@@ -894,6 +894,8 @@
     <Content Include="Views\Shared\_SessionWarning.cshtml" />
     <Content Include="Views\Report\_financialOverview.cshtml" />
     <Content Include="Views\Shared\ElmahError.cshtml" />
+    <Content Include="Views\Report\_Revenue.cshtml" />
+    <Content Include="Views\Report\_RevenueToPlan.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
@@ -944,7 +946,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>57725</DevelopmentServerPort>
+          <DevelopmentServerPort>51661</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

@@ -55,10 +55,10 @@ namespace RevenuePlanner.Models
         public int PlanTacticId { get; set; }
         public double ProjectedRevenue { get; set; }
     }
-    
+
     #region "Report"
-    
-    #region "Revenue"
+
+    #region "Revenue Overview"
     #region "LineChart Entity"
     public class Projected_Goal
     {
@@ -87,7 +87,7 @@ namespace RevenuePlanner.Models
         public string symbol { get; set; }
     }
     public class ReportOverviewModel
-    { 
+    {
         public RevenueOverviewModel revenueOverviewModel { get; set; }
         public ConversionOverviewModel conversionOverviewModel { get; set; }
         public FinancialOverviewModel financialOverviewModel { get; set; }
@@ -126,8 +126,8 @@ namespace RevenuePlanner.Models
         public string Tooltip_Prefix { get; set; }
         public string Tooltip_Suffix { get; set; }
     }
-    #endregion  
-    
+    #endregion
+
     #endregion
 
     #region"Conversion"
@@ -149,10 +149,10 @@ namespace RevenuePlanner.Models
         public string Benchmark { get; set; }
         public string PercentageDifference { get; set; }
         public bool IsNegativePercentage { get; set; }
-     }
+    }
     public class Stage_Benchmark
     {
-        public string StageCode { get; set;}
+        public string StageCode { get; set; }
         public double Benchmark { get; set; }
     }
     #endregion
@@ -174,6 +174,48 @@ namespace RevenuePlanner.Models
     }
     #endregion
 
+    #region "Revenue"
+
+    public class ReportModel
+    {
+        public double Actual_Projected { get; set; }
+        public double Goal { get; set; }
+        public Projected_Goal RevenueHeaderModel { get; set; }
+        public lineChartData RevenueLineChartModel { get; set; }
+        public RevenueToPlanModel RevenueToPlanModel { get; set; }
+    }
+    public class RevenueToPlanModel
+    {
+        public BarChartModel RevenueToPlanBarChartModel { get; set; }
+        public RevenueDataTable RevenueToPlanDataModel { get; set; }
+    }
+    public class RevenueDataTable
+    {
+        public List<string> Categories { get; set; }
+        public List<double> ActualList { get; set; }
+        public List<double> ProjectedList { get; set; }
+        public List<double> GoalList { get; set; }
+        //public List<double> CostList { get; set; }
+        //public List<double> PerformanceList { get; set; }
+        //public List<double> ROIList { get; set; }
+        public RevenueSubDataTableModel SubDataModel { get; set; }
+        public List<double> TotalRevenueList { get; set; }
+        public bool IsQuarterly { get; set; }
+        public string timeframeOption { get; set; }
+    }
+
+    public class RevenueSubDataTableModel
+    {
+        public List<string> PerformanceList { get; set; }
+        public List<string> CostList { get; set; }
+        public List<string> ROIList { get; set; }
+        public List<string> RevenueList { get; set; }
+    }
+
+
+    #endregion
+
+    #region "Basic Model"
     public class ActualDataTable
     {
         public int PlanTacticId { get; set; }
@@ -225,7 +267,7 @@ namespace RevenuePlanner.Models
     public class ActualTacticListByStage
     {
         public List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList { get; set; }
-        public string StageCode { get; set;}
+        public string StageCode { get; set; }
     }
 
     public class BarChartModel
@@ -251,6 +293,17 @@ namespace RevenuePlanner.Models
         public bool IsLineItemExist { get; set; }
         public List<BudgetedValue> ActualList { get; set; }
     }
+
+    public class BasicModel
+    {
+        public List<string> Categories { get; set; }
+        public List<double> ActualList { get; set; }
+        public List<double> ProjectedList { get; set; }
+        public List<double> GoalList { get; set; }
+        public bool IsQuarterly { get; set; }
+        public string timeframeOption { get; set; }
+    }
+    #endregion
 
     #endregion
 }

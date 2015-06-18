@@ -57,7 +57,10 @@
     .budgeting-linechart {
     padding: 0 75px;
     text-align: center;
-}    
+}
+    .nobold {
+        font-weight:inherit !important;
+    }    
 </style>
 
 @section Sidebar
@@ -380,8 +383,6 @@
 
         AllocatedBy = $('#ddlAllocate option:selected').text();
 
-
-
         Qurt_Month = AllocatedBy;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
             LoadSummary();
@@ -398,36 +399,36 @@
     });
 
 
-    //End 
+//End 
 
-    var filters = {
-        OwnerIds: [],
-        TacticTypeids: []
-    };
+var filters = {
+    OwnerIds: [],
+    TacticTypeids: []
+};
    
-    function GetOwnerListForFilter(Planids, ifexists) {
-        $('#ulSelectedOwner').html('');
-        if (!ifexists) {
-            filters.OwnerIds = [];
-        }
-        $.ajax({
-            beforeSend: function (x) {
-                myApp.hidePleaseWait();
+function GetOwnerListForFilter(Planids, ifexists) {
+    $('#ulSelectedOwner').html('');
+    if (!ifexists) {
+        filters.OwnerIds = [];
+    }
+    $.ajax({
+        beforeSend: function (x) {
+            myApp.hidePleaseWait();
+        },
+        type: "GET",
+        async: false,
+        cache: false,
+        url: '@Url.Action("GetOwnerListForFilter", "Report")',
+            data: {
+                PlanId: Planids.toString(),
+                leftPaneOption : leftPaneOption
+                   
             },
-            type: "GET",
-            async: false,
-            cache: false,
-            url: '@Url.Action("GetOwnerListForFilter", "Report")',
-                data: {
-                    PlanId: Planids.toString(),
-                    leftPaneOption : leftPaneOption
+            dataType: "json",
+            success: function (data) {
                    
-                },
-                dataType: "json",
-                success: function (data) {
-                   
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                     else {
                         if (data.isSuccess == true) {
@@ -459,149 +460,149 @@
                         }
                     }
                 }
-            });
-    }
-
-
-    function BulkOwnerOperation(selection) {
-        filters.OwnerIds = [];
-        if (selection) {
-            $("#ulSelectedOwner li").each(function (i) {
-                $(this).addClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).attr("checked", "checked");
-                filters.OwnerIds.push(chkid);
-            });
-        }
-        else {
-            $("#ulSelectedOwner li").each(function (i) {
-                $(this).removeClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).removeAttr("checked");
-            });
-        }
-    }
-
-
-    function toggleOwner(obj) {
-        var id = $(obj).attr('id');
-        if ($(obj).is(':checked')) {
-            $("#liOwner" + id).addClass("close-list");
-        }
-        else {
-            $("#liOwner" + id).removeClass("close-list");
-        }
-        filters.OwnerIds = [];
-        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
-            var chkid = $(this).attr("id");
-            if ($(this).is(':checked')) {
-                filters.OwnerIds.push(chkid);
-            }
         });
-    }
-
-    function GetTacticTypelist(Planids, ifexists) {
-     
-        $('#ulTacticType').html('');
-        if (!ifexists) {
-            filters.TacticTypeids = [];
         }
-        $.ajax({
-            beforeSend: function (x) {
-                myApp.hidePleaseWait();
-            },
-            type: "GET",
-            async: false,
-            cache: false,
-            url: '@Url.Action("GetTacticTypeListForFilter", "Report")',
+
+
+        function BulkOwnerOperation(selection) {
+            filters.OwnerIds = [];
+            if (selection) {
+                $("#ulSelectedOwner li").each(function (i) {
+                    $(this).addClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).attr("checked", "checked");
+                    filters.OwnerIds.push(chkid);
+                });
+            }
+            else {
+                $("#ulSelectedOwner li").each(function (i) {
+                    $(this).removeClass("close-list");
+                    var chkid = $(this).find("input[type=checkbox]").attr("id");
+                    $("#" + chkid).removeAttr("checked");
+                });
+            }
+        }
+
+
+        function toggleOwner(obj) {
+            var id = $(obj).attr('id');
+            if ($(obj).is(':checked')) {
+                $("#liOwner" + id).addClass("close-list");
+            }
+            else {
+                $("#liOwner" + id).removeClass("close-list");
+            }
+            filters.OwnerIds = [];
+            $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                var chkid = $(this).attr("id");
+                if ($(this).is(':checked')) {
+                    filters.OwnerIds.push(chkid);
+                }
+            });
+        }
+
+        function GetTacticTypelist(Planids, ifexists) {
+     
+            $('#ulTacticType').html('');
+            if (!ifexists) {
+                filters.TacticTypeids = [];
+            }
+            $.ajax({
+                beforeSend: function (x) {
+                    myApp.hidePleaseWait();
+                },
+                type: "GET",
+                async: false,
+                cache: false,
+                url: '@Url.Action("GetTacticTypeListForFilter", "Report")',
             data: {
                 PlanId: Planids.toString(),
                 leftPaneOption: leftPaneOption
-                },
-              dataType: "json",
-              success: function (data) {
-                  if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                      window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
-                    else {
-                        if (data.isSuccess == true) {
-                            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
-                                TactictypeCount = data.TacticTypelist.length;
-                                if (TactictypeCount > 0) {
-                                    $("#TacticTypeAllModule").css("display", "block");
-                                    $("#NoTTFound").hide();
-                                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                                        var checked = "";
-                                        var checkedclass = "";
-                                        if (ifexists && filters.TacticTypeids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
-                                            checked = "checked";
-                                            checkedclass = "close-list";
-                                        }
-                                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
-                                    });
-                                }
-                                else {
-                                    $("#TacticTypeAllModule").css("display", "none");
-                                    $("#NoTTFound").show();
-                                }
-                            }
-                            else {
-                                $("#TacticTypeAllModule").css("display", "none");
-                                $("#NoTTFound").show();
-                            }
-                        }
-                    }
-                }
-          });
-
-    }
-
-    function BulkTTOperation(selection) {
-        filters.TacticTypeids = [];
-        if (selection) {
-            $("#ulTacticType li").each(function (i) {
-                $(this).addClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).attr("checked", "checked");
-                filters.TacticTypeids.push(chkid);
-
-            });
-        }
-        else {
-            $("#ulTacticType li").each(function (i) {
-                $(this).removeClass("close-list");
-                var chkid = $(this).find("input[type=checkbox]").attr("id");
-                $("#" + chkid).removeAttr("checked");
-            });
-        }
-
-    }
-
-    function toggleTacticType(obj) {
-        var id = $(obj).attr('id').toString().replace("CbTT", "");
-        if ($(obj).is(':checked')) {
-            $("#liTT" + id).addClass("close-list");
-        }
-        else {
-            $("#liTT" + id).removeClass("close-list");
-        }
-
-        filters.TacticTypeids = [];
-        $("#ulTacticType li input[type=checkbox]").each(function () {
-            var chkid = $(this).attr("id");
-            if ($(this).is(':checked')) {
-                filters.TacticTypeids.push(chkid);
-            }
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                  }
+                  else {
+                      if (data.isSuccess == true) {
+                          if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+                              TactictypeCount = data.TacticTypelist.length;
+                              if (TactictypeCount > 0) {
+                                  $("#TacticTypeAllModule").css("display", "block");
+                                  $("#NoTTFound").hide();
+                                  $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                                      var checked = "";
+                                      var checkedclass = "";
+                                      if (ifexists && filters.TacticTypeids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
+                                          checked = "checked";
+                                          checkedclass = "close-list";
+                                      }
+                                      $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
+                                  });
+                              }
+                              else {
+                                  $("#TacticTypeAllModule").css("display", "none");
+                                  $("#NoTTFound").show();
+                              }
+                          }
+                          else {
+                              $("#TacticTypeAllModule").css("display", "none");
+                              $("#NoTTFound").show();
+                          }
+                      }
+                  }
+              }
         });
-    }
 
-    //End
-    var SelectedBUId, SelectedPlanId;
-    var IsCallFromYearDropdown = true;
-    var OptionMain = '';
-    var isAllowClick = true;
-    var multiselectPlanId = "ulSelectedPlans";
-    var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
+      }
+
+      function BulkTTOperation(selection) {
+          filters.TacticTypeids = [];
+          if (selection) {
+              $("#ulTacticType li").each(function (i) {
+                  $(this).addClass("close-list");
+                  var chkid = $(this).find("input[type=checkbox]").attr("id");
+                  $("#" + chkid).attr("checked", "checked");
+                  filters.TacticTypeids.push(chkid);
+
+              });
+          }
+          else {
+              $("#ulTacticType li").each(function (i) {
+                  $(this).removeClass("close-list");
+                  var chkid = $(this).find("input[type=checkbox]").attr("id");
+                  $("#" + chkid).removeAttr("checked");
+              });
+          }
+
+      }
+
+      function toggleTacticType(obj) {
+          var id = $(obj).attr('id').toString().replace("CbTT", "");
+          if ($(obj).is(':checked')) {
+              $("#liTT" + id).addClass("close-list");
+          }
+          else {
+              $("#liTT" + id).removeClass("close-list");
+          }
+
+          filters.TacticTypeids = [];
+          $("#ulTacticType li input[type=checkbox]").each(function () {
+              var chkid = $(this).attr("id");
+              if ($(this).is(':checked')) {
+                  filters.TacticTypeids.push(chkid);
+              }
+          });
+      }
+
+      //End
+      var SelectedBUId, SelectedPlanId;
+      var IsCallFromYearDropdown = true;
+      var OptionMain = '';
+      var isAllowClick = true;
+      var multiselectPlanId = "ulSelectedPlans";
+      var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
     var Qurt_Month = '@Enums.ViewByAllocated.Quarterly.ToString()';
 
     $(document).ready(function () {
@@ -622,7 +623,7 @@
 
         OptionMain = getYearSelectedValue(true);
 
-       // Qurt_Month = getQuarterMonthlySelectedValue();
+        // Qurt_Month = getQuarterMonthlySelectedValue();
 
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadYearDropdown();
@@ -637,7 +638,7 @@
 				.prev('.accordion-heading')
 				.find("i.indicator")
 				.toggleClass('glyphicon-chevron-down glyphicon-chevron-up');
-            }
+        }
         $('.accordion').on('hidden.bs.collapse', toggleChevron);
         $('.accordion').on('shown.bs.collapse', toggleChevron);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
@@ -733,9 +734,9 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Report/GetBudgetPlanBasedOnYear/")',
-                data: {
-                    Year: strYear
-                },
+            data: {
+                Year: strYear
+            },
             success: function (data) {
                 $('#' + multiselectPlanId).html('');
                 if (data != 'undefined' && data != null) {
@@ -745,7 +746,7 @@
                         $("#NoPlanFound").hide();
                         $.each(data, function (index, item) {
                             $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Text + '" onchange="OnPlanchange(this)" id="' + item.Value + '"></input></li>');
-            });
+                        });
                     }
                     else {
                         $("#PlanAllModule").css("display", "none");
@@ -802,16 +803,16 @@
                 $("#" + chkid).removeAttr("checked");
             });
         }
-        }
+    }
 
-        //// Remove actiave class from left sidebar menu li
-        function RemoveAllActiveItem() {
-            $('#ulLeftPane li').each(function () {
-                if ($(this).hasClass('active')) {
-                    $(this).removeClass('active');
-                }
-            });
-        }
+    //// Remove actiave class from left sidebar menu li
+    function RemoveAllActiveItem() {
+        $('#ulLeftPane li').each(function () {
+            if ($(this).hasClass('active')) {
+                $(this).removeClass('active');
+            }
+        });
+    }
 
     //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
     ///Added by Mitesh Vaishnav for PL ticket #846
@@ -824,8 +825,8 @@
                 string lblid = string.Concat("lbl", custField.CustomFieldId);
                 string detailid = string.Concat(custField.CustomFieldId, "detail");
                     @: $('@btnmultiselectid').css('display', 'initial');
-                                                @: $('@lblid').css('display', 'initial');
-                                                @: $('@detailid').css('display', 'initial');
+                                                        @: $('@lblid').css('display', 'initial');
+                                                        @: $('@detailid').css('display', 'initial');
                 }
     }
 
@@ -852,7 +853,7 @@
     //// Load Revenue view section
     function LoadRevenueView() {
         $('#conversionHeader').css('display', 'none');
-        $('#revenueHeader').css('display', 'block');
+        $('#revenueHeader').css('display', 'none');
     }
 
     //// Load Conversion view section
@@ -864,16 +865,16 @@
     //// Call function based on option
     function loadBasedOnPlan() {
         var isActualVisible = "@ViewBag.TacticActualsAddEdit"
-            if (isActualVisible.toString().toLowerCase() == 'true') {
-                if (SelectedPlanId == 0) {
-                    $("#BtnAddActual").attr("disabled", "disabled");
-                }
-                else {
-                    $("#BtnAddActual").removeAttr("disabled");
-                }
+        if (isActualVisible.toString().toLowerCase() == 'true') {
+            if (SelectedPlanId == 0) {
+                $("#BtnAddActual").attr("disabled", "disabled");
             }
+            else {
+                $("#BtnAddActual").removeAttr("disabled");
+            }
+        }
 
-            if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+        if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
                 LoadSummary();
             }
             else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
@@ -893,8 +894,14 @@
         $('#divMainReportPart').empty();
         $('#accordion-quart').css('display', 'none');
         
-    var url = '@Url.Content("~/Report/GetRevenueData/")';
+        @*var url = '@Url.Content("~/Report/GetRevenueData/")';
         $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
+            isAllowClick = true;
+            myApp.hidePleaseWait();
+        });*@
+
+        var url = '@Url.Content("~/Report/GetRevenueData1/")';
+        $('#divMainReportPart').load(url + '?option=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });
@@ -915,29 +922,29 @@
         });
     }
 
-        //// Load Budget View
-        function LoadBudgetView() {
-            $("#BtnShareReport").hide(); //Added by Arpita Soni on 01/08/2015 for ticket #1108
-            $('#budgetHeader').css('display', 'block');
-            $('#conversionHeader').css('display', 'none');
-            $('#revenueHeader').css('display', 'none');
-            $('#UlPlanHeader').css('display', 'none');
-            $('#formSideFilter').css('display', 'none');
-            $('#accordion-quart').css('display', 'none');
-            var url = '@Url.Content("~/Report/GetBudget/")';
+    //// Load Budget View
+    function LoadBudgetView() {
+        $("#BtnShareReport").hide(); //Added by Arpita Soni on 01/08/2015 for ticket #1108
+        $('#budgetHeader').css('display', 'block');
+        $('#conversionHeader').css('display', 'none');
+        $('#revenueHeader').css('display', 'none');
+        $('#UlPlanHeader').css('display', 'none');
+        $('#formSideFilter').css('display', 'none');
+        $('#accordion-quart').css('display', 'none');
+        var url = '@Url.Content("~/Report/GetBudget/")';
             $('#divMainReportPart').load(url, function () {
                 isAllowClick = true;
             });
         }
 
         //// Get Plan Ids from multiselect list
-    function GetFilterIdForPlan(ulPlanId) {
+        function GetFilterIdForPlan(ulPlanId) {
             var finalValue = "";
             var isShowAddActual = 0;
-        $('#' + ulPlanId).find("input[type='checkbox']").each(function () {
+            $('#' + ulPlanId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
                     isShowAddActual++;
-                var splitvalue = $(this).attr('id').split("_");
+                    var splitvalue = $(this).attr('id').split("_");
                     finalValue += splitvalue[0] + ",";
                 }
             });
@@ -958,11 +965,11 @@
         }
 
         //// Get id from multiselect
-    function GetCustomFilterIds(ulCustomId) {
+        function GetCustomFilterIds(ulCustomId) {
             var finalValue = "";
-        $('#' + ulCustomId).find("input[type='checkbox']").each(function () {
+            $('#' + ulCustomId).find("input[type='checkbox']").each(function () {
                 if (this.checked) {
-                finalValue += $(this).attr('id') + ",";
+                    finalValue += $(this).attr('id') + ",";
                 }
             });
 
@@ -987,21 +994,21 @@
         //// Load Share report section
         function ShowShareReport() {
             var url = '@Url.Content("~/Report/ShowShareReport/")';
-        $("#DivShareReport").empty()
-                                   .load(url.concat('?reportType=') + leftPaneOption)
-                                   .show();
-    }
+            $("#DivShareReport").empty()
+                                       .load(url.concat('?reportType=') + leftPaneOption)
+                                       .show();
+        }
 
-    //// on select simple selector dropdown close multiselect dropdown
-    $(".sbSelector").click(function () {
-        $(".ui-multiselect-menu").each(function () {
-            $(this).css("display", "none");
+        //// on select simple selector dropdown close multiselect dropdown
+        $(".sbSelector").click(function () {
+            $(".ui-multiselect-menu").each(function () {
+                $(this).css("display", "none");
+            });
         });
-    });
 
         //// handle update button event
         $('#updatedata').click(function () {
-        
+
             var arrOptionIds = new Array();
             //// close multiselect
             $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
@@ -1010,70 +1017,69 @@
 
             OptionMain = getYearSelectedValue(true);
 
-          //  Qurt_Month = getQuarterMonthlySelectedValue();
-            
+            //  Qurt_Month = getQuarterMonthlySelectedValue();
+
         @foreach (var custField in ViewCustomFields)
         {
             string multiselectid = string.Concat("ul", custField.CustomFieldId);
-            @: var filterIds = GetCustomFilterIds('@multiselectid');
-            @: var arrFilterId = filterIds.split(',');
-            @: if(arrFilterId != "")
-            @: {
-            @: for (var i = 0; i < arrFilterId.length; i++) {
-            @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
-            @:}
-            @:}
+           @: var filterIds = GetCustomFilterIds('@multiselectid');
+           @: var arrFilterId = filterIds.split(',');
+           @: if(arrFilterId != "")
+           @: {
+           @: for (var i = 0; i < arrFilterId.length; i++) {
+           @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
+           @:}
+           @:}
         }
-            
+
             //// get selected value from multiselect 
             PlanIds = GetFilterIdForPlan(multiselectPlanId);
-        //Mofied By Komal Rawal
-        var arrPlanIds = new Array();
-        arrPlanIds = PlanIds.split(',');
-        var GetSelectedPlanNo = arrPlanIds.length;
-        if (GetSelectedPlanNo > 1) {
-            $("#divAddActual").hide();
+            //Mofied By Komal Rawal
+            var arrPlanIds = new Array();
+            arrPlanIds = PlanIds.split(',');
+            var GetSelectedPlanNo = arrPlanIds.length;
+            if (GetSelectedPlanNo > 1) {
+                $("#divAddActual").hide();
 
             }
-            else
-            {
-            $("#divAddActual").show();
+            else {
+                $("#divAddActual").show();
 
-        }
-        //End
-            
+            }
+            //End
+
             SortingId = '';
             $.ajax({
                 dataType: 'json',
                 type: 'POST',
                 url: '@Url.Content("~/Report/SetReportData/")',
-                traditional:true,
+                traditional: true,
                 data: {
                     planIds: PlanIds,
                     OwnerIDs: (filters.OwnerIds).toString(),
-                    TactictypeIDs:(filters.TacticTypeids).toString(),
+                    TactictypeIDs: (filters.TacticTypeids).toString(),
                     customIds: JSON.stringify(arrOptionIds),
                 },
                 success: function (data) {
                     if (data.status) {
                         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
-                        LoadSummary();
-                    }
+                            LoadSummary();
+                        }
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
-                        LoadRevenueData();
-                    }
+                            LoadRevenueData();
+                        }
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
-                        LoadConversionData();
-                    }
+                            LoadConversionData();
+                        }
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
-                        LoadBudgetView();
-                    }
-        }
-
-
+                            LoadBudgetView();
+                        }
             }
+
+
+                }
+            });
         });
-    });
 
 function OnYearChange(_yearli) {
     $(_yearli).siblings().each(function () {
@@ -1152,7 +1158,7 @@ function getYearSelectedValue(isYearDetail) {
     });
     var _selectedYear = $(_selecteditem[0]).attr('yearValue');
     if (isYearDetail) {
-        var _YearText=$(_selecteditem).find('span').eq(0).html();
+        var _YearText = $(_selecteditem).find('span').eq(0).html();
         $("#spYearText").html(_YearText);
     }
 
@@ -1180,9 +1186,9 @@ $('#liSummary').click(function () {
         document.title = "Summary";
         isAllowClick = false;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
-        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
-            GetOwnerListForFilter(PlanIds,true);
-            GetTacticTypelist(PlanIds,true);
+            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
+            GetOwnerListForFilter(PlanIds, true);
+            GetTacticTypelist(PlanIds, true);
         }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
         LoadYearDropdown(leftPaneOption);
@@ -1199,10 +1205,10 @@ $('#liRevenue').click(function () {
         document.title = "Revenue";
         isAllowClick = false;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
-        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
-           GetOwnerListForFilter(PlanIds,true);
-           GetTacticTypelist(PlanIds,true);
-       }
+            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
+            GetOwnerListForFilter(PlanIds, true);
+            GetTacticTypelist(PlanIds, true);
+        }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()';
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
@@ -1211,7 +1217,7 @@ $('#liRevenue').click(function () {
         LoadRevenueView();
         loadBasedOnPlan();
     }
-    });
+});
 
 //// conversion click event
 $('#liConversion').click(function () {
@@ -1219,10 +1225,10 @@ $('#liConversion').click(function () {
         document.title = "Conversion";
         isAllowClick = false;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
-        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
-           GetOwnerListForFilter(PlanIds,true);
-           GetTacticTypelist(PlanIds,true);
-       }
+            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
+            GetOwnerListForFilter(PlanIds, true);
+            GetTacticTypelist(PlanIds, true);
+        }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
@@ -1231,37 +1237,37 @@ $('#liConversion').click(function () {
         LoadConversionView();
         loadBasedOnPlan();
     }
-    });
+});
 
 //// budget click event
-    $('#liBudgetreport').click(function () {
+$('#liBudgetreport').click(function () {
     if (isAllowClick) {
         document.title = "Budget";
         isAllowClick = false;
         if (leftPaneOption != '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
-             GetOwnerListForFilter(PlanIds,true);
-             GetTacticTypelist(PlanIds,true);
-         }
+            GetOwnerListForFilter(PlanIds, true);
+            GetTacticTypelist(PlanIds, true);
+        }
         leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
-                LoadYearDropdown(leftPaneOption);
-                RemoveAllActiveItem();
-                $(this).addClass('active');
-                $('#ddlsection').hide(); //Modified for #1296
-                LoadBudgetView();
-            }
-        });
+        LoadYearDropdown(leftPaneOption);
+        RemoveAllActiveItem();
+        $(this).addClass('active');
+        $('#ddlsection').hide(); //Modified for #1296
+        LoadBudgetView();
+    }
+    });
 
-        //// share report event
-        $("#BtnShareReport").click(function () {
-            ShowShareReport();
-        });
+//// share report event
+$("#BtnShareReport").click(function () {
+    ShowShareReport();
+});
 
-        ///Added by Mitesh Vaishnav for generate multiselect dropdownlist with no filter or no custom border
-        function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, isMultiple) {
-            var custom = "";
-            if (isCustomBorderApply) {
-                custom = '@Common.CustomTitle';
+///Added by Mitesh Vaishnav for generate multiselect dropdownlist with no filter or no custom border
+function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, isMultiple) {
+    var custom = "";
+    if (isCustomBorderApply) {
+        custom = '@Common.CustomTitle';
             }
 
             if (isFilterApply) {
@@ -1280,209 +1286,409 @@ $('#liConversion').click(function () {
             }
         }
 
-    // Start:- Linchart script 
-    function BindLineChart(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartHeight, _plotOptions) {
-        Highcharts.setOptions({
-            lang: {
-                numericSymbols: ["k", "M", "B", "T", "P", "E"]
-            }
-        });
-        var options = {
-            chart: {
-                height: _chartHeight,
-                //width: _chartwidth,
-                spacingTop: 50
-            },
-            colors: ['#B04499', '#999999'],
-            legend: {
-                align: 'top',
-                verticalAlign: 'top',
-                layout: 'horizontal',
-                x: 60,
-                y: -40
-            },
-            title: {
-                text: ''
-            },
-            xAxis: {
-                categories: _categories,
-                lineColor: 'black',
-                lineWidth: 2,
-                tickColor: 'black',
-                tickWidth: 2,
-                plotLines: _isshowPlotLine.toLowerCase() == "true" ? [{
-                    color: 'black', // Color value
-                    dashStyle: 'longdash', // Style of the plot line. Default to solid
-                    value: _plotlineVal, // Value of where the line will appear
-                    width: 2, // Width of the line    
-                    label: {
-                        text: 'Today',
-                        align: 'middle',
-                        verticalAlign: 'top',
-                        rotation: 0,
-                        x: -15,
-                        y: -2
-                    }
-                }] : [],
-                tickPosition: 'inside',
-                tickmarkPlacement: 'on',
-                labels: {
-                    color: '#2d2d2d',
-                    style: {
-                        "fontWeight": "bold"
-                    }
+        // Start:- Linchart script 
+        function BindLineChart(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartHeight, _plotOptions) {
+            Highcharts.setOptions({
+                lang: {
+                    numericSymbols: ["k", "M", "B", "T", "P", "E"]
                 }
-            },
-            yAxis: {
-                lineColor: 'black',
-                gridLineWidth: 0,
-                minorGridLineWidth: 0,
-                lineWidth: 2,
-                tickPosition: 'inside',
-                tickLength: 5,
-                tickWidth: 2,
-                tickColor: 'black',
-                tickAmount: 5,
-                labels: {
-                    color: '#2d2d2d',
-                    style: {
-                        "fontWeight": "bold"
-                    }
+            });
+            var options = {
+                chart: {
+                    height: _chartHeight,
+                    //width: _chartwidth,
+                    spacingTop: 50
+                },
+                colors: ['#B04499', '#999999'],
+                legend: {
+                    align: 'top',
+                    verticalAlign: 'top',
+                    layout: 'horizontal',
+                    x: 60,
+                    y: -40
                 },
                 title: {
                     text: ''
-                }
-            },
-            tooltip: {
-                valueDecimals: 1,
-            },
-            plotOptions: _plotOptions ? {
-                series: {
-                    marker: {
-                        enabled: true
+                },
+                xAxis: {
+                    categories: _categories,
+                    lineColor: 'black',
+                    lineWidth: 2,
+                    tickColor: 'black',
+                    tickWidth: 2,
+                    plotLines: _isshowPlotLine.toLowerCase() == "true" ? [{
+                        color: 'black', // Color value
+                        dashStyle: 'longdash', // Style of the plot line. Default to solid
+                        value: _plotlineVal, // Value of where the line will appear
+                        width: 2, // Width of the line    
+                        label: {
+                            text: 'Today',
+                            align: 'middle',
+                            verticalAlign: 'top',
+                            rotation: 0,
+                            x: -15,
+                            y: -2
+                        }
+                    }] : [],
+                    tickPosition: 'inside',
+                    tickmarkPlacement: 'on',
+                    labels: {
+                        color: '#2d2d2d',
+                        style: {
+                            "fontWeight": "bold"
+                        }
                     }
-                }
-            }:
+                },
+                yAxis: {
+                    lineColor: 'black',
+                    gridLineWidth: 0,
+                    minorGridLineWidth: 0,
+                    lineWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 5,
+                    tickWidth: 2,
+                    tickColor: 'black',
+                    tickAmount: 5,
+                    labels: {
+                        color: '#2d2d2d',
+                        style: {
+                            "fontWeight": "bold"
+                        }
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                tooltip: {
+                    valueDecimals: 1,
+                },
+                plotOptions: _plotOptions ? {
+                    series: {
+                        marker: {
+                            enabled: true
+                        }
+                    }
+                } :
                 {
                     series: {
                         marker: {
                             enabled: false
                         }
-                }
-            },
-            series: []
-        }
-
-        var serLength = _series.length;
-        for (var i = 0; i < serLength ; i++) {
-            options.series.push(eval(_series[i]));
-        }
-        $(_linechartDivId).highcharts(options);
-    }
-    // End:- Linchart script 
-
-    //Start:- BarLineChart Script
-    function BindBarChartData(_categories, _series, _linechartDivId, _title) {
-        Highcharts.setOptions({
-            lang: {
-                numericSymbols: ["k", "M", "B", "T", "P", "E"]
-            }
-        });
-        var options = {
-            chart: {
-                //height: _height,
-                //width: _width,
-                type: 'bar'
-            },
-            title: {
-                text: ''
-                //style: {
-                //    color: '#333',
-                //    fontFamily: 'source_sans_proregular',
-                //    fontSize: '22px',
-                //    fontWeight: 'normal'
-                //}
-            },
-            xAxis: {
-                lineWidth: 0,
-                categories: _categories,
-                gridLineWidth: 0,
-                tickWidth: 0
-            },
-            yAxis: {
-                gridLineWidth: 0,
-                labels: {
-                    enabled: false
-                },
-                title: {
-                    enabled: false
-                }
-            },
-            colors: ['#CCCCCC', '#2384b8'],
-            legend: {
-                //reversed: true,
-                align: 'center',
-                verticalAlign: 'top',
-                itemDistance: 50
-            },
-            plotOptions: {
-                series: {
-                    //stacking: 'normal',
-                    //pointWidth: 40,
-                    //pointPadding: 0.1
-                },
-                scatter: {
-                    marker: {
-                        symbol: 'line',
-                        lineWidth: 3,
-                        radius: 12,
-                        lineColor: '#F0BE29'
                     }
                 },
-                bar: {
-                    grouping: false,
-                    shadow: false,
-                    borderWidth: 0
-                }
-            },
-            tooltip: {
-                valuePrefix: '$'
-            },
-            series: []
-        }
-
-        var serLength = _series.length;
-        var _catLength = _categories.length;
-        for (var i = 0; i < serLength ; i++) {
-            //alert(eval(_series[i]));
-            options.series.push(eval(_series[i]));
-            if (_series[i].type != null && _series[i].type != 'undefined' && _series[i].type == 'scatter') {
-                var datum = options.series[i];
-                datum.tooltip = {
-                    shared: true,
-                    useHTML: true,
-                    headerFormat: '<table>',
-                    pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
-                        '<td style="text-align: right"><b>{point.y}</b></td></tr>',
-                    footerFormat: '</table>'
-                };
-                //if (_catLength == 4) {
-                //    datum.marker = {
-                //        symbol: 'line',
-                //        lineWidth: 3,
-                //        radius: 12,
-                //        lineColor: '#F0BE29'
-                //    };
-                //}  
+                series: []
             }
+
+            var serLength = _series.length;
+            for (var i = 0; i < serLength ; i++) {
+                options.series.push(eval(_series[i]));
+            }
+            $(_linechartDivId).highcharts(options);
+        }
+        // End:- Linchart script 
+
+        // Start:- Linchart script 
+        function BindLineChartRevenue(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartHeight, _plotOptions) {
+            Highcharts.setOptions({
+                lang: {
+                    numericSymbols: ["k", "M", "B", "T", "P", "E"]
+                }
+            });
+            var options = {
+                chart: {
+                    height: _chartHeight,
+                    //width: _chartwidth,
+                    spacingTop: 50
+                },
+                colors: ['#B04499', '#999999'],
+                legend: {
+                    align: 'left',
+                    verticalAlign: 'top',
+                    layout: 'vertical',
+                    x: 60,
+                    y: -40
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    categories: _categories,
+                    lineColor: 'black',
+                    lineWidth: 2,
+                    tickColor: 'black',
+                    tickWidth: 2,
+                    plotLines: _isshowPlotLine.toLowerCase() == "true" ? [{
+                        color: 'black', // Color value
+                        dashStyle: 'longdash', // Style of the plot line. Default to solid
+                        value: _plotlineVal, // Value of where the line will appear
+                        width: 2, // Width of the line    
+                        label: {
+                            text: 'Today',
+                            align: 'middle',
+                            verticalAlign: 'top',
+                            rotation: 0,
+                            x: -15,
+                            y: -2
+                        }
+                    }] : [],
+                    tickPosition: 'inside',
+                    tickmarkPlacement: 'on',
+                    labels: {
+                        color: '#2d2d2d',
+                        style: {
+                            "fontWeight": "bold"
+                        }
+                    }
+                },
+                yAxis: {
+                    lineColor: 'black',
+                    gridLineWidth: 0,
+                    minorGridLineWidth: 0,
+                    lineWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 5,
+                    tickWidth: 2,
+                    tickColor: 'black',
+                    tickAmount: 5,
+                    labels: {
+                        color: '#2d2d2d',
+                        style: {
+                            "fontWeight": "bold"
+                        }
+                    },
+                    title: {
+                        text: ''
+                    }
+                },
+                tooltip: {
+                    valueDecimals: 1,
+                },
+                plotOptions: _plotOptions ? {
+                    series: {
+                        marker: {
+                            enabled: true
+                        }
+                    }
+                } :
+                {
+                    series: {
+                        marker: {
+                            enabled: false
+                        }
+                    }
+                },
+                series: []
+            }
+
+            var serLength = _series.length;
+            for (var i = 0; i < serLength ; i++) {
+                options.series.push(eval(_series[i]));
+            }
+            $(_linechartDivId).highcharts(options);
+        }
+        // End:- Linchart script 
+
+        //Start:- BarLineChart Script
+        function BindBarChartData(_categories, _series, _linechartDivId, _title) {
+            Highcharts.setOptions({
+                lang: {
+                    numericSymbols: ["k", "M", "B", "T", "P", "E"]
+                }
+            });
+            var options = {
+                chart: {
+                    //height: _height,
+                    //width: _width,
+                    type: 'bar'
+                },
+                title: {
+                    text: ''
+                    //style: {
+                    //    color: '#333',
+                    //    fontFamily: 'source_sans_proregular',
+                    //    fontSize: '22px',
+                    //    fontWeight: 'normal'
+                    //}
+                },
+                xAxis: {
+                    lineWidth: 0,
+                    categories: _categories,
+                    gridLineWidth: 0,
+                    tickWidth: 0
+                },
+                yAxis: {
+                    gridLineWidth: 0,
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        enabled: false
+                    }
+                },
+                colors: ['#CCCCCC', '#2384b8'],
+                legend: {
+                    //reversed: true,
+                    align: 'center',
+                    verticalAlign: 'top',
+                    itemDistance: 50
+                },
+                plotOptions: {
+                    series: {
+                        //stacking: 'normal',
+                        //pointWidth: 40,
+                        //pointPadding: 0.1
+                    },
+                    scatter: {
+                        marker: {
+                            symbol: 'line',
+                            lineWidth: 3,
+                            radius: 12,
+                            lineColor: '#F0BE29'
+                        }
+                    },
+                    bar: {
+                        grouping: false,
+                        shadow: false,
+                        borderWidth: 0
+                    }
+                },
+                tooltip: {
+                    valuePrefix: '$'
+                },
+                series: []
+            }
+
+            var serLength = _series.length;
+            var _catLength = _categories.length;
+            for (var i = 0; i < serLength ; i++) {
+                //alert(eval(_series[i]));
+                options.series.push(eval(_series[i]));
+                if (_series[i].type != null && _series[i].type != 'undefined' && _series[i].type == 'scatter') {
+                    var datum = options.series[i];
+                    datum.tooltip = {
+                        shared: true,
+                        useHTML: true,
+                        headerFormat: '<table>',
+                        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+                            '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+                        footerFormat: '</table>'
+                    };
+                    //if (_catLength == 4) {
+                    //    datum.marker = {
+                    //        symbol: 'line',
+                    //        lineWidth: 2,
+                    //        radius: 26,
+                    //        lineColor: '#F0BE29'
+                    //    };
+                    //}
+
+                }
+            }
+
+            Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
+                return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
+            }
+            $(_linechartDivId).highcharts(options);
+
         }
 
-        Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
-            return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
-        };
-        $(_linechartDivId).highcharts(options);
+        function BindRevenueBarChartData(_categories, _series, _linechartDivId) {
+            Highcharts.setOptions({
+                lang: {
+                    numericSymbols: ["k", "M", "B", "T", "P", "E"]
+                }
+            });
+            var options = {
+                chart: {
+                    type: 'column'
+                    //height: _height,
+                    //width: 400
+                },
+                colors: ['#B04499', '#999999'],
+                title: {
+                    text: ''
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    verticalAlign: 'top',
+                    floating: true,
+                    x: 30,
+                    y: 45
+                },
+                xAxis: {
+                    categories: _categories,
+                    tickWidth: 0,
+                    labels: {
+                        enabled: false
+                    }
+                },
+                yAxis: {
+                    gridLineWidth: 0,
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        enabled: false
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        //pointWidth: 20,
 
-    }
-    //End:- BarLineChart Script
+                        //groupPadding: 0,
+                        //borderWidth: 0,
+                        //shadow: false
+                    },
+                    column: {
+                        //grouping: false,
+                        shadow: false,
+                        borderWidth: 0,
+                        pointPadding: 0,
+                        pointWidth: 20
+                        //groupPadding: 0
+                    }
+                },
+                series: []
+            }
+
+            var serLength = _series.length;
+            // var _catLength = _categories.length;
+
+            for (var i = 0; i < serLength ; i++) {
+                //alert(eval(_series[i]));
+                options.series.push(eval(_series[i]));
+                //if (_series[i].type != null && _series[i].type != 'undefined' && _series[i].type == 'scatter') {
+                //    var datum = options.series[i];
+                //    datum.tooltip = {
+                //        shared: true,
+                //        useHTML: true,
+                //        headerFormat: '<table>',
+                //        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+                //            '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+                //        footerFormat: '</table>'
+                //    };
+                //    if (_catLength == 4) {
+                //        datum.marker = {
+                //            symbol: 'line',
+                //            lineWidth: 2,
+                //            radius: 26,
+                //            lineColor: '#F0BE29'
+                //        };
+                //    }
+
+                //}
+            }
+
+            //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
+            //    return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
+            //};
+            $(_linechartDivId).highcharts(options);
+
+        }
+        //End:- BarLineChart Script
 
 </script>

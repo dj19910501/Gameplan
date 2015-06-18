@@ -14242,3 +14242,387 @@ div.clue-bottom-default .cluetip-arrows {
 .nav-tabs.no-position {
     position:static;
 }
+
+
+/*Start : Revenue - new Design by neel on 2/06/2015 */
+
+
+/*2/6/2015 */
+/* Revenue Section */
+.marketing-revenue-report {
+    border-bottom: 1px solid #e8e7e7;
+    float: left;
+    margin: 0 2% 2%;
+    width: 96%;
+}
+
+    .marketing-revenue-report .dropdown-marketing h2 {
+        color: #2f292b;
+    }
+
+.report-overview-wraper {
+    display: block;
+    width: 100%;
+}
+
+.geography-dropdown h5 {
+    float: left;
+    margin: 3px 10px 0 0;
+    font-family: source_sans_prolight;
+}
+
+.marketin-revenue {
+    border-right: 1px solid #e8e7e7;
+    width: 27%;
+}
+
+.dropdown-marketing {
+    float: left;
+    width: 320px;
+    margin-bottom: 10px;
+}
+
+.marketing-revenue-report .projected {
+    float: left;
+    text-align: center;
+    width: 11%;
+    padding: 0 0 11px;
+}
+
+.projected {
+    border-left: 1px solid #e8e7e7;
+}
+
+    .projected span:nth-child(1) {
+        color: #908d88;
+        display: block;
+        font-family: source_sans_prosemibold;
+        font-size: 14px;
+        padding-bottom: 20px;
+    }
+
+    .projected span:nth-child(2) {
+        display: block;
+        font-size: 26px;
+        font-weight: bold;
+        padding-bottom: 4px;
+    }
+
+    .projected span:nth-child(3) {
+        color: #559659;
+        font-weight: bold;
+    }
+
+.disable-gray span:nth-child(2) {
+    color: #908d88;
+    font-family: source_sans_prolight;
+}
+
+.disable-gray span:nth-child(3) {
+    color: #4D4D4D;
+    font-weight: normal;
+}
+
+.time-frame .geography-dropdown .revenue-summary-custom {
+    float: left;
+}
+
+.time-frame {
+    float: right;
+    position: relative;
+    top: 60px;
+}
+
+.revenue-to-plan {
+    display: block;
+    float: left;
+    margin: 0 2% 2%;
+    width: 96%;
+}
+
+    .revenue-to-plan .geography-dropdown > h5 {
+        font-family: source_sans_prolight;
+        font-size: 24px;
+        color: #2f292b;
+    }
+
+    .revenue-to-plan .geography-dropdown {
+        margin-bottom: 10px;
+    }
+/*table*/
+.graph-table {
+    text-align: center;
+    width: 100%;
+}
+
+    /*.graph-table td {
+        width: 20%;
+    }*/
+    .graph-table tr th:first-child {
+    width: 15%;
+}
+
+    .graph-table tr {
+        height: 30px;
+    }
+
+    .graph-table td:nth-child(1) {
+        text-align: right;
+    }
+
+    .graph-table tr:nth-child(2n+1) {
+        background-color: #f2f2f2;
+    }
+
+    .graph-table th {
+        border: 1px solid #e6e6e6;
+    }
+
+    .graph-table td {
+        border: 1px solid #e6e6e6;
+    }
+
+    .graph-table tr:nth-child(1) {
+        border-top: 2px solid #a8a8a8;
+    }
+
+    .graph-table tr td:first-child {
+        padding-right: 14px;
+    }
+
+/* total revenue */
+.total-revenue {
+    display: block;
+    float: left;
+    margin: 0 2% 2%;
+    width: 96%;
+    border-bottom: 1px solid #e8e7e7;
+}
+
+.total-revenue-title h5 {
+    font-family: source_sans_prolight;
+    font-size: 24px;
+    color: #2f292b;
+}
+
+.toal-revenue-graph {
+    min-height: 220px;
+}
+
+/*revenue filter*/
+.revenue-filter {
+    display: block;
+    float: left;
+    margin: 0 2% 2%;
+    width: 96%;
+}
+
+.sorting {
+    float: left;
+    width: 327px;
+}
+
+    .sorting .geography-dropdown {
+        float: left;
+        width: 162px;
+    }
+
+.select-sortby button {
+    min-width: 77px;
+}
+
+.select-item button {
+    min-width: 35px;
+}
+
+.paging {
+    float: left;
+    width: 310px;
+}
+
+    .paging ul {
+        border: 1px solid #ececec;
+        border-radius: 8px;
+        box-shadow: 1px 0 6px #eeeeee;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=135, Color=#eee)"; /*IE 8*/
+        -moz-box-shadow: 1px 0 6px #eeeeee; /*FF 3.5+*/
+        -webkit-box-shadow: 1px 0 6px #eeeeee; /*Saf3-4, Chrome, iOS 4.0.2-4.2, Android 2.3+*/
+        filter: progid:DXImageTransform.Microsoft.Shadow(Strength=3, Direction=135, Color=#eee); /*IE 5.5-7*/
+        display: inline-block;
+        list-style: outside none none;
+    }
+
+        .paging ul li {
+            border: 1px solid #ececec;
+            color: #3fa9f5;
+            float: left;
+            margin: 0;
+            padding: 3px 5px;
+            text-align: center;
+            width: 19px;
+        }
+
+    .paging li:first-child {
+        border-radius: 4px 0 0 4px;
+    }
+
+    .paging li:last-child {
+        border-radius: 0px 4px 4px 0px;
+    }
+
+    .paging ul .active {
+        background-color: #2384b8;
+    }
+
+        .paging ul .active a {
+            color: #fff;
+        }
+
+.search {
+    float: right;
+}
+
+.search-btn {
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    color: #6d6d6d;
+    display: inline-block;
+    height: 26px;
+    margin-right: 15px;
+    min-width: 75px;
+    padding: 0;
+    position: relative;
+    background: rgb(236, 236, 236);
+    background: -moz-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: -webkit-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: -o-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: -ms-linear-gradient(270deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+    background: linear-gradient(0deg, rgb(236, 236, 236) 4%, rgb(254, 254, 254) 98%);
+}
+
+    .search-btn:active {
+        background: rgb(236, 236, 236);
+        background: -moz-linear-gradient(270deg, rgb(254, 254, 254) 4%, rgb(236, 236, 236) 98%);
+        background: -webkit-linear-gradient(270deg, rgb(254, 254, 254) 4%, rgb(236, 236, 236) 98%);
+        background: -o-linear-gradient(270deg, rgb(254, 254, 254) 4%, rgb(236, 236, 236) 98%);
+        background: -ms-linear-gradient(270deg, rgb(254, 254, 254) 4%, rgb(236, 236, 236) 98%);
+        background: linear-gradient(0deg,rgb(254, 254, 254) 4%, rgb(236, 236, 236) 98%);
+    }
+
+.search input {
+    border: 1px solid #dfdfdf;
+    border-radius: 15px;
+    color: #555555;
+    padding: 5px 0 5px 10px;
+}
+
+
+/*region content*/
+.region-content {
+    border-color: #c9c9c9;
+    border-style: solid;
+    border-width: 1px;
+    display: block;
+    float: left;
+    margin: 0 2% 2%;
+    width: 96%;
+}
+
+    .region-content .report-btn-group div {
+        float: left;
+    }
+
+        .region-content .report-btn-group div:last-child {
+            float: right;
+        }
+
+    .region-content .revanue-p {
+        border-right: 1px solid #d9d9d9;
+        color: #000000;
+        float: left;
+        font-family: source_sans_proregular;
+        font-size: 24px;
+        line-height: 34px;
+        margin-right: 20px;
+        padding-right: 20px;
+        width: auto;
+    }
+
+.revanue-p-right {
+    border-right: 1px solid #d9d9d9;
+    color: #000000;
+    float: left;
+    font-family: source_sans_proregular;
+    font-size: 24px;
+    line-height: 34px;
+    margin-right: 20px;
+    padding-right: 20px;
+    width: 116px;
+}
+
+.revanue-p-right input {
+    float: left;
+    margin-right: 6px;
+    margin-top: 10px;
+}
+
+
+
+ .revanue-p-right label {
+    color: #3fa9f5;
+    font-family: source_sans_proregular;
+    font-size: 14px;
+    margin-top: 6px;
+    text-decoration: underline;
+}
+
+ .region-data .data {
+    float: left;
+}
+
+ .region-data .data .title {
+    color: #4d4d4d;
+    font-family: source_sans_prolight;
+    font-size: 14px;
+}
+.region-data .data .value {
+    color: #1e2b33;
+    display: block;
+    font-family: source_sans_proregular;
+    font-size: 42px;
+    padding-top: 26px;
+}
+ .region-data .data .value .sub-value {
+    color: #4d4d4d;
+    font-family: source_sans_prolight;
+    font-size: 16px;
+    padding-top: 12px;
+    display: block;
+}
+ .region-data .data .data-green {
+    color: #006837;
+    font-family: source_sans_proregular;
+    font-size: 18px;
+}
+
+ .region-data .data {
+    border-right: 1px solid #e8e7e7;
+    margin: 22px 0;
+    padding: 0 3.4%;
+}
+
+ .bottom-paging {
+     margin-top:20px;
+    text-align: center;
+    width: 100%;
+}
+
+ .region-data .region-graph {
+     float: left;
+    height: 150px;
+    padding: 1.8% 0.7% 0;
+    width: 39%;
+
+}
+
+/*End :  Revenue - new Design by neel on 2/06/2015 */
