@@ -213,7 +213,7 @@
             }
             $("#modalMainContainer").hide();
 
-            if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
+         //   if ($('#ActiveMenu').val().toLowerCase() == 'plan') { //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
                 //// Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen
                 $('.toggleStatus').click(function () {
                     $(this).hide();
@@ -234,11 +234,11 @@
 
                 $('.gantt-padding').removeClass('padding-top0');
                 $('#DivloadPlan').removeClass('no-bottom-border');
-            }
-            else {
-                $('.gantt-padding').addClass('padding-top0');
-                $('#DivloadPlan').addClass('no-bottom-border');
-            }
+           // }
+           // else {
+          //      $('.gantt-padding').addClass('padding-top0');
+           //     $('#DivloadPlan').addClass('no-bottom-border');
+           // }
         });
 
         function onClickPlanTitle() {
@@ -607,6 +607,7 @@
                 <div class="pull-left" id="divCollaborator" style="position: relative;">
                     <!-- position:relative = added by kapil -->
                 </div>
+            }
 @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
                 <div class="pull-right toggle-status source-sans-proregular">
                     <div class="pull-right">
@@ -619,7 +620,7 @@
                     <a href="#" class="toggleStatus">Show Status</a>
                 </div>
 @* End - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
-            }
+            
             <div>
                 <div class="gantt-padding cf lenght-div" style="min-height: 720px;">
                     @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@

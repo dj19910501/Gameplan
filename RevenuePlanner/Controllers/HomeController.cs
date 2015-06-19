@@ -529,10 +529,14 @@ namespace RevenuePlanner.Controllers
             else if (objactivemenu.Equals(Enums.ActiveMenu.Home))
             {
                 List<string> status = GetStatusAsPerSelectedType(viewBy, objactivemenu);
-                lstTactic = lstTactic.Where(t => status.Contains(t.objPlanTactic.Status)).Select(planTactic => planTactic).ToList<Plan_Tactic>();
+                List<string> statusCD = new List<string>();
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+                lstTactic = lstTactic.Where(t => status.Contains(t.objPlanTactic.Status) || (!viewBy.Equals(PlanGanttTypes.Request.ToString()) ? statusCD.Contains(t.objPlanTactic.Status) : false)).Select(planTactic => planTactic).ToList<Plan_Tactic>();
 
                 //List<string> improvementTacticStatus = GetStatusAsPerSelectedType(viewBy, objactivemenu);
-                lstImprovementTactic = lstImprovementTactic.Where(improveTactic => status.Contains(improveTactic.Status))
+                lstImprovementTactic = lstImprovementTactic.Where(improveTactic => status.Contains(improveTactic.Status) ||  (!viewBy.Equals(PlanGanttTypes.Request.ToString()) ? statusCD.Contains(improveTactic.Status) : false))
                                                            .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
 
                 //// Prepare objects for ImprovementTactic section of Left side accordian pane
