@@ -18,6 +18,12 @@
             IsPlanEditable = (bool)ViewBag.IsPlanEditable;
         }
     }
+
+    bool IsPlanCreateAll = false;
+    if (ViewBag.IsPlanCreateAll != null)
+    {
+        IsPlanCreateAll = (bool)ViewBag.IsPlanCreateAll;
+    }
     string strPlanid = ViewBag.strplanid;
     
     var BudgetingBussinessUnitId = 0;
@@ -103,9 +109,12 @@
     <li id="liDefination" class="item ">
         <a class="source-sans-probold inputs" id="LeftNavInput"><span></span>@Html.Raw("PLAN DEFINITION")</a>
     </li>
+      @if (IsPlanCreateAll)
+      {
     <li id="liCampaign" class="item">
         <a class="source-sans-probold audience" id="LeftNavCampaigns"><span></span>@Html.Raw("CAMPAIGNS")</a>
     </li>
+      }
     <li id="liCalender" class="item">
         <a class="source-sans-probold calendar" id="aApplyToCalender"><span></span>@Html.Raw("APPLY TO CALENDAR")</a>
     </li>

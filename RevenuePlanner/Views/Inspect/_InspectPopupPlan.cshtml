@@ -58,18 +58,20 @@
                 }
 
 
+                   @if (IsPlanCreateAuthorized)
+                            {
                 <div style="float: right; position: relative;">
                     <span id="AddForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="add-icon-white btn-blue btn-large"></span>
                     <div id="popupnewplan" style="display: none; position: absolute; top: 35px;" class="btn-dropdwn">
                         <ul style="margin: 0;">
                             <li id="NewCampaign" class="new-prog">New Campaign</li>
-                            @if (IsPlanCreateAuthorized)
-                            {
+                         
                                 <li id="ClonePlan" class="copy-camp">Copy Plan</li>
-                            }
+                            
                         </ul>
                     </div>
                 </div>
+                   }
                 @if (IsPlanEditable)
                 {
                     <div style="float: right; position: relative;">

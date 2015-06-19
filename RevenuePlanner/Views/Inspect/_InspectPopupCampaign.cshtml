@@ -27,6 +27,11 @@
     {
         IsPlanEditable = (bool)ViewBag.IsPlanEditable;
     }
+    bool IsPlanCreateAll = false;
+    if (ViewBag.IsPlanCreateAll != null)
+    {
+        IsPlanCreateAll = (bool)ViewBag.IsPlanCreateAll;
+    }
     if (campaignMaster != null)
     {
         TempData["CampaignModel"] = campaignMaster;
@@ -97,7 +102,8 @@
                         </div>
                     }
 
-
+                    @if(IsPlanCreateAll)
+                    {
                     <div style="float: right; position: relative;">
                         <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                         <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
@@ -107,6 +113,7 @@
                             </ul>
                         </div>
                     </div>
+                    }
                     @if (IsPlanEditable)
                     {
                         <span class="edit-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px; cursor: pointer;"></span>

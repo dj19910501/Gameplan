@@ -39,6 +39,11 @@
     planLineItemId = ViewBag.LineItemId;
     lineitemTitle = ViewBag.LineItemTitle;
     }
+    bool IsPlanCreateAll = false;
+    if (ViewBag.IsPlanCreateAll != null)
+    {
+        IsPlanCreateAll = (bool)ViewBag.IsPlanCreateAll;
+    }
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
 }
 
@@ -121,7 +126,7 @@
                         }
                     }
                     
-                    @if (!IsOtherLineItem)
+                    @if (!IsOtherLineItem && IsPlanCreateAll)
                     {
                          <div style="float: right; position: relative;">
                             <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>

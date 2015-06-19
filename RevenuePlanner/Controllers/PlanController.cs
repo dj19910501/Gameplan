@@ -50,10 +50,9 @@ namespace RevenuePlanner.Controllers
             // Added by dharmraj to check user activity permission
             bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
-            if (id == 0 && !IsPlanCreateAuthorized)
-            {
-                return AuthorizeUserAttribute.RedirectToNoAccess();
-            }
+
+            bool IsPlanCreateAll = false;
+           
 
             try
             {
@@ -82,6 +81,22 @@ namespace RevenuePlanner.Controllers
 
                     //// Set flag to check whether his Own Plan & Subordinate Plan editable or not.
                     bool isPlanDefinationDisable = true;
+
+                    if (IsPlanCreateAuthorized)
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objplan.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                    }
+                    if (id == 0 && !IsPlanCreateAuthorized)
+                    {
+                        return AuthorizeUserAttribute.RedirectToNoAccess();
+                    }
                     if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                     {
                         isPlanDefinationDisable = false;
@@ -99,6 +114,7 @@ namespace RevenuePlanner.Controllers
                     }
                     //Modified by Mitesh Vaishnav for internal review point related to "Edit All Plan" permission
                     ViewBag.IsPlanDefinationDisable = isPlanDefinationDisable;
+                    ViewBag.IsPlanCreateAll = IsPlanCreateAll;
 
                 }
             }
@@ -847,6 +863,24 @@ namespace RevenuePlanner.Controllers
                 var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId);
                 bool IsPlanEditable = false;
 
+                // Added by dharmraj to check user activity permission
+                bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
+
+                bool IsPlanCreateAll = false;
+                if (IsPlanCreateAuthorized)
+                {
+                    IsPlanCreateAll = true;
+                }
+                else
+                {
+                    if ((objPlan.CreatedBy.Equals(Sessions.User.UserId)))
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                }
+
+
                 //// Check whether his own & SubOrdinate Plan editable or Not.
                 if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
@@ -864,6 +898,7 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 ViewBag.IsPlanEditable = IsPlanEditable;
+                ViewBag.IsPlanCreateAll = IsPlanCreateAll;
 
                 //// Set Editable list of Campaign, Program, Tactic & ImprvementTactic Ids to ViewBag by PlanId.
                 SetEditableListIdsByPlanId(Sessions.PlanId);
@@ -879,9 +914,6 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            // Added by dharmraj to check user activity permission
-            bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-            ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
 
             var plan = db.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(Sessions.PlanId));
             HomePlanModel planModel = new HomePlanModel();
@@ -1647,6 +1679,18 @@ namespace RevenuePlanner.Controllers
 
                 //// Check Users own & Subordinate plan Editable or not.
                 bool IsPlanEditable = false;
+                bool IsPlanCreateAll = false;
+                if (IsPlanCreateAuthorized)
+                {
+                    IsPlanCreateAll = true;
+                }
+                else
+                {
+                    if (plan.CreatedBy.Equals(Sessions.User.UserId))
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                }
                 if (plan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
                 {
                     IsPlanEditable = true;
@@ -1681,10 +1725,14 @@ namespace RevenuePlanner.Controllers
                     if (lstSubOrdinates.Contains(plan.CreatedBy))
                     {
                         IsPlanEditable = true;
+                       IsPlanCreateAll = true;
                     }
                 }
 
+              ViewBag.IsPlanCreateAll = IsPlanCreateAll;
+
             }
+
 
             ViewBag.PlanId = plan.PlanId;
 
@@ -6232,8 +6280,24 @@ namespace RevenuePlanner.Controllers
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
             try
             {
-                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+               bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+               ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
+               var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId);
                 ViewBag.PlanId = Sessions.PlanId;
+
+                bool IsPlanCreateAll = false;
+                if (IsPlanCreateAuthorized)
+                {
+                    IsPlanCreateAll = true;
+                }
+                else
+                {
+                    if ((objPlan.CreatedBy.Equals(Sessions.User.UserId)))
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                }
+
 
                 //// Set ViewBy list.
                 string entTacticType = Enums.EntityType.Tactic.ToString();
@@ -6274,6 +6338,7 @@ namespace RevenuePlanner.Controllers
                 }
                 objHomePlan.plans = planList;
                 ViewBag.budgetPlanList = objHomePlan;
+                ViewBag.IsPlanCreateAll = IsPlanCreateAll;
                 #endregion
             }
             catch (Exception e)
