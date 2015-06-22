@@ -41,7 +41,7 @@
 
 <div class="report-btn-group">
     <p class="revanue-p">Conversion</p>
-    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
+    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="btnConversionDetails" onclick="onConversionDetailsClick();">Details</button>
     <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
         <img src="~/Content/images/export.png" /></span>Export</a>
     <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">
@@ -382,5 +382,10 @@
             }
         }
         $(labelId).html(_formtPercentage);
+    }
+
+    //Added by Dashrath Prajapati on 18/06/2015 for ticket #1362 to redirect conversion tab.
+    function onConversionDetailsClick() {
+        $('#liConversion').click();
     }
 </script>
