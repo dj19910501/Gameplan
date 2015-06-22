@@ -147,9 +147,7 @@ namespace RevenuePlanner.Test.Controllers
         #region "GetRevenueData function TestCases"
         #region GetRevenueData section with TimeFrame Empty
         /// <summary>
-        /// To check GetRevenueData function with no timeframeOption
-        /// This test case return "Object Reference not set to an instance of an Object" error due to Common.objCached.RevenueSparklineChartHeader becomes null.
-        /// Otherwise this test case successfully executed.
+        /// GetRevenueData section with TimeFrame Empty
         /// </summary>
         /// <auther>Viral Kadiya</auther>
         /// <createddate>19Jun2015</createddate>
@@ -162,21 +160,7 @@ namespace RevenuePlanner.Test.Controllers
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
 
-            #region "Old Code: Load Cache Data"
-            ////Common.objCached.RevenueSparklineChartHeader ="Top {0} by";
-
-            ////string xmlMsgFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLCommonMsgFilePath"));
-            //string xmlMsgFilePath = Convert.ToString(ConfigurationManager.AppSettings["XMLCommonMsgFilePath"]);
-            //Helper.CommonTest objCommon = new Helper.CommonTest();
-            //objCommon.loadMsg(xmlMsgFilePath);
-            //System.Web.HttpContext.Current.Cache["CommonMsg"] = objCommon;
-            //string strXMLPath = "E:/Project/Gameplan/GIT-June-2/Gameplan/RevenuePlanner.Test/bin/Debug/commonmessages.xml";
-            //CacheDependency dependency = new CacheDependency(strXMLPath);
-            //Message objMessage = new Message();
-            //System.Web.HttpContext.Current.Cache.Insert("CommonMsg", objCommon, dependency); 
-            #endregion
-
-            //// Call GetOverviewData() function
+            //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
 
             var result = ReportController.GetRevenueData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
@@ -187,9 +171,7 @@ namespace RevenuePlanner.Test.Controllers
 
         #region GetRevenueData section with Invalid TimeFrame
         /// <summary>
-        /// To check GetOverviewData function with InValide value of timeframeOption
-        /// This test case return "Object Reference not set to an instance of an Object" error due to Common.objCached.RevenueSparklineChartHeader becomes null.
-        /// Otherwise this test case successfully executed.
+        /// GetRevenueData section with Invalid TimeFrame
         /// </summary>
         /// <auther>Viral Kadiya</auther>
         /// <createddate>19Jun2015</createddate>
@@ -201,12 +183,9 @@ namespace RevenuePlanner.Test.Controllers
             List<int> lst = new List<int>();
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
-
-            //Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
-
             string _InvalidTimeFrame = "InValid";
 
-            //// Call GetOverviewData() function
+            //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetRevenueData(_InvalidTimeFrame, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
@@ -216,9 +195,7 @@ namespace RevenuePlanner.Test.Controllers
 
         #region GetRevenueData section with IsQuarterly Empty
         /// <summary>
-        /// To check GetOverviewData function with no timeframeOption
-        /// This test case return "Object Reference not set to an instance of an Object" error due to Common.objCached.RevenueSparklineChartHeader becomes null.
-        /// Otherwise this test case successfully executed.
+        ///  GetRevenueData section with IsQuarterly Empty
         /// </summary>
         /// <auther>Viral Kadiya</auther>
         /// <createddate>19Jun2015</createddate>
@@ -231,7 +208,7 @@ namespace RevenuePlanner.Test.Controllers
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             ///Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
-            //// Call GetOverviewData() function
+            //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetRevenueData("2015", string.Empty) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
@@ -241,9 +218,7 @@ namespace RevenuePlanner.Test.Controllers
 
         #region GetRevenueData section with IsQuarterly InValid
         /// <summary>
-        /// To check GetOverviewData function with no timeframeOption
-        /// This test case return "Object Reference not set to an instance of an Object" error due to Common.objCached.RevenueSparklineChartHeader becomes null.
-        /// Otherwise this test case successfully executed.
+        /// GetRevenueData section with IsQuarterly InValid
         /// </summary>
         /// <auther>Viral Kadiya</auther>
         /// <createddate>19Jun2015</createddate>
@@ -256,8 +231,7 @@ namespace RevenuePlanner.Test.Controllers
             lst.Add(9775);
             HttpContext.Current.Session["ReportPlanIds"] = lst;
             string _InValidIsQuarterly = "InValidQuarterly";
-            ///Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
-            //// Call GetOverviewData() function
+            //// Call GetRevenueData() function
             ReportController ReportController = new ReportController();
             var result = ReportController.GetRevenueData("2015", _InValidIsQuarterly) as PartialViewResult;
             //// PartialViewResult shoud not be null and should match with Partial viewName
