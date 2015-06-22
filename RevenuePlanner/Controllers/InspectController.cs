@@ -810,12 +810,14 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsCampaignEdit = true;
             try
             {
-                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
 
                     ViewBag.IsServiceUnavailable = false;
-                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
@@ -1467,13 +1469,15 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsProgramEdit = true;
             try
             {
-                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
 
                     ViewBag.IsServiceUnavailable = false;
                     ViewBag.OwnerName = Common.GetUserName(pcp.CreatedBy.ToString());
-                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                  
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
@@ -3008,7 +3012,7 @@ namespace RevenuePlanner.Controllers
             List<Stage> tblStage = db.Stages.Where(stg => stg.IsDeleted.Equals(false)).ToList();
             //// Set MQL
             string stageMQL = Enums.Stage.MQL.ToString();
-            int levelMQL = tblStage.Single(s => s.ClientId.Equals(Sessions.User.ClientId) && s.Code.Equals(stageMQL)).Level.Value;
+            int levelMQL = tblStage.Single(s => s.ClientId == Sessions.User.ClientId && s.Code == stageMQL).Level.Value;
             int tacticStageLevel = Convert.ToInt32(pcpt.Stage.Level);
             if (tacticStageLevel < levelMQL)
             {
@@ -3108,14 +3112,18 @@ namespace RevenuePlanner.Controllers
             ViewBag.CampaignProgramList = programList;
             try
             {
-                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                //Modified By Komal Rawal for #1360
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+
                 if (lstClientUsers.Count() > 0)
                 {
                     //// Flag to indicate unavailability of web service.
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
                     //// Ticket: 942 Exception handeling in Gameplan.
                     ViewBag.IsServiceUnavailable = false;
-                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
@@ -4325,11 +4333,13 @@ namespace RevenuePlanner.Controllers
             }
             try
             {
-                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId);
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
                     string strUserList = string.Join(",", lstClientUsers);
-                    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+                 
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
                     if (lstUserDetails.Count > 0)
                     {
@@ -6711,6 +6721,8 @@ namespace RevenuePlanner.Controllers
                     ViewBag.RedirectType = RequestedModule;
                 }
 
+                bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
                 //// If Id is null then return section respective PartialView.
                 if (id == 0)
                 {
@@ -6761,6 +6773,9 @@ namespace RevenuePlanner.Controllers
                 Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
                 Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
                 bool IsPlanEditable = false;
+                bool IsPlanCreateAll = false;
+
+            
                 #endregion
 
                 //// load section wise data to ViewBag.
@@ -6780,6 +6795,23 @@ namespace RevenuePlanner.Controllers
                     {
                         objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+
+                        if (IsPlanCreateAllAuthorized)
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
+                            {
+                                IsPlanCreateAll = true;
+                            }
+                            else
+                            {
+                                IsPlanCreateAll = false;
+                            }
+
+                        }
 
                         //Modify by Mitesh Vaishnav for PL ticket 746
                         if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
@@ -6810,6 +6842,24 @@ namespace RevenuePlanner.Controllers
                     {
                         objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = objPlan_Campaign_Program.Plan_Campaign.PlanId;
+
+                        if (IsPlanCreateAllAuthorized)
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
+                            {
+                                IsPlanCreateAll = true;
+                            }
+                            else
+                            {
+                                IsPlanCreateAll = false;
+                            }
+
+                        }
+
                         if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                         {
                             IsPlanEditable = true;
@@ -6835,6 +6885,23 @@ namespace RevenuePlanner.Controllers
                     {
                         objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
                         ViewBag.PlanId = objPlan_Campaign.PlanId;
+
+                        if (IsPlanCreateAllAuthorized)
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
+                            {
+                                IsPlanCreateAll = true;
+                            }
+                            else
+                            {
+                                IsPlanCreateAll = false;
+                            }
+
+                        }
 
                         if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
                         {
@@ -6873,6 +6940,23 @@ namespace RevenuePlanner.Controllers
                         ViewBag.LineItemTitle = objPlan_Campaign_Program_Tactic_LineItem.Title;
                         ViewBag.PlanId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                         ViewBag.tacticId = objPlan_Campaign_Program_Tactic_LineItem.PlanTacticId;
+
+                        if (IsPlanCreateAllAuthorized)
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                            {
+                                IsPlanCreateAll = true;
+                            }
+                            else
+                            {
+                                IsPlanCreateAll = false;
+                            }
+
+                        }
 
                         if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
                         {
@@ -6973,6 +7057,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 ViewBag.IsPlanEditable = IsPlanEditable;
+                ViewBag.IsPlanCreateAll = IsPlanCreateAll;
             }
             catch (Exception e)
             {
@@ -8500,6 +8585,7 @@ namespace RevenuePlanner.Controllers
 
             return returnValue;
         }
+
         #endregion
     }
 }

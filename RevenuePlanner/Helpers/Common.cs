@@ -4967,26 +4967,47 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="clientId">client Id</param>
         /// <returns></returns>
-        public static List<Guid> GetClientUserListUsingCustomRestrictions(Guid clientId)
+        public static List<Guid> GetClientUserListUsingCustomRestrictions(Guid clientId, List<User> lstUsers)
         {
             List<Guid> lstClientUsers = new List<Guid>();
+            List<Guid> lstClient = new List<Guid>();
+            List<Guid> lstClientWithoutAnyPermissios = new List<Guid>();
+          
             try
             {
                 using (MRPEntities objDB = new MRPEntities())
                 {
                     //// List of custom fields of all user of logged in client
                     List<int> lstCustomFields = objDB.CustomFields.Where(customField => customField.ClientId == clientId).Select(customField => customField.CustomFieldId).ToList();
+                    List<Guid> lstUserIDs = lstUsers.Select(user => user.UserId).ToList();
 
                     if (lstCustomFields.Count() > 0)
                     {
+                        //Modified By Komal Rawal for #1360
                         //// Get list of users who have View and ViewEdit rights
 
                         int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
                         int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                        int NoPermission = (int)Enums.CustomRestrictionPermission.None;
 
                         lstClientUsers = objDB.CustomRestrictions.Where(customRestriction => (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission) &&
-                                                                            lstCustomFields.Contains(customRestriction.CustomFieldId))
+                                                                            lstCustomFields.Contains(customRestriction.CustomFieldId) && lstUserIDs.Contains(customRestriction.UserId))
                                                                         .Select(customRestriction => customRestriction.UserId).ToList().Distinct().ToList();
+
+                        lstClient = objDB.CustomRestrictions.Where(customRestriction => (customRestriction.Permission == NoPermission  &&
+                                                                           lstCustomFields.Contains(customRestriction.CustomFieldId) && lstUserIDs.Contains(customRestriction.UserId)))
+                                                                       .Select(customRestriction => customRestriction.UserId).ToList().Distinct().ToList();
+                        lstClientWithoutAnyPermissios =lstUsers.Where(user => !lstClient.Contains(user.UserId) && !lstClientUsers.Contains(user.UserId)).Select(user => user.UserId).ToList().Distinct().ToList();
+                       
+                        //// Get default custom restriction is viewable or not
+                        bool isDefaultRestrictionsViewable = IsDefaultCustomRestrictionsViewable();
+
+                        if (isDefaultRestrictionsViewable)
+                        {
+                            return lstClientUsers.Concat(lstClientWithoutAnyPermissios).ToList();
+
+                        }
+                      
                     }
                 }
             }
