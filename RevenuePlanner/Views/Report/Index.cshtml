@@ -900,7 +900,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
             myApp.hidePleaseWait();
         });*@
 
-        var url = '@Url.Content("~/Report/GetRevenueData1/")';
+        var url = '@Url.Content("~/Report/GetRevenueData/")';
         $('#divMainReportPart').load(url + '?option=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
