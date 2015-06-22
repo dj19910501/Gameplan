@@ -2209,50 +2209,50 @@ namespace RevenuePlanner.Controllers
 
 
                     #region "Calcuate ActualList up to Current Month"
-                    List<double> _dtActualList = new List<double>();
-                    List<Plan_Campaign_Program_Tactic_Actual> _fltrActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                    _fltrActualTacticList = ActualTacticStageList.Where(actualstg => actualstg.StageCode.Equals(revStageCode)).Select(actualstg => actualstg.ActualTacticList).FirstOrDefault();
+                    //List<double> _dtActualList = new List<double>();
+                    //List<Plan_Campaign_Program_Tactic_Actual> _fltrActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                    //_fltrActualTacticList = ActualTacticStageList.Where(actualstg => actualstg.StageCode.Equals(revStageCode)).Select(actualstg => actualstg.ActualTacticList).FirstOrDefault();
 
-                    if (IsQuarterly)
-                    {
-                        //curntPeriod = PeriodPrefix + i;
-                        List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
-                        List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
-                        List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
-                        List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-                        //double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, ProjectedQ1 = 0, ProjectedQ2 = 0, ProjectedQ3 = 0, ProjectedQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0, Actual_ProjectedQ1 = 0, Actual_ProjectedQ2 = 0, Actual_ProjectedQ3 = 0, Actual_ProjectedQ4 = 0;
+                    //if (IsQuarterly)
+                    //{
+                    //    //curntPeriod = PeriodPrefix + i;
+                    //    List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+                    //    List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+                    //    List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+                    //    List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+                    //    //double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, ProjectedQ1 = 0, ProjectedQ2 = 0, ProjectedQ3 = 0, ProjectedQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0, Actual_ProjectedQ1 = 0, Actual_ProjectedQ2 = 0, Actual_ProjectedQ3 = 0, Actual_ProjectedQ4 = 0;
 
 
-                        List<string> _curntQuarterList = new List<string>();
+                    //    List<string> _curntQuarterList = new List<string>();
 
-                        for (int i = 1; i <= catLength; i++)
-                        {
-                            #region "Get Quarter list based on loop value"
-                            if (i == 1)
-                                _curntQuarterList = Q1;
-                            else if (i == 2)
-                                _curntQuarterList = Q2;
-                            else if (i == 3)
-                                _curntQuarterList = Q3;
-                            else if (i == 4)
-                                _curntQuarterList = Q4;
-                            #endregion
+                    //    for (int i = 1; i <= catLength; i++)
+                    //    {
+                    //        #region "Get Quarter list based on loop value"
+                    //        if (i == 1)
+                    //            _curntQuarterList = Q1;
+                    //        else if (i == 2)
+                    //            _curntQuarterList = Q2;
+                    //        else if (i == 3)
+                    //            _curntQuarterList = Q3;
+                    //        else if (i == 4)
+                    //            _curntQuarterList = Q4;
+                    //        #endregion
 
-                            _Actual = _fltrActualTacticList.Where(actual => _curntQuarterList.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
-                            _dtActualList.Add(_Actual);
-                        }
-                    }
-                    else
-                    {
-                        string curntPeriod = string.Empty;
+                    //        _Actual = _fltrActualTacticList.Where(actual => _curntQuarterList.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                    //        _dtActualList.Add(_Actual);
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    string curntPeriod = string.Empty;
 
-                        for (int i = 1; i <= catLength; i++)
-                        {
-                            curntPeriod = PeriodPrefix + i;
-                            _Actual = _fltrActualTacticList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Actualvalue);
-                            _dtActualList.Add(_Actual);
-                        }
-                    }
+                    //    for (int i = 1; i <= catLength; i++)
+                    //    {
+                    //        curntPeriod = PeriodPrefix + i;
+                    //        _Actual = _fltrActualTacticList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Actualvalue);
+                    //        _dtActualList.Add(_Actual);
+                    //    }
+                    //}
 
                     #endregion
 
@@ -2298,7 +2298,7 @@ namespace RevenuePlanner.Controllers
                     RevenueDataTable objRevenueDataTable = new RevenueDataTable();
                     RevenueSubDataTableModel objSubDataModel = new RevenueSubDataTableModel();
                     objRevenueDataTable.Categories = _Categories;
-                    objRevenueDataTable.ActualList = _dtActualList;
+                    objRevenueDataTable.ActualList = objBasicModel.ActualList;
                     objRevenueDataTable.ProjectedList = objBasicModel.ProjectedList;
                     objRevenueDataTable.GoalList = objBasicModel.GoalList;
                     objSubDataModel = GetRevenueToPlanDataByCampaign(Tacticdata, option, objBasicModel.IsQuarterly);
@@ -8663,46 +8663,46 @@ namespace RevenuePlanner.Controllers
                 }
 
                 #region "Calcuate ActualList up to Current Month"
-                List<double> _dtActualList = new List<double>();
-                List<Plan_Campaign_Program_Tactic_Actual> _fltrActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                _fltrActualTacticList = ActualTacticStageList.Where(actualstg => actualstg.StageCode.Equals(revStageCode)).Select(actualstg => actualstg.ActualTacticList).FirstOrDefault();
+                //List<double> _dtActualList = new List<double>();
+                //List<Plan_Campaign_Program_Tactic_Actual> _fltrActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                //_fltrActualTacticList = ActualTacticStageList.Where(actualstg => actualstg.StageCode.Equals(revStageCode)).Select(actualstg => actualstg.ActualTacticList).FirstOrDefault();
 
-                if (_isquarterly)
-                {
-                    List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
-                    List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
-                    List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
-                    List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-                    List<string> _curntQuarterList = new List<string>();
+                //if (_isquarterly)
+                //{
+                //    List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+                //    List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+                //    List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+                //    List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+                //    List<string> _curntQuarterList = new List<string>();
 
-                    for (int i = 1; i <= catLength; i++)
-                    {
-                        #region "Get Quarter list based on loop value"
-                        if (i == 1)
-                            _curntQuarterList = Q1;
-                        else if (i == 2)
-                            _curntQuarterList = Q2;
-                        else if (i == 3)
-                            _curntQuarterList = Q3;
-                        else if (i == 4)
-                            _curntQuarterList = Q4;
-                        #endregion
+                //    for (int i = 1; i <= catLength; i++)
+                //    {
+                //        #region "Get Quarter list based on loop value"
+                //        if (i == 1)
+                //            _curntQuarterList = Q1;
+                //        else if (i == 2)
+                //            _curntQuarterList = Q2;
+                //        else if (i == 3)
+                //            _curntQuarterList = Q3;
+                //        else if (i == 4)
+                //            _curntQuarterList = Q4;
+                //        #endregion
 
-                        _Actual = _fltrActualTacticList.Where(actual => _curntQuarterList.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
-                        _dtActualList.Add(_Actual);
-                    }
-                }
-                else
-                {
-                    string curntPeriod = string.Empty;
+                //        _Actual = _fltrActualTacticList.Where(actual => _curntQuarterList.Contains(actual.Period)).Sum(actual => actual.Actualvalue);
+                //        _dtActualList.Add(_Actual);
+                //    }
+                //}
+                //else
+                //{
+                //    string curntPeriod = string.Empty;
 
-                    for (int i = 1; i <= catLength; i++)
-                    {
-                        curntPeriod = PeriodPrefix + i;
-                        _Actual = _fltrActualTacticList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Actualvalue);
-                        _dtActualList.Add(_Actual);
-                    }
-                }
+                //    for (int i = 1; i <= catLength; i++)
+                //    {
+                //        curntPeriod = PeriodPrefix + i;
+                //        _Actual = _fltrActualTacticList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Actualvalue);
+                //        _dtActualList.Add(_Actual);
+                //    }
+                //}
 
                 #endregion
 
@@ -8749,7 +8749,7 @@ namespace RevenuePlanner.Controllers
                 RevenueDataTable objRevenueDataTable = new RevenueDataTable();
                 RevenueSubDataTableModel objSubDataModel = new RevenueSubDataTableModel();
                 objRevenueDataTable.Categories = _Categories;
-                objRevenueDataTable.ActualList = _dtActualList;
+                objRevenueDataTable.ActualList = objBasicModel.ActualList;
                 objRevenueDataTable.ProjectedList = objBasicModel.ProjectedList;
                 objRevenueDataTable.GoalList = objBasicModel.GoalList;
 
