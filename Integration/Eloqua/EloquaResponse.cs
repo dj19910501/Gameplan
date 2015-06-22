@@ -173,7 +173,8 @@ namespace Integration.Eloqua
                         //// define models for data manipulation from Eloqua response
                         ContactListDetailModel contactListDetails = new ContactListDetailModel();
                         List<elements> element = new List<elements>();
-
+                        bool isError = false;
+                        string errormsg = string.Empty;
                         //// allowed to enter only authenticated user.
                         if (integrationEloquaClient.IsAuthenticated)
                         {
@@ -237,22 +238,36 @@ namespace Integration.Eloqua
                                 {
                                     if (!isAllCampaignIdExists)
                                     {
+                                        errormsg += CampaignIdValue + " for one or many record(s) does not exists.";
                                         _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), CampaignIdValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
+                                        isError = true;
                                     }
                                     if (!isAllMQLDateExists)
                                     {
+                                        errormsg += MQLDateValue + " for one or many record(s) does not exists.";
                                         _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), MQLDateValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
+                                        isError = true;
                                     }
                                 }
                             }
                             else
                             {
-                                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "No contact data found in Eloqua contact object.", Enums.SyncStatus.Error, DateTime.Now));
+                                errormsg = "No contact data found in Eloqua contact object.";
+                                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
+                                isError = true;
                             }
                         }
                         else
                         {
-                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed.", Enums.SyncStatus.Error, DateTime.Now));
+                            errormsg = "Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed.";
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
+                            isError = true;
+                        }
+                        if (isError)
+                        {
+                            // Update IntegrationInstanceSection log with Error status
+                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, errormsg);
+                            return true;
                         }
 
                         //// get distinct campaign id for filter.
@@ -331,7 +346,7 @@ namespace Integration.Eloqua
                                 objIntegrationInstanceTacticId = objTactic.IntegrationInstanceTacticId;
 
                             //// filter list based on period for tactic start and end date.
-                            List<elements> lstTacticContacts = element.Where(Objelement => Objelement.CampaignId == objIntegrationInstanceTacticId && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
+                            List<elements> lstTacticContacts = element.Where(Objelement => !string.IsNullOrEmpty(Objelement.CampaignId) && Objelement.CampaignId == objIntegrationInstanceTacticId && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
 
                             contactIds = contactIds + "," + string.Join(",", lstTacticContacts.Select(t => t.contactId).Distinct().ToList());
 
