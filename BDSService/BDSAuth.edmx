@@ -182,7 +182,7 @@
           <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="ClientID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="DatabaseName" Type="nvarchar" Nullable="false" MaxLength="255" />
-          <Property Name="ConnectionString" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="EncryptedConnectionString" Type="varbinary" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -605,6 +605,9 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="DecryptData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="EncryptedString" Type="varbinary" Mode="In" />
+        </Function>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -614,7 +617,6 @@
           <EntitySet Name="Application_Activity" EntityType="BDSAuthModel.Application_Activity" />
           <EntitySet Name="Application_Role" EntityType="BDSAuthModel.Application_Role" />
           <EntitySet Name="Clients" EntityType="BDSAuthModel.Client" />
-          <EntitySet Name="ClientDatabases" EntityType="BDSAuthModel.ClientDatabase" />
           <EntitySet Name="CustomRestrictions" EntityType="BDSAuthModel.CustomRestriction" />
           <EntitySet Name="Menu_Application" EntityType="BDSAuthModel.Menu_Application" />
           <EntitySet Name="PasswordResetRequests" EntityType="BDSAuthModel.PasswordResetRequest" />
@@ -661,10 +663,6 @@
           <AssociationSet Name="FK_User_Client" Association="BDSAuthModel.FK_User_Client">
             <End Role="Client" EntitySet="Clients" />
             <End Role="User" EntitySet="Users" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UserClientDatabase_ClientDatabase" Association="BDSAuthModel.FK_UserClientDatabase_ClientDatabase">
-            <End Role="ClientDatabase" EntitySet="ClientDatabases" />
-            <End Role="UserClientDatabase" EntitySet="UserClientDatabases" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomRestriction_User" Association="BDSAuthModel.FK_CustomRestriction_User">
             <End Role="User" EntitySet="Users" />
@@ -717,6 +715,14 @@
           <AssociationSet Name="FK_User_User" Association="BDSAuthModel.FK_User_User">
             <End Role="User" EntitySet="Users" />
             <End Role="User1" EntitySet="Users" />
+          </AssociationSet>
+          <FunctionImport Name="DecryptData" ReturnType="Collection(String)">
+          <Parameter Name="EncryptedString" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <EntitySet Name="ClientDatabases" EntityType="BDSAuthModel.ClientDatabase" />
+          <AssociationSet Name="FK_UserClientDatabase_ClientDatabase" Association="BDSAuthModel.FK_UserClientDatabase_ClientDatabase">
+            <End Role="ClientDatabase" EntitySet="ClientDatabases" />
+            <End Role="UserClientDatabase" EntitySet="UserClientDatabases" />
           </AssociationSet>
         </EntityContainer>
         <EntityType Name="Application">
@@ -788,16 +794,6 @@
           <Property Type="Guid" Name="ModifiedBy" />
           <NavigationProperty Name="Roles" Relationship="BDSAuthModel.ClientId_fk" FromRole="Client" ToRole="Role" />
           <NavigationProperty Name="Users" Relationship="BDSAuthModel.FK_User_Client" FromRole="Client" ToRole="User" />
-        </EntityType>
-        <EntityType Name="ClientDatabase">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Guid" Name="ClientID" Nullable="false" />
-          <Property Type="String" Name="DatabaseName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="ConnectionString" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="UserClientDatabases" Relationship="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" FromRole="ClientDatabase" ToRole="UserClientDatabase" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -1087,18 +1083,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_UserClientDatabase_ClientDatabase">
-          <End Type="BDSAuthModel.ClientDatabase" Role="ClientDatabase" Multiplicity="1" />
-          <End Type="BDSAuthModel.UserClientDatabase" Role="UserClientDatabase" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ClientDatabase">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="UserClientDatabase">
-              <PropertyRef Name="ClientDatabaseID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_CustomRestriction_User">
           <End Type="BDSAuthModel.User" Role="User" Multiplicity="1" />
           <End Type="BDSAuthModel.CustomRestriction" Role="CustomRestriction" Multiplicity="*" />
@@ -1255,6 +1239,28 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="ClientDatabase">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Guid" Name="ClientID" Nullable="false" />
+          <Property Type="String" Name="DatabaseName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Type="Binary" Name="EncryptedConnectionString" MaxLength="8000" FixedLength="false" />
+          <NavigationProperty Name="UserClientDatabases" Relationship="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" FromRole="ClientDatabase" ToRole="UserClientDatabase" />
+        </EntityType>
+        <Association Name="FK_UserClientDatabase_ClientDatabase">
+          <End Type="BDSAuthModel.ClientDatabase" Role="ClientDatabase" Multiplicity="1" />
+          <End Type="BDSAuthModel.UserClientDatabase" Role="UserClientDatabase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ClientDatabase">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UserClientDatabase">
+              <PropertyRef Name="ClientDatabaseID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1322,16 +1328,6 @@
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="ClientDatabases">
-            <EntityTypeMapping TypeName="BDSAuthModel.ClientDatabase">
-              <MappingFragment StoreEntitySet="ClientDatabase">
-                <ScalarProperty Name="ConnectionString" ColumnName="ConnectionString" />
-                <ScalarProperty Name="DatabaseName" ColumnName="DatabaseName" />
-                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1487,6 +1483,17 @@
               <MappingFragment StoreEntitySet="UserClientDatabase">
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
                 <ScalarProperty Name="ClientDatabaseID" ColumnName="ClientDatabaseID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="DecryptData" FunctionName="BDSAuthModel.Store.DecryptData" />
+          <EntitySetMapping Name="ClientDatabases">
+            <EntityTypeMapping TypeName="BDSAuthModel.ClientDatabase">
+              <MappingFragment StoreEntitySet="ClientDatabase">
+                <ScalarProperty Name="EncryptedConnectionString" ColumnName="EncryptedConnectionString" />
+                <ScalarProperty Name="DatabaseName" ColumnName="DatabaseName" />
+                <ScalarProperty Name="ClientID" ColumnName="ClientID" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -10,6 +10,7 @@ using System.IO;
 using System.Web;
 using BDSService.Helpers;
 using System.Transactions;
+using System.Data.Objects.SqlClient;
 
 namespace BDSService
 {
@@ -2699,13 +2700,21 @@ namespace BDSService
                                           ClientDatabaseID = cd.Id,
                                           ClientID = cd.ClientID,
                                           DatabaseName = cd.DatabaseName,
-                                          ConnectionString = cd.ConnectionString
+                                          EncryptedConnectionString = cd.EncryptedConnectionString
+                                          //ConnectionString = db.DecryptData(cd.EncryptedConnectionString).FirstOrDefault()
                                       }).ToList();
+
+                foreach (BDSEntities.ClientDatabase d in lstClientDatabases)
+                {
+                    //d.ConnectionString = BDSEntities.CustomSqlFunctions.Decryption(d.EncryptedConnectionString);
+                    d.ConnectionString = db.DecryptData(d.EncryptedConnectionString).FirstOrDefault();
+                }
             }
             catch (Exception ex)
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
+            
             return lstClientDatabases;
         }
 

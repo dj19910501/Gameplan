@@ -22,7 +22,7 @@ namespace BDSService
         public int Id { get; set; }
         public System.Guid ClientID { get; set; }
         public string DatabaseName { get; set; }
-        public string ConnectionString { get; set; }
+        public byte[] EncryptedConnectionString { get; set; }
     
         public virtual ICollection<UserClientDatabase> UserClientDatabases { get; set; }
     }

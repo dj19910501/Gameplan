@@ -9,7 +9,6 @@
         <EntityTypeShape EntityType="BDSAuthModel.Application_Activity" Width="1.5" PointX="6.9613359006873026" PointY="15.103687665939185" />
         <EntityTypeShape EntityType="BDSAuthModel.Application_Role" Width="1.5" PointX="5.3037031466624249" PointY="25.577523139108681" />
         <EntityTypeShape EntityType="BDSAuthModel.Client" Width="1.5" PointX="4.1866492015247463" PointY="0.59335711626026644" />
-        <EntityTypeShape EntityType="BDSAuthModel.ClientDatabase" Width="1.5" PointX="3.8536328356031486" PointY="20.943442667342463" />
         <EntityTypeShape EntityType="BDSAuthModel.CustomRestriction" Width="1.5" PointX="1.6923661873174671" PointY="11.149705668515388" />
         <EntityTypeShape EntityType="BDSAuthModel.Menu_Application" Width="1.5" PointX="8.77878631873931" PointY="12.158587580620585" />
         <EntityTypeShape EntityType="BDSAuthModel.PasswordResetRequest" Width="1.5" PointX="1.2977589486622061" PointY="0.81828850545840737" />
@@ -30,7 +29,6 @@
         <AssociationConnector Association="BDSAuthModel.FK_Application_Role_Role" />
         <AssociationConnector Association="BDSAuthModel.ClientId_fk" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Client" />
-        <AssociationConnector Association="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" />
         <AssociationConnector Association="BDSAuthModel.FK_CustomRestriction_User" />
         <AssociationConnector Association="BDSAuthModel.FK_CustomRestriction_User1" />
         <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_Menu_Application" />
@@ -44,6 +42,8 @@
         <AssociationConnector Association="BDSAuthModel.FK_User_Activity_Permission_User1" />
         <AssociationConnector Association="BDSAuthModel.FK_User_Application_User" />
         <AssociationConnector Association="BDSAuthModel.FK_User_User" />
+        <EntityTypeShape EntityType="BDSAuthModel.ClientDatabase" Width="1.5" PointX="9.5736534956719979" PointY="15.808188594788401" />
+        <AssociationConnector Association="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

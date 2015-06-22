@@ -12,6 +12,9 @@ namespace BDSService
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Objects;
+    using System.Data.Objects.DataClasses;
+    using System.Linq;
     
     public partial class BDSAuthEntities : DbContext
     {
@@ -29,7 +32,6 @@ namespace BDSService
         public DbSet<Application_Activity> Application_Activity { get; set; }
         public DbSet<Application_Role> Application_Role { get; set; }
         public DbSet<Client> Clients { get; set; }
-        public DbSet<ClientDatabase> ClientDatabases { get; set; }
         public DbSet<CustomRestriction> CustomRestrictions { get; set; }
         public DbSet<Menu_Application> Menu_Application { get; set; }
         public DbSet<PasswordResetRequest> PasswordResetRequests { get; set; }
@@ -41,5 +43,15 @@ namespace BDSService
         public DbSet<User_Activity_Permission> User_Activity_Permission { get; set; }
         public DbSet<User_Application> User_Application { get; set; }
         public DbSet<UserClientDatabase> UserClientDatabases { get; set; }
+        public DbSet<ClientDatabase> ClientDatabases { get; set; }
+    
+        public virtual ObjectResult<string> DecryptData(byte[] encryptedString)
+        {
+            var encryptedStringParameter = encryptedString != null ?
+                new ObjectParameter("EncryptedString", encryptedString) :
+                new ObjectParameter("EncryptedString", typeof(byte[]));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("DecryptData", encryptedStringParameter);
+        }
     }
 }

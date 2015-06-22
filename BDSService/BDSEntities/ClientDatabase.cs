@@ -11,5 +11,6 @@ namespace BDSService.BDSEntities
         public Guid ClientID { get; set; }
         public string DatabaseName { get; set; }
         public string ConnectionString { get; set; }
+        public byte[] EncryptedConnectionString { get; set; }
     }
 }
