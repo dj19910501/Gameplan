@@ -140,7 +140,7 @@ namespace Integration.Eloqua
         /// </summary>
         private void SetIntegrationInstanceDetail()
         {
-			//Modified by Komal Rawal for ticket #1118
+            //Modified by Komal Rawal for ticket #1118
             string Companyname = "Company Name";
             IntegrationInstance integrationInstance = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
             _CustomNamingPermissionForInstance = integrationInstance.CustomNamingPermission;
@@ -244,7 +244,7 @@ namespace Integration.Eloqua
                 List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
                 CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                 // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                
+
                 _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
                 List<int> plnaIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
                 SetMappingEloquaFolderIdsPlanId(plnaIdList);
@@ -289,17 +289,17 @@ namespace Integration.Eloqua
                 {
                     string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
                     int IntegrationTypeId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IntegrationTypeId;
-                    
+
                     //// Pull responses from Eloqua
                     GetDataForTacticandUpdate();
 
                     if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(_clientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
-                    GetDataPullEloqua();
+                        GetDataPullEloqua();
                 }
             }
 
             lstSyncError.AddRange(_lstSyncError);
-            
+
             return _isResultError;
         }
 
@@ -375,7 +375,7 @@ namespace Integration.Eloqua
                     _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
                     CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                    
+
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncTacticData(tacticList[index]);
@@ -387,7 +387,7 @@ namespace Integration.Eloqua
                 using (var scope = new TransactionScope())
                 {
                     List<Plan_Improvement_Campaign_Program_Tactic> tacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).ToList();
-                    
+
                     for (int index = 0; index < tacticList.Count; index++)
                     {
                         tacticList[index] = SyncImprovementData(tacticList[index]);
@@ -730,7 +730,7 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="planIMPTactic">Improvement tactic.</param>
         /// <returns>Returns id of improvement tactic created on eloqua.</returns>
-        private string CreateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic,int folderId)
+        private string CreateImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, int folderId)
         {
             IDictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create, folderId);
 
@@ -812,13 +812,13 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="planTactic">Plan tactic.</param>
         /// <returns>Returns flag to determine whether udpate was successfull or not.</returns>
-        private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic,int folderId)
+        private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic, int folderId)
         {
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update, folderId);
             if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
             {
                 titleMappedValue = _mappingTactic["Title"].ToString();
-                
+
                 if (tactic.ContainsKey(titleMappedValue))
                 {
                     tactic[titleMappedValue] = planTactic.TacticCustomName;
@@ -877,7 +877,7 @@ namespace Integration.Eloqua
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
                 try
                 {
-                    planTactic.IntegrationInstanceTacticId = CreateTactic(planTactic,_tacFolderId);
+                    planTactic.IntegrationInstanceTacticId = CreateTactic(planTactic, _tacFolderId);
                     planTactic.LastSyncDate = DateTime.Now;
                     planTactic.ModifiedDate = DateTime.Now;
                     planTactic.ModifiedBy = _userId;
@@ -1025,7 +1025,7 @@ namespace Integration.Eloqua
         /// </summary>
         /// <param name="planTactic">Plan tactic.</param>
         /// <returns>Returns id of tactic created on eloqua.</returns>
-        private string CreateTactic(Plan_Campaign_Program_Tactic planTactic,int folderId)
+        private string CreateTactic(Plan_Campaign_Program_Tactic planTactic, int folderId)
         {
             IDictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Create, folderId);
             if (_mappingTactic.ContainsKey("Title") && planTactic != null && _CustomNamingPermissionForInstance && IsClientAllowedForCustomNaming)//_clientActivityList.Where(clientActivity=>clientActivity.Code==Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any() && 
@@ -1087,101 +1087,101 @@ namespace Integration.Eloqua
             Dictionary<int, int> dictPlanFolderId = new Dictionary<int, int>();
             foreach (var _plan in tblplan)
             {
-            //// Get Folder Path for selected plan.
+                //// Get Folder Path for selected plan.
                 string folderPath = _plan.FolderPath;
 
-            //// Check weather folder path exist or not.
-            if (folderPath != null)
-            {
-                //// Remove first occurrence of "/" from folder path if exist.
-                folderPath = (folderPath[0].ToString() == "/") ? folderPath.Remove(0, 1) : folderPath;
-
-                //// Remove last occurrence of "/" from folder path if exist.
-                folderPath = (folderPath[folderPath.Length - 1].ToString() == "/") ? folderPath.Remove(folderPath.Length - 1, 1) : folderPath;
-
-                //// Convert folder path into String array.
-                string[] folderPathArray = folderPath.Split('/');
-
-                //// Call function to search folder name from Eloqua.
-                IRestResponse response = SearchFolderInEloqua(folderPathArray.Last());
-
-                //// Convert Json response into class.
-                folderResponse respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
-
-                //// If response is null skip.
-                if (respo != null)
+                //// Check weather folder path exist or not.
+                if (folderPath != null)
                 {
+                    //// Remove first occurrence of "/" from folder path if exist.
+                    folderPath = (folderPath[0].ToString() == "/") ? folderPath.Remove(0, 1) : folderPath;
 
-                    if (respo.elements.Count > 1)
+                    //// Remove last occurrence of "/" from folder path if exist.
+                    folderPath = (folderPath[folderPath.Length - 1].ToString() == "/") ? folderPath.Remove(folderPath.Length - 1, 1) : folderPath;
+
+                    //// Convert folder path into String array.
+                    string[] folderPathArray = folderPath.Split('/');
+
+                    //// Call function to search folder name from Eloqua.
+                    IRestResponse response = SearchFolderInEloqua(folderPathArray.Last());
+
+                    //// Convert Json response into class.
+                    folderResponse respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
+
+                    //// If response is null skip.
+                    if (respo != null)
                     {
-                        //// If folder search result get more than one result.
 
-                        //// Search for all folder.
-                        response = SearchFolderInEloqua("*");
-
-                        //// Convert Json response into class.
-                        respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
-
-                        //// Get Id of folder from Eloqua for root folder of folder path defined in plan.
-                        var parentId = respo.elements.Where(p => p.name.Equals(folderPathArray.First())).Select(p => new { p.id }).FirstOrDefault();
-
-                        string parentFolderId = Convert.ToString(parentId.id); ;
-
-                        //// Iterate folder path array and find folder.
-                        for (int i = 1; i < folderPathArray.Length; i++)
+                        if (respo.elements.Count > 1)
                         {
-                            //// Get list of folder which contain parent Id.
-                            var list = respo.elements.Where(p => p.folderId == parentFolderId && p.folderId != null).ToList().Select(p => new { p.name, p.id, p.folderId }).ToList();
+                            //// If folder search result get more than one result.
 
-                            //// Iterate list and get folder id as parent id.
-                            foreach (var item in list)
+                            //// Search for all folder.
+                            response = SearchFolderInEloqua("*");
+
+                            //// Convert Json response into class.
+                            respo = JsonConvert.DeserializeObject<folderResponse>(response.Content);
+
+                            //// Get Id of folder from Eloqua for root folder of folder path defined in plan.
+                            var parentId = respo.elements.Where(p => p.name.Equals(folderPathArray.First())).Select(p => new { p.id }).FirstOrDefault();
+
+                            string parentFolderId = Convert.ToString(parentId.id); ;
+
+                            //// Iterate folder path array and find folder.
+                            for (int i = 1; i < folderPathArray.Length; i++)
                             {
-                                if (item.name.ToString() == folderPathArray.ElementAt(i))
+                                //// Get list of folder which contain parent Id.
+                                var list = respo.elements.Where(p => p.folderId == parentFolderId && p.folderId != null).ToList().Select(p => new { p.name, p.id, p.folderId }).ToList();
+
+                                //// Iterate list and get folder id as parent id.
+                                foreach (var item in list)
                                 {
-                                    parentFolderId = item.id;
+                                    if (item.name.ToString() == folderPathArray.ElementAt(i))
+                                    {
+                                        parentFolderId = item.id;
+                                    }
                                 }
                             }
-                        }
 
-                        //// Check weather selected folder is correct folder or not.
-                        parentFolderId = respo.elements.Where(p => p.id == parentFolderId && p.name == folderPathArray.Last()).Select(p => p.id).FirstOrDefault();
+                            //// Check weather selected folder is correct folder or not.
+                            parentFolderId = respo.elements.Where(p => p.id == parentFolderId && p.name == folderPathArray.Last()).Select(p => p.id).FirstOrDefault();
 
-                        if (parentFolderId != null)
-                        {
+                            if (parentFolderId != null)
+                            {
                                 folderId = Convert.ToInt32(parentFolderId);
+                            }
+                            else
+                            {
+                                //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                                _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), parentFolderId + " folder does not exists for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
+                                //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                                folderId = 0;
+                            }
+                        }
+                        else if (respo.elements.Count > 0)
+                        {
+                            //// If folder search result get only one result.
+                            int _folderId;
+                            int.TryParse(respo.elements.FirstOrDefault().id, out _folderId);
+                            folderId = _folderId;
                         }
                         else
                         {
                             //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                                _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), parentFolderId + " folder does not exists for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Folder path has not been specified for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                             //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                                folderId = 0;
+
+                            //// default value return.
+                            folderId = 0;
                         }
                     }
-                    else if (respo.elements.Count > 0)
-                    {
-                        //// If folder search result get only one result.
-                        int _folderId;
-                        int.TryParse(respo.elements.FirstOrDefault().id, out _folderId);
-                        folderId = _folderId;
-                    }
-                    else
-                    {
-                        //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                            _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Folder path has not been specified for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
-                        //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-
-                        //// default value return.
-                            folderId = 0;
-                    }
                 }
-            }
-            else
-            {
-                //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                else
+                {
+                    //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Folder path has not been specified for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
-                //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-            }
+                    //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                }
                 dictPlanFolderId.Add(_plan.PlanId, folderId);
             }
             _mappingPlan_FolderId = dictPlanFolderId;
@@ -1226,8 +1226,6 @@ namespace Integration.Eloqua
         /// <returns>Returns eloqua campaign object.</returns>
         public string GetEloquaCampaignIdByCRMId(string crmId)
         {
-            int page = 1;   // Set default page value.
-            int pageSize = 1; // Set default pagesize value.
             string strSearchTerm = "crmId='" + crmId.ToString() + "'";  // Get Campaign data using Search query based on CRMId.
             string _EloquaCampaignId = string.Empty;
             RestRequest request = new RestRequest(Method.GET)
@@ -1237,10 +1235,17 @@ namespace Integration.Eloqua
                 RequestFormat = DataFormat.Json
             };
 
-            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
-            if (response.Data != null)
+            IRestResponse response = _client.Execute(request);
+            //// Manipulation of contact list response and store into model
+            string TacticResult = response.Content.ToString();
+            if (!string.IsNullOrEmpty(TacticResult))
             {
-                _EloquaCampaignId = response.Data.id;
+                JObject joResponse = JObject.Parse(TacticResult);
+                JArray elementsArray = (JArray)joResponse["elements"];
+                if (elementsArray.Count > 0)
+                {
+                    _EloquaCampaignId = elementsArray[0]["id"].ToString();
+                }
             }
             return _EloquaCampaignId;
         }
