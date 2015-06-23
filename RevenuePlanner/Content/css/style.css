@@ -13623,7 +13623,7 @@ div.clue-bottom-default .cluetip-arrows {
     float: left;
     left: 163px;
     position: relative;
-    width: 77%;
+    /*width: 77%;*/
 }
     /*.r-graph {margin: 0 0 0 65px;}*/
     /* .top-cost{padding:10px 10px 10px 66px;}*/
@@ -13671,6 +13671,7 @@ div.clue-bottom-default .cluetip-arrows {
     .report-heder-tab li {
         padding: 1% 6%;
     }
+    /*.headefix {        width: 72%;}*/
 }
 
 @media screen and (max-width: 1400px) {
@@ -13695,7 +13696,7 @@ div.clue-bottom-default .cluetip-arrows {
     }
 
     .headefix {
-        width: 81% !important;
+        /*width: 81% !important;*/
     }
 
     .revenue-graph .revenue-graph-info {
@@ -13859,7 +13860,9 @@ div.clue-bottom-default .cluetip-arrows {
    .headefix {
         margin: 0 auto;
         position: relative;
-        width: 65%;
+        /*width: 65%;*/
+        width:1045px;
+
     }
 
 
@@ -14045,7 +14048,7 @@ div.clue-bottom-default .cluetip-arrows {
     .headefix {
     margin: 0 auto;
     position: relative;
-    width: 77%;
+    /*width: 77%;*/
 }
 }
 
@@ -14057,8 +14060,11 @@ div.clue-bottom-default .cluetip-arrows {
     float: left;
     left: 120px;
     position: relative;
-    width: 83% !important;
+    /*width: 83% !important;*/
+        width: 1050px;
 }
+
+
     /*.r-graph {margin: 0 0 0 65px;}*/
     .reveanue-table .top-revenue:nth-child(2n) {
         padding: 10px 10px 10px 58px;
