@@ -13,6 +13,12 @@
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
     string ActivePlan = ViewBag.ActivePlan;
+    var CreatedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()];
+   var SubmittedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()];
+   var ApprovedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()];
+   var InProgressStatus = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()];
+   var CompleteStatus = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()];
+   var DeclineStatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()];
 }
 
 @Html.Hidden("IsViewOnly")
@@ -523,6 +529,31 @@
                     </div>
                 </div>
             </div>
+
+              <div id="accordion-Status" class="dropdown-section accordion">
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                        <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Status" href="#accordion-element-Status">Status<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+        </div>
+                    <div id="accordion-element-Status" class="accordion-body collapse">
+                        <ul class="scroll-list" id="ulStatus">
+                        <li class="accordion-inner"  id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@CreatedStatus"/></li>
+                              <li class="accordion-inner"  id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@SubmittedStatus"/></li>
+                              <li class="accordion-inner"   id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@ApprovedStatus"/></li>
+                              <li class="accordion-inner" id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@InProgressStatus"/></li>
+                              <li class="accordion-inner"  id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@CompleteStatus"/></li>
+                              <li class="accordion-inner"  id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@DeclineStatus"/></li>
+                        </ul>
+                        <div class="list-tab">
+                            <ul id="StatusAllModule">
+                                <li><a onclick="BulkStatusOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkStatusOperation(false)">deselect all</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
 
@@ -696,12 +727,54 @@
         SelectedPlans: [],
         PlanTitles: [],
         OwnerIds: [],
-        TacticTypeids: []
+        TacticTypeids: [],
+        StatusIds : []
     };
 
     var PlanCount = 0, OwnerCount = 0;
 
     var isFirstCall = true;
+
+    //Added By Komal Rawal for #1376
+    function toggleStatus(obj) {
+        //debugger;
+        var id = $(obj).attr('id');
+       var liID = $(obj).parent().attr('id');
+        if ($(obj).is(':checked')) {
+            $('#' +liID).addClass("close-list");
+        }
+        else {
+            $('#' + liID).removeClass("close-list");
+        }
+        filters.StatusIds = [];
+        $("#ulStatus li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.StatusIds.push(chkid);
+            }
+        });
+    }
+
+    function BulkStatusOperation(selection) {
+        filters.StatusIds = [];
+        if (selection) {
+            $("#ulStatus li").each(function (i) {
+                $(this).addClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).attr("checked", "checked");
+                filters.StatusIds.push(chkid);
+            });
+        }
+        else {
+            $("#ulStatus li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+        }
+    }
+
+    //End
 
     //Reset all the Filters
     $("#PlanAllModule").css("display", "none");
@@ -967,6 +1040,7 @@
                $("#NoOwnerFound").show();
                filters.OwnerIds = [];
                filters.TacticTypeids = [];
+               filters.StatusIds = [];
            }
        }
        else {
@@ -977,6 +1051,7 @@
            $("#NoOwnerFound").show();
            filters.OwnerIds = [];
            filters.TacticTypeids = [];
+           filters.StatusIds = [];
        }
        // }
        // });
@@ -986,6 +1061,7 @@
        filters.customFieldIds = [];
        filters.OwnerIds = [];
        filters.TacticTypeids = [];
+       filters.StatusIds = [];
        $('#divCustomFieldsFilter').html('');
        $('#ulSelectedOwner').html('');
    }
@@ -1624,6 +1700,7 @@ function AjaxRequest() {
     var OwnerIds = filters.OwnerIds;
     var TacticTypeids = filters.TacticTypeids; //Modified for #1283
     var GetSelectedPlanNo = filters.SelectedPlans.length;
+    var StatusIds = filters.StatusIds;
 
     if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         if (GetSelectedPlanNo > 1) {
@@ -1650,6 +1727,7 @@ function AjaxRequest() {
                         customFieldIds: CustomFieldId.toString(),
                         ownerIds: OwnerIds.toString(),
                         TacticTypeid: TacticTypeids.toString(),
+                        StatusIds : filters.StatusIds.toString(),
                         activeMenu: $('#ActiveMenu').val(),
                         getViewByList: getViewByList
                     },

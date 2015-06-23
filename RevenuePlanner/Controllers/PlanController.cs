@@ -117,6 +117,11 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IsPlanCreateAll = IsPlanCreateAll;
 
                 }
+                else
+                {
+                    ViewBag.IsPlanCreateAll = true;
+                }
+                
             }
             catch (Exception e)
             {

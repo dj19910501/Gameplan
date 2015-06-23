@@ -1019,7 +1019,8 @@ namespace RevenuePlanner.Helpers
         Tactic,
         Request,
         Custom,
-        Stage
+        Stage,
+        Status
     }
 
     #endregion
