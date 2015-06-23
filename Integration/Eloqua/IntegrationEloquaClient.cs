@@ -1226,8 +1226,6 @@ namespace Integration.Eloqua
         /// <returns>Returns eloqua campaign object.</returns>
         public string GetEloquaCampaignIdByCRMId(string crmId)
         {
-            int page = 1;   // Set default page value.
-            int pageSize = 1; // Set default pagesize value.
             string strSearchTerm = "crmId='" + crmId.ToString() + "'";  // Get Campaign data using Search query based on CRMId.
             string _EloquaCampaignId = string.Empty;
             RestRequest request = new RestRequest(Method.GET)
@@ -1237,10 +1235,17 @@ namespace Integration.Eloqua
                 RequestFormat = DataFormat.Json
             };
 
-            IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
-            if (response.Data != null)
+            IRestResponse response = _client.Execute(request);
+            //// Manipulation of contact list response and store into model
+            string TacticResult = response.Content.ToString();
+            if (!string.IsNullOrEmpty(TacticResult))
             {
-                _EloquaCampaignId = response.Data.id;
+                JObject joResponse = JObject.Parse(TacticResult);
+                JArray elementsArray = (JArray)joResponse["elements"];
+                if (elementsArray.Count > 0)
+                {
+                    _EloquaCampaignId = elementsArray[0]["id"].ToString();
+                }
             }
             return _EloquaCampaignId;
         }
