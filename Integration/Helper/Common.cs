@@ -587,6 +587,22 @@ namespace Integration.Helper
             name = name.Substring(0, ((name.Length > (CustomNameLimitSet + 1)) ? CustomNameLimitSet : name.Length));
             return name;
         }
+
+        /// <summary>
+        /// </summary>
+        public static string GetClosedWon(Guid _clientId)
+        {
+            string ClosedWonTitle = ClosedWon;
+            using (MRPEntities db = new MRPEntities())
+            {
+                ClosedWonTitle = db.Stages.FirstOrDefault(i => i.ClientId == _clientId && !i.IsDeleted && i.Code == StageCW).Title;
+                if (string.IsNullOrEmpty(ClosedWonTitle))
+                {
+                    ClosedWonTitle = ClosedWon;
+                }
+            }
+            return ClosedWonTitle;
+        }
     }
 
     public class CRM_EloquaMapping

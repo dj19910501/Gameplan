@@ -888,11 +888,11 @@ namespace Integration.Salesforce
                             }
                             if (lastSyncDate != string.Empty)
                             {
-                                opportunityGetQueryWhere = " WHERE " + StageName + "= '" + Common.ClosedWon + "' AND " + LastModifiedDate + " > " + lastSyncDate + " AND " + LastModifiedDate + " < " + currentDate;
+                                opportunityGetQueryWhere = " WHERE " + StageName + "= '" + Common.GetClosedWon(_clientId) + "' AND " + LastModifiedDate + " > " + lastSyncDate + " AND " + LastModifiedDate + " < " + currentDate;
                             }
                             else
                             {
-                                opportunityGetQueryWhere = " WHERE " + StageName + "= '" + Common.ClosedWon + "' AND " + LastModifiedDate + " < " + currentDate;
+                                opportunityGetQueryWhere = " WHERE " + StageName + "= '" + Common.GetClosedWon(_clientId) + "' AND " + LastModifiedDate + " < " + currentDate;
                             }
 
                             string opportunityRoleQuery = "SELECT ContactId,IsPrimary,OpportunityId FROM OpportunityContactRole WHERE OpportunityId IN (SELECT Id FROM Opportunity" + opportunityGetQueryWhere + ")";
@@ -908,7 +908,7 @@ namespace Integration.Salesforce
                                 OpportunityMember objOpp = new OpportunityMember();
                                 try
                                 {
-                                    if (Convert.ToString(jobj[Amount]) != null && Convert.ToString(jobj[CloseDate]) != null)
+                                    if (jobj[Amount] != null && !string.IsNullOrEmpty(Convert.ToString(jobj[Amount])) && jobj[CloseDate] != null && !string.IsNullOrEmpty(Convert.ToString(jobj[CloseDate])))
                                     {
                                         string campaignid = Convert.ToString(jobj[CampaignId]);
                                         objOpp.CampaignId = campaignid;
@@ -985,7 +985,7 @@ namespace Integration.Salesforce
                                         if (contactid.Contains(Convert.ToString(jobj["ContactId"])))
                                         {
                                             string str = Convert.ToString(jobj[ResponseDate]);
-                                            if (Convert.ToString(jobj[ResponseDate]) != "")
+                                            if (jobj[ResponseDate] != null && !string.IsNullOrEmpty(Convert.ToString(jobj[ResponseDate])))
                                             {
                                                 string campaignid = Convert.ToString(jobj[CampaignId]);
                                                 objCampaign.CampaignId = campaignid;
