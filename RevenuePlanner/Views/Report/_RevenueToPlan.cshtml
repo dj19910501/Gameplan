@@ -4,9 +4,10 @@
 @{
     var revenue_barchartModel = Model.RevenueToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanBarChartModel) : string.Empty;
     var revenue_datatableModel = Model.RevenueToPlanDataModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanDataModel) : string.Empty;
+    var revenue_linechartModel = Model.LineChartModel != null ? JsonConvert.SerializeObject(Model.LineChartModel) : string.Empty;
 }
 <div class="revenue-to-plan-graph">
-            <div id="dvRevenuePlanBarChart" class="graph" style="height: 160px; padding-left: 0%;"></div>
+            <div id="dvRevenuePlanBarChart" class="graph" style="height: 200px; padding-left: 0%;"></div>
             <div class="graph-table">
                 <div class="table-responsive">
                     <table class="graph-table">
@@ -19,13 +20,23 @@
 <script type="text/javascript">
 
     $(document).ready(function(){
-    // Start:- Revenue To Plan BarChart script 
-    var _barchartdata = "@revenue_barchartModel";
-    var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
-    _BarChartdata = JSON.parse(_BarChartdata);
-    var barchartDivId = "#dvRevenuePlanBarChart";
+        // Start:- Revenue To Plan Combination script 
 
-    BindRevenueBarChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId);
+        //Start: Get BarChart Model
+        var _barchartdata = "@revenue_barchartModel";
+        var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
+        _BarChartdata = JSON.parse(_BarChartdata);
+        var barchartDivId = "#dvRevenuePlanBarChart";
+        //End: Get BarChart Model
+
+    //Start: Get LineChart Model
+    var _linechartdata = "@revenue_linechartModel";
+    var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
+    _LineChartdata = JSON.parse(_LineChartdata);
+    //End: Get LineChart Model
+
+        //BindRevenueBarChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId);
+    BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue);
     // End:- Revenue To Plan BarChart script  
 
     // Start:- Revenue To Plan DataTable script  

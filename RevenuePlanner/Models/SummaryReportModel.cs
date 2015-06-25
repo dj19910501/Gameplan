@@ -75,12 +75,14 @@ namespace RevenuePlanner.Models
         public List<series> series { get; set; }
         public string isDisplay { get; set; }
         public string todayValue { get; set; }
+        
     }
     public class series
     {
         public string name { get; set; }
-        public List<double> data { get; set; }
+        public List<double?> data { get; set; }
         public marker marker { get; set; }
+        public bool showInLegend { get; set; }
     }
     public class marker
     {
@@ -188,6 +190,7 @@ namespace RevenuePlanner.Models
     {
         public BarChartModel RevenueToPlanBarChartModel { get; set; }
         public RevenueDataTable RevenueToPlanDataModel { get; set; }
+        public lineChartData LineChartModel { get; set; }
     }
     public class RevenueDataTable
     {

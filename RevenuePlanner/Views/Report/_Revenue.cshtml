@@ -2,7 +2,7 @@
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
 @{
-    var linechartdata = Model.RevenueLineChartModel != null ? JsonConvert.SerializeObject(Model.RevenueLineChartModel) : string.Empty;
+    //var linechartdata = Model.RevenueLineChartModel != null ? JsonConvert.SerializeObject(Model.RevenueLineChartModel) : string.Empty;
     var revenue_Projected_Goal = Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal();
     var revenue_to_planModel = Model.RevenueToPlanModel != null ? Model.RevenueToPlanModel : new RevenuePlanner.Models.RevenueToPlanModel();
     //var revenue_barchartModel = Model.RevenueToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanBarChartModel) : string.Empty;
@@ -79,7 +79,7 @@
             @Html.Partial("_RevenueToPlan",revenue_to_planModel)
         </div>
     </div>
-    <div class="total-revenue">
+    @*<div class="total-revenue">
         <div class="total-revenue-title">
             <h5>Total Revenue</h5>
         </div>
@@ -87,7 +87,7 @@
             <div id="RevenueLineChart" style="height: 100%;">
             </div>
         </div>
-    </div>
+    </div>*@
     @*<div class="revenue-filter">
         <div class="sorting">
             <div class="geography-dropdown">
@@ -413,12 +413,12 @@
         // End:- Revenue To Plan DataTable script  *@
 
         // Start:- Revenue_LineChart script 
-        var _lineardata = "@linechartdata";
+        @*var _lineardata = "@linechartdata";
         var chartdata = (_lineardata.toString().replace(/&quot;/g, '"'));
         chartdata = JSON.parse(chartdata);
         var linechartDivId = "#RevenueLineChart";
 
-        BindLineChartRevenue(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, 220, false);
+        BindLineChartRevenue(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, 220, false);*@
         // End:- Revenue_LineChart script 
     });
 

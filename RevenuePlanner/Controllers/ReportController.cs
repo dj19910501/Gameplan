@@ -2175,9 +2175,9 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region "Set Linechart & Revenue Overview data to model"
-                    objLineChartData = GetLineChartData(objBasicModel);
+                    objLineChartData = GetCombinationLineChartData(objBasicModel);
                     objProjectedGoal = GetRevenueOverviewData(OverviewModelList, option);
-                    objReportModel.RevenueLineChartModel = objLineChartData != null ? objLineChartData : new lineChartData();
+                    //objReportModel.RevenueLineChartModel = objLineChartData != null ? objLineChartData : new lineChartData();
                     objReportModel.RevenueHeaderModel = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
                     #endregion
 
@@ -2279,19 +2279,22 @@ namespace RevenuePlanner.Controllers
                     }
 
                     BarChartSeries _chartSeries1 = new BarChartSeries();
-                    _chartSeries1.name = "Actual/Projected";
+                    _chartSeries1.name = "Actual";
                     _chartSeries1.data = serData1;
+                    _chartSeries1.type = "column";
                     lstSeries.Add(_chartSeries1);
 
                     BarChartSeries _chartSeries2 = new BarChartSeries();
                     _chartSeries2.name = "Goal";
                     _chartSeries2.data = serData2;
+                    _chartSeries2.type = "column";
                     lstSeries.Add(_chartSeries2);
 
                     objBarChartModel.series = lstSeries;
                     objBarChartModel.categories = _barChartCategories;
 
                     objRevenueToPlanModel.RevenueToPlanBarChartModel = objBarChartModel;
+                    objRevenueToPlanModel.LineChartModel = objLineChartData;
                     #endregion
 
                     #region "Calculate DataTable"
@@ -8020,8 +8023,8 @@ namespace RevenuePlanner.Controllers
             List<series> lstseries = new List<series>();
             lineChartData LineChartData = new lineChartData();
             bool IsDisplay = false, IsQuarterly = objBasicModel.IsQuarterly;
-            List<double> serData1 = new List<double>();
-            List<double> serData2 = new List<double>();
+            List<double?> serData1 = new List<double?>();
+            List<double?> serData2 = new List<double?>();
             //double monthlyActualTotal = 0, monthlyProjectedTotal = 0, monthlyGoalTotal = 0, TodayValue=0;
             double TodayValue = 0, catLength = 0;
             string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
@@ -8073,6 +8076,113 @@ namespace RevenuePlanner.Controllers
                 marker objMarker2 = new marker();
                 objMarker2.symbol = "square";
                 objSeries2.marker = objMarker2;
+
+                lstseries.Add(objSeries1);
+                lstseries.Add(objSeries2);
+                #endregion
+
+                #endregion
+
+                #region "Set Series, Categories & Marker data to Model"
+
+                //foreach (series _ser in lstseries)
+                //{
+                //    marker objMarker1 = new marker();
+                //    objMarker1.symbol = "square";
+                //    _ser.marker = objMarker1;
+                //}
+                categories = objBasicModel.Categories != null ? objBasicModel.Categories : new List<string>();
+                LineChartData.categories = categories;
+                LineChartData.series = lstseries;
+
+                // Set IsDisplay & TodayValue to Plot line on Linechart graph.
+                LineChartData.isDisplay = IsDisplay.ToString();
+                LineChartData.todayValue = TodayValue.ToString();
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return LineChartData;
+            //return Json(RevenueLineChartData, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// This action will return the data of Revenue Line chart
+        /// </summary>
+        /// <param name="BasicModel"> Basic Model</param>
+        /// <returns>Return LineChart Model</returns>
+        public lineChartData GetCombinationLineChartData(BasicModel objBasicModel)
+        {
+            #region "Declare Local Varialbles"
+            List<string> categories = new List<string>();
+            List<series> lstseries = new List<series>();
+            lineChartData LineChartData = new lineChartData();
+            bool IsDisplay = false, IsQuarterly = objBasicModel.IsQuarterly;
+            List<double?> serData1 = new List<double?>();
+            List<double?> serData2 = new List<double?>();
+            double TodayValue = 0, catLength = 0;
+            string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
+            //int catLength = 12;
+            #endregion
+
+            try
+            {
+
+                #region "Get Today Plot Value"
+                if (currentYear == timeframeOption)
+                {
+                    IsDisplay = true;
+                    TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly,IsPadding:true);
+                }
+                #endregion
+
+                #region "Get Series list"
+
+                if (objBasicModel == null)
+                    return LineChartData;
+                catLength = objBasicModel.Categories.Count;   // Set categories list count.
+
+                #region "Monthly/Quarterly Calculate Actual, Projected & Goal Total"
+
+                double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0, _prevActual_Projected = 0, _prevGoal = 0;
+
+                serData1.Add(null); // Insert blank data at 1st index of list to Add padding to Graph.
+                serData2.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
+
+                if (!IsQuarterly)
+                {
+                    serData1.Add(null); // Insert blank data at 1st index of list to Add padding to Graph.
+                    serData2.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
+                }
+
+                for (int i = 0; i < catLength; i++)
+                {
+                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
+                    _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
+                    _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
+                    Actual_Projected = _prevActual_Projected = _prevActual_Projected + (_Actual + _Projected);
+                    _Goal = _prevGoal = _prevGoal + _Goal;
+                    serData1.Add(Actual_Projected);
+                    serData2.Add(_Goal);
+                }
+
+                series objSeries1 = new series();
+                objSeries1.name = "Actual";
+                objSeries1.data = serData1;
+                marker objMarker1 = new marker();
+                objMarker1.symbol = "square";
+                objSeries1.marker = objMarker1;
+                objSeries1.showInLegend = true;
+
+                series objSeries2 = new series();
+                objSeries2.name = "Goal";
+                objSeries2.data = serData2;
+                marker objMarker2 = new marker();
+                objMarker2.symbol = "square";
+                objSeries2.marker = objMarker2;
+                objSeries2.showInLegend = true;
 
                 lstseries.Add(objSeries1);
                 lstseries.Add(objSeries2);
@@ -8177,7 +8287,7 @@ namespace RevenuePlanner.Controllers
             return ProjectedTrendModelList;
         }
 
-        public double GetTodayPlotValue(string timeframeOption, bool IsQuarterly)
+        public double GetTodayPlotValue(string timeframeOption, bool IsQuarterly,bool IsPadding =false)
         {
             double resultTodayValue = 0;
             try
@@ -8190,10 +8300,13 @@ namespace RevenuePlanner.Controllers
                     //LineChartData.isDisplay = "1";
                     int currentmonth = currentDate.Month;
                     int currentdatedays = currentDate.Day;
+                    double _paddingval = 0;
                     if (!IsQuarterly)
                     {
                         int currentmonthdays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
-                        resultTodayValue = (currentmonth - 1) + (Convert.ToDouble(currentdatedays) / Convert.ToDouble(currentmonthdays));
+                        _paddingval = IsPadding ? 2 : 0;
+                        //resultTodayValue = _paddingval + (currentmonth - 1) + (Convert.ToDouble(currentdatedays) / Convert.ToDouble(currentmonthdays));
+                        resultTodayValue = _paddingval + (currentmonth - 1);
                     }
                     // LineChartData.TodayValue = todayindex.ToString();
                     else
@@ -8201,6 +8314,7 @@ namespace RevenuePlanner.Controllers
                         int currentQuarter = ((currentMonth - 1) / 3);
                         int totaldays = 0;
                         int currentdays = 0;
+                        _paddingval = IsPadding ? 1 : 0;
                         if (currentQuarter == 0)
                         {
                             for (int i = 1; i <= 3; i++)
@@ -8250,7 +8364,8 @@ namespace RevenuePlanner.Controllers
                             currentdays += currentdatedays;
                         }
 
-                        resultTodayValue = (currentQuarter) + (Convert.ToDouble(currentdays) / Convert.ToDouble(totaldays));
+                        //resultTodayValue = _paddingval + (currentQuarter) + (Convert.ToDouble(currentdays) / Convert.ToDouble(totaldays));
+                        resultTodayValue = _paddingval + (currentQuarter);
                     }
 
                 }
@@ -8638,6 +8753,11 @@ namespace RevenuePlanner.Controllers
                 BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, option, _isquarterly);
                 #endregion
 
+                #region "Set Linechart & Revenue Overview data to model"
+                objLineChartData = GetCombinationLineChartData(objBasicModel);
+                objRevenueToPlanModel.LineChartModel = objLineChartData != null ? objLineChartData : new lineChartData();
+                #endregion
+
                 #endregion
 
                 #region "Revenue To Plan"
@@ -8717,13 +8837,15 @@ namespace RevenuePlanner.Controllers
                 }
 
                 BarChartSeries _chartSeries1 = new BarChartSeries();
-                _chartSeries1.name = "Actual/Projected";
+                _chartSeries1.name = "Actual";
                 _chartSeries1.data = serData1;
+                _chartSeries1.type = "column";
                 lstSeries.Add(_chartSeries1);
 
                 BarChartSeries _chartSeries2 = new BarChartSeries();
                 _chartSeries2.name = "Goal";
                 _chartSeries2.data = serData2;
+                _chartSeries2.type = "column";
                 lstSeries.Add(_chartSeries2);
 
                 List<string> _barChartCategories = new List<string>();

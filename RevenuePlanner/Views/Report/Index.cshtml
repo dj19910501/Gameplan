@@ -1692,6 +1692,103 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
             $(_linechartDivId).highcharts(options);
 
         }
-        //End:- BarLineChart Script
+    //End:- BarLineChart Script
+
+    //Start:- Combination Chart Script
+        function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal) {
+            Highcharts.setOptions({
+                lang: {
+                    numericSymbols: ["k", "M", "B", "T", "P", "E"]
+                }
+            });
+            var options = {
+                chart: {
+                    //type: 'column'
+                    //height: 220
+                    //width: 400
+                },
+                colors: ['#B04499', '#999999'],
+                title: {
+                    text: ''
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'left',
+                    verticalAlign: 'top',
+                    floating: true,
+                    x: 30,
+                    y: 45
+                },
+                xAxis: {
+                    categories: _categories,
+                    tickWidth: 0,
+                    labels: {
+                        enabled: false
+                    },
+                    plotLines: [{
+                        color: 'black', // Color value
+                        dashStyle: 'longdash', // Style of the plot line. Default to solid
+                        value: _plotlineVal, // Value of where the line will appear
+                        width: 2, // Width of the line    
+                        label: {
+                            text: 'Today',
+                            align: 'middle',
+                            verticalAlign: 'top',
+                            rotation: 0,
+                            x: -15,
+                            y: 0
+                        }
+                    }],
+                },
+                yAxis: {
+                    gridLineWidth: 0,
+                    labels: {
+                        enabled: false
+                    },
+                    title: {
+                        enabled: false
+                    }
+                },
+                credits: {
+                    enabled: false
+                },
+                tooltip: {
+                    valueDecimals: 2,
+                },
+                plotOptions: {
+                    series: {
+                        //pointWidth: 20,
+
+                        //groupPadding: 0,
+                        //borderWidth: 0,
+                        //shadow: false
+                    },
+                    column: {
+                        //grouping: false,
+                        shadow: false,
+                        borderWidth: 0,
+                        pointPadding: 0,
+                        pointWidth: 20
+                        //groupPadding: 0
+                    }
+                },
+                series: []
+            }
+            var serLength = _Barseries.length;
+
+            for (var i = 0; i < serLength ; i++) {
+                options.series.push(eval(_Barseries[i]));
+            }
+            var _linechartseriesLength = _linechartseries.length;
+            for (var i = 0; i < _linechartseriesLength ; i++) {
+                options.series.push(eval(_linechartseries[i]));
+            }
+
+            //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
+            //    return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
+            //};
+            $(_ChartDivId).highcharts(options);
+        }
+    //End:- Combination Chart Script
 
 </script>
