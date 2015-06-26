@@ -15,10 +15,6 @@
     .greenLabel {
     color:#009E26 !important;
     }
-    .margintop_5
-    {
-        margin-top:5px !important;
-    }
 </style>
 <section class="report-overview-wraper">
 
@@ -44,7 +40,6 @@
         </div>
         <div class="time-frame">
             <div class="geography-dropdown">
-                <h5 class="margintop_5">Time frame:</h5>
                 <div class="revenue-summary-custom ddlQuarter">
                     <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
                             @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
