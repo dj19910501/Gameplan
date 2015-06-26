@@ -103,7 +103,7 @@
         
         string Submit = "Submit for Approval";
         string Approve = "Approve";
-        string Reject = "Reject";
+        string Reject = "Decline";
         List<string> aryStatus = new List<string>();
         bool isVisibleStatus = true;
 
@@ -504,7 +504,7 @@
               else if (statusValue == "Approve") {
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
               }
-              else if (statusValue == "Reject") {
+              else if (statusValue == "Decline") {
                   stat = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()";
               }
 
