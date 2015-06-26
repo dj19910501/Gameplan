@@ -2195,18 +2195,21 @@ namespace RevenuePlanner.Controllers
                     double catLength = _Categories != null ? _Categories.Count : 0;
                     List<double> serData1 = new List<double>();
                     List<double> serData2 = new List<double>();
+                    List<double> serData3 = new List<double>();
                     double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0;
                     bool _IsQuarterly = objBasicModel.IsQuarterly;
-
+                    int _compareValue = 0;
                     serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
                     serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                    serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
 
                     if (!_IsQuarterly)
                     {
                         serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
                         serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                        serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
                     }
-
+                    _compareValue = IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
 
                     #region "Calcuate ActualList up to Current Month"
                     //List<double> _dtActualList = new List<double>();
@@ -2262,8 +2265,18 @@ namespace RevenuePlanner.Controllers
                         _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
                         _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
                         Actual_Projected = _Actual + _Projected;
-                        serData1.Add(Actual_Projected);
+                        //serData1.Add(Actual_Projected);
                         serData2.Add(_Goal);
+                        if ((i + 1) <= (_compareValue))
+                        {
+                            serData1.Add(Actual_Projected);
+                            serData3.Add(0);
+                        }
+                        else
+                        {
+                            serData1.Add(0);
+                            serData3.Add(Actual_Projected);
+                        }
                     }
                     List<string> _barChartCategories = new List<string>();
                     if (!IsQuarterly)
@@ -2289,6 +2302,12 @@ namespace RevenuePlanner.Controllers
                     _chartSeries2.data = serData2;
                     _chartSeries2.type = "column";
                     lstSeries.Add(_chartSeries2);
+
+                    BarChartSeries _chartSeries3 = new BarChartSeries();
+                    _chartSeries3.name = "Projected";
+                    _chartSeries3.data = serData3;
+                    _chartSeries3.type = "column";
+                    lstSeries.Add(_chartSeries3);
 
                     objBarChartModel.series = lstSeries;
                     objBarChartModel.categories = _barChartCategories;
@@ -8122,6 +8141,7 @@ namespace RevenuePlanner.Controllers
             bool IsDisplay = false, IsQuarterly = objBasicModel.IsQuarterly;
             List<double?> serData1 = new List<double?>();
             List<double?> serData2 = new List<double?>();
+            List<double?> serData3 = new List<double?>();
             double TodayValue = 0, catLength = 0;
             string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
             //int catLength = 12;
@@ -8150,13 +8170,17 @@ namespace RevenuePlanner.Controllers
 
                 serData1.Add(null); // Insert blank data at 1st index of list to Add padding to Graph.
                 serData2.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
+                serData3.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
 
                 if (!IsQuarterly)
                 {
                     serData1.Add(null); // Insert blank data at 1st index of list to Add padding to Graph.
                     serData2.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
+                    serData3.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
                 }
-
+                double _comparevalue = 0;
+                double paddingval = IsQuarterly ? 1 : 2;
+                _comparevalue = TodayValue - paddingval;
                 for (int i = 0; i < catLength; i++)
                 {
                     _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
@@ -8164,8 +8188,23 @@ namespace RevenuePlanner.Controllers
                     _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
                     Actual_Projected = _prevActual_Projected = _prevActual_Projected + (_Actual + _Projected);
                     _Goal = _prevGoal = _prevGoal + _Goal;
-                    serData1.Add(Actual_Projected);
+                    //serData1.Add(Actual_Projected);
                     serData2.Add(_Goal);
+                    if ((i) <= (_comparevalue))
+                    {
+                        serData1.Add(Actual_Projected);
+                        if (i == _comparevalue)
+                            serData3.Add(Actual_Projected);
+                        else
+                            serData3.Add(null);
+
+
+                    }
+                    else
+                    {
+                        serData1.Add(null);
+                        serData3.Add(Actual_Projected);
+                    }
                 }
 
                 series objSeries1 = new series();
@@ -8184,8 +8223,17 @@ namespace RevenuePlanner.Controllers
                 objSeries2.marker = objMarker2;
                 objSeries2.showInLegend = true;
 
+                series objSeries3 = new series();
+                objSeries3.name = "Projected";
+                objSeries3.data = serData3;
+                marker objMarker3 = new marker();
+                objMarker3.symbol = "square";
+                objSeries3.marker = objMarker3;
+                objSeries3.showInLegend = true;
+
                 lstseries.Add(objSeries1);
                 lstseries.Add(objSeries2);
+                lstseries.Add(objSeries3);
                 #endregion
 
                 #endregion
@@ -8541,6 +8589,17 @@ namespace RevenuePlanner.Controllers
             return objBasicModel;
         }
 
+        public int GetCurrentQuarterNumber()
+        {
+            try
+            {
+                return ((currentMonth - 1) / 3 + 1);
+            }
+            catch (Exception ex)
+            {   
+                throw ex;
+            }
+        }
 
         #endregion
 
@@ -8770,16 +8829,20 @@ namespace RevenuePlanner.Controllers
                 double catLength = _Categories != null ? _Categories.Count : 0;
                 List<double> serData1 = new List<double>();
                 List<double> serData2 = new List<double>();
+                List<double> serData3 = new List<double>();
                 double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0;
                 bool _IsQuarterly = objBasicModel.IsQuarterly;
-
+                int _compareValue = 0;
+                _compareValue = _IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
                 serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
                 serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
 
                 if (!_IsQuarterly)
                 {
                     serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
                     serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                    serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
                 }
 
                 #region "Calcuate ActualList up to Current Month"
@@ -8832,8 +8895,18 @@ namespace RevenuePlanner.Controllers
                     _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
                     _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
                     Actual_Projected = _Actual + _Projected;
-                    serData1.Add(Actual_Projected);
+                    //serData1.Add(Actual_Projected);
                     serData2.Add(_Goal);
+                    if ((i + 1) <= (_compareValue))
+                    {
+                        serData1.Add(Actual_Projected);
+                        serData3.Add(0);
+                    }
+                    else
+                    {
+                        serData1.Add(0);
+                        serData3.Add(Actual_Projected);
+                    }
                 }
 
                 BarChartSeries _chartSeries1 = new BarChartSeries();
@@ -8847,6 +8920,12 @@ namespace RevenuePlanner.Controllers
                 _chartSeries2.data = serData2;
                 _chartSeries2.type = "column";
                 lstSeries.Add(_chartSeries2);
+
+                BarChartSeries _chartSeries3 = new BarChartSeries();
+                _chartSeries3.name = "Projected";
+                _chartSeries3.data = serData3;
+                _chartSeries3.type = "column";
+                lstSeries.Add(_chartSeries3);
 
                 List<string> _barChartCategories = new List<string>();
                 if (!_IsQuarterly)
