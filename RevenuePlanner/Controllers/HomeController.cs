@@ -953,19 +953,19 @@ namespace RevenuePlanner.Controllers
             {
                 id = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
                 text = taskdata.PlanTitle,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlanOfCustomField(viewBy,tacticstatus,
+                start_date =Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlanOfCustomField(viewBy,viewBy=="Status"?taskdata.MainParentId: tacticstatus,
                             ((viewBy.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase)) ? IsCampaign ?taskdata.Tactic.Plan_Campaign_Program.PlanCampaignId.ToString() : (IsProgram ? taskdata.Tactic.PlanProgramId.ToString() : taskdata.Tactic.PlanTacticId.ToString())
                             : taskdata.MainParentId), taskdata.PlanId, lstCampaign, lstProgram, (viewBy.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase)) ? lstTactic.Where(tactic => taskdata.lstCustomEntityId.Contains(IsCampaign ? tactic.PlanCampaignId
                                     : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId))).Select(tactic => tactic).ToList() : lstTactic, IsCampaign, IsProgram)),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
-                                                          GetMinStartDateForPlanOfCustomField(viewBy,tacticstatus,
+                                                          GetMinStartDateForPlanOfCustomField(viewBy, viewBy == "Status" ? taskdata.MainParentId : tacticstatus,
                                                           (viewBy.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase)
                                                           ?
                                                           IsCampaign ? taskdata.Tactic.Plan_Campaign_Program.PlanCampaignId.ToString() : (IsProgram ? taskdata.Tactic.PlanProgramId.ToString() : taskdata.Tactic.PlanTacticId.ToString())
                                                           : taskdata.MainParentId), taskdata.PlanId, lstCampaign, lstProgram,
                                                           (viewBy.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase)) ? lstTactic.Where(tactic => taskdata.lstCustomEntityId.Contains(IsCampaign ? tactic.PlanCampaignId
                                                         : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId))).Select(tactic => tactic).ToList() : lstTactic, IsCampaign, IsProgram),
-                                                          GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus,
+                                                          GetMaxEndDateForPlanOfCustomFields(viewBy, viewBy == "Status" ? taskdata.MainParentId : tacticstatus,
                                                           ((viewBy.Equals(PlanGanttTypes.Custom.ToString(), StringComparison.OrdinalIgnoreCase))
                                                           ?
                                                           IsCampaign ? taskdata.Tactic.Plan_Campaign_Program.PlanCampaignId.ToString() : (IsProgram ? taskdata.Tactic.PlanProgramId.ToString() : taskdata.Tactic.PlanTacticId.ToString())
