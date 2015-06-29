@@ -24,6 +24,21 @@ namespace BDSService
             this.User_Activity_Permission1 = new HashSet<User_Activity_Permission>();
             this.User_Application = new HashSet<User_Application>();
             this.User1 = new HashSet<User>();
+            this.Applications = new HashSet<Application>();
+            this.Applications1 = new HashSet<Application>();
+            this.Application_Role = new HashSet<Application_Role>();
+            this.Application_Role1 = new HashSet<Application_Role>();
+            this.Clients = new HashSet<Client>();
+            this.Clients1 = new HashSet<Client>();
+            this.Menu_Application = new HashSet<Menu_Application>();
+            this.Menu_Application1 = new HashSet<Menu_Application>();
+            this.Roles = new HashSet<Role>();
+            this.Roles1 = new HashSet<Role>();
+            this.Role_Permission = new HashSet<Role_Permission>();
+            this.Role_Permission1 = new HashSet<Role_Permission>();
+            this.User_Application1 = new HashSet<User_Application>();
+            this.User_Application2 = new HashSet<User_Application>();
+            this.UserClientDatabases = new HashSet<UserClientDatabase>();
         }
     
         public System.Guid UserId { get; set; }
@@ -53,5 +68,20 @@ namespace BDSService
         public virtual ICollection<User_Application> User_Application { get; set; }
         public virtual ICollection<User> User1 { get; set; }
         public virtual User User2 { get; set; }
+        public virtual ICollection<Application> Applications { get; set; }
+        public virtual ICollection<Application> Applications1 { get; set; }
+        public virtual ICollection<Application_Role> Application_Role { get; set; }
+        public virtual ICollection<Application_Role> Application_Role1 { get; set; }
+        public virtual ICollection<Client> Clients { get; set; }
+        public virtual ICollection<Client> Clients1 { get; set; }
+        public virtual ICollection<Menu_Application> Menu_Application { get; set; }
+        public virtual ICollection<Menu_Application> Menu_Application1 { get; set; }
+        public virtual ICollection<Role> Roles { get; set; }
+        public virtual ICollection<Role> Roles1 { get; set; }
+        public virtual ICollection<Role_Permission> Role_Permission { get; set; }
+        public virtual ICollection<Role_Permission> Role_Permission1 { get; set; }
+        public virtual ICollection<User_Application> User_Application1 { get; set; }
+        public virtual ICollection<User_Application> User_Application2 { get; set; }
+        public virtual ICollection<UserClientDatabase> UserClientDatabases { get; set; }
     }
 }

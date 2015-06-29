@@ -25,5 +25,6 @@ namespace BDSService
         public byte[] EncryptedConnectionString { get; set; }
     
         public virtual ICollection<UserClientDatabase> UserClientDatabases { get; set; }
+        public virtual Client Client { get; set; }
     }
 }

@@ -30,5 +30,6 @@ namespace BDSService
     
         public virtual ICollection<Role_Activity_Permission> Role_Activity_Permission { get; set; }
         public virtual ICollection<User_Activity_Permission> User_Activity_Permission { get; set; }
+        public virtual Application Application { get; set; }
     }
 }

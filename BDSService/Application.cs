@@ -20,6 +20,7 @@ namespace BDSService
             this.Application_Role = new HashSet<Application_Role>();
             this.Menu_Application = new HashSet<Menu_Application>();
             this.User_Application = new HashSet<User_Application>();
+            this.Application_Activity = new HashSet<Application_Activity>();
         }
     
         public System.Guid ApplicationId { get; set; }
@@ -37,5 +38,8 @@ namespace BDSService
         public virtual ICollection<Application_Role> Application_Role { get; set; }
         public virtual ICollection<Menu_Application> Menu_Application { get; set; }
         public virtual ICollection<User_Application> User_Application { get; set; }
+        public virtual ICollection<Application_Activity> Application_Activity { get; set; }
+        public virtual User User { get; set; }
+        public virtual User User1 { get; set; }
     }
 }

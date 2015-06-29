@@ -19,6 +19,7 @@ namespace BDSService
             this.Application_Role = new HashSet<Application_Role>();
             this.Role_Activity_Permission = new HashSet<Role_Activity_Permission>();
             this.Role_Permission = new HashSet<Role_Permission>();
+            this.User_Application = new HashSet<User_Application>();
         }
     
         public System.Guid RoleId { get; set; }
@@ -37,5 +38,8 @@ namespace BDSService
         public virtual Client Client { get; set; }
         public virtual ICollection<Role_Activity_Permission> Role_Activity_Permission { get; set; }
         public virtual ICollection<Role_Permission> Role_Permission { get; set; }
+        public virtual User User { get; set; }
+        public virtual User User1 { get; set; }
+        public virtual ICollection<User_Application> User_Application { get; set; }
     }
 }

@@ -44,6 +44,24 @@
         <AssociationConnector Association="BDSAuthModel.FK_User_User" />
         <EntityTypeShape EntityType="BDSAuthModel.ClientDatabase" Width="1.5" PointX="9.5736534956719979" PointY="15.808188594788401" />
         <AssociationConnector Association="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_Activity_Application" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_User1" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_Role_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_Application_Role_User1" />
+        <AssociationConnector Association="BDSAuthModel.FK_Client_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_Client_User1" />
+        <AssociationConnector Association="BDSAuthModel.FK_ClientDatabase_Client" />
+        <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_Menu_Application_User1" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_User1" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_Role" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Permission_User" />
+        <AssociationConnector Association="BDSAuthModel.FK_Role_Permission_User1" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User1" />
+        <AssociationConnector Association="BDSAuthModel.FK_User_Application_User2" />
+        <AssociationConnector Association="BDSAuthModel.FK_UserClientDatabase_User" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

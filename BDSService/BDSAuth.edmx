@@ -30,6 +30,10 @@
             <End Role="Client" EntitySet="Client" />
             <End Role="Role" EntitySet="Role" />
           </AssociationSet>
+          <AssociationSet Name="FK_Application_Activity_Application" Association="BDSAuthModel.Store.FK_Application_Activity_Application">
+            <End Role="Application" EntitySet="Application" />
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+          </AssociationSet>
           <AssociationSet Name="FK_Application_Role_Application" Association="BDSAuthModel.Store.FK_Application_Role_Application">
             <End Role="Application" EntitySet="Application" />
             <End Role="Application_Role" EntitySet="Application_Role" />
@@ -37,6 +41,34 @@
           <AssociationSet Name="FK_Application_Role_Role" Association="BDSAuthModel.Store.FK_Application_Role_Role">
             <End Role="Role" EntitySet="Role" />
             <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_Role_User" Association="BDSAuthModel.Store.FK_Application_Role_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_Role_User1" Association="BDSAuthModel.Store.FK_Application_Role_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_User" Association="BDSAuthModel.Store.FK_Application_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Application" EntitySet="Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_User1" Association="BDSAuthModel.Store.FK_Application_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="Application" EntitySet="Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Client_User" Association="BDSAuthModel.Store.FK_Client_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Client" EntitySet="Client" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Client_User1" Association="BDSAuthModel.Store.FK_Client_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="Client" EntitySet="Client" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClientDatabase_Client" Association="BDSAuthModel.Store.FK_ClientDatabase_Client">
+            <End Role="Client" EntitySet="Client" />
+            <End Role="ClientDatabase" EntitySet="ClientDatabase" />
           </AssociationSet>
           <AssociationSet Name="FK_CustomRestriction_User" Association="BDSAuthModel.Store.FK_CustomRestriction_User">
             <End Role="User" EntitySet="User" />
@@ -53,6 +85,14 @@
           <AssociationSet Name="FK_Menu_Application_Menu_Application" Association="BDSAuthModel.Store.FK_Menu_Application_Menu_Application">
             <End Role="Menu_Application" EntitySet="Menu_Application" />
             <End Role="Menu_Application1" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_User" Association="BDSAuthModel.Store.FK_Menu_Application_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_User1" Association="BDSAuthModel.Store.FK_Menu_Application_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
           </AssociationSet>
           <AssociationSet Name="FK_PasswordResetRequest_User" Association="BDSAuthModel.Store.FK_PasswordResetRequest_User">
             <End Role="User" EntitySet="User" />
@@ -78,6 +118,22 @@
             <End Role="Role" EntitySet="Role" />
             <End Role="Role_Permission" EntitySet="Role_Permission" />
           </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_User" Association="BDSAuthModel.Store.FK_Role_Permission_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_User1" Association="BDSAuthModel.Store.FK_Role_Permission_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_User" Association="BDSAuthModel.Store.FK_Role_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="Role" EntitySet="Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_User1" Association="BDSAuthModel.Store.FK_Role_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="Role" EntitySet="Role" />
+          </AssociationSet>
           <AssociationSet Name="FK_User_Activity_Permission_Application_Activity" Association="BDSAuthModel.Store.FK_User_Activity_Permission_Application_Activity">
             <End Role="Application_Activity" EntitySet="Application_Activity" />
             <End Role="User_Activity_Permission" EntitySet="User_Activity_Permission" />
@@ -94,7 +150,19 @@
             <End Role="Application" EntitySet="Application" />
             <End Role="User_Application" EntitySet="User_Application" />
           </AssociationSet>
+          <AssociationSet Name="FK_User_Application_Role" Association="BDSAuthModel.Store.FK_User_Application_Role">
+            <End Role="Role" EntitySet="Role" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
           <AssociationSet Name="FK_User_Application_User" Association="BDSAuthModel.Store.FK_User_Application_User">
+            <End Role="User" EntitySet="User" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_User1" Association="BDSAuthModel.Store.FK_User_Application_User1">
+            <End Role="User" EntitySet="User" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_User2" Association="BDSAuthModel.Store.FK_User_Application_User2">
             <End Role="User" EntitySet="User" />
             <End Role="User_Application" EntitySet="User_Application" />
           </AssociationSet>
@@ -112,6 +180,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_UserClientDatabase_ClientDatabase" Association="BDSAuthModel.Store.FK_UserClientDatabase_ClientDatabase">
             <End Role="ClientDatabase" EntitySet="ClientDatabase" />
+            <End Role="UserClientDatabase" EntitySet="UserClientDatabase" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserClientDatabase_User" Association="BDSAuthModel.Store.FK_UserClientDatabase_User">
+            <End Role="User" EntitySet="User" />
             <End Role="UserClientDatabase" EntitySet="UserClientDatabase" />
           </AssociationSet>
         </EntityContainer>
@@ -240,7 +312,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
-          <Property Name="ColorCode" Type="nchar" MaxLength="10" />
+          <Property Name="ColorCode" Type="nvarchar" Nullable="false" MaxLength="10" />
           <Property Name="ClientId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="Role_Activity_Permission">
@@ -353,6 +425,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Application_Activity_Application">
+          <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="1" />
+          <End Role="Application_Activity" Type="BDSAuthModel.Store.Application_Activity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Application_Activity">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Application_Role_Application">
           <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="1" />
           <End Role="Application_Role" Type="BDSAuthModel.Store.Application_Role" Multiplicity="*" />
@@ -374,6 +458,90 @@
             </Principal>
             <Dependent Role="Application_Role">
               <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_Role_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Application_Role" Type="BDSAuthModel.Store.Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_Role_User1">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Application_Role" Type="BDSAuthModel.Store.Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_User1">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Application" Type="BDSAuthModel.Store.Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Client_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Client" Type="BDSAuthModel.Store.Client" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Client">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Client_User1">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Client" Type="BDSAuthModel.Store.Client" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Client">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClientDatabase_Client">
+          <End Role="Client" Type="BDSAuthModel.Store.Client" Multiplicity="1" />
+          <End Role="ClientDatabase" Type="BDSAuthModel.Store.ClientDatabase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="ClientId" />
+            </Principal>
+            <Dependent Role="ClientDatabase">
+              <PropertyRef Name="ClientID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -422,6 +590,30 @@
             </Principal>
             <Dependent Role="Menu_Application1">
               <PropertyRef Name="ParentApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Menu_Application" Type="BDSAuthModel.Store.Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Menu_Application">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_User1">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Menu_Application" Type="BDSAuthModel.Store.Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Menu_Application">
+              <PropertyRef Name="ModifiedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -497,6 +689,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Role_Permission_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Role_Permission" Type="BDSAuthModel.Store.Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Permission_User1">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Role_Permission" Type="BDSAuthModel.Store.Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Role" Type="BDSAuthModel.Store.Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_User1">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="Role" Type="BDSAuthModel.Store.Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_User_Activity_Permission_Application_Activity">
           <End Role="Application_Activity" Type="BDSAuthModel.Store.Application_Activity" Multiplicity="1" />
           <End Role="User_Activity_Permission" Type="BDSAuthModel.Store.User_Activity_Permission" Multiplicity="*" />
@@ -545,6 +785,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_User_Application_Role">
+          <End Role="Role" Type="BDSAuthModel.Store.Role" Multiplicity="1" />
+          <End Role="User_Application" Type="BDSAuthModel.Store.User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_User_Application_User">
           <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="1" />
           <End Role="User_Application" Type="BDSAuthModel.Store.User_Application" Multiplicity="*" />
@@ -554,6 +806,30 @@
             </Principal>
             <Dependent Role="User_Application">
               <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_User1">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="User_Application" Type="BDSAuthModel.Store.User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_User2">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="0..1" />
+          <End Role="User_Application" Type="BDSAuthModel.Store.User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="ModifiedBy" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -602,6 +878,18 @@
             </Principal>
             <Dependent Role="UserClientDatabase">
               <PropertyRef Name="ClientDatabaseID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserClientDatabase_User">
+          <End Role="User" Type="BDSAuthModel.Store.User" Multiplicity="1" />
+          <End Role="UserClientDatabase" Type="BDSAuthModel.Store.UserClientDatabase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserClientDatabase">
+              <PropertyRef Name="UserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -724,6 +1012,78 @@
             <End Role="ClientDatabase" EntitySet="ClientDatabases" />
             <End Role="UserClientDatabase" EntitySet="UserClientDatabases" />
           </AssociationSet>
+          <AssociationSet Name="FK_Application_Activity_Application" Association="BDSAuthModel.FK_Application_Activity_Application">
+            <End Role="Application" EntitySet="Applications" />
+            <End Role="Application_Activity" EntitySet="Application_Activity" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_User" Association="BDSAuthModel.FK_Application_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Application" EntitySet="Applications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_User1" Association="BDSAuthModel.FK_Application_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Application" EntitySet="Applications" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_Role_User" Association="BDSAuthModel.FK_Application_Role_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Application_Role_User1" Association="BDSAuthModel.FK_Application_Role_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Application_Role" EntitySet="Application_Role" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Client_User" Association="BDSAuthModel.FK_Client_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Client" EntitySet="Clients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Client_User1" Association="BDSAuthModel.FK_Client_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Client" EntitySet="Clients" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ClientDatabase_Client" Association="BDSAuthModel.FK_ClientDatabase_Client">
+            <End Role="Client" EntitySet="Clients" />
+            <End Role="ClientDatabase" EntitySet="ClientDatabases" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_User" Association="BDSAuthModel.FK_Menu_Application_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Menu_Application_User1" Association="BDSAuthModel.FK_Menu_Application_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Menu_Application" EntitySet="Menu_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_User" Association="BDSAuthModel.FK_Role_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Role" EntitySet="Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_User1" Association="BDSAuthModel.FK_Role_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Role" EntitySet="Roles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_Role" Association="BDSAuthModel.FK_User_Application_Role">
+            <End Role="Role" EntitySet="Roles" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_User" Association="BDSAuthModel.FK_Role_Permission_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Role_Permission_User1" Association="BDSAuthModel.FK_Role_Permission_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Role_Permission" EntitySet="Role_Permission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_User1" Association="BDSAuthModel.FK_User_Application_User1">
+            <End Role="User" EntitySet="Users" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_User_Application_User2" Association="BDSAuthModel.FK_User_Application_User2">
+            <End Role="User" EntitySet="Users" />
+            <End Role="User_Application" EntitySet="User_Application" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UserClientDatabase_User" Association="BDSAuthModel.FK_UserClientDatabase_User">
+            <End Role="User" EntitySet="Users" />
+            <End Role="UserClientDatabase" EntitySet="UserClientDatabases" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Application">
           <Key>
@@ -743,6 +1103,9 @@
           <NavigationProperty Name="Application_Role" Relationship="BDSAuthModel.FK_Application_Role_Application" FromRole="Application" ToRole="Application_Role" />
           <NavigationProperty Name="Menu_Application" Relationship="BDSAuthModel.FK_Menu_Application_Application" FromRole="Application" ToRole="Menu_Application" />
           <NavigationProperty Name="User_Application" Relationship="BDSAuthModel.FK_User_Application_Application" FromRole="Application" ToRole="User_Application" />
+          <NavigationProperty Name="Application_Activity" Relationship="BDSAuthModel.FK_Application_Activity_Application" FromRole="Application" ToRole="Application_Activity" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_Application_User" FromRole="Application" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_Application_User1" FromRole="Application" ToRole="User" />
         </EntityType>
         <EntityType Name="Application_Activity">
           <Key>
@@ -757,6 +1120,7 @@
           <Property Type="String" Name="ActivityType" MaxLength="255" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Role_Activity_Permission" Relationship="BDSAuthModel.FK_Role_Activity_Permission_Application_Activity" FromRole="Application_Activity" ToRole="Role_Activity_Permission" />
           <NavigationProperty Name="User_Activity_Permission" Relationship="BDSAuthModel.FK_User_Activity_Permission_Application_Activity" FromRole="Application_Activity" ToRole="User_Activity_Permission" />
+          <NavigationProperty Name="Application" Relationship="BDSAuthModel.FK_Application_Activity_Application" FromRole="Application_Activity" ToRole="Application" />
         </EntityType>
         <EntityType Name="Application_Role">
           <Key>
@@ -772,6 +1136,8 @@
           <Property Type="Boolean" Name="IsDeleted" />
           <NavigationProperty Name="Application" Relationship="BDSAuthModel.FK_Application_Role_Application" FromRole="Application_Role" ToRole="Application" />
           <NavigationProperty Name="Role" Relationship="BDSAuthModel.FK_Application_Role_Role" FromRole="Application_Role" ToRole="Role" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_Application_Role_User" FromRole="Application_Role" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_Application_Role_User1" FromRole="Application_Role" ToRole="User" />
         </EntityType>
         <EntityType Name="Client">
           <Key>
@@ -794,6 +1160,9 @@
           <Property Type="Guid" Name="ModifiedBy" />
           <NavigationProperty Name="Roles" Relationship="BDSAuthModel.ClientId_fk" FromRole="Client" ToRole="Role" />
           <NavigationProperty Name="Users" Relationship="BDSAuthModel.FK_User_Client" FromRole="Client" ToRole="User" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_Client_User" FromRole="Client" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_Client_User1" FromRole="Client" ToRole="User" />
+          <NavigationProperty Name="ClientDatabases" Relationship="BDSAuthModel.FK_ClientDatabase_Client" FromRole="Client" ToRole="ClientDatabase" />
         </EntityType>
         <EntityType Name="CustomRestriction">
           <Key>
@@ -834,6 +1203,8 @@
           <NavigationProperty Name="Menu_Application1" Relationship="BDSAuthModel.FK_Menu_Application_Menu_Application" FromRole="Menu_Application" ToRole="Menu_Application1" />
           <NavigationProperty Name="Menu_Application2" Relationship="BDSAuthModel.FK_Menu_Application_Menu_Application" FromRole="Menu_Application1" ToRole="Menu_Application" />
           <NavigationProperty Name="Role_Permission" Relationship="BDSAuthModel.FK_Role_Permission_Menu_Application" FromRole="Menu_Application" ToRole="Role_Permission" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_Menu_Application_User" FromRole="Menu_Application" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_Menu_Application_User1" FromRole="Menu_Application" ToRole="User" />
         </EntityType>
         <EntityType Name="PasswordResetRequest">
           <Key>
@@ -859,12 +1230,15 @@
           <Property Type="Guid" Name="CreatedBy" />
           <Property Type="DateTime" Name="ModifiedDate" Precision="3" />
           <Property Type="Guid" Name="ModifiedBy" />
-          <Property Type="String" Name="ColorCode" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Type="String" Name="ColorCode" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Type="Guid" Name="ClientId" />
           <NavigationProperty Name="Application_Role" Relationship="BDSAuthModel.FK_Application_Role_Role" FromRole="Role" ToRole="Application_Role" />
           <NavigationProperty Name="Client" Relationship="BDSAuthModel.ClientId_fk" FromRole="Role" ToRole="Client" />
           <NavigationProperty Name="Role_Activity_Permission" Relationship="BDSAuthModel.FK_Role_Activity_Permission_Role" FromRole="Role" ToRole="Role_Activity_Permission" />
           <NavigationProperty Name="Role_Permission" Relationship="BDSAuthModel.FK_Role_Permission_Role" FromRole="Role" ToRole="Role_Permission" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_Role_User" FromRole="Role" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_Role_User1" FromRole="Role" ToRole="User" />
+          <NavigationProperty Name="User_Application" Relationship="BDSAuthModel.FK_User_Application_Role" FromRole="Role" ToRole="User_Application" />
         </EntityType>
         <EntityType Name="Role_Activity_Permission">
           <Key>
@@ -894,6 +1268,8 @@
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <NavigationProperty Name="Menu_Application" Relationship="BDSAuthModel.FK_Role_Permission_Menu_Application" FromRole="Role_Permission" ToRole="Menu_Application" />
           <NavigationProperty Name="Role" Relationship="BDSAuthModel.FK_Role_Permission_Role" FromRole="Role_Permission" ToRole="Role" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_Role_Permission_User" FromRole="Role_Permission" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_Role_Permission_User1" FromRole="Role_Permission" ToRole="User" />
         </EntityType>
         <EntityType Name="SecurityQuestion">
           <Key>
@@ -935,6 +1311,21 @@
           <NavigationProperty Name="User_Application" Relationship="BDSAuthModel.FK_User_Application_User" FromRole="User" ToRole="User_Application" />
           <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_User_User" FromRole="User" ToRole="User1" />
           <NavigationProperty Name="User2" Relationship="BDSAuthModel.FK_User_User" FromRole="User1" ToRole="User" />
+          <NavigationProperty Name="Applications" Relationship="BDSAuthModel.FK_Application_User" FromRole="User" ToRole="Application" />
+          <NavigationProperty Name="Applications1" Relationship="BDSAuthModel.FK_Application_User1" FromRole="User" ToRole="Application" />
+          <NavigationProperty Name="Application_Role" Relationship="BDSAuthModel.FK_Application_Role_User" FromRole="User" ToRole="Application_Role" />
+          <NavigationProperty Name="Application_Role1" Relationship="BDSAuthModel.FK_Application_Role_User1" FromRole="User" ToRole="Application_Role" />
+          <NavigationProperty Name="Clients" Relationship="BDSAuthModel.FK_Client_User" FromRole="User" ToRole="Client" />
+          <NavigationProperty Name="Clients1" Relationship="BDSAuthModel.FK_Client_User1" FromRole="User" ToRole="Client" />
+          <NavigationProperty Name="Menu_Application" Relationship="BDSAuthModel.FK_Menu_Application_User" FromRole="User" ToRole="Menu_Application" />
+          <NavigationProperty Name="Menu_Application1" Relationship="BDSAuthModel.FK_Menu_Application_User1" FromRole="User" ToRole="Menu_Application" />
+          <NavigationProperty Name="Roles" Relationship="BDSAuthModel.FK_Role_User" FromRole="User" ToRole="Role" />
+          <NavigationProperty Name="Roles1" Relationship="BDSAuthModel.FK_Role_User1" FromRole="User" ToRole="Role" />
+          <NavigationProperty Name="Role_Permission" Relationship="BDSAuthModel.FK_Role_Permission_User" FromRole="User" ToRole="Role_Permission" />
+          <NavigationProperty Name="Role_Permission1" Relationship="BDSAuthModel.FK_Role_Permission_User1" FromRole="User" ToRole="Role_Permission" />
+          <NavigationProperty Name="User_Application1" Relationship="BDSAuthModel.FK_User_Application_User1" FromRole="User" ToRole="User_Application" />
+          <NavigationProperty Name="User_Application2" Relationship="BDSAuthModel.FK_User_Application_User2" FromRole="User" ToRole="User_Application" />
+          <NavigationProperty Name="UserClientDatabases" Relationship="BDSAuthModel.FK_UserClientDatabase_User" FromRole="User" ToRole="UserClientDatabase" />
         </EntityType>
         <EntityType Name="User_Activity_Permission">
           <Key>
@@ -965,6 +1356,9 @@
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <NavigationProperty Name="Application" Relationship="BDSAuthModel.FK_User_Application_Application" FromRole="User_Application" ToRole="Application" />
           <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_User_Application_User" FromRole="User_Application" ToRole="User" />
+          <NavigationProperty Name="Role" Relationship="BDSAuthModel.FK_User_Application_Role" FromRole="User_Application" ToRole="Role" />
+          <NavigationProperty Name="User1" Relationship="BDSAuthModel.FK_User_Application_User1" FromRole="User_Application" ToRole="User" />
+          <NavigationProperty Name="User2" Relationship="BDSAuthModel.FK_User_Application_User2" FromRole="User_Application" ToRole="User" />
         </EntityType>
         <EntityType Name="UserClientDatabase">
           <Key>
@@ -974,6 +1368,7 @@
           <Property Type="Int32" Name="ClientDatabaseID" Nullable="false" />
           <Property Type="Guid" Name="UserID" Nullable="false" />
           <NavigationProperty Name="ClientDatabase" Relationship="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" FromRole="UserClientDatabase" ToRole="ClientDatabase" />
+          <NavigationProperty Name="User" Relationship="BDSAuthModel.FK_UserClientDatabase_User" FromRole="UserClientDatabase" ToRole="User" />
         </EntityType>
         <Association Name="ApplicationId_fk">
           <End Type="BDSAuthModel.Application" Role="Application" Multiplicity="0..1" />
@@ -1248,6 +1643,7 @@
           <Property Type="String" Name="DatabaseName" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="Binary" Name="EncryptedConnectionString" MaxLength="8000" FixedLength="false" />
           <NavigationProperty Name="UserClientDatabases" Relationship="BDSAuthModel.FK_UserClientDatabase_ClientDatabase" FromRole="ClientDatabase" ToRole="UserClientDatabase" />
+          <NavigationProperty Name="Client" Relationship="BDSAuthModel.FK_ClientDatabase_Client" FromRole="ClientDatabase" ToRole="Client" />
         </EntityType>
         <Association Name="FK_UserClientDatabase_ClientDatabase">
           <End Type="BDSAuthModel.ClientDatabase" Role="ClientDatabase" Multiplicity="1" />
@@ -1258,6 +1654,222 @@
             </Principal>
             <Dependent Role="UserClientDatabase">
               <PropertyRef Name="ClientDatabaseID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_Activity_Application">
+          <End Type="BDSAuthModel.Application" Role="Application" Multiplicity="1" />
+          <End Type="BDSAuthModel.Application_Activity" Role="Application_Activity" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Application">
+              <PropertyRef Name="ApplicationId" />
+            </Principal>
+            <Dependent Role="Application_Activity">
+              <PropertyRef Name="ApplicationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_User">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Application" Role="Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_User1">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Application" Role="Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_Role_User">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Application_Role" Role="Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Application_Role_User1">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Application_Role" Role="Application_Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Application_Role">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Client_User">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Client" Role="Client" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Client">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Client_User1">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Client" Role="Client" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Client">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ClientDatabase_Client">
+          <End Type="BDSAuthModel.Client" Role="Client" Multiplicity="1" />
+          <End Type="BDSAuthModel.ClientDatabase" Role="ClientDatabase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Client">
+              <PropertyRef Name="ClientId" />
+            </Principal>
+            <Dependent Role="ClientDatabase">
+              <PropertyRef Name="ClientID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_User">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Menu_Application" Role="Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Menu_Application">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Menu_Application_User1">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Menu_Application" Role="Menu_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Menu_Application">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_User">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Role" Role="Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_User1">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Role" Role="Role" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_Role">
+          <End Type="BDSAuthModel.Role" Role="Role" Multiplicity="1" />
+          <End Type="BDSAuthModel.User_Application" Role="User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Role">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Permission_User">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Role_Permission" Role="Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Role_Permission_User1">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.Role_Permission" Role="Role_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="Role_Permission">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_User1">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.User_Application" Role="User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="CreatedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_User_Application_User2">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="BDSAuthModel.User_Application" Role="User_Application" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="User_Application">
+              <PropertyRef Name="ModifiedBy" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_UserClientDatabase_User">
+          <End Type="BDSAuthModel.User" Role="User" Multiplicity="1" />
+          <End Type="BDSAuthModel.UserClientDatabase" Role="UserClientDatabase" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="UserClientDatabase">
+              <PropertyRef Name="UserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>

@@ -19,5 +19,6 @@ namespace BDSService
         public System.Guid UserID { get; set; }
     
         public virtual ClientDatabase ClientDatabase { get; set; }
+        public virtual User User { get; set; }
     }
 }

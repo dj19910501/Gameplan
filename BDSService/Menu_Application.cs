@@ -40,5 +40,7 @@ namespace BDSService
         public virtual ICollection<Menu_Application> Menu_Application1 { get; set; }
         public virtual Menu_Application Menu_Application2 { get; set; }
         public virtual ICollection<Role_Permission> Role_Permission { get; set; }
+        public virtual User User { get; set; }
+        public virtual User User1 { get; set; }
     }
 }
