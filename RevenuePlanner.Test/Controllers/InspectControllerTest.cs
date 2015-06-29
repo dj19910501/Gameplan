@@ -4,17 +4,15 @@ using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using RevenuePlanner.Test.MockHelpers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using System.Collections.Generic;
+
 
 namespace RevenuePlanner.Test.Controllers
 {
     [TestClass]
-    public class InspectControllerTest
+    public class InspectControllerTest : CommonController
     {
         #region Save Plan
         /// <summary>
@@ -80,13 +78,11 @@ namespace RevenuePlanner.Test.Controllers
             string UserID = (Sessions.User.UserId).ToString();
             int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
             Sessions.PlanId = PlanID;
-            Random random = new Random();
-            int Number = random.Next();
-            string Title = "Test Campaign" + Number;
+            string Title = "Test Campaign" + "_ " + DateTime.Now;
             Plan_CampaignModel Form = new Plan_CampaignModel();
             Form.PlanCampaignId = 0;
             Form.Owner = "sys Admin";
-            Form.Title = "Test Campaign" + Number;
+            Form.Title = "Test Campaign" + "_ " + DateTime.Now;
             Form.StartDate = DateTime.Now;
             Form.EndDate = DateTime.MaxValue;
             Form.PlanId = PlanID;
@@ -226,7 +222,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Call index method
             int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
             int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
-            var result = Save_Comment(PlanCampaignId, Enums.Section.Campaign.ToString());
+            var result = Save_Comment(PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
 
             if (result != null)
             {
@@ -238,6 +234,396 @@ namespace RevenuePlanner.Test.Controllers
 
 
       
+        #endregion
+
+        #endregion
+
+        #region Program Related Methods
+
+        #region Save Program
+        /// <summary>
+        /// To Save the Program
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Program()
+        {
+
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            string Title = "Test Program"+ "_ "+ DateTime.Now;
+            Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
+            Form.PlanProgramId = 0;
+            Form.OwnerId = Sessions.User.UserId;
+            Form.Title = "Test Program" + "_ " + DateTime.Now;
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+            Form.PlanCampaignId = PlanCampaignId;
+
+            var result = objInspectController.SetupSaveProgram(Form,"[]", UserID, Title) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Save Program Check duplicate
+        /// <summary>
+        /// To check the duplicate Program
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Program_Check_Duplicate()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            string Title = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.Title).FirstOrDefault();
+            Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
+            Form.PlanProgramId = 0;
+            Form.OwnerId = Sessions.User.UserId;
+            Form.Title = Title;
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+            Form.PlanCampaignId = PlanCampaignId;
+
+
+            var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Update Program
+        /// <summary>
+        /// To Update Program
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>25June2015</createddate>
+        [TestMethod]
+        public void Update_Program()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+
+            string Title = "Update Program";
+            Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
+            Form.PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault(); 
+            Form.OwnerId = Sessions.User.UserId;
+            Form.Title = "Update Program";
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+            Form.PlanCampaignId = PlanCampaignId;
+
+            var result = objInspectController.SetupSaveProgram(Form, "[]", UserID, Title) as JsonResult;
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Save Program Budget Allocation
+        /// <summary>
+        /// To Save the Program
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Program_Budget_Allocation()
+        {
+
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+
+            string Title = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.Title).FirstOrDefault();
+            Plan_Campaign_ProgramModel Form = new Plan_Campaign_ProgramModel();
+            Form.PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault(); 
+            Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+            Form.ProgramBudget = 10000;
+
+            string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
+
+            var result = objInspectController.SaveProgramBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+
+        #endregion
+
+        #region Save comment in Review Tab
+        /// <summary>
+        /// To Save  comment in Review Tab
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Comment_Program()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+            var result = Save_Comment(PlanProgramId, Enums.Section.Program.ToString().ToLower());
+          
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+
+            }
+        }
+
+
+
+        #endregion
+
+        #endregion
+
+        #region Tactic Related Methods
+
+        #region Save Tactic
+        /// <summary>
+        /// To Save the Tactic
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Tactic()
+        {
+
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int ModelId = DataHelper.GetModelId();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+            int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId ).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
+            int?  StageId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype =>tactictype.StageId).FirstOrDefault();
+           
+
+            string Title = "Test Tactic" + "_ " + DateTime.Now;
+            Inspect_Popup_Plan_Campaign_Program_TacticModel Form = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
+            Form.PlanTacticId = 0;
+            Form.PlanProgramId = PlanProgramId;
+            Form.PlanCampaignId = PlanCampaignId;
+            Form.OwnerId = Sessions.User.UserId;
+            Form.TacticTypeId = TacticTypeId;
+            Form.StageId = Convert.ToInt32(StageId);
+            Form.TacticTitle = "Test Tactic" + "_ " + DateTime.Now;
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+           
+
+            var result = objInspectController.SetupSaveTactic(Form,"","","[]",UserID,"",false) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Save Tactic Check duplicate
+        /// <summary>
+        /// To check the duplicate Tactic
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Tactic_Check_Duplicate()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+            string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
+            Inspect_Popup_Plan_Campaign_Program_TacticModel Form = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
+            Form.PlanTacticId = 0;
+            Form.PlanProgramId = PlanProgramId;
+            Form.PlanCampaignId = PlanCampaignId;
+            Form.OwnerId = Sessions.User.UserId;
+            Form.TacticTitle = Title;
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+
+            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Update Tactic
+        /// <summary>
+        /// To Update Tactic
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>25June2015</createddate>
+        [TestMethod]
+        public void Update_Tactic()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int ModelId = DataHelper.GetModelId();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+            int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
+            int? StageId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.StageId).FirstOrDefault();
+
+
+            string Title = "Update Tactic";
+            Inspect_Popup_Plan_Campaign_Program_TacticModel Form = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
+            Form.PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault(); ;
+            Form.PlanProgramId = PlanProgramId;
+            Form.PlanCampaignId = PlanCampaignId;
+            Form.OwnerId = Sessions.User.UserId;
+            Form.TacticTypeId = TacticTypeId;
+            Form.StageId = Convert.ToInt32(StageId);
+            Form.TacticTitle = Title;
+            Form.StartDate = DateTime.Now;
+            Form.EndDate = DateTime.MaxValue;
+
+
+            var result = objInspectController.SetupSaveTactic(Form, "", "", "[]", UserID, "", false) as JsonResult;
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Save Tactic Budget Allocation
+        /// <summary>
+        /// To Save the Tactic
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Tactic_Budget_Allocation()
+        {
+
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            InspectController objInspectController = new InspectController();
+            string UserID = (Sessions.User.UserId).ToString();
+            int ModelId = DataHelper.GetModelId();
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+            int TacticTypeId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.TacticTypeId).FirstOrDefault();
+            int? StageId = db.TacticTypes.Where(id => id.ModelId == ModelId).Select(tactictype => tactictype.StageId).FirstOrDefault();
+
+
+            string Title = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.Title).FirstOrDefault();
+            Plan_Campaign_Program_TacticModel Form = new Plan_Campaign_Program_TacticModel();
+            Form.PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault(); ;
+            Form.PlanProgramId = PlanProgramId;
+            Form.AllocatedBy = Enums.PlanAllocatedBy.months.ToString();
+            Form.TacticBudget = 10000;
+
+            string Budgetvalues = GetBudgetValues(Form.AllocatedBy);
+
+            var result = objInspectController.SaveTacticBudgetAllocation(Form, Budgetvalues, UserID, Title) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+            }
+        }
+
+        #endregion
+
+        #region Save comment in Review Tab
+        /// <summary>
+        /// To Save  comment in Review Tab
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>29June2015</createddate>
+        [TestMethod]
+        public void Save_Comment_Tactic()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            //// Call index method
+            int PlanID = db.Plans.Where(plan => plan.Title == "test plan #975").Select(plan => plan.PlanId).FirstOrDefault();
+            int PlanCampaignId = db.Plan_Campaign.Where(c => c.PlanId == PlanID).Select(c => c.PlanCampaignId).FirstOrDefault();
+            int PlanProgramId = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == PlanCampaignId).Select(program => program.PlanProgramId).FirstOrDefault();
+            int PlanTacticId = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == PlanProgramId).Select(tactic => tactic.PlanTacticId).FirstOrDefault();
+            var result = Save_Comment(PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result.Data);
+
+            }
+        }
+
+
+
         #endregion
 
         #endregion
