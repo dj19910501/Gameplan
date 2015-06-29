@@ -54,7 +54,7 @@ namespace BDSService
                     BDSEntities.User userEntity = new BDSEntities.User();
                     userEntity.UserId = user.UserId;
                     userEntity.ClientId = user.ClientId;
-                    userEntity.Client = lstClient.Where(c => c.ClientId == user.ClientId).Select(c=>c.Name).FirstOrDefault(); //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
+                    userEntity.Client = lstClient.Where(c => c.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault(); //db.Clients.Where(cl => cl.ClientId == user.ClientId).Select(c => c.Name).FirstOrDefault();
                     userEntity.DisplayName = user.DisplayName;
                     userEntity.Email = user.Email;
                     userEntity.FirstName = user.FirstName;
@@ -62,9 +62,9 @@ namespace BDSService
                     userEntity.LastName = user.LastName;
                     userEntity.Password = user.Password;
                     userEntity.ProfilePhoto = user.ProfilePhoto;
-                    userEntity.RoleId = lstUserApplication.Where(u => u.UserId == user.UserId).Select(ua=>ua.RoleId).FirstOrDefault(); //db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
-                    userEntity.RoleCode = lstRole.Where(rl => rl.RoleId == userEntity.RoleId).Select(rl=>rl.Code).FirstOrDefault(); //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
-                    userEntity.RoleTitle = lstRole.Where(rl => rl.RoleId == userEntity.RoleId).Select(rl=>rl.Title).FirstOrDefault(); //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
+                    userEntity.RoleId = lstUserApplication.Where(u => u.UserId == user.UserId).Select(ua => ua.RoleId).FirstOrDefault(); //db.User_Application.Where(ua => ua.ApplicationId == applicationId && ua.UserId == user.UserId).Select(u => u.RoleId).FirstOrDefault();
+                    userEntity.RoleCode = lstRole.Where(rl => rl.RoleId == userEntity.RoleId).Select(rl => rl.Code).FirstOrDefault(); //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Code).FirstOrDefault();
+                    userEntity.RoleTitle = lstRole.Where(rl => rl.RoleId == userEntity.RoleId).Select(rl => rl.Title).FirstOrDefault(); //db.Roles.Where(rl => rl.RoleId == userEntity.RoleId).Select(r => r.Title).FirstOrDefault();
 
                     //Start Manoj 08Jul2014 PL # 34 (Measure)
                     // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
@@ -2357,25 +2357,23 @@ namespace BDSService
             {
                 var roleId = db.User_Application.Where(usr => usr.UserId == userId && usr.ApplicationId == applicationId).FirstOrDefault().RoleId;
                 var DefaultActivities = db.Role_Activity_Permission.Where(rap => rap.RoleId == roleId).ToList();
-                if (DefaultActivities.Count > 0)
+                int retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
+                retVal = retDelUserActivity;
+                if (retDelUserActivity == 1 && DefaultActivities.Count > 0)
                 {
-                    int retDelUserActivity = DeleteUserActivityPermission(userId, applicationId);
-                    if (retDelUserActivity == 1)
+                    foreach (var item in DefaultActivities)
                     {
-                        foreach (var item in DefaultActivities)
-                        {
 
-                            User_Activity_Permission obj = new User_Activity_Permission();
-                            obj.UserId = userId;
-                            obj.ApplicationActivityId = item.ApplicationActivityId;
-                            obj.CreatedBy = CreatorId;
-                            obj.CreatedDate = System.DateTime.Now;
-                            db.Entry(obj).State = EntityState.Added;
-                            db.User_Activity_Permission.Add(obj);
-                        }
-
-                        retVal = db.SaveChanges();
+                        User_Activity_Permission obj = new User_Activity_Permission();
+                        obj.UserId = userId;
+                        obj.ApplicationActivityId = item.ApplicationActivityId;
+                        obj.CreatedBy = CreatorId;
+                        obj.CreatedDate = System.DateTime.Now;
+                        db.Entry(obj).State = EntityState.Added;
+                        db.User_Activity_Permission.Add(obj);
                     }
+
+                    retVal = db.SaveChanges();
                 }
             }
             catch (Exception ex)
@@ -2714,7 +2712,7 @@ namespace BDSService
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
-            
+
             return lstClientDatabases;
         }
 
@@ -2725,7 +2723,7 @@ namespace BDSService
         /// <param name="userId">User ID</param>
         /// <param name="clientId">Client ID</param>
         /// <returns>Returns 1 if Succcess, otherwise 0</returns>
-        public int SetDefaultRightsForDababase(Guid userId,Guid clientId)
+        public int SetDefaultRightsForDababase(Guid userId, Guid clientId)
         {
             try
             {
