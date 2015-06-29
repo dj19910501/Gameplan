@@ -7,7 +7,7 @@
     var revenue_linechartModel = Model.LineChartModel != null ? JsonConvert.SerializeObject(Model.LineChartModel) : string.Empty;
 }
 <div class="revenue-to-plan-graph">
-            <div id="dvRevenuePlanBarChart" class="graph" style="height: 230px; padding-left: 0%;"></div>
+            <div id="dvRevenuePlanBarChart" class="graph" style="height: 270px; padding-left: 0%; width:99%;"></div>
             <div class="graph-table">
                 <div class="table-responsive">
                     <table class="graph-table">
@@ -36,7 +36,7 @@
     //End: Get LineChart Model
 
         //BindRevenueBarChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId);
-    BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue);
+    BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
     // End:- Revenue To Plan BarChart script  
 
     // Start:- Revenue To Plan DataTable script  
@@ -113,7 +113,7 @@
         _tbody = _tbody + ' </tr>';
 
         _tbody = _tbody + ' <tr> ';
-        _rowLabel = 'Cost';
+        _rowLabel = 'Actual Cost';
         _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
         for (var _cat = 0; _cat < _catCount; _cat++) {
             //_tbody = _tbody + ' <td>' +_costList[_cat]+ '</td> ';

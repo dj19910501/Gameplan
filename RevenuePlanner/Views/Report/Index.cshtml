@@ -1696,7 +1696,7 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
     //End:- BarLineChart Script
 
     //Start:- Combination Chart Script
-        function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal) {
+        function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal,_pointLabelWidth) {
             Highcharts.setOptions({
                 lang: {
                     numericSymbols: ["k", "M", "B", "T", "P", "E"]
@@ -1717,7 +1717,7 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                     align: 'left',
                     verticalAlign: 'top',
                     floating: true,
-                    x: 30,
+                    x: 60,
                     y: 45
                 },
                 xAxis: {
@@ -1737,18 +1737,31 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                             verticalAlign: 'top',
                             rotation: 0,
                             x: -15,
-                            y: 0
+                            y: -2
                         }
-                    }],
+                    }]
+                    //plotBands: [{
+                    //    color: '#ebebeb',
+                    //    from: _plotBandFrom,
+                    //    to: _plotBandTo
+                    //}]
                 },
                 yAxis: {
                     gridLineWidth: 0,
                     labels: {
-                        enabled: false
+                        enabled: true,
+                        align: 'left',
+                        x: 7,
+                        y:2
                     },
                     title: {
-                        enabled: false
-                    }
+                        enabled: false,
+                        text:'Values'
+                    },
+                    lineWidth: 1,
+                    tickPosition: 'inside',
+                    tickLength: 5,
+                    tickWidth: 2
                 },
                 credits: {
                     enabled: false
@@ -1768,8 +1781,8 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                         //grouping: false,
                         shadow: false,
                         borderWidth: 0,
-                        pointPadding: 0,
-                        pointWidth: 20
+                        //pointPadding: 5,
+                        pointWidth: _pointLabelWidth
                         //groupPadding: 0
                     }
                 },
@@ -1783,6 +1796,27 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
             var _linechartseriesLength = _linechartseries.length;
             for (var i = 0; i < _linechartseriesLength ; i++) {
                 options.series.push(eval(_linechartseries[i]));
+
+                //if (_series[i].type != null && _series[i].type != 'undefined') {
+                //    var datum = options.series[i];
+                //    datum.tooltip = {
+                //        shared: true,
+                //        useHTML: true,
+                //        headerFormat: '<table>',
+                //        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+                //            '<td style="text-align: right"><b>{point.y}</b></td></tr> <tr><td style="color: {series.color}">{series.name}: </td>' +
+                //    '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+                //        footerFormat: '</table>'
+                //    };
+                //    //if (_catLength == 4) {
+                //    //    datum.marker = {
+                //    //        symbol: 'line',
+                //    //        lineWidth: 2,
+                //    //        radius: 26,
+                //    //        lineColor: '#F0BE29'
+                //    //    };
+                //    //}
+                //}
             }
 
             //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {

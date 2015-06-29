@@ -37,7 +37,9 @@ namespace RevenuePlanner.Controllers
         private const string strPlannedCost = "Planned Cost";
         private const string strActualCost = "Actual Cost";
         private const string strBudget = "Budget";
-
+        private const double _constQuartPlotBandPadding = 0.4;
+        private const double _lastQuarterValue = 4;
+        private const double _PlotBandToValue = 5;
         #endregion
 
         #region Report Index
@@ -2057,6 +2059,7 @@ namespace RevenuePlanner.Controllers
             List<TacticwiseOverviewModel> OverviewModelList = new List<TacticwiseOverviewModel>();
             Projected_Goal objProjectedGoal = new Projected_Goal();
             lineChartData objLineChartData = new lineChartData();
+            
             #endregion
             try
             {
@@ -2188,15 +2191,13 @@ namespace RevenuePlanner.Controllers
                     #region "Calculate Barchart data by TimeFrame"
                     BarChartModel objBarChartModel = new BarChartModel();
                     List<BarChartSeries> lstSeries = new List<BarChartSeries>();
-
-
                     List<string> _Categories = new List<string>();
                     _Categories = objBasicModel.Categories;
                     double catLength = _Categories != null ? _Categories.Count : 0;
                     List<double> serData1 = new List<double>();
                     List<double> serData2 = new List<double>();
                     List<double> serData3 = new List<double>();
-                    double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0;
+                    double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0, _plotBandFromValue = 0 ,_plotBandToValue = 0;
                     bool _IsQuarterly = objBasicModel.IsQuarterly;
                     int _compareValue = 0;
                     serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
@@ -2210,6 +2211,12 @@ namespace RevenuePlanner.Controllers
                         serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
                     }
                     _compareValue = IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
+
+                    #region "Set PlotBand From & To values"
+                    _plotBandFromValue = IsQuarterly && (_compareValue != _lastQuarterValue) ? (_compareValue + _constQuartPlotBandPadding) : 0;
+                    objBarChartModel.plotBandFromValue = _plotBandFromValue;
+                    objBarChartModel.plotBandToValue = _plotBandFromValue > 0 ? (_PlotBandToValue) : 0;
+                    #endregion
 
                     #region "Calcuate ActualList up to Current Month"
                     //List<double> _dtActualList = new List<double>();
@@ -8142,7 +8149,7 @@ namespace RevenuePlanner.Controllers
             List<double?> serData1 = new List<double?>();
             List<double?> serData2 = new List<double?>();
             List<double?> serData3 = new List<double?>();
-            double TodayValue = 0, catLength = 0;
+            double TodayValue = 0, catLength = 0, _PointLabelWidth = 20;
             string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
             //int catLength = 12;
             #endregion
@@ -8177,6 +8184,7 @@ namespace RevenuePlanner.Controllers
                     serData1.Add(null); // Insert blank data at 1st index of list to Add padding to Graph.
                     serData2.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
                     serData3.Add(null);// Insert blank data at 1st index of list to Add padding to Graph.
+                    _PointLabelWidth = 14;
                 }
                 double _comparevalue = 0;
                 double paddingval = IsQuarterly ? 1 : 2;
@@ -8211,25 +8219,28 @@ namespace RevenuePlanner.Controllers
                 objSeries1.name = "Actual";
                 objSeries1.data = serData1;
                 marker objMarker1 = new marker();
-                objMarker1.symbol = "square";
+                objMarker1.symbol = "circle";
                 objSeries1.marker = objMarker1;
-                objSeries1.showInLegend = true;
+                objSeries1.showInLegend = false;
+                objSeries1.shadow = false;
 
                 series objSeries2 = new series();
                 objSeries2.name = "Goal";
                 objSeries2.data = serData2;
                 marker objMarker2 = new marker();
-                objMarker2.symbol = "square";
+                objMarker2.symbol = "circle";
                 objSeries2.marker = objMarker2;
-                objSeries2.showInLegend = true;
+                objSeries2.showInLegend = false;
+                objSeries2.shadow = false;
 
                 series objSeries3 = new series();
                 objSeries3.name = "Projected";
                 objSeries3.data = serData3;
                 marker objMarker3 = new marker();
-                objMarker3.symbol = "square";
+                objMarker3.symbol = "circle";
                 objSeries3.marker = objMarker3;
-                objSeries3.showInLegend = true;
+                objSeries3.showInLegend = false;
+                objSeries3.shadow = true;
 
                 lstseries.Add(objSeries1);
                 lstseries.Add(objSeries2);
@@ -8253,6 +8264,7 @@ namespace RevenuePlanner.Controllers
                 // Set IsDisplay & TodayValue to Plot line on Linechart graph.
                 LineChartData.isDisplay = IsDisplay.ToString();
                 LineChartData.todayValue = TodayValue.ToString();
+                LineChartData.pointLabelWidth = _PointLabelWidth;
                 #endregion
             }
             catch (Exception ex)

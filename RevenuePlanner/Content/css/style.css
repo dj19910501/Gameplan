@@ -12886,7 +12886,7 @@ div.clue-bottom-default .cluetip-arrows {
     margin-right: 20px;
 }
 
-.report-btn-group {
+.report-btn-group, .report-revenue-summary {
     background-color: #f1f1f1;
     clear: both;
     display: inline-block;
@@ -12912,7 +12912,7 @@ div.clue-bottom-default .cluetip-arrows {
     padding: 0 10px;
 }
 
-.report-btn-group {
+.report-btn-group, .report-revenue-summary {
     width: 98%;
 }
 

@@ -75,6 +75,7 @@ namespace RevenuePlanner.Models
         public List<series> series { get; set; }
         public string isDisplay { get; set; }
         public string todayValue { get; set; }
+        public double pointLabelWidth { get; set; }
         
     }
     public class series
@@ -83,6 +84,7 @@ namespace RevenuePlanner.Models
         public List<double?> data { get; set; }
         public marker marker { get; set; }
         public bool showInLegend { get; set; }
+        public bool shadow { get; set; }
     }
     public class marker
     {
@@ -278,7 +280,10 @@ namespace RevenuePlanner.Models
         public List<string> categories { get; set; }
         public List<BarChartSeries> series { get; set; }
         public List<BarChartSeriesScatter> scatterdata { get; set; }
+        public double plotBandFromValue { get; set; }
+        public double plotBandToValue { get; set; }
     }
+
     public class BarChartSeries
     {
         public string name { get; set; }
