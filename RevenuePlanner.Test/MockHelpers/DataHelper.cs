@@ -99,6 +99,18 @@ namespace RevenuePlanner.Test.MockHelpers
         }
 
         /// <summary>
+        /// Get Year
+        /// </summary>
+        /// <returns></returns>
+        /// 
+        public static string GetYear()
+        {
+            string year = DateTime.Now.Year.ToString();
+            return year;
+        }
+
+
+        /// <summary>
         /// Get comma separated published plan id list.
         /// </summary>
         /// <returns></returns>
