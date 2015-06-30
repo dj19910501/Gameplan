@@ -14200,10 +14200,10 @@ div.clue-bottom-default .cluetip-arrows {
 
     .pop-body-wraper {
         float: left;
-        /*max-height: 700px;*//*Modified by Mitesh vaishnav for PL ticket #1391*/
+        max-height: 700px;/*Modified by Mitesh vaishnav for PL ticket #1391*/
         overflow-x: hidden;
         width: 130%;
-        overflow:visible;/*Added by Mitesh Vaishnav for PL ticket #1391*/
+        /*overflow:visible;*//*Added by Mitesh Vaishnav for PL ticket #1391*/
     }
 
     .PopupDiv {

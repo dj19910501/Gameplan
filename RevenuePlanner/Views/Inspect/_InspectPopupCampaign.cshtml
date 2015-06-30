@@ -208,6 +208,10 @@
     var tabtext = "";
     $(document).ready(
       function () {
+          var modelHeight = $(window).height();
+          var headerHeight = $('.headerfix-wraper').height();
+          var bodyWrapperMaxHeight = modelHeight - headerHeight;
+          $('.pop-body-wraper').css('max-height', bodyWrapperMaxHeight + 'px');
           CloseIconClick();
           $("#btnEditCampaign").css("display", "block");
           $("#AddForm").css("display", "block");
