@@ -83,5 +83,6 @@ namespace RevenuePlanner.Models
         public DbSet<User_Filter> User_Filter { get; set; }
         public DbSet<User_Notification> User_Notification { get; set; }
         public DbSet<EntityTypeColor> EntityTypeColors { get; set; }
+        public DbSet<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
     }
 }

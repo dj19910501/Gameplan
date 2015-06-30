@@ -118,6 +118,9 @@
     <Compile Include="Models\IntegrationInstance_Attribute.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IntegrationInstance_UnprocessData.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IntegrationType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

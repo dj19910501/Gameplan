@@ -506,8 +506,8 @@ namespace Integration.Eloqua
                     string filepath = string.Empty;
                     ArrayList srclist = new ArrayList();
                     Dictionary<string, bool> pathList = new Dictionary<string, bool>();
-                    DataTable dt = new DataTable();
-
+                    Dictionary<string, bool> pathListarchived = new Dictionary<string, bool>();
+                    int uploadedrecord = 0;
                     if (Directory.Exists(localDestpath))
                     {
                         //Create local directory
@@ -565,26 +565,25 @@ namespace Integration.Eloqua
                                     pathList.Add(localRunnungPath + "/" + objfiles.ToString(), extension.ToLower().Trim() == ".csv" ? true : false);
                                 }
                             }
+                            List<EloquaResponseModel> lstResponse = new List<EloquaResponseModel>();
 
                             if (pathList != null && pathList.Count > 0)
                             {
                                 foreach (string FullfileName in pathList.Keys)
                                 {
                                     string fileName = System.IO.Path.GetFileName(FullfileName).ToString();
-                                    dt = new DataTable();
 
-                                    //Convert Excel file to DataTable object
-                                    dt = Common.ToDataTable(FullfileName);
+                                    //Convert Excel file to DataTable object and add in list
+                                    DataTable dt = Common.ToDataTable(FullfileName);
 
                                     if (dt != null && dt.Rows.Count > 0)
                                     {
+                                        uploadedrecord += dt.Rows.Count;
                                         var lstColumns = setarrExcelColumn(dt);
                                         if (lstColumns.Contains(eloquaCampaignIDColumn.ToLower()) && lstColumns.Contains(externalCampaignIDColumn.ToLower()) && lstColumns.Contains(eloquaResponseDateTimeColumn.ToLower()))
                                         {
                                             var lstResult = dt.AsEnumerable().Where(a => !string.IsNullOrEmpty(a.Field<string>(eloquaResponseDateTimeColumn))).GroupBy(a => new { eloquaId = a[eloquaCampaignIDColumn], externalId = a[externalCampaignIDColumn], date = pathList[FullfileName] ? DateTime.ParseExact((a[eloquaResponseDateTimeColumn].ToString().Split(' ')[0]).ToString(), responsedateformat, CultureInfo.InvariantCulture).ToString("MM/yyyy") : Convert.ToDateTime(a[eloquaResponseDateTimeColumn]).ToString("MM/yyyy") })
                                                                           .Select(a => new { id = a.Key, items = a.ToList().Count });
-
-                                            List<EloquaResponseModel> lstResponse = new List<EloquaResponseModel>();
                                             foreach (var item in lstResult)
                                             {
                                                 lstResponse.Add(new EloquaResponseModel()
@@ -595,79 +594,178 @@ namespace Integration.Eloqua
                                                     responseCount = item.items
                                                 });
                                             }
-
-                                            if (lstResponse.Count > 0)
-                                            {
-                                                var lstEloquaTacticId = lstResponse.Where(t => !string.IsNullOrEmpty(t.eloquaTacticId)).Select(t => t.eloquaTacticId).ToList();
-                                                var lstExternalTacticId = lstResponse.Where(t => !string.IsNullOrEmpty(t.externalTacticId)).Select(t => t.externalTacticId).ToList();
-                                                var lstExternalTacticIdSub = lstResponse.Where(t => !string.IsNullOrEmpty(t.externalTacticId)).Select(t => t.externalTacticId.Substring(0, 15)).ToList();
-                                                List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
-                                                List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                                               (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstExternalTacticIdSub.Contains(tactic.IntegrationInstanceTacticId)) &&
-                                                                                                                                               tactic.IsDeployedToIntegration == true &&
-                                                                                                                                               lstApproveStatus.Contains(tactic.Status) &&
-                                                                                                                                               tactic.IsDeleted == false &&
-                                                                                                                                               tactic.Stage.Code == Common.StageINQ).ToList();
-                                                // Insert or Update tactic actuals.
-                                                foreach (var objTactic in lstTactic)
-                                                {
-                                                    DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
-                                                    DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
-                                                    var lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
-                                                                                                    r.peroid >= tacticStartDate && r.peroid <= tacticEndDate);
-                                                    foreach (var item in lstTacticResponse)
-                                                    {
-                                                        string tmpPeriod = "Y" + item.peroid.Month.ToString();
-                                                        var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == tmpPeriod && a.StageTitle == Common.StageProjectedStageValue);
-                                                        if (objTacticActual != null)
-                                                        {
-                                                            objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.responseCount;
-                                                            objTacticActual.ModifiedDate = DateTime.Now;
-                                                            objTacticActual.ModifiedBy = _userId;
-                                                            db.Entry(objTacticActual).State = EntityState.Modified;
-                                                        }
-                                                        else
-                                                        {
-                                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
-                                                            actualTactic.Actualvalue = item.responseCount;
-                                                            actualTactic.PlanTacticId = objTactic.PlanTacticId;
-                                                            actualTactic.Period = "Y" + item.peroid.Month;
-                                                            actualTactic.StageTitle = Common.StageProjectedStageValue;
-                                                            actualTactic.CreatedDate = DateTime.Now;
-                                                            actualTactic.CreatedBy = _userId;
-                                                            db.Entry(actualTactic).State = EntityState.Added;
-                                                        }
-                                                    }
-
-                                                    objTactic.LastSyncDate = DateTime.Now;
-                                                    objTactic.ModifiedDate = DateTime.Now;
-                                                    objTactic.ModifiedBy = _userId;
-
-                                                    // Insert Log
-                                                    IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                                    instanceTactic.IntegrationInstanceId = IntegrationInstanceId;
-                                                    instanceTactic.EntityId = objTactic.PlanTacticId;
-                                                    instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                                    instanceTactic.Status = StatusResult.Success.ToString();
-                                                    instanceTactic.Operation = Operation.Import_Actuals.ToString();
-                                                    instanceTactic.SyncTimeStamp = DateTime.Now;
-                                                    instanceTactic.CreatedDate = DateTime.Now;
-                                                    instanceTactic.CreatedBy = _userId;
-                                                    instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                                    db.Entry(instanceTactic).State = EntityState.Added;
-                                                }
-
-                                                db.SaveChanges();
-                                            }
+                                            pathListarchived.Add(FullfileName, true);
                                         }
                                         else
                                         {
-                                            lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgRequiredColumnNotExistEloquaPullResponse, Enums.SyncStatus.Error, DateTime.Now));
-                                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgRequiredColumnNotExistEloquaPullResponse);
+                                            lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "File : " + fileName + " : " + Common.msgRequiredColumnNotExistEloquaPullResponse, Enums.SyncStatus.Info, DateTime.Now));
+                                            
+                                            // Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgRequiredColumnNotExistEloquaPullResponse);
                                             //throw new Exception(Common.msgRequiredColumnNotExistEloquaPullResponse);
-                                            return true;
                                         }
                                     }
+                                }
+                            }
+                            
+                            if (lstResponse.Count > 0)
+                            {
+                                var lstEloquaTacticId = lstResponse.Where(t => !string.IsNullOrEmpty(t.eloquaTacticId)).Select(t => t.eloquaTacticId).ToList();
+                                var lstExternalTacticId = lstResponse.Where(t => !string.IsNullOrEmpty(t.externalTacticId)).Select(t => t.externalTacticId).ToList();
+                                var lstExternalTacticIdSub = lstResponse.Where(t => !string.IsNullOrEmpty(t.externalTacticId)).Select(t => t.externalTacticId.Substring(0, 15)).ToList();
+                                List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
+                                List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                                                                                                                               (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstExternalTacticIdSub.Contains(tactic.IntegrationInstanceTacticId)) &&
+                                                                                                                               tactic.IsDeployedToIntegration == true &&
+                                                                                                                               lstApproveStatus.Contains(tactic.Status) &&
+                                                                                                                               tactic.IsDeleted == false &&
+                                                                                                                               tactic.Stage.Code == Common.StageINQ).ToList();
+                                // Insert or Update tactic actuals.
+                                foreach (var objTactic in lstTactic)
+                                {
+                                    DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
+                                    DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
+                                    List<EloquaResponseModel> lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
+                                                                                    r.peroid >= tacticStartDate && r.peroid <= tacticEndDate).ToList();
+                                    foreach (EloquaResponseModel item in lstTacticResponse)
+                                    {
+                                        string tmpPeriod = "Y" + item.peroid.Month.ToString();
+                                        var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == tmpPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                        if (objTacticActual != null)
+                                        {
+                                            objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.responseCount;
+                                            objTacticActual.ModifiedDate = DateTime.Now;
+                                            objTacticActual.ModifiedBy = _userId;
+                                            db.Entry(objTacticActual).State = EntityState.Modified;
+                                        }
+                                        else
+                                        {
+                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                            actualTactic.Actualvalue = item.responseCount;
+                                            actualTactic.PlanTacticId = objTactic.PlanTacticId;
+                                            actualTactic.Period = "Y" + item.peroid.Month;
+                                            actualTactic.StageTitle = Common.StageProjectedStageValue;
+                                            actualTactic.CreatedDate = DateTime.Now;
+                                            actualTactic.CreatedBy = _userId;
+                                            db.Entry(actualTactic).State = EntityState.Added;
+                                        }
+                                        lstResponse.Remove(item);
+                                    }
+
+                                    objTactic.LastSyncDate = DateTime.Now;
+                                    objTactic.ModifiedDate = DateTime.Now;
+                                    objTactic.ModifiedBy = _userId;
+
+                                    // Insert Log
+                                    IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                    instanceTactic.IntegrationInstanceId = IntegrationInstanceId;
+                                    instanceTactic.EntityId = objTactic.PlanTacticId;
+                                    instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                    instanceTactic.Status = StatusResult.Success.ToString();
+                                    instanceTactic.Operation = Operation.Import_Actuals.ToString();
+                                    instanceTactic.SyncTimeStamp = DateTime.Now;
+                                    instanceTactic.CreatedDate = DateTime.Now;
+                                    instanceTactic.CreatedBy = _userId;
+                                    instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                    db.Entry(instanceTactic).State = EntityState.Added;
+                                }
+                            }
+
+                            // Process Unprocess Data
+                            DateTime pastdate = DateTime.Now.AddMonths(-6);
+                            var unproceessdatalist = db.IntegrationInstance_UnprocessData.Where(data => data.IntegrationInstanceId == IntegrationInstanceId && data.CreatedDate >= pastdate).ToList();
+
+
+                            if (unproceessdatalist.Count > 0)
+                            {
+                                var lstEloquaTacticId = unproceessdatalist.Where(t => !string.IsNullOrEmpty(t.EloquaCampaignID)).Select(t => t.EloquaCampaignID).ToList();
+                                var lstExternalTacticId = unproceessdatalist.Where(t => !string.IsNullOrEmpty(t.ExternalCampaignID)).Select(t => t.ExternalCampaignID).ToList();
+                                var lstExternalTacticIdSub = unproceessdatalist.Where(t => !string.IsNullOrEmpty(t.ExternalCampaignID)).Select(t => t.ExternalCampaignID.Substring(0, 15)).ToList();
+                                List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
+                                List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                                                                                                                               (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstExternalTacticIdSub.Contains(tactic.IntegrationInstanceTacticId)) &&
+                                                                                                                               tactic.IsDeployedToIntegration == true &&
+                                                                                                                               lstApproveStatus.Contains(tactic.Status) &&
+                                                                                                                               tactic.IsDeleted == false &&
+                                                                                                                               tactic.Stage.Code == Common.StageINQ).ToList();
+                                // Insert or Update tactic actuals.
+                                foreach (var objTactic in lstTactic)
+                                {
+                                    DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
+                                    DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
+                                    var lstTacticResponse = unproceessdatalist.Where(r => (r.EloquaCampaignID == objTactic.IntegrationInstanceTacticId || r.ExternalCampaignID == objTactic.IntegrationInstanceTacticId) &&
+                                                                                    r.ResponseDateTime >= tacticStartDate && r.ResponseDateTime <= tacticEndDate);
+                                    foreach (var item in lstTacticResponse)
+                                    {
+                                        string tmpPeriod = "Y" + item.ResponseDateTime.Month.ToString();
+                                        var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == tmpPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                        if (objTacticActual != null)
+                                        {
+                                            objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.ResponseCount;
+                                            objTacticActual.ModifiedDate = DateTime.Now;
+                                            objTacticActual.ModifiedBy = _userId;
+                                            db.Entry(objTacticActual).State = EntityState.Modified;
+                                        }
+                                        else
+                                        {
+                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                            actualTactic.Actualvalue = item.ResponseCount;
+                                            actualTactic.PlanTacticId = objTactic.PlanTacticId;
+                                            actualTactic.Period = "Y" + item.ResponseDateTime.Month;
+                                            actualTactic.StageTitle = Common.StageProjectedStageValue;
+                                            actualTactic.CreatedDate = DateTime.Now;
+                                            actualTactic.CreatedBy = _userId;
+                                            db.Entry(actualTactic).State = EntityState.Added;
+                                        }
+
+                                        db.Entry(item).State = EntityState.Deleted;
+                                    }
+
+                                    objTactic.LastSyncDate = DateTime.Now;
+                                    objTactic.ModifiedDate = DateTime.Now;
+                                    objTactic.ModifiedBy = _userId;
+
+                                    // Insert Log
+                                    IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                    instanceTactic.IntegrationInstanceId = IntegrationInstanceId;
+                                    instanceTactic.EntityId = objTactic.PlanTacticId;
+                                    instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                    instanceTactic.Status = StatusResult.Success.ToString();
+                                    instanceTactic.Operation = Operation.Import_Actuals.ToString();
+                                    instanceTactic.SyncTimeStamp = DateTime.Now;
+                                    instanceTactic.CreatedDate = DateTime.Now;
+                                    instanceTactic.CreatedBy = _userId;
+                                    instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                    db.Entry(instanceTactic).State = EntityState.Added;
+                                }
+                            }
+
+                            if (lstResponse.Count > 0)
+                            {
+                                foreach (var res in lstResponse)
+                                {
+                                    IntegrationInstance_UnprocessData unprocessobj = new IntegrationInstance_UnprocessData();
+                                    unprocessobj.IntegrationInstanceId = IntegrationInstanceId;
+                                    unprocessobj.EloquaCampaignID = res.eloquaTacticId;
+                                    unprocessobj.ExternalCampaignID = res.externalTacticId;
+                                    unprocessobj.ResponseDateTime = res.peroid;
+                                    unprocessobj.ResponseCount = res.responseCount;
+                                    unprocessobj.CreatedDate = DateTime.Now;
+                                    unprocessobj.CreatedBy = _userId;
+                                    db.Entry(unprocessobj).State = EntityState.Added;
+                                }
+
+                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Of total records (" + uploadedrecord + ") uploaded, "  + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
+                            }
+
+
+                            //save all data
+                            db.SaveChanges();
+
+                            if (pathListarchived != null && pathListarchived.Count > 0)
+                            {
+                                foreach (string FullfileName in pathListarchived.Keys)
+                                {
+                                    string fileName = System.IO.Path.GetFileName(FullfileName).ToString();
 
                                     // Move local file to local archived folder
                                     string ProcssingFilePath = FullfileName;
@@ -703,7 +801,6 @@ namespace Integration.Eloqua
                                     }
                                 }
                             }
-
                             // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                         }

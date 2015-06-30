@@ -24,6 +24,7 @@
           <EntitySet Name="ImprovementTacticType_Metric" EntityType="MRPModel.Store.ImprovementTacticType_Metric" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstance" EntityType="MRPModel.Store.IntegrationInstance" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstance_Attribute" EntityType="MRPModel.Store.IntegrationInstance_Attribute" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationInstance_UnprocessData" EntityType="MRPModel.Store.IntegrationInstance_UnprocessData" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceDataTypeMapping" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMapping" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceDataTypeMappingPull" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMappingPull" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceExternalServer" EntityType="MRPModel.Store.IntegrationInstanceExternalServer" store:Type="Tables" Schema="dbo" />
@@ -139,6 +140,10 @@
           <AssociationSet Name="FK_IntegrationInstance_IntegrationType" Association="MRPModel.Store.FK_IntegrationInstance_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationType" />
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstance_UnprocessData_IntegrationInstance" Association="MRPModel.Store.FK_IntegrationInstance_UnprocessData_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="IntegrationInstance_UnprocessData" EntitySet="IntegrationInstance_UnprocessData" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstanceDataTypeMapping_CustomField_CustomFieldId" Association="MRPModel.Store.FK_IntegrationInstanceDataTypeMapping_CustomField_CustomFieldId">
             <End Role="CustomField" EntitySet="CustomField" />
@@ -580,6 +585,19 @@
           <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
           <Property Name="IntegrationTypeAttributeId" Type="int" Nullable="false" />
           <Property Name="Value" Type="nvarchar" Nullable="false" MaxLength="255" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationInstance_UnprocessData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="EloquaCampaignID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ExternalCampaignID" Type="nvarchar" MaxLength="50" />
+          <Property Name="ResponseDateTime" Type="datetime" Nullable="false" />
+          <Property Name="ResponseCount" Type="int" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
@@ -1390,6 +1408,18 @@
             </Principal>
             <Dependent Role="IntegrationInstance">
               <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationInstance_UnprocessData_IntegrationInstance">
+          <End Role="IntegrationInstance" Type="MRPModel.Store.IntegrationInstance" Multiplicity="1" />
+          <End Role="IntegrationInstance_UnprocessData" Type="MRPModel.Store.IntegrationInstance_UnprocessData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance_UnprocessData">
+              <PropertyRef Name="IntegrationInstanceId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2320,6 +2350,11 @@
             <End Role="TacticType" EntitySet="TacticTypes" />
           </AssociationSet>
           <EntitySet Name="EntityTypeColors" EntityType="MRPModel.EntityTypeColor" />
+          <EntitySet Name="IntegrationInstance_UnprocessData" EntityType="MRPModel.IntegrationInstance_UnprocessData" />
+          <AssociationSet Name="FK_IntegrationInstance_UnprocessData_IntegrationInstance" Association="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="IntegrationInstance_UnprocessData" EntitySet="IntegrationInstance_UnprocessData" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -2583,6 +2618,7 @@
           <NavigationProperty Name="Models2" Relationship="MRPModel.FK_Model_IntegrationInstanceINQ" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="Models3" Relationship="MRPModel.FK_Model_IntegrationInstanceMQL" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
+          <NavigationProperty Name="IntegrationInstance_UnprocessData" Relationship="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstance_UnprocessData" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -4115,6 +4151,32 @@
           <Property Type="String" Name="EntityType" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ColorCode" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="IntegrationInstance_UnprocessData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int64" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="IntegrationInstanceId" Nullable="false" />
+          <Property Type="String" Name="EloquaCampaignID" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ExternalCampaignID" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="DateTime" Name="ResponseDateTime" Nullable="false" Precision="3" />
+          <Property Type="Int32" Name="ResponseCount" Nullable="false" />
+          <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
+          <Property Type="Guid" Name="CreatedBy" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" FromRole="IntegrationInstance_UnprocessData" ToRole="IntegrationInstance" />
+        </EntityType>
+        <Association Name="FK_IntegrationInstance_UnprocessData_IntegrationInstance">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationInstance_UnprocessData" Role="IntegrationInstance_UnprocessData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationInstance_UnprocessData">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4995,6 +5057,20 @@
               <MappingFragment StoreEntitySet="EntityTypeColor">
                 <ScalarProperty Name="ColorCode" ColumnName="ColorCode" />
                 <ScalarProperty Name="EntityType" ColumnName="EntityType" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationInstance_UnprocessData">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationInstance_UnprocessData">
+              <MappingFragment StoreEntitySet="IntegrationInstance_UnprocessData">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ResponseCount" ColumnName="ResponseCount" />
+                <ScalarProperty Name="ResponseDateTime" ColumnName="ResponseDateTime" />
+                <ScalarProperty Name="ExternalCampaignID" ColumnName="ExternalCampaignID" />
+                <ScalarProperty Name="EloquaCampaignID" ColumnName="EloquaCampaignID" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
