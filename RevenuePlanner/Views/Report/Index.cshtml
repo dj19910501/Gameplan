@@ -298,7 +298,8 @@
    <ul id="ulLeftPane">
        <li class="active" id="liSummary"><a class="overview"><span></span>OVERVIEW</a></li>
        <li id="liRevenue"><a class="revenue" ><span></span>REVENUE</a></li>
-       <li id="liConversion"><a class="conversion" ><span></span>CONVERSION</a></li>
+       @*<li id="liConversion"><a class="conversion" ><span></span>CONVERSION</a></li>*@
+       <li id="liConversion"><a class="conversion" ><span></span>WATERFALL</a></li> @*--title changed by dashrath prajapati*@
        <li id="liBudgetreport"><a class="budget" ><span></span>BUDGET</a></li>
    </ul>
 </div>
@@ -913,10 +914,19 @@ function GetOwnerListForFilter(Planids, ifexists) {
         $('#UlPlanHeader').css('display', 'block');
         $('#formSideFilter').css('display', 'block');
         $("#BtnShareReport").show();
-        $('#divMainReportPart').empty();
+        //$('#divMainReportPart').empty();
         $('#accordion-quart').css('display', 'none');
-        var url = '@Url.Content("~/Report/GetConversionData/")';
-        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
+        $('#conversionHeader').css('display', 'none'); //added by dashrath prajapati for new design of conversion partial page
+        $('#revenueHeader').css('display', 'none'); //added by dashrath prajapati for new design of conversion partial page
+
+      @*  var url = '@Url.Content("~/Report/GetConversionData/")';*@
+        //$('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain , function () {
+        //    isAllowClick = true;
+        //    myApp.hidePleaseWait();
+        //});
+
+        var url = '@Url.Content("~/Report/GetConversionData1/")';
+        $('#divMainReportPart').load(url + '?timeFrameOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
             myApp.hidePleaseWait();
         });

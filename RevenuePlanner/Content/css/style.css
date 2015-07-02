@@ -14634,3 +14634,13 @@ div.clue-bottom-default .cluetip-arrows {
 }
 
 /*End :  Revenue - new Design by neel on 2/06/2015 */
+/*start :  conversion - dashrath prajapati 07/02/2015 */
+.dropdown-inline
+    {
+    display:inline-block;
+    }
+    .CustomDropdown button
+    {
+        display:inline-block!important;
+    }
+/*End :  conversion - dashrath prajapati 07/02/2015*/

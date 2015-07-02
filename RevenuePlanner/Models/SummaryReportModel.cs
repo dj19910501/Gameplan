@@ -159,6 +159,40 @@ namespace RevenuePlanner.Models
         public string StageCode { get; set; }
         public double Benchmark { get; set; }
     }
+
+    public class ConversionOverviewToPlanModel
+    {
+        public List<ConversionToPlanModel> conversionOverviewPlanModel { get; set; }
+    }
+    public class ConversionToPlanModel
+    {
+        public ConversionOverviewModel conversionOverviewModel { get; set; }
+        public ConversionDataTable ConversionToPlanDataTableModel { get; set; }
+        public BarChartModel ConversionToPlanBarChartModel { get; set; }
+        public lineChartData LineChartModel { get; set; }//dashrath
+    }
+    public class ConversionDataTable
+    {
+        public List<string> Categories { get; set; }
+        public List<double> ActualList { get; set; }
+        public List<double> ProjectedList { get; set; }
+        public List<double> GoalList { get; set; }
+        //public List<double> CostList { get; set; }
+        //public List<double> PerformanceList { get; set; }
+        //public List<double> ROIList { get; set; }
+        public ConversionSubDataTableModel SubDataModel { get; set; }
+        public List<double> TotalRevenueList { get; set; }
+        public bool IsQuarterly { get; set; }
+        public string timeframeOption { get; set; }
+    }
+
+    public class ConversionSubDataTableModel
+    {
+        public List<string> PerformanceList { get; set; }
+        public List<string> CostList { get; set; }
+        public List<string> ROIList { get; set; }
+        public List<string> RevenueList { get; set; }
+    }
     #endregion
 
     #region "Financial Overview"
@@ -187,6 +221,9 @@ namespace RevenuePlanner.Models
         public Projected_Goal RevenueHeaderModel { get; set; }
         public lineChartData RevenueLineChartModel { get; set; }
         public RevenueToPlanModel RevenueToPlanModel { get; set; }
+        public Projected_Goal ConversionHeaderModel { get; set; } //dashrath
+        public ConversionOverviewModel conversionOverviewModel { get; set; }//dashrath
+        public ConversionToPlanModel ConversionToPlanModel { get; set; }//dashrath
     }
     public class RevenueToPlanModel
     {
