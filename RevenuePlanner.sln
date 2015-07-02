@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenuePlanner", "RevenuePlanner\RevenuePlanner.csproj", "{9704E4CD-7AB2-418F-90F3-56A41C4D9E3F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BDSService", "BDSService\BDSService.csproj", "{A1638569-716F-4051-8208-7AB78F16141B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{C7AA3463-8E84-4280-A893-C6E7D38EA8D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Integration", "Integration\Integration.csproj", "{B312EF9A-C33A-4E44-8BD6-B141080302E0}"
@@ -39,18 +37,6 @@ Global
 		{9704E4CD-7AB2-418F-90F3-56A41C4D9E3F}.Staging|Any CPU.ActiveCfg = Release|Any CPU
 		{9704E4CD-7AB2-418F-90F3-56A41C4D9E3F}.Staging|Any CPU.Build.0 = Release|Any CPU
 		{9704E4CD-7AB2-418F-90F3-56A41C4D9E3F}.Test|Any CPU.ActiveCfg = Release|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.BulldogProduction|Any CPU.ActiveCfg = BulldogProduction|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.BulldogProduction|Any CPU.Build.0 = BulldogProduction|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.BulldogStaging|Any CPU.ActiveCfg = BulldogStaging|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.BulldogStaging|Any CPU.Build.0 = BulldogStaging|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Prod|Any CPU.ActiveCfg = BulldogProduction|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Staging|Any CPU.ActiveCfg = BulldogStaging|Any CPU
-		{A1638569-716F-4051-8208-7AB78F16141B}.Test|Any CPU.ActiveCfg = Release|Any CPU
 		{C7AA3463-8E84-4280-A893-C6E7D38EA8D2}.BulldogProduction|Any CPU.ActiveCfg = Release|Any CPU
 		{C7AA3463-8E84-4280-A893-C6E7D38EA8D2}.BulldogProduction|Any CPU.Build.0 = Release|Any CPU
 		{C7AA3463-8E84-4280-A893-C6E7D38EA8D2}.BulldogStaging|Any CPU.ActiveCfg = Release|Any CPU
