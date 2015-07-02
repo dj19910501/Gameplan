@@ -497,7 +497,7 @@
         // Load header data
         LoadHeaderData();
         function LoadHeaderData() {
-            debugger;
+           
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetReportHeader/")',
@@ -653,7 +653,7 @@
 
         function LoadDataConversionToPlanByCampaign() {
             var _childValue = '0';
-            debugger;
+           
             var id = '';
             var Type = '';
             var tacticId = $("#ddlTacticConversionToPlan").val();
@@ -720,7 +720,7 @@
         }
 
         function PopulateRevenueToPlanChildDDL(items, id) {
-            debugger;
+           
             var $dropdown = $("#" + id);
             $dropdown.empty();
             var $html = '';
@@ -747,7 +747,7 @@
 
         // bind header data
         function setLabel(data) {
-            debugger;
+           
             var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
             setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, true);
             setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
@@ -761,7 +761,7 @@
         }
 
         function setPercentage(id, value) {
-            debugger;
+         
             var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
             var isNegative = value < 0;
             if (isNegative) {
@@ -809,7 +809,7 @@
         var _LineChartCombine;
         var _Isfilter = false;
         function GetConversionToPlanByCode(_Code) {
-            debugger;
+         
             var _childid = $("#ddlTopChildConversionToPlan").val();
             var tacticId = $("#ddlTacticConversionToPlan").val();
             var parentlabel = $("#ddlParentConversionSummery option:selected").val()
@@ -865,7 +865,7 @@
 
 
         function GetConversionToPlanByCustomFilter(_childValue) {
-            debugger;
+        
             var code = $("#ddlINQToPlan").val();
             var parentlabel = $("#ddlParentConversionSummery option:selected").val()
             var Type = '';
