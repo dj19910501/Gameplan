@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.Mvc;
 using System.Linq;
 using System;
+using System.Net;
 namespace RevenuePlanner.Helpers
 {
     public static class HtmlHelpers
@@ -4308,12 +4309,15 @@ namespace RevenuePlanner.Helpers
                         string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
-                            sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
+                           // sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
+                            var _editdescription = Common.GenerateHTMLAttribute(customFieldEntityValue);
+                            sb.Append("<div class='Attribute-content-text' id=\"cf_" + item.customFieldId + "\">" + WebUtility.HtmlDecode(_editdescription) + " </div>");
                         }
                         else
                         {
                             inputclassName += " input-setup";
                             sb.Append("<input type=\"text\" maxlength =\"255\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
+                            sb.Append("</div>");
                         }
 
                         //If custom field is required than add attribute require
@@ -4321,7 +4325,7 @@ namespace RevenuePlanner.Helpers
                         {
                             sb.Append(" require=\"true\" oldValue=\"" + item.value + "\" label=\"" + item.name + "\"");
                         }
-                        sb.Append("></div>");
+                        sb.Append("</div>");
                         sb = sb.Replace("#VIEW_DETAIL_LINK#", "");
                         fieldCounter = fieldCounter + 1;
                     }
