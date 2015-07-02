@@ -2704,7 +2704,8 @@ ul.welcome-sprite {
     padding-right: 3px;
 }*/
 #inspect-modal-left-column2, #inspect-modal-left-column3, #inspect-modal-left-column4 {
-    padding-left: 25px;
+    padding-left: 3.5%;
+    margin: 10px auto !important;
     /*margin-top: 20px;*/
 }
 /* */
@@ -10520,11 +10521,8 @@ li.close-list {
 }
 
 #divPartial {
-    /*margin: 0 auto;*/
-    /*Added by : Kalpesh Sharma #732*/
+    /*modified by Mitesh Vaishnav for PL ticket #1391*/
     margin: auto;
-    min-width: 1000px;
-    max-width: 1000px;
 }
 
 .modal-inspect-review.modal-full-view .icon-flag {
@@ -10788,7 +10786,8 @@ li.close-list {
 }
 
 .paddingleft25px {
-    padding-left: 25px;
+    padding-left: 3.5%;
+    margin:10px 0 !important;
 }
 
 .table-head {
@@ -14197,18 +14196,28 @@ div.clue-bottom-default .cluetip-arrows {
             right: 6px;
             top: 6px;
         }
-
+/*Modified by Mitesh vaishnav for PL ticket #1391*/
     .pop-body-wraper {
         float: left;
-        max-height: 700px;/*Modified by Mitesh vaishnav for PL ticket #1391*/
-        overflow-x: hidden;
-        width: 130%;
+        /*max-height: 700px;*/
+        overflow:auto;
+        width: 100%;
+        min-width:800px;
         /*overflow:visible;*//*Added by Mitesh Vaishnav for PL ticket #1391*/
     }
-
+    /*Modified by Mitesh Vaishnav for PL ticket #1391*/
     .PopupDiv {
         width: 78%;
-        min-height: 800px;
+        /*min-height: 800px;*/
+        margin:0 auto;
+        min-width:800px;
+        max-width:1050px;
+        width:70%;
+    }
+    @media (max-width:1024px){ 
+        .headerfix{ 
+        left:0; width:100%; 
+        } 
     }
 
 /*Start - Financial Section */

@@ -223,8 +223,8 @@ var InspectMode = "@InspectMode"; // Modifiedby Komal Rawal for #1213 - For Hand
       function () {
           var modelHeight = $(window).height();
           var headerHeight = $('.headerfix-wraper').height();
-          var bodyWrapperMaxHeight = modelHeight - headerHeight;
-          $('.pop-body-wraper').css('max-height', bodyWrapperMaxHeight + 'px');
+          var bodyWrapperMaxHeight = modelHeight - headerHeight-20;
+          $('.pop-body-wraper').css('height', bodyWrapperMaxHeight + 'px');
           NumberFormatterTipsyTitle($("#lblCustomNameFormat"), 130);
           $("#AddForm").css("display", "block");
           CloseIconClick();          
