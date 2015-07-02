@@ -30,7 +30,7 @@
     {
         margin-top: 5px !important;
     }
-
+   
 </style>
 <section class="report-overview-wraper conversion-wrapper">
     <div class="marketing-revenue-report">
@@ -416,6 +416,8 @@
     $(document).ready(function () {
         $("html, body").animate({ scrollTop: 0 }, 1000);//scroll up when page get from overview by click on detail button of convesrion section- Dashrath prajapati
 
+      
+        //
         //start combine chart of bar chart and line chart script
         //start bar chart
         var _barchartdata = "@conversion_barchartModel";
@@ -519,7 +521,7 @@
 
             if (_parentValue == _campaignLabel) {
                 $("#CustomFieldChildDDL").css('display', 'none');
-                $("#CampaignChildDDL").css('display', 'block');
+                $("#CampaignChildDDL").css('display', 'inline-block');
 
                 /*Start: Refresh Campaign, Program, Tactic dropdowns*/
                 $("#ddlCampaignConversionToPlan").val("0");
