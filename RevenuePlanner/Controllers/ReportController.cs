@@ -10139,8 +10139,8 @@ namespace RevenuePlanner.Controllers
             List<string> _Categories = new List<string>();
             _Categories = objBasicModelDataTable.Categories;
             double catLength = _Categories != null ? _Categories.Count : 0;
-            //objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption,objBasicModelDataTable.IsQuarterly);
-            objSubDataModel = GetConversionToPlanDataByCampaignByCode(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode);
+            //objSubDataModel = GetConversionToPlanDataByCampaignByCode(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode);
+            objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode); //method change for first time getting value 03/07/2015 
             objconversionDataTable.SubDataModel = objSubDataModel;
             objconversionDataTable.Categories = _Categories;
             objconversionDataTable.ActualList = objBasicModelDataTable.ActualList;

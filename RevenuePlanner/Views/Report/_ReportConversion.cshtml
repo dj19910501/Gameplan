@@ -448,7 +448,7 @@
                 var _Id = "#" + _cntrlId;
                 var text = $(_Id).attr('orig-val');
                 if (text != null && text != 'undefined' && text != 'NaN') {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
                     $(_Id).html(_formatednumber);
                 }
             });
@@ -747,6 +747,7 @@
         function setLabel(data) {
             
             var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+            var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
             setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, true);
             setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
             var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
@@ -755,7 +756,8 @@
             }
             if (parseFloat(data.ProjectedRevenueValue) > 0) {
             }
-            setPercentage("#mqlActualPercentages", mqlActualPercentage);
+            //setPercentage("#mqlActualPercentages", mqlActualPercentage);
+            setPercentage("#mqlActualPercentages", _ConversionPercentage);
         }
 
         function setPercentage(id, value) {
