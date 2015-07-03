@@ -4669,6 +4669,37 @@ namespace RevenuePlanner.Helpers
         }
 
         /// <summary>
+        /// Function to generate HTML with Anchor link if text contains url.
+        /// Method used in all inspect popup to generate HTML based text.
+        /// Added by Ravindra on 02/07/2015
+        /// </summary>
+        /// <param name="description">attribute Text.</param>
+        public static string GenerateHTMLAttribute(string attribute = "")
+        {
+            string result = string.Empty;
+            if (string.IsNullOrEmpty(attribute))
+                return result;
+            try
+            {
+                result = attribute;
+                string regex = @"((www\.|(http|https|ftp|news|file)+\:\/\/)[&#95;.a-z0-9-]+\.[a-z0-9\/&#95;:@=.+?,_\[\]\(\)\!\$\*\|##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])";
+                Regex r = new Regex(regex, RegexOptions.IgnoreCase);
+                result = result.Replace("\n", "<br />");
+                result = r.Replace(result, "<a href=\"$1\" title=\"Click to open in a new window or tab\" target=\"&#95;blank\">$1</a>").Replace("href=\"www", "href=\"//www");
+                if (!result.Contains("www"))
+                {
+                    result = "<a href=" + result + " title='Click to open in a new window or tab' target='_blank'>" + result + " </a>";
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return result;
+        }
+
+
+        /// <summary>
         /// Function to return Status message.
         /// Added by Viral Kadiya on 11/17/2014 for PL ticket #947.
         /// </summary>
