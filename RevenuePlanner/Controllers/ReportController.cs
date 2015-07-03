@@ -2338,6 +2338,14 @@ namespace RevenuePlanner.Controllers
                     #endregion
                     #endregion
                     objReportModel.RevenueToPlanModel = objRevenueToPlanModel;
+
+                    #region "CardSection Model"
+                    CardSectionModel objCardSectionModel = new CardSectionModel();
+                    List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
+                    CardSectionListModel = GetCardSectionList();
+                    objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                    #endregion
+                    objReportModel.CardSectionModel = objCardSectionModel;
                 }
                 else
                 {
@@ -2346,6 +2354,7 @@ namespace RevenuePlanner.Controllers
                     //objReportModel.RevenueToPlanBarChartModel = new BarChartModel();
                     //objReportModel.RevenueToPlanDataModel = new RevenueDataTable();
                     objReportModel.RevenueToPlanModel = new RevenueToPlanModel();
+                    objReportModel.CardSectionModel = new CardSectionModel();
                 }
             }
             catch (Exception ex)
@@ -10001,9 +10010,8 @@ namespace RevenuePlanner.Controllers
             lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Actuals, Value = Common.Actuals });
             lstParentConversionPerformance = lstParentConversionPerformance.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.parentConvertionPerformance = lstParentConversionPerformance;
-
-
             //added by dashrath prajapati
+
             //// Set View By Allocated values.
             List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
             lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
@@ -10027,7 +10035,7 @@ namespace RevenuePlanner.Controllers
             ActualTacticStageList = GetActualListInTacticInterval(tacticStageList, timeFrameOption, ActualStageCodeList, IsTillCurrentMonth);
 
             List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
-            ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
+            ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();//test mqlStageCode
             OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
 
             objProjectedGoal = new Projected_Goal();
@@ -10140,7 +10148,8 @@ namespace RevenuePlanner.Controllers
             _Categories = objBasicModelDataTable.Categories;
             double catLength = _Categories != null ? _Categories.Count : 0;
             //objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption,objBasicModelDataTable.IsQuarterly);
-            objSubDataModel = GetConversionToPlanDataByCampaignByCode(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode);
+            //objSubDataModel = GetConversionToPlanDataByCampaignByCode(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode);
+            objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode); //method change for first time getting value 
             objconversionDataTable.SubDataModel = objSubDataModel;
             objconversionDataTable.Categories = _Categories;
             objconversionDataTable.ActualList = objBasicModelDataTable.ActualList;
@@ -10240,10 +10249,20 @@ namespace RevenuePlanner.Controllers
 
             objBarChartModel.series = lstSeries;
             objBarChartModel.categories = _barChartCategories;
-
             objConversionToPlanModel.ConversionToPlanBarChartModel = objBarChartModel;
+
             #endregion
+           
             #endregion
+
+            //#region "CardSection Model"
+            //CardSectionModel objCardSectionModel = new CardSectionModel();
+            //List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
+            //CardSectionListModel = GetConversionCardSectionList();
+            //objCardSectionModel.CardSectionListModel = CardSectionListModel;
+            //objReportModel.CardSectionModel = objCardSectionModel;
+            //#endregion
+          
             objReportModel.ConversionToPlanModel = objConversionToPlanModel;
 
             return PartialView("_ReportConversion", objReportModel);
@@ -11424,6 +11443,156 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
         #endregion
+
+        #region "CardSection related Method"
+        public List<CardSectionListModel> GetCardSectionList(string ParentLabel = "", string childlabelType = "", string childId = "")
+        {
+            #region "Declare local variables"
+            List<CardSectionListModel> objCardSectionList = new List<CardSectionListModel>();
+            CardSectionListModel objCardSection = new CardSectionListModel();
+            CardSectionListSubModel objCardSectionSubModel = new CardSectionListSubModel();
+            #endregion
+
+            #region "Set Default Values"
+            string strParentLabel = !string.IsNullOrEmpty(ParentLabel) ? ParentLabel : "Campaign";
+            string strChildLabelType = !string.IsNullOrEmpty(childlabelType) ? childlabelType : Common.RevenueCampaign;
+
+            #endregion
+
+            try
+            {
+                #region "Add Static Values to Model"
+                objCardSection.title = "North America";
+                objCardSection.ParentLabel = "TacticCustom36";
+                objCardSection.FieldId = 127;
+
+                #region "Insert Cardsection Sub model data"
+                // Start Revenue CardSection SubModel Data
+                objCardSectionSubModel.CardType = Enums.TOPRevenueType.Revenue.ToString();
+                objCardSectionSubModel.Actual_Projected = 1615286;
+                objCardSectionSubModel.Goal = 1346071;
+                objCardSectionSubModel.Percentage = 2.43;
+                objCardSectionSubModel.IsNegative = false;
+                objCardSection.RevenueCardValues = objCardSectionSubModel;
+                // End Revenue CardSection SubModel Data
+
+                // Start Cost CardSection SubModel Data
+                objCardSectionSubModel = new CardSectionListSubModel();
+                objCardSectionSubModel.CardType = Enums.TOPRevenueType.Cost.ToString();
+                objCardSectionSubModel.Actual_Projected = 1615286;
+                objCardSectionSubModel.Goal = 1346071;
+                objCardSectionSubModel.Percentage = 2.43;
+                objCardSectionSubModel.IsNegative = false;
+                objCardSection.CostCardValues = objCardSectionSubModel;
+                // End Cost CardSection SubModel Data
+
+                // Start ROI CardSection SubModel Data
+                objCardSectionSubModel = new CardSectionListSubModel();
+                objCardSectionSubModel.CardType = Enums.TOPRevenueType.ROI.ToString();
+                objCardSectionSubModel.Actual_Projected = 1615286;
+                objCardSectionSubModel.Goal = 1346071;
+                objCardSectionSubModel.Percentage = 2.43;
+                objCardSectionSubModel.IsNegative = false;
+                objCardSection.ROICardValues = objCardSectionSubModel;
+                // End ROI CardSection SubModel Data
+
+                #endregion
+
+                // Add Multiple fixed same values to Model
+                objCardSectionList.Add(objCardSection);
+                objCardSectionList.Add(objCardSection);
+                objCardSectionList.Add(objCardSection);
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return objCardSectionList;
+        }
+        
+        #endregion
+
+        //#region "CardSection Conversion related Method"
+        //public List<CardSectionListModel> GetConversionCardSectionList(string ParentLabel = "", string childlabelType = "", string childId = "")
+        //{
+        //    #region "Declare local variables"
+        //    List<CardSectionListModel> objCardSectionList = new List<CardSectionListModel>();
+        //    CardSectionListModel objCardSection = new CardSectionListModel();
+        //    CardSectionListSubModel objCardSectionSubModel = new CardSectionListSubModel();
+        //    #endregion
+
+        //    #region "Set Default Values"
+        //    string strParentLabel = !string.IsNullOrEmpty(ParentLabel) ? ParentLabel : "Campaign";
+        //    string strChildLabelType = !string.IsNullOrEmpty(childlabelType) ? childlabelType : Common.RevenueCampaign;
+
+        //    #endregion
+
+        //    try
+        //    {
+        //        #region "Add Static Values to Model"
+        //        objCardSection.title = "North America";
+        //        objCardSection.ParentLabel = "TacticCustom36";
+        //        objCardSection.FieldId = 127;
+
+        //        #region "Insert Cardsection Sub model data"
+        //        // Start convertion CardSection SubModel Data
+        //        objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
+        //        objCardSectionSubModel.Actual_Projected = 1615286;
+        //        objCardSectionSubModel.Goal = 1346071;
+        //        objCardSectionSubModel.Percentage =1.00;
+        //        objCardSectionSubModel.IsNegative = false;
+        //        objCardSection.INQCardValues = objCardSectionSubModel;
+        //        // End convertion CardSection SubModel Data
+
+        //        // Start convertion CardSection SubModel Data
+        //        objCardSectionSubModel = new CardSectionListSubModel();
+        //        objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
+        //        objCardSectionSubModel.Actual_Projected = 1615286;
+        //        objCardSectionSubModel.Goal = 1346071;
+        //        objCardSectionSubModel.Percentage = 2.43;
+        //        objCardSectionSubModel.IsNegative = false;
+        //        objCardSection.TQLCardValues = objCardSectionSubModel;
+        //        // End convertion CardSection SubModel Data
+
+        //        // Start convertion CardSection SubModel Data
+        //        objCardSectionSubModel = new CardSectionListSubModel();
+        //        objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
+        //        objCardSectionSubModel.Actual_Projected = 1615286;
+        //        objCardSectionSubModel.Goal = 1346071;
+        //        objCardSectionSubModel.Percentage = 3.45;
+        //        objCardSectionSubModel.IsNegative = false;
+        //        objCardSection.CWCardValues = objCardSectionSubModel;
+        //        // End convertion CardSection SubModel Data
+
+        //        // Start convertion CardSection SubModel Data
+        //        objCardSectionSubModel = new CardSectionListSubModel();
+        //        objCardSectionSubModel.CardType = Enums.InspectStage.ADS.ToString();
+        //        objCardSectionSubModel.Actual_Projected = 1615286;
+        //        objCardSectionSubModel.Goal = 1346071;
+        //        objCardSectionSubModel.Percentage = 4.56;
+        //        objCardSectionSubModel.IsNegative = false;
+        //        objCardSection.ADSCardValues = objCardSectionSubModel;
+        //        // End convertion CardSection SubModel Data
+
+        //        #endregion
+
+        //        // Add Multiple fixed same values to Model
+        //        objCardSectionList.Add(objCardSection);
+        //        objCardSectionList.Add(objCardSection);
+        //        objCardSectionList.Add(objCardSection);
+        //        objCardSectionList.Add(objCardSection);
+        //        #endregion
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //    return objCardSectionList;
+        //}
+
+        //#endregion
+
         #endregion
     }
 

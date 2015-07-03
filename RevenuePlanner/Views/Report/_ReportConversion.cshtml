@@ -11,6 +11,8 @@
     var conversion_datatableModel = Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty;
     var conversion_barchartModel = Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty;
     var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
+    
+    //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel();
                      
    
 }
@@ -104,8 +106,9 @@
             </div>
 
     </div>
-    <div class="revenue-to-plan">
-    </div>
+   <div  id="ConversionCardID">
+        @*  @Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)*@
+   </div>
     @*<div class="revenue-filter">
         <div class="sorting">
             <div class="geography-dropdown">
@@ -450,7 +453,7 @@
                 var _Id = "#" + _cntrlId;
                 var text = $(_Id).attr('orig-val');
                 if (text != null && text != 'undefined' && text != 'NaN') {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
                     $(_Id).html(_formatednumber);
                 }
             });
@@ -499,7 +502,6 @@
         // Load header data
         LoadHeaderData();
         function LoadHeaderData() {
-           
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetReportHeader/")',
@@ -749,8 +751,9 @@
 
         // bind header data
         function setLabel(data) {
-           
+            debugger;
             var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+            var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
             setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, true);
             setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
             var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
@@ -759,7 +762,8 @@
             }
             if (parseFloat(data.ProjectedRevenueValue) > 0) {
             }
-            setPercentage("#mqlActualPercentages", mqlActualPercentage);
+            //setPercentage("#mqlActualPercentages", mqlActualPercentage);
+            setPercentage("#mqlActualPercentages", _ConversionPercentage);
         }
 
         function setPercentage(id, value) {
@@ -921,9 +925,12 @@
             }
             else {
                 var _dataTableModel = '@conversion_datatableModel';
-        }
+            }
+           
         _dataTableModel = (_dataTableModel.toString().replace(/&quot;/g, '"'));
         _dataTableModel = JSON.parse(_dataTableModel);
+       
+
 
         var isQuarterly = _dataTableModel.IsQuarterly;
         var _rowcount = 8;
