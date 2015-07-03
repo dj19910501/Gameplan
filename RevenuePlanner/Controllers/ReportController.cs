@@ -10149,7 +10149,7 @@ namespace RevenuePlanner.Controllers
             double catLength = _Categories != null ? _Categories.Count : 0;
             //objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption,objBasicModelDataTable.IsQuarterly);
             //objSubDataModel = GetConversionToPlanDataByCampaignByCode(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode);
-            objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode); //method change for first time getting value 
+            objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode); //method change for first time getting  
             objconversionDataTable.SubDataModel = objSubDataModel;
             objconversionDataTable.Categories = _Categories;
             objconversionDataTable.ActualList = objBasicModelDataTable.ActualList;
