@@ -10524,6 +10524,13 @@ li.close-list {
     /*modified by Mitesh Vaishnav for PL ticket #1391*/
     margin: auto;
 }
+.messagewidth {
+    max-width:70%;
+    min-width:70%;
+    margin: 0 auto !important;
+    
+
+}
 
 .modal-inspect-review.modal-full-view .icon-flag {
     margin-left: 0 !important;
