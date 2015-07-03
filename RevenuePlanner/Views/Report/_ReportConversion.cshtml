@@ -754,7 +754,7 @@
            
             var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
             var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
-            setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, true);
+            setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, false);
             setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
             var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
             if (parseFloat(data.ProjectedMQLValue) > 0) {
