@@ -2339,13 +2339,13 @@ namespace RevenuePlanner.Controllers
                     #endregion
                     objReportModel.RevenueToPlanModel = objRevenueToPlanModel;
 
-                    #region "CardSection Model"
-                    CardSectionModel objCardSectionModel = new CardSectionModel();
-                    List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-                    CardSectionListModel = GetCardSectionList();
-                    objCardSectionModel.CardSectionListModel = CardSectionListModel;
-                    #endregion
-                    objReportModel.CardSectionModel = objCardSectionModel;
+                    //#region "CardSection Model"
+                    //CardSectionModel objCardSectionModel = new CardSectionModel();
+                    //List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
+                    //CardSectionListModel = GetCardSectionList();
+                    //objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                    //#endregion
+                    //objReportModel.CardSectionModel = objCardSectionModel;
                 }
                 else
                 {
@@ -2354,7 +2354,7 @@ namespace RevenuePlanner.Controllers
                     //objReportModel.RevenueToPlanBarChartModel = new BarChartModel();
                     //objReportModel.RevenueToPlanDataModel = new RevenueDataTable();
                     objReportModel.RevenueToPlanModel = new RevenueToPlanModel();
-                    objReportModel.CardSectionModel = new CardSectionModel();
+                    //objReportModel.CardSectionModel = new CardSectionModel();
                 }
             }
             catch (Exception ex)
