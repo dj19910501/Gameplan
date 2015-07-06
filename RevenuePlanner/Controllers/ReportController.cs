@@ -5125,10 +5125,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.INQValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = objTactic.TacticObj.EndDate.Month;
-                    objTacticdt.StartYear = objTactic.TacticObj.StartDate.Year;
-                    objTacticdt.EndYear = objTactic.TacticObj.EndDate.Year;
+                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Month : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Year : objTactic.TacticObj.StartDate.Year;
+                    objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     tacticdata.Add(objTacticdt);
                 }
             }
@@ -5152,10 +5152,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.MQLValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = objTactic.TacticObj.EndDate.Month;
-                    objTacticdt.StartYear = objTactic.TacticObj.StartDate.Year;
-                    objTacticdt.EndYear = objTactic.TacticObj.EndDate.Year;
+                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Month : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Year : objTactic.TacticObj.StartDate.Year;
+                    objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     tacticdata.Add(objTacticdt);
                 }
             }
@@ -5179,10 +5179,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.CWValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = objTactic.TacticObj.EndDate.Month;
-                    objTacticdt.StartYear = objTactic.TacticObj.StartDate.Year;
-                    objTacticdt.EndYear = objTactic.TacticObj.EndDate.Year;
+                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.StartDate.Year;
+                    objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     tacticdata.Add(objTacticdt);
                 }
             }
@@ -9936,7 +9936,7 @@ namespace RevenuePlanner.Controllers
         #region "Get Conversion data Main method"
         //added for new Main method of conversion partial view page-Dashrath Prajapati
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]
-        public ActionResult GetConversionData1(string timeFrameOption = "thisquarter", string isQuarterly = "true")
+        public ActionResult GetWaterFallData(string timeFrameOption = "thisquarter", string isQuarterly = "true")
         {
             #region "Declare Variables"
             ReportModel objReportModel = new ReportModel();
