@@ -2339,12 +2339,12 @@ namespace RevenuePlanner.Controllers
                     #endregion
                     objReportModel.RevenueToPlanModel = objRevenueToPlanModel;
 
-                    //#region "CardSection Model"
+                    #region "CardSection Model"
                     //CardSectionModel objCardSectionModel = new CardSectionModel();
                     //List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
                     //CardSectionListModel = GetCardSectionList();
                     //objCardSectionModel.CardSectionListModel = CardSectionListModel;
-                    //#endregion
+                    #endregion
                     //objReportModel.CardSectionModel = objCardSectionModel;
                 }
                 else
@@ -5134,10 +5134,11 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.INQValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = objTactic.TacticObj.EndDate.Month;
-                    objTacticdt.StartYear = objTactic.TacticObj.StartDate.Year;
-                    objTacticdt.EndYear = objTactic.TacticObj.EndDate.Year;
+                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Month : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.INQVelocity).Year : objTactic.TacticObj.StartDate.Year;
+                    objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.INQVelocity).Year : objTactic.TacticObj.EndDate.Year;
+
                     tacticdata.Add(objTacticdt);
                 }
             }
@@ -5161,10 +5162,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.MQLValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = objTactic.TacticObj.EndDate.Month;
-                    objTacticdt.StartYear = objTactic.TacticObj.StartDate.Year;
-                    objTacticdt.EndYear = objTactic.TacticObj.EndDate.Year;
+                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Month : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.MQLVelocity).Year : objTactic.TacticObj.StartDate.Year;
+                    objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.MQLVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     tacticdata.Add(objTacticdt);
                 }
             }
@@ -5188,10 +5189,10 @@ namespace RevenuePlanner.Controllers
                     StageValue = (objTactic.CWValue * (weightage.HasValue ? weightage.Value : 0)) / 100;
                     objTacticdt.TacticId = objTactic.TacticObj.PlanTacticId;
                     objTacticdt.Value = StageValue;
-                    objTacticdt.StartMonth = objTactic.TacticObj.StartDate.Month;
-                    objTacticdt.EndMonth = objTactic.TacticObj.EndDate.Month;
-                    objTacticdt.StartYear = objTactic.TacticObj.StartDate.Year;
-                    objTacticdt.EndYear = objTactic.TacticObj.EndDate.Year;
+                    objTacticdt.StartMonth = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.StartDate.Month;
+                    objTacticdt.EndMonth = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Month : objTactic.TacticObj.EndDate.Month;
+                    objTacticdt.StartYear = IsVelocity ? objTactic.TacticObj.StartDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.StartDate.Year;
+                    objTacticdt.EndYear = IsVelocity ? objTactic.TacticObj.EndDate.AddDays(objTactic.CWVelocity).Year : objTactic.TacticObj.EndDate.Year;
                     tacticdata.Add(objTacticdt);
                 }
             }
@@ -9945,7 +9946,7 @@ namespace RevenuePlanner.Controllers
         #region "Get Conversion data Main method"
         //added for new Main method of conversion partial view page-Dashrath Prajapati
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]
-        public ActionResult GetConversionData1(string timeFrameOption = "thisquarter", string isQuarterly = "true")
+        public ActionResult GetWaterFallData(string timeFrameOption = "thisquarter", string isQuarterly = "true")
         {
             #region "Declare Variables"
             ReportModel objReportModel = new ReportModel();
@@ -11444,7 +11445,7 @@ namespace RevenuePlanner.Controllers
         #endregion
         #endregion
 
-        #region "CardSection related Method"
+        //#region "CardSection related Method"
         //public List<CardSectionListModel> GetCardSectionList(string ParentLabel = "", string childlabelType = "", string childId = "")
         //{
         //    #region "Declare local variables"
@@ -11511,7 +11512,7 @@ namespace RevenuePlanner.Controllers
         //    return objCardSectionList;
         //}
         
-        #endregion
+        //#endregion
 
         //#region "CardSection Conversion related Method"
         //public List<CardSectionListModel> GetConversionCardSectionList(string ParentLabel = "", string childlabelType = "", string childId = "")
@@ -11540,7 +11541,7 @@ namespace RevenuePlanner.Controllers
         //        objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
         //        objCardSectionSubModel.Actual_Projected = 1615286;
         //        objCardSectionSubModel.Goal = 1346071;
-        //        objCardSectionSubModel.Percentage =1.00;
+        //        objCardSectionSubModel.Percentage = 1.00;
         //        objCardSectionSubModel.IsNegative = false;
         //        objCardSection.INQCardValues = objCardSectionSubModel;
         //        // End convertion CardSection SubModel Data
