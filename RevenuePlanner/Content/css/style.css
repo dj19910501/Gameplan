@@ -339,7 +339,7 @@ h3.title-header {
 .title-simple {
     font-size: 30px;
     opacity: 100%;
-    margin-left: 19px;
+    margin-left: 4%;
 }
 
 textarea {
@@ -10525,8 +10525,8 @@ li.close-list {
     margin: auto;
 }
 .messagewidth {
-    max-width:70%;
-    min-width:70%;
+    max-width:68%;
+    min-width:68%;
     margin: 0 auto !important;
     
 

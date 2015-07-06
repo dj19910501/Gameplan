@@ -278,7 +278,7 @@
           function SaveTitle() {
               var returnparameter = false;
               var title = htmlEncode($('#txtProgramTitle').val());
-              var planCampaignId = '@campaignId';
+              var planProgramId = $("#hdnPlanProgramId").val();
               var iserror = false;
 
               if (title == '') {
@@ -297,7 +297,7 @@
             async: false,
             type: 'POST',
             url: '@Url.Content("~/Inspect/SaveTitle/")',
-            data: { title: title, Id: planCampaignId, ActivePopup: "Program" },
+            data: { title: title, Id: planProgramId, ActivePopup: "Program" },
             success: function (data) {
                 if (!data.IsDuplicate) {
                     var planProgramId = $("#hdnPlanProgramId").val();
