@@ -6556,8 +6556,10 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (ActivePopup == "Program")
                 {
-                    int PlanCampaignid = Convert.ToInt32(Id);
-                    var Planprogramid = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == PlanCampaignid).Select(program => program.PlanProgramId).FirstOrDefault();
+                  
+                    int Planprogramid = Convert.ToInt32(Id);
+                    int PlanCampaignid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == Planprogramid).Select(program => program.PlanCampaignId).FirstOrDefault();
+
                     //// Get duplicate record.
                     var pcpvar = (from pcp in db.Plan_Campaign_Program
                                   join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
