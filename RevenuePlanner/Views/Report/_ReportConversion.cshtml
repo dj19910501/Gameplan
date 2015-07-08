@@ -12,7 +12,9 @@
     var conversion_barchartModel = Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty;
     var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
     
-    ////var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
+   //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
+
+   
                      
    
 }
@@ -45,14 +47,14 @@
                 </div>
             </div>
         </div>
-        <div class="projected" style="margin-left: 9px;">
+        <div class="projected disable-gray" style="margin-left: 9px;">
             <span>Actual</span>
             <span id="mqlActuals"></span>
             <span id="mqlActualPercentages"></span>
         </div>
-        <div class="projected disable-gray projected-txt">
+        <div class="projected disable-gray">
             <span>Projected</span>
-            <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size: 30px;">$1.58M</p>
+            <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
             <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>
         </div>
         <div class="time-frame">
@@ -107,7 +109,7 @@
 
     </div>
    <div  id="ConversionCardID">
-        @*  @Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)*@
+          @*@Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)*@
    </div>
     @*<div class="revenue-filter">
         <div class="sorting">
@@ -553,6 +555,7 @@
             loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
             var _childValue = '0';
             LoadDataConversionToPlanByCampaign();
+            ReloadConversionCardByCustomField();
         });
 
 
@@ -705,7 +708,19 @@
             }
         });
 
-    }
+        }
+
+        function ReloadConversionCardByCustomField() {
+            var parentlabel = $("#ddlParentConversionSummery").val();
+            var Code = $("#ddlINQToPlan").val();
+            var Type = '';
+            var id = '';
+            //var code = Code;
+            //id = _childvalue;
+
+            var _url = "@Url.Content("~/Report/GetConversionCardDetailByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
+            $("#ConversionCardID").load(_url);
+   }
 
         function loadChildListData(parentOption, id) {
 
