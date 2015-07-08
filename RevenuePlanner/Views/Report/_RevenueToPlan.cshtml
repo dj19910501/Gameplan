@@ -114,10 +114,11 @@
 
         _tbody = _tbody + ' <tr> ';
         _rowLabel = 'Actual Cost';
+        var _labelActualCost = 'Actual_Cost'; // Add BY Nishant Sheth #1421
         _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
         for (var _cat = 0; _cat < _catCount; _cat++) {
             //_tbody = _tbody + ' <td>' +_costList[_cat]+ '</td> ';
-            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _cntrlId = _labelActualCost + '_' + _cat.toString(); // Change By Nishant Sheth  : #1421
             _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _costList[_cat] + '" id="' + _cntrlId + '">' + _costList[_cat] + '</span> </td> ';
         }
         _tbody = _tbody + ' </tr>';
