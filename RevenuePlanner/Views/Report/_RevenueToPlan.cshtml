@@ -200,14 +200,17 @@
             else {
                 if (_percentage < 0) {
                     //_formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_percentage)), false);
+                    _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_percentage)), true);// Change By Nishant #1423
                     $(_lblPercentage).removeClass("above").addClass("below")
                 }
                 else {
                     //_formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), false);
+                    _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);// Change By Nishant #1423
                     $(_lblPercentage).removeClass("below").addClass("above");
                 }
             }
             //$(_lblPercentage).html(_formtPercentage);
+            $(_lblPercentage).html(_formtPercentage);// Change By Nishant #1423
         });
     }
 
