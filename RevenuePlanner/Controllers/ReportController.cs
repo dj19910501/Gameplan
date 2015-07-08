@@ -9902,6 +9902,7 @@ namespace RevenuePlanner.Controllers
                     TotalTrendQ2 = (costActualQ2) != 0 ? ((((revActualQ2) - (costActualQ2)) / (costActualQ2)) * 100) : 0; // Change By Nishant #1423
                     TotalTrendQ3 = (costActualQ3) != 0 ? ((((revActualQ3) - (costActualQ3)) / (costActualQ3)) * 100) : 0; // Change By Nishant #1423
                     TotalTrendQ4 = (costActualQ4) != 0 ? ((((revActualQ4) - (costActualQ4)) / (costActualQ4)) * 100) : 0; // Change By Nishant #1423
+                   
 
                     ROIList.Add(Math.Round(TotalTrendQ1, 2).ToString());
                     ROIList.Add(Math.Round(TotalTrendQ2, 2).ToString());
