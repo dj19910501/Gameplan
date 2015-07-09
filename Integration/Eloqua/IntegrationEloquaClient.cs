@@ -1670,7 +1670,7 @@ namespace Integration.Eloqua
         {
             RestRequest request = new RestRequest(Method.GET)
             {
-                Resource = string.Format("/data/contact/view/{2}/contacts/list/{3}?count={1}&page={0}&depth=complete", 1, 100, eloquaViewId, elouqaContactListId),
+                Resource = string.Format("/data/contact/view/{0}/contacts/list/{1}?depth=complete", eloquaViewId, elouqaContactListId),
                 RequestFormat = DataFormat.Json
             };
 
