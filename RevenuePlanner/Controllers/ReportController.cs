@@ -7104,7 +7104,8 @@ namespace RevenuePlanner.Controllers
                         #region "Calculate Proj.Vs Goal"
                         Actual_Projected = ActualDataTable.Sum(actual => actual.ActualValue) + ProjectedRevenueTrendList.Sum(proj => proj.TrendValue);
                         Goal = ProjectedRevenueTrendList.Sum(proj => proj.Value);
-                        Proj_Goal = Actual_Projected > 0 ? ((Actual_Projected - Goal) / Actual_Projected) : 0;
+                        //Proj_Goal = Actual_Projected > 0 ? ((Actual_Projected - Goal) / Actual_Projected) : 0; // Commneted By Nishant Sheth :#1424
+                        Proj_Goal = Goal > 0 ? (((Actual_Projected - Goal) / Goal) * 100) : 0;// Change By Nishant Sheth :#1424
                         TotalRevenueTypeCol = TotalRevenueTypeCol + Proj_Goal;
                         #endregion
 
@@ -7156,10 +7157,18 @@ namespace RevenuePlanner.Controllers
                             GoalQ3 = ProjectedRevenueTrendList.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month) || Q3.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                             GoalQ4 = ProjectedRevenueTrendList.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month) || Q3.Contains(_proj.Month) || Q4.Contains(_proj.Month)).Sum(_proj => _proj.Value);
 
-                            Proj_GoalQ1 = Act_ProjQ1 > 0 ? ((Act_ProjQ1 - GoalQ1) / Act_ProjQ1) : 0;
-                            Proj_GoalQ2 = Act_ProjQ2 > 0 ? ((Act_ProjQ2 - GoalQ2) / Act_ProjQ2) : 0;
-                            Proj_GoalQ3 = Act_ProjQ3 > 0 ? ((Act_ProjQ3 - GoalQ3) / Act_ProjQ3) : 0;
-                            Proj_GoalQ4 = Act_ProjQ4 > 0 ? ((Act_ProjQ4 - GoalQ4) / Act_ProjQ4) : 0;
+                            ///Comment By Nishant Sheth For #1424
+
+                            //Proj_GoalQ1 = Act_ProjQ1 > 0 ? ((Act_ProjQ1 - GoalQ1) / Act_ProjQ1) : 0;
+                            //Proj_GoalQ2 = Act_ProjQ2 > 0 ? ((Act_ProjQ2 - GoalQ2) / Act_ProjQ2) : 0;
+                            //Proj_GoalQ3 = Act_ProjQ3 > 0 ? ((Act_ProjQ3 - GoalQ3) / Act_ProjQ3) : 0;
+                            //Proj_GoalQ4 = Act_ProjQ4 > 0 ? ((Act_ProjQ4 - GoalQ4) / Act_ProjQ4) : 0;
+
+                            /// End By Nishant Sheth
+                            Proj_GoalQ1 = GoalQ1 > 0 ? (((Act_ProjQ1 - GoalQ1) / GoalQ1) * 100) : 0;// Change By Nishant #1424
+                            Proj_GoalQ2 = GoalQ2 > 0 ? (((Act_ProjQ2 - GoalQ2) / GoalQ2) * 100) : 0;// Change By Nishant #1424
+                            Proj_GoalQ3 = GoalQ3 > 0 ? (((Act_ProjQ3 - GoalQ3) / GoalQ3) * 100) : 0;// Change By Nishant #1424
+                            Proj_GoalQ4 = GoalQ4 > 0 ? (((Act_ProjQ4 - GoalQ4) / GoalQ4) * 100) : 0;// Change By Nishant #1424
                             #endregion
 
                             //TotalTrendQ1 = TotalTrendQ1 + (ActualQ1 + TrendQ1);
@@ -7207,7 +7216,8 @@ namespace RevenuePlanner.Controllers
 
                     double TotalActual_Projected = ActualTacticList.Sum(actual => actual.Actualvalue) + lstTotalProjectedTrendModel.Sum(proj => proj.TrendValue);
                     double TotalGoal = lstTotalProjectedTrendModel.Sum(proj => proj.Value);
-                    double TotalProj_Goal = TotalActual_Projected > 0 ? ((TotalActual_Projected - TotalGoal) / TotalActual_Projected) : 0;
+                    //double TotalProj_Goal = TotalActual_Projected > 0 ? ((TotalActual_Projected - TotalGoal) / TotalActual_Projected) : 0; // Comment By Nishant Sheth for #1424
+                    double TotalProj_Goal = TotalGoal > 0 ? (((TotalActual_Projected - TotalGoal) / TotalGoal) * 100) : 0;// Change By Nishant #1424
                     double _totalTrendQ1 = 0, _totalTrendQ2 = 0, _totalTrendQ3 = 0, _totalTrendQ4 = 0, _totalActualQ1 = 0, _totalActualQ2 = 0, _totalActualQ3 = 0, _totalActualQ4 = 0;
                     Act_ProjQ1 = Act_ProjQ2 = Act_ProjQ3 = Act_ProjQ4 = GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = Proj_GoalQ1 = Proj_GoalQ2 = Proj_GoalQ3 = Proj_GoalQ4 = 0;
                     #region "Calculate Trend Quarterly"
@@ -7239,10 +7249,19 @@ namespace RevenuePlanner.Controllers
                     GoalQ3 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month) || Q3.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ4 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month) || Q3.Contains(_proj.Month) || Q4.Contains(_proj.Month)).Sum(_proj => _proj.Value);
 
-                    TotalTrendQ1 = Act_ProjQ1 > 0 ? ((Act_ProjQ1 - GoalQ1) / Act_ProjQ1) : 0;
-                    TotalTrendQ2 = Act_ProjQ2 > 0 ? ((Act_ProjQ2 - GoalQ2) / Act_ProjQ2) : 0;
-                    TotalTrendQ3 = Act_ProjQ3 > 0 ? ((Act_ProjQ3 - GoalQ3) / Act_ProjQ3) : 0;
-                    TotalTrendQ4 = Act_ProjQ4 > 0 ? ((Act_ProjQ4 - GoalQ4) / Act_ProjQ4) : 0;
+                    /// Commented By Nishant Sheth for #1424
+
+                    //TotalTrendQ1 = Act_ProjQ1 > 0 ? ((Act_ProjQ1 - GoalQ1) / Act_ProjQ1) : 0;
+                    //TotalTrendQ2 = Act_ProjQ2 > 0 ? ((Act_ProjQ2 - GoalQ2) / Act_ProjQ2) : 0;
+                    //TotalTrendQ3 = Act_ProjQ3 > 0 ? ((Act_ProjQ3 - GoalQ3) / Act_ProjQ3) : 0;
+                    //TotalTrendQ4 = Act_ProjQ4 > 0 ? ((Act_ProjQ4 - GoalQ4) / Act_ProjQ4) : 0;
+
+                    /// End By Nishant Sheth
+
+                    TotalTrendQ1 = GoalQ1 > 0 ? (((Act_ProjQ1 - GoalQ1) / GoalQ1) * 100) : 0;// Change By Nishant #1424
+                    TotalTrendQ2 = GoalQ2 > 0 ? (((Act_ProjQ2 - GoalQ2) / GoalQ2) * 100) : 0;// Change By Nishant #1424
+                    TotalTrendQ3 = GoalQ3 > 0 ? (((Act_ProjQ3 - GoalQ3) / GoalQ3) * 100) : 0;// Change By Nishant #1424
+                    TotalTrendQ4 = GoalQ4 > 0 ? (((Act_ProjQ4 - GoalQ4) / GoalQ4) * 100) : 0;// Change By Nishant #1424
                     #endregion
 
                     #endregion
@@ -7449,7 +7468,8 @@ namespace RevenuePlanner.Controllers
                         #region "Calculate ROI"
                         if (TotalCostValueCurrentMonth != 0)
                         {
-                            TotalROIValueCurrentMonth = (TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth;
+                            //TotalROIValueCurrentMonth = (TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth; // Commented BY Nishant Sheth : #1423
+                            TotalROIValueCurrentMonth = (((TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth) * 100); // Add By Nishant Sheth : #1423
                         }
                         else
                         {
@@ -7462,14 +7482,17 @@ namespace RevenuePlanner.Controllers
                         #region "Set Sparkline chart Data"
                         _sparklinedata = new sparklineData();
                         _sparklinedata.Name = _obj.Title;
-                        strRevenueTypeColumn = Math.Round(TotalROIValueCurrentMonth, 1).ToString();
+                        //strRevenueTypeColumn = Math.Round(TotalROIValueCurrentMonth, 1).ToString(); // Commented By Nishant Sheth : #1423
+                        strRevenueTypeColumn = TotalROIValueCurrentMonth > 0 ? ("+" + Math.Round(TotalROIValueCurrentMonth, 1).ToString() + "%") : (TotalROIValueCurrentMonth.Equals(0) ? "0%" : Math.Round(TotalROIValueCurrentMonth, 1).ToString() + "%");// Change By Nishant Sheth #1423 (Display in %)
                         _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
+                        _sparklinedata.IsPercentage = true; // Add BY Nishant Sheth : #1423
                         _sparklinedata.IsPositive = TotalROIValueCurrentMonth >= 0 ? true : false;
                         _sparklinedata.Is_Pos_Neg_Status = true;
                         _sparklinedata.IsTotal = false;
                         _sparklinedata.Value = TotalROIValueCurrentMonth;
                         //_sparklinedata.Tooltip_Prefix = strCurrency.ToString();
                         _sparklinedata.Tooltip_Prefix = _sparklinedata.Tooltip_Suffix = string.Empty;
+                        _sparklinedata.Tooltip_Suffix = strPercentage.ToString();// Add BY Nishant Sheth : #1423
                         #endregion
 
                         #region "Calcualte Actual & Projected value Quarterly"
@@ -7511,11 +7534,19 @@ namespace RevenuePlanner.Controllers
                             //TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0; 
                             #endregion
 
-                            TrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
-                            TrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
-                            TrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
-                            TrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0;
+                            /// Commented By Nishant Sheth for #1423
 
+                            //TrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
+                            //TrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
+                            //TrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
+                            //TrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0;
+
+                            /// End By Nishant Sheth 
+
+                            TrendQ1 = (costActualQ1) != 0 ? ((((revActualQ1) - (costActualQ1)) / (costActualQ1)) * 100) : 0; // Change By Nishant #1423
+                            TrendQ2 = (costActualQ2) != 0 ? ((((revActualQ2) - (costActualQ2)) / (costActualQ2)) * 100) : 0; // Change By Nishant #1423
+                            TrendQ3 = (costActualQ3) != 0 ? ((((revActualQ3) - (costActualQ3)) / (costActualQ3)) * 100) : 0; // Change By Nishant #1423
+                            TrendQ4 = (costActualQ4) != 0 ? ((((revActualQ4) - (costActualQ4)) / (costActualQ4)) * 100) : 0; // Change By Nishant #1423
                             strTrendValue = string.Join(", ", new List<string> { (TrendQ1).ToString(), (TrendQ2).ToString(), (TrendQ3).ToString(), (TrendQ4).ToString() });
                             _sparklinedata.Trend = strTrendValue;
                         }
@@ -7552,7 +7583,8 @@ namespace RevenuePlanner.Controllers
                     #region "Calculate ROI"
                     if (TotalCostValueCurrentMonth != 0)
                     {
-                        TotalRevenueTypeCol = (TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth;
+                        //TotalRevenueTypeCol = (TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth; // Commented BY Nishant Sheth : #1423
+                        TotalRevenueTypeCol = (((TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth) * 100); // Add By Nishant Sheth : #1423
                     }
                     else
                     {
@@ -7599,10 +7631,18 @@ namespace RevenuePlanner.Controllers
                         //TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0; 
                         #endregion
 
-                        TotalTrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
-                        TotalTrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
-                        TotalTrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
-                        TotalTrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0;
+                        /// Commented By Nishant Sheth for #1423
+
+                        //TotalTrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
+                        //TotalTrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
+                        //TotalTrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
+                        //TotalTrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0;
+
+                        /// End By Nishant Sheth
+                        TotalTrendQ1 = (costActualQ1) != 0 ? ((((revActualQ1) - (costActualQ1)) / (costActualQ1)) * 100) : 0; // Change By Nishant #1423
+                        TotalTrendQ2 = (costActualQ2) != 0 ? ((((revActualQ2) - (costActualQ2)) / (costActualQ2)) * 100) : 0; // Change By Nishant #1423
+                        TotalTrendQ3 = (costActualQ3) != 0 ? ((((revActualQ3) - (costActualQ3)) / (costActualQ3)) * 100) : 0; // Change By Nishant #1423
+                        TotalTrendQ4 = (costActualQ4) != 0 ? ((((revActualQ4) - (costActualQ4)) / (costActualQ4)) * 100) : 0; // Change By Nishant #1423
 
                         //TotalTrendQ1 = TrendQ1;//(ActualQ1 + TrendQ1);
                         //TotalTrendQ2 = TrendQ2;//(ActualQ2 + TrendQ2);
@@ -7620,13 +7660,16 @@ namespace RevenuePlanner.Controllers
                     _sparklinedata = new sparklineData();
                     _sparklinedata.Name = "Total";
                     strRevenueTypeColumn = string.Empty;
-                    strRevenueTypeColumn = Math.Round(TotalRevenueTypeCol, 1).ToString();
+                    //strRevenueTypeColumn = Math.Round(TotalRevenueTypeCol, 1).ToString(); // Commented BY Nishant Sheth : #1423
+                    strRevenueTypeColumn = TotalRevenueTypeCol > 0 ? ("+" + Math.Round(TotalRevenueTypeCol, 1).ToString() + "%") : (TotalRevenueTypeCol.Equals(0) ? "0%" : Math.Round(TotalRevenueTypeCol, 1).ToString() + "%"); // Change By Nishant Sheth #1423 (Display in %)
                     _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
+                    _sparklinedata.IsPercentage = true; // Add BY Nishant Sheth : #1423
                     _sparklinedata.IsPositive = TotalRevenueTypeCol >= 0 ? true : false;
                     _sparklinedata.Is_Pos_Neg_Status = true;
                     _sparklinedata.Trend = string.Join(", ", new List<string> { TotalTrendQ1.ToString(), TotalTrendQ2.ToString(), TotalTrendQ3.ToString(), TotalTrendQ4.ToString() });
                     _sparklinedata.IsTotal = true;
                     _sparklinedata.Tooltip_Prefix = _sparklinedata.Tooltip_Suffix = string.Empty;
+                    _sparklinedata.Tooltip_Suffix = strPercentage.ToString();// Add BY Nishant Sheth : #1423
                     resultSparklineData.Add(_sparklinedata);
                     #endregion
 
@@ -9701,10 +9744,10 @@ namespace RevenuePlanner.Controllers
                     GoalQ3 = lstTotalProjectedTrendModel.Where(_proj => Q3.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ4 = lstTotalProjectedTrendModel.Where(_proj => Q4.Contains(_proj.Month)).Sum(_proj => _proj.Value);
 
-                    TotalTrendQ1 = Act_ProjQ1 > 0 ? ((Act_ProjQ1 - GoalQ1) / Act_ProjQ1) : 0;
-                    TotalTrendQ2 = Act_ProjQ2 > 0 ? ((Act_ProjQ2 - GoalQ2) / Act_ProjQ2) : 0;
-                    TotalTrendQ3 = Act_ProjQ3 > 0 ? ((Act_ProjQ3 - GoalQ3) / Act_ProjQ3) : 0;
-                    TotalTrendQ4 = Act_ProjQ4 > 0 ? ((Act_ProjQ4 - GoalQ4) / Act_ProjQ4) : 0;
+                    TotalTrendQ1 = GoalQ1 > 0 ? (((Act_ProjQ1 - GoalQ1) / GoalQ1) * 100) : 0;// Change By Nishant #1424
+                    TotalTrendQ2 = GoalQ2 > 0 ? (((Act_ProjQ2 - GoalQ2) / GoalQ2) * 100) : 0;// Change By Nishant #1424
+                    TotalTrendQ3 = GoalQ3 > 0 ? (((Act_ProjQ3 - GoalQ3) / GoalQ3) * 100) : 0;// Change By Nishant #1424
+                    TotalTrendQ4 = GoalQ4 > 0 ? (((Act_ProjQ4 - GoalQ4) / GoalQ4) * 100) : 0;// Change By Nishant #1424
 
                     #endregion
 
@@ -9730,7 +9773,7 @@ namespace RevenuePlanner.Controllers
                         _totalTrend = lstTotalProjectedTrendModel.Where(_projTrend => _projTrend.Month.Equals(_curntPeriod)).Sum(_projTrend => _projTrend.TrendValue);
                         _totalActual_Projected = _totalActual + _totalTrend;
                         _totalGoal = lstTotalProjectedTrendModel.Where(_proj => _proj.Month.Equals(_curntPeriod)).Sum(_proj => _proj.Value);
-                        _TotalTrendValue = _totalActual_Projected > 0 ? ((_totalActual_Projected - _totalGoal) / _totalActual_Projected) : 0;
+                        _TotalTrendValue = _totalGoal > 0 ? (((_totalActual_Projected - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant #1424
                         PerformanceList.Add(_TotalTrendValue.ToString());
                     }
                     #endregion
@@ -9888,10 +9931,10 @@ namespace RevenuePlanner.Controllers
                     costActualQ4 = TacticCostData.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
 
-                    TotalTrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
-                    TotalTrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
-                    TotalTrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
-                    TotalTrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0;
+                    TotalTrendQ1 = (costActualQ1) != 0 ? ((((revActualQ1) - (costActualQ1)) / (costActualQ1)) * 100) : 0; // Change By Nishant #1423
+                    TotalTrendQ2 = (costActualQ2) != 0 ? ((((revActualQ2) - (costActualQ2)) / (costActualQ2)) * 100) : 0; // Change By Nishant #1423
+                    TotalTrendQ3 = (costActualQ3) != 0 ? ((((revActualQ3) - (costActualQ3)) / (costActualQ3)) * 100) : 0; // Change By Nishant #1423
+                    TotalTrendQ4 = (costActualQ4) != 0 ? ((((revActualQ4) - (costActualQ4)) / (costActualQ4)) * 100) : 0; // Change By Nishant #1423
 
                     ROIList.Add(Math.Round(TotalTrendQ1, 2).ToString());
                     ROIList.Add(Math.Round(TotalTrendQ2, 2).ToString());
@@ -9907,7 +9950,7 @@ namespace RevenuePlanner.Controllers
                         _curntPeriod = PeriodPrefix.ToString() + _month;
                         _revactual = _ActualDataTable.Where(actual => _curntPeriod.Equals(actual.Period)).Sum(actual => actual.ActualValue);
                         _costActual = TacticCostData.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                        _TotalTrend = (_costActual) != 0 ? (((_revactual) - (_costActual)) / (_costActual)) : 0;
+                        _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
                         ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
                     }
                 }
