@@ -7115,7 +7115,7 @@ namespace RevenuePlanner.Controllers
                         Actual_Projected = ActualDataTable.Sum(actual => actual.ActualValue) + ProjectedRevenueTrendList.Sum(proj => proj.TrendValue);
                         Goal = ProjectedRevenueTrendList.Sum(proj => proj.Value);
                         //Proj_Goal = Actual_Projected > 0 ? ((Actual_Projected - Goal) / Actual_Projected) : 0; // Commneted By Nishant Sheth :#1424
-                        Proj_Goal = Goal > 0 ? (((Actual_Projected - Goal) / Goal) * 100) : 0;// Change By Nishant Sheth :#1424
+                        Proj_Goal = Goal > 0 ? (((Actual_Projected - Goal) / Goal) * 100) : 0;// Change By Nishant Sheth :#1424 // 
                         TotalRevenueTypeCol = TotalRevenueTypeCol + Proj_Goal;
                         #endregion
 
