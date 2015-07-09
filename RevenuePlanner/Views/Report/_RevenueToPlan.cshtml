@@ -114,11 +114,10 @@
 
         _tbody = _tbody + ' <tr> ';
         _rowLabel = 'Actual Cost';
-        var _labelActualCost = 'Actual_Cost'; // Add BY Nishant Sheth #1421
         _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
         for (var _cat = 0; _cat < _catCount; _cat++) {
             //_tbody = _tbody + ' <td>' +_costList[_cat]+ '</td> ';
-            _cntrlId = _labelActualCost + '_' + _cat.toString(); // Change By Nishant Sheth  : #1421
+            _cntrlId = _rowLabel + '_' + _cat.toString();
             _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _costList[_cat] + '" id="' + _cntrlId + '">' + _costList[_cat] + '</span> </td> ';
         }
         _tbody = _tbody + ' </tr>';
@@ -201,14 +200,17 @@
             else {
                 if (_percentage < 0) {
                     //_formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_percentage)), false);
+                    _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_percentage)), true);// Change By Nishant #1423
                     $(_lblPercentage).removeClass("above").addClass("below")
                 }
                 else {
                     //_formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), false);
+                    _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);// Change By Nishant #1423
                     $(_lblPercentage).removeClass("below").addClass("above");
                 }
             }
             //$(_lblPercentage).html(_formtPercentage);
+            $(_lblPercentage).html(_formtPercentage);// Change By Nishant #1423
         });
     }
 
