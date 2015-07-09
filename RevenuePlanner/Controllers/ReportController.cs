@@ -9155,7 +9155,7 @@ namespace RevenuePlanner.Controllers
                     string _curntPeriod = string.Empty;
                     double _actualval, _actualtotal = 0;
 
-                    for (int i = 1; i <= 12; i++)
+                    for (int i = 0; i < 12; i++)
                     {
                         _actualval = ActualList.ToList()[i];
                         if (Convert.ToInt32(DateTime.Now.Month) > i)
@@ -9710,7 +9710,7 @@ namespace RevenuePlanner.Controllers
                 {
                     string _curntPeriod = string.Empty;
                     double _actualval, _actualtotal = 0;
-                    for (int i = 1; i <= 12; i++)
+                    for (int i = 0; i < 12; i++)
                     {
                         _actualval = ActualList.ToList()[i];
                         if (Convert.ToInt32(DateTime.Now.Month) > i)
@@ -10754,9 +10754,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                           
                                 _actualtotal = 0;
-                            
                         }
                         _monthTrendList.Add(_actualtotal);
                     }
@@ -11062,7 +11060,7 @@ namespace RevenuePlanner.Controllers
                     string _curntPeriod = string.Empty;
                     double _actualval, _actualtotal = 0;
 
-                    for (int i = 1; i <= 12; i++)
+                    for (int i = 0; i < 12; i++)
                     {
                         _actualval = ActualList.ToList()[i];
                         if (Convert.ToInt32(DateTime.Now.Month) > i)
