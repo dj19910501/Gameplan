@@ -7102,7 +7102,7 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region "Calculate Proj.Vs Goal"
-                        Actual_Projected = ActualDataTable.Sum(actual => actual.ActualValue) + ProjectedRevenueTrendList.Sum(proj => proj.TrendValue);
+                        Actual_Projected = ActualDataTable.Sum(actual => actual.ActualValue);// +ProjectedRevenueTrendList.Sum(proj => proj.TrendValue);
                         Goal = ProjectedRevenueTrendList.Sum(proj => proj.Value);
                         //Proj_Goal = Actual_Projected > 0 ? ((Actual_Projected - Goal) / Actual_Projected) : 0; // Commneted By Nishant Sheth :#1424
                         Proj_Goal = Goal > 0 ? (((Actual_Projected - Goal) / Goal) * 100) : 0;// Change By Nishant Sheth :#1424 // 
@@ -7147,10 +7147,10 @@ namespace RevenuePlanner.Controllers
                             TrendQ4 = ProjectedRevenueTrendList.Where(_projTrend => Q1.Contains(_projTrend.Month) || Q2.Contains(_projTrend.Month) || Q3.Contains(_projTrend.Month) || Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
 
                             #region "Newly Added Code"
-                            Act_ProjQ1 = ActualQ1 + TrendQ1;
-                            Act_ProjQ2 = ActualQ2 + TrendQ2;
-                            Act_ProjQ3 = ActualQ3 + TrendQ3;
-                            Act_ProjQ4 = ActualQ4 + TrendQ4;
+                            Act_ProjQ1 = ActualQ1;// +TrendQ1;
+                            Act_ProjQ2 = ActualQ2;// +TrendQ2;
+                            Act_ProjQ3 = ActualQ3;// +TrendQ3;
+                            Act_ProjQ4 = ActualQ4;// +TrendQ4;
 
                             GoalQ1 = ProjectedRevenueTrendList.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                             GoalQ2 = ProjectedRevenueTrendList.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -7214,7 +7214,7 @@ namespace RevenuePlanner.Controllers
                                                        TrendValue = tac.Key.TrendValue
                                                    }).Distinct().ToList();
 
-                    double TotalActual_Projected = ActualTacticList.Sum(actual => actual.Actualvalue) + lstTotalProjectedTrendModel.Sum(proj => proj.TrendValue);
+                    double TotalActual_Projected = ActualTacticList.Sum(actual => actual.Actualvalue);// +lstTotalProjectedTrendModel.Sum(proj => proj.TrendValue);
                     double TotalGoal = lstTotalProjectedTrendModel.Sum(proj => proj.Value);
                     //double TotalProj_Goal = TotalActual_Projected > 0 ? ((TotalActual_Projected - TotalGoal) / TotalActual_Projected) : 0; // Comment By Nishant Sheth for #1424
                     double TotalProj_Goal = TotalGoal > 0 ? (((TotalActual_Projected - TotalGoal) / TotalGoal) * 100) : 0;// Change By Nishant #1424
@@ -7239,10 +7239,10 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region "Newly added Code"
-                    Act_ProjQ1 = _totalActualQ1 + _totalTrendQ1;
-                    Act_ProjQ2 = _totalActualQ2 + _totalTrendQ2;
-                    Act_ProjQ3 = _totalActualQ3 + _totalTrendQ3;
-                    Act_ProjQ4 = _totalActualQ4 + _totalTrendQ4;
+                    Act_ProjQ1 = _totalActualQ1;// +_totalTrendQ1;
+                    Act_ProjQ2 = _totalActualQ2;// +_totalTrendQ2;
+                    Act_ProjQ3 = _totalActualQ3;// +_totalTrendQ3;
+                    Act_ProjQ4 = _totalActualQ4;// +_totalTrendQ4;
 
                     GoalQ1 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ2 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -9287,10 +9287,10 @@ namespace RevenuePlanner.Controllers
                     _totalTrendQ4 = lstTotalProjectedTrendModel.Where(_projTrend => Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
 
                     #region "Newly added Code"
-                    Act_ProjQ1 = _totalActualQ1 + _totalTrendQ1;
-                    Act_ProjQ2 = _totalActualQ2 + _totalTrendQ2;
-                    Act_ProjQ3 = _totalActualQ3 + _totalTrendQ3;
-                    Act_ProjQ4 = _totalActualQ4 + _totalTrendQ4;
+                    Act_ProjQ1 = _totalActualQ1;// +_totalTrendQ1;
+                    Act_ProjQ2 = _totalActualQ2;// +_totalTrendQ2;
+                    Act_ProjQ3 = _totalActualQ3;// +_totalTrendQ3;
+                    Act_ProjQ4 = _totalActualQ4;// +_totalTrendQ4;
 
                     GoalQ1 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ2 = lstTotalProjectedTrendModel.Where(_proj => Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -9326,7 +9326,7 @@ namespace RevenuePlanner.Controllers
                         _curntPeriod = PeriodPrefix.ToString() + i;
                         _totalActual = _perActualDataTable.Where(actual => actual.Period.Equals(_curntPeriod)).Sum(actual => actual.ActualValue);
                         _totalTrend = lstTotalProjectedTrendModel.Where(_projTrend => _projTrend.Month.Equals(_curntPeriod)).Sum(_projTrend => _projTrend.TrendValue);
-                        _totalActual_Projected = _totalActual + _totalTrend;
+                        _totalActual_Projected = _totalActual;// +_totalTrend;
                         _totalGoal = lstTotalProjectedTrendModel.Where(_proj => _proj.Month.Equals(_curntPeriod)).Sum(_proj => _proj.Value);
                         _TotalTrendValue = _totalGoal > 0 ? (((_totalActual_Projected - _totalGoal) / _totalGoal) * 100) : 0;//Change By Nishant #1424
                         PerformanceList.Add(_TotalTrendValue.ToString());
@@ -9836,10 +9836,10 @@ namespace RevenuePlanner.Controllers
                     _totalTrendQ4 = lstTotalProjectedTrendModel.Where(_projTrend => Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
 
                     #region "Newly added Code"
-                    Act_ProjQ1 = _totalActualQ1 + _totalTrendQ1;
-                    Act_ProjQ2 = _totalActualQ2 + _totalTrendQ2;
-                    Act_ProjQ3 = _totalActualQ3 + _totalTrendQ3;
-                    Act_ProjQ4 = _totalActualQ4 + _totalTrendQ4;
+                    Act_ProjQ1 = _totalActualQ1;// +_totalTrendQ1;
+                    Act_ProjQ2 = _totalActualQ2;// +_totalTrendQ2;
+                    Act_ProjQ3 = _totalActualQ3;// +_totalTrendQ3;
+                    Act_ProjQ4 = _totalActualQ4;// +_totalTrendQ4;
 
                     GoalQ1 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ2 = lstTotalProjectedTrendModel.Where(_proj => Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -9877,7 +9877,7 @@ namespace RevenuePlanner.Controllers
                         _curntPeriod = PeriodPrefix.ToString() + i;
                         _totalActual = ActualTacticList.Where(actual => actual.Period.Equals(_curntPeriod)).Sum(actual => actual.Actualvalue);
                         _totalTrend = lstTotalProjectedTrendModel.Where(_projTrend => _projTrend.Month.Equals(_curntPeriod)).Sum(_projTrend => _projTrend.TrendValue);
-                        _totalActual_Projected = _totalActual + _totalTrend;
+                        _totalActual_Projected = _totalActual;// +_totalTrend;
                         _totalGoal = lstTotalProjectedTrendModel.Where(_proj => _proj.Month.Equals(_curntPeriod)).Sum(_proj => _proj.Value);
                         //_TotalTrendValue = _totalActual_Projected > 0 ? ((_totalActual_Projected - _totalGoal) / _totalActual_Projected) : 0;
                         _TotalTrendValue = _totalGoal > 0 ? (((_totalActual_Projected - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant #1424
@@ -10000,7 +10000,7 @@ namespace RevenuePlanner.Controllers
                 ActualTrendModelList = new List<ActualTrendModel>();
                 List<Models.ActualDataTable> _ActualDataTable = new List<Models.ActualDataTable>();
                 revFltrActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
-                revFltrActuals = revActualTacticList.Where(actual => IncludeCurrentMonth.Contains(TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
+                revFltrActuals = revActualTacticList;//.Where(actual => IncludeCurrentMonth.Contains(TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
                 _ActualDataTable = GetActualTacticDataTable(revFltrActuals);
                 TotalRevenueValueCurrentMonth = _ActualDataTable.Sum(actual => actual.ActualValue);
                 TacticIds = new List<int>();
@@ -10892,10 +10892,10 @@ namespace RevenuePlanner.Controllers
                     _totalTrendQ4 = lstTotalProjectedTrendModel.Where(_projTrend => Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
 
                     #region "Newly added Code"
-                    Act_ProjQ1 = _totalActualQ1 + _totalTrendQ1;
-                    Act_ProjQ2 = _totalActualQ2 + _totalTrendQ2;
-                    Act_ProjQ3 = _totalActualQ3 + _totalTrendQ3;
-                    Act_ProjQ4 = _totalActualQ4 + _totalTrendQ4;
+                    Act_ProjQ1 = _totalActualQ1;// +_totalTrendQ1;
+                    Act_ProjQ2 = _totalActualQ2;// +_totalTrendQ2;
+                    Act_ProjQ3 = _totalActualQ3;// +_totalTrendQ3;
+                    Act_ProjQ4 = _totalActualQ4;// +_totalTrendQ4;
 
                     GoalQ1 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ2 = lstTotalProjectedTrendModel.Where(_proj => Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -10934,7 +10934,7 @@ namespace RevenuePlanner.Controllers
                         _curntPeriod = PeriodPrefix.ToString() + i;
                         _totalActual = ActualTacticList.Where(actual => actual.Period.Equals(_curntPeriod)).Sum(actual => actual.Actualvalue);
                         _totalTrend = lstTotalProjectedTrendModel.Where(_projTrend => _projTrend.Month.Equals(_curntPeriod)).Sum(_projTrend => _projTrend.TrendValue);
-                        _totalActual_Projected = _totalActual + _totalTrend;
+                        _totalActual_Projected = _totalActual;// +_totalTrend;
                         _totalGoal = lstTotalProjectedTrendModel.Where(_proj => _proj.Month.Equals(_curntPeriod)).Sum(_proj => _proj.Value);
                         _TotalTrendValue = _totalGoal > 0 ? (((_totalActual_Projected - _totalGoal) / _totalGoal) * 100) : 0;// Change By Nishant #1424
                         PerformanceList.Add(_TotalTrendValue.ToString());
@@ -11219,10 +11219,10 @@ namespace RevenuePlanner.Controllers
                     _totalTrendQ4 = lstTotalProjectedTrendModel.Where(_projTrend => Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
 
                     #region "Newly added Code"
-                    Act_ProjQ1 = _totalActualQ1 + _totalTrendQ1;
-                    Act_ProjQ2 = _totalActualQ2 + _totalTrendQ2;
-                    Act_ProjQ3 = _totalActualQ3 + _totalTrendQ3;
-                    Act_ProjQ4 = _totalActualQ4 + _totalTrendQ4;
+                    Act_ProjQ1 = _totalActualQ1;// +_totalTrendQ1;
+                    Act_ProjQ2 = _totalActualQ2;// +_totalTrendQ2;
+                    Act_ProjQ3 = _totalActualQ3;// +_totalTrendQ3;
+                    Act_ProjQ4 = _totalActualQ4;// +_totalTrendQ4;
 
                     GoalQ1 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ2 = lstTotalProjectedTrendModel.Where(_proj => Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -11258,7 +11258,7 @@ namespace RevenuePlanner.Controllers
                         _curntPeriod = PeriodPrefix.ToString() + i;
                         _totalActual = _perActualDataTable.Where(actual => actual.Period.Equals(_curntPeriod)).Sum(actual => actual.ActualValue);
                         _totalTrend = lstTotalProjectedTrendModel.Where(_projTrend => _projTrend.Month.Equals(_curntPeriod)).Sum(_projTrend => _projTrend.TrendValue);
-                        _totalActual_Projected = _totalActual + _totalTrend;
+                        _totalActual_Projected = _totalActual;// +_totalTrend;
                         _totalGoal = lstTotalProjectedTrendModel.Where(_proj => _proj.Month.Equals(_curntPeriod)).Sum(_proj => _proj.Value);
                         _TotalTrendValue = _totalGoal > 0 ? (((_totalActual_Projected - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant Sheth : #1424
                         PerformanceList.Add(_TotalTrendValue.ToString());

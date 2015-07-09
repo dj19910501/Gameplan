@@ -130,7 +130,7 @@
         for (var _cat = 0; _cat < _catCount; _cat++) {
             //_tbody = _tbody + ' <td>' +_ROIList[_cat]+ '</td> ';
             _cntrlId = _rowLabel + '_' + _cat.toString();
-            _tbody = _tbody + ' <td> <span class="ROIval" orig-val="' + _ROIList[_cat] + '" id="' + _cntrlId + '">' + _ROIList[_cat] + '</span> </td> ';
+            _tbody = _tbody + ' <td> <span class="ROIval" orig-val="' + _ROIList[_cat] + '" id="' + _cntrlId + '">' + _ROIList[_cat].toString() + '</span> </td> ';
         }
         _tbody = _tbody + ' </tr>';
 
@@ -195,7 +195,7 @@
             var _text = $(_lblPercentage).attr('orig-val');
             var _percentage = parseFloat(_text);
             if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN' || _percentage == '0') {
-                $(_lblPercentage).html('--');
+                _formtPercentage = '--';
                 $(_lblPercentage).removeClass("above").removeClass("below");
             }
             else {
