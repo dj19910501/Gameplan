@@ -1620,7 +1620,7 @@ namespace RevenuePlanner.Controllers
                                 #endregion
 
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                Common.ChangeCampaignStatus(pcpobj.PlanCampaignId,false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 return Json(new { IsSaved = true, Msg = strMessage, programID = programid, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
@@ -1748,7 +1748,7 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
-                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId);
+                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId,false);
                                     scope.Complete();
                                     string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                     return Json(new { IsSaved = true, Msg = strMessage, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
@@ -3325,9 +3325,9 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
-                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId);
+                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId,false);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
-                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    Common.ChangeCampaignStatus(PlanCampaignId,false);
 
                                     scope.Complete();
                                     string strMessag = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -3702,13 +3702,13 @@ namespace RevenuePlanner.Controllers
                                     }
                                     //// End - Added by :- Mitesh Vaishnav on 19/05/2015 for PL ticket #546
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId);
+                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId,false);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pcpobj.PlanProgramId).Select(program => program.PlanCampaignId).Single();
-                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    Common.ChangeCampaignStatus(PlanCampaignId,false);
                                     if (oldProgramId > 0)
                                     {
-                                        Common.ChangeProgramStatus(oldProgramId);
-                                        Common.ChangeCampaignStatus(oldCampaignId);
+                                        Common.ChangeProgramStatus(oldProgramId,false);
+                                        Common.ChangeCampaignStatus(oldCampaignId,false);
                                     }
                                     //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
@@ -4497,11 +4497,11 @@ namespace RevenuePlanner.Controllers
 
                                     ////Start Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
                                     ////Update Program status according to the tactic status
-                                    Common.ChangeProgramStatus(tactic.PlanProgramId);
+                                    Common.ChangeProgramStatus(tactic.PlanProgramId,false);
 
                                     ////Update Campaign status according to the tactic and program status
                                     var PlanCampaignId = tactic.Plan_Campaign_Program.PlanCampaignId;
-                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    Common.ChangeCampaignStatus(PlanCampaignId,false);
                                     ////End Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
 
                                     if (result >= 1)
@@ -6556,8 +6556,10 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (ActivePopup == "Program")
                 {
-                    int PlanCampaignid = Convert.ToInt32(Id);
-                    var Planprogramid = db.Plan_Campaign_Program.Where(program => program.PlanCampaignId == PlanCampaignid).Select(program => program.PlanProgramId).FirstOrDefault();
+                  
+                    int Planprogramid = Convert.ToInt32(Id);
+                    int PlanCampaignid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == Planprogramid).Select(program => program.PlanCampaignId).FirstOrDefault();
+
                     //// Get duplicate record.
                     var pcpvar = (from pcp in db.Plan_Campaign_Program
                                   join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
@@ -7625,6 +7627,7 @@ namespace RevenuePlanner.Controllers
             int result = 0;
             string approvedComment = "";
             string strmessage = "";
+            bool Addcomment = false;
             try
             {
                 using (MRPEntities mrp = new MRPEntities())
@@ -7659,11 +7662,13 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                                 {
+
                                     pcptc.PlanProgramId = planTacticId;
                                     approvedComment = Convert.ToString(Enums.Section.Program) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
                                 }
                                 else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                                 {
+                                    
                                     pcptc.PlanCampaignId = planTacticId;
                                     approvedComment = Convert.ToString(Enums.Section.Campaign) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
                                 }
@@ -7740,14 +7745,19 @@ namespace RevenuePlanner.Controllers
                                     }
                                     // End - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
 
+                                    if (!tactic.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString()))
+                                    {
+                                        Addcomment = true;
+                                    }
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                     //-- Update Program status according to the tactic status
-                                    Common.ChangeProgramStatus(tactic.PlanProgramId);
+                                    Common.ChangeProgramStatus(tactic.PlanProgramId,Addcomment);
 
                                     //-- Update Campaign status according to the tactic and program status
                                     var PlanCampaignId = tactic.Plan_Campaign_Program.PlanCampaignId;
-                                    Common.ChangeCampaignStatus(PlanCampaignId);
+                                    Common.ChangeCampaignStatus(PlanCampaignId, Addcomment);
                                     //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                    
                                 }
                                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                                 {
@@ -7802,31 +7812,37 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                                         {
+                                            Addcomment = true;
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
                                             db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
+                                            AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower());
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
                                         }
                                         else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                                         {
+                                            Addcomment = true;
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
                                             db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
+                                            AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower());
 
                                         }
                                         else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                                         {
-
+                                            Addcomment = true;
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString();
                                             db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
+                                            AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower());
                                             Common.InsertChangeLog(program.Plan_Campaign.PlanId, 0, program.PlanProgramId, program.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
 
                                         }
 
                                         //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                        Common.ChangeCampaignStatus(program.PlanCampaignId, Addcomment);
                                         //-- Update Campaign status according to the tactic and program status
-                                        Common.ChangeCampaignStatus(program.PlanCampaignId);
+                                      
                                     }
                                     if (result >= 1)
                                     {
@@ -7859,7 +7875,7 @@ namespace RevenuePlanner.Controllers
                                             db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == planTacticId).ToList().ForEach(pcp => pcp.Status = strstatus);
                                             db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.Plan_Campaign_Program.PlanCampaignId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
-
+                                            AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower());
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
                                         }
                                         else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
@@ -7868,6 +7884,7 @@ namespace RevenuePlanner.Controllers
                                             db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == planTacticId).ToList().ForEach(pcp => pcp.Status = strstatus);
                                             db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.Plan_Campaign_Program.PlanCampaignId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
+                                            AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower());
 
                                         }
                                         else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
@@ -7876,6 +7893,7 @@ namespace RevenuePlanner.Controllers
                                             db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == planTacticId).ToList().ForEach(pcp => pcp.Status = strstatus);
                                             db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.Plan_Campaign_Program.PlanCampaignId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
+                                            AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower());
                                             Common.InsertChangeLog(campaign.PlanId, 0, campaign.PlanCampaignId, campaign.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined);
 
                                         }
@@ -7885,6 +7903,8 @@ namespace RevenuePlanner.Controllers
                                         string strURL = GetNotificationURLbyStatus(Sessions.PlanId, planTacticId, section);
                                         Common.mailSendForTactic(planTacticId, status, campaign.Title, false, "", Convert.ToString(Enums.Section.Campaign).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     }
+
+                                  
                                     strmessage = Common.objCached.CampaignStatusSuccessfully.Replace("{0}", status);
                                     // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                     string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
@@ -8445,22 +8465,22 @@ namespace RevenuePlanner.Controllers
                             //// Change Parent section status by ID.
                             if (IsProgram)
                             {
-                                Common.ChangeCampaignStatus(cid);
+                                Common.ChangeCampaignStatus(cid,false);
                             }
 
                             if (IsTactic)
                             {
-                                Common.ChangeProgramStatus(pid);
+                                Common.ChangeProgramStatus(pid,false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pid).Select(program => program.PlanCampaignId).Single();
-                                Common.ChangeCampaignStatus(PlanCampaignId);
+                                Common.ChangeCampaignStatus(PlanCampaignId,false);
                             }
 
                             if (IsLineItem)
                             {
                                 var planProgramId = tempLocalVariable;
-                                Common.ChangeProgramStatus(planProgramId);
+                                Common.ChangeProgramStatus(planProgramId,false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == tempLocalVariable).Select(program => program.PlanCampaignId).Single();
-                                Common.ChangeCampaignStatus(PlanCampaignId);
+                                Common.ChangeCampaignStatus(PlanCampaignId,false);
                             }
 
                             scope.Complete();
@@ -8584,6 +8604,150 @@ namespace RevenuePlanner.Controllers
             }
 
             return returnValue;
+        }
+
+        //Added By Komal Rawal for #1357 - To Add Comment
+        public void AddComment(string status,int Id,string Section)
+        {
+            string approvedComment = "";
+            Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
+            if (Section == Convert.ToString(Enums.Section.Campaign).ToLower())
+            {
+               
+                //Modified By Komal Rawal for #1357
+               var Program = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == Id && id.Status == status && id.IsDeleted == false).Select(program => program).ToList();
+                foreach (var item in Program)
+                {
+                    approvedComment = Convert.ToString(Enums.Section.Program) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    pcptc.Comment = approvedComment;
+                    DateTime Currentdate = DateTime.Now;
+                    pcptc.CreatedDate = Currentdate;
+                    string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
+                    pcptc.CreatedBy = Sessions.User.UserId;
+                    pcptc.PlanProgramId = item.PlanProgramId;
+                    db.Entry(pcptc).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                    db.SaveChanges();
+         
+                }
+                var Programids = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == Id && id.Status == status).Select(program => program.PlanProgramId).ToList();
+                var Tactics = db.Plan_Campaign_Program_Tactic.Where(id => Programids.Contains(id.PlanProgramId)).Select(tactic => tactic).ToList();
+                bool isApproved = false;
+                DateTime todaydate = DateTime.Now;
+                foreach (var item in Tactics)
+                {
+                    if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                    {
+                        item.Status = status;
+                        isApproved = true;
+                        if (todaydate > item.StartDate && todaydate < item.EndDate)
+                        {
+                            item.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                        }
+                        else if (todaydate > item.EndDate)
+                        {
+                            item.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                        }
+                    }
+                    else
+                    {
+                        item.Status = status;
+                    }
+                    item.ModifiedBy = Sessions.User.UserId;
+                    item.ModifiedDate = DateTime.Now;
+                    db.Entry(item).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    if (isApproved)
+                    {
+                        Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                        if (item.IsDeployedToIntegration == true)
+                        {
+                            ExternalIntegration externalIntegration = new ExternalIntegration(item.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                            externalIntegration.Sync();
+                        }
+                    }
+                    else if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                    {
+                        Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
+                    }
+
+                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    pcptc.Comment = approvedComment;
+                    DateTime Currentdate = DateTime.Now;
+                    pcptc.CreatedDate = Currentdate;
+                    string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
+                    pcptc.CreatedBy = Sessions.User.UserId;
+                    pcptc.PlanTacticId = item.PlanTacticId;
+                    pcptc.PlanProgramId = null;
+                    db.Entry(pcptc).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                    db.SaveChanges();
+
+                }
+
+              
+            }
+           else if (Section == Convert.ToString(Enums.Section.Program).ToLower())
+            {
+
+                var Tactics = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == Id && id.Status == status && id.IsDeleted == false).Select(id => id).ToList();
+                bool isApproved = false;
+                DateTime todaydate = DateTime.Now;
+                foreach (var item in Tactics)
+                {
+                    if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
+                    {
+                        item.Status = status;
+                        isApproved = true;
+                        if (todaydate > item.StartDate && todaydate < item.EndDate)
+                        {
+                            item.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                        }
+                        else if (todaydate > item.EndDate)
+                        {
+                            item.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                        }
+                    }
+                    else
+                    {
+                        item.Status = status;
+                    }
+                    item.ModifiedBy = Sessions.User.UserId;
+                    item.ModifiedDate = DateTime.Now;
+                    db.Entry(item).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    if (isApproved)
+                    {
+                        Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                        if (item.IsDeployedToIntegration == true)
+                        {
+                            ExternalIntegration externalIntegration = new ExternalIntegration(item.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                            externalIntegration.Sync();
+                        }
+                    }
+                    else if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                    {
+                        Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
+                    }
+
+                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    pcptc.Comment = approvedComment;
+                    DateTime Currentdate = DateTime.Now;
+                    pcptc.CreatedDate = Currentdate;
+                    string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
+                    pcptc.CreatedBy = Sessions.User.UserId;
+                    pcptc.PlanTacticId = item.PlanTacticId;
+                    db.Entry(pcptc).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                    db.SaveChanges();
+
+                }
+
+              
+            }
+         
         }
 
         #endregion
