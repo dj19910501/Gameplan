@@ -9135,18 +9135,22 @@ namespace RevenuePlanner.Controllers
                     TotalTrendQ3 = TotalTrendQ2 + (ActualQ3);
                     TotalTrendQ4 = TotalTrendQ3 + (ActualQ4);
                     int currentmonth = System.DateTime.Now.Month;
-                    int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                    if (_quater == 1)
+                    string currentyear = DateTime.Now.Year.ToString();
+                    if (timeFrameOption.ToLower() == currentyear.ToLower())
                     {
-                        TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 2)
-                    {
-                        TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 3)
-                    {
-                        TotalTrendQ4 = 0;
+                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                        if (_quater == 1)
+                        {
+                            TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 2)
+                        {
+                            TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 3)
+                        {
+                            TotalTrendQ4 = 0;
+                        }
                     }
 
                 }
@@ -9154,11 +9158,16 @@ namespace RevenuePlanner.Controllers
                 {
                     string _curntPeriod = string.Empty;
                     double _actualval, _actualtotal = 0;
-
+                    string currentyear = DateTime.Now.Year.ToString();
+                    int currentEndMonth = 12;
+                    if (timeFrameOption.ToLower() == currentyear.ToLower())
+                    {
+                        currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
+                    }
                     for (int i = 0; i < 12; i++)
                     {
                         _actualval = ActualList.ToList()[i];
-                        if (Convert.ToInt32(DateTime.Now.Month) > i)
+                        if (currentEndMonth > i)
                         {
                             if (_actualval != 0.0)
                             {
@@ -9691,18 +9700,22 @@ namespace RevenuePlanner.Controllers
                     TotalTrendQ3 = TotalTrendQ2 + (ActualQ3);
                     TotalTrendQ4 = TotalTrendQ3 + (ActualQ4);
                     int currentmonth = System.DateTime.Now.Month;
-                    int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                    if (_quater == 1)
+                    string currentyear = DateTime.Now.Year.ToString();
+                    if (timeFrameOption.ToLower() == currentyear.ToLower())
                     {
-                        TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 2)
-                    {
-                        TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 3)
-                    {
-                        TotalTrendQ4 = 0;
+                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                        if (_quater == 1)
+                        {
+                            TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 2)
+                        {
+                            TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 3)
+                        {
+                            TotalTrendQ4 = 0;
+                        }
                     }
 
                 }
@@ -9710,10 +9723,16 @@ namespace RevenuePlanner.Controllers
                 {
                     string _curntPeriod = string.Empty;
                     double _actualval, _actualtotal = 0;
+                     string currentyear = DateTime.Now.Year.ToString();
+                     int currentEndMonth = 12;
+                     if (timeFrameOption.ToLower() == currentyear.ToLower())
+                     {
+                         currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
+                     }
                     for (int i = 0; i < 12; i++)
                     {
                         _actualval = ActualList.ToList()[i];
-                        if (Convert.ToInt32(DateTime.Now.Month) > i)
+                        if (currentEndMonth > i)
                         {
                             if (_actualval != 0.0)
                             {
@@ -10723,29 +10742,38 @@ namespace RevenuePlanner.Controllers
                     TotalTrendQ3 = TotalTrendQ2 + (ActualQ3);
                     TotalTrendQ4 = TotalTrendQ3 + (ActualQ4);
                     int currentmonth = System.DateTime.Now.Month;
-                    int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                    if (_quater == 1)
+                    string currentyear = DateTime.Now.Year.ToString();
+                    if (timeFrameOption.ToLower() == currentyear.ToLower())
                     {
-                        TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 2)
-                    {
-                        TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 3)
-                    {
-                        TotalTrendQ4 = 0;
+                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                        if (_quater == 1)
+                        {
+                            TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 2)
+                        {
+                            TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 3)
+                        {
+                            TotalTrendQ4 = 0;
+                        }
                     }
                 }
                 else
                 {
                     string _curntPeriod = string.Empty;
                     double _actualval, _actualtotal = 0;
-
+                    string currentyear = DateTime.Now.Year.ToString();
+                    int currentEndMonth = 12;
+                    if (timeFrameOption.ToLower() == currentyear.ToLower())
+                    {
+                        currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
+                    }
                     for (int i = 0; i < 12; i++)
                     {
                         _actualval = ActualList.ToList()[i];
-                        if (Convert.ToInt32(DateTime.Now.Month) > i)
+                        if (currentEndMonth > i)
                         {
                             if (_actualval != 0.0)
                             {
@@ -11040,18 +11068,22 @@ namespace RevenuePlanner.Controllers
                     TotalTrendQ3 = TotalTrendQ2 + (ActualQ3);
                     TotalTrendQ4 = TotalTrendQ3 + (ActualQ4);
                     int currentmonth = System.DateTime.Now.Month;
-                    int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                    if (_quater == 1)
+                    string currentyear = DateTime.Now.Year.ToString();
+                    if (timeFrameOption.ToLower() == currentyear.ToLower())
                     {
-                        TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 2)
-                    {
-                        TotalTrendQ3 = TotalTrendQ4 = 0;
-                    }
-                    else if (_quater == 3)
-                    {
-                        TotalTrendQ4 = 0;
+                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                        if (_quater == 1)
+                        {
+                            TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 2)
+                        {
+                            TotalTrendQ3 = TotalTrendQ4 = 0;
+                        }
+                        else if (_quater == 3)
+                        {
+                            TotalTrendQ4 = 0;
+                        }
                     }
 
                 }
@@ -11059,11 +11091,16 @@ namespace RevenuePlanner.Controllers
                 {
                     string _curntPeriod = string.Empty;
                     double _actualval, _actualtotal = 0;
-
+                    string currentyear = DateTime.Now.Year.ToString();
+                    int currentEndMonth = 12;
+                    if (timeFrameOption.ToLower() == currentyear.ToLower())
+                    {
+                        currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
+                    }
                     for (int i = 0; i < 12; i++)
                     {
                         _actualval = ActualList.ToList()[i];
-                        if (Convert.ToInt32(DateTime.Now.Month) > i)
+                        if (currentEndMonth > i)
                         {
                             if (_actualval != 0.0)
                             {
