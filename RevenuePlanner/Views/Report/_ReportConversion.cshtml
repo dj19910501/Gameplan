@@ -11,8 +11,9 @@
     var conversion_datatableModel = Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty;
     var conversion_barchartModel = Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty;
     var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
-    
-   //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
+    var _mqllabel = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()];
+
+    //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
 
    
                      
@@ -52,10 +53,11 @@
             <span id="mqlActuals"></span>
             <span id="mqlActualPercentages"></span>
         </div>
-        <div class="projected disable-gray">
-            <span>Projected</span>
+       <div class="projected disable-gray" style="height: 88px"> @*#1420 added by dashrath Prajalapti*@
+            <span>Goal</span> @*#1378 Added by dashrath Prajapati*@
             <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
-            <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>
+            @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
+           <p class="ellipsis-block FormatingBlock">@_mqllabel</p> @*#1378 Added by dashrath Prajapati*@
         </div>
         <div class="time-frame">
             <div class="geography-dropdown">
@@ -109,7 +111,7 @@
 
     </div>
    <div  id="ConversionCardID">
-          @*@Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)*@
+       @*   @Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)*@
    </div>
     @*<div class="revenue-filter">
         <div class="sorting">
@@ -555,7 +557,7 @@
             loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
             var _childValue = '0';
             LoadDataConversionToPlanByCampaign();
-            ReloadConversionCardByCustomField();
+            //ReloadConversionCardByCustomField();
         });
 
 
@@ -698,18 +700,26 @@
             success: function (data) {
                 FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
                 barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel);
-                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel)
+                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel);
                 _Isfilter = true;
                 BindConversionToPlanDataTable()
                 formatDataTableValues();
                 formatPercentageValue();
                 //loadBarChart();
                 loadCombineChart();
+                //loadcardsection();
             }
         });
-
+           @* // $("#ConversionCardID").load(@Url.Action("LoadConversionCardSectionPartial", new { cardModel = _cardDat }));*@
         }
 
+
+        function loadcardsection()
+        {
+            //TempData["CardData"] = revenue_cardsectionModel;
+            var _url = "@Url.Content("~/Report/LoadConversionCardSectionPartial/")";
+            $("#ConversionCardID").load(_url);
+        }
         function ReloadConversionCardByCustomField() {
             var parentlabel = $("#ddlParentConversionSummery").val();
             var Code = $("#ddlINQToPlan").val();
@@ -828,6 +838,7 @@
         var barchartData;
         var _BarchartCombine;
         var _LineChartCombine;
+        var _cardData;
         var _Isfilter = false;
         function GetConversionToPlanByCode(_Code) {
          
@@ -881,6 +892,7 @@
                 loadCombineChart();
             }
         });
+           
     }
         //up to here
 
