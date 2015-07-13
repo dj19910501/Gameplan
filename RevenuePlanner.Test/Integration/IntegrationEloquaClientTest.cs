@@ -170,7 +170,7 @@ namespace RevenuePlanner.Test.Integration
             //// Enter view id and contact list id.
             string elouqaContactListId = "58", eloquaViewId = "10007";
 
-            var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId);
+            var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId, 1);
 
             Assert.AreNotEqual(null, result);
         }
@@ -186,7 +186,7 @@ namespace RevenuePlanner.Test.Integration
             //// Enter view id and contact list id.
             string elouqaContactListId = "58", eloquaViewId = "10007";
 
-            var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId);
+            var result = controller.GetEloquaContactList(elouqaContactListId, eloquaViewId, 1);
 
             Assert.AreNotEqual(null, result);
         }

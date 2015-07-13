@@ -2263,12 +2263,12 @@ namespace RevenuePlanner.Helpers
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>26/05/201</CreatedDate>
         /// <param name="PlanProgramId"></param>
-        public static void ChangeProgramStatus(int PlanProgramId)
+        public static void ChangeProgramStatus(int PlanProgramId, bool AddComment)
         {
             using (MRPEntities db = new MRPEntities())
             {
                 var objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcp => pcp.PlanProgramId == PlanProgramId && pcp.IsDeleted.Equals(false)).FirstOrDefault();
-
+                Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
                 if (objPlan_Campaign_Program != null)
                 {
                     string newProgramStatus = Common.GetProgramStatus(objPlan_Campaign_Program);
@@ -2278,7 +2278,20 @@ namespace RevenuePlanner.Helpers
                         objPlan_Campaign_Program.ModifiedDate = DateTime.Now;
                         objPlan_Campaign_Program.ModifiedBy = Sessions.User.UserId;
                         db.Entry(objPlan_Campaign_Program).State = EntityState.Modified;
+                        if (AddComment)  //Added By Komal Rawal for #1357 - To Add Comment
+                        {
+                            string approvedComment = Convert.ToString(Enums.Section.Program) + " " + newProgramStatus + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                            pcptc.Comment = approvedComment;
+                            DateTime Currentdate = DateTime.Now;
+                            pcptc.CreatedDate = Currentdate;
+                            string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
+                            pcptc.CreatedBy = Sessions.User.UserId;
+                            pcptc.PlanProgramId = PlanProgramId;
+                            db.Entry(pcptc).State = EntityState.Added;
+                            db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                        }
                         db.SaveChanges();
+                       
                     }
                 }
             }
@@ -2290,12 +2303,12 @@ namespace RevenuePlanner.Helpers
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>26/05/201</CreatedDate>
         /// <param name="PlanCampaignId"></param>
-        public static void ChangeCampaignStatus(int PlanCampaignId)
+        public static void ChangeCampaignStatus(int PlanCampaignId,bool AddComment)
         {
             using (MRPEntities db = new MRPEntities())
             {
                 var objPlan_Campaign = db.Plan_Campaign.Where(pcp => pcp.PlanCampaignId == PlanCampaignId && pcp.IsDeleted.Equals(false)).FirstOrDefault();
-
+                Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
                 if (objPlan_Campaign != null)
                 {
                     string newCampaignStatus = Common.GetCampaignStatus(objPlan_Campaign);
@@ -2305,7 +2318,20 @@ namespace RevenuePlanner.Helpers
                         objPlan_Campaign.ModifiedDate = DateTime.Now;
                         objPlan_Campaign.ModifiedBy = Sessions.User.UserId;
                         db.Entry(objPlan_Campaign).State = EntityState.Modified;
+                        if (AddComment)  //Added By Komal Rawal for #1357 - To Add Comment
+                        {
+                            string approvedComment = Convert.ToString(Enums.Section.Campaign) + " " + newCampaignStatus + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                            pcptc.Comment = approvedComment;
+                            DateTime Currentdate = DateTime.Now;
+                            pcptc.CreatedDate = Currentdate;
+                            string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
+                            pcptc.CreatedBy = Sessions.User.UserId;
+                            pcptc.PlanCampaignId = PlanCampaignId;
+                            db.Entry(pcptc).State = EntityState.Added;
+                            db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                        }
                         db.SaveChanges();
+                       
                     }
                 }
             }

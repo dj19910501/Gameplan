@@ -1631,9 +1631,9 @@ namespace RevenuePlanner.Controllers
 
                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                 //-- Update Camapign and Program according to tactic status
-                Common.ChangeProgramStatus(planTactic.PlanProgramId);
+                Common.ChangeProgramStatus(planTactic.PlanProgramId,false);
                 var PlanCampaignId = db.Plan_Campaign_Program.Where(prgrm => prgrm.IsDeleted.Equals(false) && prgrm.PlanProgramId == planTactic.PlanProgramId).Select(prgrm => prgrm.PlanCampaignId).FirstOrDefault();
-                Common.ChangeCampaignStatus(PlanCampaignId);
+                Common.ChangeCampaignStatus(PlanCampaignId,false);
                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                 if (isApproved)
@@ -2160,7 +2160,7 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             if (returnValue >= 1)
                             {
-                                Common.ChangeCampaignStatus(pc.PlanCampaignId);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                Common.ChangeCampaignStatus(pc.PlanCampaignId,false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
 
@@ -2246,9 +2246,9 @@ namespace RevenuePlanner.Controllers
                             if (returnValue >= 1)
                             {
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                Common.ChangeProgramStatus(pcpt.PlanProgramId);
+                                Common.ChangeProgramStatus(pcpt.PlanProgramId,false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.IsDeleted.Equals(false) && _prgrm.PlanProgramId == pcpt.PlanProgramId).Select(_prgrm => _prgrm.PlanCampaignId).FirstOrDefault();
-                                Common.ChangeCampaignStatus(PlanCampaignId);
+                                Common.ChangeCampaignStatus(PlanCampaignId,false);
                                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
 
@@ -2504,9 +2504,9 @@ namespace RevenuePlanner.Controllers
                             {
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 var planProgramId = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
-                                Common.ChangeProgramStatus(planProgramId);
+                                Common.ChangeProgramStatus(planProgramId,false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.IsDeleted.Equals(false) && _prgrm.PlanProgramId == pcptl.Plan_Campaign_Program_Tactic.PlanProgramId).Select(_prgrm => _prgrm.PlanCampaignId).FirstOrDefault();
-                                Common.ChangeCampaignStatus(PlanCampaignId);
+                                Common.ChangeCampaignStatus(PlanCampaignId,false);
                                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                 scope.Complete();

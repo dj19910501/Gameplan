@@ -1666,11 +1666,11 @@ namespace Integration.Eloqua
         /// <param name="elouqaContactListId">Eloqua contact list Id.</param>
         /// <param name="eloquaViewId"> Eloqua view Id.</param>
         /// <returns>Returns eloqua campaign object.</returns>
-        public IRestResponse GetEloquaContactList(string elouqaContactListId, string eloquaViewId)
+        public IRestResponse GetEloquaContactList(string elouqaContactListId, string eloquaViewId, int page)
         {
             RestRequest request = new RestRequest(Method.GET)
             {
-                Resource = string.Format("/data/contact/view/{2}/contacts/list/{3}?count={1}&page={0}&depth=complete", 1, 100, eloquaViewId, elouqaContactListId),
+                Resource = string.Format("/data/contact/view/{0}/contacts/list/{1}?page={2}", eloquaViewId, elouqaContactListId, page),
                 RequestFormat = DataFormat.Json
             };
 

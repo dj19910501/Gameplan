@@ -11,6 +11,11 @@
     var conversion_datatableModel = Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty;
     var conversion_barchartModel = Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty;
     var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
+    var _mqllabel = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()];
+
+    //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
+
+   
                      
    
 }
@@ -43,15 +48,16 @@
                 </div>
             </div>
         </div>
-        <div class="projected" style="margin-left: 9px;">
+        <div class="projected disable-gray" style="margin-left: 9px;">
             <span>Actual</span>
             <span id="mqlActuals"></span>
             <span id="mqlActualPercentages"></span>
         </div>
-        <div class="projected disable-gray projected-txt">
-            <span>Projected</span>
-            <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size: 30px;">$1.58M</p>
-            <p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>
+       <div class="projected disable-gray" style="height: 88px"> @*#1420 added by dashrath Prajalapti*@
+            <span>Goal</span> @*#1378 Added by dashrath Prajapati*@
+            <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
+            @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
+           <p class="ellipsis-block FormatingBlock">@_mqllabel</p> @*#1378 Added by dashrath Prajapati*@
         </div>
         <div class="time-frame">
             <div class="geography-dropdown">
@@ -104,8 +110,9 @@
             </div>
 
     </div>
-    <div class="revenue-to-plan">
-    </div>
+   <div  id="ConversionCardID">
+       @*   @Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)*@
+   </div>
     @*<div class="revenue-filter">
         <div class="sorting">
             <div class="geography-dropdown">
@@ -450,7 +457,7 @@
                 var _Id = "#" + _cntrlId;
                 var text = $(_Id).attr('orig-val');
                 if (text != null && text != 'undefined' && text != 'NaN') {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
                     $(_Id).html(_formatednumber);
                 }
             });
@@ -499,7 +506,6 @@
         // Load header data
         LoadHeaderData();
         function LoadHeaderData() {
-           
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetReportHeader/")',
@@ -551,6 +557,7 @@
             loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
             var _childValue = '0';
             LoadDataConversionToPlanByCampaign();
+            //ReloadConversionCardByCustomField();
         });
 
 
@@ -693,17 +700,37 @@
             success: function (data) {
                 FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
                 barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel);
-                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel)
+                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel);
                 _Isfilter = true;
                 BindConversionToPlanDataTable()
                 formatDataTableValues();
                 formatPercentageValue();
                 //loadBarChart();
                 loadCombineChart();
+                //loadcardsection();
             }
         });
+           @* // $("#ConversionCardID").load(@Url.Action("LoadConversionCardSectionPartial", new { cardModel = _cardDat }));*@
+        }
 
-    }
+
+        function loadcardsection()
+        {
+            //TempData["CardData"] = revenue_cardsectionModel;
+            var _url = "@Url.Content("~/Report/LoadConversionCardSectionPartial/")";
+            $("#ConversionCardID").load(_url);
+        }
+        function ReloadConversionCardByCustomField() {
+            var parentlabel = $("#ddlParentConversionSummery").val();
+            var Code = $("#ddlINQToPlan").val();
+            var Type = '';
+            var id = '';
+            //var code = Code;
+            //id = _childvalue;
+
+            var _url = "@Url.Content("~/Report/GetConversionCardDetailByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
+            $("#ConversionCardID").load(_url);
+   }
 
         function loadChildListData(parentOption, id) {
 
@@ -751,7 +778,8 @@
         function setLabel(data) {
            
             var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
-            setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, true);
+            var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
+            setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, false);
             setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
             var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
             if (parseFloat(data.ProjectedMQLValue) > 0) {
@@ -759,7 +787,8 @@
             }
             if (parseFloat(data.ProjectedRevenueValue) > 0) {
             }
-            setPercentage("#mqlActualPercentages", mqlActualPercentage);
+            //setPercentage("#mqlActualPercentages", mqlActualPercentage);
+            setPercentage("#mqlActualPercentages", _ConversionPercentage);
         }
 
         function setPercentage(id, value) {
@@ -809,6 +838,7 @@
         var barchartData;
         var _BarchartCombine;
         var _LineChartCombine;
+        var _cardData;
         var _Isfilter = false;
         function GetConversionToPlanByCode(_Code) {
          
@@ -862,6 +892,7 @@
                 loadCombineChart();
             }
         });
+           
     }
         //up to here
 
@@ -921,9 +952,12 @@
             }
             else {
                 var _dataTableModel = '@conversion_datatableModel';
-        }
+            }
+           
         _dataTableModel = (_dataTableModel.toString().replace(/&quot;/g, '"'));
         _dataTableModel = JSON.parse(_dataTableModel);
+       
+
 
         var isQuarterly = _dataTableModel.IsQuarterly;
         var _rowcount = 8;

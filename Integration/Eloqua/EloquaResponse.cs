@@ -176,67 +176,89 @@ namespace Integration.Eloqua
                             bool isError = false;
                             string errormsg = string.Empty;
                             //// allowed to enter only authenticated user.
-                            if (integrationEloquaClient.IsAuthenticated)
-                            {
-                                //// Get list detail from eloqua for particular list id.
-                                var lstcontactDetails = integrationEloquaClient.GetEloquaContactListDetails(ListIdValue.ToString());
-
-                                //// Deserialize Object and store response into ContactListDetail Model
-                                contactListDetails = JsonConvert.DeserializeObject<ContactListDetailModel>(lstcontactDetails.Content);
-
-                                //// Get contact list for particular ViewId and List Id.
-                                var lstcontacts = integrationEloquaClient.GetEloquaContactList(ListIdValue.ToString(), ViewIdValue.ToString());
-
-                                //// Manipulation of contact list response and store into model
-                                string TacticResult = lstcontacts.Content.ToString();
-                                if (!string.IsNullOrEmpty(TacticResult))
+                                if (integrationEloquaClient.IsAuthenticated)
                                 {
-                                    JObject joResponse = JObject.Parse(TacticResult);
-                                    JArray elementsArray = (JArray)joResponse["elements"];
+                                    //// Get list detail from eloqua for particular list id.
+                                    var lstcontactDetails = integrationEloquaClient.GetEloquaContactListDetails(ListIdValue.ToString());
 
-                                    //bool isAllCampaignIdExists = true;
-                                    //bool isAllMQLDateExists = true;
-
-                                    for (int i = 0; i < elementsArray.Count(); i++)
+                                    //// Deserialize Object and store response into ContactListDetail Model
+                                    contactListDetails = JsonConvert.DeserializeObject<ContactListDetailModel>(lstcontactDetails.Content);
+                                    int page = 1;
+                                    while (page > 0)
                                     {
-                                        elements elementsInner = new elements();
-                                        if (elementsArray[i][CampaignIdValue] != null && elementsArray[i][MQLDateValue] != null)
+                                        //// Get contact list for particular ViewId and List Id.
+                                        var lstcontacts = integrationEloquaClient.GetEloquaContactList(ListIdValue.ToString(), ViewIdValue.ToString(), page);
+
+                                        //// Manipulation of contact list response and store into model
+                                        string TacticResult = lstcontacts.Content.ToString();
+                                        if (!string.IsNullOrEmpty(TacticResult))
                                         {
-                                            if (!string.IsNullOrEmpty(elementsArray[i][CampaignIdValue].ToString()) && !string.IsNullOrEmpty(elementsArray[i][MQLDateValue].ToString()))
+                                            JObject joResponse = JObject.Parse(TacticResult);
+                                            JArray elementsArray = (JArray)joResponse["elements"];
+
+                                            //bool isAllCampaignIdExists = true;
+                                            //bool isAllMQLDateExists = true;
+
+                                            for (int i = 0; i < elementsArray.Count(); i++)
                                             {
-                                                elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
-                                                elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
-                                                elementsInner.peroid = new DateTime(elementsInner.peroid.Year, elementsInner.peroid.Month, 1);
-                                                elementsInner.contactId = elementsArray[i]["contactId"].ToString();
-                                                elementsInner.type = elementsArray[i]["type"].ToString();
-                                                element.Add(elementsInner);
+                                                elements elementsInner = new elements();
+                                                if (elementsArray[i][CampaignIdValue] != null && elementsArray[i][MQLDateValue] != null)
+                                                {
+                                                    if (!string.IsNullOrEmpty(elementsArray[i][CampaignIdValue].ToString()) && !string.IsNullOrEmpty(elementsArray[i][MQLDateValue].ToString()))
+                                                    {
+                                                        elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
+                                                        elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                                        elementsInner.peroid = new DateTime(elementsInner.peroid.Year, elementsInner.peroid.Month, 1);
+                                                        elementsInner.contactId = elementsArray[i]["contactId"].ToString();
+                                                        elementsInner.type = elementsArray[i]["type"].ToString();
+                                                        element.Add(elementsInner);
+                                                    }
+                                                }
                                             }
+
+                                            if (elementsArray.Count == 0)
+                                            {
+                                                if (page == 1)
+                                                {
+                                                    errormsg = "No contact data found in Eloqua contact object.";
+                                                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
+                                                    isError = true;
+                                                }
+                                                page = 0;
+                                            }
+                                            else
+                                            {
+                                                page++;
+                                            }
+                                            //if (elementsArray.Count > 0 && listPullMapping.Count > 0)
+                                            //{
+                                            //    if (!isAllCampaignIdExists)
+                                            //    {
+                                            //        errormsg += CampaignIdValue + " for one or many record(s) does not exists.";
+                                            //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), CampaignIdValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
+                                            //        isError = true;
+                                            //    }
+                                            //    if (!isAllMQLDateExists)
+                                            //    {
+                                            //        errormsg += MQLDateValue + " for one or many record(s) does not exists.";
+                                            //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), MQLDateValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
+                                            //        isError = true;
+                                            //    }
+                                            //}
+
+                                        }
+                                        else
+                                        {
+                                            if (page == 1)
+                                            {
+                                                errormsg = "No contact data found in Eloqua contact object.";
+                                                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
+                                                isError = true;
+                                            }
+                                            page = 0;
                                         }
                                     }
-
-                                    //if (elementsArray.Count > 0 && listPullMapping.Count > 0)
-                                    //{
-                                    //    if (!isAllCampaignIdExists)
-                                    //    {
-                                    //        errormsg += CampaignIdValue + " for one or many record(s) does not exists.";
-                                    //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), CampaignIdValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
-                                    //        isError = true;
-                                    //    }
-                                    //    if (!isAllMQLDateExists)
-                                    //    {
-                                    //        errormsg += MQLDateValue + " for one or many record(s) does not exists.";
-                                    //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), MQLDateValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
-                                    //        isError = true;
-                                    //    }
-                                    //}
                                 }
-                                else
-                                {
-                                    errormsg = "No contact data found in Eloqua contact object.";
-                                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
-                                    isError = true;
-                                }
-                            }
                             else
                             {
                                 errormsg = "Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed.";
