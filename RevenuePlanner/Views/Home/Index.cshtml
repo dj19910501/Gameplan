@@ -80,7 +80,7 @@
 @section Sidebar{
     <script type="text/javascript">
         //Added By komal rawal for #1283
-        var isTacticExist = false;       
+        var isTacticExist = false;
 
         function GetTacticTypelist(Planids) {
 
@@ -1846,12 +1846,19 @@ function AjaxRequest() {
                         var title = $(this).attr('title');
                         DisplayPopUpMenu(type, name, title, e);
 
-                    });                  
+                    });
+
                     var $doc = $(document);
                     $doc.click(function () {
                         $('#popupType').css('display', 'none');
                     });
-                    //////////////////
+
+                    $(document).mouseup(function (e) {
+                        $('#popupType').css("display", "none");
+                    });
+                    $(".gantt_ver_scroll").scroll(function () {
+                        $('#popupType').css('display', 'none');
+                    });
                 }
 
             }
@@ -2588,19 +2595,25 @@ function Quarter() {
                       $(".gantt_add").dblclick(function (e) {
                           e.stopPropagation();
                       });
-                    
+
                       $(".gantt_add").click(function (e) {
                           var type = $(this).attr('id');
                           var name = $(this).attr('Name');
                           var title = $(this).attr('title');
                           DisplayPopUpMenu(type, name, title, e);
                       });
-                    
+                     
                       var $doc = $(document);
                       $doc.click(function () {
                           $('#popupType').css('display', 'none');
                       });
-                      //////////////////
+
+                      $(document).mouseup(function (e) {
+                          $('#popupType').css("display", "none");
+                      });
+                      $(".gantt_ver_scroll").scroll(function () {
+                          $('#popupType').css('display', 'none');
+                      });
                   });
 
               }
@@ -2616,121 +2629,121 @@ function Quarter() {
                   var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
                   $("#divPartial").empty();
                   $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
-                          if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                              //// Call function to redirect on service unavailibility.
-                              //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                              //// Ticket: 942 Exception handeling in Gameplan.
-                              window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                      }
-
-                          modalBackdropDisplayNone();
-                      });
-              }
-
-              //End Script Of Bhaveh
-
-              //// Modified By Maninder Singh Wadhva PL Ticket#47
-              //Start Creating and Populating tabulated data
-              function FillTacticsTable() {
-                  $('#table_activities > tbody >tr').remove();
-                  if (typeof activities != 'undefined') {
-                      if (activities.data.length) {
-                          for (i in activities.data) {
-                              addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].projectedStageValue,
-                                  activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted, activities.data[i].isImprovement);
+                      if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                          //// Call function to redirect on service unavailibility.
+                          //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                          //// Ticket: 942 Exception handeling in Gameplan.
+                          window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           }
+
+                      modalBackdropDisplayNone();
+                  });
+                  }
+
+                  //End Script Of Bhaveh
+
+                  //// Modified By Maninder Singh Wadhva PL Ticket#47
+                  //Start Creating and Populating tabulated data
+                  function FillTacticsTable() {
+                      $('#table_activities > tbody >tr').remove();
+                      if (typeof activities != 'undefined') {
+                          if (activities.data.length) {
+                              for (i in activities.data) {
+                                  addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].projectedStageValue,
+                                      activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted, activities.data[i].isImprovement);
+                              }
+                          }
+
+                          //Fetch all the row values from the tables
+                          $('.ActivitiesFormater').each(function () {
+                              //Added By : Kalpesh Sharma
+                              //PL #508 Set format for label in tool tip
+                              SetBudget($(this));
+                          });
+
                       }
-
-                      //Fetch all the row values from the tables
-                      $('.ActivitiesFormater').each(function () {
-                          //Added By : Kalpesh Sharma
-                          //PL #508 Set format for label in tool tip
-                          SetBudget($(this));
-                      });
-
                   }
-              }
 
-              //// Modified By Maninder Singh Wadhva PL Ticket#47
-              //add row in tactics table
-              function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isDeclined, isSubmitted, isImprovement) {
+                  //// Modified By Maninder Singh Wadhva PL Ticket#47
+                  //add row in tactics table
+                  function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isDeclined, isSubmitted, isImprovement) {
 
-                  var $activitiesTable = $('#table_activities > tbody');
-                  var $html = "";
-                  if (isImprovement) {
-                      var valueForImprovement = '---';
-                      projectedStageValue = valueForImprovement;
-                      mqls = valueForImprovement;
-                      cws = valueForImprovement;
-                  }
-                  if (isDeclined) {
-                      $html += '<tr class="rejected" id="' + id + '" data-index="' + index + '">' +
-                                  '<td class="border-r sm">'
-
+                      var $activitiesTable = $('#table_activities > tbody');
+                      var $html = "";
                       if (isImprovement) {
-                          $html += '<span class="bullhorn-icon"></span>'
+                          var valueForImprovement = '---';
+                          projectedStageValue = valueForImprovement;
+                          mqls = valueForImprovement;
+                          cws = valueForImprovement;
                       }
-                      //Modified by Arpita Soni on 01/16/2015 for ticket #1084
-                      $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
-                                  '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
-                                  '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
-                                  '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
-                                  '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
-                      $html += '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>';
+                      if (isDeclined) {
+                          $html += '<tr class="rejected" id="' + id + '" data-index="' + index + '">' +
+                                      '<td class="border-r sm">'
 
-                      $html += '</tr>';
-                  } else if (isSubmitted) {
-                      $html += '<tr class="pending"  id="' + id + '" data-index="' + index + '">' +
-                                  '<td class="border-r sm">'
+                          if (isImprovement) {
+                              $html += '<span class="bullhorn-icon"></span>'
+                          }
+                          //Modified by Arpita Soni on 01/16/2015 for ticket #1084
+                          $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
+                                      '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
+                                      '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
+                                      '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
+                                      '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
+                          $html += '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>';
 
-                      if (isImprovement) {
-                          $html += '<span class="bullhorn-icon"></span>'
+                          $html += '</tr>';
+                      } else if (isSubmitted) {
+                          $html += '<tr class="pending"  id="' + id + '" data-index="' + index + '">' +
+                                      '<td class="border-r sm">'
+
+                          if (isImprovement) {
+                              $html += '<span class="bullhorn-icon"></span>'
+                          }
+                          //Modified by Arpita Soni on 01/16/2015 for ticket #1084
+                          $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
+                                      '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
+                                      '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
+                                      '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
+                                      '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
+                          $html += '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>';
+                          $html += '</tr>';
                       }
-                      //Modified by Arpita Soni on 01/16/2015 for ticket #1084
-                      $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
-                                  '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
-                                  '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
-                                  '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
-                                  '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
-                      $html += '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>';
-                      $html += '</tr>';
-                  }
 
-                  $activitiesTable.append($html);
-
-              }
-
-              function displayTacticMQL(MQL) {
-                  if (MQL != 'N/A' && MQL != '---') {
-                      //Modified by Arpita Soni on 01/16/2015 for Ticket #1084
-                      return number_format(MQL, 0, '.', ',');
+                      $activitiesTable.append($html);
 
                   }
-                  else {
-                      return MQL;
-                  }
-              }
 
-              $(document).on("click", ".accept-icon", function () {
-                  var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
-                  ApproveTactic(this, task);
-              })
+                  function displayTacticMQL(MQL) {
+                      if (MQL != 'N/A' && MQL != '---') {
+                          //Modified by Arpita Soni on 01/16/2015 for Ticket #1084
+                          return number_format(MQL, 0, '.', ',');
 
-              //// Modified By Maninder Singh Wadhva PL Ticket#47
-              function ApproveTactic(e, task) {
-                  var approveDeclineTacticId;
-                  var isImprovement = false;
-                  if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
-                      approveDeclineTacticId = task.ImprovementPlanTacticId;
-                      isImprovement = true;
-                  }
-                  else {
-                      approveDeclineTacticId = task.plantacticid;
+                      }
+                      else {
+                          return MQL;
+                      }
                   }
 
-                  $.ajax({
-                      type: 'POST',
-                      url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
+                  $(document).on("click", ".accept-icon", function () {
+                      var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
+                      ApproveTactic(this, task);
+                  })
+
+                  //// Modified By Maninder Singh Wadhva PL Ticket#47
+                  function ApproveTactic(e, task) {
+                      var approveDeclineTacticId;
+                      var isImprovement = false;
+                      if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+                          approveDeclineTacticId = task.ImprovementPlanTacticId;
+                          isImprovement = true;
+                      }
+                      else {
+                          approveDeclineTacticId = task.plantacticid;
+                      }
+
+                      $.ajax({
+                          type: 'POST',
+                          url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
                       data: {
                           planTacticId: approveDeclineTacticId,
                           isApprove: true,
@@ -3654,7 +3667,6 @@ function Quarter() {
             Currenttime = $('#ddlUpComingActivites').val();
             isQuater = Currenttime;
         }
-
     });
 
 
@@ -3722,7 +3734,7 @@ function Quarter() {
     }
 
     function DisplayPopUpMenu(typeVal, nameVal, titleVal, e) {
-      
+
         var type = typeVal;
         var name = nameVal;
         var title = titleVal;
@@ -3732,7 +3744,7 @@ function Quarter() {
         var CampaignId;
         var ProgramId;
         var TacticId;
-        var ImpTacticId;       
+        var ImpTacticId;
 
         if (name_Id.length == 1) {
             PlanId = name_Id[0].replace("L", "");
@@ -3785,9 +3797,7 @@ function Quarter() {
         var targetOffset = target.offset().top;
         var scrollPosition = $(window).scrollTop();
 
-        if ($('#popupType').css('display') == 'none') {
-
-
+        if ($('#popupType').css('display') == 'none') {            
             if (scrollPosition <= targetOffset) {
                 $('#popupType').css({
                     'display': 'block',
@@ -3857,7 +3867,7 @@ function Quarter() {
                                 var planProgramId = "";
                                 loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
 
-                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
                                     $("#hdnBudgetingExpandId").val(expandplanProgramId);
                                     $("#hdnBudgetingIsSave").val("true");
                                     $("#hdnBudgetingCurrentTab").val("aAllocated")
@@ -4238,6 +4248,6 @@ function Quarter() {
         }
         modalBackdropDisplayNone();
     };
-}
+    }
 
 </script>

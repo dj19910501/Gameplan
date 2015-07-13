@@ -100,7 +100,7 @@ gantt._calc_grid_width = function () {
 gantt._render_grid_item = function (t) {
     for (var e = this.config.columns, n = [], i = 0; i < e.length; i++) {
 
-        var a, s, r = i == e.length - 1, o = e[i]; "add" == o.name && i == e.length - 1 ? s = "<div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' title='" + t.text + "'></div>  " : (s = o.template ? o.template(t) : t[o.name],
+        var a, s, r = i == e.length - 1, o = e[i]; "add" == o.name && i == e.length - 1 ? s = "<div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' ></div>  " : (s = o.template ? o.template(t) : t[o.name],
         s instanceof Date && (s = this.templates.date_grid(s)), s = "<div class='gantt_tree_content'>" + s + "</div>");
         var d = "gantt_cell" + (r ? " gantt_last_cell" : ""), l = ""; if (o.tree) {
             for (var h = 0; h < t.$level; h++) l += this.templates.grid_indent(t);
@@ -2159,7 +2159,6 @@ gantt._render_grid_item = function (t) {
     finalizeUpdate: function () {
         this._waitMode && this._waitMode--, ("tree" == this.obj.mytype || this.obj._h2) && this.updatedRows.length && this.sendData(), this.callEvent("onAfterUpdateFinish", []), this.updatedRows.length || this.callEvent("onFullSync", [])
     },
-
     init: function (t) {
         this.obj = t, this.obj._dp_init && this.obj._dp_init(this)
     },

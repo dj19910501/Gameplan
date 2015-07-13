@@ -4317,13 +4317,12 @@ namespace RevenuePlanner.Helpers
                         {
                             inputclassName += " input-setup";
                             sb.Append("<input type=\"text\" maxlength =\"255\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
-                            sb.Append("</div>");
-                        }
-
-                        //If custom field is required than add attribute require
-                        if (item.isRequired)
-                        {
-                            sb.Append(" require=\"true\" oldValue=\"" + item.value + "\" label=\"" + item.name + "\"");
+                            //If custom field is required than add attribute require
+                            if (item.isRequired)
+                            {
+                                sb.Append(" require=\"true\" oldValue=\"" + item.value + "\" label=\"" + item.name + "\"");
+                            }
+                            sb.Append("</input>");
                         }
                         sb.Append("</div>");
                         sb = sb.Replace("#VIEW_DETAIL_LINK#", "");
@@ -4521,15 +4520,8 @@ namespace RevenuePlanner.Helpers
                                 sb.Append("</div>");
                                 fieldCounter = fieldCounter + 1;
                             }
-
-
-
-
                         }
                     }
-
-
-
                 }
             }
             return new MvcHtmlString(sb.ToString());

@@ -10,6 +10,7 @@ using System.Globalization;
 using RevenuePlanner.BDSService;
 using System.Data.Objects.SqlClient;
 using System.Web;
+using System.Data;
 
 /*
  *  Author: Manoj Limbachiya
@@ -29,7 +30,6 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarEndDate;
 
         #endregion
-
 
         #region "Index"
 
@@ -4267,6 +4267,296 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+
+        #region --entity Type Permission based access---
+
+        public List<string> GetPermission(int id, string section)
+        {
+            List<string> _lstPermission = new List<string>();
+            bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+            bool IsTacticActualsAddEditAuthorized;
+            if (id == 0)
+            {
+                if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
+                {
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
+                {
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
+                {
+                    IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                {
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+                {
+                    IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+                }
+            }
+
+            IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+
+            Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
+            Plan_Campaign_Program objPlan_Campaign_Program = null;
+            Plan_Campaign objPlan_Campaign = null;
+            Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
+            Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
+            bool IsPlanEditable = false;
+            bool IsPlanCreateAll = false;
+
+            if (Convert.ToString(section) != "")
+            {
+                DateTime todaydate = DateTime.Now;
+                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                List<Guid> lstSubordinatesIds = new List<Guid>();
+                if (IsTacticAllowForSubordinates)
+                {
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                }
+
+                if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
+                {
+                    objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();                   
+                    if (IsPlanCreateAllAuthorized)
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            IsPlanCreateAll = false;
+                        }
+                    }
+                    //Modify by Mitesh Vaishnav for PL ticket 746
+                    if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
+                {
+                    objPlan_Campaign_Program = objDbMrpEntities.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
+                    if (IsPlanCreateAllAuthorized)
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            IsPlanCreateAll = false;
+                        }
+
+                    }
+                    if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }                   
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
+                {
+                    objPlan_Campaign = objDbMrpEntities.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
+                    if (IsPlanCreateAllAuthorized)
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            IsPlanCreateAll = false;
+                        }
+                    }
+                    if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                   
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                {
+                    objPlan_Improvement_Campaign_Program_Tactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(picpobjw => picpobjw.ImprovementPlanTacticId.Equals(id)).FirstOrDefault();
+                   if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+                {
+                    objPlan_Campaign_Program_Tactic_LineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => pcptl.PlanLineItemId.Equals(id)).FirstOrDefault();
+                      if (IsPlanCreateAllAuthorized)
+                    {
+                        IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            IsPlanCreateAll = false;
+                        }
+                    }
+
+                    if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                    {
+                        IsPlanEditable = true;
+                    }
+
+                    if (objPlan_Campaign_Program_Tactic_LineItem.LineItemTypeId == null)
+                    {
+                        ViewBag.IsOtherLineItem = true;
+                    }
+                    else
+                    {
+                        ViewBag.IsOtherLineItem = false;
+                    }                    
+                }               
+             
+                //// Custom Restrictions
+                if (IsPlanEditable)
+                {
+                    //// Start - Added by Sohel Pathan on 27/01/2015 for PL ticket #1140
+                    List<int> planTacticIds = new List<int>();
+                    List<int> lstAllowedEntityIds = new List<int>();
+                    int itemId = 0;
+
+                    if (section.ToString().Equals(Enums.Section.Campaign.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign != null)
+                    {
+                        if (objPlan_Campaign.Plan_Campaign_Program != null)
+                        {
+                            List<int> programIds = objPlan_Campaign.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false)).Select(program => program.PlanProgramId).ToList();
+                            if (programIds.Count() > 0)
+                            {
+                                planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programIds.Contains(tactic.Plan_Campaign_Program.PlanProgramId))
+                                                                                .Select(tactic => tactic.PlanTacticId).ToList();
+                                lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                                if (lstAllowedEntityIds.Count != planTacticIds.Count)
+                                {
+                                    IsPlanEditable = false;
+                                }
+
+                            }
+                        }
+                    }
+                    else if (section.ToString().Equals(Enums.Section.Program.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program != null)
+                    {
+                        if (objPlan_Campaign_Program.Plan_Campaign_Program_Tactic != null)
+                        {
+                            planTacticIds = objPlan_Campaign_Program.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false)).Select(tactic => tactic.PlanTacticId).ToList();
+                            lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                            if (lstAllowedEntityIds.Count != planTacticIds.Count)
+                            {
+                                IsPlanEditable = false;
+                            }
+                        }
+                    }
+                    else if (section.ToString().Equals(Enums.Section.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic != null)
+                    {
+                        itemId = objPlan_Campaign_Program_Tactic.PlanTacticId;
+                        planTacticIds.Add(itemId);
+                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                        if (lstAllowedEntityIds.Contains(itemId))
+                        {
+                            IsPlanEditable = true;
+                        }
+                        else
+                        {
+                            IsPlanEditable = false;
+                        }
+                    }
+                    else if (section.ToString().Equals(Enums.Section.LineItem.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic_LineItem != null)
+                    {
+                        if (objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic != null)
+                        {
+                            itemId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanTacticId;
+                            planTacticIds.Add(itemId);
+                            lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                            if (lstAllowedEntityIds.Contains(itemId))
+                            {
+                                IsPlanEditable = true;
+                            }
+                            else
+                            {
+                                IsPlanEditable = false;
+                            }
+                        }
+                    }
+                    //// End - Added by Sohel Pathan on 27/01/2015 for PL ticket #1140
+                }
+            }
+
+
+            ViewBag.IsPlanEditable = IsPlanEditable;
+            ViewBag.IsPlanCreateAll = IsPlanCreateAll;
+
+            InspectModel im = null;//GetInspectModel(id, section, false);
+            if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                IsPlanEditable = false;
+                //Get all subordinates of current user upto n level
+                var lstOwnAndSubOrdinates = new List<Guid>();
+                try
+                {
+                    lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        // return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+
+                    }
+                }
+                // Get current user permission for edit own and subordinates plans.
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                // To get permission status for Plan Edit, By dharmraj PL #519
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+
+                if (im.OwnerId.Equals(Sessions.User.UserId))
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+
+                ViewBag.IsPlanEditable = IsPlanEditable;
+                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+            }
+
+            return _lstPermission;
+        }
+
+        #endregion
+
     }
 
     public class ProgressModel
@@ -4274,4 +4564,5 @@ namespace RevenuePlanner.Controllers
         public int PlanId { get; set; }
         public DateTime EffectiveDate { get; set; }
     }
+
 }
