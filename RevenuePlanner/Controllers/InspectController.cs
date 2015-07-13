@@ -7624,6 +7624,7 @@ namespace RevenuePlanner.Controllers
         [HttpPost]
         public JsonResult ApprovedTactic(int planTacticId, string status, string section)
         {
+
             int result = 0;
             string approvedComment = "";
             string strmessage = "";

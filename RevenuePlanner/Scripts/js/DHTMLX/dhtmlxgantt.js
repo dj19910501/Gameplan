@@ -2159,6 +2159,7 @@ gantt._render_grid_item = function (t) {
     finalizeUpdate: function () {
         this._waitMode && this._waitMode--, ("tree" == this.obj.mytype || this.obj._h2) && this.updatedRows.length && this.sendData(), this.callEvent("onAfterUpdateFinish", []), this.updatedRows.length || this.callEvent("onFullSync", [])
     },
+
     init: function (t) {
         this.obj = t, this.obj._dp_init && this.obj._dp_init(this)
     },

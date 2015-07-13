@@ -28,6 +28,7 @@
     font-family: 'Conv_ProximaNova-Light', Arial, "sans-serif";
 }
 
+
 /*---------------------------
         Micro - ClearFix
 -----------------------------*/
@@ -339,7 +340,7 @@ h3.title-header {
 .title-simple {
     font-size: 30px;
     opacity: 100%;
-    margin-left: 4%;
+    margin-left: 19px;
 }
 
 textarea {
@@ -10523,13 +10524,6 @@ li.close-list {
 #divPartial {
     /*modified by Mitesh Vaishnav for PL ticket #1391*/
     margin: auto;
-}
-.messagewidth {
-    max-width:68%;
-    min-width:68%;
-    margin: 0 auto !important;
-    
-
 }
 
 .modal-inspect-review.modal-full-view .icon-flag {
