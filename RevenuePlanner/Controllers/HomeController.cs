@@ -687,6 +687,7 @@ namespace RevenuePlanner.Controllers
                                                     Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
                                                     GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
                                                     tacticListByViewById, lstImprovementTactic, tacticPlanId),
+
                     });
                 }
 
@@ -900,6 +901,7 @@ namespace RevenuePlanner.Controllers
                 Progress = 0,
                 Open = false,
                 Color = TacticColor,
+                type = "Tactic",
                 PlanId = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId,
                 PlanTitle = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title,
                 Campaign = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign,
@@ -980,6 +982,7 @@ namespace RevenuePlanner.Controllers
                 open = false,
                 parent = string.Format("Z{0}", taskdata.MainParentId),
                 color = PlanColor,
+                type = "Plan",
                 planid = taskdata.PlanId
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
 
@@ -1010,6 +1013,7 @@ namespace RevenuePlanner.Controllers
                 open = false,
                 parent = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
                 color = CampaignColor,
+                type = "Campaign",
                 plancampaignid = taskdata.Program.PlanCampaignId,
                 Status = taskdata.Campaign.Status
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
@@ -1042,6 +1046,7 @@ namespace RevenuePlanner.Controllers
                 open = false,
                 parent = string.Format("Z{0}_L{1}_C{2}", taskdata.MainParentId, taskdata.PlanId, taskdata.Program.PlanCampaignId),
                 color = ProgramColor,
+                type = "Program",
                 planprogramid = taskdata.Program.PlanProgramId,
                 Status = taskdata.Program.Status
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
@@ -1108,6 +1113,7 @@ namespace RevenuePlanner.Controllers
                 progress = 0,
                 open = true,
                 colorcode = ImprovementColor,
+                type = "Imp Tactic",
                 color = string.Empty,
                 ImprovementActivityId = taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                 isImprovement = true,
@@ -1130,6 +1136,7 @@ namespace RevenuePlanner.Controllers
                 open = true,
                 parent = string.Format("Z{0}_L{1}_M{2}", taskdataImprovement.MainParentId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
                 colorcode = ImprovementColor,
+                type = "Imp Tactic",
                 color = string.Empty,
                 isSubmitted = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusDeclined),
@@ -1445,6 +1452,10 @@ namespace RevenuePlanner.Controllers
             var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
             var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
             //Emd
+
+            PermissionModel _modelPermission = new PermissionModel();
+            _modelPermission = GetPermission(Convert.ToInt32(planId), Enums.EntityType.Plan.ToString());
+
             //InspectController inspCt = new InspectController();
             //inspCt.LoadInspectPopup(1, "", "", "", 1, "");
 
@@ -1500,6 +1511,7 @@ namespace RevenuePlanner.Controllers
                 planid = plan.planid,
                 type = "Plan"
 
+
             });
             #endregion
 
@@ -1525,6 +1537,7 @@ namespace RevenuePlanner.Controllers
                 color = PlanColor,
                 planid = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId,
                 type = "Plan"
+
             }).Select(improvementTactic => improvementTactic).Distinct().OrderBy(improvementTactic => improvementTactic.text);
 
             //// Finalize task data Improvement Tactic list for gantt chart
@@ -1572,6 +1585,7 @@ namespace RevenuePlanner.Controllers
                 IsHideDragHandleRight = true,
                 parent = string.Format("L{0}", improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
                 type = "Imp Tactic"
+
             }).Select(improvementTactic => improvementTactic).Distinct().ToList();
 
             //// Finalize task data Improvement Activities list for gantt chart
@@ -1598,6 +1612,7 @@ namespace RevenuePlanner.Controllers
                 IsHideDragHandleRight = true,
                 Status = improvementTacticActivty.ImprovementTactic.Status,
                 type = "Imp Tactic"
+
             }).OrderBy(improvementTacticActivty => improvementTacticActivty.text);
             #endregion
 
@@ -4270,39 +4285,45 @@ namespace RevenuePlanner.Controllers
 
         #region --entity Type Permission based access---
 
-        public List<string> GetPermission(int id, string section)
+        public PermissionModel GetPermission(int id, string section)
         {
-            List<string> _lstPermission = new List<string>();
-            bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-            bool IsTacticActualsAddEditAuthorized;
+            PermissionModel _model = new PermissionModel();
+            _model.IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
             if (id == 0)
             {
                 if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                 {
+                    return _model;
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                 {
+                    return _model;
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
-                    IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+                    _model.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+                    return _model;
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                 {
+                    return _model;
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
                 {
-                    IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+                    _model.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+                    return _model;
                 }
             }
 
-            IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
+            _model.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
 
             Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
             Plan_Campaign_Program objPlan_Campaign_Program = null;
             Plan_Campaign objPlan_Campaign = null;
             Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
             Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
+
             bool IsPlanEditable = false;
             bool IsPlanCreateAll = false;
 
@@ -4318,118 +4339,126 @@ namespace RevenuePlanner.Controllers
 
                 if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
-                    objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();                   
-                    if (IsPlanCreateAllAuthorized)
+                    objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+                    if (_model.IsPlanCreateAllAuthorized)
                     {
                         IsPlanCreateAll = true;
+                        _model.IsPlanCreateAll = IsPlanCreateAll;
                     }
                     else
                     {
                         if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
                         {
                             IsPlanCreateAll = true;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
                         else
                         {
                             IsPlanCreateAll = false;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
                     }
                     //Modify by Mitesh Vaishnav for PL ticket 746
                     if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
                     {
                         IsPlanEditable = true;
+                        _model.IsPlanEditable = IsPlanEditable;
                     }
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                 {
                     objPlan_Campaign_Program = objDbMrpEntities.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
-                    if (IsPlanCreateAllAuthorized)
+                    if (_model.IsPlanCreateAllAuthorized)
                     {
                         IsPlanCreateAll = true;
+                        _model.IsPlanCreateAll = IsPlanCreateAll;
                     }
                     else
                     {
                         if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                         {
                             IsPlanCreateAll = true;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
                         else
                         {
                             IsPlanCreateAll = false;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
 
                     }
                     if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                     {
                         IsPlanEditable = true;
-                    }                   
+                        _model.IsPlanEditable = IsPlanEditable;
+                    }
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                 {
                     objPlan_Campaign = objDbMrpEntities.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
-                    if (IsPlanCreateAllAuthorized)
+                    if (_model.IsPlanCreateAllAuthorized)
                     {
                         IsPlanCreateAll = true;
+                        _model.IsPlanCreateAll = IsPlanCreateAll;
                     }
                     else
                     {
                         if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
                         {
                             IsPlanCreateAll = true;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
                         else
                         {
                             IsPlanCreateAll = false;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
                     }
                     if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
                     {
                         IsPlanEditable = true;
+                        _model.IsPlanEditable = IsPlanEditable;
                     }
-                   
+
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                 {
                     objPlan_Improvement_Campaign_Program_Tactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(picpobjw => picpobjw.ImprovementPlanTacticId.Equals(id)).FirstOrDefault();
-                   if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))
+                    if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))
                     {
                         IsPlanEditable = true;
+                        _model.IsPlanEditable = IsPlanEditable;
                     }
                 }
                 else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
                 {
                     objPlan_Campaign_Program_Tactic_LineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => pcptl.PlanLineItemId.Equals(id)).FirstOrDefault();
-                      if (IsPlanCreateAllAuthorized)
+                    if (_model.IsPlanCreateAllAuthorized)
                     {
                         IsPlanCreateAll = true;
+                        _model.IsPlanCreateAll = IsPlanCreateAll;
                     }
                     else
                     {
                         if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
                         {
                             IsPlanCreateAll = true;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
                         else
                         {
                             IsPlanCreateAll = false;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
                         }
                     }
 
                     if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
                     {
                         IsPlanEditable = true;
+                        _model.IsPlanEditable = IsPlanEditable;
                     }
+                }
 
-                    if (objPlan_Campaign_Program_Tactic_LineItem.LineItemTypeId == null)
-                    {
-                        ViewBag.IsOtherLineItem = true;
-                    }
-                    else
-                    {
-                        ViewBag.IsOtherLineItem = false;
-                    }                    
-                }               
-             
                 //// Custom Restrictions
                 if (IsPlanEditable)
                 {
@@ -4451,6 +4480,7 @@ namespace RevenuePlanner.Controllers
                                 if (lstAllowedEntityIds.Count != planTacticIds.Count)
                                 {
                                     IsPlanEditable = false;
+                                    _model.IsPlanEditable = IsPlanEditable;
                                 }
 
                             }
@@ -4465,6 +4495,7 @@ namespace RevenuePlanner.Controllers
                             if (lstAllowedEntityIds.Count != planTacticIds.Count)
                             {
                                 IsPlanEditable = false;
+                                _model.IsPlanEditable = IsPlanEditable;
                             }
                         }
                     }
@@ -4476,10 +4507,12 @@ namespace RevenuePlanner.Controllers
                         if (lstAllowedEntityIds.Contains(itemId))
                         {
                             IsPlanEditable = true;
+                            _model.IsPlanEditable = IsPlanEditable;
                         }
                         else
                         {
                             IsPlanEditable = false;
+                            _model.IsPlanEditable = IsPlanEditable;
                         }
                     }
                     else if (section.ToString().Equals(Enums.Section.LineItem.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic_LineItem != null)
@@ -4492,67 +4525,139 @@ namespace RevenuePlanner.Controllers
                             if (lstAllowedEntityIds.Contains(itemId))
                             {
                                 IsPlanEditable = true;
+                                _model.IsPlanEditable = IsPlanEditable;
                             }
                             else
                             {
                                 IsPlanEditable = false;
+                                _model.IsPlanEditable = IsPlanEditable;
                             }
                         }
                     }
-                    //// End - Added by Sohel Pathan on 27/01/2015 for PL ticket #1140
                 }
             }
+            _model.IsPlanEditable = IsPlanEditable;
+            _model.IsPlanCreateAll = IsPlanCreateAll;
 
-
-            ViewBag.IsPlanEditable = IsPlanEditable;
-            ViewBag.IsPlanCreateAll = IsPlanCreateAll;
-
-            InspectModel im = null;//GetInspectModel(id, section, false);
+            InspectController _ctrl = new InspectController();
+            InspectModel im = _ctrl.GetInspectModel(id, section, false);
             if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                IsPlanEditable = false;
-                //Get all subordinates of current user upto n level
-                var lstOwnAndSubOrdinates = new List<Guid>();
-                try
+
+                _model.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                _model.IsPlanCreateAll = false;
+                if (id > 0)
                 {
-                    lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                }
-                catch (Exception e)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-                    if (e is System.ServiceModel.EndpointNotFoundException)
+                    var objplan = objDbMrpEntities.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
+                    _model.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                    _model.IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                    //Get all subordinates of current user upto n level
+                    var lstSubOrdinates = new List<Guid>();
+                    try
                     {
-                        // return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-
+                        lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
                     }
-                }
-                // Get current user permission for edit own and subordinates plans.
-                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                // To get permission status for Plan Edit, By dharmraj PL #519
-                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-
-                if (im.OwnerId.Equals(Sessions.User.UserId))
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditAllAuthorized)
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditSubordinatesAuthorized)
-                {
-                    if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
+                    catch (Exception e)
                     {
-                        IsPlanEditable = true;
+                        ErrorSignal.FromCurrentContext().Raise(e);
+
+                        //To handle unavailability of BDSService
+                        if (e is System.ServiceModel.EndpointNotFoundException)
+                        {
+                            // return RedirectToAction("ServiceUnavailable", "Login");
+                        }
                     }
+
+                    //// Set flag to check whether his Own Plan & Subordinate Plan editable or not.
+                    bool isPlanDefinationDisable = true;
+
+                    if (_model.IsPlanCreateAuthorized)
+                    {
+                        IsPlanCreateAll = true;
+                        _model.IsPlanCreateAll = IsPlanCreateAll;
+                    }
+                    else
+                    {
+                        if (objplan.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsPlanCreateAll = true;
+                            _model.IsPlanCreateAll = IsPlanCreateAll;
+                        }
+                    }
+                    if (id == 0 && !_model.IsPlanCreateAuthorized)
+                    {
+                        //return AuthorizeUserAttribute.RedirectToNoAccess();
+                    }
+                    if (objplan.CreatedBy.Equals(Sessions.User.UserId))
+                    {
+                        isPlanDefinationDisable = false;
+                    }
+                    else if (_model.IsPlanEditAllAuthorized)
+                    {
+                        isPlanDefinationDisable = false;
+                    }
+                    else if (_model.IsPlanEditSubordinatesAuthorized)
+                    {
+                        if (lstSubOrdinates.Contains(objplan.CreatedBy))
+                        {
+                            isPlanDefinationDisable = false;
+                        }
+                    }
+                    //Modified by Mitesh Vaishnav for internal review point related to "Edit All Plan" permission
+                    _model.IsPlanDefinationDisable = isPlanDefinationDisable;
+                    _model.IsPlanCreateAll = IsPlanCreateAll;
+
+                }
+                else
+                {
+                    _model.IsPlanCreateAll = true;
                 }
 
-                ViewBag.IsPlanEditable = IsPlanEditable;
-                ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                //IsPlanEditable = false;
+                //_model.IsPlanEditable = IsPlanEditable;
+                ////Get all subordinates of current user upto n level
+                //var lstOwnAndSubOrdinates = new List<Guid>();
+                //try
+                //{
+                //    lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                //}
+                //catch (Exception e)
+                //{
+                //    ErrorSignal.FromCurrentContext().Raise(e);
+                //    if (e is System.ServiceModel.EndpointNotFoundException)
+                //    {
+                //        // return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
 
+                //    }
+                //}
+                //// Get current user permission for edit own and subordinates plans.
+                //_model.IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                //// To get permission status for Plan Edit, By dharmraj PL #519
+                //_model.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+
+                //if (im.OwnerId.Equals(Sessions.User.UserId))
+                //{
+                //    IsPlanEditable = true;
+                //    _model.IsPlanEditable = IsPlanEditable;
+                //}
+                //else if (_model.IsPlanEditAllAuthorized)
+                //{
+                //    IsPlanEditable = true;
+                //    _model.IsPlanEditable = IsPlanEditable;
+                //}
+                //else if (_model.IsPlanEditSubordinatesAuthorized)
+                //{
+                //    if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
+                //    {
+                //        IsPlanEditable = true;
+                //        _model.IsPlanEditable = IsPlanEditable;
+                //    }
+                //}
+                //_model.IsPlanEditable = IsPlanEditable;
+                //_model.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);             
             }
 
-            return _lstPermission;
+            return _model;
         }
 
         #endregion

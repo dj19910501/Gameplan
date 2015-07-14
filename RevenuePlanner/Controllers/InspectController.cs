@@ -7246,7 +7246,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="section"></param>
         /// <param name="isStatusChange"></param>
         /// <returns>Returns InspectModel.</returns>
-        private InspectModel GetInspectModel(int id, string section, bool isStatusChange = true)
+        public InspectModel GetInspectModel(int id, string section, bool isStatusChange = true)
         {
 
             InspectModel imodel = new InspectModel();

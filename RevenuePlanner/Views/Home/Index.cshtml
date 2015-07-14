@@ -81,6 +81,7 @@
     <script type="text/javascript">
         //Added By komal rawal for #1283
         var isTacticExist = false;
+ 
 
         function GetTacticTypelist(Planids) {
 
@@ -183,8 +184,9 @@
 
         //End
         // Edited to add PlanYear option.
-        var Currenttime = "thisquarter";
+        var Currenttime = "thisquarter";      
         $(document).ready(function () {
+            
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
             $("#nl-form2").hide();
             //Added by Nirav for Custom Dropdown - 388
@@ -655,6 +657,7 @@
             <div>
                 <div class="gantt-padding market-activity-main  cf lenght-div" style="min-height: 720px;">
                     @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
+
                     <div id="gantt_here"></div>
 
                     <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
@@ -1836,7 +1839,7 @@ function AjaxRequest() {
 
                     //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
                     //// display popup based on type and name and title.  
-                    $(".gantt_add").dblclick(function (e) {
+                    $(".gantt_last_cell").dblclick(function (e) {
                         e.stopPropagation();
                     });
 
@@ -2491,7 +2494,7 @@ function Quarter() {
                               }
 
                               //// Modified By Maninder Singh Wadhva PL Ticket#47
-                              function ShowModel(taskId, isShowInspect) {
+                              function ShowModel(taskId, isShowInspect) {                     
                                   removeDefaultModalPopupBackgroungColor();
                                   var task, planTacticId, planProgramId, planCampaignId, planId;
                                   var isImprovement = false;
@@ -2592,7 +2595,7 @@ function Quarter() {
 
                       //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
                       //// display popup based on type and name and title.  
-                      $(".gantt_add").dblclick(function (e) {
+                      $(".gantt_last_cell").dblclick(function (e) {
                           e.stopPropagation();
                       });
 
@@ -3733,8 +3736,8 @@ function Quarter() {
         }
     }
 
-    function DisplayPopUpMenu(typeVal, nameVal, titleVal, e) {
-
+    function DisplayPopUpMenu(typeVal, nameVal, titleVal, e)
+    {        
         var type = typeVal;
         var name = nameVal;
         var title = titleVal;
@@ -3767,19 +3770,19 @@ function Quarter() {
 
         var ul;
         if (type == "Plan") {
-            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
+            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
         }
 
         else if (type == "Program") {
-            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>Child Tactic</li> </ul>";
+            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram1'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>Child Tactic</li> </ul>";
         }
 
         else if (type == "Tactic") {
-            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic'>New Tactic </li> <li class='new-prog' id='CloneTactic'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> </ul>";
+            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> </ul>";
         }
 
         else if (type == "Campaign") {
-            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>Child Program</li> </ul>";
+            ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign1'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>Child Program</li> </ul>";
         }
 
         else {
@@ -3818,17 +3821,7 @@ function Quarter() {
         }
         else {
             $('#popupType').css('display', 'none');
-        }
-
-        //$('#popupType').css('display', 'none');
-        //$('#popupType' ).html(ul);
-
-        //if ($('#popupType' ).css('display') == 'none') {
-        //    $('#popupType' ).css('display', 'block');
-        //}
-        //else {
-        //    $('#popupType').css('display', 'none');
-        //}
+        }      
         e.stopPropagation();
 
         ////new Plan.
@@ -3838,7 +3831,7 @@ function Quarter() {
         });
 
         ////Copy Plan.
-        $('#ClonePlan').click(function () {
+        $('#ClonePlan1').click(function () {
             var planId = PlanId; //$("#hdnPlanId").val();
             if (parseInt(planId) > 0) {
                 $.ajax({
@@ -3895,23 +3888,21 @@ function Quarter() {
         });
 
         //Child Campaign
-    $('#ChildCampaign').click(function () {
-        ShowModel(name, null);
-        var planId = PlanId; // $("#hdnPlanId").val(); 
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", planId, '@RequestedModule');
-        $('.taskpopup').css('display', 'none');
+        $('#ChildCampaign').click(function () {       
+            var planId = PlanId; // $("#hdnPlanId").val(); 
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');  
+            $('.taskpopup').css('display', 'none');
     });
 
         //new Campaign
-    $('#NewCampaign').click(function () {
-        ShowModel(name, null);
+        $('#NewCampaign').click(function () {  
         var planId = PlanId; // $("#hdnPlanId").val();
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", planId, '@RequestedModule');
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');  
         $('.taskpopup').css('display', 'none');
     });
 
         ////Copy Campaign.
-    $('#CloneCampaign').click(function () {
+    $('#CloneCampaign1').click(function () {
         var idPlanCamaign = CampaignId;//$("#hdnPlanCampaignId").val();
         var Title = title;//$("#lblCampaignTitle").html();
         $.ajax({
@@ -3971,20 +3962,18 @@ function Quarter() {
 
         //Child Program
     $('#ChildProgram').click(function () {
-        ShowModel(name, null);
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', CampaignId, '@RequestedModule');//$('#hdnPlanCampaignId').val(), $("#hdnRedirectType").val()
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');      
         $('.taskpopup').css('display', 'none');
     });
 
         //New Program
     $('#NewProgram').click(function () {
-        ShowModel(name, null);
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', CampaignId, '@RequestedModule');//$('#hdnPlanCampaignId').val(), $("#hdnRedirectType").val()
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');  
         $('.taskpopup').css('display', 'none');
     });
 
         //Copy Program
-    $('#CloneProgram').click(function () {
+    $('#CloneProgram1').click(function () {
         var idPlanProgram = ProgramId;// $("#hdnPlanProgramId").val();
         var Title = title;// $("#lblProgramTitle").html();
         $.ajax({
@@ -4044,26 +4033,24 @@ function Quarter() {
 
         //Child Tactic
     $("#ChildTactic").on("click", function () {
-        ShowModel(name, null);
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');      
         $("#errorMessage").css("display", "none");
-        $("#successMessage").css("display", "none");
-        loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', ProgramId, '@RequestedModule');//planProgramId $("#hdnRedirectType").val()
+        $("#successMessage").css("display", "none");       
         $('.taskpopup').css('display', 'none');
         return false;
     });
 
         //New Tactic
-    $("#NewTactic").on("click", function () {
-        ShowModel(name, null);
+    $("#NewTactic1").on("click", function () {
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');    
         $("#errorMessage").css("display", "none");
-        $("#successMessage").css("display", "none");
-        loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', ProgramId, '@RequestedModule');//planProgramId $("#hdnRedirectType").val()
+        $("#successMessage").css("display", "none");      
         $('.taskpopup').css('display', 'none');
         return false;
     });
 
         //Copy Tactic
-    $('#CloneTactic').click(function () {
+    $('#CloneTactic1').click(function () {
         var idPlanTactic = TacticId;// $("#hdnPlanTacticId").val();
         var Title = title;// $("#lblTacticTitle").html();
         $.ajax({
@@ -4124,14 +4111,12 @@ function Quarter() {
 
         //Child Line Item
     $('#ChildLineItem').click(function () {
-        ShowModel(name, null);
-        loadInspectPopup('0', "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", '@Enums.InspectPopupMode.Add.ToString()', TacticId, '@RequestedModule');// $('#hdnPlanTacticId').val(), $("#hdnRequestedModule").val()
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", 0, TacticId, '@RequestedModule');          
         $('.taskpopup').css('display', 'none');
     });
 
         //Improvments Tactic
     $('#ImpsTactic').click(function (e) {
-
         isTacticExist = true;
         if (!isTacticExist) {
             ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
