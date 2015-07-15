@@ -360,6 +360,8 @@
                                 }
                                 else if (data.id != 0) {
                                     $('#PlanId').val(data.id.toString());
+                                    $('#divPlanDefinationEnabled').hide();
+                                    $('#divPlanDefinationDisabled').show();
                                     $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
                                     renderDisablePlanDefinationSection();
                                     var url = data.redirect;
@@ -428,8 +430,12 @@
                 $('#conjuntionWord').html('to deliver ');
             }
         }
+        else {
+            $('#divBudgetSummary').hide();
+        }
 
-
+        $('#divPlanDefinationEnabled').show();
+        $('#divPlanDefinationDisabled').hide();
 
         $("#lblMarkringActivitiesTitle").hide();
         if (CurrentPlanId != "0") {

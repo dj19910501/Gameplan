@@ -4025,7 +4025,7 @@ function Quarter() {
 
         ////new Plan.
         $("#NewPlan").click(function (e) {
-            var url = '@Url.Action("Create", "Plan")';
+            var url = '@Url.Action("CreatePlan", "Plan")';
             displayconfirm(url);
         });
 
@@ -4316,7 +4316,6 @@ function Quarter() {
 
         //Improvments Tactic
         $('#ImpsTactic').click(function (e) {
-            debugger;
         isTacticExist = true;
         if (!isTacticExist) {
             ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';

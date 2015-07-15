@@ -1494,7 +1494,7 @@ namespace RevenuePlanner.Controllers
             var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
             //Emd
 
-            PermissionModel _modelPermission = new PermissionModel();
+          // PermissionModel _modelPermission = new PermissionModel();
            // _modelPermission = GetPermission(Convert.ToInt32(planId), Enums.EntityType.Plan.ToString());
 
             //InspectController inspCt = new InspectController();

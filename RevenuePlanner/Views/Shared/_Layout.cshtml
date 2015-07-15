@@ -278,7 +278,6 @@
 
     //Added By Komal Rawal for new home page ui
     function ShowMessage(IsError, Message, time) {
-        alert(time);
         if (IsError) {
             $("#errorMsg").css("display", "block");
             $("#spanMsgError").empty();
@@ -295,7 +294,6 @@
             $("#spanMsgSuccess").empty();
             $("#spanMsgSuccess").text(Message);
             if (time != 'undefined') {
-                alert(1);
                 $('#SuccessMsg').slideDown(time);
             }
         }

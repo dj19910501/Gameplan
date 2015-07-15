@@ -208,8 +208,13 @@
         $('#table_baseline').on('click', 'tbody tr td .add-icon', function (e) {
             e.stopPropagation();
             var url = '@Url.Content("~/Plan/CreatePlan")';
-             //window.location.href = url;
              var queryStringArr = [];
+            queryStringArr.push(
+              {
+                  key: 'isPlanSelecter',
+                  Value: true
+              });
+
              formSubmitEvent(url, queryStringArr);
         });
         
