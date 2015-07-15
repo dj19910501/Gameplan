@@ -620,13 +620,10 @@
         }
         
         var tacticTypeValue = $('#ddlTacticType').val();
-        debugger;
         if (tacticTypeValue == "") {
-            debugger;
             $('#btnMultiselect_ddlTacticType').addClass("error");
         }
         else {
-            debugger;
             $('#btnMultiselect_ddlTacticType').removeClass("error");
         }
         if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
@@ -922,7 +919,6 @@
 
       //Added By Komal Rawal
       function loadtacticdata(tacticTypeId) {
-          debugger;
           var pmql = 0;
           var pcost = 0;
           var projectedStageValue = 0;
@@ -993,7 +989,6 @@
 
 
     $('#ddlTacticType').change(function () {
-        debugger;
           var tacticTypeId = $(this).val();
           loadtacticdata(tacticTypeId);
 
@@ -1032,7 +1027,6 @@
       var mqlConversion = 0;
       function GetConversionRate(projectedStageValue, isTacticTypeChange) {
           if ($('#ddlTacticType').val() != '') {
-              debugger;
               $.ajax({
                   type: 'POST',
                   url: '@Url.Content("~/Inspect/CalculateMQL")',

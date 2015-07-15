@@ -50,6 +50,8 @@ namespace RevenuePlanner.Models
 
         /* Added by Sohel Pathan on 04/08/2014 for PL ticket #623 */
         public string Description { get; set; }
+
+        public HomePlanModelHeader objplanhomemodelheader { get; set; }
     }
 
     public class Plan_CampaignModel

@@ -12,6 +12,8 @@
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
+    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable; //Added By Komal Rawal for new homepage UI
+    bool IsPlanPublished = (bool)ViewBag.IsPublished;
     string ActivePlan = ViewBag.ActivePlan;
     var CreatedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()];
     var SubmittedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()];
@@ -19,6 +21,10 @@
     var InProgressStatus = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()];
     var CompleteStatus = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()];
     var DeclineStatus = Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()];
+		
+ var Successmsgduplicate = (string)ViewBag.SuccessMessageDuplicatePlan;
+    var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
+    var ListBudgetingPlan = Model.objplanhomemodelheader.plans; //Added By Komal Rawal for new homepage UI
 
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
@@ -64,7 +70,6 @@
         color: #6d6d6d !important;
     }
 </style>
-
 @if (activeMenu.ToLower() == "plan")
 {
     @section nlFormContent{
@@ -74,14 +79,21 @@
         <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
     }
 }
-
 @Html.Hidden("ActiveMenu", activeMenu)
 @Html.HiddenFor(m => m.PlanId)
+@section PlanHeader{
+
+<div class="light-blue-chart cf full-width-header" id="planHeader">
+    @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
+</div>
+
+    }
+
 @section Sidebar{
     <script type="text/javascript">
         //Added By komal rawal for #1283
         var isTacticExist = false;
- 
+
 
         function GetTacticTypelist(Planids) {
 
@@ -184,11 +196,11 @@
 
         //End
         // Edited to add PlanYear option.
-        var Currenttime = "thisquarter";      
+        var Currenttime = "thisquarter";
         $(document).ready(function () {
-            
+
             var isRender;       //// Added by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
-            $("#nl-form2").hide();
+            //  $("#nl-form2").hide();
             //Added by Nirav for Custom Dropdown - 388
 
             if (($('#ActiveMenu').val().toLowerCase() == "plan")) {
@@ -267,7 +279,9 @@
                 //// Modified By Maninder Singh Wadhva to Address PL#203
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                     if (CurrentPlanId > 0) {
-                        GetCollaborators(CurrentPlanId);
+                        GetCollaborators(CurrentPlanId); 
+                        GetTacticTypelist(CurrentPlanId);
+                        GetOwnerListForFilter(CurrentPlanId);
                     }
                 }
                 PagePostRequest = false;
@@ -278,8 +292,8 @@
                     GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
                 }
                 arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
-                $('#cSuccessDuplicatePlan').empty();
-                $('#successMessageDuplicatePlan').slideUp(1);
+               // $('#cSuccessDuplicatePlan').empty();
+                $('#successMessage').slideUp(1);
                 $('#content_wraper').removeClass('padding-top40');
             });
         }
@@ -375,17 +389,20 @@
 
     </script>
 
-    <div id="PlanModulesSection">
-        <div class="padding-content padding-bottom0 hide" id="DivButtonsHome">
-            <h4 class="text-shadow-black source-sans-prolight">Planning Review</h4>
+    <div id="PlanModulesSection" class="plan-mod-section sidebar-main">
+        <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
+            <div class="sidebar-toogle">
+                <a href="#"><<&nbsp;<span>hide</span></a>
+            </div>
+            <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
             <div class="wraper-btns cf">
-                @if (IsTacticActualsAddEditAuthorized)
-                {
-                    <div class="span6" id="divAddActuals">
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Home")'">Add Actuals</button>
+                @* @if (IsTacticActualsAddEditAuthorized)
+                {*@
+                <div id="divAddPlan">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("CreatePlan", "Plan")'" style="min-width:90%">Create New Plan</button>
                     </div>    
-                }
-                <div class="span6" id="divPlanEditButtonHome">
+                @* }*@
+                @* <div class="span6" id="divPlanEditButtonHome">
                     <!-- change by kunal for edit plan  -->
                     <!-- start -->
                     @{
@@ -408,14 +425,36 @@
                         }
                     }
                     <!-- end -->
-                </div>
+                </div>*@
             </div>
         </div>
 
         <div class="padding-content padding-bottom0 hide" id="DivButtonsPlanSummary">
-            <h4 class="text-shadow-black source-sans-prolight">Plan Summary</h4>
+            <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
             <div class="wraper-btns cf">
-                @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
+
+                <div>
+                    @if (IsPlanEditable && !IsPlanPublished)
+                    {
+                    <button id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular publish-plan-btn" type="button"  style="min-width:90%">
+                        Publish Plan
+                    </button>
+                    }
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Plan", new { PlanId = CurrentPlanId})'" style="min-width:90%">
+                        Add Actuals
+                    </button>
+                     @if (IsPlanEditable)
+                     {
+                         int pid = Model.PlanId;
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button"  onclick="EditPlan()" style="min-width:90%">
+                        Edit Plan Defination
+                    </button>
+                     }
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Budgeting", "Plan")'"  style="min-width:90%">
+                        Edit Plan Budget & Cost
+                    </button>
+                </div>
+                @*  @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
                 {
                     <div class="span6">
                         <div class="btn-group ">
@@ -451,7 +490,7 @@
                         }
                     }
                     <!-- end -->
-                </div>
+                </div>*@
             </div>
         </div>
 
@@ -600,7 +639,7 @@
     <!--End sidebar-->
 }
 
-<!--success message-->
+@*<!--success message-->
 <div id="successMessageDuplicatePlan" class="alert hide alert-success message-position">
     <a class="close">×</a>
     <div id="cSuccessDuplicatePlan">@Html.Raw(HttpUtility.HtmlDecode((string)ViewBag.SuccessMessageDuplicatePlan))</div>
@@ -610,7 +649,7 @@
 <div id="errorMessageDuplicatePlan" class="alert hide alert-error message-position">
     <a class="close">×</a>
     <div id="cErrorDuplicatePlan">@Html.Raw(HttpUtility.HtmlDecode((string)ViewBag.ErrorMessageDuplicatePlan))</div>
-</div>
+</div>*@
 <!--error message-->
 @* Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 *@
 <!--error message Inspect Popup-->
@@ -620,19 +659,31 @@
 </div>
 <!--error message Inspect Popup-->
 @* End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 *@
-<div class="light-blue-chart cf" id="planHeader">
-    @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
-</div>
+
 
 <script>
     var pid = $('#PlanId').val();
     var CurrentPlanId = pid;
     var isDataModified = false; // Added by Sohel Pathan on 13/11/2014 for PL ticket #933.
-</script>
-<div id="DivloadPlan" class="no-bottom-border">
+</script>	
+
+@if (activeMenu.ToLower() == "plan") //// Added by Komal Rawal for new Homepage UI
+{
+    <div class="calender-view-nav">
+        <ul class="nav nav-tabs new-margin no-position" id="PlanTab">
+            <li class="active pull-left" id="liCalender">
+                <a>CALENDER VIEW</a>
+            </li>
+            <li class="pull-left" id="liGrid">
+                <a>GRID VIEW</a>
+            </li>
+            </ul>
+    </div>
+}
+<div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
 
-<div class="tab-content all-height cf" style="padding-right: 18px;">
+<div id="CalenderView" class="tab-content all-height cf" style="padding-right: 18px;">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
             @if (activeMenu.ToLower() == "plan") //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
@@ -698,17 +749,17 @@
     // Added By Bhavesh
 *@
 <div class="container-fluid all-height" id="modalMainContainer">
-    <div class="row-fluid calc-height">
+    <div class="row-fluid calc-height content-wrapper-main">
         <div class="container-fluid">
             <div class="row-fluid ">
                 <div class="span12">
                     <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed; overflow: hidden;">
                         <div style="margin: 30px auto !important">@* Modified for #1318*@
-                            <div id="successMessage" class="alert alert-success" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                            <div id="successMessage" class="alert alert-success messagewidth">
                                 <a class="close">×</a>
                                 <strong>Success.</strong> <span id="spanMessageSuccess"></span>
                             </div>
-                            <div id="errorMessage" class="alert alert-error hide" style="display: none; margin: auto !important; max-width: 1000px !important;">
+                            <div id="errorMessage" class="alert alert-error hide messagewidth">
                                 <a class="close">×</a>
                                 <strong>Error!</strong> <span id="spanMessageError">@Common.objCached.ValidateForEmptyField</span>
                             </div>
@@ -730,6 +781,7 @@
 
     var InspectSuccMsg = "";
     var SelectedPlanTitle = "";
+    var isCalenderView = true;
     var filters = {
         customFieldIds: [],
         PlanIDs: [],
@@ -746,7 +798,7 @@
 
     //Added By Komal Rawal for #1376
     function toggleStatus(obj) {
-        //
+       
         var id = $(obj).attr('id');
         var liID = $(obj).parent().attr('id');
         if ($(obj).is(':checked')) {
@@ -783,6 +835,77 @@
         }
     }
 
+
+
+    $("#liGrid,#liCalender").click(function () {
+        var activeTab = $("#PlanTab li.active a").parent(this).attr('id');
+        $('#' + activeTab).removeClass("active");
+        $(this).removeClass("pull-left");
+        $(this).addClass("active pull-left");
+        var id = $(this).attr('id');
+        if (id == "liCalender") {
+            $("#CalenderView").show()
+            RefreshCurrentTab();
+          
+        }
+        else {
+            $("#CalenderView").hide()
+            //Call the function for grid view
+        }
+    });
+  
+    //End
+    //Added by Komal Rawal for new homepage UI to publish plan
+    $('#BtnPublishPlan').click(function () {
+        publishPlan();
+    });
+
+    function publishPlan() {
+        var uId = $(window).attr('name');
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Plan/ApplyToCalendar/")',
+            data: 'UserId=' + uId,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.errorMessage != undefined) {
+                        isError = true;
+                        ShowMessage(isError, data.errorMessage, 3000);
+                       // $('#cErrorDuplicatePlan').html('<strong>Error! </strong>' + data.errorMessage);
+                        //$('#errorMsg').slideDown(3000);
+                    }
+                    else if (data.activeMenu != undefined && data.currentPlanId != undefined) {
+                        var url = '@Url.Content("~/Home/Index")';
+
+                            var queryStringArr = [];
+
+                            queryStringArr.push(
+                             {
+                                 key: 'ActiveMenu',
+                                 Value: data.activeMenu
+                             });
+
+                            queryStringArr.push(
+                             {
+                                 key: 'currentPlanId',
+                                 Value: data.currentPlanId
+                             });
+
+                            displayconfirm(url, queryStringArr);
+                        }
+                }
+            }
+        });
+    }
+
+    function displayconfirm(strURL, queryStringArr) {
+
+        //window.location.href = strURL;
+        formSubmitEvent(strURL, queryStringArr);
+    }
     //End
 
     //Reset all the Filters
@@ -1264,7 +1387,7 @@
     /*added by Nirav for plan consistency on 14 apr 2014*/
     function EditPlan() {
         var pid = $("#CurrentPlanId").val();
-        var url = '@Url.Content("~/Plan/Create?id=")' + pid;
+        var url = '@Url.Content("~/Plan/CreatePlan?id=")' + pid;
         window.location.href = url;
     }
     $(".selectBox select").selectbox();
@@ -1299,7 +1422,9 @@
     //// Default load tactics in view control.
     var activeMenu = $('#ActiveMenu').val().toLowerCase();
     var getViewByList = false;  //// Added by Sohel Pathan on 28/10/2014 for PL ticket #885.
-
+    var Successmsgduplicate = '@Successmsgduplicate';
+    var Errormsgduplicate = '@errormsgduplicate';
+    var isError = false;
     function SetPlanButtons() {
 
         //Added : By Kalpesh Sharma Ticket #638 Cloning icon for plans, campaigns, programs and tactics
@@ -1347,7 +1472,6 @@
         var strflg = "";
         var PlanIdsCustom;
         SetGantt();
-
         // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
         if ('@((bool)ViewBag.ShowInspectPopup)' != '@false') {
             ShowInspectForPlanTacticId();
@@ -1380,6 +1504,10 @@
         else {
             PlanIdsCustom = CurrentPlanId;
         }
+
+        if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            LoadPlan();
+        }
         getViewByList = true;
         BindOtherAttributes();
         GetOwnerListForFilter(PlanIdsCustom);
@@ -1388,40 +1516,57 @@
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
     });
 
+    function LoadPlan() {
+        var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
+        populateNF(plans, "dropdown-plan-title");
+        var nlform = new NLForm(document.getElementById('nl-form2'));
+    }
+
     var appendtag = '';//uday
     function DuplicatePlanMessage() {
         /*close x event on message*/
-        $("#successMessageDuplicatePlan").find(".close").click(function (e) {
+        $("#SuccessMsg").find(".close").click(function (e) {
             e.stopPropagation();
             e.preventDefault();
             $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
             $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
         });
 
-        $("#errorMessageDuplicatePlan").find(".close").click(function (e) {
+        $("#errorMsg").find(".close").click(function (e) {
             e.stopPropagation();
             e.preventDefault();
             $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
             $(this).closest(".alert").slideUp(400);
         });
 
-        if ($('#cSuccessDuplicatePlan').html() == '') {
-            $("#successMessageDuplicatePlan").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
-        }
-        else {
-            $("#successMessageDuplicatePlan").removeClass("message-position");
-            $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-            $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
-            $("#successMessageDuplicatePlan").slideDown(3000);
+        //if ($('#cSuccessDuplicatePlan').html() == '') {
+        //    $("#successMessageDuplicatePlan").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
+        //}
+        //else {
+        //    $("#successMessageDuplicatePlan").removeClass("message-position");
+        //    $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+        //    $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
+        //    $("#successMessageDuplicatePlan").slideDown(3000);
+        //}
+
+        if (Successmsgduplicate != "") {
+            ShowMessage(isError, Successmsgduplicate, 3000);
+          //  $("#SuccessMsg").slideDown(3000);
         }
 
-        if ($('#cErrorDuplicatePlan').html() == '') {
-            $("#errorMessageDuplicatePlan").slideUp(400);
-        }
-        else {
-            $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html())
-            $("#errorMessageDuplicatePlan").slideDown(400);
+        //if ($('#cErrorDuplicatePlan').html() == '') {
+        //    $("#errorMessageDuplicatePlan").slideUp(400);
+        //}
+        //else {
+        //    $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+        //    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html())
+        //    $("#errorMessageDuplicatePlan").slideDown(400);
+        //}
+
+        if (Errormsgduplicate != "") {
+            isError = true;
+            ShowMessage(isError, Errormsgduplicate,400);
+           // $("#errorMsg").slideDown(400);
         }
     }
 
@@ -1691,7 +1836,6 @@ var planYear;
 //// Modified By Maninder Singh Wadhva to Address PL#203
 //// Function to make ajax request.
 function AjaxRequest() {
-
     //// Start - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
     filters.customFieldIds = [];
 
@@ -1711,6 +1855,7 @@ function AjaxRequest() {
     var TacticTypeids = filters.TacticTypeids; //Modified for #1283
     var GetSelectedPlanNo = filters.SelectedPlans.length;
     var StatusIds = filters.StatusIds;
+
 
     if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         if (GetSelectedPlanNo > 1) {
@@ -1778,7 +1923,7 @@ function AjaxRequest() {
                     }
                     else {
                         $("#divPlanEditButtonHome").hide();
-                        $("#divAddActuals").hide();
+                          //  $("#divAddActuals").hide();
                     }
 
                     //// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -1811,7 +1956,6 @@ function AjaxRequest() {
                     }
 
                     renderGantt(data.taskData);
-
                     var w1 = window.innerWidth;
                     var w3 = document.body.clientWidth;
 
@@ -1838,15 +1982,17 @@ function AjaxRequest() {
                     });
 
                     //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
-                    //// display popup based on type and name and title.  
+                    //// display popup based on type and name and title.
+
                     $(".gantt_last_cell").dblclick(function (e) {
                         e.stopPropagation();
                     });
 
                     $(".gantt_add").click(function (e) {
+                 
                         var type = $(this).attr('id');
                         var name = $(this).attr('Name');
-                        var title = $(this).attr('title');
+                        var title = $(this).attr('aria-label');
                         DisplayPopUpMenu(type, name, title, e);
 
                     });
@@ -1914,29 +2060,29 @@ function GetCurrentPlanPermissionDetail() {
             }
             else {
                 if (data.IsPlanEditable) {
-                    switch ($('#ActiveMenu').val().toLowerCase()) {
-                        case 'home':
-                            // $("#divPlanEditButtonHome").show();
-                            if ($("#IsTacticActualsAddEditAuthorized").val().toLowerCase() == 'true')
-                                $("#divAddActuals").show();
-                            break;
-                        case 'plan':
-                            // $("#divPlanEditButtonPlan").show();
-                            $("#divAddActuals").hide();
-                            break;
-                    }
+                        //switch ($('#ActiveMenu').val().toLowerCase()) {
+                        //    case 'home':
+                        //        // $("#divPlanEditButtonHome").show();
+                        //        if ($("#IsTacticActualsAddEditAuthorized").val().toLowerCase() == 'true')
+                        //            $("#divAddActuals").show();
+                        //        break;
+                        //    case 'plan':
+                        //        // $("#divPlanEditButtonPlan").show();
+                        //        $("#divAddActuals").hide();
+                        //        break;
+                        //}
                     $("#isViewOnly").val(true);
                 }
                 else {
-                    switch ($('#ActiveMenu').val().toLowerCase()) {
-                        case 'home':
-                            //$("#divPlanEditButtonHome").hide();
-                            $("#divAddActuals").hide();
-                            break;
-                        case 'plan':
-                            //$("#divPlanEditButtonPlan").hide();
-                            break;
-                    }
+                        //switch ($('#ActiveMenu').val().toLowerCase()) {
+                        //    case 'home':
+                        //        //$("#divPlanEditButtonHome").hide();
+                        //        $("#divAddActuals").hide();
+                        //        break;
+                        //    case 'plan':
+                        //        //$("#divPlanEditButtonPlan").hide();
+                        //        break;
+                        //}
                     $("#isViewOnly").val(false);
                 }
             }
@@ -2494,7 +2640,7 @@ function Quarter() {
                               }
 
                               //// Modified By Maninder Singh Wadhva PL Ticket#47
-                              function ShowModel(taskId, isShowInspect) {                     
+                              function ShowModel(taskId, isShowInspect) {
                                   removeDefaultModalPopupBackgroungColor();
                                   var task, planTacticId, planProgramId, planCampaignId, planId;
                                   var isImprovement = false;
@@ -2594,7 +2740,8 @@ function Quarter() {
                       });
 
                       //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
-                      //// display popup based on type and name and title.  
+                      //// display popup based on type and name and title.                       
+
                       $(".gantt_last_cell").dblclick(function (e) {
                           e.stopPropagation();
                       });
@@ -2602,10 +2749,10 @@ function Quarter() {
                       $(".gantt_add").click(function (e) {
                           var type = $(this).attr('id');
                           var name = $(this).attr('Name');
-                          var title = $(this).attr('title');
+                          var title = $(this).attr('aria-label');
                           DisplayPopUpMenu(type, name, title, e);
                       });
-                     
+
                       var $doc = $(document);
                       $doc.click(function () {
                           $('#popupType').css('display', 'none');
@@ -2637,125 +2784,125 @@ function Quarter() {
                           //// Added By: Maninder Singh Wadhva on 11/24/2014.
                           //// Ticket: 942 Exception handeling in Gameplan.
                           window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                          }
+                      }
 
                       modalBackdropDisplayNone();
                   });
-                  }
+              }
 
-                  //End Script Of Bhaveh
+              //End Script Of Bhaveh
 
-                  //// Modified By Maninder Singh Wadhva PL Ticket#47
-                  //Start Creating and Populating tabulated data
-                  function FillTacticsTable() {
-                      $('#table_activities > tbody >tr').remove();
-                      if (typeof activities != 'undefined') {
-                          if (activities.data.length) {
-                              for (i in activities.data) {
-                                  addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].projectedStageValue,
-                                      activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted, activities.data[i].isImprovement);
-                              }
+              //// Modified By Maninder Singh Wadhva PL Ticket#47
+              //Start Creating and Populating tabulated data
+              function FillTacticsTable() {
+                  $('#table_activities > tbody >tr').remove();
+                  if (typeof activities != 'undefined') {
+                      if (activities.data.length) {
+                          for (i in activities.data) {
+                              addRowTactic(i, activities.data[i].id, activities.data[i].text, activities.data[i].projectedStageValue,
+                                  activities.data[i].mqls, activities.data[i].cws, activities.data[i].cost, activities.data[i].isDeclined, activities.data[i].isSubmitted, activities.data[i].isImprovement);
                           }
-
-                          //Fetch all the row values from the tables
-                          $('.ActivitiesFormater').each(function () {
-                              //Added By : Kalpesh Sharma
-                              //PL #508 Set format for label in tool tip
-                              SetBudget($(this));
-                          });
-
                       }
+
+                      //Fetch all the row values from the tables
+                      $('.ActivitiesFormater').each(function () {
+                          //Added By : Kalpesh Sharma
+                          //PL #508 Set format for label in tool tip
+                          SetBudget($(this));
+                      });
+
                   }
+              }
 
-                  //// Modified By Maninder Singh Wadhva PL Ticket#47
-                  //add row in tactics table
-                  function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isDeclined, isSubmitted, isImprovement) {
+              //// Modified By Maninder Singh Wadhva PL Ticket#47
+              //add row in tactics table
+              function addRowTactic(index, id, text, projectedStageValue, mqls, cws, cost, isDeclined, isSubmitted, isImprovement) {
 
-                      var $activitiesTable = $('#table_activities > tbody');
-                      var $html = "";
+                  var $activitiesTable = $('#table_activities > tbody');
+                  var $html = "";
+                  if (isImprovement) {
+                      var valueForImprovement = '---';
+                      projectedStageValue = valueForImprovement;
+                      mqls = valueForImprovement;
+                      cws = valueForImprovement;
+                  }
+                  if (isDeclined) {
+                      $html += '<tr class="rejected" id="' + id + '" data-index="' + index + '">' +
+                                  '<td class="border-r sm">'
+
                       if (isImprovement) {
-                          var valueForImprovement = '---';
-                          projectedStageValue = valueForImprovement;
-                          mqls = valueForImprovement;
-                          cws = valueForImprovement;
+                          $html += '<span class="bullhorn-icon"></span>'
                       }
-                      if (isDeclined) {
-                          $html += '<tr class="rejected" id="' + id + '" data-index="' + index + '">' +
-                                      '<td class="border-r sm">'
+                      //Modified by Arpita Soni on 01/16/2015 for ticket #1084
+                      $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
+                                  '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
+                                  '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
+                                  '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
+                                  '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
+                      $html += '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>';
 
-                          if (isImprovement) {
-                              $html += '<span class="bullhorn-icon"></span>'
-                          }
-                          //Modified by Arpita Soni on 01/16/2015 for ticket #1084
-                          $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
-                                      '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
-                                      '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
-                                      '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
-                                      '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
-                          $html += '<td><span class="reject-icon active"></span><span class="accept-icon"></span></td>';
+                      $html += '</tr>';
+                  } else if (isSubmitted) {
+                      $html += '<tr class="pending"  id="' + id + '" data-index="' + index + '">' +
+                                  '<td class="border-r sm">'
 
-                          $html += '</tr>';
-                      } else if (isSubmitted) {
-                          $html += '<tr class="pending"  id="' + id + '" data-index="' + index + '">' +
-                                      '<td class="border-r sm">'
-
-                          if (isImprovement) {
-                              $html += '<span class="bullhorn-icon"></span>'
-                          }
-                          //Modified by Arpita Soni on 01/16/2015 for ticket #1084
-                          $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
-                                      '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
-                                      '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
-                                      '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
-                                      '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
-                          $html += '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>';
-                          $html += '</tr>';
+                      if (isImprovement) {
+                          $html += '<span class="bullhorn-icon"></span>'
                       }
-
-                      $activitiesTable.append($html);
-
+                      //Modified by Arpita Soni on 01/16/2015 for ticket #1084
+                      $html += '<span class="title-baseline-model ConcatTextlength" style="width: 400px" title=' + text + ' >' + text + '</span><span class="search-icon"></span></td>' +
+                                  '<td class="sm">' + displayTacticMQL(projectedStageValue) + '</td>' +
+                                  '<td class="sm">' + displayTacticMQL(mqls) + '</td>' +
+                                  '<td class="sm ActivitiesFormater">' + FormatCurrency(cws, false) + '</td>' +
+                                  '<td class="border-r sm ActivitiesFormater">' + FormatCurrency(cost, false) + '</td>';
+                      $html += '<td><span class="reject-icon"></span><span class="accept-icon"></span></td>';
+                      $html += '</tr>';
                   }
 
-                  function displayTacticMQL(MQL) {
-                      if (MQL != 'N/A' && MQL != '---') {
-                          //Modified by Arpita Soni on 01/16/2015 for Ticket #1084
-                          return number_format(MQL, 0, '.', ',');
+                  $activitiesTable.append($html);
 
-                      }
-                      else {
-                          return MQL;
-                      }
+              }
+
+              function displayTacticMQL(MQL) {
+                  if (MQL != 'N/A' && MQL != '---') {
+                      //Modified by Arpita Soni on 01/16/2015 for Ticket #1084
+                      return number_format(MQL, 0, '.', ',');
+
+                  }
+                  else {
+                      return MQL;
+                  }
+              }
+
+              $(document).on("click", ".accept-icon", function () {
+                  var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
+                  ApproveTactic(this, task);
+              })
+
+              //// Modified By Maninder Singh Wadhva PL Ticket#47
+              function ApproveTactic(e, task) {
+                  var approveDeclineTacticId;
+                  var isImprovement = false;
+                  if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+                      approveDeclineTacticId = task.ImprovementPlanTacticId;
+                      isImprovement = true;
+                  }
+                  else {
+                      approveDeclineTacticId = task.plantacticid;
                   }
 
-                  $(document).on("click", ".accept-icon", function () {
-                      var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
-                      ApproveTactic(this, task);
-                  })
-
-                  //// Modified By Maninder Singh Wadhva PL Ticket#47
-                  function ApproveTactic(e, task) {
-                      var approveDeclineTacticId;
-                      var isImprovement = false;
-                      if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
-                          approveDeclineTacticId = task.ImprovementPlanTacticId;
-                          isImprovement = true;
-                      }
-                      else {
-                          approveDeclineTacticId = task.plantacticid;
-                      }
-
-                      $.ajax({
-                          type: 'POST',
-                          url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
-                      data: {
-                          planTacticId: approveDeclineTacticId,
-                          isApprove: true,
-                          isImprovement: isImprovement
-                      },
-                      dataType: "json",
-                      success: function (data) {
-                          if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
-                              window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                  $.ajax({
+                      type: 'POST',
+                      url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
+                          data: {
+                              planTacticId: approveDeclineTacticId,
+                              isApprove: true,
+                              isImprovement: isImprovement
+                          },
+                          dataType: "json",
+                          success: function (data) {
+                              if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                                  window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           }
                           else {
                               if (data.result == true) {
@@ -2780,7 +2927,7 @@ function Quarter() {
                               }
                           }
                       }
-                  });
+                      });
               }
 
               $(document).on("click", ".reject-icon", function () {
@@ -2849,7 +2996,9 @@ function Quarter() {
               /// Added By: Maninder Singh Wadhva.
 
               /// Ended Script Of Inspect Popup
-              function GetHealderData(selectedPlanIds) {
+    //Commented by komal Rawal for new homepage UI
+    @*function GetHealderData(selectedPlanIds) {
+    alert(1);
                   var newUrl = '';
                   if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                       newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
@@ -2979,11 +3128,11 @@ function Quarter() {
                   },
               });
               barChart2.parse(data.lstchart, "json");
-          }
+    }*@
+    //End
 
           //// Modified By Maninder Singh Wadhva PL Ticket#47
           gantt.attachEvent("onTaskOpened", function (id) {
-
               var planid = CurrentPlanId;
               //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
               if (typeof isRender == 'undefined' || isRender == false) {
@@ -2996,9 +3145,34 @@ function Quarter() {
 
               // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
               $(".gantt_container .gantt_tree_content").each(function (index, element) {
-
                   $(element).attr("title", htmlDecode(element.innerHTML));
               });
+
+
+              $(".gantt_last_cell").dblclick(function (e) {
+                  e.stopPropagation();
+              });
+
+              $(".gantt_add").click(function (e) {
+                  var type = $(this).attr('id');
+                  var name = $(this).attr('Name');
+                  var title = $(this).attr('aria-label');
+                  DisplayPopUpMenu(type, name, title, e);
+
+              });
+
+              var $doc = $(document);
+              $doc.click(function () {
+                  $('#popupType').css('display', 'none');
+              });
+
+              $(document).mouseup(function (e) {
+                  $('#popupType').css("display", "none");
+              });
+              $(".gantt_ver_scroll").scroll(function () {
+                  $('#popupType').css('display', 'none');
+              });
+
           });
 
           //// Added by :- Sohel Pathan on 11/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
@@ -3294,6 +3468,7 @@ function Quarter() {
 
           //// Modified By Maninder Singh Wadhva PL Ticket#47
           gantt.attachEvent("onTaskClosed", function (id) {
+
               //// Modified by :- Sohel Pathan on 10/04/2014 for PL ticket #419 to display tactic count properly in left nav-menu
               OnTaskCollapse(id)
               hoverRows();
@@ -3303,8 +3478,32 @@ function Quarter() {
 
               // added by dharmraj to display tooltip on camp., prog., tactic name in calendar.
               $(".gantt_container .gantt_tree_content").each(function (index, element) {
-
                   $(element).attr("title", htmlDecode(element.innerHTML));
+              });
+
+
+              $(".gantt_last_cell").dblclick(function (e) {
+                  e.stopPropagation();
+              });
+
+              $(".gantt_add").click(function (e) {
+                  var type = $(this).attr('id');
+                  var name = $(this).attr('Name');
+                  var title = $(this).attr('aria-label');
+                  DisplayPopUpMenu(type, name, title, e);
+
+              });
+
+              var $doc = $(document);
+              $doc.click(function () {
+                  $('#popupType').css('display', 'none');
+              });
+
+              $(document).mouseup(function (e) {
+                  $('#popupType').css("display", "none");
+              });
+              $(".gantt_ver_scroll").scroll(function () {
+                  $('#popupType').css('display', 'none');
               });
 
           });
@@ -3736,8 +3935,8 @@ function Quarter() {
         }
     }
 
-    function DisplayPopUpMenu(typeVal, nameVal, titleVal, e)
-    {        
+    function DisplayPopUpMenu(typeVal, nameVal, titleVal, e) {
+    
         var type = typeVal;
         var name = nameVal;
         var title = titleVal;
@@ -3800,7 +3999,7 @@ function Quarter() {
         var targetOffset = target.offset().top;
         var scrollPosition = $(window).scrollTop();
 
-        if ($('#popupType').css('display') == 'none') {            
+        if ($('#popupType').css('display') == 'none') {
             if (scrollPosition <= targetOffset) {
                 $('#popupType').css({
                     'display': 'block',
@@ -3821,12 +4020,12 @@ function Quarter() {
         }
         else {
             $('#popupType').css('display', 'none');
-        }      
+        }
         e.stopPropagation();
 
         ////new Plan.
         $("#NewPlan").click(function (e) {
-            var url = '@Url.Action("Create", "Plan")';
+            var url = '@Url.Action("CreatePlan", "Plan")';
             displayconfirm(url);
         });
 
@@ -3868,38 +4067,38 @@ function Quarter() {
                                 }
                                 else {
                                     RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0);
+                                }
+
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.msg);
+
+                                window.location.reload();
+                                return;
                             }
-
-                            $("#successMessage").css("display", "block");
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(data.msg);
-
-                            window.location.reload();
-                            return;
+                            if (data.errormsg != '') {
+                                $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
+                                return;
+                            }
                         }
-                        if (data.errormsg != '') {
-                            $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html());
-                            return;
-                        }
-                    }
                     }
                 });
-        }
+            }
         });
 
         //Child Campaign
-        $('#ChildCampaign').click(function () {       
+        $('#ChildCampaign').click(function () {
             var planId = PlanId; // $("#hdnPlanId").val(); 
-            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');  
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');
             $('.taskpopup').css('display', 'none');
-    });
+        });
 
         //new Campaign
-        $('#NewCampaign').click(function () {  
-        var planId = PlanId; // $("#hdnPlanId").val();
-        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');  
+        $('#NewCampaign').click(function () {     
+            var planId = PlanId; // $("#hdnPlanId").val();
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');
         $('.taskpopup').css('display', 'none');
-    });
+        });
 
         ////Copy Campaign.
     $('#CloneCampaign1').click(function () {
@@ -3962,13 +4161,13 @@ function Quarter() {
 
         //Child Program
     $('#ChildProgram').click(function () {
-        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');      
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');
         $('.taskpopup').css('display', 'none');
     });
 
         //New Program
     $('#NewProgram').click(function () {
-        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');  
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');
         $('.taskpopup').css('display', 'none');
     });
 
@@ -4033,18 +4232,18 @@ function Quarter() {
 
         //Child Tactic
     $("#ChildTactic").on("click", function () {
-        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');      
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
         $("#errorMessage").css("display", "none");
-        $("#successMessage").css("display", "none");       
+        $("#successMessage").css("display", "none");
         $('.taskpopup').css('display', 'none');
         return false;
     });
 
         //New Tactic
     $("#NewTactic1").on("click", function () {
-        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');    
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
         $("#errorMessage").css("display", "none");
-        $("#successMessage").css("display", "none");      
+        $("#successMessage").css("display", "none");
         $('.taskpopup').css('display', 'none');
         return false;
     });
@@ -4111,12 +4310,12 @@ function Quarter() {
 
         //Child Line Item
     $('#ChildLineItem').click(function () {
-        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", 0, TacticId, '@RequestedModule');          
+        ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", 0, TacticId, '@RequestedModule');
         $('.taskpopup').css('display', 'none');
     });
 
         //Improvments Tactic
-    $('#ImpsTactic').click(function (e) {
+        $('#ImpsTactic').click(function (e) {
         isTacticExist = true;
         if (!isTacticExist) {
             ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
@@ -4185,10 +4384,10 @@ function Quarter() {
 
         if (section == "campaign") {
             if (mode == "Add") {
-                loadInspectPopup("0", "campaign", currentTab, "Add", '12812', RequestedModule);
+                loadInspectPopup("0", "campaign", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "campaign", currentTab, "ReadOnly", 0, RequestedModule);
+                loadInspectPopup(id, "campaign", currentTab, "ReadOnly", ParentId, RequestedModule);
             }
         }
         else if (section == "program") {
@@ -4196,7 +4395,7 @@ function Quarter() {
                 loadInspectPopup("0", "program", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "program", currentTab, "ReadOnly", 0, RequestedModule);
+                loadInspectPopup(id, "program", currentTab, "ReadOnly", ParentId, RequestedModule);
             }
         }
         else if (section == "tactic") {
@@ -4233,6 +4432,48 @@ function Quarter() {
         }
         modalBackdropDisplayNone();
     };
-    }
+}
+
+</script>		 
+<script>
+    $('.sidebar-toogle a').toggle(
+
+
+function () {
+    $('#sidebar').css({
+        'position': 'relative',
+        'left': 'auto',
+        'width': '50px',
+        'background':'transparent',
+
+    });
+    $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "none");
+    $(".sidebar-section").css("display", "none");
+    $('.sidebar-toogle a').html(">>").css('letter-spacing','-1px');
+
+    $(".wraper-btns").css("display", "none");
+    $("#content_wraper").css('width', 'calc(100% - 50px)');
+    $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
+    $('.sidebar-toogle').css('border-bottom-width', '0');
+
+
+}, function () {
+    $('#sidebar').css({
+        'position': 'static',
+        'left': 'auto',
+        'background': '#e9e9e9 none repeat scroll 0 0',
+        'width': '280px',
+
+    });
+    $('.sidebar-toogle a').html("<< hide").css('letter-spacing', '0px');
+    $(".sidebar-toogle-wrapper h4.text-shadow-black").css("display", "block");
+    $(".sidebar-section").css("display", "block");
+    $(".wraper-btns").css("display", "block");
+    $("#content_wraper").css('width', 'calc(100% - 280px)');
+    $('#sidebar.sidebar').css({ 'width': '280px', 'background': '#e9e9e9 none repeat scroll 0 0', });
+    $('.sidebar-toogle').css('border-bottom-width', '1px');
+
+
+})
 
 </script>

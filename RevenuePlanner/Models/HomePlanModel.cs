@@ -57,6 +57,7 @@ namespace RevenuePlanner.Models
 
         // public List<string> UpcomingActivity { get; set; }
         public List<SelectListItem> UpcomingActivity { get; set; }
+        public List<SelectListItem> plans { get; set; }
     }
 
     public class InspectModel

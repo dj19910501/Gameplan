@@ -48,17 +48,54 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns view as per menu selected</returns>
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false)
         {
+
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             //// To get permission status for Add/Edit Actual, By dharmraj PL #519
             ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-
+            // Get current user permission for edit own and subordinates plans.
+            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+            bool IsPlanEditable = false;
+            bool isPublished = false;
             //// Set viewbag for notification email shared link inspect popup
             ViewBag.ActiveMenu = activeMenu;
             ViewBag.ShowInspectForPlanTacticId = planTacticId;
             ViewBag.ShowInspectForPlanCampaignId = planCampaignId;
             ViewBag.ShowInspectForPlanProgramId = planProgramId;
             ViewBag.IsImprovement = isImprovement;
+
+            // Added by Komal Rawal  for new homepage ui publish button
+            if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+            {
+                //Get all subordinates of current user upto n level
+                var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                //// Check whether his own & SubOrdinate Plan editable or Not.
+                var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId == currentPlanId);
+              
+                if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // 
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+
+                Plan Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(currentPlanId));
+                isPublished = Plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
+                
+            }
+            ViewBag.IsPlanEditable = IsPlanEditable;
+            ViewBag.IsPublished = isPublished;
+            //End
 
             //// Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
             //// Check insepct popup shared link validation to open insepct pop up as per link
@@ -271,29 +308,29 @@ namespace RevenuePlanner.Controllers
         {
             Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
             HomePlan objHomePlan = new HomePlan();
-            List<SelectListItem> planList;
+            //List<SelectListItem> planList;
 
-            //// if condition added to dispaly only published plan on home page
-            if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
-            {
-                var lstPlanAll = Common.GetPlan();
-                planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+            ////// if condition added to dispaly only published plan on home page
+            //if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
+            //{
+            //    var lstPlanAll = Common.GetPlan();
+            //    planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
 
-                var objexists = planList.Where(plan => plan.Value == currentPlanId.ToString()).ToList();
-                if (objexists.Count != 0)
-                {
-                    planList.Single(plan => plan.Value.Equals(currentPlanId.ToString())).Selected = true;
-                }
-                else
-                {
-                    planList.FirstOrDefault().Selected = true;
-                }
+            //    var objexists = planList.Where(plan => plan.Value == currentPlanId.ToString()).ToList();
+            //    if (objexists.Count != 0)
+            //    {
+            //        planList.Single(plan => plan.Value.Equals(currentPlanId.ToString())).Selected = true;
+            //    }
+            //    else
+            //    {
+            //        planList.FirstOrDefault().Selected = true;
+            //    }
 
-                //// Set Plan dropdown values
-                if (planList != null)
-                    planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
-                objHomePlan.plans = planList;
-            }
+            //    //// Set Plan dropdown values
+            //    if (planList != null)
+            //        planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+            //    objHomePlan.plans = planList;
+            //}
 
             //// Prepare ViewBy dropdown values
             List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(null);
@@ -356,8 +393,12 @@ namespace RevenuePlanner.Controllers
         public JsonResult GetViewControlDetail(string viewBy, string planId, string timeFrame, string customFieldIds, string ownerIds, string activeMenu, bool getViewByList, string TacticTypeid, string StatusIds)
         {
             //// Create plan list based on PlanIds of search filter
+
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
+          
             var lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => new { plan.PlanId, plan.Model.ClientId, plan.Year }).ToList();
+              
+           
             bool IsRequest = false;
             string planYear = string.Empty;
             int year;
@@ -1453,8 +1494,8 @@ namespace RevenuePlanner.Controllers
             var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
             //Emd
 
-            PermissionModel _modelPermission = new PermissionModel();
-            _modelPermission = GetPermission(Convert.ToInt32(planId), Enums.EntityType.Plan.ToString());
+          // PermissionModel _modelPermission = new PermissionModel();
+           // _modelPermission = GetPermission(Convert.ToInt32(planId), Enums.EntityType.Plan.ToString());
 
             //InspectController inspCt = new InspectController();
             //inspCt.LoadInspectPopup(1, "", "", "", 1, "");
@@ -3185,115 +3226,115 @@ namespace RevenuePlanner.Controllers
         /// Action method to return AddActual view
         /// </summary>
         /// <returns>returns AddActual view</returns>
-        public ActionResult AddActual()
-        {
-            HomePlanModel planmodel = new Models.HomePlanModel();
+        //public ActionResult AddActual()
+        //{
+        //    HomePlanModel planmodel = new Models.HomePlanModel();
 
-            try
-            {
-                List<string> tacticStatus = Common.GetStatusListAfterApproved();
+        //    try
+        //    {
+        //        List<string> tacticStatus = Common.GetStatusListAfterApproved();
 
-                //// Tthis is inititalized as 0 bcoz to get the status for tactics.
-                string planGanttType = PlanGanttTypes.Tactic.ToString();
-                ViewBag.AddActualFlag = true;     // Added by Arpita Soni on 01/17/2015 for Ticket #1090 
-                List<User> lstIndividuals = GetIndividualsByPlanId(Sessions.PlanId.ToString(), planGanttType, Enums.ActiveMenu.Home.ToString(), true);
-                ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
+        //        //// Tthis is inititalized as 0 bcoz to get the status for tactics.
+        //        string planGanttType = PlanGanttTypes.Tactic.ToString();
+        //        ViewBag.AddActualFlag = true;     // Added by Arpita Soni on 01/17/2015 for Ticket #1090 
+        //        List<User> lstIndividuals = GetIndividualsByPlanId(Sessions.PlanId.ToString(), planGanttType, Enums.ActiveMenu.Home.ToString(), true);
+        //        ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
 
-                //// Fetch individual's records distinct
-                planmodel.objIndividuals = lstIndividuals.Select(user => new
-                {
-                    UserId = user.UserId,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
-                }).ToList().Distinct().Select(user => new User()
-                {
-                    UserId = user.UserId,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
-                }).ToList().OrderBy(user => string.Format("{0} {1}", user.FirstName, user.LastName)).ToList();
-                ////End - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
+        //        //// Fetch individual's records distinct
+        //        planmodel.objIndividuals = lstIndividuals.Select(user => new
+        //        {
+        //            UserId = user.UserId,
+        //            FirstName = user.FirstName,
+        //            LastName = user.LastName
+        //        }).ToList().Distinct().Select(user => new User()
+        //        {
+        //            UserId = user.UserId,
+        //            FirstName = user.FirstName,
+        //            LastName = user.LastName
+        //        }).ToList().OrderBy(user => string.Format("{0} {1}", user.FirstName, user.LastName)).ToList();
+        //        ////End - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
 
-                List<TacticType> objTacticType = new List<TacticType>();
+        //        List<TacticType> objTacticType = new List<TacticType>();
 
-                //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
-                objTacticType = (from tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic
-                                 where tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false
-                                 select tactic.TacticType).Distinct().OrderBy(tactic => tactic.Title).ToList();
+        //        //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
+        //        objTacticType = (from tactic in objDbMrpEntities.Plan_Campaign_Program_Tactic
+        //                         where tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false
+        //                         select tactic.TacticType).Distinct().OrderBy(tactic => tactic.Title).ToList();
 
-                ViewBag.TacticTypeList = objTacticType;
+        //        ViewBag.TacticTypeList = objTacticType;
 
-                //// Added by Dharmraj Mangukiya to implement custom restrictions PL ticket #537
-                //// Get current user permission for edit own and subordinates plans.
-                List<Guid> lstOwnAndSubOrdinates = new List<Guid>();
-                try
-                {
-                    lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                }
-                catch (Exception objException)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(objException);
+        //        //// Added by Dharmraj Mangukiya to implement custom restrictions PL ticket #537
+        //        //// Get current user permission for edit own and subordinates plans.
+        //        List<Guid> lstOwnAndSubOrdinates = new List<Guid>();
+        //        try
+        //        {
+        //            lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+        //        }
+        //        catch (Exception objException)
+        //        {
+        //            ErrorSignal.FromCurrentContext().Raise(objException);
 
-                    //// To handle unavailability of BDSService
-                    if (objException is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        //// Flag to indicate unavailability of web service.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        return RedirectToAction("ServiceUnavailable", "Login");
-                    }
-                }
+        //            //// To handle unavailability of BDSService
+        //            if (objException is System.ServiceModel.EndpointNotFoundException)
+        //            {
+        //                //// Flag to indicate unavailability of web service.
+        //                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //                //// Ticket: 942 Exception handeling in Gameplan.
+        //                return RedirectToAction("ServiceUnavailable", "Login");
+        //            }
+        //        }
 
-                bool IsPlanEditable = false;
-                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                var objPlan = objDbMrpEntities.Plans.FirstOrDefault(plan => plan.PlanId == Sessions.PlanId);
-                //// Added by Dharmraj for #712 Edit Own and Subordinate Plan
-                if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditAllAuthorized)
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditSubordinatesAuthorized)
-                {
-                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
-                    {
-                        IsPlanEditable = true;
-                    }
-                }
+        //        bool IsPlanEditable = false;
+        //        bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+        //        bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+        //        var objPlan = objDbMrpEntities.Plans.FirstOrDefault(plan => plan.PlanId == Sessions.PlanId);
+        //        //// Added by Dharmraj for #712 Edit Own and Subordinate Plan
+        //        if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
+        //        {
+        //            IsPlanEditable = true;
+        //        }
+        //        else if (IsPlanEditAllAuthorized)
+        //        {
+        //            IsPlanEditable = true;
+        //        }
+        //        else if (IsPlanEditSubordinatesAuthorized)
+        //        {
+        //            if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+        //            {
+        //                IsPlanEditable = true;
+        //            }
+        //        }
 
-                ViewBag.IsPlanEditable = IsPlanEditable;
-                ViewBag.IsNewPlanEnable = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+        //        ViewBag.IsPlanEditable = IsPlanEditable;
+        //        ViewBag.IsNewPlanEnable = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
 
-                //// Start - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
-                List<CustomFieldsForFilter> lstCustomField = new List<CustomFieldsForFilter>();
-                List<CustomFieldsForFilter> lstCustomFieldOption = new List<CustomFieldsForFilter>();
+        //        //// Start - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+        //        List<CustomFieldsForFilter> lstCustomField = new List<CustomFieldsForFilter>();
+        //        List<CustomFieldsForFilter> lstCustomFieldOption = new List<CustomFieldsForFilter>();
 
-                //// Retrive Custom Fields and CustomFieldOptions list
-                GetCustomFieldAndOptions(out lstCustomField, out lstCustomFieldOption);
+        //        //// Retrive Custom Fields and CustomFieldOptions list
+        //        GetCustomFieldAndOptions(out lstCustomField, out lstCustomFieldOption);
 
-                planmodel.lstCustomFields = lstCustomField;
-                planmodel.lstCustomFieldOptions = lstCustomFieldOption;
-                //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
+        //        planmodel.lstCustomFields = lstCustomField;
+        //        planmodel.lstCustomFieldOptions = lstCustomFieldOption;
+        //        //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+        //    }
+        //    catch (Exception objException)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(objException);
 
-                //// To handle unavailability of BDSService
-                if (objException is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-            }
+        //        //// To handle unavailability of BDSService
+        //        if (objException is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            //// Flag to indicate unavailability of web service.
+        //            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+        //            //// Ticket: 942 Exception handeling in Gameplan.
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
+        //    }
 
-            return View("AddActual", planmodel);
-        }
+        //    return View("AddActual", planmodel);
+        //}
 
         /// <summary>
         /// Added By: Bhavesh Dobariya.
@@ -3305,7 +3346,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ownerId"></param>
         /// <param name="UserId"></param>
         /// <returns>Returns Json Result.</returns>
-        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId, string UserId = "")
+        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId,  int PlanId,string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3329,7 +3370,7 @@ namespace RevenuePlanner.Controllers
             if (status == 0)
             {
                 //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
-                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(Sessions.PlanId) &&
+                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(planTactic => planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(PlanId) &&
                                                                                 tacticStatus.Contains(planTactic.Status) && planTactic.IsDeleted.Equals(false) &&
                                                                                 !planTactic.Plan_Campaign_Program_Tactic_Actual.Any() &&
                                                                                 (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(planTactic.TacticType.TacticTypeId)) &&
@@ -3337,7 +3378,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Sessions.PlanId &&
+                TacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId &&
                                                                                 tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false &&
                                                                                 (filteredTacticTypeIds.Count.Equals(0) || filteredTacticTypeIds.Contains(tactic.TacticType.TacticTypeId)) &&
                                                                                 (filteredOwner.Count.Equals(0) || filteredOwner.Contains(tactic.CreatedBy))).ToList();
@@ -4282,386 +4323,6 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-
-        #region --entity Type Permission based access---
-
-        public PermissionModel GetPermission(int id, string section)
-        {
-            PermissionModel _model = new PermissionModel();
-            _model.IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-
-            if (id == 0)
-            {
-                if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
-                {
-                    return _model;
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
-                {
-                    return _model;
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
-                {
-                    _model.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-                    return _model;
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
-                {
-                    return _model;
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
-                {
-                    _model.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-                    return _model;
-                }
-            }
-
-            _model.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-
-            Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
-            Plan_Campaign_Program objPlan_Campaign_Program = null;
-            Plan_Campaign objPlan_Campaign = null;
-            Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
-            Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
-
-            bool IsPlanEditable = false;
-            bool IsPlanCreateAll = false;
-
-            if (Convert.ToString(section) != "")
-            {
-                DateTime todaydate = DateTime.Now;
-                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                List<Guid> lstSubordinatesIds = new List<Guid>();
-                if (IsTacticAllowForSubordinates)
-                {
-                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
-                }
-
-                if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
-                {
-                    objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
-                    if (_model.IsPlanCreateAllAuthorized)
-                    {
-                        IsPlanCreateAll = true;
-                        _model.IsPlanCreateAll = IsPlanCreateAll;
-                    }
-                    else
-                    {
-                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
-                        {
-                            IsPlanCreateAll = true;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                        else
-                        {
-                            IsPlanCreateAll = false;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                    }
-                    //Modify by Mitesh Vaishnav for PL ticket 746
-                    if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
-                    {
-                        IsPlanEditable = true;
-                        _model.IsPlanEditable = IsPlanEditable;
-                    }
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
-                {
-                    objPlan_Campaign_Program = objDbMrpEntities.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
-                    if (_model.IsPlanCreateAllAuthorized)
-                    {
-                        IsPlanCreateAll = true;
-                        _model.IsPlanCreateAll = IsPlanCreateAll;
-                    }
-                    else
-                    {
-                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
-                        {
-                            IsPlanCreateAll = true;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                        else
-                        {
-                            IsPlanCreateAll = false;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-
-                    }
-                    if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
-                    {
-                        IsPlanEditable = true;
-                        _model.IsPlanEditable = IsPlanEditable;
-                    }
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
-                {
-                    objPlan_Campaign = objDbMrpEntities.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
-                    if (_model.IsPlanCreateAllAuthorized)
-                    {
-                        IsPlanCreateAll = true;
-                        _model.IsPlanCreateAll = IsPlanCreateAll;
-                    }
-                    else
-                    {
-                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
-                        {
-                            IsPlanCreateAll = true;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                        else
-                        {
-                            IsPlanCreateAll = false;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                    }
-                    if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
-                    {
-                        IsPlanEditable = true;
-                        _model.IsPlanEditable = IsPlanEditable;
-                    }
-
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
-                {
-                    objPlan_Improvement_Campaign_Program_Tactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(picpobjw => picpobjw.ImprovementPlanTacticId.Equals(id)).FirstOrDefault();
-                    if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))
-                    {
-                        IsPlanEditable = true;
-                        _model.IsPlanEditable = IsPlanEditable;
-                    }
-                }
-                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
-                {
-                    objPlan_Campaign_Program_Tactic_LineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => pcptl.PlanLineItemId.Equals(id)).FirstOrDefault();
-                    if (_model.IsPlanCreateAllAuthorized)
-                    {
-                        IsPlanCreateAll = true;
-                        _model.IsPlanCreateAll = IsPlanCreateAll;
-                    }
-                    else
-                    {
-                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
-                        {
-                            IsPlanCreateAll = true;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                        else
-                        {
-                            IsPlanCreateAll = false;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                    }
-
-                    if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
-                    {
-                        IsPlanEditable = true;
-                        _model.IsPlanEditable = IsPlanEditable;
-                    }
-                }
-
-                //// Custom Restrictions
-                if (IsPlanEditable)
-                {
-                    //// Start - Added by Sohel Pathan on 27/01/2015 for PL ticket #1140
-                    List<int> planTacticIds = new List<int>();
-                    List<int> lstAllowedEntityIds = new List<int>();
-                    int itemId = 0;
-
-                    if (section.ToString().Equals(Enums.Section.Campaign.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign != null)
-                    {
-                        if (objPlan_Campaign.Plan_Campaign_Program != null)
-                        {
-                            List<int> programIds = objPlan_Campaign.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false)).Select(program => program.PlanProgramId).ToList();
-                            if (programIds.Count() > 0)
-                            {
-                                planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programIds.Contains(tactic.Plan_Campaign_Program.PlanProgramId))
-                                                                                .Select(tactic => tactic.PlanTacticId).ToList();
-                                lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                                if (lstAllowedEntityIds.Count != planTacticIds.Count)
-                                {
-                                    IsPlanEditable = false;
-                                    _model.IsPlanEditable = IsPlanEditable;
-                                }
-
-                            }
-                        }
-                    }
-                    else if (section.ToString().Equals(Enums.Section.Program.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program != null)
-                    {
-                        if (objPlan_Campaign_Program.Plan_Campaign_Program_Tactic != null)
-                        {
-                            planTacticIds = objPlan_Campaign_Program.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false)).Select(tactic => tactic.PlanTacticId).ToList();
-                            lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                            if (lstAllowedEntityIds.Count != planTacticIds.Count)
-                            {
-                                IsPlanEditable = false;
-                                _model.IsPlanEditable = IsPlanEditable;
-                            }
-                        }
-                    }
-                    else if (section.ToString().Equals(Enums.Section.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic != null)
-                    {
-                        itemId = objPlan_Campaign_Program_Tactic.PlanTacticId;
-                        planTacticIds.Add(itemId);
-                        lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                        if (lstAllowedEntityIds.Contains(itemId))
-                        {
-                            IsPlanEditable = true;
-                            _model.IsPlanEditable = IsPlanEditable;
-                        }
-                        else
-                        {
-                            IsPlanEditable = false;
-                            _model.IsPlanEditable = IsPlanEditable;
-                        }
-                    }
-                    else if (section.ToString().Equals(Enums.Section.LineItem.ToString(), StringComparison.OrdinalIgnoreCase) && objPlan_Campaign_Program_Tactic_LineItem != null)
-                    {
-                        if (objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic != null)
-                        {
-                            itemId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanTacticId;
-                            planTacticIds.Add(itemId);
-                            lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                            if (lstAllowedEntityIds.Contains(itemId))
-                            {
-                                IsPlanEditable = true;
-                                _model.IsPlanEditable = IsPlanEditable;
-                            }
-                            else
-                            {
-                                IsPlanEditable = false;
-                                _model.IsPlanEditable = IsPlanEditable;
-                            }
-                        }
-                    }
-                }
-            }
-            _model.IsPlanEditable = IsPlanEditable;
-            _model.IsPlanCreateAll = IsPlanCreateAll;
-
-            InspectController _ctrl = new InspectController();
-            InspectModel im = _ctrl.GetInspectModel(id, section, false);
-            if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-
-                _model.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-                _model.IsPlanCreateAll = false;
-                if (id > 0)
-                {
-                    var objplan = objDbMrpEntities.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
-                    _model.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                    _model.IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                    //Get all subordinates of current user upto n level
-                    var lstSubOrdinates = new List<Guid>();
-                    try
-                    {
-                        lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                    }
-                    catch (Exception e)
-                    {
-                        ErrorSignal.FromCurrentContext().Raise(e);
-
-                        //To handle unavailability of BDSService
-                        if (e is System.ServiceModel.EndpointNotFoundException)
-                        {
-                            // return RedirectToAction("ServiceUnavailable", "Login");
-                        }
-                    }
-
-                    //// Set flag to check whether his Own Plan & Subordinate Plan editable or not.
-                    bool isPlanDefinationDisable = true;
-
-                    if (_model.IsPlanCreateAuthorized)
-                    {
-                        IsPlanCreateAll = true;
-                        _model.IsPlanCreateAll = IsPlanCreateAll;
-                    }
-                    else
-                    {
-                        if (objplan.CreatedBy.Equals(Sessions.User.UserId))
-                        {
-                            IsPlanCreateAll = true;
-                            _model.IsPlanCreateAll = IsPlanCreateAll;
-                        }
-                    }
-                    if (id == 0 && !_model.IsPlanCreateAuthorized)
-                    {
-                        //return AuthorizeUserAttribute.RedirectToNoAccess();
-                    }
-                    if (objplan.CreatedBy.Equals(Sessions.User.UserId))
-                    {
-                        isPlanDefinationDisable = false;
-                    }
-                    else if (_model.IsPlanEditAllAuthorized)
-                    {
-                        isPlanDefinationDisable = false;
-                    }
-                    else if (_model.IsPlanEditSubordinatesAuthorized)
-                    {
-                        if (lstSubOrdinates.Contains(objplan.CreatedBy))
-                        {
-                            isPlanDefinationDisable = false;
-                        }
-                    }
-                    //Modified by Mitesh Vaishnav for internal review point related to "Edit All Plan" permission
-                    _model.IsPlanDefinationDisable = isPlanDefinationDisable;
-                    _model.IsPlanCreateAll = IsPlanCreateAll;
-
-                }
-                else
-                {
-                    _model.IsPlanCreateAll = true;
-                }
-
-                //IsPlanEditable = false;
-                //_model.IsPlanEditable = IsPlanEditable;
-                ////Get all subordinates of current user upto n level
-                //var lstOwnAndSubOrdinates = new List<Guid>();
-                //try
-                //{
-                //    lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                //}
-                //catch (Exception e)
-                //{
-                //    ErrorSignal.FromCurrentContext().Raise(e);
-                //    if (e is System.ServiceModel.EndpointNotFoundException)
-                //    {
-                //        // return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-
-                //    }
-                //}
-                //// Get current user permission for edit own and subordinates plans.
-                //_model.IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                //// To get permission status for Plan Edit, By dharmraj PL #519
-                //_model.IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-
-                //if (im.OwnerId.Equals(Sessions.User.UserId))
-                //{
-                //    IsPlanEditable = true;
-                //    _model.IsPlanEditable = IsPlanEditable;
-                //}
-                //else if (_model.IsPlanEditAllAuthorized)
-                //{
-                //    IsPlanEditable = true;
-                //    _model.IsPlanEditable = IsPlanEditable;
-                //}
-                //else if (_model.IsPlanEditSubordinatesAuthorized)
-                //{
-                //    if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
-                //    {
-                //        IsPlanEditable = true;
-                //        _model.IsPlanEditable = IsPlanEditable;
-                //    }
-                //}
-                //_model.IsPlanEditable = IsPlanEditable;
-                //_model.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);             
-            }
-
-            return _model;
-        }
-
-        #endregion
-
     }
 
     public class ProgressModel
@@ -4669,5 +4330,4 @@ namespace RevenuePlanner.Controllers
         public int PlanId { get; set; }
         public DateTime EffectiveDate { get; set; }
     }
-
 }

@@ -1,0 +1,655 @@
+﻿@model RevenuePlanner.Models.PlanModel
+@using RevenuePlanner.Helpers
+@{
+    ViewBag.Title = "Plan Definition";
+    ViewBag.PageTitle = "CreatePlan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string strPlanId = Convert.ToString(Model.PlanId);
+    bool IsModelCreateEditAuthorized = (bool)ViewBag.modelcreateedit;
+    ViewBag.strplanid = strPlanId;
+    var IsQuarter = ViewBag.IsQuarter;
+    bool isPlanSelecter = false;
+    if (TempData["isPlanSelecter"] != null)
+    {
+        isPlanSelecter = (bool)TempData["isPlanSelecter"];
+    }
+    bool isPlanDefinationDisable = false;
+    if (ViewBag.IsPlanDefinationDisable != null)
+    {
+        isPlanDefinationDisable = ViewBag.IsPlanDefinationDisable;
+    }
+    bool isPlanEdit = false;
+    if (!string.IsNullOrEmpty(strPlanId) && strPlanId != "0")
+    {
+        isPlanEdit = true;
+    }
+    var ListBudgetingPlan = Model.objplanhomemodelheader.plans;
+}
+
+@section nlFormContent{
+    <<link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+}
+
+@Html.Hidden("hdnPlanId", strPlanId, new { id = "hdnPlanId" })
+@section PlanHeader{
+
+    <div class="light-blue-chart cf full-width-header" id="planHeader">
+        @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
+    </div>
+
+}
+@section Sidebar
+{
+    <div class="padding-content padding-bottom0 ">
+        <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
+        <div class="wraper-btns cf">
+
+            @if (strPlanId == "0")
+            {
+                <div>
+                    <button id="btnCancel" class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%">Cancel</button>
+                </div>
+            }
+
+            else
+            {
+                <div>
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = strPlanId })');" style="min-width:90%">< Back to Plan</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes">
+                <div class="change"><span class="action">None</span></div>
+            </div>
+        </li>
+    </ul>
+}
+
+@*<div id="errorMessage" class="alert alert-error hide message-position-small">
+        <a class="close" id="aclose">×</a>
+        <strong>Error! </strong><span id="spanMessageError"></span>
+    </div>*@
+<!--Error message-->
+@*<div id="divErrLessBudget" class="alert alert-error hide message-position-small">
+        <a class="close" id="aclose">×</a>
+        <strong>Error! </strong><span>@Common.objCached.ErrMsgLessPlanBudget</span>
+    </div>*@
+
+
+
+@using (Html.BeginForm("SavePlanDefination", "Plan", FormMethod.Post, new { @name = "SavePlanForm", @class = "create-plan-form" }))
+{
+
+    <table>
+        <tbody>
+            <tr>
+                <td>
+                    <div id="nl-form" class="nl-form nomargin pull-left form-plan-mini padding-assortment n1-form-main">
+                        <div class="bold font_size16 plan-defination">Plan definition</div>
+                        <div id="divPlanDefinationEnabled plan-text">
+                            I'm using the
+                            @{
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable) && IsModelCreateEditAuthorized)
+    {
+        @Html.DropDownListFor(m => m.ModelId, (SelectList)TempData["selectList"], new { datadefault = "SelectModel", @class = "myValue calculateBudget hide", placeholder = @Model.ModelId })
+                                <span id="ModelTitle" class="source-sans-proregular"></span>
+    }
+    else
+    {
+        <span id="ModelTitle" class="source-sans-proregular">@Model.ModelTitle</span>
+    }
+                            }
+                            model to create a plan called
+                            @Html.TextBoxFor(model => model.Title, new { placeholder = @Model.Title, datasubline = "For example: <em>2014 North American Events</em>", datadefault = "Title", maxlength = "50", @class = "myValue", isedit = isPlanEdit })
+                            in
+                            @{
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
+    {
+        @Html.DropDownListFor(m => m.Year, (SelectList)TempData["selectYearList"], new { placeholder = @Model.Year, @class = "myValue hide" })
+    }
+    else
+    {
+        <span id="spandef">@Model.Year</span>
+    }
+                            }
+                            @* Start - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+                            with a
+                            @{
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
+    {
+        @Html.DropDownListFor(m => m.GoalType, (SelectList)TempData["goalTypeList"], "select", new { datadefault = "SelectGoalType", @class = "myValue calculateBudget hide", placeholder = @Model.GoalType })
+    }
+    else
+    {
+        <span id="spandef">@Model.GoalType</span>
+    }
+                            }
+                            goal of
+                            <span id="revenueSign">$</span>
+                            @Html.TextBoxFor(model => model.GoalValue, new { placeholder = @Model.GoalValue, datasubline = "For example: <em>800,000</em>", datadefault = "GoalValue", datamask = "ddd-dddd", formatType = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue, @class = "myValueFormat", isedit = isPlanEdit })
+                            and a budget of
+                            @Html.TextBoxFor(model => model.Budget, new { placeholder = @Model.Budget, datasubline = "For example: <em>$800,000</em>", datadefault = "Budget", formatType = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar, id = "txtBudget", @class = "myValueFormat", isedit = isPlanEdit })
+                            allocated by
+                            @{
+    if (strPlanId == "" || strPlanId == "0" || (!isPlanDefinationDisable))
+    {
+        @Html.DropDownListFor(m => m.AllocatedBy, new SelectList((System.Collections.IEnumerable)TempData["allocatedByList"], "Value", "Text"), "select", new { datadefault = "SelectAllocatedBy", @class = "myValue hide", placeholder = @Model.AllocatedBy })
+    }
+    else
+    {
+        <span id="spanAllocatedBy">@Model.AllocatedBy</span>
+    }
+    <span id="spanZeroBudget" class="source-sans-prosemibold" style="display: none;">none</span>  }.
+                            <div class="nl-overlay"></div>
+                        </div>
+                        <div id="divPlanDefinationDisabled">
+                            I'm using the
+                            <span id="disabledModelTitle" class="source-sans-proregular"></span>
+                            model to create a plan called
+                            <span id="disabledPlanTitle" class="source-sans-proregular"></span>in
+                            <span id="disabledPlanYear" class="source-sans-proregular"></span>
+                            with a
+                            <span id="disabledGoalType" class="source-sans-proregular"></span>
+                            goal of
+                            <span id="disabledGoalValue" class="source-sans-proregular letter-space"></span>
+                            and a budget of
+                            <span id="disabledBudgetValue" class="source-sans-proregular"></span>
+                            allocated by
+                            <span id="disabledAllocatedBy" class="source-sans-proregular"></span>.
+                        </div>
+                        <div id="divBudgetSummary">
+                            Based on my goal, this plan will require
+                            <span id="input1" class="source-sans-prosemibold"></span>
+                            <span id="msg1" class="source-sans-prosemibold"></span>
+                            <span id="conjuntionWord">and </span>
+                            <span id="input2" class="source-sans-prosemibold"></span>
+                            <span id="msg2" class="source-sans-prosemibold"></span>
+                            with an<span class="source-sans-prosemibold"> average deal size of</span>
+                            <span id="averageDealSize" class="source-sans-prosemibold">@Model.AverageDealSize</span>.
+                        </div>
+                        @* End - Modified by Sohel Pathan on 15/07/2014 for PL ticket #566 *@
+                        <!--To call js for forms animations-->
+                        <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+                        <script>
+                            var nlform = new NLForm(document.getElementById('nl-form'));
+                        </script>
+
+                    </div>
+                </td>
+
+                @Html.HiddenFor(model => model.ModelId)
+                @Html.HiddenFor(model => model.PlanId)
+                @Html.HiddenFor(model => model.TotalAllocatedCampaignBudget)
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        @if (strPlanId == "0")
+        {
+            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20" type="button" style="min-width: 20%; margin-left: 8px">Create Plan</button>
+        }
+        else
+        {
+            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20" type="button" style="min-width: 20%; margin-left: 8px">Save</button>
+        }
+    </div>
+
+
+}
+
+<script type="text/javascript">
+    var CurrentPlanId = '@strPlanId';
+    var isQuater = '@IsQuarter';
+    var IsPlanSelecter = '@isPlanSelecter';
+    var isError = false;
+    $(document).ready(function () {
+
+        var hdnPlanId = $("#hdnPlanId").val();
+        changeBudgetValues();
+
+        $(".priceValue").priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+
+        if (hdnPlanId != 0) {
+            $('.changes').html('');
+            var url = '@Url.Content("~/Home/LoadChangeLog")';
+            $('.changes').load(url + '?objectId=' + "@RevenuePlanner.Helpers.Sessions.PlanId", function (response, status, xhr) {
+                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                    //// Call function to redirect on service unavailibility.
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                }
+            });
+        }
+        //  to apply custom restriction logic on Business Units
+        if ('@isPlanDefinationDisable'.toLowerCase().toString() == "true") {
+            $('#form1 :input').each(function () {
+                if ($(this).attr('type') == 'text' || $(this).attr('type') == 'textarea' || $(this).attr('type') == 'select') {
+                    $(this).attr('readonly', 'readonly');
+                }
+            });
+            $("#button-save").hide();
+        }
+        else {
+            $("#button-save").css('display', 'block');
+        }
+
+
+        if ($("#GoalType").val().toLowerCase() == "revenue") {
+            $('#revenueSign').show();
+        }
+        else {
+            $('#revenueSign').hide();
+        }
+
+
+        $('#txtBudget').parent().find('.currency_dollar').blur(function (e) {
+            $('#txtBudget').val($(this).val());
+            changeBudgetValues();
+        });
+
+
+        $("#button-save").click(function () {
+            var isError = false;
+            $('.nl-field').each(function () {
+                if ($(this).next().attr('datadefault') == "Title") {
+                    var tValue = $(this).children('a').text();
+
+                    //// Validate Plan Title blank or not.
+                    var modeldata = $("form[name=SavePlanForm]").serialize();
+                    if (modeldata != null && modeldata != 'undefined') {
+                        var _splictData = modeldata.split("&");
+                        if (_splictData == null || _splictData == 'undefined' || _splictData[1] == null || _splictData[1] == 'undefined' || _splictData[1].split("=")[1] == 'undefined' || _splictData[1].split("=")[1] == '') {
+                            tValue = '';
+                        }
+                    }
+                    else {
+                        tValue = '';
+                    }
+
+                    if (tValue == '' || tValue == "Plan Title") {
+                        $(this).children('a').addClass("error-form");
+                        isError = true;
+                    }
+                    else {
+                        $(this).children('a').removeClass("error-form");
+                      }
+                }
+                else if ($(this).next().attr('datadefault') == "SelectModel") {
+                    var tValue = $(this).children('a').text();
+                    if (tValue == 'select') {
+                        $(this).children('a').addClass("error-form");
+                        isError = true;
+
+                    }
+                    else {
+                        $(this).children('a').removeClass("error-form");
+                    }
+                }
+
+                else if ($(this).next().attr('datadefault') == "SelectGoalType") {
+                    var tValue = $(this).children('a').text();
+                    if (tValue == 'select') {
+                        $(this).children('a').addClass("error-form");
+                        isError = true;
+
+                    }
+                    else {
+                        $(this).children('a').removeClass("error-form");
+                    }
+                }
+                else if ($(this).next().attr('datadefault') == "SelectAllocatedBy") {
+                    var tValue = $(this).children('a').text();
+                    if (tValue == 'select') {
+                        $(this).children('a').addClass("error-form");
+                        isError = true;
+
+                    }
+                    else {
+                        $(this).children('a').removeClass("error-form");
+                    }
+                }
+
+            });
+
+            if (isError) {
+                @* $("#errorMessage").css("display", "block");
+                $("#spanMessageError").empty();
+                $("#spanMessageError").text("@Common.objCached.ValidateForEmptyField");*@
+                ShowMessage(isError, "@Common.objCached.ValidateForEmptyField")
+                return false;
+            }
+            else {
+                $("#errorMsg").css("display", "none");
+            }
+
+            var TotalAllocatedCampaignBudget = $('#TotalAllocatedCampaignBudget').val();
+            var totalBudget = parseInt(ReplaceCC($("#txtBudget").val()));
+
+
+            if (!isError) {
+                $("#GoalValue").val(ReplaceCC($("#GoalValue").val()));
+                $("#txtBudget").val(ReplaceCC($("#txtBudget").val()));
+                var uId = $(window).attr('name');
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Content("~/Plan/SavePlanDefination")',
+                    data: $("form[name=SavePlanForm]").serialize() + '&UserId=' + uId,
+                    success: function (data) {
+
+                        if (data != 'undefined') {
+                            if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                                window.location = '@Url.Content("~/Login/Index")';
+                            }
+                            else {
+                                if (data.id == -1) {
+                                    isError = true;
+                                    //$("#errorMessage").css("display", "block");
+                                    //$("#spanMessageError").empty();
+                                    //$("#spanMessageError").text(data.imsg);
+                                    //   $("#divErrLessBudget").css("display", "none");
+                                    ShowMessage(isError, data.imsg)
+                                    return false;
+                                }
+                                else if (data.id != 0) {
+                                    $('#PlanId').val(data.id.toString());
+                                    $('#divPlanDefinationEnabled').hide();
+                                    $('#divPlanDefinationDisabled').show();
+                                    $('#ModelTitle').html($('#divPlanDefinationEnabled').find('#ModelTitle').html());
+                                    renderDisablePlanDefinationSection();
+                                    var url = data.redirect;
+                                    var queryStringArr = [];
+                                    queryStringArr.push(
+                                        {
+                                            key: 'ismsg',
+                                            Value: data.ismsg
+                                        });
+
+                                    formSubmitEvent(url, queryStringArr);
+                                    return;
+                                }
+                                else if (data.id == 0) {
+                                    var url = data.redirect;
+                                    var queryStringArr = [];
+                                    queryStringArr.push(
+                                        {
+                                            key: 'ismsg',
+                                            Value: data.ismsg
+                                        });
+
+                                    formSubmitEvent(url, queryStringArr);
+                                    return;
+                                }
+                                else {
+                                    isError = true;
+                                    @*$("#errorMessage").css("display", "block");
+                                      $("#spanMessageError").empty();
+                                      $("#spanMessageError").text("@RevenuePlanner.Helpers.Common.objCached.InvalidError");*@
+                                    ShowMessage(isError, "@RevenuePlanner.Helpers.Common.objCached.InvalidError")
+                                    return false;
+                                }
+                            }
+                        }
+                    },
+                    error: function () {
+                        GoToLogin();
+                        return false;
+                    }
+                });
+            }
+            
+            return isError;
+        });
+
+
+        if (hdnPlanId != 0) {
+            $('#divBudgetSummary').show();
+            var modelId = 0;
+            var goalType = $("#GoalType").val();
+            var goalValue = $("#GoalValue").val();
+
+            if ($('#ModelId').val() != '')
+                modelId = $('#ModelId').val();
+
+            if (goalType != '')
+                calculateBudget(modelId, goalType, goalValue);
+
+            if (goalType.toLowerCase() == "revenue") {
+                $('#revenueSign').show();
+                $('#conjuntionWord').html('and ');
+            }
+            else {
+                $('#revenueSign').hide();
+                $('#conjuntionWord').html('to deliver ');
+            }
+        }
+        else {
+            $('#divBudgetSummary').hide();
+        }
+
+        $('#divPlanDefinationEnabled').show();
+        $('#divPlanDefinationDisabled').hide();
+
+        $("#lblMarkringActivitiesTitle").hide();
+        if (CurrentPlanId != "0") {
+            LoadPlan();
+            onClickPlanTitle();
+        }
+
+    });
+
+    function LoadPlan() {
+        var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
+        populateNF(plans, "dropdown-plan-title");
+        var nlform = new NLForm(document.getElementById('nl-form2'));
+        GetHealderData(CurrentPlanId);
+        GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+    }
+
+    function onClickPlanTitle() {
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            CurrentPlanId = $(this).attr('value');
+            $("#CurrentPlanId").val(CurrentPlanId);
+            if (CurrentPlanId > 0) {
+                GetHealderData(CurrentPlanId);
+                GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+                GetPlan(CurrentPlanId);
+            }
+        });
+    }
+
+    function GetPlan(Planid) {
+        var url = '@Url.Content("~/Plan/CreatePlan")';
+        window.location = url + "?id=" + Planid;
+    }
+
+    $('#nl-form').find('.nl-field.nl-dd').find('li').click(function () {
+        var element = $(this).parent().parent().next();
+
+        $('#AllocatedBy').prev().children('ul').children('li').removeClass("nl-dd-checked");
+        $(this).addClass('nl-dd-checked');
+
+        if (element.hasClass('calculateBudget')) {
+            if ($("#GoalType").val().toLowerCase() == 'revenue') {
+                $('#revenueSign').show();
+                $('#conjuntionWord').html('and ');
+            }
+            else {
+                $('#revenueSign').hide();
+                $('#conjuntionWord').html('to deliver ');
+            }
+
+            if ($("#GoalType").val().toLowerCase() == '') {
+                $('#divBudgetSummary').hide();
+            }
+            else {
+                $('#divBudgetSummary').show();
+            }
+
+            var modelId = 0;
+            var goalType = $("#GoalType").val();
+            var goalValue = $("#GoalValue").val();
+
+            if ($('#ModelId').val() != '') {
+                modelId = $('#ModelId').val();
+                $('#averageDealSize').html("0");
+                $('#ModelTitle').html($('#ModelId').prev().find('.nl-field-toggle').html());
+                $('#ModelTitle').hide();
+            }
+
+            if (goalType != '')
+                calculateBudget(modelId, goalType, goalValue);
+        }
+    });
+
+    function calculateBudget(_modelId, _goalType, _goalValue) {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Content("~/Plan/CalculateBudget/")',
+            dataType: "json",
+            data: { modelId: _modelId, goalType: _goalType, goalValue: _goalValue },
+            success: function (data) {
+                $('#msg1').html(data.msg1);
+                $('#msg2').html(data.msg2);
+                $('#input1').html(number_format(data.input1.toString(), 0, '.', ','));
+                if (_goalType.toLowerCase() != "revenue") {
+                    $('#input2').html('$' + number_format(data.input2.toString(), 0, '.', ','));
+                }
+                else {
+                    $('#input2').html(number_format(data.input2.toString(), 0, '.', ','));
+                }
+                $('#averageDealSize').html(FormatCurrency(data.ADS, false));
+            }
+        });
+    }
+
+    $('#GoalValue').parent().find('.priceValue').blur(function () {
+        if (!$(this).parent().hasClass('budget-month') && !$(this).parent().hasClass('budget-quarters')) {
+            var modelId = 0;
+            var goalType = $("#GoalType").val();
+            var goalValue = $('#GoalValue').parent().find('.priceValue').val();
+
+            if ($('#ModelId').val() != '')
+                modelId = $('#ModelId').val();
+
+            if (goalType != '')
+                calculateBudget(modelId, goalType, goalValue);
+        }
+    });
+
+
+    function renderDisablePlanDefinationSection() {
+        $('table').addClass('element-disable');
+        $('#disabledModelTitle').html($('#ModelTitle').html());
+        $('#disabledPlanTitle').html($('#Title').prev().find('.nl-field-toggle').html());
+        $('#disabledPlanYear').html($('#Year').val());
+        $('#disabledGoalType').html($('#GoalType').prev().find('.nl-field-toggle').html());
+        if ($('#GoalType').val().toLowerCase() == "revenue") {
+            $('#disabledGoalValue').html("$" + $('#GoalValue').prev().find('.nl-field-toggle').html());
+        }
+        else {
+            $('#disabledGoalValue').html($('#GoalValue').prev().find('.nl-field-toggle').html());
+        }
+        $('#disabledBudgetValue').html($('#txtBudget').prev().find('.nl-field-toggle').html());
+        $('#disabledAllocatedBy').html($('#AllocatedBy').prev().find('.nl-field-toggle').html());
+        $('#AllocatedBy').attr('placeholder', $('#AllocatedBy').val());
+    }
+
+
+    function changeBudgetValues() {
+        if ($("#txtBudget").val().replace("$", "") == "0") {
+            $('#AllocatedBy').prev().css("display", "none");
+            $('#spanZeroBudget').css("display", "inline");
+            $('#AllocatedBy').prev().children('a').text("none");
+
+            $('#AllocatedBy').prev().children('ul').children('li').removeClass("nl-dd-checked");
+
+            $('#AllocatedBy').prev().children('ul').children('li').each(function () {
+
+                if ($(this).html() == "none") {
+                    $(this).addClass('nl-dd-checked');
+                }
+            });
+
+            $("#AllocatedBy").children("option").each(function () {
+                if ($(this).attr("value") == "default") {
+                    $(this).attr("selected", "selected");
+                }
+                else {
+                    $(this).removeAttr("selected");
+                }
+            });
+        }
+        else {
+            $('#AllocatedBy').prev().css("display", "inline");
+            $('#spanZeroBudget').css("display", "none");
+        }
+    }
+
+
+    $("#header a").not("#ContactSupport").click(function () {
+        if (isDataChanged()) {
+            displayconfirm($(this).attr('href'));
+            return false;
+        }
+        else {
+            return true;
+        }
+    });
+
+    function displayconfirm(strURL) {
+        if (isDataChanged()) {
+            $('#errorMsg').html("<strong>Error! </strong> <span id='spanMsgError'>You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:gray;' href='" + strURL + "' class='btn-gray'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a></span><a id='aclose' class='close confirmClose'>×</a>");
+            $("#errorMsg").slideDown(400);
+            // $("#divErrLessBudget").css("display", "none");
+        }
+        else {
+            window.location.href = strURL;
+        }
+    }
+
+    function isDataChanged() {
+        var changed = false;
+
+        $('.myValue').each(function () {
+            var iv = $(this).attr("placeholder");
+            if ($(this).val() != iv) {
+                changed = true;
+                return false;
+            }
+        });
+        $('.myValueFormat').each(function () {
+            var iv = $(this).attr("placeholder");
+            if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
+                changed = true;
+                return false;
+            }
+        });
+
+        return changed;
+    }
+
+    $(document).on("click", "#confirmClose, .confirmClose", function (e) {
+        $("#errorMsg").slideUp(1000);
+        //  $("#divErrLessBudget").css("display", "none");
+    });
+
+    // Code to Cancel new Plan
+    $("#btnCancel").click(function () {
+        if (IsPlanSelecter == "False") {
+            var url = '@Url.Content("~/Home/Index")';
+        }
+        else {
+            var url = '@Url.Content("~/Plan/PlanSelector")';
+        }
+        var queryStringArr = [];
+        formSubmitEvent(url, queryStringArr);
+    });
+</script>

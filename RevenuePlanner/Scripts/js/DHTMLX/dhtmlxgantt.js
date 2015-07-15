@@ -99,7 +99,8 @@ gantt._calc_grid_width = function () {
 },
 gantt._render_grid_item = function (t) {
     for (var e = this.config.columns, n = [], i = 0; i < e.length; i++) {
-       
+   
+
         var a, s, r = i == e.length - 1, o = e[i]; "add" == o.name && i == e.length - 1 ? s = "<div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' ></div>  " : (s = o.template ? o.template(t) : t[o.name],
         s instanceof Date && (s = this.templates.date_grid(s)), s = "<div class='gantt_tree_content'>" + s + "</div>");
         var d = "gantt_cell" + (r ? " gantt_last_cell" : ""), l = ""; if (o.tree) {
@@ -110,8 +111,7 @@ gantt._render_grid_item = function (t) {
         } var c = "width:" + (o.width - (r ? 1 : 0)) + "px;"; dhtmlx.defined(o.align) && (c += "text-align:" + o.align + ";"), a = "<div class='" + d + "' style='" + c + "'>" + l + s + "</div>", n.push(a)
     } var d = 0 === t.$index % 2 ? "" : " odd"; if (d += t.$transparent ? " gantt_transparent" : "", this.templates.grid_row_class) { var g = this.templates.grid_row_class.call(this, t.start_date, t.end_date, t); g && (d += " " + g) } this.getState().selected_task == t.id && (d += " gantt_selected");
 
-
-    var u = document.createElement("div"); return u.className = "gantt_row" + d, u.style.height = this.config.row_height + "px", u.style.lineHeight = gantt.config.row_height + "px", u.setAttribute(this.config.task_attribute, t.id), u.innerHTML = n.join(""), u
+var u = document.createElement("div"); return u.className = "gantt_row" + d, u.style.height = this.config.row_height + "px", u.style.lineHeight = gantt.config.row_height + "px", u.setAttribute(this.config.task_attribute, t.id), u.innerHTML = n.join(""), u
 }, gantt.open = function (t) { gantt._set_item_state(t, !0), this.callEvent("onTaskOpened", [t]) }, gantt.close = function (t) { gantt._set_item_state(t, !1), this.callEvent("onTaskClosed", [t]) }, gantt._set_item_state = function (t, e) { t && this._pull[t] && (this._pull[t].$open = e, this.refreshData()) }, gantt.getTaskIndex = function (t) { for (var e = this._branches[this.getTask(t).parent], n = 0; n < e.length; n++) if (e[n] == t) return n; return -1 }, gantt.getGlobalTaskIndex = function (t) { for (var e = this._order, n = 0; n < e.length; n++) if (e[n] == t) return n; return -1 }, gantt.moveTask = function (t, e, n) {
     var i = arguments[3]; if (i) { if (i === t) return; n = this.getTask(i).parent, e = this.getTaskIndex(i) } n = n || 0; var a = this.getTask(t); this._branches[a.parent]; var s = this._branches[n]; if (-1 == e && (e = s.length + 1), a.parent == n) { var r = this.getTaskIndex(t); if (r == e) return; e > r && e-- } this._branch_update(a.parent, t), s = this._branches[n]; var o = s[e]; o ? s = s.slice(0, e).concat([t]).concat(s.slice(e)) : s.push(t), a.parent = n, this._branches[n] = s, this.refreshData()
 }, gantt._init_dnd = function () {
@@ -2697,8 +2697,8 @@ function () {
             grid_file: function () {
                 return "<div class='gantt_tree_icon gantt_file'></div>"
             },
-            grid_open: function (t) {
-                return "<div class='gantt_tree_icon gantt_" + (t.$open ? "close" : "open") + "'></div>"
+            grid_open: function (t) {                       
+                return "<div class='gantt_tree_icon gantt_" + (t.$open ? "close" : "open") + "'></div>"          
             },
             grid_blank: function () {
                 return "<div class='gantt_tree_icon gantt_blank'></div>"

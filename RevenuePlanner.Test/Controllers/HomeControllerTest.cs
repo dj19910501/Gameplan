@@ -1060,9 +1060,9 @@ namespace RevenuePlanner.Test.Controllers
             HttpContext.Current = DataHelper.SetUserAndPermission();
 
             //// Call AddActual method
-            HomeController objHomeController = new HomeController();
+            PlanController objHomeController = new PlanController();
             Sessions.PlanId = DataHelper.GetPlanId();
-            var result = objHomeController.AddActual() as ViewResult;
+            var result = objHomeController.AddActual(Convert.ToInt32(Sessions.PlanId)) as ViewResult;
 
             if (result != null)
             {
@@ -1094,7 +1094,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 0; // Open tactic
-            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty) as JsonResult;
+            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty,string.Empty,Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             if (result != null)
             {
@@ -1120,7 +1120,7 @@ namespace RevenuePlanner.Test.Controllers
             HomeController objHomeController = new HomeController();
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 1; // All tactic
-            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty) as JsonResult;
+            var result = objHomeController.GetActualTactic(Status, string.Empty, string.Empty, string.Empty,Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             if (result != null)
             {
@@ -1147,7 +1147,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 0; // Open tactic
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty) as JsonResult;
+            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty,Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             if (result != null)
             {
@@ -1174,7 +1174,7 @@ namespace RevenuePlanner.Test.Controllers
             Sessions.PlanId = DataHelper.GetPlanId();
             int Status = 1; // All tactic
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty) as JsonResult;
+            var result = objHomeController.GetActualTactic(Status, string.Empty, CommaSeparatedCustomFields, string.Empty, Convert.ToInt32(Sessions.PlanId)) as JsonResult;
 
             if (result != null)
             {

@@ -339,7 +339,7 @@ h3.title-header {
 .title-simple {
     font-size: 30px;
     opacity: 100%;
-    margin-left: 19px;
+    margin-left: 4%;
 }
 
 textarea {
@@ -10524,6 +10524,13 @@ li.close-list {
     /*modified by Mitesh Vaishnav for PL ticket #1391*/
     margin: auto;
 }
+.messagewidth {
+    max-width:68%;
+    min-width:68%;
+    margin: 0 auto !important;
+    
+
+}
 
 .modal-inspect-review.modal-full-view .icon-flag {
     margin-left: 0 !important;
@@ -14855,3 +14862,145 @@ overflow:hidden;
       max-width:none;
 }
   
+		 
+/*Added By Komal Rawal for new UI of home page*/
+#PlanTab li {
+    background: none repeat scroll 0 0 #f2f2f2;
+    width: 49.9%;
+    border-left: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+    margin-top:-5px;
+}
+
+  #PlanTab li a {
+        font-size: 15px;
+        text-align: center;
+        text-decoration: none;
+        font-family: "source_sans_probold",Arial,"sans-serif";
+        border-width: 0;
+        border-radius: 0;
+        margin-right: 0;
+    }
+
+  #liCalender.active > a {
+    color: #fff !important;
+}
+
+#liGrid.active > a {
+    color: #fff !important;
+}
+
+#PlanTab > .active > a, #PlanTab > .active > a:hover, #PlanTab > .active > a:focus {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #c6ebf3;
+    border-color: #ddd #ddd transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 0;
+    color: #fff;
+    cursor: default;
+}
+
+/*End*/
+
+/* sidebar toggle*/
+.sidebar-toogle {
+    border-bottom: 1px solid #b3b3b3;
+    color:#005580;
+    font-weight: 700;
+    padding: 8px 20px;
+    text-align: right;
+}
+.sidebar-toogle a {
+     color:#005580;
+    } 
+.sidebar-toogle-wrapper {
+padding:0;
+}
+.sidebar-toogle-wrapper  h4
+{
+     margin: 20px 0;
+    padding: 0 20px;
+}
+.sidebar-toogle-wrapper .wraper-btns
+{
+    margin: 0 17px;
+    width: auto;
+}
+/* sidebar toggle*/
+
+/* Remove box-shadow from top*/
+
+ #content_wraper
+{
+      -webkit-box-shadow: -2px 0 3px 0 #999999;
+    box-shadow: -2px 0 3px 0 #999999;
+}
+/* Remove box-shadow from top*/
+
+
+/* Create Plan Page*/
+.plan-defination {
+
+     color: #000000;
+  font-family: source_sans_prosemibold;
+  font-weight: 500 !important;
+  text-transform: capitalize;
+font-size: 24px !important;
+}
+
+/*.n1-form-main.padding-assortment
+{
+    padding: 20px 0 0 20px;
+
+}
+.n1-form-main .nl-field-toggle, .n1-form-main .nl-field-toggle:hover
+ {
+  color: #5693b3;
+      font-family: source_sans_proregular;
+    font-weight: 700;
+    text-decoration: underline;
+}
+.n1-form-main .nl-ti-text .nl-field-toggle {
+    background:none;
+     text-decoration: none;
+
+}*/
+
+.letter-space {
+   letter-spacing: 7px;
+}
+.btn-blue.publish-plan-btn {
+  background: #2f6d30 none repeat scroll 0 0 !important;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+.calender-view-nav .nav-tabs > li > a {
+     padding-bottom: 13px;
+    padding-top: 13px;
+        font-size: 17px;
+}
+.calender-view-nav .nav-tabs > li > a {
+  color: #3f3f3f !important;  
+    }
+.calender-view-nav #liCalender.active a  {
+  color: #908D88 !important
+    }
+#sidebar h4 {
+  font-weight: 600;
+}
+.full-width-header h2
+{
+    font-size: 29px !important;
+  font-family: source_sans_probold;
+font-weight:normal
+}
+
+.create-plan-form {
+min-height:590px;
+}
+
+/*End*/

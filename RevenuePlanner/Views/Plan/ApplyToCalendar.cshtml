@@ -255,13 +255,13 @@
                 <div class="gantt-padding cf all-height lenght-div ">
                     <div id="gantt_here"></div>
                 </div>
-                <div class="margin-top20">
+               @* <div class="margin-top20">
                     <a id="lnkGoBack" style="cursor: pointer;">Back</a>
                     @if (IsPlanEditable)
                     {
                         <input id="BtnPublishPlan" class="btn btn-blue text-shadow-blue source-sans-proregular padding-side20 pull-right margin-top20 hide" type="submit" value="Publish Plan">
                     }
-                </div>
+                </div>*@
             </div>
         </div>
     </div>
@@ -372,6 +372,7 @@
     //Dharmraj End 7July2014 : 547 (Warning of data loss during tactic/Program/Campaign creation)
 
     function displayconfirm(strURL, queryStringArr) {
+      
         //window.location.href = strURL;
         formSubmitEvent(strURL, queryStringArr);
     }
@@ -498,14 +499,14 @@
                      window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                  } else {
                      planYear = parseInt(data.planYear);
-                     isPublished = data.isPublished;
+                    // isPublished = data.isPublished;
                      renderGantt(data.taskData);
-                     if (isPublished) {
-                         $("#BtnPublishPlan").hide();
-                     }
-                     else {
-                         $("#BtnPublishPlan").show();
-                     }
+                     //if (isPublished) {
+                     //    $("#BtnPublishPlan").hide();
+                     //}
+                     //else {
+                     //    $("#BtnPublishPlan").show();
+                     //}
                  }
              }
          });
@@ -1170,7 +1171,7 @@
         return result;
     }
 
-    //// Start - Added by Sohel Patan on 31/12/2014 for PL ticket #1059
+   @* //// Start - Added by Sohel Patan on 31/12/2014 for PL ticket #1059
     $('#BtnPublishPlan').click(function () {
         publishPlan();
     });
@@ -1213,5 +1214,5 @@
             }
         });
     }
-    //// End - Added by Sohel Patan on 31/12/2014 for PL ticket #1059                    
+    //// End - Added by Sohel Patan on 31/12/2014 for PL ticket #1059          *@          
 </script>
