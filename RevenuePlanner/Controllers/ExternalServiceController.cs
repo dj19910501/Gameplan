@@ -15,6 +15,7 @@ using System.Transactions;
 using System.Web.Mvc;
 using Integration.Salesforce;
 using Integration.Eloqua;
+using Integration.WorkFront;
 using System.Configuration;
 
 #endregion
@@ -989,21 +990,50 @@ namespace RevenuePlanner.Controllers
                         }
                         if (!string.IsNullOrWhiteSpace(companyname))
                         {
-
                             //// Check Credentials whether Authenticate or not for Eloqua Client.
-                    IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
+                            IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient();
                             integrationEloquaClient._companyName = companyname;// "TechnologyPartnerBulldog";
-                    integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
-                    integrationEloquaClient._password = form.Password;//"Brij1234";
-                    RevenuePlanner.Models.IntegrationType integrationType = GetIntegrationTypeById(form.IntegrationTypeId);
-                    integrationEloquaClient._apiURL = integrationType.APIURL;
-                    integrationEloquaClient._apiVersion = integrationType.APIVersion;
-                    integrationEloquaClient.Authenticate();
-                    isAuthenticated = integrationEloquaClient.IsAuthenticated;
-                }
+                            integrationEloquaClient._username = form.Username;// "Brij.Bhavsar";
+                            integrationEloquaClient._password = form.Password;//"Brij1234";
+                            RevenuePlanner.Models.IntegrationType integrationType = GetIntegrationTypeById(form.IntegrationTypeId);
+                            integrationEloquaClient._apiURL = integrationType.APIURL;
+                            integrationEloquaClient._apiVersion = integrationType.APIVersion;
+                            integrationEloquaClient.Authenticate();
+                            isAuthenticated = integrationEloquaClient.IsAuthenticated;
+                         }
+                         
                     }
                 }
-            
+
+                //Added by Brad Gray for ticket #1365
+                else if (form.IntegrationType.Code.Equals(Integration.Helper.Enums.IntegrationType.WorkFront.ToString()))
+                {
+                    if (form.IntegrationTypeAttributes.Count > 0)
+                    {
+                        List<int> attributeIds = form.IntegrationTypeAttributes.Select(attr => attr.IntegrationTypeAttributeId).ToList();
+                        List<IntegrationTypeAttribute> integrationTypeAttributes = db.IntegrationTypeAttributes.Where(attr => attributeIds.Contains(attr.IntegrationTypeAttributeId)).ToList();
+                        string companyname = string.Empty;
+
+
+                        //// Get ConsumerKey based on Attributes.
+                        foreach (IntegrationTypeAttribute integrationTypeAttribute in integrationTypeAttributes)
+                        {
+                            if (integrationTypeAttribute.Attribute.Equals("Company Name"))
+                            {
+                                companyname = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(companyname))
+                        {
+                            RevenuePlanner.Models.IntegrationType integrationType = GetIntegrationTypeById(form.IntegrationTypeId);
+                            //Creates, authenticates and logs user in
+                            IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(companyname, integrationType.APIURL, form.Username, form.Password);
+                            isAuthenticated = integrationWorkFrontClient.isAuthenticated();
+                        }
+                         
+                    }
+                }
+
                 else if (form.IntegrationType.Code.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()) && form.IntegrationTypeAttributes != null)
                 {
                     //// Check Credentials whether Authenticate or not for Salesforce Client.

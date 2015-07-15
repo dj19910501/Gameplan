@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using Integration.Eloqua;
+using Integration.WorkFront;
 using Integration.Helper;
 using System.Text;
 using System.Threading;
@@ -264,6 +265,26 @@ namespace Integration
                         //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     }
                 }
+                ///Added by Brad Gray for WorkFront Sync PL ticket #1368
+                ///WorkFront is only in play at a tactic Level - thus instance sync must find
+                ///all tactics tied to the instance and update accordingly
+                else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.WorkFront.ToString()))
+                {
+                    IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
+                    if (integrationWorkFrontClient.IsAuthenticated)
+                    {
+                        List<SyncError> lstSyncError = new List<SyncError>();
+                        _isResultError = integrationWorkFrontClient.SyncData(out lstSyncError);
+                        _lstAllSyncError.AddRange(lstSyncError);
+                    }
+                    else
+                    {
+                        instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationWorkFrontClient.errorMessage;
+                        _isResultError = true;
+                        IsAuthenticationError = true;
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationWorkFrontClient.errorMessage, Enums.SyncStatus.Error, DateTime.Now));
+                    }
+                }
 
                 int integrationinstanceId = Convert.ToInt32(_integrationInstanceId);
                 using (MRPEntities dbouter = new MRPEntities())
@@ -452,6 +473,12 @@ namespace Integration
                 {
                     return integrationEloquaClient.GetTargetDataType();
                 }
+            }
+            //Added by Brad Gray for ticket # 1367
+            else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.WorkFront.ToString()))
+            {
+                IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession();
+                return integrationWorkFrontClient.getWorkFrontFields();
             }
 
             return null;
