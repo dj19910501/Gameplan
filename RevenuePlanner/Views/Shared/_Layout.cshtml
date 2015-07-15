@@ -48,11 +48,26 @@
         <div class="row-fluid">
             @Html.Partial("_header")
         </div>
+        <div>
+            @RenderSection("PlanHeader", false)
+        </div>
         <div class="row-fluid calc-height">
             <div id="sidebar" class="span2">
                 @RenderSection("Sidebar", false)
             </div>
+
             <div id="content_wraper" class="span10 all-height">
+                <div id="MessageDisplay">
+                    <div id="errorMsg" class="alert alert-error hide message-position-small">
+                        <a class="close" id="aclose">×</a>
+                        <strong>Error! </strong><span id="spanMsgError"></span>
+                    </div>
+
+                    <div id="SuccessMsg" class="alert alert-success hide message-position-small">
+                        <a class="close">×</a>
+                        <strong>Success. </strong><span id="spanMsgSuccess"></span>
+                    </div>
+                </div>
                 @RenderBody()
             </div>
             <div class="clear"></div>
@@ -260,4 +275,29 @@
 
         };
     })();
+
+    //Added By Komal Rawal for new home page ui
+    function ShowMessage(IsError, Message, time) {
+        alert(time);
+        if (IsError) {
+            $("#errorMsg").css("display", "block");
+            $("#spanMsgError").empty();
+            $("#spanMsgError").text(Message);
+            $("#SuccessMsg").css("display", "none");
+            if (time != 'undefined')
+             {
+                $('#errorMsg').slideDown(time);
+            }
+        }
+        else {
+            $("#errorMsg").css("display", "none");
+            $("#SuccessMsg").css("display", "block");
+            $("#spanMsgSuccess").empty();
+            $("#spanMsgSuccess").text(Message);
+            if (time != 'undefined') {
+                alert(1);
+                $('#SuccessMsg').slideDown(time);
+            }
+        }
+    }
 </script>

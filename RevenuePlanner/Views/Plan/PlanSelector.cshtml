@@ -7,7 +7,10 @@
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     string strConfirmationmessage = Common.objCached.PlanDeleteConfirmMessage;
     string errorMsg = (string)TempData["ErrorMessage"];
+    string successmsg = (string)TempData["SuccessMessage"];
+    
 }
+
 
 @section Sidebar
 {
@@ -40,16 +43,16 @@
     </ul>
 }
 
-<!-- success/error message-->
+@*<!-- success/error message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
     <div id="cSuccess">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))</div>
-</div>
+</div>*@
 
-<div id="errorMessage" class="alert alert-error hide message-position">
+@*<div id="errorMessage" class="alert alert-error hide message-position">
     <a class="close">×</a>
     <div id="cError">@Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))</div>
-</div>
+</div>*@
 <!--success/error message-->
 <div id="Div_NoModelArea"></div>
 <ul class="nav nav-tabs" id="YearTabs">
@@ -79,7 +82,9 @@
 
 
 <script type="text/javascript">
-
+    var isError = false;
+    var errormsg = '@errorMsg';
+    var successmsg = '@successmsg';
     $(document).ready(function () {
         /*Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
         if ('@TempData["IsNoModel"]' == 'True') {
@@ -91,13 +96,29 @@
         LoadYearsData(); //function call to load Years tabs
 
         // Code to set Error/Success message
-        if ($('#cSuccess').html() != '') {
-            $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
-            $("#successMessage").slideDown(1200); // Show the Alert
+        //if ($('#cSuccess').html() != '') {
+        //    $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())
+        //    $("#successMessage").slideDown(1200); // Show the Alert
+        //}
+        //if ($('#cError').html() != '') {
+        //    $('#cError').html('<strong>Error!</strong> ' + $('#cError').html())
+        //    $("#errorMessage").slideDown(1200); // Show the Alert
+        //}
+
+        $("#SuccessMsg").removeClass("message-position-small");
+        $("#SuccessMsg").addClass("message-position");
+
+        $("#errorMsg").removeClass("message-position-small");
+        $("#errorMsg").addClass("message-position");
+
+        if (successmsg != "") {
+            ShowMessage(isError, successmsg,1200);
+           
         }
-        if ($('#cError').html() != '') {
-            $('#cError').html('<strong>Error!</strong> ' + $('#cError').html())
-            $("#errorMessage").slideDown(1200); // Show the Alert
+        if (errormsg != "") {
+            isError = true;
+            ShowMessage(isError, errormsg,1200);
+           
         }
 
         // Code to load change log
@@ -165,15 +186,20 @@
                         Value: PlanId
                     });
 
-                formSubmitEvent('@Url.Content("~/Plan/Create")', queryStringArr);
+                formSubmitEvent('@Url.Content("~/Plan/CreatePlan")', queryStringArr);
             }
         });
 
         // Code to Create new Plan
         $("#NewPlan").click(function () {
-            var url = '@Url.Content("~/Plan/Create")';
+            var url = '@Url.Content("~/Plan/CreatePlan")';
             //window.location.href = url;
             var queryStringArr = [];
+            queryStringArr.push(
+                {
+                    key: 'isPlanSelecter',
+                    Value: true
+                });
 
             formSubmitEvent(url, queryStringArr);
         });
@@ -181,10 +207,9 @@
         //Added By komal Rawal for #1131
         $('#table_baseline').on('click', 'tbody tr td .add-icon', function (e) {
             e.stopPropagation();
-            var url = '@Url.Content("~/Plan/Create")';
+            var url = '@Url.Content("~/Plan/CreatePlan")';
              //window.location.href = url;
              var queryStringArr = [];
-
              formSubmitEvent(url, queryStringArr);
         });
         
@@ -237,16 +262,19 @@
                             }
                             else {
                                 if (data.errorMsg != undefined) {
-                                    $('#errorMessage').css("display", "block");
-                                    $('#cError').html('<strong>Error!</strong> ' + data.errorMsg)
-                                    $("#errorMessage").slideDown(1200); // Show the Alert
-                                    $('#successMessage').css("display", "none");
+                                    isError = true;
+                                    //$('#errorMessage').css("display", "block");
+                                    //$('#cError').html('<strong>Error!</strong> ' + data.errorMsg)
+                                    //$('#successMessage').css("display", "none");
+                                    ShowMessage(isError, data.errormsg,1200);
+                                   
                                 }
                                 else if (data.successmsg != undefined) {
-                                    $('#successMessage').css("display", "block");
-                                    $('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
-                                    $("#successMessage").slideDown(1200); // Show the Alert
-                                    $('#errorMessage').css("display", "none");
+                                    //$('#successMessage').css("display", "block");
+                                    //$('#cSuccess').html('<strong>Success.</strong> ' + data.successmsg)
+                                    //$('#errorMessage').css("display", "none");
+                                    ShowMessage(isError, data.successmsg,1200);
+                                   
                                 }
                                 TabClick();
                             }
@@ -294,10 +322,12 @@
             }
             else {
                 if ('@errorMsg' == '') {
-                    $('#errorMessage').css("display", "block");
+                    isError = true;
+                    @* $('#errorMessage').css("display", "block");
                     $('#cError').html('<strong>Error!</strong> @Common.objCached.NoPublishPlanAvailable');  //// Error Message modified by Sohel Pathan on 22/05/2014 to address internal review points
-                    $("#errorMessage").slideDown(1200); // Show the Alert
-                    $('#successMessage').css("display", "none");
+                    $('#successMessage').css("display", "none");*@
+                    ShowMessage(isError, "@Common.objCached.NoPublishPlanAvailable",1200);
+                   
                 }
             }
         }

@@ -30,21 +30,219 @@ namespace RevenuePlanner.Controllers
         public const string TacticCustomTitle = "TacticCustom";
         #endregion
 
+      
+        //public ActionResult Create(int id = 0, bool isBackFromAssortment = false)
+        //{
+        //    /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
+        //    if (isBackFromAssortment == true)
+        //    {
+        //        TempData["IsBackFromAssortment"] = true;
+        //    }
+        //    /*End :Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
+        //    // Added by dharmraj to check user activity permission
+        //    bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+        //    ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
+
+        //    bool IsPlanCreateAll = false;
+
+
+        //    try
+        //    {
+        //        if (id > 0)
+        //        {
+        //            // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
+        //            var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
+        //            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+        //            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+        //            //Get all subordinates of current user upto n level
+        //            var lstSubOrdinates = new List<Guid>();
+        //            try
+        //            {
+        //                lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                ErrorSignal.FromCurrentContext().Raise(e);
+
+        //                //To handle unavailability of BDSService
+        //                if (e is System.ServiceModel.EndpointNotFoundException)
+        //                {
+        //                    return RedirectToAction("ServiceUnavailable", "Login");
+        //                }
+        //            }
+
+        //            //// Set flag to check whether his Own Plan & Subordinate Plan editable or not.
+        //            bool isPlanDefinationDisable = true;
+
+        //            if (IsPlanCreateAuthorized)
+        //            {
+        //                IsPlanCreateAll = true;
+        //            }
+        //            else
+        //            {
+        //                if (objplan.CreatedBy.Equals(Sessions.User.UserId))
+        //                {
+        //                    IsPlanCreateAll = true;
+        //                }
+        //            }
+        //            if (id == 0 && !IsPlanCreateAuthorized)
+        //            {
+        //                return AuthorizeUserAttribute.RedirectToNoAccess();
+        //            }
+        //            if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+        //            {
+        //                isPlanDefinationDisable = false;
+        //            }
+        //            else if (IsPlanEditAllAuthorized)
+        //            {
+        //                isPlanDefinationDisable = false;
+        //            }
+        //            else if (IsPlanEditSubordinatesAuthorized)
+        //            {
+        //                if (lstSubOrdinates.Contains(objplan.CreatedBy))
+        //                {
+        //                    isPlanDefinationDisable = false;
+        //                }
+        //            }
+        //            //Modified by Mitesh Vaishnav for internal review point related to "Edit All Plan" permission
+        //            ViewBag.IsPlanDefinationDisable = isPlanDefinationDisable;
+        //            ViewBag.IsPlanCreateAll = IsPlanCreateAll;
+
+        //        }
+        //        else
+        //        {
+        //            ViewBag.IsPlanCreateAll = true;
+        //        }
+
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
+
+        //        //To handle unavailability of BDSService
+        //        if (e is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
+        //    }
+
+        //    PlanModel objPlanModel = new PlanModel();
+        //    try
+        //    {
+        //        ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
+        //        Sessions.PlanId = id;/*added by Nirav for plan consistency on 14 apr 2014*/
+
+        //        var List = GetModelName();
+        //        if (List == null || List.Count == 0)
+        //        {
+        //            //Modified by Mitesh Vaishnav for functional review point 64
+        //            TempData["IsNoModel"] = true;
+        //            return RedirectToAction("PlanSelector");
+        //            //End: Modified by Mitesh Vaishnav for functional review point 64
+
+        //        }
+        //        List.Insert(0, new PlanModel { ModelId = 0, ModelTitle = "select" }); // Added by dharmraj to add default select item in model dropdown
+        //        TempData["selectList"] = new SelectList(List, "ModelId", "ModelTitle");
+        //        /*Modified by Mitesh Vaishnav for PL ticket #622*/
+        //        List<SelectListItem> Listyear = new List<SelectListItem>();
+        //        int yr = DateTime.Now.Year;
+        //        for (int i = 0; i < 5; i++)
+        //        {
+        //            Listyear.Add(new SelectListItem { Text = (yr + i).ToString(), Value = (yr + i).ToString(), Selected = false });
+        //        }
+        //        var year = Listyear;
+        //        TempData["selectYearList"] = new SelectList(year, "Value", "Text");
+        //        /*End :Modified by Mitesh Vaishnav for PL ticket #622*/
+
+        //        var GoalTypeList = Common.GetGoalTypeList(Sessions.User.ClientId);
+        //        var AllocatedByList = Common.GetAllocatedByList();      // Added by Sohel Pathan on 05/08/2014
+
+        //        //added by kunal to fill the plan data in edit mode - 01/17/2014
+        //        if (id != 0)
+        //        {
+        //            var objplan = db.Plans.Where(plan => plan.PlanId == id && plan.IsDeleted == false).FirstOrDefault();/*changed by Nirav for plan consistency on 14 apr 2014*/
+        //            objPlanModel.PlanId = objplan.PlanId;
+        //            objPlanModel.ModelId = objplan.ModelId;
+        //            objPlanModel.Title = objplan.Title;
+        //            objPlanModel.Year = objplan.Year;
+        //            objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
+        //            objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
+        //            objPlanModel.AllocatedBy = objplan.AllocatedBy;
+        //            objPlanModel.Budget = objplan.Budget;
+        //            objPlanModel.Version = objplan.Version;
+        //            objPlanModel.ModelTitle = objplan.Model.Title + " " + objplan.Model.Version;
+        //            double TotalAllocatedCampaignBudget = 0;
+        //            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objplan.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(a => a.Value).ToList();
+        //            if (PlanCampaignBudgetList.Count > 0)
+        //            {
+        //                TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Sum();
+        //            }
+        //            objPlanModel.TotalAllocatedCampaignBudget = TotalAllocatedCampaignBudget;
+        //            #region "In edit mode, plan year might be of previous year. We included previous year"
+        //            int planYear = 0; //plan's year
+        //            int.TryParse(objplan.Year, out planYear);
+        //            if (planYear != 0 && planYear < yr)
+        //            {
+        //                for (int i = planYear; i < yr; i++)
+        //                {
+        //                    Listyear.Add(new SelectListItem { Text = (i).ToString(), Value = (i).ToString(), Selected = false });//Modified by Pratik for PL ticket #1089
+        //                }
+
+        //                year = Listyear.OrderBy(objyear => objyear.Value).ToList();//Modified by Pratik for PL ticket #1089
+        //                TempData["selectYearList"] = new SelectList(year, "Value", "Text");//Modified by Mitesh Vaishnav for PL ticket #622
+        //            }
+
+        //            //Added By Komal Rawal for #1176
+        //            if (objplan.Status == Enums.PlanStatus.Published.ToString())
+        //            {
+        //                bool IsModelCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
+        //                ViewBag.modelcreateedit = IsModelCreateEdit;
+        //            }
+        //            else
+        //            {
+        //                ViewBag.modelcreateedit = true;
+
+        //            }
+        //            //End
+        //            #endregion
+        //        }
+        //        else
+        //        {
+        //            objPlanModel.Title = "Plan Title";
+        //            objPlanModel.GoalValue = "0";
+        //            objPlanModel.Budget = 0;
+        //            objPlanModel.Year = DateTime.Now.Year.ToString(); // Added by dharmraj to add default year in year dropdown
+        //            ViewBag.modelcreateedit = true;
+        //        }
+        //        //end
+
+        //        TempData["goalTypeList"] = GoalTypeList;
+        //        TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
+        //    }
+        //    return View(objPlanModel);
+
+        //}
+
         #region Create
 
         /// <summary>
         /// Function to create Plan
         /// </summary>
         /// <param name="id">PlanId</param>
-        /// <param name="isBackFromAssortment">Flag to check that return from Assortment.</param>
+        /// <param name="isPlanSelecter">Flag to check that return from PlanSelecter.</param>
         /// <returns></returns>
-        /// added id parameter by kunal on 01/17/2014 for edit plan
-        public ActionResult Create(int id = 0, bool isBackFromAssortment = false)
+        /// added By Komal rawal for new homePage Ui of Plan
+        /// 
+        public ActionResult CreatePlan(int id = 0, bool isPlanSelecter = false)
         {
             /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
-            if (isBackFromAssortment == true)
+            if (isPlanSelecter == true)
             {
-                TempData["IsBackFromAssortment"] = true;
+                TempData["isPlanSelecter"] = true;
             }
             /*End :Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
             // Added by dharmraj to check user activity permission
@@ -223,6 +421,9 @@ namespace RevenuePlanner.Controllers
                     ViewBag.modelcreateedit = true;
                 }
                 //end
+                var IsQuarter = objPlanModel.Year;
+                ViewBag.IsQuarter = IsQuarter;
+                objPlanModel.objplanhomemodelheader = Common.GetPlanHeaderValue(id);
 
                 TempData["goalTypeList"] = GoalTypeList;
                 TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
@@ -234,6 +435,7 @@ namespace RevenuePlanner.Controllers
             return View(objPlanModel);
 
         }
+
 
         #region NoModel
 
@@ -533,6 +735,137 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { id = 0 });
         }
+
+        //Added By Komal Rawal for new Home Page UI
+        public JsonResult SavePlanDefination(PlanModel objPlanModel, string UserId = "")
+        {
+
+            try
+            {
+                
+                if (!string.IsNullOrEmpty(UserId))
+                {
+                    if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
+                    {
+                        TempData["ErrorMessage"] = Common.objCached.LoginWithSameSession;
+                        return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    }
+                }
+             
+                if (ModelState.IsValid)
+                {
+                    Plan plan = new Plan();
+                    string oldAllocatedBy = "", newAllocatedBy = "";
+
+                    //// Add Mode
+                    if (objPlanModel.PlanId == 0)
+                    {
+                        string planDraftStatus = Enums.PlanStatusValues.FirstOrDefault(status => status.Key.Equals(Enums.PlanStatus.Draft.ToString())).Value;
+                        plan.Status = planDraftStatus;
+                        plan.CreatedDate = System.DateTime.Now;
+                        plan.CreatedBy = Sessions.User.UserId;
+                        plan.IsActive = true;
+                        plan.IsDeleted = false;
+                        double version = 0;
+                        var plantable = db.Plans.Where(m => m.ModelId == objPlanModel.ModelId && m.IsActive == true && m.IsDeleted == false).FirstOrDefault();
+                        if (plantable != null)
+                        {
+                            version = Convert.ToDouble(plantable.Version) + 0.1;
+                        }
+                        else
+                        {
+                            version = 1;
+                        }
+                        plan.Version = version.ToString();
+                        plan.Title = objPlanModel.Title.Trim();
+                        plan.GoalType = objPlanModel.GoalType;
+                        if (objPlanModel.GoalValue != null)
+                        {
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                        }
+                        else
+                        {
+                            plan.GoalValue = 0;
+                        }
+                        plan.AllocatedBy = objPlanModel.AllocatedBy;
+                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.ModelId = objPlanModel.ModelId;
+                        plan.Year = objPlanModel.Year;
+                        db.Plans.Add(plan);
+                    }
+                    else //// Edit Mode
+                    {
+                        plan = db.Plans.Where(_plan => _plan.PlanId == objPlanModel.PlanId).ToList().FirstOrDefault();
+
+                        oldAllocatedBy = plan.AllocatedBy;
+                        newAllocatedBy = objPlanModel.AllocatedBy;
+
+                        //Check whether the user wants to switch the Model for this Plan
+                        if (plan.ModelId != objPlanModel.ModelId)
+                        {
+                            //Check whether the Model switching is valid or not - check whether Model to switch to has all of the tactics present that are present in the plan
+                            List<string> lstTactic = CheckModelTacticType(objPlanModel.PlanId, objPlanModel.ModelId);
+                            if (lstTactic.Count() > 0)
+                            {
+                                string msg = RevenuePlanner.Helpers.Common.objCached.CannotSwitchModelForPlan.Replace("[TacticNameToBeReplaced]", String.Join(" ,", lstTactic));
+                                return Json(new { id = -1, imsg = msg });
+                            }
+                            else
+                            {
+                                //Update the TacticTypeIds based on new Modeld
+                                UpdateTacticType(objPlanModel.PlanId, objPlanModel.ModelId);
+                            }
+                        }
+
+                        plan.Title = objPlanModel.Title.Trim();
+                        plan.GoalType = objPlanModel.GoalType;
+                        if (objPlanModel.GoalValue != null)
+                        {
+                            plan.GoalValue = Convert.ToInt64(objPlanModel.GoalValue.Trim().Replace(",", "").Replace("$", ""));
+                        }
+                        else
+                        {
+                            plan.GoalValue = 0;
+                        }
+                        plan.AllocatedBy = objPlanModel.AllocatedBy;
+                        plan.Description = objPlanModel.Description;  
+                        plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
+                        plan.ModelId = objPlanModel.ModelId;
+                        if (plan.Year != objPlanModel.Year)
+                        {
+                            plan.Year = objPlanModel.Year;
+                            Common.UpdatePlanYearOfActivities(objPlanModel.PlanId, Convert.ToInt32(objPlanModel.Year)); 
+                        }
+                        plan.ModifiedBy = Sessions.User.UserId;
+                        plan.ModifiedDate = System.DateTime.Now;
+                        db.Entry(plan).State = EntityState.Modified;
+                     
+                    }
+
+                    int result = db.SaveChanges();
+
+                    //// Insert Changelog.
+                    if (objPlanModel.PlanId == 0)
+                    {
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                    }
+                    else
+                    {
+                        Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                    }
+
+
+                    return Json(new { id = Sessions.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully." }) });
+                 
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { id = 0 });
+        }
+        //End
 
         #region Calculate Plan Budget
         /// <summary>
@@ -2615,7 +2948,7 @@ namespace RevenuePlanner.Controllers
                     {
                         ViewBag.CampaignID = Session["CampaignID"];
                         TempData["SuccessMessageDeletedPlan"] = strMessage;
-                        return Json(new { redirect = Url.Action("Assortment"), planId = Sessions.PlanId, Id = rtResult, msg = strMessage });
+                        return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId }), planId = Sessions.PlanId, Id = rtResult, msg = strMessage });
                     }
                 }
                 return Json(new { });
@@ -6283,11 +6616,13 @@ namespace RevenuePlanner.Controllers
         public ActionResult Budgeting()
         {
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
+            HomePlanModel planmodel = new Models.HomePlanModel();
             try
             {
                bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId);
+               var IsQuarter = objPlan.Year;
                 ViewBag.PlanId = Sessions.PlanId;
 
                 bool IsPlanCreateAll = false;
@@ -6317,33 +6652,37 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ViewBy = lstViewBy;
 
                 #region BudgetingPlanList
-                HomePlan objHomePlan = new HomePlan();
-                List<SelectListItem> planList;
-                //if (Bid == "false")
-                //{
-                planList = Common.GetPlan().Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
-                if (planList.Count > 0)
-                {
-                    var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
-                    if (objexists.Count != 0)
-                    {
-                        planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
-                    }
-                    /*changed by Nirav for plan consistency on 14 apr 2014*/
+                //Modified By Komal Rawal for new homepage UI
 
-                    if (!Common.IsPlanPublished(Sessions.PlanId))
-                    {
-                        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
-                        var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
-                        if (activeplan.Count > 0)
-                            Sessions.PublishedPlanId = Sessions.PlanId;
-                        else
-                            Sessions.PublishedPlanId = 0;
-                    }
-                }
-                objHomePlan.plans = planList;
-                ViewBag.budgetPlanList = objHomePlan;
+                //HomePlan objHomePlan = new HomePlan();
+                //List<SelectListItem> planList;
+                ////if (Bid == "false")
+                ////{
+                //planList = Common.GetPlan().Select(_pln => new SelectListItem() { Text = _pln.Title, Value = _pln.PlanId.ToString() }).OrderBy(_pln => _pln.Text).ToList();
+                //if (planList.Count > 0)
+                //{
+                //    var objexists = planList.Where(_pln => _pln.Value == Sessions.PlanId.ToString()).ToList();
+                //    if (objexists.Count != 0)
+                //    {
+                //        planList.FirstOrDefault(_pln => _pln.Value.Equals(Sessions.PlanId.ToString())).Selected = true;
+                //    }
+                //    /*changed by Nirav for plan consistency on 14 apr 2014*/
+
+                //    if (!Common.IsPlanPublished(Sessions.PlanId))
+                //    {
+                //        string planPublishedStatus = Enums.PlanStatus.Published.ToString();
+                //        var activeplan = db.Plans.Where(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false && _pln.Status == planPublishedStatus).ToList();
+                //        if (activeplan.Count > 0)
+                //            Sessions.PublishedPlanId = Sessions.PlanId;
+                //        else
+                //            Sessions.PublishedPlanId = 0;
+                //    }
+                //}
+                //objHomePlan.plans = planList;
+                
+                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(Sessions.PlanId);
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
+                ViewBag.IsQuarter = IsQuarter;
                 #endregion
             }
             catch (Exception e)
@@ -6360,7 +6699,7 @@ namespace RevenuePlanner.Controllers
                     return RedirectToAction("ServiceUnavailable", "Login");
                 }
             }
-            return View();
+            return View(planmodel);
 
         }
 
@@ -8141,6 +8480,391 @@ namespace RevenuePlanner.Controllers
                 }
             }
             return Json(new { }, JsonRequestBehavior.AllowGet);
+        }
+
+        #endregion
+
+        #region "Add Actual"
+
+        /// <summary>
+        /// Action method to return AddActual view
+        /// </summary>
+        /// <returns>returns AddActual view</returns>
+        public ActionResult AddActual(int Planid)
+        {
+            HomePlanModel planmodel = new Models.HomePlanModel();
+
+            try
+            {
+                List<string> tacticStatus = Common.GetStatusListAfterApproved();
+                //// Tthis is inititalized as 0 bcoz to get the status for tactics.
+                string planGanttType = PlanGanttTypes.Tactic.ToString();
+                ViewBag.AddActualFlag = true;     // Added by Arpita Soni on 01/17/2015 for Ticket #1090 
+                List<RevenuePlanner.BDSService.User> lstIndividuals = GetIndividualsByPlanId(Planid.ToString(), planGanttType, Enums.ActiveMenu.Plan.ToString(), true);
+                ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
+
+                //// Fetch individual's records distinct
+                planmodel.objIndividuals = lstIndividuals.Select(user => new
+                {
+                    UserId = user.UserId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName
+                }).ToList().Distinct().Select(user => new RevenuePlanner.BDSService.User()
+                {
+                    UserId = user.UserId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName
+                }).ToList().OrderBy(user => string.Format("{0} {1}", user.FirstName, user.LastName)).ToList();
+                ////End - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
+
+                List<TacticType> objTacticType = new List<TacticType>();
+
+                //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
+                objTacticType = (from tactic in db.Plan_Campaign_Program_Tactic
+                                 where tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Planid && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false
+                                 select tactic.TacticType).Distinct().OrderBy(tactic => tactic.Title).ToList();
+
+                ViewBag.TacticTypeList = objTacticType;
+
+                //// Added by Dharmraj Mangukiya to implement custom restrictions PL ticket #537
+                //// Get current user permission for edit own and subordinates plans.
+                List<Guid> lstOwnAndSubOrdinates = new List<Guid>();
+                try
+                {
+                    lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                }
+                catch (Exception objException)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(objException);
+
+                    //// To handle unavailability of BDSService
+                    if (objException is System.ServiceModel.EndpointNotFoundException)
+                    {
+                        //// Flag to indicate unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        return RedirectToAction("ServiceUnavailable", "Login");
+                    }
+                }
+
+                bool IsPlanEditable = false;
+                bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
+                var objPlan = db.Plans.FirstOrDefault(plan => plan.PlanId == Planid);
+                var IsQuarter = objPlan.Year;
+                //// Added by Dharmraj for #712 Edit Own and Subordinate Plan
+                if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditAllAuthorized)
+                {
+                    IsPlanEditable = true;
+                }
+                else if (IsPlanEditSubordinatesAuthorized)
+                {
+                    if (lstOwnAndSubOrdinates.Contains(objPlan.CreatedBy))
+                    {
+                        IsPlanEditable = true;
+                    }
+                }
+
+                ViewBag.IsPlanEditable = IsPlanEditable;
+                ViewBag.IsNewPlanEnable = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                ViewBag.PlanId = Planid;
+                ViewBag.IsQuarter = IsQuarter;
+                //// Start - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+                List<CustomFieldsForFilter> lstCustomField = new List<CustomFieldsForFilter>();
+                List<CustomFieldsForFilter> lstCustomFieldOption = new List<CustomFieldsForFilter>();
+
+                //// Retrive Custom Fields and CustomFieldOptions list
+                GetCustomFieldAndOptions(out lstCustomField, out lstCustomFieldOption);
+
+                planmodel.lstCustomFields = lstCustomField;
+                planmodel.lstCustomFieldOptions = lstCustomFieldOption;
+                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(Planid);
+                //// End - Added by Sohel Pathan on 22/01/2015 for PL ticket #1144
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return RedirectToAction("ServiceUnavailable", "Login");
+                }
+            }
+
+            return View("AddActual", planmodel);
+        }
+   
+
+        /// <summary>
+        /// Function to get list of users based on selected plan id(s), tab and active menu
+        /// </summary>
+        /// <param name="PlanId">comma separated list of plan id(s)</param>
+        /// <param name="ViewBy">/viewBy option selected from dropdown</param>
+        /// <param name="ActiveMenu">current active menu</param>
+        /// <param name="IsForAddActuals">flag to check call from Add Actual screen</param>
+        /// <returns>returns list of users</returns>
+        private List<RevenuePlanner.BDSService.User> GetIndividualsByPlanId(string PlanId, string ViewBy, string ActiveMenu, bool IsForAddActuals = false)
+        {
+            List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
+
+            //// Added by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+            Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, ActiveMenu.ToLower());
+            List<string> status = Common.GetStatusListAfterApproved();
+
+            // Start - Added by Arpita Soni on 01/17/2015 for Ticket #1090 
+            //// To remove owner of submitted tactics from filter list
+            //if (IsForAddActuals)
+            //{
+            //    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            //}
+            // End - Added by Arpita Soni on 01/17/2015 for Ticket #1090
+
+            //// Select Tactics of selected plans
+            var campaignList = db.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && PlanIds.Contains(campaign.PlanId)).Select(campaign => campaign.PlanCampaignId).ToList();
+            var programList = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
+            var tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic);
+
+            BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
+
+            List<int> lstAllowedEntityIds = new List<int>();
+
+            //// Added by :- Sohel Pathan on 21/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+            if (ActiveMenu.Equals(Enums.ActiveMenu.Plan.ToString()))
+            {
+                //List<string> statusCD = new List<string>();
+                //statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                //statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+                var TacticUserList = tacticList.Distinct().ToList();
+                //     TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status) || ((tactic.CreatedBy == Sessions.User.UserId && !ViewBy.Equals(GanttTabs.Request.ToString())) ? statusCD.Contains(tactic.Status) : false)).Distinct().ToList();
+                if (IsForAddActuals)
+                {
+                    TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status)).Distinct().ToList();
+                }
+                else
+                {
+                    TacticUserList = TacticUserList.Where(tactic => !ViewBy.Equals(GanttTabs.Request.ToString())).Distinct().ToList();
+                }
+
+                if (TacticUserList.Count > 0)
+                {
+                    List<int> planTacticIds = TacticUserList.Select(tactic => tactic.PlanTacticId).ToList();
+                    lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+
+                    //// Custom Restrictions applied
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                }
+
+                string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
+                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+
+                return individuals;
+            }
+            else
+            {
+                //// Modified by :- Sohel Pathan on 17/04/2014 for PL ticket #428 to disply users in individual filter according to selected plan and status of tactis 
+                //   var TacticUserList = tacticList.Where(tactic => status.Contains(tactic.Status)).Select(tactic => tactic).Distinct().ToList();
+
+                List<string> statusCD = new List<string>();
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+                statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+                var TacticUserList = tacticList.Distinct().ToList();
+                TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status) || (!ViewBy.Equals(GanttTabs.Request.ToString()) ? statusCD.Contains(tactic.Status) : false)).Distinct().ToList();
+
+                if (TacticUserList.Count > 0)
+                {
+                    List<int> planTacticIds = TacticUserList.Select(tactic => tactic.PlanTacticId).ToList();
+                    lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+
+
+                    // Custom Restrictions applied
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                }
+
+                string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
+                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+
+                return individuals;
+            }
+        }
+
+        /// <summary>
+        /// Function to prepare list of custom fields and customfield options
+        /// </summary>
+        /// <param name="customFieldListOut"></param>
+        /// <param name="customFieldOptionsListOut"></param>
+        public void GetCustomFieldAndOptions(out List<CustomFieldsForFilter> customFieldListOut, out List<CustomFieldsForFilter> customFieldOptionsListOut)
+        {
+            customFieldListOut = new List<CustomFieldsForFilter>();
+            customFieldOptionsListOut = new List<CustomFieldsForFilter>();
+
+            //// Get list of custom fields
+            string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+            string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+            var lstCustomField = db.CustomFields.Where(customField => customField.ClientId == Sessions.User.ClientId && customField.IsDeleted.Equals(false) &&
+                                                                customField.EntityType.Equals(EntityTypeTactic) && customField.CustomFieldType.Name.Equals(DropDownList) &&
+                                                                customField.IsDisplayForFilter.Equals(true) && customField.CustomFieldOptions.Count() > 0)
+                                                                .Select(customField => new
+                                                                {
+                                                                    customField.Name,
+                                                                    customField.CustomFieldId
+                                                                }).ToList();
+
+            List<int> lstCustomFieldId = new List<int>();
+
+            if (lstCustomField.Count > 0)
+            {
+                //// Get list of Custom Field Ids
+                lstCustomFieldId = lstCustomField.Select(customField => customField.CustomFieldId).Distinct().ToList();
+
+                //// Get list of custom field options
+                var lstCustomFieldOptions = db.CustomFieldOptions
+                                                            .Where(customFieldOption => lstCustomFieldId.Contains(customFieldOption.CustomFieldId) && customFieldOption.IsDeleted == false)
+                                                            .Select(customFieldOption => new
+                                                            {
+                                                                customFieldOption.CustomFieldId,
+                                                                customFieldOption.CustomFieldOptionId,
+                                                                customFieldOption.Value
+                                                            }).ToList();
+
+                //// Get default custom restriction value
+                bool IsDefaultCustomRestrictionsViewable = Common.IsDefaultCustomRestrictionsViewable();
+
+                //// Custom Restrictions
+                var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);   //// Modified by Sohel Pathan on 15/01/2015 for PL ticket #1139
+
+                if (userCustomRestrictionList.Count() > 0)
+                {
+                    int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
+                    int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                    int NonePermission = (int)Enums.CustomRestrictionPermission.None;
+
+                    foreach (var customFieldId in lstCustomFieldId)
+                    {
+                        if (userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId).Count() > 0)
+                        {
+                            //// Prepare list of allowed Custom Field Option Ids
+                            List<int> lstAllowedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId &&
+                                                                                                    (customRestriction.Permission == ViewOnlyPermission || customRestriction.Permission == ViewEditPermission))
+                                                                                                .Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+
+                            List<int> lstRestrictedCustomFieldOptionIds = userCustomRestrictionList.Where(customRestriction => customRestriction.CustomFieldId == customFieldId &&
+                                                                                                            customRestriction.Permission == NonePermission)
+                                                                                                    .Select(customRestriction => customRestriction.CustomFieldOptionId).ToList();
+
+                            //// Get list of custom field options
+                            var lstAllowedCustomFieldOption = lstCustomFieldOptions.Where(customFieldOption => customFieldOption.CustomFieldId == customFieldId &&
+                                                                                        lstAllowedCustomFieldOptionIds.Contains(customFieldOption.CustomFieldOptionId))
+                                                                                    .Select(customFieldOption => new
+                                                                                    {
+                                                                                        customFieldOption.CustomFieldId,
+                                                                                        customFieldOption.CustomFieldOptionId,
+                                                                                        customFieldOption.Value
+                                                                                    }).ToList();
+
+                            if (lstAllowedCustomFieldOption.Count > 0)
+                            {
+                                customFieldListOut.AddRange(lstCustomField.Where(customField => customField.CustomFieldId == customFieldId)
+                                                                        .Select(customField => new CustomFieldsForFilter()
+                                                                        {
+                                                                            CustomFieldId = customField.CustomFieldId,
+                                                                            Title = customField.Name
+                                                                        }).ToList());
+
+                                customFieldOptionsListOut.AddRange(lstAllowedCustomFieldOption.Select(customFieldOption => new CustomFieldsForFilter()
+                                {
+                                    CustomFieldId = customFieldOption.CustomFieldId,
+                                    CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                                    Title = customFieldOption.Value
+                                }).ToList());
+
+                            }
+
+                            //// If default custom restiction is viewable then select custom field and option who dont have restrictions
+                            if (IsDefaultCustomRestrictionsViewable)
+                            {
+                                var lstNewCustomFieldOptions = lstCustomFieldOptions.Where(option => !lstAllowedCustomFieldOptionIds.Contains(option.CustomFieldOptionId) && !lstRestrictedCustomFieldOptionIds.Contains(option.CustomFieldOptionId) && option.CustomFieldId == customFieldId).ToList();
+                                if (lstNewCustomFieldOptions.Count() > 0)
+                                {
+                                    //// If CustomField is not added in out list then add it
+                                    if (!(customFieldListOut.Where(customField => customField.CustomFieldId == customFieldId).Any()))
+                                    {
+                                        customFieldListOut.AddRange(lstCustomField.Where(customField => customField.CustomFieldId == customFieldId)
+                                                                                    .Select(customField => new CustomFieldsForFilter()
+                                                                                    {
+                                                                                        CustomFieldId = customField.CustomFieldId,
+                                                                                        Title = customField.Name
+                                                                                    }).ToList());
+                                    }
+
+                                    ///// Add custom field options that are not in Custom Restriction list
+                                    customFieldOptionsListOut.AddRange(lstNewCustomFieldOptions.Select(customFieldOption => new CustomFieldsForFilter()
+                                    {
+                                        CustomFieldId = customFieldOption.CustomFieldId,
+                                        CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                                        Title = customFieldOption.Value
+                                    }).ToList());
+                                }
+                            }
+
+                        }
+                        else if (IsDefaultCustomRestrictionsViewable)
+                        {
+                            if (lstCustomFieldOptions.Where(option => option.CustomFieldId == customFieldId).Count() > 0)
+                            {
+                                customFieldListOut.AddRange(lstCustomField.Where(customField => customField.CustomFieldId == customFieldId).Select(customField => new CustomFieldsForFilter()
+                                {
+                                    CustomFieldId = customField.CustomFieldId,
+                                    Title = customField.Name
+                                }).ToList());
+
+                                customFieldOptionsListOut.AddRange(lstCustomFieldOptions.Where(option => option.CustomFieldId == customFieldId).Select(customFieldOption => new CustomFieldsForFilter()
+                                {
+                                    CustomFieldId = customFieldOption.CustomFieldId,
+                                    CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                                    Title = customFieldOption.Value
+                                }).ToList());
+                            }
+                        }
+                    }
+                }
+                else if (IsDefaultCustomRestrictionsViewable)
+                {
+                    //// If default custom restriction is viewable than add all custom fields for search filter
+                    customFieldListOut = lstCustomField.Select(customField => new CustomFieldsForFilter()
+                    {
+                        CustomFieldId = customField.CustomFieldId,
+                        Title = customField.Name
+                    }).ToList();
+
+                    customFieldOptionsListOut = lstCustomFieldOptions.Select(customFieldOption => new CustomFieldsForFilter()
+                    {
+                        CustomFieldId = customFieldOption.CustomFieldId,
+                        CustomFieldOptionId = customFieldOption.CustomFieldOptionId,
+                        Title = customFieldOption.Value
+                    }).ToList();
+                }
+            }
+
+            if (customFieldListOut.Count() > 0)
+            {
+                ////// Sort custom fields by name
+                customFieldListOut = customFieldListOut.OrderBy(customField => customField.Title).ToList();
+            }
+            if (customFieldOptionsListOut.Count() > 0)
+            {
+                ////// Sort custom field option list by value and custom field id
+                customFieldOptionsListOut = customFieldOptionsListOut.OrderBy(customFieldOption => customFieldOption.CustomFieldId).ThenBy(customFieldOption => customFieldOption.Title).ToList();
+            }
         }
 
         #endregion

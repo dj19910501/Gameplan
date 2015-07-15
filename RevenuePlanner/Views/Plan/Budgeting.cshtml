@@ -1,4 +1,5 @@
-﻿@using RevenuePlanner.Helpers
+﻿@model RevenuePlanner.Models.HomePlanModel
+@using RevenuePlanner.Helpers
 @{
     ViewBag.Title = ViewBag.ActiveMenu;
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -24,11 +25,37 @@
             myView = "0";
         }
     }
-    RevenuePlanner.Models.HomePlan ListBudgetingPlan = ViewBag.budgetPlanList;
+   var ListBudgetingPlan = Model.objplanhomemodelheader.plans; //Modified for new homepage UI
+   var IsQuarter = ViewBag.IsQuarter;
 }
+
+@section PlanHeader{
+
+    <div class="light-blue-chart cf full-width-header" id="planHeader">
+        @Html.Partial("~/Views/Shared/_planheader.cshtml", Model.objplanhomemodelheader)
+    </div>
+
+}
+
 @section Sidebar
 {
-    @Html.Partial("~/Views/Plan/_plan.cshtml")
+   <div class="padding-content padding-bottom0" id="DivButtonsHome">
+        <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
+        <div class="wraper-btns cf">
+            <div >
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = CurrentPlanId})');" style="min-width:90%">< Back to Plan</button>
+            </div>
+        </div>
+    </div>
+
+    <ul class="nav nav-list nav-gray-plan">
+        <li id="change-log" class="nav-header">
+            <span>Change Log</span>
+            <div class="changes">
+                <div class="change"><span class="action">None</span></div>
+            </div>
+        </li>
+    </ul>
 }
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
@@ -57,6 +84,7 @@
     <a class="close">×</a>
     <div id="cErrorDuplicatePlan"></div>
 </div>
+
 <div class=" budgetColums budgetReporting remove_btm_pdng ">
     <div class="plannedCost budget_allocation ">
         <h3 class="source-sans-proregular" id="planCostTitle" style="padding-top: 0px;"></h3>
@@ -83,22 +111,17 @@
 		     <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aonCost" class="request" style="padding: 6px 27px 4px;">ON</a></div>
             <div class="request-icon-block" style="top:0px; cursor:pointer;"><a id="aoffCost" class="new-btn-plan request-btn-active">OFF</a></div>
 </div>
- 
- 
-     
-    
-      
 </div>
 <div id="DivloadPlan">
     <ul class="nav nav-tabs">
-        <li class="title-header source-sans-proregular bold font-size25px">
+      @*  <li class="title-header source-sans-proregular bold font-size25px">
             <form id="nl-form2" class="nl-form-plan-title without-margin plantitle">
                 <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40">
                 </select>
                 <div class="nl-overlay"></div>
 
             </form>
-        </li>
+        </li>*@
         <li id="aAllocated" class="pull-right" onclick="TabLoad('aAllocated');">
             <a href="#">Budget</a>
         </li>
@@ -118,6 +141,7 @@
     var expand = $("#hdnBudgetingExpandId").val();
     var CurrentView = '@myView';
     var currentTab = 'aAllocated';
+    var isQuater = '@IsQuarter';
     if ('@type' == 'plan') {
         currentTab = 'aPlanned';
     }
@@ -154,6 +178,7 @@
     }
     var hideAllMessages = false;
     $(document).ready(function () {
+        $("#lblMarkringActivitiesTitle").hide();
         $("#errorMessageDuplicatePlan").slideUp(300);
         $(".selectBox select").selectbox();
         $("#ddlViewBy").multiselect({
@@ -172,6 +197,7 @@
         $("#ddlViewBy").multiselect('refresh');
         LoadPlan();
         onClickPlanTitle();
+
     });
     function ExpandItems() {
         expand = $("#hdnBudgetingExpandId").val();
@@ -392,12 +418,15 @@ else {
 
 
 function LoadPlan() {
+     
     //  $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")', function () { TabLoad(currentTab); ShowChangeLog(CurrentPlanId); hideAllMessages = true; });
     ShowChangeLog(CurrentPlanId);
-    var plans = @Html.Raw(Json.Encode(ListBudgetingPlan.plans))
+    var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
    populateNF(plans, "dropdown-plan-title");
     var nlform = new NLForm(document.getElementById('nl-form2'));
     TabLoad(currentTab);   
+    GetHealderData(CurrentPlanId);
+    GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
     hideAllMessages = true;
 }
 
@@ -430,6 +459,10 @@ function onClickPlanTitle() {
         $("#slidepanel-container").empty();
         $("#errorMessageDuplicatePlan").slideUp(300);
         HideMessages();
+        if (CurrentPlanId > 0) {  //Modified by komal rawal for new homepage UI
+            GetHealderData(CurrentPlanId);
+            GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
+        }
     });
 }
 

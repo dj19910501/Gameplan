@@ -1,4 +1,14 @@
 ﻿@model RevenuePlanner.Models.HomePlanModelHeader
+@using RevenuePlanner.Helpers;
+@{
+  string activeMenu = Convert.ToString(ViewBag.ActiveMenu);
+  string planid = ViewBag.strplanid;
+ 
+}
+
+
+<link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 
 <div class="white-chart">
     <p class="source-sans-probold">Activity Distribution</p>
@@ -26,12 +36,34 @@
     <!-- Modified font class by kapil - 100614 - #508 -->
     <p id="pMQLImproved" class="small-value source-sans-prosemibold">@Html.DisplayFor(model => model.PercentageMQLImproved)</p>
 </div>
+  @*  Added By Komal Rawal for new UI of homepage*@
+<div  style="margin-top: 30px; width:30%">
+      
+       <h2 id="lblMarkringActivitiesTitle" style="display:none;">Marketing Activities(Ongoing)</h2>
+  
+       @if (Model.plans != null && Model.plans.Count > 0)
+       {
+        <form id="nl-form2" class="nl-form-plan-title without-margin plantitle"  style="display:none;">
 
-<div >
-    <h2 style="color:white;font-weight:normal;font-size: 28.5px; margin-top: 30px;">@Html.Raw("Summary")</h2>   @* Modified by : Sohel Pathan on 29/10/2014 for PL ticket #899 *@
+            <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40" >
+                <script>
+                    var plan = @Html.Raw(Json.Encode(Model.plans))
+                    populateNF(plan, "dropdown-plan-title");
+                </script>
+            </select>
+            <div class="nl-overlay"></div>
+            <script>
+                var nlform = new NLForm(document.getElementById('nl-form2'));
+            </script>
+
+        </form>
+       }
+      <h2 id="lblCreatePlanTitle" style="display:none;">Create a new plan</h2>
+ 
 </div>
-
+@Html.Hidden("ActiveMenu", activeMenu)
 <script type="text/javascript">
+    var Planid = '@planid';
     SetBudget("#pbudget");
     SetPriceValue("#pMQLs");
     
@@ -53,6 +85,178 @@
     }
 
     
+    //Added by Komal Rawal for new home page UI
+    if (($('#ActiveMenu').val().toLowerCase() == "plan")) {
+        if (Planid !="0") {
+            $("#lblMarkringActivitiesTitle").hide();
+            $("#nl-form2").show();
+        }
+        else {
+            $("#lblCreatePlanTitle").show();
+            $("#nl-form2").hide();
+        }
+    }
+    else {
+            $("#lblMarkringActivitiesTitle").show();
+            $("#nl-form2").hide();
+    }
 
+
+    function GetHealderData(selectedPlanIds) {
+        var newUrl = '';
+        if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
+        newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
+    }
+        else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
+        newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+        selectedPlanIds = parseInt(CurrentPlanId);
+    }
+    $.ajax(
+    {
+        type: "GET",
+        cache: false,
+        url: newUrl,
+        data: {
+            planid: selectedPlanIds,
+            activeMenu: $('#ActiveMenu').val().toLowerCase(),
+            year: isQuater
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data != null) {
+
+                $.each(data.lstHomePlanModelHeader, function (index, obj) {
+                    if (index == "MQLs") {
+                        $("#pMQLs").html(obj);
+                        SetPriceValue("#pMQLs");
+                    }
+                    else if (index == "Budget") {
+                        $("#pbudget").html(obj);
+                        SetBudget("#pbudget");
+                    }
+                    else if (index == "TacticCount") {
+                        $("#ptacticcount").html(obj);
+                    }
+                    else if (index == "mqlLabel") {
+                        $("#pmqlLabel").html(obj);
+                    }
+                    else if (index == "costLabel") {
+                        $("#pcostLabel").html(obj);
+                    }
+                    else if (index == "PercentageMQLImproved") {
+                        /// Added By: Maninder Singh Wadhva
+                        /// Addressed PL Ticket: 37,38,47,49
+
+                        var pMQLImproved = $("#pMQLImproved");
+                        pMQLImproved.removeClass("greenfont");
+                        pMQLImproved.removeClass("redfont");
+
+                        var divBullhornbg = $('#DivBullhornbg');
+                        divBullhornbg.removeClass("bullhorn-bg-disabled");
+                        divBullhornbg.removeClass("bullhorn-bg");
+                        if (obj != null) {
+                            divBullhornbg.addClass("bullhorn-bg");
+                            if (obj < 0) {
+                                pMQLImproved.html(FormatNumber(obj, true))
+                                pMQLImproved.addClass("redfont");
+                            }
+                            else {
+                                pMQLImproved.html("+" + FormatNumber(obj, true))
+                                pMQLImproved.addClass("greenfont");
+                            }
+                        }
+                        else {
+                            divBullhornbg.addClass("bullhorn-bg-disabled");
+                            pMQLImproved.html('---');
+                        }
+                    }
+
+                });
+
+            }
+        }
+    });
+}
+    function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam) {
+       // alert('chart');
+    var newUrl = '';
+    var isMultiple = false;
+    newUrl = '@Url.Action("GetNumberOfActivityPerMonth", "Home")';
+        if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
+            isMultiple = true;
+        }
+        else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
+        if (CurrentPlanId > 0) {
+            selectedPlanIds = CurrentPlanId.toString();
+        }
+    }
+    $.ajax(
+    {
+        type: "GET",
+        cache: false,
+        url: newUrl,
+        data: {
+            planid: selectedPlanIds,
+            strparam: strParam,
+            isMultiplePlan: isMultiple
+        },
+        dataType: "json",
+        success: function (data) {
+            if (data != null) {
+                $(".dhx_canvas_text").remove();
+                $("canvas").remove();
+                setgraphdata(data);
+
+            }
+        }
+    });
+}
+function setgraphdata(data) {
+
+    var barChart2 = new dhtmlXChart({
+        view: "bar",
+        container: "chart2",
+        value: "#NoOfActivity#",
+        label: "#NoOfActivity#",
+        color: "#Color#",
+        radius: 3,
+        padding: {
+            top: 25,
+            bottom: 16,
+            right: 00,
+            left: 00
+
+        },
+        xAxis: {
+
+            template: "#Month#"
+        },
+    });
+    barChart2.parse(data.lstchart, "json");
+}
+   
+function populateNF(items, id) {
+    var $dropdown = $("#" + id);
+    var $html = '';
+    if (items.length > 0) {
+        $.each(items, function (index, plan) {
+            if (plan.Selected) {
+                SelectedPlanTitle = plan.Text;
+                $html += '<option value="' + plan.Value + '" selected>' + plan.Text + '</option>';
+                CurrentPlanId = plan.Value;
+                $("#CurrentPlanId").val(CurrentPlanId);
+            } else {
+                $html += '<option value="' + plan.Value + '">' + plan.Text + '</option>';
+            }
+        });
+    } else {
+        $html += '<option value=' + 0 + ' selected>' + "Plan Title" + '</option>';
+        CurrentPlanId = 0;
+        $("#CurrentPlanId").val(CurrentPlanId);
+    }
+    $dropdown.append($html);
+}
+
+    //ENd
 
 </script>

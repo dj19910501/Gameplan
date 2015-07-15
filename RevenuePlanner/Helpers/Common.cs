@@ -1539,6 +1539,27 @@ namespace RevenuePlanner.Helpers
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
             List<string> tacticStatus = GetStatusListAfterApproved();
+            //Added By Komal Rawal for new UI of homepage
+            List<SelectListItem> planList;
+
+                var lstPlanAll = Common.GetPlan();
+                planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+
+                var objexists = planList.Where(plan => plan.Value == planId.ToString()).ToList();
+                if (objexists.Count != 0)
+                {
+                    planList.Single(plan => plan.Value.Equals(planId.ToString())).Selected = true;
+                }
+                else
+                {
+                    planList.FirstOrDefault().Selected = true;
+                }
+
+                //// Set Plan dropdown values
+                if (planList != null)
+                    planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+                objHomePlanModelHeader.plans = planList;
+          //End
 
             var objPlan = objDbMrpEntities.Plans.Where(plan => plan.PlanId == planId && plan.IsDeleted == false && plan.IsActive == true).Select(plan => plan).FirstOrDefault();
             if (objPlan != null)

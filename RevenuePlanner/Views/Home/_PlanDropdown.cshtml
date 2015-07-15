@@ -3,11 +3,11 @@
 
 <ul class="nav nav-tabs" style="margin-left:25px;">
     <li class="title-header source-sans-proregular bold font-size25px" style="padding-top:5px;">
-       @if (Model.plans != null && Model.plans.Count > 0)
+      @* @if (Model.plans != null && Model.plans.Count > 0)
        {
         <form id="nl-form2" class="nl-form-plan-title without-margin plantitle" style="display:none;">
 
-            <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40" >
+            <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40" style="display:none;" >
                 <script>
                     var plan = @Html.Raw(Json.Encode(Model.plans))
                     populateNF(plan, "dropdown-plan-title");
@@ -19,9 +19,11 @@
             </script>
 
         </form>
-       }
-        <h2 id="lblMarkringActivitiesTitle" style="font-size: 29.5px;display:none;">Marketing Activities</h2>
+       }*@
+         <h2 id="lblMarkringActivitiestitle" style="font-size: 23px;display:none;">Marketing Activities</h2>
     </li>
+   
+
     <li style="padding-top:5px;">
         <div class="request-icons hide">
 		     <div class="request-icon-block"><a href="#" class="request">Request<span class="counter badge"></a></span></div>
@@ -63,11 +65,12 @@
         RefreshCurrentTab();
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             GetCollaborators(CurrentPlanId);
-            $("#nl-form2").show();
+            $("#lblMarkringActivitiestitle").show();
+           // $("#nl-form2").show();
         }
         else {
-            $("#nl-form2").hide();
-            $("#lblMarkringActivitiesTitle").show();
+          //  $("#nl-form2").hide();
+          
         }
         $('.request-icons').show();
         var SelectedPlans = filters.SelectedPlans.toString();
