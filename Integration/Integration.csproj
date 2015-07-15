@@ -102,6 +102,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="WorkFront\Client.cs" />
+    <Compile Include="WorkFront\ClientException.cs" />
+    <Compile Include="WorkFront\ClientHandling.cs" />
+    <Compile Include="WorkFront\Fields.cs" />
+    <Compile Include="WorkFront\IntegrationWorkFrontSession.cs" />
+    <Compile Include="WorkFront\ObjCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Readme\Elmah.txt" />

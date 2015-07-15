@@ -45,6 +45,7 @@ namespace RevenuePlanner.Models
         public Nullable<double> ProjectedStageValue { get; set; }
         public int StageId { get; set; }
         public string TacticCustomName { get; set; }
+        public string IntegrationWorkFrontProjectID { get; set; }
     
         public virtual Plan_Campaign_Program Plan_Campaign_Program { get; set; }
         public virtual ICollection<Plan_Campaign_Program_Tactic_Actual> Plan_Campaign_Program_Tactic_Actual { get; set; }

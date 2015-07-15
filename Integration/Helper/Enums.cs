@@ -14,7 +14,8 @@ namespace Integration.Helper
         public enum IntegrationType
         {
             Salesforce,
-            Eloqua
+            Eloqua,
+            WorkFront
         }
 
         public enum PullCWActualField

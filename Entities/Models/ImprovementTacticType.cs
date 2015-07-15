@@ -36,5 +36,7 @@ namespace RevenuePlanner.Models
     
         public virtual ICollection<ImprovementTacticType_Metric> ImprovementTacticType_Metric { get; set; }
         public virtual ICollection<Plan_Improvement_Campaign_Program_Tactic> Plan_Improvement_Campaign_Program_Tactic { get; set; }
+        public virtual ImprovementTacticType ImprovementTacticType1 { get; set; }
+        public virtual ImprovementTacticType ImprovementTacticType2 { get; set; }
     }
 }
