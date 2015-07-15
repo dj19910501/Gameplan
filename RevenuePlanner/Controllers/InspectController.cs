@@ -643,6 +643,7 @@ namespace RevenuePlanner.Controllers
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == planId);
 
             #region "Set values in ViewBag"
+           
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             ViewBag.IsDeployedToIntegration = false;
             ViewBag.IsCreated = true;
@@ -1477,7 +1478,7 @@ namespace RevenuePlanner.Controllers
 
                     ViewBag.IsServiceUnavailable = false;
                     ViewBag.OwnerName = Common.GetUserName(pcp.CreatedBy.ToString());
-                  
+
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
@@ -1620,7 +1621,7 @@ namespace RevenuePlanner.Controllers
                                 #endregion
 
                                 result = Common.InsertChangeLog(Sessions.PlanId, null, programid, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
-                                Common.ChangeCampaignStatus(pcpobj.PlanCampaignId,false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                Common.ChangeCampaignStatus(pcpobj.PlanCampaignId, false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 string strMessage = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                 return Json(new { IsSaved = true, Msg = strMessage, programID = programid, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
@@ -1748,7 +1749,7 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
-                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId,false);
+                                    Common.ChangeCampaignStatus(pcpobj.PlanCampaignId, false);
                                     scope.Complete();
                                     string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                     return Json(new { IsSaved = true, Msg = strMessage, campaignID = campaignId }, JsonRequestBehavior.AllowGet);
@@ -3325,9 +3326,9 @@ namespace RevenuePlanner.Controllers
 
                                 if (result >= 1)
                                 {
-                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId,false);
+                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId, false);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == pcpobj.PlanProgramId).Select(a => a.PlanCampaignId).Single();
-                                    Common.ChangeCampaignStatus(PlanCampaignId,false);
+                                    Common.ChangeCampaignStatus(PlanCampaignId, false);
 
                                     scope.Complete();
                                     string strMessag = Common.objCached.PlanEntityCreated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -3364,7 +3365,7 @@ namespace RevenuePlanner.Controllers
                                 bool isOwner = false;
                                 string status = string.Empty;
                                 int oldProgramId = 0;
-                                string oldProgramTitle="";
+                                string oldProgramTitle = "";
                                 int oldCampaignId = 0;
                                 #endregion
                                 //Start - Added by Mitesh Vaishnav for PL ticket #1137
@@ -3387,7 +3388,7 @@ namespace RevenuePlanner.Controllers
                                 if (pcpobj.PlanProgramId != form.PlanProgramId)
                                 {
                                     oldProgramId = pcpobj.PlanProgramId;
-                                    oldProgramTitle=pcpobj.Plan_Campaign_Program.Title;
+                                    oldProgramTitle = pcpobj.Plan_Campaign_Program.Title;
                                     oldCampaignId = pcpobj.Plan_Campaign_Program.PlanCampaignId;
                                     pcpobj.PlanProgramId = form.PlanProgramId;
                                     db.Entry(pcpobj).State = EntityState.Modified;
@@ -3610,7 +3611,7 @@ namespace RevenuePlanner.Controllers
                                         }
 
                                     }
-                                   
+
                                 }
                                 // End - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
                                 // Start Added by dharmraj for ticket #644
@@ -3702,19 +3703,19 @@ namespace RevenuePlanner.Controllers
                                     }
                                     //// End - Added by :- Mitesh Vaishnav on 19/05/2015 for PL ticket #546
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId,false);
+                                    Common.ChangeProgramStatus(pcpobj.PlanProgramId, false);
                                     var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pcpobj.PlanProgramId).Select(program => program.PlanCampaignId).Single();
-                                    Common.ChangeCampaignStatus(PlanCampaignId,false);
+                                    Common.ChangeCampaignStatus(PlanCampaignId, false);
                                     if (oldProgramId > 0)
                                     {
-                                        Common.ChangeProgramStatus(oldProgramId,false);
-                                        Common.ChangeCampaignStatus(oldCampaignId,false);
+                                        Common.ChangeProgramStatus(oldProgramId, false);
+                                        Common.ChangeCampaignStatus(oldCampaignId, false);
                                     }
                                     //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                     scope.Complete();
                                     string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid,tacticStatus=pcpobj.Status });
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status });
                                 }
                             }
                         }
@@ -4339,7 +4340,7 @@ namespace RevenuePlanner.Controllers
                 if (lstClientUsers.Count() > 0)
                 {
                     string strUserList = string.Join(",", lstClientUsers);
-                 
+
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
                     if (lstUserDetails.Count > 0)
                     {
@@ -4497,11 +4498,11 @@ namespace RevenuePlanner.Controllers
 
                                     ////Start Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
                                     ////Update Program status according to the tactic status
-                                    Common.ChangeProgramStatus(tactic.PlanProgramId,false);
+                                    Common.ChangeProgramStatus(tactic.PlanProgramId, false);
 
                                     ////Update Campaign status according to the tactic and program status
                                     var PlanCampaignId = tactic.Plan_Campaign_Program.PlanCampaignId;
-                                    Common.ChangeCampaignStatus(PlanCampaignId,false);
+                                    Common.ChangeCampaignStatus(PlanCampaignId, false);
                                     ////End Added by Mitesh Vaishnav for PL ticket #766 Different Behavior for Approve Tactics via Request tab
 
                                     if (result >= 1)
@@ -6475,7 +6476,7 @@ namespace RevenuePlanner.Controllers
                     int Tacticid = Convert.ToInt32(Id);
                     int pid = db.Plan_Campaign_Program_Tactic.Where(program => program.PlanTacticId == Tacticid).Select(program => program.PlanProgramId).FirstOrDefault();
                     int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == pid).Select(program => program.PlanCampaignId).FirstOrDefault();
-                   
+
                     var objpcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
 
                     //// Get Tactic duplicate record.
@@ -6494,7 +6495,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        
+
                         Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
                         pcpobj.Title = title;
                         db.Entry(pcpobj).State = EntityState.Modified;
@@ -6509,19 +6510,19 @@ namespace RevenuePlanner.Controllers
                     int tid = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanLineItemId == PlanLineItemId).FirstOrDefault().PlanTacticId;
                     int cid = 0;
                     int pid = 0;
-                 
+
 
                     var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tid);
                     if (objTactic != null)
                     {
                         cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
                         pid = objTactic.PlanProgramId;
-                      
+
                     }
                     else
                     {
                         objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == PlanLineItemId);
-                     
+
                         cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
                         pid = objTactic.PlanProgramId;
                     }
@@ -6544,19 +6545,19 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(PlanLineItemId));
-                          objLineitem.Title = title;
-                          objLineitem.ModifiedBy = Sessions.User.UserId;
-                          objLineitem.ModifiedDate = DateTime.Now;
-                          db.Entry(objLineitem).State = EntityState.Modified;
-                          db.SaveChanges();
-                          string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    
-                          return Json(new { IsDuplicate = false, msg = strMessage, planLineitemID = PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
-                         
+                        objLineitem.Title = title;
+                        objLineitem.ModifiedBy = Sessions.User.UserId;
+                        objLineitem.ModifiedDate = DateTime.Now;
+                        db.Entry(objLineitem).State = EntityState.Modified;
+                        db.SaveChanges();
+                        string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);
+                        return Json(new { IsDuplicate = false, msg = strMessage, planLineitemID = PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+
                     }
                 }
                 else if (ActivePopup == "Program")
                 {
-                  
+
                     int Planprogramid = Convert.ToInt32(Id);
                     int PlanCampaignid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == Planprogramid).Select(program => program.PlanCampaignId).FirstOrDefault();
 
@@ -6573,15 +6574,15 @@ namespace RevenuePlanner.Controllers
                     //              where pcp.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && pcp.IsDeleted.Equals(false)
                     //               && pcp.PlanCampaignId == PlanCampaignid
                     //              select pcp.PlanProgramId).FirstOrDefault();
-                   
-                  
+
+
 
 
 
                     //// if duplicate record exist then return with duplication message.
                     if (pcpvar != null)
                     {
-                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);  
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);
                         return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
                     }
                     else
@@ -6603,7 +6604,7 @@ namespace RevenuePlanner.Controllers
                 {
                     int Campaignid = Convert.ToInt32(Id);
                     //// Get PlanId by PlanCampaignId.
-                   var planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(Campaignid)).FirstOrDefault().PlanId;
+                    var planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(Campaignid)).FirstOrDefault().PlanId;
                     //// check for duplicate record.
                     var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(Campaignid))).FirstOrDefault();
 
@@ -6686,7 +6687,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult LoadProgramList(string ParentId)
         {
-            int parentCampaignId=0;
+            int parentCampaignId = 0;
             if (!string.IsNullOrEmpty(ParentId))
             {
                 parentCampaignId = Convert.ToInt32(ParentId);
@@ -6777,7 +6778,7 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditable = false;
                 bool IsPlanCreateAll = false;
 
-            
+
                 #endregion
 
                 //// load section wise data to ViewBag.
@@ -6851,7 +6852,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
+                            if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                             {
                                 IsPlanCreateAll = true;
                             }
@@ -6894,7 +6895,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
+                            if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
                             {
                                 IsPlanCreateAll = true;
                             }
@@ -6949,7 +6950,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                            if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
                             {
                                 IsPlanCreateAll = true;
                             }
@@ -7669,7 +7670,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                                 {
-                                    
+
                                     pcptc.PlanCampaignId = planTacticId;
                                     approvedComment = Convert.ToString(Enums.Section.Campaign) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
                                 }
@@ -7752,13 +7753,13 @@ namespace RevenuePlanner.Controllers
                                     }
                                     //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                     //-- Update Program status according to the tactic status
-                                    Common.ChangeProgramStatus(tactic.PlanProgramId,Addcomment);
+                                    Common.ChangeProgramStatus(tactic.PlanProgramId, Addcomment);
 
                                     //-- Update Campaign status according to the tactic and program status
                                     var PlanCampaignId = tactic.Plan_Campaign_Program.PlanCampaignId;
                                     Common.ChangeCampaignStatus(PlanCampaignId, Addcomment);
                                     //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                    
+
                                 }
                                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                                 {
@@ -7843,7 +7844,7 @@ namespace RevenuePlanner.Controllers
                                         //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                         Common.ChangeCampaignStatus(program.PlanCampaignId, Addcomment);
                                         //-- Update Campaign status according to the tactic and program status
-                                      
+
                                     }
                                     if (result >= 1)
                                     {
@@ -7905,7 +7906,7 @@ namespace RevenuePlanner.Controllers
                                         Common.mailSendForTactic(planTacticId, status, campaign.Title, false, "", Convert.ToString(Enums.Section.Campaign).ToLower(), strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                                     }
 
-                                  
+
                                     strmessage = Common.objCached.CampaignStatusSuccessfully.Replace("{0}", status);
                                     // Start - // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                                     string strStatusMessage = Common.GetStatusMessage(status);     // if status is Approved,SubmitforApproval or Rejected then derive status message by this function.
@@ -7953,13 +7954,13 @@ namespace RevenuePlanner.Controllers
             int CurrentYear = CurrentDate.Year;
             int diffYear = Convert.ToInt32(Year) - CurrentYear;
             DateTime returnDate = DateTime.Now;
-            if (isEndDate)
-            {
+            if (isEndDate && diffYear == 0)
+            {                
                 DateTime lastEndDate = new DateTime(CurrentDate.AddYears(diffYear).Year, 12, 31);
                 DateTime endDate = CurrentDate.AddYears(diffYear).AddMonths(1);
                 returnDate = endDate > lastEndDate ? lastEndDate : endDate;
             }
-            else
+            else if (diffYear == 0)
             {
                 returnDate = DateTime.Now.AddYears(diffYear);
             }
@@ -8466,22 +8467,22 @@ namespace RevenuePlanner.Controllers
                             //// Change Parent section status by ID.
                             if (IsProgram)
                             {
-                                Common.ChangeCampaignStatus(cid,false);
+                                Common.ChangeCampaignStatus(cid, false);
                             }
 
                             if (IsTactic)
                             {
-                                Common.ChangeProgramStatus(pid,false);
+                                Common.ChangeProgramStatus(pid, false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pid).Select(program => program.PlanCampaignId).Single();
-                                Common.ChangeCampaignStatus(PlanCampaignId,false);
+                                Common.ChangeCampaignStatus(PlanCampaignId, false);
                             }
 
                             if (IsLineItem)
                             {
                                 var planProgramId = tempLocalVariable;
-                                Common.ChangeProgramStatus(planProgramId,false);
+                                Common.ChangeProgramStatus(planProgramId, false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == tempLocalVariable).Select(program => program.PlanCampaignId).Single();
-                                Common.ChangeCampaignStatus(PlanCampaignId,false);
+                                Common.ChangeCampaignStatus(PlanCampaignId, false);
                             }
 
                             scope.Complete();
@@ -8608,15 +8609,15 @@ namespace RevenuePlanner.Controllers
         }
 
         //Added By Komal Rawal for #1357 - To Add Comment
-        public void AddComment(string status,int Id,string Section)
+        public void AddComment(string status, int Id, string Section)
         {
             string approvedComment = "";
             Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
             if (Section == Convert.ToString(Enums.Section.Campaign).ToLower())
             {
-               
+
                 //Modified By Komal Rawal for #1357
-               var Program = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == Id && id.Status == status && id.IsDeleted == false).Select(program => program).ToList();
+                var Program = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == Id && id.Status == status && id.IsDeleted == false).Select(program => program).ToList();
                 foreach (var item in Program)
                 {
                     approvedComment = Convert.ToString(Enums.Section.Program) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
@@ -8629,7 +8630,7 @@ namespace RevenuePlanner.Controllers
                     db.Entry(pcptc).State = EntityState.Added;
                     db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
                     db.SaveChanges();
-         
+
                 }
                 var Programids = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == Id && id.Status == status).Select(program => program.PlanProgramId).ToList();
                 var Tactics = db.Plan_Campaign_Program_Tactic.Where(id => Programids.Contains(id.PlanProgramId)).Select(tactic => tactic).ToList();
@@ -8687,9 +8688,9 @@ namespace RevenuePlanner.Controllers
 
                 }
 
-              
+
             }
-           else if (Section == Convert.ToString(Enums.Section.Program).ToLower())
+            else if (Section == Convert.ToString(Enums.Section.Program).ToLower())
             {
 
                 var Tactics = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == Id && id.Status == status && id.IsDeleted == false).Select(id => id).ToList();
@@ -8746,9 +8747,9 @@ namespace RevenuePlanner.Controllers
 
                 }
 
-              
+
             }
-         
+
         }
 
         #endregion
