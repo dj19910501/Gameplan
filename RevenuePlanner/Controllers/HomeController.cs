@@ -48,7 +48,6 @@ namespace RevenuePlanner.Controllers
         /// <returns>returns view as per menu selected</returns>
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false)
         {
-
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             //// To get permission status for Add/Edit Actual, By dharmraj PL #519
@@ -671,6 +670,13 @@ namespace RevenuePlanner.Controllers
             var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
             var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
 
+            //Added BY Ravindra Singh Sisodiya, Get Subordinates Ids List #1433
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
             //// Set viewBy option as per GanttType selecte and grap CustomTypeId in case of CustomField
             if (IsTactic)
             {
@@ -1023,7 +1029,6 @@ namespace RevenuePlanner.Controllers
                 open = false,
                 parent = string.Format("Z{0}", taskdata.MainParentId),
                 color = PlanColor,
-                type = "Plan",
                 planid = taskdata.PlanId
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
 
@@ -1039,7 +1044,10 @@ namespace RevenuePlanner.Controllers
                 parent = taskdata.parent,
                 color = (taskdata.progress > 0 ? "stripe" : string.Empty),
                 colorcode = taskdata.color,
-                planid = taskdata.planid
+                planid = taskdata.planid,
+                type = "Plan",
+                _Permission = GetPermission(Convert.ToInt32(taskdata.planid), Enums.EntityType.Plan.ToString(), lstSubordinatesIds)
+
             }).ToList().Distinct().ToList();
             #endregion
 
@@ -1054,7 +1062,6 @@ namespace RevenuePlanner.Controllers
                 open = false,
                 parent = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
                 color = CampaignColor,
-                type = "Campaign",
                 plancampaignid = taskdata.Program.PlanCampaignId,
                 Status = taskdata.Campaign.Status
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
@@ -1072,7 +1079,9 @@ namespace RevenuePlanner.Controllers
                 color = (taskdata.progress == 1 ? " stripe" : (taskdata.progress > 0 ? "stripe" : string.Empty)),
                 colorcode = taskdata.color,
                 plancampaignid = taskdata.plancampaignid,
-                Status = taskdata.Status
+                Status = taskdata.Status,
+                type = "Campaign",
+                _Permission = GetPermission(Convert.ToInt32(taskdata.plancampaignid), Enums.EntityType.Campaign.ToString(), lstSubordinatesIds)
             }).ToList().Distinct().ToList();
             #endregion
 
@@ -1087,7 +1096,6 @@ namespace RevenuePlanner.Controllers
                 open = false,
                 parent = string.Format("Z{0}_L{1}_C{2}", taskdata.MainParentId, taskdata.PlanId, taskdata.Program.PlanCampaignId),
                 color = ProgramColor,
-                type = "Program",
                 planprogramid = taskdata.Program.PlanProgramId,
                 Status = taskdata.Program.Status
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
@@ -1105,7 +1113,9 @@ namespace RevenuePlanner.Controllers
                 color = (taskdata.progress == 1 ? " stripe stripe-no-border " : (taskdata.progress > 0 ? "partialStripe" : string.Empty)),
                 colorcode = taskdata.color,
                 planprogramid = taskdata.planprogramid,
-                Status = taskdata.Status
+                Status = taskdata.Status,
+                type = "Program",
+                _Permission = GetPermission(Convert.ToInt32(taskdata.planprogramid), Enums.EntityType.Program.ToString(), lstSubordinatesIds)
             }).ToList().Distinct().ToList();
             #endregion
 
@@ -1139,7 +1149,9 @@ namespace RevenuePlanner.Controllers
                 color = (taskdata.progress == 1 ? " stripe" : string.Empty),
                 colorcode = taskdata.color,
                 plantacticid = taskdata.plantacticid,
-                Status = taskdata.Status
+                Status = taskdata.Status,
+                type = "Tactic",
+                _Permission = GetPermission(Convert.ToInt32(taskdata.plantacticid), Enums.EntityType.Tactic.ToString(), lstSubordinatesIds)
             }).Distinct().ToList();
             #endregion
 
@@ -1155,6 +1167,7 @@ namespace RevenuePlanner.Controllers
                 open = true,
                 colorcode = ImprovementColor,
                 type = "Imp Tactic",
+                _Permission = GetPermission(Convert.ToInt32(taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId), Enums.EntityType.ImprovementTactic.ToString(), lstSubordinatesIds, "Add"),
                 color = string.Empty,
                 ImprovementActivityId = taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
                 isImprovement = true,
@@ -1178,6 +1191,7 @@ namespace RevenuePlanner.Controllers
                 parent = string.Format("Z{0}_L{1}_M{2}", taskdataImprovement.MainParentId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
                 colorcode = ImprovementColor,
                 type = "Imp Tactic",
+                _Permission = GetPermission(Convert.ToInt32(taskdataImprovement.ImprovementTactic.ImprovementPlanTacticId), Enums.EntityType.ImprovementTactic.ToString(), lstSubordinatesIds, "Add"),
                 color = string.Empty,
                 isSubmitted = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
                 isDeclined = taskdataImprovement.ImprovementTactic.Status.Equals(tacticStatusDeclined),
@@ -1494,11 +1508,13 @@ namespace RevenuePlanner.Controllers
             var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
             //Emd
 
-          // PermissionModel _modelPermission = new PermissionModel();
-           // _modelPermission = GetPermission(Convert.ToInt32(planId), Enums.EntityType.Plan.ToString());
-
-            //InspectController inspCt = new InspectController();
-            //inspCt.LoadInspectPopup(1, "", "", "", 1, "");
+            //Added BY Ravindra Singh Sisodiya, Get Subordinates Ids List #1433
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+            if (IsTacticAllowForSubordinates)
+            {
+                lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+            }
 
             //// Added BY Bhavesh, Calculate MQL at runtime #376
             List<TacticStageValue> tacticStageRelationList = new List<TacticStageValue>();
@@ -1533,9 +1549,7 @@ namespace RevenuePlanner.Controllers
                                                lstTactic, lstImprovementTactic, tactic.PlanId),
                 open = false,
                 color = PlanColor,
-                planid = tactic.PlanId,
-                type = "Plan"
-
+                planid = tactic.PlanId
             }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
 
             //// Finalize task data plan list for gantt chart
@@ -1550,9 +1564,8 @@ namespace RevenuePlanner.Controllers
                 color = (plan.progress > 0 ? "stripe" : string.Empty),
                 colorcode = plan.color,
                 planid = plan.planid,
-                type = "Plan"
-
-
+                type = "Plan",
+                _Permission = GetPermission(Convert.ToInt32(plan.planid), Enums.EntityType.Plan.ToString(), lstSubordinatesIds)
             });
             #endregion
 
@@ -1576,8 +1589,7 @@ namespace RevenuePlanner.Controllers
                                                lstTactic, lstImprovementTactic, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
                 open = false,
                 color = PlanColor,
-                planid = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId,
-                type = "Plan"
+                planid = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId
 
             }).Select(improvementTactic => improvementTactic).Distinct().OrderBy(improvementTactic => improvementTactic.text);
 
@@ -1593,7 +1605,8 @@ namespace RevenuePlanner.Controllers
                 color = (improvementTactic.progress > 0 ? "stripe" : string.Empty),
                 colorcode = improvementTactic.color,
                 planid = improvementTactic.planid,
-                type = "Plan"
+                type = "Plan",
+                _Permission = GetPermission(Convert.ToInt32(improvementTactic.planid), Enums.EntityType.Plan.ToString(), lstSubordinatesIds)
             });
             #endregion
 
@@ -1625,7 +1638,8 @@ namespace RevenuePlanner.Controllers
                 IsHideDragHandleLeft = improvementTactic.minStartDate < CalendarStartDate,
                 IsHideDragHandleRight = true,
                 parent = string.Format("L{0}", improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-                type = "Imp Tactic"
+                type = "Imp Tactic",
+                _Permission = GetPermission(Convert.ToInt32(improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId), Enums.EntityType.ImprovementTactic.ToString(), lstSubordinatesIds, "Add")
 
             }).Select(improvementTactic => improvementTactic).Distinct().ToList();
 
@@ -1652,7 +1666,8 @@ namespace RevenuePlanner.Controllers
                 IsHideDragHandleLeft = improvementTacticActivty.ImprovementTactic.EffectiveDate < CalendarStartDate,
                 IsHideDragHandleRight = true,
                 Status = improvementTacticActivty.ImprovementTactic.Status,
-                type = "Imp Tactic"
+                type = "Imp Tactic",
+                _Permission = GetPermission(Convert.ToInt32(improvementTacticActivty.ImprovementTactic.ImprovementPlanTacticId), Enums.EntityType.ImprovementTactic.ToString(), lstSubordinatesIds, "Add")
 
             }).OrderBy(improvementTacticActivty => improvementTacticActivty.text);
             #endregion
@@ -1683,9 +1698,7 @@ namespace RevenuePlanner.Controllers
                 cost = tactic.objPlanTactic.Cost,
                 cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? tactic.objPlanTactic.Status == tacticStatusSubmitted || tactic.objPlanTactic.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).RevenueValue, 1) : 0 : 0,
                 plantacticid = tactic.objPlanTactic.PlanTacticId,
-                Status = tactic.objPlanTactic.Status,
-                type = "Tactic"
-
+                Status = tactic.objPlanTactic.Status
             }).OrderBy(tactic => tactic.text);
 
             //// Finalize task data tactic list for gantt chart
@@ -1708,7 +1721,8 @@ namespace RevenuePlanner.Controllers
                 cws = tactic.cws,
                 plantacticid = tactic.plantacticid,
                 Status = tactic.Status,
-                type = "Tactic"
+                type = "Tactic",
+                _Permission = GetPermission(Convert.ToInt32(tactic.plantacticid), Enums.EntityType.Tactic.ToString(), lstSubordinatesIds)
             });
             #endregion
 
@@ -1725,8 +1739,8 @@ namespace RevenuePlanner.Controllers
                 parent = string.Format("L{0}_C{1}", tactic.PlanId, tactic.PlanCampaignId),
                 color = ProgramColor,
                 planprogramid = tactic.objPlanTactic.PlanProgramId,
-                Status = tactic.objPlanTacticProgram.Status,
-                type = "Program"
+                Status = tactic.objPlanTacticProgram.Status
+
             }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
 
             //// Finalize task data program list for gantt chart
@@ -1743,7 +1757,8 @@ namespace RevenuePlanner.Controllers
                 colorcode = program.color,
                 planprogramid = program.planprogramid,
                 Status = program.Status,
-                type = "Program"
+                type = "Program",
+                _Permission = GetPermission(Convert.ToInt32(program.planprogramid), Enums.EntityType.Program.ToString(), lstSubordinatesIds)
             });
             #endregion
 
@@ -1760,8 +1775,8 @@ namespace RevenuePlanner.Controllers
                 parent = string.Format("L{0}", tactic.PlanId),
                 color = CampaignColor,
                 plancampaignid = tactic.PlanCampaignId,
-                Status = tactic.objPlanTacticCampaign.Status,
-                type = "Campaign"
+                Status = tactic.objPlanTacticCampaign.Status
+
             }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
 
             //// Finalize task data campaign list for gantt chart
@@ -1778,7 +1793,8 @@ namespace RevenuePlanner.Controllers
                 colorcode = campaign.color,
                 plancampaignid = campaign.plancampaignid,
                 Status = campaign.Status,
-                type = "Campaign"
+                type = "Campaign",
+                _Permission = GetPermission(Convert.ToInt32(campaign.plancampaignid), Enums.EntityType.Campaign.ToString(), lstSubordinatesIds)
             });
             #endregion
             taskDataPlanMerged = taskDataPlanMerged.Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram);
@@ -4323,6 +4339,146 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region --entity Type Permission based access---
+
+        public PermissionModel GetPermission(int id, string section, List<Guid> lstSubordinatesIds, string InspectPopupMode = "")
+        {
+            PermissionModel _model = new PermissionModel();
+            _model.IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+            Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
+            Plan_Campaign_Program objPlan_Campaign_Program = null;
+            Plan_Campaign objPlan_Campaign = null;
+            Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
+
+            if (Convert.ToString(section) != "")
+            {
+                DateTime todaydate = DateTime.Now;
+                if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
+                {
+                    objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+                    if (_model.IsPlanCreateAllAuthorized)
+                    {
+                        _model.IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
+                        {
+                            _model.IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            _model.IsPlanCreateAll = false;
+                        }
+                    }
+                }
+
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
+                {
+                    objPlan_Campaign_Program = objDbMrpEntities.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
+                    if (_model.IsPlanCreateAllAuthorized)
+                    {
+                        _model.IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
+                        {
+                            _model.IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            _model.IsPlanCreateAll = false;
+                        }
+                    }
+                }
+
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
+                {
+                    objPlan_Campaign = objDbMrpEntities.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
+                    if (_model.IsPlanCreateAllAuthorized)
+                    {
+                        _model.IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
+                        {
+                            _model.IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            _model.IsPlanCreateAll = false;
+                        }
+                    }
+                }
+
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                {
+                    if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
+                    {
+                        _model.InspectMode = Enums.InspectPopupMode.Edit.ToString();
+                    }
+                    else if (InspectPopupMode == Enums.InspectPopupMode.Add.ToString())
+                    {
+                        _model.InspectMode = Enums.InspectPopupMode.Add.ToString();
+                    }
+                    else
+                    {
+                        _model.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
+                    }
+                }
+
+                else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+                {
+                    objPlan_Campaign_Program_Tactic_LineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => pcptl.PlanLineItemId.Equals(id)).FirstOrDefault();
+                    if (_model.IsPlanCreateAllAuthorized)
+                    {
+                        _model.IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            _model.IsPlanCreateAll = true;
+                        }
+                        else
+                        {
+                            _model.IsPlanCreateAll = false;
+                        }
+                    }
+                }
+            }
+
+            if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
+                _model.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                _model.IsPlanCreateAll = false;
+                if (id > 0)
+                {
+                    var objplan = objDbMrpEntities.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
+                    if (_model.IsPlanCreateAuthorized)
+                    {
+                        _model.IsPlanCreateAll = true;
+                    }
+                    else
+                    {
+                        if (objplan.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            _model.IsPlanCreateAll = true;
+                        }
+                    }
+                }
+                else
+                {
+                    _model.IsPlanCreateAll = true;
+                }
+            }
+            return _model;
+        }
+
+        #endregion
     }
 
     public class ProgressModel
