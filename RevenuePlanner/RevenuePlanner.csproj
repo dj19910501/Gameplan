@@ -234,7 +234,6 @@
     <Compile Include="Models\IntegrationTypeModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\OrganizationModel.cs" />
-    <Compile Include="Models\PermissionModel.cs" />
     <Compile Include="Models\PlanModel.cs" />
     <Compile Include="Models\SummaryReportModel.cs" />
     <Compile Include="Models\SyncFrequencyModel.cs" />
