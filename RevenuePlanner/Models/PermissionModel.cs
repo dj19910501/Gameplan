@@ -11,5 +11,6 @@ namespace RevenuePlanner.Models
         public bool IsPlanCreateAuthorized { get; set; }
         public bool IsPlanCreateAll { get; set; }
         public string InspectMode { get; set; }
+
     }
 }
