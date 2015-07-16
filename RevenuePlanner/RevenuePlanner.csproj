@@ -234,6 +234,7 @@
     <Compile Include="Models\IntegrationTypeModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\OrganizationModel.cs" />
+    <Compile Include="Models\PermissionModel.cs" />
     <Compile Include="Models\PlanModel.cs" />
     <Compile Include="Models\SummaryReportModel.cs" />
     <Compile Include="Models\SyncFrequencyModel.cs" />
@@ -894,11 +895,9 @@
     <Content Include="Views\Shared\_SessionWarning.cshtml" />
     <Content Include="Views\Report\_financialOverview.cshtml" />
     <Content Include="Views\Shared\ElmahError.cshtml" />
-
     <Content Include="Views\Report\_Revenue.cshtml" />
     <Content Include="Views\Report\_RevenueToPlan.cshtml" />
     <Content Include="Views\Report\_ReportConversion.cshtml" />
-
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
