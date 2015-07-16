@@ -14581,7 +14581,7 @@ div.clue-bottom-default .cluetip-arrows {
     line-height: 34px;
     margin-right: 20px;
     padding-right: 20px;
-    width: 116px;
+    width: 117px; /* by bheru 16-07-2015*/
 }
 
 .revanue-p-right input {
@@ -14635,6 +14635,14 @@ div.clue-bottom-default .cluetip-arrows {
     padding: 0 3.4%;
 }
 
+   /* by bheru 16-07-2015*/
+ #ConversionCardID .region-data .data
+{
+    width: 24.9%;
+    padding: 0;
+  text-align: center;
+  word-wrap: break-word;
+}
  .bottom-paging {
      margin-top:20px;
     text-align: center;

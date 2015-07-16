@@ -224,6 +224,7 @@ namespace RevenuePlanner.Models
         public Projected_Goal ConversionHeaderModel { get; set; } //dashrath
         public ConversionOverviewModel conversionOverviewModel { get; set; }//dashrath
         public ConversionToPlanModel ConversionToPlanModel { get; set; }//dashrath
+        public CardSectionModel CardSectionModel { get; set; }
     }
     public class RevenueToPlanModel
     {
@@ -347,6 +348,42 @@ namespace RevenuePlanner.Models
         public List<double> GoalList { get; set; }
         public bool IsQuarterly { get; set; }
         public string timeframeOption { get; set; }
+    }
+
+    public class CardSectionModel
+    {
+        public List<CardSectionListModel> CardSectionListModel { get; set; }
+    }
+    public class CardSectionListModel
+    {
+        public string title { get; set; }
+        public CardSectionListSubModel INQCardValues { get; set; }//dashrath
+        public CardSectionListSubModel TQLCardValues { get; set; }//dashrath
+        public CardSectionListSubModel CWCardValues { get; set; }//dashrath
+        public CardSectionListSubModel ADSCardValues { get; set; }//dashrath
+
+        public CardSectionListSubModel RevenueCardValues { get; set; }
+        public CardSectionListSubModel CostCardValues { get; set; }
+        public CardSectionListSubModel ROICardValues { get; set; }
+        public lineChartData LineChartData { get; set; }
+        public string ParentLabel { get; set; }
+        public double FieldId { get; set; }
+        public string FieldType { get; set; }
+    }
+    public class CardSectionListSubModel
+    {
+        public string CardType { get; set; }
+        public double Actual_Projected { get; set; }
+        public double Goal { get; set; }
+        public double Percentage { get; set; }
+        public double RestPercentage { get; set; }
+        public bool? IsNegative { get; set; }
+    }
+    public class TacticMappingItem
+    {
+        public int ParentId { get; set; }
+        public string ParentTitle { get; set; }
+        public int ChildId { get; set; }
     }
     #endregion
 

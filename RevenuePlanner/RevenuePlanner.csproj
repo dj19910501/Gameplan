@@ -898,6 +898,7 @@
     <Content Include="Views\Report\_Revenue.cshtml" />
     <Content Include="Views\Report\_RevenueToPlan.cshtml" />
     <Content Include="Views\Report\_ReportConversion.cshtml" />
+    <Content Include="Views\Report\_ConversionCardSection.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

@@ -13,7 +13,7 @@
     var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
     var _mqllabel = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()];
 
-    //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
+    var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
 
    
                      
@@ -111,7 +111,7 @@
 
     </div>
    <div  id="ConversionCardID">
-       @*   @Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)*@
+       @Html.Partial("_ConversionCardSection",Conversion_cardsectionModel)
    </div>
     @*<div class="revenue-filter">
         <div class="sorting">

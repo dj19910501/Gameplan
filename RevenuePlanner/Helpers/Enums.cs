@@ -90,7 +90,9 @@ namespace RevenuePlanner.Helpers
             CW = 2,
             Revenue = 3,
             ProjectedStageValue = 4,
-            Cost=5
+            Cost=5,
+             TQL=6,
+            ADS=7
         }
 
         /// <summary>
