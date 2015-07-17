@@ -2449,7 +2449,7 @@ namespace Integration.Salesforce
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, _clientId);
+                    tactic[titleMappedValue] =planTactic.TacticCustomName==null? Common.GenerateCustomName(planTactic, _clientId):planTactic.TacticCustomName;
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                     tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
                 }

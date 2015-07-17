@@ -1033,7 +1033,7 @@ namespace Integration.Eloqua
                 titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId);
+                    tactic[titleMappedValue] =planTactic.TacticCustomName==null? Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId):planTactic.TacticCustomName;
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                 }
             }
