@@ -13,8 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationWinService", "In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevenuePlanner.Test", "RevenuePlanner.Test\RevenuePlanner.Test.csproj", "{EBED3F5B-D7F2-487D-AA96-23100D6BCAB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BDSService", "BDSService\BDSService.csproj", "{A1638569-716F-4051-8208-7AB78F16141B}"
-EndProject
+
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		BulldogProduction|Any CPU = BulldogProduction|Any CPU
