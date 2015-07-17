@@ -231,6 +231,7 @@ namespace RevenuePlanner.Models
         public BarChartModel RevenueToPlanBarChartModel { get; set; }
         public RevenueDataTable RevenueToPlanDataModel { get; set; }
         public lineChartData LineChartModel { get; set; }
+        public CardSectionModel CardSectionModel { get; set; }
     }
     public class RevenueDataTable
     {

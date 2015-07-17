@@ -904,6 +904,7 @@
     <Content Include="Views\Report\_ConversionCardSection.cshtml" />
     <Content Include="Views\Plan\AddActual.cshtml" />
     <Content Include="Views\Plan\CreatePlan.cshtml" />
+    <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

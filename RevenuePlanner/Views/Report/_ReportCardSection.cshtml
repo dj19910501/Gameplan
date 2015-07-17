@@ -1,0 +1,352 @@
+﻿@model RevenuePlanner.Models.CardSectionModel
+@using RevenuePlanner.Models
+@using RevenuePlanner.Helpers
+@using Newtonsoft.Json;
+@{
+    var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
+}
+<style>
+    .carvdval-block {
+        display: block;
+    }
+</style>
+<div id="dvCardSectionData"></div>
+<input type="text" id="titletext" style="display:none" />
+@*<div class="region-content">
+        <div id="conversionPartial">
+            <div class="report-btn-group">
+                <div>
+                    <p class="revanue-p">North America</p>
+                    <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>
+                    <a id="" class="btn  source-sans-proregular report-grey-btn hideReport" name=""><span>
+                        <img src="/Content/images/export.png"></span>Export</a>
+                </div>
+                <div>
+                    <p class="revanue-p-right">
+                        <input type="checkbox" /><label> Add to Compare</label>
+                    </p>
+                    <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="">Add Widget</button>
+                </div>
+            </div>
+            <div class="region-data">
+                <div class="data">
+                    <span class="title">Revenue</span>
+                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
+                    <span class="data-green">+11.8% </span>
+                </div>
+                <div class="data">
+                    <span class="title">Revenue</span>
+                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
+                    <span class="data-green">+11.8% </span>
+                </div>
+                <div class="data">
+                    <span class="title">Revenue</span>
+                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
+                    <span class="data-green">+11.8% </span>
+                </div>
+                <div id="dvNorthAmericaGraph1" class="region-graph">
+                </div>
+            </div>
+        </div>
+    </div>*@
+<script type="text/javascript">
+
+    //var BackParentLabel = '';
+    //var BackChildLabel = '';
+    //var BackId = '';
+    //var IsBack = '';
+    //var BackHeadTitle = "";
+    function htmlEscape(str) {
+
+        return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&nbsp;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/' '/g, '&nbsp;');
+    }
+
+    $(document).ready(function () {
+
+        @*BackParentLabel = '@TempData["BackParentLabel"]';
+        BackChildLabel = '@TempData["BackChildLabel"]';
+        BackId = '@TempData["BackId"]';*@
+
+        var _carddata = "@cardsectionList";
+        var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
+        _CardData = JSON.parse(_CardData);
+        var _cardhtml = '';
+        var _title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
+        var _Revdata = '', _Costdata = '', _ROIdata = '';
+        var _fieldId = '';
+        var rev = "Revenue", cost = "Cost", roi = "ROI";
+        var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
+        var _Revact_projId = '', _RevgoalId = '', _RevPercntgId = '', _Costact_projId = '', _CostgoalId = '', _CostPercntgId = '', _ROIact_projId = '', _ROIgoalId = '', _ROIPercntgId = '';
+        var _btnDetailsId = '', _btnCompareId = '', _chkCompareId = '', _linechartDivId = '';
+
+        // Add BY Nishant Sheth
+        // Desc: For Card Section details button click argument
+        var ParentLabel = '@ViewBag.ParentLabel';
+        var childlabelType = '@ViewBag.childlabelType';
+        //var childId = '@ViewBag.childId';
+        var optionmain = '@ViewBag.option';
+
+        // End By Nishant Sheth
+
+        //alert(_CardData.length);
+        $.each(_CardData, function (key, value) {
+            _title = value.title;
+            _Revdata = value.RevenueCardValues;
+            _Costdata = value.CostCardValues;
+            _ROIdata = value.ROICardValues;
+
+            _Revact_proj = _Revdata.Actual_Projected;
+            _Revgoal = _Revdata.Goal;
+            _Revpercentange = _Revdata.Percentage;
+
+            _Costact_proj = _Costdata.Actual_Projected;
+            _Costgoal = _Costdata.Goal;
+            _Costpercentange = _Costdata.Percentage;
+
+            _ROIact_proj = _ROIdata.Actual_Projected;
+            _ROIgoal = _ROIdata.Goal;
+            _ROIpercentange = _ROIdata.Percentage;
+
+            _fieldId = value.FieldId;
+
+            // Configure Details & Compare buttonID and CompareCheckbox ID.
+            _btnDetailsId = 'buttonDtls_' + _fieldId;
+            _btnCompareId = "buttonCmpr_" + _fieldId;
+            _chkCompareId = "chk_" + _fieldId;
+            _linechartDivId = "dv_" + _fieldId;
+
+            _Revact_projId = rev + actproj + "_" + _fieldId;
+            _RevgoalId = rev + goal + "_" + _fieldId;
+            _RevPercntgId = rev + percntg + "_" + _fieldId;
+
+            _Costact_projId = cost + actproj + "_" + _fieldId;
+            _CostgoalId = cost + goal + "_" + _fieldId;
+            _CostPercntgId = cost + percntg + "_" + _fieldId;
+
+            _ROIact_projId = roi + actproj + "_" + _fieldId;
+            _ROIgoalId = roi + goal + "_" + _fieldId;
+            _ROIPercntgId = roi + percntg + "_" + _fieldId;
+
+            //alert("key: " + key + ", Value: " + value.title);
+            _cardhtml = _cardhtml + '<div class="region-content">';
+            _cardhtml = _cardhtml + '<div>';
+            _cardhtml = _cardhtml + '<div class="report-btn-group">';
+            _cardhtml = _cardhtml + '<div>';
+            _cardhtml = _cardhtml + '<p class="revanue-p">' + _title + '</p>';
+            $("#titletext").val(_title).html();
+            if (childlabelType != '@Common.RevenueTactic') {
+
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + htmlEscape(_title) + '")>Details</button>';
+            }
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '<div>';
+            _cardhtml = _cardhtml + ' <p class="revanue-p-right">';
+            _cardhtml = _cardhtml + '<input "' + _chkCompareId + '" type="checkbox" /><label> Add to Compare</label>';
+            _cardhtml = _cardhtml + '</p>';
+            _cardhtml = _cardhtml + '<button id="' + _btnCompareId + '" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="' + _btnCompareId + '">Compare</button>';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '<div class="region-data">';
+            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<span class="title">Revenue</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value">/</span><span class="cardval sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<span class="title">Cost</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value">/</span><span class="cardval sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<span class="title">ROI</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" class="region-graph">';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '</div>';
+            _cardhtml = _cardhtml + '</div>';
+        });
+        $("#dvCardSectionData").html(_cardhtml);
+        formatCardSectionValues();
+        formatCardPercentageValue();
+    });
+
+    function formatCardSectionValues() {
+        var _TypeCol = $(".cardval");
+        var _formatednumber = '';
+        var _type = '';
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _Id = "#" + _cntrlId;
+            var text = $(_Id).attr('orig-val');
+            //_type = $(_Id).attr('add-sep');
+            if (text != null && text != 'undefined' && text != 'NaN') {
+                _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                //alert(_formatednumber);
+                //var _value = '';
+                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
+                //    //$(_Id).html( _formatednumber);
+                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
+                //        _value = '/' + _formatednumber.toString();
+                //    }
+                //}
+                //else {
+                //    _value = _formatednumber;
+                //}
+                //alert(_value);
+                $(_Id).html(_formatednumber);
+            }
+        });
+    }
+
+    function formatCardPercentageValue() {
+        var _TypeCol = $(".percentageval");
+
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _lblPercentage = "#" + _cntrlId;
+            var _text = $(_lblPercentage).attr('orig-val');
+            var _percentage = parseFloat(_text);
+            if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
+                _formtPercentage = "--";
+                $(_lblPercentage).removeClass("above").removeClass("below");
+            }
+            else {
+                if (_percentage < 0) {
+                    _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                    $(_lblPercentage).removeClass("above").addClass("below")
+                }
+                else {
+                    _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                    $(_lblPercentage).removeClass("below").addClass("above");
+                }
+            }
+            $(_lblPercentage).html(_formtPercentage);
+        });
+    }
+
+    /// Add By Nishant Sheth
+    /// Desc: For card details section
+    function CardDetailsClick(parentlabel, Type, id, OptionMain, HeadTitleval) {
+        
+        var HeadTitle = document.getElementById('head-title');
+
+        var BtnBack = document.getElementById('BtnBack');
+        BtnBack.style.display = "block";
+
+        var marketingDiv = document.getElementById('div-mareketing-drp');
+        marketingDiv.style.display = "none";
+
+        HeadTitle.innerHTML = HeadTitleval;
+
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
+        var Qurt_Month = AllocatedBy;
+        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
+        $("#dvRevenueToPlan").load(_url);
+
+        if (parentlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+            $("#ddlCampaignRevenueToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
+            fillCardProgramDropDown(id, false);
+        }
+        if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+            $("#ddlProgramRevenueToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
+            fillCardTacticDropDown(id);
+        }
+    }
+
+    function fillCardProgramDropDown(campaignId, isback) {
+        
+        var id = '';
+        //campaignId = $('#ddlCampaignRevenueToPlan').val();
+        if (campaignId > 0) {
+            id = campaignId.toString();
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadProgramDropDown/")',
+            data: {
+                id: id,
+                selectOption: OptionMain
+            },
+            success: function (data) {
+                $("#ddlProgramRevenueToPlan").empty();
+                $("#ddlProgramRevenueToPlan").append("<option value='0'>All Programs</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlProgramRevenueToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
+                });
+                if (isback == true) {
+                    fillCardTacticDropDown("0");
+                }
+                else {
+                    fillCardTacticDropDown($('#ddlProgramRevenueToPlan option').eq(1).val());
+                }
+                $('#ddlProgramRevenueToPlan').multiselect("refresh");
+            },
+            error: function () {
+                
+                $("#ddlProgramRevenueToPlan").empty();
+                $("#ddlProgramRevenueToPlan").append("<option value='0'>All Programs</option>");
+                fillCardTacticDropDown(campaignId);
+                $('#ddlProgramRevenueToPlan').multiselect("refresh");
+                GoToLogin();
+            }
+        });
+    }
+
+    function fillCardTacticDropDown(programId) {
+        var id = '';
+        var Type = '';
+        //programId = $('#ddlProgramRevenueToPlan').val();
+        if (programId > 0) {
+            Type = '';
+            id = programId.toString();
+        }
+        else if (campaignId > 0) {
+            Type = '';
+            id = '';
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadTacticDropDown/")',
+            data: {
+                id: id,
+                type: Type,
+                selectOption: OptionMain
+            },
+            success: function (data) {
+                $("#ddlTacticRevenueToPlan").empty();
+                $("#ddlTacticRevenueToPlan").append("<option value='0'>All Tactics</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlTacticRevenueToPlan").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
+                });
+                $('#ddlTacticRevenueToPlan').multiselect("refresh");
+                //alert('call function!');
+                //LoadDataRevenueToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                myApp.hidePleaseWait();
+            },
+            error: function () {
+                $("#ddlTacticRevenueToPlan").empty();
+                $("#ddlTacticRevenueToPlan").append("<option value='0'>All Tactics</option>");
+                $('#ddlTacticRevenueToPlan').multiselect("refresh");
+                //alert('call function!');
+                //LoadDataRevenueToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                GoToLogin();
+            }
+        });
+    }
+    // End By Nishant Sheth
+
+</script>

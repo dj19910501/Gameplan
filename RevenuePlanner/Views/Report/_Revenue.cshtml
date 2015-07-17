@@ -5,6 +5,7 @@
     //var linechartdata = Model.RevenueLineChartModel != null ? JsonConvert.SerializeObject(Model.RevenueLineChartModel) : string.Empty;
     var revenue_Projected_Goal = Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal();
     var revenue_to_planModel = Model.RevenueToPlanModel != null ? Model.RevenueToPlanModel : new RevenuePlanner.Models.RevenueToPlanModel();
+    var revenue_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel();
     //var revenue_barchartModel = Model.RevenueToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanBarChartModel) : string.Empty;
     //var revenue_datatableModel = Model.RevenueToPlanDataModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanDataModel) : string.Empty;
 }
@@ -24,13 +25,14 @@
 
     <div class="marketing-revenue-report">
         <div class="dropdown-marketing">
-            <h2>Marketing Revenue </h2>
-            <div class="geography-dropdown">
+            <h2 id="head-title"></h2>
+            <div class="geography-dropdown" id="div-mareketing-drp">
                 <h5>View By:</h5>
                 <div class="revenue-summary-custom">
                     @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text"))
                 </div>
             </div>
+            <input type="button" id="BtnBack" class="btn btn-blue text-shadow-blue source-sans-proregular" value="< Back" onclick="javascript:BtnBackClick();" /> @*Add By Nishant Sheth*@
         </div>
         <div class="projected disable-gray">
             <span>Projected</span>
@@ -87,7 +89,7 @@
             </div>
         </div>
     </div>*@
-    @*<div class="revenue-filter">
+    <div class="revenue-filter">
         <div class="sorting">
             <div class="geography-dropdown">
                 <h5>Sort By</h5>
@@ -129,7 +131,10 @@
         </div>
 
     </div>
-    <div class="region-content">
+    <div id="dvRevenueCardSection">
+        @Html.Partial("_ReportCardSection", revenue_cardsectionModel)
+    </div>
+    @*<div class="region-content">
         <div id="conversionPartial">
             <div class="report-btn-group">
                 <div>
@@ -320,8 +325,23 @@
     var _childRevenueToPlanDDLId = "ddlChildRevenueToPlan";
     var campaignId = $('#ddlCampaignRevenueToPlan').val();
     var programId = $('#ddlProgramRevenueToPlan').val();
+
+    //var BackParentLabel = '';
+    //var BackChildLabel = '';
+    //var BackId = '';
+    //var IsBack = '';
+    //var BackHeadTitle = "";
+    var OptionMain = '';
     $(document).ready(function () {
+        @*BackParentLabel = '@TempData["BackParentLabel"]';
+        BackChildLabel = '@TempData["BackChildLabel"]';
+        BackId = '@TempData["BackId"]';*@
+        var BtnBack = document.getElementById('BtnBack');
+        BtnBack.style.display = "none";
        
+        OptionMain = '@ViewBag.option';
+        var HeadTitle = document.getElementById('head-title');
+        HeadTitle.innerHTML = '@TempData["HeadTitle"]';
 
         $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan").multiselect({
             multiple: false,
@@ -488,6 +508,7 @@
    $('#ddlParentRevenueSummery').change(function () {
        var _childValue = '0';
        ReloadRevenueToPlanByCustomField(_childValue);
+        fillCardProgramDropDown(0, true);
    });
    $('#ddlChildRevenueToPlan').change(function () {
        var _childValue = $("#ddlChildRevenueToPlan").val();
@@ -499,8 +520,17 @@
        var id = '';
        id = _childvalue;
 
-       var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
+        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&DrpChange=" + 'true';
        $("#dvRevenueToPlan").load(_url);
+
+        // Add by Nishant Sheth
+        $("#ddlCampaignRevenueToPlan").css('display', 'none');
+        $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
+        $("#ddlProgramRevenueToPlan").css('display', 'none');
+        $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
+        $("#ddlTacticRevenueToPlan").css('display', 'none');
+        $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
+        
    }
     function LoadDataRevenueToPlanByCampaign() {
         var id = '';
