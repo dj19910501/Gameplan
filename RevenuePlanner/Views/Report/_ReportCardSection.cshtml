@@ -11,7 +11,7 @@
     }
 </style>
 <div id="dvCardSectionData"></div>
-<input type="text" id="titletext" style="display:none" />
+
 @*<div class="region-content">
         <div id="conversionPartial">
             <div class="report-btn-group">
@@ -56,17 +56,9 @@
     //var BackId = '';
     //var IsBack = '';
     //var BackHeadTitle = "";
-    function htmlEscape(str) {
 
-        return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&nbsp;')
-                .replace(/'/g, '&#39;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/' '/g, '&nbsp;');
-    }
-
+    var list = [];
+    var listid = [];
     $(document).ready(function () {
 
         @*BackParentLabel = '@TempData["BackParentLabel"]';
@@ -78,7 +70,7 @@
         _CardData = JSON.parse(_CardData);
         var _cardhtml = '';
         var _title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
-        var _Revdata = '', _Costdata = '', _ROIdata = '';
+        var _Revdata = '', _Costdata = '', _ROIdata = '', _lineChartData = '';
         var _fieldId = '';
         var rev = "Revenue", cost = "Cost", roi = "ROI";
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
@@ -100,6 +92,8 @@
             _Revdata = value.RevenueCardValues;
             _Costdata = value.CostCardValues;
             _ROIdata = value.ROICardValues;
+            _lineChartData = value.LineChartData;
+            list.push(_lineChartData);
 
             _Revact_proj = _Revdata.Actual_Projected;
             _Revgoal = _Revdata.Goal;
@@ -120,6 +114,7 @@
             _btnCompareId = "buttonCmpr_" + _fieldId;
             _chkCompareId = "chk_" + _fieldId;
             _linechartDivId = "dv_" + _fieldId;
+            listid.push(_linechartDivId);
 
             _Revact_projId = rev + actproj + "_" + _fieldId;
             _RevgoalId = rev + goal + "_" + _fieldId;
@@ -142,7 +137,7 @@
             $("#titletext").val(_title).html();
             if (childlabelType != '@Common.RevenueTactic') {
 
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + htmlEscape(_title) + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + _title + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -152,24 +147,30 @@
             _cardhtml = _cardhtml + '<button id="' + _btnCompareId + '" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="' + _btnCompareId + '">Compare</button>';
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '</div>';
+
             _cardhtml = _cardhtml + '<div class="region-data">';
+
             _cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Revenue</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value">/</span><span class="cardval sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
+
             _cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Cost</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value">/</span><span class="cardval sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
+
             _cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">ROI</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardvalroi carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" class="region-graph">';
+
+            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:40%;">';
             _cardhtml = _cardhtml + '</div>';
+
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '</div>';
@@ -177,9 +178,86 @@
         $("#dvCardSectionData").html(_cardhtml);
         formatCardSectionValues();
         formatCardPercentageValue();
+        formatCardSectionROIValues();
+        formatSetsubValues();
+        loadlineChart(list, listid);
     });
 
+    function loadlineChart(_chartdata, chartId) {
+        debugger;
+        for (i = 0; i < _chartdata.length; i++) {
+            var linechartDivId = "#" + chartId[i].toString();
+            BindLineChart(_chartdata[i].categories, _chartdata[i].todayValue, _chartdata[i].isDisplay, _chartdata[i].series, linechartDivId, 150, true);
+            // $(linechartDivId).css('width', '200px');
+
+        }
+
+    }
+    function formatSetsubValues() {
+        var _TypeCol = $(".cardsub");
+        var _formatednumber = '';
+        var _type = '';
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _Id = "#" + _cntrlId;
+            var text = $(_Id).attr('orig-val');
+            //_type = $(_Id).attr('add-sep');
+            if (text != null && text != 'undefined' && text != 'NaN') {
+                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                //alert(_formatednumber);
+                //alert(_formatednumber);
+                //var _value = '';
+                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
+                //    //$(_Id).html( _formatednumber);
+                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
+                //        _value = '/' + _formatednumber.toString();
+                //    }
+                //}
+                //else {
+                //    _value = _formatednumber;
+                //}
+                //alert(_value);
+                //var _value = '/' + _formatednumber;
+
+                $(_Id).html(_formatednumber);
+            }
+            var value = $(_Id).text();
+            $(_Id).html("/" + value);
+
+        });
+    }
+
+    function formatCardSectionROIValues() {
+        debugger;
+        var _TypeCol = $(".cardvalroi");
+        var _formatednumber = '';
+        var _type = '';
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _Id = "#" + _cntrlId;
+            var text = $(_Id).attr('orig-val');
+            //_type = $(_Id).attr('add-sep');
+            if (text != null && text != 'undefined' && text != 'NaN') {
+                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                //alert(_formatednumber);
+                //var _value = '';
+                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
+                //    //$(_Id).html( _formatednumber);
+                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
+                //        _value = '/' + _formatednumber.toString();
+                //    }
+                //}
+                //else {
+                //    _value = _formatednumber;
+                //}
+                //alert(_value);
+                $(_Id).html(_formatednumber);
+            }
+        });
+    }
+
     function formatCardSectionValues() {
+        debugger;
         var _TypeCol = $(".cardval");
         var _formatednumber = '';
         var _type = '';
@@ -218,6 +296,7 @@
             if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
                 _formtPercentage = "--";
                 $(_lblPercentage).removeClass("above").removeClass("below");
+
             }
             else {
                 if (_percentage < 0) {

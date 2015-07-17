@@ -11676,6 +11676,8 @@ namespace RevenuePlanner.Controllers
             }
             return objCardSectionList;
         }
+
+
         public List<CardSectionListModel> GetCardSectionDefaultData(List<TacticStageValue> _TacticData, List<ActualTrendModel> ActualTacticTrendList, List<ProjectedTrendModel> ProjectedTrendList, List<TacticwiseOverviewModel> _objTacticWiseModel, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", string ChildDDLId = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0)
         {
             #region "Declare local variables"
@@ -11692,6 +11694,7 @@ namespace RevenuePlanner.Controllers
             List<string> IncludeCurrentMonth = new List<string>();
             List<TacticwiseOverviewModel> _fltrTacticwiseData = new List<TacticwiseOverviewModel>();
             double ProjvsGoal = 0, Percentage = 0;
+            lineChartData objLineChartData = new lineChartData();
             #region "Quarterly Trend Varaibles"
             //List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
             //List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
@@ -11714,56 +11717,11 @@ namespace RevenuePlanner.Controllers
             try
             {
 
-
-
-
-
-
-
-
-
                 #region "Get Year list"
                 List<string> yearlist = new List<string>();
                 yearlist.Add(timeframeOption);
                 IncludeCurrentMonth = GetMonthWithYearUptoCurrentMonth(yearlist);
                 #endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                 string costStageCode = Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString();
@@ -11783,44 +11741,9 @@ namespace RevenuePlanner.Controllers
                 if (!IsTacticCustomField)
                 {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     TacticCostData = GetActualCostData(_TacticData, tblTacticLineItemList, tblLineItemActualList);
                     CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
                 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
                 List<ActualTacticListByStage> ActualStageList = new List<ActualTacticListByStage>();
@@ -11835,87 +11758,16 @@ namespace RevenuePlanner.Controllers
                 {
 
 
-
-
                     _revActualTacticList = ActualTacticStageList.Where(act => act.StageCode.Equals(revStageCode)).Select(act => act.ActualTacticList).FirstOrDefault();
                 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 List<double> _monthTrendList = new List<double>();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
                 #region "iterate each card item"
                 foreach (int _ParentId in ParentIdsList)
                 {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                     double costActual = 0;
                     double revenueActual = 0;
@@ -11927,27 +11779,6 @@ namespace RevenuePlanner.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     fltrTacticData = _TacticData.Where(tac => _ChildIdsList.Contains(tac.TacticObj.PlanTacticId)).ToList();
                     #region "Set Default Values"
                     strParentTitle = TacticMappingList.Where(card => card.ParentId.Equals(_ParentId)).Select(card => card.ParentTitle).FirstOrDefault();
@@ -11956,153 +11787,15 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     objCardSection = new CardSectionListModel();
-
-
-
-
-
-
 
                     objCardSection.title = strParentTitle;      // Set ParentTitle Ex. (Campaign1) 
                     objCardSection.ParentLabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
 
 
-
-
-
                     if (IsTacticCustomField)
                     {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -12112,36 +11805,6 @@ namespace RevenuePlanner.Controllers
 
                         //// Get ActualList upto CurrentMonth.
                         CurrentMonthActualTacticList = _revActualDataTable.Where(actual => IncludeCurrentMonth.Contains(_TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -12191,22 +11854,8 @@ namespace RevenuePlanner.Controllers
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
                         revenueActual = CurrentMonthActualTacticList.Sum(data => data.ActualValue);
                         revenueGoal = ProjectedTrendList.Sum(data => data.Value);
-
-
 
 
 
@@ -12216,88 +11865,8 @@ namespace RevenuePlanner.Controllers
                         ProjectedDatatable = GetProjectedCostData(customFieldId, _ParentId.ToString(), CustomFieldType, fltrTacticData, IsTacticCustomField);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         costActual = CurrentMonthCostList.Sum(innercost => innercost.Value);
                         costGoal = ProjectedDatatable.Sum(innergoalcost => innergoalcost.Value);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -12390,16 +11959,6 @@ namespace RevenuePlanner.Controllers
 
                         //objCardSection.FieldId = _ChildIdsList.FirstOrDefault();        // Set Child Id: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id. By Nishant Sheth
                         //objCardSection.ChildId = _ChildId;
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -12776,64 +12335,19 @@ namespace RevenuePlanner.Controllers
                         // End ROI CardSection SubModel Data
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                         #endregion
 
+                        #region "line chart"
+                        BasicModel _basicmodel1 = GetCardValuesListByTimeFrame(ActualTacticTrendList, CurrentMonthCostList, timeframeOption);
+                        objLineChartData = new lineChartData();
+                        objLineChartData = GetCardLineChartData(_basicmodel1, timeframeOption);
+                        objCardSection.LineChartData = objLineChartData;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        #endregion
                         // Add Multiple fixed same values to Model
                         objCardSectionList.Add(objCardSection);
                         //objCardSectionList.Add(objCardSection);
                         //objCardSectionList.Add(objCardSection);
-
-
-
-
-
-
-
-
-
 
                     }
 
@@ -12851,6 +12365,134 @@ namespace RevenuePlanner.Controllers
             }
             return objCardSectionList;
         }
+
+        #region"Card LineChartData method -dashrath"
+        public BasicModel GetCardValuesListByTimeFrame(List<ActualTrendModel> ActualTrendList, List<TacticMonthValue> CurrentMonthCostList, string timeframeOption)
+        {
+            BasicModel objBasicModel = new BasicModel();
+            int categorieslength = 4;
+            List<double> _actuallist = new List<double>();
+            List<double> _costlist = new List<double>();
+            List<string> _curntQuarterList = new List<string>();
+            List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+            List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+            List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+            List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+            double _Actual, _cost = 0;
+            List<string> categories = new List<string>();
+            categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+            foreach (var item in CurrentMonthCostList)
+            {
+
+                string _monthval = item.Month;
+                _monthval = _monthval.Replace(timeframeOption, "");
+                item.Month = _monthval;
+            }
+            for (int i = 1; i <= categorieslength; i++)
+            {
+                #region "Get Quarter list based on loop value"
+                if (i == 1)
+                    _curntQuarterList = Q1;
+                else if (i == 2)
+                    _curntQuarterList = Q2;
+                else if (i == 3)
+                    _curntQuarterList = Q3;
+                else if (i == 4)
+                    _curntQuarterList = Q4;
+                #endregion
+
+                _Actual = ActualTrendList.Where(actual => _curntQuarterList.Contains(actual.Month)).Sum(actual => actual.TrendValue);
+                _actuallist.Add(_Actual);
+
+                _cost = CurrentMonthCostList.Where(costactual => _curntQuarterList.Contains(costactual.Month)).Sum(costactual => costactual.Value);
+                _costlist.Add(_cost);
+            }
+            objBasicModel.Categories = categories;
+            objBasicModel.ActualList = _actuallist;
+            objBasicModel.CostList = _costlist;
+            return objBasicModel;
+
+        }
+
+        public lineChartData GetCardLineChartData(BasicModel objBasicModel, string timeframeOption)
+        {
+            List<string> categories = new List<string>();
+            categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+            #region "Declare Local Varialbles"
+            List<series> lstseries = new List<series>();
+            lineChartData LineChartData = new lineChartData();
+            bool IsDisplay = false, IsQuarterly = true;
+            List<double?> serData1 = new List<double?>();
+            List<double?> serData2 = new List<double?>();
+            double TodayValue = 0, catLength = 0;
+            string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString();
+            #endregion
+            try
+            {
+
+                #region "Get Today Plot Value"
+                if (currentYear == timeframeOption)
+                {
+                    IsDisplay = true;
+                    TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly);
+                }
+                #endregion
+
+                #region "Get Series list"
+
+                if (objBasicModel == null)
+                    return LineChartData;
+                catLength = objBasicModel.Categories.Count;   // Set categories list count.
+
+                #region "Quarterly Calculate ActualReveneue & ActualCost"
+
+                double _Actual = 0, _Cost = 0, _totActul = 0, _totalcost = 0;
+
+                for (int i = 0; i < catLength; i++)
+                {
+                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
+                    _totActul = _totActul + _Actual;
+                    _Cost = objBasicModel.CostList[i] != null ? objBasicModel.CostList[i] : 0;
+                    _totalcost = _totalcost + _Cost;
+                    serData1.Add(_totActul);
+                    serData2.Add(_totalcost);
+                }
+
+                series objSeries1 = new series();
+                objSeries1.name = "Revenue";
+                objSeries1.data = serData1;
+                marker objMarker1 = new marker();
+                objMarker1.symbol = "square";
+                objSeries1.marker = objMarker1;
+
+                series objSeries2 = new series();
+                objSeries2.name = "Cost";
+                objSeries2.data = serData2;
+                marker objMarker2 = new marker();
+                objMarker2.symbol = "square";
+                objSeries2.marker = objMarker2;
+
+                lstseries.Add(objSeries1);
+                lstseries.Add(objSeries2);
+                #endregion
+                #endregion
+                #region "Set Series, Categories & Marker data to Model"
+                categories = objBasicModel.Categories != null ? objBasicModel.Categories : new List<string>();
+                LineChartData.categories = categories;
+                LineChartData.series = lstseries;
+                // Set IsDisplay & TodayValue to Plot line on Linechart graph.
+                LineChartData.isDisplay = IsDisplay.ToString();
+                LineChartData.todayValue = TodayValue.ToString();
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return LineChartData;
+            //return Json(RevenueLineChartData, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
         //#region "CardSection related Method"
         //public List<CardSectionListModel> GetCardSectionList(string ParentLabel = "", string childlabelType = "", string childId = "")
         //{

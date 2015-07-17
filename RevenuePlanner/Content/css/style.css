@@ -12371,7 +12371,7 @@ li.close-list {
     line-height: 38px;
     margin-right: -3.3px;
     padding: 0.5% 6%;
-    width: 12.96%;
+    width: 12.95%;
     background-color: #f2f2f2;
 }
 
@@ -12775,7 +12775,7 @@ div.clue-bottom-default .cluetip-arrows {
     display: inline-block;
     line-height: 38px;
     margin-right: -3.3px;
-    padding: 0.5% 5.99%;
+    padding: 0.5% 6%;       /*set line alignment:- added by dashrath*/
     width: 12.96%;
     background-color: #f2f2f2;
 }
@@ -14629,12 +14629,18 @@ div.clue-bottom-default .cluetip-arrows {
     font-size: 18px;
 }
 
+ /* by bheru on 16-07-2015 */
  .region-data .data {
-    border-right: 1px solid #e8e7e7;
-    margin: 22px 0;
-    padding: 0 3.4%;
+  border-right: 1px solid #e8e7e7;
+  margin: 22px 0;
+  padding: 0;
+  text-align: center;
+  word-wrap: break-word;
 }
-
+ #dvRevenueCardSection .region-data .data
+{
+width: 215px;
+}
    /* by bheru 16-07-2015*/
  #ConversionCardID .region-data .data
 {

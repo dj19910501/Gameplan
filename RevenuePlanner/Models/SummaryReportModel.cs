@@ -347,6 +347,7 @@ namespace RevenuePlanner.Models
         public List<double> ActualList { get; set; }
         public List<double> ProjectedList { get; set; }
         public List<double> GoalList { get; set; }
+        public List<double> CostList { get; set; }//cost list added by dashrath
         public bool IsQuarterly { get; set; }
         public string timeframeOption { get; set; }
     }
