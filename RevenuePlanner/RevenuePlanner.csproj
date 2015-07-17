@@ -414,6 +414,9 @@
     <Content Include="Content\images\icon-dollar.png" />
     <Content Include="Content\images\icon-expand.png" />
     <Content Include="Content\images\icon-filter-search.gif" />
+    <Content Include="Content\images\icon-plus_black.png" />
+    <Content Include="Content\images\icon-plus_in_circle.png" />
+    <Content Include="Content\images\icon-plus_white.png" />
     <Content Include="Content\images\icon-return-to-sign-in-blue.png" />
     <Content Include="Content\images\icons-accept-reject.png" />
     <Content Include="Content\images\icons-nav-black-reports.png" />
