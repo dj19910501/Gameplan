@@ -2769,7 +2769,7 @@ namespace Integration.Salesforce
                     //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
                     else if (mapping.Key == tacticType)
                     {
-                        value = ((Plan_Campaign_Program_Tactic)obj).TacticType.Title.Substring(0,40);
+                        value = (((Plan_Campaign_Program_Tactic)obj).TacticType.Title).ToString().Substring(0,40);
                     }
                     //// End - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
 
