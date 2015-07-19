@@ -90,9 +90,9 @@ namespace RevenuePlanner.Helpers
             CW = 2,
             Revenue = 3,
             ProjectedStageValue = 4,
-            Cost=5,
-             TQL=6,
-            ADS=7
+            Cost = 5,
+            TQL = 6,
+            ADS = 7
         }
 
         /// <summary>
@@ -179,6 +179,42 @@ namespace RevenuePlanner.Helpers
           
         };
 
+        // Add By Nishant Sheth : 06-July-2015
+
+        public enum PerPage
+        {
+            Five = 5,
+            Ten = 10,
+            Twenty = 20,
+            TwentyFive = 25,
+            Fifty = 50,
+            Hundered = 100
+        }
+        public static Dictionary<string, string> PerPageSize = new Dictionary<string, string>()
+        {
+            {PerPage.Five.ToString(), "5"},
+            {PerPage.Ten.ToString(), "10"},
+            {PerPage.Twenty.ToString(), "20"},
+            {PerPage.TwentyFive.ToString(), "25"},
+            {PerPage.Fifty.ToString(), "50"},
+            {PerPage.Hundered.ToString(), "100"}
+          
+        };
+
+        public enum SortBy
+        {
+            Revenue,
+            Cost,
+            ROI
+        }
+        public static Dictionary<string, string> SortByDrp = new Dictionary<string, string>()
+        {
+            {SortBy.Revenue.ToString(), "revenueval"},
+            {SortBy.Cost.ToString(), "costval"},
+            {SortBy.ROI.ToString(), "roival"}
+            
+        };
+        // End By Nishant Sheth
         #endregion
 
         //#region User
@@ -271,8 +307,8 @@ namespace RevenuePlanner.Helpers
             Report = 1 << 15,
             ReportView = 1 << 16,
             Comments = 1 << 17,
-            CommentsViewEdit = 1 << 18 ,
-			TacticApproveOwn = 1 << 19
+            CommentsViewEdit = 1 << 18,
+            TacticApproveOwn = 1 << 19
         }
 
 
@@ -307,7 +343,7 @@ namespace RevenuePlanner.Helpers
             { CustomRestrictionPermission.ViewOnly.ToString(),"View Only"},
             {CustomRestrictionPermission.ViewEdit.ToString(),"View/Edit"}
          };
-        
+
         public enum UserActivityPermissionType
         {
             Yes,
@@ -917,7 +953,7 @@ namespace RevenuePlanner.Helpers
             November,
             December
         }
-        public static Dictionary<int,string> YearMonths =new Dictionary<int,string> ()
+        public static Dictionary<int, string> YearMonths = new Dictionary<int, string>()
         {
             {1,"January"},
             {2,"February"},
