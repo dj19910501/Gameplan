@@ -11,6 +11,7 @@ using System.Transactions;
 using System.Web.Mvc;
 using System.Xml;
 using System.Text.RegularExpressions;
+using Integration;
 
 /*
  *  Author: 
@@ -1283,6 +1284,10 @@ namespace RevenuePlanner.Controllers
                 if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null)
                 {
                     ViewBag.IsModelIntegrated = true;
+                    //Start addition by Brad Gray for PL#1734
+                    var intInstance = objModel.IntegrationInstance;
+                    ViewBag.ModelIntegrationType = intInstance.Instance;
+                    //End addition by Brad Gray for PL#1734
                 }
                 else
                 {

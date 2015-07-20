@@ -3,6 +3,7 @@
 @using RevenuePlanner.Helpers
 @{
     bool IsModelIntegrated = ViewBag.IsModelIntegrated;
+    string ModelIntegrationType = ViewBag.ModelIntegrationType;
     //Start Manoj Limbachiya PL # 486
     bool IsDeplyed = ViewBag.IsDeployed;
     //End Manoj Limbachiya PL # 486
@@ -55,7 +56,7 @@
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
 
-            <label>Target Stage</label>
+            <label>Target Stages</label>
             <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
 
             <label class="margin-top10">Status</label>
@@ -81,9 +82,19 @@
         {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
         }
+
+        //Start Brad Gray PL # 1374
+        if (ModelIntegrationType==Enums.IntegrationInstanceType.WorkFront.ToString())
+        {
+            <label>WorkFront Template</label>
+            <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
+        }
+        //End Brad Gray PL # 1374
     }
-        
-            }
+
+    
+
+}
         </div>
         <!--End content-->
 
