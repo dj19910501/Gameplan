@@ -304,6 +304,8 @@
 
 
 <script type="text/javascript">
+    var marsterCustomField = '@Common.RevenueCampaign';
+    var masterCustomFieldOptionId = 0;
     $(function () {
         var options = {
 
@@ -389,6 +391,7 @@
 
         $('#ddlParentRevenueSummery').bind('change', function () {
             var _parentValue = $(this).val();
+            marsterCustomField = _parentValue;
             // ParentValue selected Campaign label then dispaly Campaigns,Programs,Tactics dropdownlist else single CustomfieldOption dropdownlist.
             if (_parentValue == _campaignLabel) {
                 $("#CustomFieldChildDDL").css('display', 'none');
@@ -537,10 +540,11 @@
     $('#ddlParentRevenueSummery').change(function () {
         var _childValue = '0';
         ReloadRevenueToPlanByCustomField(_childValue);
-        fillCardProgramDropDown(0, true);
+        
     });
     $('#ddlChildRevenueToPlan').change(function () {
         var _childValue = $("#ddlChildRevenueToPlan").val();
+	masterCustomFieldOptionId = _childValue;
         ReloadRevenueToPlanByCustomField(_childValue);
     });
     function ReloadRevenueToPlanByCustomField(_childvalue) {

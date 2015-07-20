@@ -83,7 +83,18 @@ namespace RevenuePlanner.Models
         public string name { get; set; }
         public List<double?> data { get; set; }
         public marker marker { get; set; }
-        public bool showInLegend { get; set; }
+        private bool ShowInLegend = true;
+        public bool showInLegend 
+        {
+            get 
+            {
+                return ShowInLegend;
+            }
+            set
+            {
+                ShowInLegend = value;
+            }
+        }
         public bool shadow { get; set; }
     }
     public class marker
@@ -368,7 +379,7 @@ namespace RevenuePlanner.Models
         public CardSectionListSubModel CostCardValues { get; set; }
         public CardSectionListSubModel ROICardValues { get; set; }
         public lineChartData LineChartData { get; set; }
-        public string ParentLabel { get; set; }
+        public string MasterParentlabel { get; set; }
         public double FieldId { get; set; }
         public string FieldType { get; set; }
     }
