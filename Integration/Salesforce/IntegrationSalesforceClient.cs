@@ -172,7 +172,20 @@ namespace Integration.Salesforce
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
                     _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+                    List<int> programIdList = new List<int>() { planTactic.PlanProgramId };
+                    var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                    List<int> campaignIdList = new List<int>() { planTactic.Plan_Campaign_Program.PlanCampaignId };
+                    var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
                     _mappingCustomFields = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+
+                    if (lstCustomFieldsprogram.Count > 0)
+                    {
+                        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToDictionary(c => c.Key, c => c.Value);
+                    }
+                    if (lstCustomFieldsCampaign.Count > 0)
+                    {
+                        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                    }
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     planTactic = SyncTacticData(planTactic);
                     db.SaveChanges();
@@ -182,7 +195,13 @@ namespace Integration.Salesforce
                     Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == _id).FirstOrDefault();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     List<int> programIdList = new List<int>() { planProgram.PlanProgramId };
+                    List<int> campaignIdList = new List<int>() { planProgram.PlanCampaignId };
+                    var lstCustomFieldsCampaign = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
                     _mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                    if (lstCustomFieldsCampaign.Count > 0)
+                    {
+                        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                    }
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     planProgram = SyncProgramData(planProgram);
                     db.SaveChanges();
@@ -559,8 +578,8 @@ namespace Integration.Salesforce
             _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             _isResultError = false;
             SetMappingDetails();
-           
-           
+
+
             bool IsInstanceSync = false;
 
             Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id).FirstOrDefault();
@@ -636,7 +655,7 @@ namespace Integration.Salesforce
                         {
                             if (_mappingCustomFields != null)
                             {
-                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsProgram).ToDictionary(c => c.Key, c => c.Value);
+                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsProgram).ToDictionary(c => c.Key, c => c.Value);
                             }
                             else
                             {
@@ -1655,8 +1674,8 @@ namespace Integration.Salesforce
                 {
                     if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                     {
-                       // planProgram.IntegrationInstanceProgramId = null;
-                       // planProgram = SyncProgramData(planProgram);
+                        // planProgram.IntegrationInstanceProgramId = null;
+                        // planProgram = SyncProgramData(planProgram);
                         return planProgram;
                     }
                     else
@@ -1915,7 +1934,7 @@ namespace Integration.Salesforce
                     if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                     {
                         //planTactic.IntegrationInstanceTacticId = null;
-                       // planTactic = SyncTacticData(planTactic);
+                        // planTactic = SyncTacticData(planTactic);
                         return planTactic;
                     }
                     else
@@ -2219,8 +2238,8 @@ namespace Integration.Salesforce
                 {
                     if (e.Error.Equals(SalesforceError.EntityIsDeleted))
                     {
-                       // planIMPTactic.IntegrationInstanceTacticId = null;
-                       // planIMPTactic = SyncImprovementData(planIMPTactic);
+                        // planIMPTactic.IntegrationInstanceTacticId = null;
+                        // planIMPTactic = SyncImprovementData(planIMPTactic);
                         return planIMPTactic;
                     }
                     else
@@ -2296,13 +2315,13 @@ namespace Integration.Salesforce
                 int total = 0;
                 int pageSize = 10;
                 int maxpage = 0;
-                    List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId)).ToList();
-                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                    List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
-                    _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                 page = 0;
-                 total = campaignList.Count();
+                List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId)).ToList();
+                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
+                _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                page = 0;
+                total = campaignList.Count();
                 maxpage = (total / pageSize);
                 List<Plan_Campaign> lstPagedlistCampaign = new List<Plan_Campaign>();
                 while (page <= maxpage)
@@ -2314,47 +2333,47 @@ namespace Integration.Salesforce
                         for (int index = 0; index < lstPagedlistCampaign.Count; index++)
                         {
                             lstPagedlistCampaign[index] = SyncCampaingData(lstPagedlistCampaign[index]);
+                        }
+                        db.SaveChanges();
+                        scope.Complete();
                     }
-                    db.SaveChanges();
-                    scope.Complete();
-                }
                     page++;
                 }
-                
-            
-                    List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => planIds.Contains(program.Plan_Campaign.PlanId)).ToList();
-                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                    List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
-                    var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToDictionary(c => c.Key, c => c.Value);
-                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                    page = 0;
-                    total = programList.Count();
-                    maxpage = (total / pageSize);
-                    List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                    while (page <= maxpage)
+
+
+                List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => planIds.Contains(program.Plan_Campaign.PlanId)).ToList();
+                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
+                var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToDictionary(c => c.Key, c => c.Value);
+                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                page = 0;
+                total = programList.Count();
+                maxpage = (total / pageSize);
+                List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                while (page <= maxpage)
+                {
+                    lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                    lstPagedlistProgram = programList.Skip(page * pageSize).Take(pageSize).ToList();
+                    using (var scope = new TransactionScope())
                     {
-                        lstPagedlistProgram = new List<Plan_Campaign_Program>();
-                        lstPagedlistProgram = programList.Skip(page * pageSize).Take(pageSize).ToList();
-                        using (var scope = new TransactionScope())
+                        for (int index = 0; index < lstPagedlistProgram.Count; index++)
                         {
-                            for (int index = 0; index < lstPagedlistProgram.Count; index++)
-                            {
-                                lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index]);
+                            lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index]);
+                        }
+                        db.SaveChanges();
+                        scope.Complete();
                     }
-                    db.SaveChanges();
-                    scope.Complete();
+                    page++;
                 }
-                        page++;
-                    }
 
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IsDeleted.Equals(false)).ToList();
-                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
-                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+                // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
                 var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                 _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToDictionary(c => c.Key, c => c.Value);
-                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 page = 0;
                 total = tacticList.Count();
                 maxpage = (total / pageSize);
@@ -2363,15 +2382,15 @@ namespace Integration.Salesforce
                 {
                     lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
                     lstPagedlistTactic = tacticList.Skip(page * pageSize).Take(pageSize).ToList();
-                using (var scope = new TransactionScope())
-                {
+                    using (var scope = new TransactionScope())
+                    {
                         for (int index = 0; index < lstPagedlistTactic.Count; index++)
                         {
                             lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index]);
+                        }
+                        db.SaveChanges();
+                        scope.Complete();
                     }
-                    db.SaveChanges();
-                    scope.Complete();
-                }
                     page++;
                 }
 
@@ -2384,15 +2403,15 @@ namespace Integration.Salesforce
                 {
                     lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
                     lstPagedlistIMPTactic = improvetacticList.Skip(page * pageSize).Take(pageSize).ToList();
-                using (var scope = new TransactionScope())
-                {
+                    using (var scope = new TransactionScope())
+                    {
                         for (int index = 0; index < lstPagedlistIMPTactic.Count; index++)
                         {
                             lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index]);
+                        }
+                        db.SaveChanges();
+                        scope.Complete();
                     }
-                    db.SaveChanges();
-                    scope.Complete();
-                }
                     page++;
                 }
 
@@ -2416,7 +2435,7 @@ namespace Integration.Salesforce
                     }
                     page++;
                 }
-               
+
             }
             catch (SalesforceException e)
             {
@@ -2441,7 +2460,7 @@ namespace Integration.Salesforce
             if (_mappingCampaign.ContainsKey("ActivityType"))
             {
                 string activityType = Enums.EntityType.Campaign.ToString();
-                string ActivityTypeMappedValue=_mappingCampaign["ActivityType"].ToString();
+                string ActivityTypeMappedValue = _mappingCampaign["ActivityType"].ToString();
                 campaign.Add(ActivityTypeMappedValue, activityType);
             }
             //End by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
@@ -2481,7 +2500,7 @@ namespace Integration.Salesforce
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] =planTactic.TacticCustomName==null? Common.GenerateCustomName(planTactic, _clientId):planTactic.TacticCustomName;
+                    tactic[titleMappedValue] = planTactic.TacticCustomName == null ? Common.GenerateCustomName(planTactic, _clientId) : planTactic.TacticCustomName;
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                     tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
                 }
@@ -2895,7 +2914,7 @@ namespace Integration.Salesforce
                 }
             }
 
-            String Query = "select distinct '" + EntityType.Substring(0, 1) + "' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
+            String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
                 "case  " +
                    "    when A.keyi is not null then Extent2.AbbreviationForMulti " +
                    "    when Extent3.[Name]='TextBox' then Extent1.Value " +
