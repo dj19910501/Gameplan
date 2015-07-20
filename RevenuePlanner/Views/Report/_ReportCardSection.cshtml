@@ -186,7 +186,7 @@
         formatCardPercentageValue();
         formatCardSectionROIValues();
         formatSetsubValues();
-        loadlineChart(list, listid);
+        
         //LoadPagination();
 
         var a = $('#dvCardSectionData').children();
@@ -203,6 +203,7 @@
         });
 
         SortCardSection($("#ddlSortby :selected").val());
+        loadlineChart(list, listid);
     });
 
     function loadlineChart(_chartdata, chartId) {

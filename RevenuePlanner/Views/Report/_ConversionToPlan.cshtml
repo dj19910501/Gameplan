@@ -1,0 +1,233 @@
+﻿@model RevenuePlanner.Models.ConversionToPlanModel
+@using RevenuePlanner.Models;
+@using RevenuePlanner.Helpers
+@using Newtonsoft.Json;
+
+@{
+    //var revenue_Projected_Goal = Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal();
+
+    var conversion_datatableModel = Model.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanDataTableModel) : string.Empty;
+    var conversion_barchartModel = Model.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanBarChartModel) : string.Empty;
+    var Conversion_linechartModel = Model.LineChartModel != null ? JsonConvert.SerializeObject(Model.LineChartModel) : string.Empty;
+    var _mqllabel = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()];
+
+    //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
+    var Conversion_cardsectionModel = TempData["ConversionCard"];
+    bool IsCard = false;
+    TempData["ConversionCard"] = Conversion_cardsectionModel;
+    if (Conversion_cardsectionModel != null)
+    {
+        IsCard = true;
+    }
+
+}
+<div class="revenue-to-plan-graph">
+    <div id="dvConversionCombineChart" class="graph" style="height: 100%; padding-left: 0%; width: 99%;"></div>
+    <div class="graph-table" id="dvConvPlan">
+        <div class="table-responsive">
+            <table class="graph-table">
+                <tbody id="ConversionToPlanDataTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var BackParentLabel = '';
+    var BackChildLabel = '';
+    var BackId = '';
+    var IsBack = '';
+    var BackHeadTitle = "";
+    $(document).ready(function () {
+
+        BackParentLabel = '@TempData["ConvBackParentLabel"]';
+        BackChildLabel = '@TempData["ConvBackChildLabel"]';
+        BackId = '@TempData["ConvBackId"]';
+
+        BindConversionToPlanDataTable();
+        formatDataTableValues();
+        formatPercentageValue();
+        //start bar chart
+        var _barchartdata = "@conversion_barchartModel";
+        var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
+        _BarChartdata = JSON.parse(_BarChartdata);
+        //End bar chart
+
+        //Start: Get LineChart Model
+        var _linechartdata = "@Conversion_linechartModel";
+        var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
+        _LineChartdata = JSON.parse(_LineChartdata);
+        //End: Get LineChart Model
+
+        var barCombinechartDivId = "#dvConversionCombineChart";
+        BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
+        //end combine chart script
+
+        // Nishant
+        debugger;
+        var iscard = '@IsCard';
+        if (iscard.toLowerCase() != "false") {
+
+            var HeadTitle = document.getElementById('head-title');
+            if ('@Convert.ToString(TempData["ConvHeadTitle"])' == '') {
+                HeadTitle.innerHTML = 'Waterfall';
+            }
+            else {
+                HeadTitle.innerHTML = '@Convert.ToString(TempData["ConvHeadTitle"])';
+            }
+
+            if ('@Convert.ToString(TempData["ConvHeadTitle"])' == 'Waterfall') {
+                var marketingDiv = document.getElementById('div-mareketing-drp');
+                marketingDiv.style.display = "block";
+
+                var BtnBack = document.getElementById('BtnBack');
+                BtnBack.style.display = "none";
+            }
+
+
+            var ParentLabel = '@ViewBag.ConvParentLabel';
+            var childlabelType = '@ViewBag.ConvchildlabelType';
+            var childId = '@ViewBag.ConvchildId';
+            var optionmain = '@ViewBag.Convoption';
+            var BackHeadTitle = '@Convert.ToString(TempData["ConvBackParentLabel"])';
+
+            var _cardUrl = "@Url.Content("~/Report/LoadConverstionCardSectionPartial")" + "?ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&childId=" + childId + "&option=" + optionmain;
+            $("#ConversionCardID").load(_cardUrl);
+        }
+
+
+    });
+    function BindConversionToPlanDataTable() {
+        //if (_Isfilter) {
+        //    var _dataTableModel = FilterData;
+        //}
+        //else {
+        var _dataTableModel = '@conversion_datatableModel';
+        //}
+
+        _dataTableModel = (_dataTableModel.toString().replace(/&quot;/g, '"'));
+        _dataTableModel = JSON.parse(_dataTableModel);
+
+
+
+        var isQuarterly = _dataTableModel.IsQuarterly;
+        var _rowcount = 8;
+        var _tbody = '<tr>';
+        var _categories = _dataTableModel.Categories;
+        var _catCount = _dataTableModel.Categories.length;
+        var _lblTimeFrame = _dataTableModel.timeframeOption;
+        var _subDataModel = _dataTableModel.SubDataModel;
+        var _performanceList = _subDataModel.PerformanceList;
+        var _totalRevenueList = _subDataModel.RevenueList;
+        var _curnttimeframe = '';
+        _tbody = _tbody + ' <th>&nbsp;</th> '
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _curnttimeframe = _categories[_cat] + ' ' + _lblTimeFrame;
+            _tbody = _tbody + ' <th class="nobold">' + _curnttimeframe + '</th>';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        var _actualList = _dataTableModel.ActualList;
+        var _projectedList = _dataTableModel.ProjectedList;
+        var _goalList = _dataTableModel.GoalList;
+        var _rowLabel = '', _actual = '0', _projected = '0', _goal = '0', _Performance = '0', _Cost = '0', _ROI = '0', _TotalRevenue = '0', _cntrlId = '';
+
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Actual';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _actualList[_cat] + '" id="' + _cntrlId + '">' + _actualList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Projected';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _projectedList[_cat] + '" id="' + _cntrlId + '">' + _projectedList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Goal';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _goalList[_cat] + '" id="' + _cntrlId + '">' + _goalList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        _tbody = _tbody + ' <tr > ';
+        _rowLabel = 'Performance';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="performanceval" orig-val="' + _performanceList[_cat] + '" id="' + _cntrlId + '">' + _performanceList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Total';
+        var _label = 'Total_Revenue';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            //_tbody = _tbody + ' <td>' +_actualList[_cat]+ '</td> ';
+            _cntrlId = _label + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _totalRevenueList[_cat] + '" id="' + _cntrlId + '">' + _totalRevenueList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        $("#ConversionToPlanDataTable").html(_tbody);
+    }
+    function formatDataTableValues() {
+        var _TypeCol = $(".currencyval");
+        var _formatednumber = '';
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _Id = "#" + _cntrlId;
+            var text = $(_Id).attr('orig-val');
+            if (text != null && text != 'undefined' && text != 'NaN') {
+                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                $(_Id).html(_formatednumber);
+            }
+        });
+    }
+
+    function formatPercentageValue() {
+        var _TypeCol = $(".performanceval");
+
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _lblPercentage = "#" + _cntrlId;
+            var _text = $(_lblPercentage).attr('orig-val');
+            var _percentage = parseFloat(_text);
+            if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
+                _formtPercentage = "--";
+                $(_lblPercentage).removeClass("above").removeClass("below");
+            }
+            else {
+                if (_percentage < 0) {
+                    _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                    $(_lblPercentage).removeClass("above").addClass("below")
+                }
+                else {
+                    _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                    $(_lblPercentage).removeClass("below").addClass("above");
+                }
+            }
+            $(_lblPercentage).html(_formtPercentage);
+        });
+    }
+
+    function BtnBackClick() {
+        
+        var code = $("#ddlINQToPlan").val();
+        var AllocatedBy = $('#ddlTimeFrameSelectBox option:selected').text();
+        var Qurt_Month = AllocatedBy;
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + BackChildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&IsBackClick=" + true;
+        $("#dvConversionToPlan").load(_url);
+    }
+</script>

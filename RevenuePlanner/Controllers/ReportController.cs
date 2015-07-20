@@ -10134,6 +10134,31 @@ namespace RevenuePlanner.Controllers
             string CWStageLabel = Common.GetLabel(Common.StageModeCW);
             #endregion
 
+            // Add BY Nishant Sheth
+            TempData["ConversionCard"] = null;
+            ViewBag.ConvParentLabel = Common.RevenueCampaign;
+            ViewBag.ConvchildlabelType = Common.RevenueCampaign;
+            ViewBag.ConvchildId = 0;
+            ViewBag.Convoption = timeFrameOption;
+            #region TempData for Back Button
+            TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
+            TempData["ConvBackChildLabel"] = "";
+            TempData["ConvBackId"] = "";
+            TempData["ConvIsBack"] = "";
+            TempData["ConvHeadHireachy"] = "Waterfall";
+            TempData["ConvHeadTitle"] = "Waterfall";
+            TempData["ConvBackWithCustom"] = Common.RevenueCampaign;
+
+            TempData["ConvHeadHireachy"] = string.Empty;
+            TempData["ConvBackParentHireachy"] = string.Empty;
+            TempData["ConvBackChildHireachy"] = string.Empty;
+            TempData["ConvBackHeadTitle"] = string.Empty;
+            TempData["ConvBackIdHireachy"] = string.Empty;
+            TempData["ConvBackDummyId"] = string.Empty;
+            //ViewBag.HeadTitleHearichy = "";
+            #endregion
+            // End By Nishant Sheth
+
             //// Get list of month display in view
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             //// get tactic list
@@ -10895,7 +10920,7 @@ namespace RevenuePlanner.Controllers
         /// <param name= ParentLabel ,childlabelType , childId ,  option ,Quarterly, code> </param>
         /// <returns>Return json data of filtered combine chart and Conversiondatatable </returns>
         #region "Get combine chart and Conversiondatatable result based on filter -dashrath Prajapati"
-        public JsonResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "")
+        public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp")
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
@@ -10921,7 +10946,233 @@ namespace RevenuePlanner.Controllers
             List<RevenueContrinutionData> _TacticOptionList = new List<RevenueContrinutionData>();
             ConversionToPlanModel conversionObj = new ConversionToPlanModel();
             string customFieldType = string.Empty;
+            // Add By Nishant Sheth
+            List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
+            List<int> campaignlist = new List<int>();
+            List<int> programlist = new List<int>();
+            List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
+            List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
+            List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
+            CardSectionModel objCardSectionModel = new CardSectionModel();
+            List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
+            List<TacticwiseOverviewModel> OverviewModelList = new List<TacticwiseOverviewModel>();
+
+            tacticlist = GetTacticForReporting();
+            Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+            // End By Nishant Sheth
             #endregion
+            /// Declarion For Card Section 
+            /// Nishant Sheth
+            /// 
+            ViewBag.ConvParentLabel = ParentLabel;
+            ViewBag.ConvchildId = childId;
+            ViewBag.Convoption = option;
+
+            #region TempData for Back Button
+
+            if (DrpChange != "CampaignDrp")
+            {
+                #region ViewBag for Back Button
+                TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
+                TempData["ConvBackChildLabel"] = "";
+                TempData["ConvBackId"] = "";
+                TempData["ConvIsBack"] = "";
+                TempData["ConvHeadHireachy"] = "Waterfall";
+                TempData["ConvHeadTitle"] = "Waterfall";
+                TempData["ConvBackWithCustom"] = Common.RevenueCampaign;
+
+                TempData["ConvHeadHireachy"] = string.Empty;
+                TempData["ConvBackParentHireachy"] = string.Empty;
+                TempData["ConvBackChildHireachy"] = string.Empty;
+                TempData["ConvBackHeadTitle"] = string.Empty;
+                TempData["ConvBackIdHireachy"] = string.Empty;
+                TempData["ConvBackDummyId"] = string.Empty;
+
+                #endregion
+
+            }
+
+            TempData["ConvBackWithCustom"] = ParentLabel;
+
+            string HeadHireachy = TempData["ConvHeadHireachy"] as string;
+            string BackParentHireachy = TempData["ConvBackParentHireachy"] as string;
+            string BackChildHireachy = TempData["ConvBackChildHireachy"] as string;
+            string BackTitleHireachy = TempData["ConvBackHeadTitle"] as string;
+            string BackIdHireachy = TempData["ConvBackIdHireachy"] as string;
+            string BackDummyId = TempData["ConvBackDummyId"] as string;
+            string[] BackParentArray = { };
+            string[] BackChildArray = { };
+            string[] BackIdArray = { };
+            string[] BackDummyArray = { };
+
+            if (DrpChange != "CampaignDrp" || isDetails)
+            {
+                HeadHireachy = HeadHireachy + "," + BackHeadTitle;
+                BackParentHireachy = BackParentHireachy + "," + ParentLabel;
+                BackChildHireachy = BackChildHireachy + "," + childlabelType;
+            }
+
+            string TempDummyid = ((!string.IsNullOrEmpty(ParentLabel) ? ParentLabel.Substring(0, 3) : "Parent") + "-" + (!string.IsNullOrEmpty(childlabelType) ? childlabelType.Substring(0, 3) : "Child") + childId);
+
+            BackDummyId = BackDummyId + "," + TempDummyid;
+
+            BackDummyArray = BackDummyId.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+
+            List<string> dummyids = BackDummyArray.ToList<string>();
+
+            var readdummy = from n in dummyids where n == TempDummyid select new { n };
+            var x = dummyids.GroupBy(s => s).Select(s => new { id = s.Key, count = s.Key.Count() }).ToList().Where(s => s.count == 1 && s.id == TempDummyid).Select(s => s.id).ToList();
+
+
+            if ((!IsBackClick && isDetails) || DrpChange == "true")
+            {
+                BackIdHireachy = BackIdHireachy + "," + childId;
+            }
+
+            BackDummyArray = dummyids.Distinct().ToArray();
+
+            TempData["ConvBackDummyId"] = BackDummyArray;
+
+            TempData["ConvHeadHireachy"] = HeadHireachy;
+            TempData["ConvBackParentHireachy"] = BackParentHireachy;
+            TempData["ConvBackChildHireachy"] = BackChildHireachy;
+            TempData["ConvBackIdHireachy"] = BackIdHireachy;
+
+            string[] HeadHireachyArray = HeadHireachy.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+
+            BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            //if (isDetails)
+            BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+
+            if (BackParentArray.Count() > 1)
+            {
+                if (BackIdArray.Count() == 4)
+                {
+                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+                }
+                else
+                {
+                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                }
+            }
+            else
+            {
+                TempData["ConvBackParentLabel"] = (BackParentArray.Count() > 0) ? Convert.ToString(BackParentArray[0]) : string.Empty;
+            }
+
+            if (BackChildArray.Count() > 1)
+            {
+                TempData["ConvBackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
+            }
+            else
+            {
+                TempData["ConvBackChildLabel"] = string.Empty;
+            }
+
+            if (BackIdArray.Count() > 1)
+            {
+                TempData["ConvBackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+            }
+            else
+            {
+                TempData["ConvBackId"] = "0";
+            }
+
+            if (HeadHireachyArray.Count() == 0)
+            {
+                TempData["ConvHeadTitle"] = "Waterfall";
+            }
+            else
+            {
+                TempData["ConvHeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
+            }
+
+
+            if (IsBackClick)
+            {
+                BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+                BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+                BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+                if (BackDummyArray.Count() > 0)
+                {
+                    List<string> y = BackDummyArray.ToList<string>();
+                    y.RemoveAt(BackDummyArray.Count() - 1);
+                    BackDummyArray = y.ToArray();
+                    TempData["ConvBackDummyId"] = string.Join(",", BackDummyArray);
+                }
+
+                if (BackParentArray.Count() > 1)
+                {
+                    List<string> y = BackParentArray.ToList<string>();
+                    y.RemoveAt(BackParentArray.Count() - 1);
+                    BackParentArray = y.ToArray();
+                    TempData["ConvBackParentHireachy"] = string.Join(",", BackParentArray);
+                }
+                if (BackChildArray.Count() > 0)
+                {
+                    List<string> y = BackChildArray.ToList<string>();
+                    y.RemoveAt(BackChildArray.Count() - 1);
+                    BackChildArray = y.ToArray();
+                    TempData["ConvBackChildHireachy"] = string.Join(",", BackChildArray);
+                }
+                if (BackIdArray.Count() > 0)
+                {
+                    List<string> y = BackIdArray.ToList<string>();
+                    //if (BackChildArray[0] != Common.RevenueCampaign && BackChildArray.Count() != 1)
+                    {
+                        y.RemoveAt(BackIdArray.Count() - 1);
+                    }
+                    BackIdArray = y.ToArray();
+                    TempData["ConvBackIdHireachy"] = string.Join(",", BackIdArray);
+                }
+
+                if (BackParentArray.Count() > 1)
+                {
+                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+                }
+                else
+                {
+                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[0]);
+                }
+
+                if (BackChildArray.Count() > 1)
+                {
+                    TempData["ConvBackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 1]);
+                }
+                else
+                {
+                    TempData["ConvBackChildLabel"] = string.Empty;
+                }
+
+                if (BackIdArray.Count() > 1)
+                {
+                    TempData["ConvBackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+                }
+                else
+                {
+                    TempData["ConvBackId"] = "0";
+                }
+
+                if (HeadHireachyArray.Count() > 0)
+                {
+                    List<string> y = HeadHireachyArray.ToList<string>();
+                    y.RemoveAt(HeadHireachyArray.Count() - 1);
+                    HeadHireachyArray = y.ToArray();
+                    TempData["ConvHeadHireachy"] = string.Join(",", HeadHireachyArray);
+                    if (HeadHireachyArray.Count() == 0)
+                    {
+                        TempData["ConvHeadTitle"] = "Waterfall";
+                    }
+                    else
+                    {
+                        TempData["ConvHeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
+                    }
+                }
+            }
+
+            #endregion
+
             try
             {
                 //PlanTacticIdsList
@@ -10953,6 +11204,77 @@ namespace RevenuePlanner.Controllers
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
                     ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
                     #endregion
+
+                    #region Mapping Items for Card Section
+                    /// Add By Nishant Sheth
+                   
+                    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+                    campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                    programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
+                   
+
+                    if (childlabelType.Contains(Common.RevenueTactic))
+                    {
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        {
+                            ViewBag.ConvchildlabelType = Common.RevenueTactic;
+                        }
+
+                        //_lstTactic = tacticlist.ToList();
+
+                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                        {
+                            _lstTactic = _lstTactic.Where(t => t.PlanTacticId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanTacticId))
+                                .ToList();
+                        }
+
+                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
+                            .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+                    }
+                    else if (childlabelType.Contains(Common.RevenueProgram))
+                    {
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        {
+                            ViewBag.ConvchildlabelType = Common.RevenueTactic;
+                        }
+
+                        _lstTactic = tacticlist.ToList();
+                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                        {
+                            _lstTactic = _lstTactic.Where(t => t.PlanProgramId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanProgramId))
+                                .ToList();
+                        }
+                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanTacticId, _childId = pc.PlanTacticId, _parentTitle = pc.Title })
+                            .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
+                    }
+                    else if (childlabelType.Contains(Common.RevenueCampaign))
+                    {
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        {
+                            ViewBag.ConvchildlabelType = Common.RevenueProgram;
+                        }
+                        _lstTactic = tacticlist.ToList();
+
+                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                        {
+                            _lstTactic = _lstTactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.Plan_Campaign_Program.PlanCampaignId))
+                                .ToList();
+                        }
+
+                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanProgramId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Title })
+                            .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
+                    }
+                    else
+                    {
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        {
+                            ViewBag.ConvchildlabelType = Common.RevenueCampaign;
+                        }
+                        _lstTactic = tacticlist.ToList();
+                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+                    }
+                    // End By Nishant Sheth
+                    #endregion
                 }
                 else if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
                 {
@@ -10962,16 +11284,31 @@ namespace RevenuePlanner.Controllers
                     {
                         customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
                         IsTacticCustomField = true;
+                        if (Convert.ToInt32(childId) > 0)
+                        {
+                            ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
+                            ViewBag.ConvchildlabelType = Common.RevenueTactic;
+                        }
                     }
                     else if (ParentLabel.Contains(Common.CampaignCustomTitle))
                     {
                         customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
                         IsCampaignCustomField = true;
+                        if (Convert.ToInt32(childId) > 0)
+                        {
+                            ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
+                            ViewBag.ConvchildlabelType = Common.RevenueCampaign;
+                        }
                     }
                     else if (ParentLabel.Contains(Common.ProgramCustomTitle))
                     {
                         customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
                         IsProgramCustomField = true;
+                        if (Convert.ToInt32(childId) > 0)
+                        {
+                            ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
+                            ViewBag.ConvchildlabelType = Common.RevenueProgram;
+                        }
                     }
                     else
                     {
@@ -11035,6 +11372,52 @@ namespace RevenuePlanner.Controllers
 
                     _tacticdata = TacticData.Where(t => PlanTacticIdsList.Contains(t.TacticObj.PlanTacticId)).ToList();
 
+                    #endregion
+
+                    #region Add CampaginList For CardSection Base on CustomFieldOption
+                    // Add BY Nishant Sheth
+                    if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+                    {
+                        if (_customfieldOptionId > 0)
+                        {
+                            tacticlist = _tacticdata.Select(t => t.TacticObj).ToList();
+                            if (ParentLabel.Contains(Common.TacticCustomTitle))
+                            {
+                                _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
+                                 .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+
+                            }
+                            else if (ParentLabel.Contains(Common.ProgramCustomTitle))
+                            {
+
+                                _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanProgramId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Title })
+                                    .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
+
+                            }
+                            else if (ParentLabel.Contains(Common.CampaignCustomTitle))
+                            {
+
+                                _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.Plan_Campaign_Program.PlanCampaignId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title })
+                                    .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
+
+                            }
+                        }
+                        else
+                        {
+                            foreach (var data in _TacticOptionList)
+                            {
+                                if (data.planTacticList.Count > 0)
+                                {
+                                    data.planTacticList.ForEach(innerdata => _cmpgnMappingList.Add(new TacticMappingItem { ParentTitle = data.Title, ParentId = data.CustomFieldOptionid, ChildId = innerdata }));
+                                }
+                                else
+                                {
+                                    _cmpgnMappingList.Add(new TacticMappingItem { ParentTitle = data.Title, ParentId = data.CustomFieldOptionid, ChildId = 0 });
+                                }
+                            }
+                        }
+
+                    }
                     #endregion
 
                     #region "Get ActualTrend Model list"
@@ -11116,6 +11499,21 @@ namespace RevenuePlanner.Controllers
                         ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
                     }
                 }
+
+                /// Add By Nishant Sheth : 07-July-2015 
+                /// Desc : Fill card section with filter option , Ticket no:#1397 
+                objCardSectionModel = new CardSectionModel();
+                CardSectionListModel = new List<CardSectionListModel>();
+
+                OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
+
+
+                CardSectionListModel = GetConversionCardSectionList(_tacticdata, OverviewModelList, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), Common.RevenueCampaign.ToString(), "", "", false, "", 0);
+                //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
+                objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                TempData["ConversionCard"] = objCardSectionModel;
+
+                // End By Nishant Sheth
 
                 #region "Revenue Model Values"
 
@@ -11264,7 +11662,8 @@ namespace RevenuePlanner.Controllers
             {
                 throw ex;
             }
-            return Json(objReportModel, JsonRequestBehavior.AllowGet);
+            //return Json(objReportModel, JsonRequestBehavior.AllowGet);
+            return PartialView("_ConversionToPlan", objReportModel.ConversionToPlanModel);
         }
         #endregion
         #endregion
@@ -12173,6 +12572,17 @@ namespace RevenuePlanner.Controllers
             CardSectionModel cardModel = new CardSectionModel();
             cardModel = (CardSectionModel)TempData["CardData"];
             return PartialView("_ReportCardSection", cardModel);
+        }
+        public ActionResult LoadConverstionCardSectionPartial(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "")
+        {
+            ViewBag.ConvParentLabel = ParentLabel;
+            ViewBag.ConvchildlabelType = childlabelType;
+            ViewBag.ConvchildId = childId;
+            ViewBag.Convoption = option;
+
+            CardSectionModel cardModel = new CardSectionModel();
+            cardModel = (CardSectionModel)TempData["ConversionCard"];
+            return PartialView("_ConversionCardSection", cardModel);
         }
         //#endregion
 

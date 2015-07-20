@@ -201,17 +201,33 @@ namespace RevenuePlanner.Helpers
           
         };
 
-        public enum SortBy
+        public enum SortByRevenue
         {
             Revenue,
             Cost,
             ROI
         }
-        public static Dictionary<string, string> SortByDrp = new Dictionary<string, string>()
+        public static Dictionary<string, string> SortByRevenueDrp = new Dictionary<string, string>()
         {
-            {SortBy.Revenue.ToString(), "revenueval"},
-            {SortBy.Cost.ToString(), "costval"},
-            {SortBy.ROI.ToString(), "roival"}
+            {SortByRevenue.Revenue.ToString(), "revenueval"},
+            {SortByRevenue.Cost.ToString(), "costval"},
+            {SortByRevenue.ROI.ToString(), "roival"}
+            
+        };
+
+        public enum SortByWaterFall
+        {
+            INQ,
+            TQL,
+            CW,
+            ADS
+        }
+        public static Dictionary<string, string> SortByWaterFallDrp = new Dictionary<string, string>()
+        {
+            {SortByWaterFall.INQ.ToString(), "inqval"},
+            {SortByWaterFall.TQL.ToString(), "tqlval"},
+            {SortByWaterFall.CW.ToString(), "cwval"},
+            {SortByWaterFall.ADS.ToString(), "adsval"}
             
         };
         // End By Nishant Sheth
