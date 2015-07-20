@@ -37,13 +37,13 @@
     <p id="pMQLImproved" class="small-value source-sans-prosemibold">@Html.DisplayFor(model => model.PercentageMQLImproved)</p>
 </div>
   @*  Added By Komal Rawal for new UI of homepage*@
-<div  style="margin-top: 30px; width:30%">
+<div  style="margin-top: 27px; width:30%">
       
        <h2 id="lblMarkringActivitiesTitle" style="display:none;">Marketing Activities(Ongoing)</h2>
   
        @if (Model.plans != null && Model.plans.Count > 0)
        {
-        <form id="nl-form2" class="nl-form-plan-title without-margin plantitle"  style="display:none;">
+        <form id="nl-form2" class="nl-form-plan-title without-margin plantitle"  style=" margin-top:35px !important;display:none;">
 
             <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40" >
                 <script>

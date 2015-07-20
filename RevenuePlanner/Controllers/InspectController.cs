@@ -8660,6 +8660,18 @@ namespace RevenuePlanner.Controllers
                     db.Entry(item).State = EntityState.Modified;
                     db.SaveChanges();
 
+                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    pcptc.Comment = approvedComment;
+                    DateTime Currentdate = DateTime.Now;
+                    pcptc.CreatedDate = Currentdate;
+                    string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
+                    pcptc.CreatedBy = Sessions.User.UserId;
+                    pcptc.PlanTacticId = item.PlanTacticId;
+                    pcptc.PlanProgramId = null;
+                    db.Entry(pcptc).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                    db.SaveChanges();
+
                     if (isApproved)
                     {
                         Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
@@ -8673,18 +8685,6 @@ namespace RevenuePlanner.Controllers
                     {
                         Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
                     }
-
-                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                    pcptc.Comment = approvedComment;
-                    DateTime Currentdate = DateTime.Now;
-                    pcptc.CreatedDate = Currentdate;
-                    string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
-                    pcptc.CreatedBy = Sessions.User.UserId;
-                    pcptc.PlanTacticId = item.PlanTacticId;
-                    pcptc.PlanProgramId = null;
-                    db.Entry(pcptc).State = EntityState.Added;
-                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
-                    db.SaveChanges();
 
                 }
 
@@ -8720,6 +8720,17 @@ namespace RevenuePlanner.Controllers
                     db.Entry(item).State = EntityState.Modified;
                     db.SaveChanges();
 
+                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    pcptc.Comment = approvedComment;
+                    DateTime Currentdate = DateTime.Now;
+                    pcptc.CreatedDate = Currentdate;
+                    string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
+                    pcptc.CreatedBy = Sessions.User.UserId;
+                    pcptc.PlanTacticId = item.PlanTacticId;
+                    db.Entry(pcptc).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                    db.SaveChanges();
+
                     if (isApproved)
                     {
                         Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
@@ -8733,17 +8744,6 @@ namespace RevenuePlanner.Controllers
                     {
                         Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
                     }
-
-                    approvedComment = Convert.ToString(Enums.Section.Tactic) + " " + status + " by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
-                    pcptc.Comment = approvedComment;
-                    DateTime Currentdate = DateTime.Now;
-                    pcptc.CreatedDate = Currentdate;
-                    string DisplayDate = Currentdate.ToString("MMM dd") + " at " + Currentdate.ToString("hh:mmtt");
-                    pcptc.CreatedBy = Sessions.User.UserId;
-                    pcptc.PlanTacticId = item.PlanTacticId;
-                    db.Entry(pcptc).State = EntityState.Added;
-                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
-                    db.SaveChanges();
 
                 }
 
