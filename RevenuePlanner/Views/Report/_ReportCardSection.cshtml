@@ -137,9 +137,10 @@
             _cardhtml = _cardhtml + '<div>';
             _cardhtml = _cardhtml + '<p class="revanue-p">' + _title + '</p>';
             $("#titletext").val(_title).html();
+            var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
 
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + _title + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -340,7 +341,7 @@
     /// Desc: For card details section
     function CardDetailsClick(parentlabel, Type, id, OptionMain, HeadTitleval) {
 
-        var HeadTitle = document.getElementById('head-title');
+        //var HeadTitle = document.getElementById('head-title');
 
         var BtnBack = document.getElementById('BtnBack');
         BtnBack.style.display = "block";
@@ -348,7 +349,7 @@
         var marketingDiv = document.getElementById('div-mareketing-drp');
         marketingDiv.style.display = "none";
 
-        HeadTitle.innerHTML = HeadTitleval;
+        //HeadTitle.innerHTML = HeadTitleval;
 
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;

@@ -8680,7 +8680,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp" || isDetails)
             {
-                HeadHireachy = HeadHireachy + "," + BackHeadTitle;
+                HeadHireachy = HeadHireachy + "," + HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(BackHeadTitle));
                 BackParentHireachy = BackParentHireachy + "," + ParentLabel;
                 BackChildHireachy = BackChildHireachy + "," + childlabelType;
             }
@@ -11789,7 +11789,7 @@ namespace RevenuePlanner.Controllers
 
                     objCardSection = new CardSectionListModel();
 
-                    objCardSection.title = strParentTitle;      // Set ParentTitle Ex. (Campaign1) 
+                    objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
                     objCardSection.ParentLabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
 
