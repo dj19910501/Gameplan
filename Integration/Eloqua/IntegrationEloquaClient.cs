@@ -367,33 +367,57 @@ namespace Integration.Eloqua
             SetMappingEloquaFolderIdsPlanId(planIds);
             try
             {
-                using (var scope = new TransactionScope())
-                {
+                int page = 0;
+                int total = 0;
+                int pageSize = 10;
+                int maxpage = 0;
+
                     List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
                     // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
                     List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
                     _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
                     CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-
-                    for (int index = 0; index < tacticList.Count; index++)
-                    {
-                        tacticList[index] = SyncTacticData(tacticList[index]);
-                    }
-                    db.SaveChanges();
-                    scope.Complete();
-                }
-
+                page = 0;
+                total = tacticList.Count();
+                maxpage = (total / pageSize);
+                List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                while (page <= maxpage)
+                {
+                    lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                    lstPagedlistTactic = tacticList.Skip(page * pageSize).Take(pageSize).ToList();
                 using (var scope = new TransactionScope())
                 {
-                    List<Plan_Improvement_Campaign_Program_Tactic> tacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).ToList();
-
-                    for (int index = 0; index < tacticList.Count; index++)
-                    {
-                        tacticList[index] = SyncImprovementData(tacticList[index]);
+                        for (int index = 0; index < lstPagedlistTactic.Count; index++)
+                        {
+                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index]);
                     }
                     db.SaveChanges();
                     scope.Complete();
+                    }
+                    page++;
+                }
+
+                List<Plan_Improvement_Campaign_Program_Tactic> IMPtacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).ToList();
+
+                page = 0;
+                total = IMPtacticList.Count();
+                maxpage = (total / pageSize);
+                List<Plan_Improvement_Campaign_Program_Tactic> lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                while (page <= maxpage)
+                {
+                    lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                    lstPagedlistIMPTactic = IMPtacticList.Skip(page * pageSize).Take(pageSize).ToList();
+                    using (var scope = new TransactionScope())
+                    {
+                        for (int index = 0; index < lstPagedlistTactic.Count; index++)
+                        {
+                            lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index]);
+                        }
+                        db.SaveChanges();
+                        scope.Complete();
+                    }
+                    page++;
                 }
 
             }
