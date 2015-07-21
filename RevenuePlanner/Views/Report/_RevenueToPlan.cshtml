@@ -265,13 +265,23 @@
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         var InnerBackchildLabel = BackChildLabel;
-        if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
+        @*if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
             if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 InnerBackchildLabel = '@RevenuePlanner.Helpers.Common.RevenueCampaign';
             }
-        }
+        }*@
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&IsBackClick=" + true;
         $("#dvRevenueToPlan").load(_url);
+
+        tempRevenueHeader.splice(tempRevenueHeader.length - 1, 1); // Remove last value from Temep Header global variable.
+        var _headerValue = tempRevenueHeader[tempRevenueHeader.length - 1]; // Get last value from global variable.
+
+        var _revActualProj = _headerValue.ActualProjected;
+        var _revGoal = _headerValue.Goal;
+        var _revPercentage = _headerValue.Percentage;
+        var _isNegativePercntg = _headerValue.IsNegative;
+
+        formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
 
         if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '') {
             $("#ddlCampaignRevenueToPlan").css('display', 'none');
@@ -305,14 +315,15 @@
         }
         else if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
             if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
-                $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
+                $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 // $("#ddlProgramRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
 
                 //  $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
-                fillCardCampaignDropDown(BackId, '');
+                //fillCardCampaignDropDown(BackId, '');
+                fillCardProgramDropDown(BackId, BackChildLabel); // Change By Nisant Sheth
             }
             else if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
@@ -324,13 +335,24 @@
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
                 fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
             }
+            else if (BackChildLabel == '' && BackId > 0) {
+                $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
+
+                //     $("#ddlProgramRevenueToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
+
+                //   $("#ddlTacticRevenueToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
+                //fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+                    fillCardCampaignDropDown(BackId, ''); // Change BY Nishant Sheth
+                }
             else {
                 $("#CampaignChildDDL").css('display', 'none');
                 $("#CustomFieldChildDDL").css('display', '')
             }
     }
     else if (marsterCustomField.indexOf('@Common.ProgramCustomTitle') >= 0) {
-            if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+        if (BackChildLabel == '' && BackId > 0) {
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');

@@ -306,6 +306,7 @@
 <script type="text/javascript">
     var marsterCustomField = '@Common.RevenueCampaign';
     var masterCustomFieldOptionId = 0;
+    var tempRevenueHeader = [];
     $(function () {
         var options = {
 
@@ -428,24 +429,33 @@
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _revPercentage = '@revenue_Projected_Goal.Percentage';
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';
-        var _formtPercentage = "0";
-        setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
-        setBootstrapTooltip("#revGoal", _revGoal, 5, true);
-        if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
-            _formtPercentage = "0";
-            $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
-        }
-        else {
-            if (_isNegativePercentage.toLowerCase() == 'true') {
-                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-                $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
-            }
-            else {
-                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-                $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
-            }
-        }
-        $("#revPercentage").html(_formtPercentage);
+
+        tempRevenueHeader.push({
+            ActualProjected: _revActual_Projected.toString(),
+            Goal: _revGoal.toString(),
+            Percentage: _revPercentage.toString(),
+            IsNegative: _isNegativePercentage.toString().toLowerCase()
+        });
+        formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage);
+
+        //var _formtPercentage = "0";
+        //setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
+        //setBootstrapTooltip("#revGoal", _revGoal, 5, true);
+        //if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+        //    _formtPercentage = "0";
+        //    $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
+        //}
+        //else {
+        //    if (_isNegativePercentage.toLowerCase() == 'true') {
+        //        _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+        //        $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
+        //    }
+        //    else {
+        //        _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+        //        $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
+        //    }
+        //}
+        //$("#revPercentage").html(_formtPercentage);
 
         @*// Start:- Revenue To Plan BarChart script
         var _barchartdata = "@revenue_barchartModel";
@@ -662,6 +672,34 @@
             }
         });
 
+    }
+
+    function formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage) {
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';
+        var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _revPercentage = '@revenue_Projected_Goal.Percentage';
+        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+
+        var _formtPercentage = "0";
+        $("#revActual_Projected").popover('destroy');
+        $("#revGoal").popover('destroy');
+        setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
+        setBootstrapTooltip("#revGoal", _revGoal, 5, true);
+        if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+            _formtPercentage = "0";
+            $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (_isNegativePercentage.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+                $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+                $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $("#revPercentage").html(_formtPercentage);
     }
 
 </script>

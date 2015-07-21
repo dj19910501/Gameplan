@@ -78,7 +78,7 @@
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
         var _Revact_projId = '', _RevgoalId = '', _RevPercntgId = '', _Costact_projId = '', _CostgoalId = '', _CostPercntgId = '', _ROIact_projId = '', _ROIgoalId = '', _ROIPercntgId = '';
         var _btnDetailsId = '', _btnCompareId = '', _chkCompareId = '', _linechartDivId = '';
-
+        var _revIsNegative = '';
         // Add BY Nishant Sheth
         // Desc: For Card Section details button click argument
         var ParentLabel = '@ViewBag.ParentLabel';
@@ -101,6 +101,7 @@
             _Revact_proj = _Revdata.Actual_Projected;
             _Revgoal = _Revdata.Goal;
             _Revpercentange = _Revdata.Percentage;
+            _revIsNegative = _Revdata.IsNegative;
 
             _Costact_proj = _Costdata.Actual_Projected;
             _Costgoal = _Costdata.Goal;
@@ -141,7 +142,7 @@
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
 
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Revact_proj) + '","' + String(_Revgoal) + '","' + String(_Revpercentange) + '","' + String(_revIsNegative) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -341,7 +342,7 @@
 
     /// Add By Nishant Sheth
     /// Desc: For card details section
-    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval) {
+    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActualProj, _revGoal, _revPercentage, _isNegativePercntg) {
        
 
         var BtnBack = document.getElementById('BtnBack');
@@ -350,13 +351,22 @@
         var marketingDiv = document.getElementById('div-mareketing-drp');
         marketingDiv.style.display = "none";
 
-       
+        var _pushValue = {
+            ActualProjected: _revActualProj.toString(),
+            Goal: _revGoal.toString(),
+            Percentage: _revPercentage.toString(),
+            IsNegative: _isNegativePercntg.toString().toLowerCase()
+        }
+        tempRevenueHeader.push(_pushValue); // Push Card Values to Temp global variable declare at _Revenue.cshtml page. This global variable use when user click on Back button.
+
 
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvRevenueToPlan").load(_url);
        
+        formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
+
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
                 $("#ddlCampaignRevenueToPlan").css('display', 'none');
