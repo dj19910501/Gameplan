@@ -169,11 +169,11 @@
 
             _cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">ROI</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardvalroi carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:200px;">';
+            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:48%;float:left;">';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '</div>';
@@ -185,7 +185,6 @@
 
         formatCardSectionValues();
         formatCardPercentageValue();
-        formatCardSectionROIValues();
         formatSetsubValues();
         
         //LoadPagination();
@@ -231,21 +230,12 @@
             var text = $(_Id).attr('orig-val');
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
-                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
-                //alert(_formatednumber);
-                //alert(_formatednumber);
-                //var _value = '';
-                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
-                //    //$(_Id).html( _formatednumber);
-                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
-                //        _value = '/' + _formatednumber.toString();
-                //    }
-                //}
-                //else {
-                //    _value = _formatednumber;
-                //}
-                //alert(_value);
-                //var _value = '/' + _formatednumber;
+                if (_Id.indexOf("ROI") > 0) {
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                }
+                else {
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                }
 
                 $(_Id).html(_formatednumber);
             }
@@ -255,34 +245,6 @@
         });
     }
 
-    function formatCardSectionROIValues() {
-
-        var _TypeCol = $(".cardvalroi");
-        var _formatednumber = '';
-        var _type = '';
-        $.each(_TypeCol, function (key, _cntrl) {
-            var _cntrlId = $(_cntrl).attr('id');
-            var _Id = "#" + _cntrlId;
-            var text = $(_Id).attr('orig-val');
-            //_type = $(_Id).attr('add-sep');
-            if (text != null && text != 'undefined' && text != 'NaN') {
-                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
-                //alert(_formatednumber);
-                //var _value = '';
-                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
-                //    //$(_Id).html( _formatednumber);
-                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
-                //        _value = '/' + _formatednumber.toString();
-                //    }
-                //}
-                //else {
-                //    _value = _formatednumber;
-                //}
-                //alert(_value);
-                $(_Id).html(_formatednumber);
-            }
-        });
-    }
 
     function formatCardSectionValues() {
 
@@ -295,19 +257,12 @@
             var text = $(_Id).attr('orig-val');
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
-                _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
-                //alert(_formatednumber);
-                //var _value = '';
-                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
-                //    //$(_Id).html( _formatednumber);
-                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
-                //        _value = '/' + _formatednumber.toString();
-                //    }
-                //}
-                //else {
-                //    _value = _formatednumber;
-                //}
-                //alert(_value);
+                if (_Id.indexOf("ROI") > 0) {
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                }
+                else {
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                }
                 $(_Id).html(_formatednumber);
             }
         });

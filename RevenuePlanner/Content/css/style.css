@@ -14639,7 +14639,8 @@ div.clue-bottom-default .cluetip-arrows {
 }
  #dvRevenueCardSection .region-data .data
 {
-width: 215px;
+/*width: 215px;*/
+  width: 17%;
 }
    /* by bheru 16-07-2015*/
  #ConversionCardID .region-data .data
