@@ -529,8 +529,9 @@ namespace Integration.Salesforce
                     }
                     else
                     {
-                        // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                        // Update IntegrationInstanceSection log with Error status, modified by Mitesh Vaishnav for internal review point on 07-07-2015
+                        _isResultError = true;
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForSalesforcePullResponse);
                     }
                 }
                 catch (SalesforceException e)

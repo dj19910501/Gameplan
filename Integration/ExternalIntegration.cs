@@ -100,6 +100,9 @@ namespace Integration
         /// </summary>
         public void Sync()
         {
+            var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _id).FirstOrDefault();
+            if (Instance != null && Instance.IsActive)
+            {
             if (EntityType.Tactic.Equals(_entityType))
             {
                 SyncTactic();
@@ -122,6 +125,22 @@ namespace Integration
             }
 
             SendSyncErrorEmail();
+        }
+            else
+            {
+                IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+                instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_id);
+                instanceLogStart.SyncStart = DateTime.Now;
+                instanceLogStart.CreatedBy = _userId;
+                instanceLogStart.CreatedDate = DateTime.Now;
+                instanceLogStart.ErrorDescription = "Instance have inactive status.";
+                instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
+                db.Entry(instanceLogStart).State = EntityState.Added;
+              
+                Instance.LastSyncStatus = StatusResult.Error.ToString();
+                db.Entry(Instance).State = EntityState.Modified;
+                int resulValue = db.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -242,6 +261,7 @@ namespace Integration
                         instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
                         _isResultError = true;
                         IsAuthenticationError = true;
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationSalesforceClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
