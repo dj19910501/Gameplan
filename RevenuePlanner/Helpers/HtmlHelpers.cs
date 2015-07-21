@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using System.Linq;
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 namespace RevenuePlanner.Helpers
 {
     public static class HtmlHelpers
@@ -4250,7 +4251,7 @@ namespace RevenuePlanner.Helpers
             //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
             StringBuilder sb = new StringBuilder(string.Empty);
-
+            bool isvalidformate = false;//dashrath
             //fieldCounter variable for defining raw style
             if (customFieldList.Count != 0)
             {
@@ -4307,12 +4308,13 @@ namespace RevenuePlanner.Helpers
                         inputclassName += item.isRequired ? " resubmission" : string.Empty;
                         //When item value contains double quots then it would be replaced 
                         string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
+                        //"start #1341 Make hyperlinks in attribute fields hyperlinks :- dashrath prajapati"
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
-                           // sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
-                            var _editdescription = Common.GenerateHTMLAttribute(customFieldEntityValue);
-                            sb.Append("<div class='Attribute-content-text' id=\"cf_" + item.customFieldId + "\">" + WebUtility.HtmlDecode(_editdescription) + " </div>");
+                                var _editdescription = Common.GenerateHTMLAttribute(customFieldEntityValue);
+                                sb.Append("<div class='Attribute-content-text' id=\"cf_" + item.customFieldId + "\">" + WebUtility.HtmlDecode(_editdescription) + " </div>");
                         }
+                        //up to here #1341 Make hyperlinks in attribute fields hyperlinks :- added by dashrath prajapati"
                         else
                         {
                             inputclassName += " input-setup";
