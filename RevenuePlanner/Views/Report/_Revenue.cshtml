@@ -549,6 +549,9 @@
     });
     $('#ddlParentRevenueSummery').change(function () {
         var _childValue = '0';
+        if ($('#ddlParentRevenueSummery :selected').val() == '@Common.RevenueCampaign') {
+            fillCardCampaignDropDown("", "");
+        }
         ReloadRevenueToPlanByCustomField(_childValue);
         
     });
@@ -576,7 +579,7 @@
 
     }
     function LoadDataRevenueToPlanByCampaign() {
-        var id = '';
+        var id = '0';
         var Type = '';
         var tacticId = $("#ddlTacticRevenueToPlan").val();
         var parentlabel = $("#ddlParentRevenueSummery").val();
@@ -591,6 +594,15 @@
         else if (campaignId > 0) {
             Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
             id = campaignId.toString();
+        }
+        if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
+            if (id > 0) {
+                parentlabel = '@Common.RevenueCampaign';
+            }
+            if (parseInt(id)<= 0) {
+                id = masterCustomFieldOptionId;
+            }
+            
         }
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
         $("#dvRevenueToPlan").load(_url);

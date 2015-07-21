@@ -348,6 +348,8 @@
         }
         else if (masterlabel == '@Common.CampaignCustomTitle') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 // $("#ddlProgramRevenueToPlan").css('display', 'block');
@@ -358,6 +360,8 @@
                 fillCardProgramDropDown(id, Type);
             }
             else if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 //     $("#ddlProgramRevenueToPlan").css('display', 'none');
@@ -369,7 +373,7 @@
             }
             else {
                 $("#CampaignChildDDL").css('display', '');
-                $("#CustomFieldChildDDL").css('display', 'none')
+                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
 
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
@@ -380,6 +384,8 @@
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
            if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 //     $("#ddlProgramRevenueToPlan").css('display', 'none');
@@ -439,6 +445,9 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlCampaignRevenueToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
                 });
+               
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
                 fillCardProgramDropDown("0", type);
                 $('#ddlCampaignRevenueToPlan').multiselect("refresh");
             },
@@ -478,6 +487,8 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlProgramRevenueToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
                 });
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
                 fillCardTacticDropDown(campaignId, type);
                 $('#ddlProgramRevenueToPlan').multiselect("refresh");
             },

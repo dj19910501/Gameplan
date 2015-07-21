@@ -270,7 +270,7 @@
                 InnerBackchildLabel = '@RevenuePlanner.Helpers.Common.RevenueCampaign';
             }
         }*@
-        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&IsBackClick=" + true;
+        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
         $("#dvRevenueToPlan").load(_url);
 
         tempRevenueHeader.splice(tempRevenueHeader.length - 1, 1); // Remove last value from Temep Header global variable.
@@ -323,7 +323,12 @@
                 //  $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
                 //fillCardCampaignDropDown(BackId, '');
-                fillCardProgramDropDown(BackId, BackChildLabel); // Change By Nisant Sheth
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                } else {
+                    fillCardProgramDropDown(BackId, BackChildLabel); // Change By Nishant Sheth
+                }
             }
             else if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
@@ -333,7 +338,12 @@
 
                 //   $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                } else {
                 fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+            }
             }
             else if (BackChildLabel == '' && BackId > 0) {
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
@@ -344,8 +354,13 @@
                 //   $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
                 //fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                } else {
                     fillCardCampaignDropDown(BackId, ''); // Change BY Nishant Sheth
                 }
+            }
             else {
                 $("#CampaignChildDDL").css('display', 'none');
                 $("#CustomFieldChildDDL").css('display', '')
@@ -359,7 +374,13 @@
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
 
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                }
+                else {
                 fillCardProgramDropDown(BackId, BackChildLabel);
+                }
             }
             else {
                 $("#CampaignChildDDL").css('display', 'none');
@@ -373,7 +394,7 @@
             //  $("#ddlProgramRevenueToPlan").css('display', 'none');
             //   $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
             $("#CampaignChildDDL").css('display', 'none');
-            $("#CustomFieldChildDDL").css('display', '')
+            $("#CustomFieldChildDDL").css('display', '');
             //  $("#ddlTacticRevenueToPlan").css('display', '');
             //    $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
             //    fillCardTacticDropDown(id, "");

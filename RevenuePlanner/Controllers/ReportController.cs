@@ -8666,7 +8666,7 @@ namespace RevenuePlanner.Controllers
             }
 
             TempData["BackWithCustom"] = ParentLabel;
-
+            TempData["IsDispalyCustomFieldChildDDL"] = false;// For Campaign Child DDL Display Or Not
             string HeadHireachy = TempData["HeadHireachy"] as string;
             string BackParentHireachy = TempData["BackParentHireachy"] as string;
             string BackChildHireachy = TempData["BackChildHireachy"] as string;
@@ -8726,8 +8726,18 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
+                    {
+                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
+                        {
+                            TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+                        }
+                    }
+                    else
+                    {
                     TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
                 }
+            }
             }
             else
             {
@@ -8742,12 +8752,12 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 1]);
+                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
                 }
             }
             else
             {
-                if (ParentLabel == Common.RevenueCampaign)
+                if (ParentLabel == Common.RevenueCampaign && !string.IsNullOrEmpty(marsterCustomField))
                 {
                     TempData["BackChildLabel"] = childlabelType;
                 }
@@ -8778,6 +8788,14 @@ namespace RevenuePlanner.Controllers
 
             if (IsBackClick)
             {
+                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+                {
+                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
+                    {
+                        TempData["IsDispalyCustomFieldChildDDL"] = true;
+                    }
+                }
+                marsterCustomField = string.Empty;
                 BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
@@ -8839,6 +8857,10 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     TempData["BackId"] = "0";
+                    if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+                    {
+                        TempData["IsDispalyCustomFieldChildDDL"] = true;
+                    }
                 }
 
                 if (HeadHireachyArray.Count() > 0)
@@ -11215,7 +11237,7 @@ namespace RevenuePlanner.Controllers
 
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
@@ -11233,13 +11255,13 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueProgram))
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
 
                         _lstTactic = tacticlist.ToList();
-                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                        //if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
                         {
                             _lstTactic = _lstTactic.Where(t => t.PlanProgramId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanProgramId))
                                 .ToList();
@@ -11249,7 +11271,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueCampaign))
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueProgram;
                         }
@@ -11266,7 +11288,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueCampaign;
                         }
