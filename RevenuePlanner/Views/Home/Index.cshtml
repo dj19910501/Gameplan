@@ -931,7 +931,6 @@
             }
         }
         else {
-           
             UpdateCalenderView();
         }
     }
@@ -1894,15 +1893,15 @@ function AjaxRequest() {
     var StatusIds = filters.StatusIds;
 
 
-    if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+    @*if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         if (GetSelectedPlanNo > 1) {
             $('#PlanModulesSection').css("display", "none");
         }
         else {
             $('#PlanModulesSection').css("display", "block");
         }
-    }
-    else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+    }*@
+    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
         Planid = CurrentPlanId;
         GetSelectedPlanNo = 1;
