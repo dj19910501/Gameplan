@@ -924,6 +924,20 @@
     $("#PlanAllModule").css("display", "none");
 
     function UpdateResult() {
+       if (document.getElementById("liGrid").className == "active")
+        {
+             $("#CalenderView").hide();
+            $("#divgridview").show();
+            $.ajax({
+                url: '@Url.Content("~/Home/LoadHomeGrid/")',
+                data: { planId: filters.SelectedPlans.toString() },
+                success: function (result) {
+                    $("#divgridview").html('');
+                    $("#divgridview").html(result);
+
+                }
+            });
+        }
         requestPlanActiveTab(false);
         var SelectedPlanIds;
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
