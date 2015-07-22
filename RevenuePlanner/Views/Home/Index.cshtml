@@ -924,9 +924,9 @@
     $("#PlanAllModule").css("display", "none");
 
     function UpdateResult() {
-       if (document.getElementById("liGrid").className == "active")
-        {
-             $("#CalenderView").hide();
+        // added by devanshi for #1431
+        if (document.getElementById("liGrid").className == "active") {
+            $("#CalenderView").hide();
             $("#divgridview").show();
             $.ajax({
                 url: '@Url.Content("~/Home/LoadHomeGrid/")',
@@ -937,53 +937,55 @@
 
                 }
             });
-        }
-        requestPlanActiveTab(false);
-        var SelectedPlanIds;
-        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-            SelectedPlanIds = filters.SelectedPlans.toString();
-        }
+        }//end
         else {
-            SelectedPlanIds = CurrentPlanId;
-        }
-
-        SetAttributeData();
-
-        $('#hdnSelectedPlanIds').val(SelectedPlanIds);
-
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Home/SetSessionPlan/")',
-            dataType: "json",
-            async: false,
-            data: {
-                planids: SelectedPlanIds
-            },
-            success: function (data) {
-                if (data.isSuccess == true) {
-                    $("#CurrentPlanId").val(data.id);
-                    if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                        BindUpcomingActivites(SelectedPlanIds);
-                    }
-                    Currenttime = $('#ddlUpComingActivites').val();
-                    isQuater = Currenttime;
-                    SetBudget("#pbudget");
-                    SetPriceValue("#pMQLs");
-                    getViewByList = true;
-                    RefreshCurrentTab();
-                    GetHealderData(SelectedPlanIds);
-                    GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
-                }
+            requestPlanActiveTab(false);
+            var SelectedPlanIds;
+            if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                SelectedPlanIds = filters.SelectedPlans.toString();
             }
-        });
+            else {
+                SelectedPlanIds = CurrentPlanId;
+            }
 
-        // Session set in This Method :  Added By Bhavesh
+            SetAttributeData();
 
-        // Start - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
-        $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-        $('#errorMessageInspectPopup').slideUp(400);
-        // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
-        window.location.reload();
+            $('#hdnSelectedPlanIds').val(SelectedPlanIds);
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Home/SetSessionPlan/")',
+                dataType: "json",
+                async: false,
+                data: {
+                    planids: SelectedPlanIds
+                },
+                success: function (data) {
+                    if (data.isSuccess == true) {
+                        $("#CurrentPlanId").val(data.id);
+                        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                            BindUpcomingActivites(SelectedPlanIds);
+                        }
+                        Currenttime = $('#ddlUpComingActivites').val();
+                        isQuater = Currenttime;
+                        SetBudget("#pbudget");
+                        SetPriceValue("#pMQLs");
+                        getViewByList = true;
+                        RefreshCurrentTab();
+                        GetHealderData(SelectedPlanIds);
+                        GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
+                    }
+                }
+            });
+
+            // Session set in This Method :  Added By Bhavesh
+
+            // Start - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
+            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+            $('#errorMessageInspectPopup').slideUp(400);
+            // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
+            window.location.reload();
+        }
     }
 
     function removeByValue(arr, val) {
