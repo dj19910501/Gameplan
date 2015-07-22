@@ -14996,7 +14996,8 @@ font-size: 24px !important;
 .n1-form-main.padding-assortment
 {
     padding: 20px 0 0 20px;
-
+   white-space: normal;
+    width: 98%;
 }
 /*.n1-form-main .nl-field-toggle, .n1-form-main .nl-field-toggle:hover
  {
