@@ -282,6 +282,7 @@
                         GetCollaborators(CurrentPlanId); 
                         GetTacticTypelist(CurrentPlanId);
                         GetOwnerListForFilter(CurrentPlanId);
+                        LoadPlanGrid(CurrentPlanId);
                     }
                 }
                 PagePostRequest = false;
@@ -854,15 +855,7 @@
             $("#CalenderView").hide() ;
   $("#divgridview").show();
             //Call the function for grid view 
-  $.ajax({
-            url: '@Url.Content("~/Home/LoadHomeGrid/")',
-            data: { planId: filters.SelectedPlans.toString() },
-            success: function (result) {
-                $("#divgridview").html('');
-                $("#divgridview").html(result);
-
-            }
-        });
+           LoadPlanGrid(CurrentPlanId);
         }
     });
   
@@ -925,68 +918,85 @@
 
     function UpdateResult() {
         // added by devanshi for #1431
-        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-            $("#CalenderView").hide();
-            $("#divgridview").show();
-            $.ajax({
-                url: '@Url.Content("~/Home/LoadHomeGrid/")',
-                data: { planId: filters.SelectedPlans.toString() },
-                success: function (result) {
-                    $("#divgridview").html('');
-                    $("#divgridview").html(result);
-
-                }
-            });
-        }//end
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                $("#CalenderView").hide();
+                $("#divgridview").show();
+                LoadPlanGrid(CurrentPlanId);
+              
+            }
+            else
+            {
+                UpdateCalenderView();
+            }
+        }
         else {
-            requestPlanActiveTab(false);
-            var SelectedPlanIds;
-            if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                SelectedPlanIds = filters.SelectedPlans.toString();
-            }
-            else {
-                SelectedPlanIds = CurrentPlanId;
-            }
-
-            SetAttributeData();
-
-            $('#hdnSelectedPlanIds').val(SelectedPlanIds);
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Home/SetSessionPlan/")',
-                dataType: "json",
-                async: false,
-                data: {
-                    planids: SelectedPlanIds
-                },
-                success: function (data) {
-                    if (data.isSuccess == true) {
-                        $("#CurrentPlanId").val(data.id);
-                        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                            BindUpcomingActivites(SelectedPlanIds);
-                        }
-                        Currenttime = $('#ddlUpComingActivites').val();
-                        isQuater = Currenttime;
-                        SetBudget("#pbudget");
-                        SetPriceValue("#pMQLs");
-                        getViewByList = true;
-                        RefreshCurrentTab();
-                        GetHealderData(SelectedPlanIds);
-                        GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
-                    }
-                }
-            });
-
-            // Session set in This Method :  Added By Bhavesh
-
-            // Start - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
-            $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
-            $('#errorMessageInspectPopup').slideUp(400);
-            // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
-            //  window.location.reload();
+           
+            UpdateCalenderView();
         }
     }
+
+    //Modified By komal Rawal 
+    function UpdateCalenderView() {
+
+        requestPlanActiveTab(false);
+        var SelectedPlanIds;
+        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+            SelectedPlanIds = filters.SelectedPlans.toString();
+        }
+        else {
+            SelectedPlanIds = CurrentPlanId;
+        }
+
+        SetAttributeData();
+
+        $('#hdnSelectedPlanIds').val(SelectedPlanIds);
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/SetSessionPlan/")',
+            dataType: "json",
+            async: false,
+            data: {
+                planids: SelectedPlanIds
+            },
+            success: function (data) {
+                if (data.isSuccess == true) {
+                    $("#CurrentPlanId").val(data.id);
+                    if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                        BindUpcomingActivites(SelectedPlanIds);
+                    }
+                    Currenttime = $('#ddlUpComingActivites').val();
+                    isQuater = Currenttime;
+                    SetBudget("#pbudget");
+                    SetPriceValue("#pMQLs");
+                    getViewByList = true;
+                    RefreshCurrentTab();
+                    GetHealderData(SelectedPlanIds);
+                    GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime);
+                }
+            }
+        });
+
+        $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
+        $('#errorMessageInspectPopup').slideUp(400);
+    }
+    //End
+
+    function LoadPlanGrid(PlanID)
+    {
+        $.ajax({
+            url: '@Url.Content("~/Home/LoadHomeGrid/")',
+            data: { planId: PlanID.toString() },
+            success: function (result) {
+                $("#divgridview").html('');
+                $("#divgridview").html(result);
+
+            }
+        });
+
+    }
+
     function removeByValue(arr, val) {
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] == val) {
