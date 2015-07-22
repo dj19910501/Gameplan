@@ -317,9 +317,11 @@
 
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
+        myApp.showPleaseWait();
+
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvRevenueToPlan").load(_url);
-       
+        myApp.hidePleaseWait();
         formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
 
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {

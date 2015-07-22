@@ -8770,6 +8770,12 @@ namespace RevenuePlanner.Controllers
             if (BackIdArray.Count() > 1)
             {
                 TempData["BackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+
+                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
+                {
+                    TempData["IsDispalyCustomFieldChildDDL"] = true;
+                }
+
             }
             else
             {
