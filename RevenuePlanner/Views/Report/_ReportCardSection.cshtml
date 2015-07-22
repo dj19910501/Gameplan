@@ -447,7 +447,10 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlCampaignRevenueToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
                 });
+                if (parseInt(id) == 0) {
                
+                    $('#ddlCampaignRevenueToPlan').val('0');
+                }
                 marsterCustomField = marsterCustomField;
                 masterCustomFieldOptionId = masteroptionid;
                 fillCardProgramDropDown("0", type);

@@ -58,7 +58,7 @@
         var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
         _CardData = JSON.parse(_CardData);
         var _cardhtml = '';
-        var _title = '', _Inq_proj = '', _Inqgoal = '', _Inqpercentange = '', _Tql_proj = '', _Tqltgoal = '', _Tqlpercentange = '', _Cw_proj = '', _Cwgoal = '', _Cwpercentange = '', _Ads_proj = '', _Adsgoal = '', _Adspercentange = '';
+        var _masterParentLabel = '', _title = '', _Inq_proj = '', _Inqgoal = '', _Inqpercentange = '', _Tql_proj = '', _Tqltgoal = '', _Tqlpercentange = '', _Cw_proj = '', _Cwgoal = '', _Cwpercentange = '', _Ads_proj = '', _Adsgoal = '', _Adspercentange = '';
         var _Inqdata = '', _Tqldata = '', _Cwdata = '', _Adsdata = '';
         var _fieldId = '';
         //var rev = "Revenue", cost = "Cost", roi = "ROI";
@@ -83,6 +83,7 @@
             _btnDetailsId = 'buttonDtls_' + _fieldId;
             // End By Nishant Sheth
             _title = value.title;
+            _masterParentLabel = value.MasterParentlabel;
             _Inqdata = value.INQCardValues;
             _Tqldata = value.TQLCardValues;
             _Cwdata = value.CWCardValues;
@@ -135,8 +136,9 @@
             _cardhtml = _cardhtml + '<div>';
             _cardhtml = _cardhtml + '<p class="revanue-p">' + _title + '</p>';
             //_cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>';
+            var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + _title + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -363,7 +365,7 @@
         });
     }
 
-    function CardDetailsClick(parentlabel, Type, id, OptionMain, HeadTitleval) {
+    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval) {
 
         var HeadTitle = document.getElementById('head-title');
 
@@ -379,12 +381,232 @@
         var Qurt_Month = AllocatedBy;
         var Code = $("#ddlINQToPlan").val();
 
-        debugger;
+        
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvConversionToPlan").load(_url);
 
-    }
+        if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+            if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+                $("#ddlCampaignConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
 
+                // $("#ddlProgramConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                //  $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardProgramDropDown(id, Type);
+            }
+            else if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#ddlCampaignConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardTacticDropDown(id, Type);
+            }
+        }
+        else if (masterlabel == '@Common.CampaignCustomTitle') {
+            if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                // $("#ddlProgramConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                //  $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardProgramDropDown(id, Type);
+            }
+            else if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardTacticDropDown(id, Type);
+            }
+            else {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', '');
+
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardCampaignDropDown(id, Type);
+            }
+        }
+        else if (masterlabel == '@Common.ProgramCustomTitle') {
+            if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardTacticDropDown(id, Type);
+            }
+            else {
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardProgramDropDown(id, Type);
+            }
+        }
+        else if (masterlabel == '@Common.TacticCustomTitle') {
+            //  $("#ddlCampaignConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+            //CustomFieldChildDDL
+            //  $("#ddlProgramConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+            $("#CampaignChildDDL").css('display', '');
+            $("#CustomFieldChildDDL").css('display', 'none')
+            //  $("#ddlTacticConversionToPlan").css('display', '');
+            $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+            fillCardTacticDropDown(id, "");
+        }
+    }
+    function fillCardCampaignDropDown(campaignId, type) {
+
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        //campaignId = $('#ddlCampaignConversionToPlan').val();
+        if (campaignId > 0) {
+            if (type == '') {
+                masteroptionid = parseInt(campaignId);
+            }
+            else {
+                id = campaignId.toString();
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadCampaignDropDownDynamic/")',
+            data: {
+                marsterCustomField: marsterCustomField,
+                masterCustomFieldOptionId: masteroptionid
+            },
+            success: function (data) {
+                $("#ddlCampaignConversionToPlan").empty();
+                $("#ddlCampaignConversionToPlan").append("<option value='0'>All Campaigns</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlCampaignConversionToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
+                });
+
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
+                fillCardProgramDropDown("0", type);
+                $('#ddlCampaignConversionToPlan').multiselect("refresh");
+            },
+            error: function () {
+
+                $("#ddlCampaignConversionToPlan").empty();
+                $("#ddlCampaignConversionToPlan").append("<option value='0'>All Programs</option>");
+                fillCardProgramDropDown("0", type);
+                $('#ddlCampaignConversionToPlan').multiselect("refresh");
+                GoToLogin();
+            }
+        });
+    }
+    function fillCardProgramDropDown(campaignId, type) {
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        if (campaignId > 0) {
+            if (type === undefined || type == null || type.length <= 0) {
+                masteroptionid = parseInt(campaignId);
+            }
+            else {
+                id = campaignId.toString();
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadProgramDropDownDynamic/")',
+            data: {
+                id: id,
+                marsterCustomField: marsterCustomField,
+                masterCustomFieldOptionId: masteroptionid
+            },
+            success: function (data) {
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlProgramConversionToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
+                });
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
+                fillCardTacticDropDown(campaignId, type);
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+            },
+            error: function () {
+
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                fillCardTacticDropDown(campaignId, type);
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+                GoToLogin();
+            }
+        });
+    }
+    function fillCardTacticDropDown(programId, Type) {
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        if (programId > 0) {
+            if (Type == "") {
+                masteroptionid = parseInt(programId);
+            }
+            else {
+                id = programId.toString();
+            }
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadTacticDropDownDynamic/")',
+            data: {
+                id: id,
+                type: Type,
+                marsterCustomField: marsterCustomField,
+                masterCustomFieldOptionId: masteroptionid
+            },
+            success: function (data) {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlTacticConversionToPlan").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
+                });
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                //LoadDataRevenueToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                myApp.hidePleaseWait();
+            },
+            error: function () {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                //LoadDataRevenueToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                GoToLogin();
+            }
+        });
+    }
     /// Add By Nishant Sheth For Pagination and sorting: 03-Jul-2015
 
     function LoadPagination() {

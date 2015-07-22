@@ -8645,7 +8645,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp")
             {
-                #region ViewBag for Back Button
+                #region TempData for Back Button
                 TempData["BackParentLabel"] = Common.RevenueCampaign;
                 TempData["BackChildLabel"] = "";
                 TempData["BackId"] = "";
@@ -10948,7 +10948,7 @@ namespace RevenuePlanner.Controllers
         /// <param name= ParentLabel ,childlabelType , childId ,  option ,Quarterly, code> </param>
         /// <returns>Return json data of filtered combine chart and Conversiondatatable </returns>
         #region "Get combine chart and Conversiondatatable result based on filter -dashrath Prajapati"
-        public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp")
+        public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
@@ -11000,7 +11000,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp")
             {
-                #region ViewBag for Back Button
+                #region TempData for Back Button
                 TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
                 TempData["ConvBackChildLabel"] = "";
                 TempData["ConvBackId"] = "";
@@ -11035,7 +11035,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp" || isDetails)
             {
-                HeadHireachy = HeadHireachy + "," + BackHeadTitle;
+                HeadHireachy = HeadHireachy + "," + HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(BackHeadTitle));
                 BackParentHireachy = BackParentHireachy + "," + ParentLabel;
                 BackChildHireachy = BackChildHireachy + "," + childlabelType;
             }
@@ -11081,8 +11081,18 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
+                    {
+                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
+                        {
+                            TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+                        }
+                    }
+                    else
+                    {
                     TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
                 }
+            }
             }
             else
             {
@@ -11101,6 +11111,10 @@ namespace RevenuePlanner.Controllers
             if (BackIdArray.Count() > 1)
             {
                 TempData["ConvBackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
+                {
+                    TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
+                }
             }
             else
             {
@@ -11119,6 +11133,14 @@ namespace RevenuePlanner.Controllers
 
             if (IsBackClick)
             {
+                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+                {
+                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
+                    {
+                        TempData["IsDispalyCustomFieldChildDDL"] = true;
+                    }
+                }
+                marsterCustomField = string.Empty;
                 BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
@@ -11201,6 +11223,45 @@ namespace RevenuePlanner.Controllers
 
             #endregion
 
+            string customFieldOptionIdCardSection = string.Empty;
+            int customFieldIdCardSection = 0;
+            bool isTacticCustomFieldCardSection = false;
+            string customFieldTypeCardSection = string.Empty;
+            if (masterCustomFieldOptionId > 0)
+            {
+                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+                {
+                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                    List<int> campaignIds = new List<int>();
+                    campaignIds = TacticData.Select(p => p.TacticObj.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
+                }
+                else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
+                {
+                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                    List<int> programIds = new List<int>();
+                    programIds = TacticData.Select(p => p.TacticObj.PlanProgramId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticData = TacticData.Where(t => programIds.Contains(t.TacticObj.PlanProgramId)).ToList();
+                }
+                else if (marsterCustomField.Contains(Common.TacticCustomTitle))
+                {
+                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
+                    customFieldIdCardSection = mastercustomfieldIdInner;
+                    isTacticCustomFieldCardSection = true;
+                    customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == mastercustomfieldIdInner).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                    List<int> tacticIds = new List<int>();
+                    tacticIds = TacticData.Select(p => p.TacticObj.PlanTacticId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    customFieldOptionIdCardSection = customfiledvalue;
+                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticData = TacticData.Where(t => tacticIds.Contains(t.TacticObj.PlanTacticId)).ToList();
+                }
+            }
+
             try
             {
                 //PlanTacticIdsList
@@ -11248,7 +11309,7 @@ namespace RevenuePlanner.Controllers
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
 
-                        //_lstTactic = tacticlist.ToList();
+                        _lstTactic = tacticlist.ToList();
 
                         if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
                         {
@@ -11536,7 +11597,7 @@ namespace RevenuePlanner.Controllers
                 OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
 
 
-                CardSectionListModel = GetConversionCardSectionList(_tacticdata, OverviewModelList, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), Common.RevenueCampaign.ToString(), "", "", false, "", 0);
+                CardSectionListModel = GetConversionCardSectionList(_tacticdata, OverviewModelList, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, "", "", false, "", 0);
                 //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
                 TempData["ConversionCard"] = objCardSectionModel;
@@ -11800,7 +11861,7 @@ namespace RevenuePlanner.Controllers
                     objCardSection = new CardSectionListModel();
 
                     #region "Add Static Values to Model"
-                    objCardSection.title = strParentTitle;      // Set ParentTitle Ex. (Campaign1) 
+                    objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
                   
                     objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.

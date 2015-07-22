@@ -187,6 +187,9 @@
 
 
 <script type="text/javascript">
+    var marsterCustomField = '@Common.RevenueCampaign';
+    var masterCustomFieldOptionId = 0;
+
     var parentSummaryTab;
     var _childtopConversiontoPlanDDLId = "ddlTopChildConversionToPlan";
     var _parentValue;
@@ -251,7 +254,7 @@
 
         $('#ddlParentConversionSummery').bind('change', function () {
             var _parentValue = $(this).val();
-
+            marsterCustomField = _parentValue;
             if (_parentValue == _campaignLabel) {
                 $("#CustomFieldChildDDL").css('display', 'none');
                 $("#CampaignChildDDL").css('display', 'inline-block');
@@ -272,7 +275,7 @@
                     CustomProgramName: "@Common.ProgramCustomTitle",
                     CustomTacticName: "@Common.TacticCustomTitle"
                 });
-                //$("#ddlCampaignRevenueToPlan").multiselect('refresh');
+                //$("#ddlCampaignConversionToPlan").multiselect('refresh');
                 /*End: Refresh Campaign, Program, Tactic dropdowns*/
 
             }
@@ -389,7 +392,6 @@
         var ParentDrpVal = $("#ddlParentConversionSummery option:selected").val();
         var isParentChng = false;
         function LoadDataConversionToPlanByCampaign() {
-            debugger;
             var _childValue = '0';
            
             var id = '';
@@ -419,6 +421,8 @@
             var DrpChange = 'CampaignDrp';
             if (isParentChng) {
                 DrpChange = 'true';
+                Type = '';
+                id = _childValue;
             }
             // + "&DrpChange=" + (isParentChng == true) ? 'true' : 'CampaignDrp'
             var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
@@ -458,37 +462,6 @@
             }
             });*@
            @* // $("#ConversionCardID").load(@Url.Action("LoadConversionCardSectionPartial", new { cardModel = _cardDat }));*@
-        }
-
-
-        function loadcardsection() {
-            //TempData["CardData"] = revenue_cardsectionModel;
-            var _url = "@Url.Content("~/Report/LoadConversionCardSectionPartial/")";
-            $("#ConversionCardID").load(_url);
-        }
-        function ReloadConversionCardByCustomField() {
-            var parentlabel = $("#ddlParentConversionSummery").val();
-            var Code = $("#ddlINQToPlan").val();
-            var Type = '';
-            var id = '';
-            //var code = Code;
-            //id = _childvalue;
-
-            var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&DrpChange=" + 'true';
-            $("#ConversionCardID").load(_url);
-   }
-
-        function loadChildListData(parentOption, id) {
-
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetChildLabelData/")',
-                data: {
-                    ParentLabel: parentOption,
-                    selectOption: OptionMain,////This variable globally declare in parent view "Index"
-                    IsAllInclude: true
-                },
-                success: function (r) {
                     PopulateRevenueToPlanChildDDL(r, id);
                 }
             });
@@ -565,6 +538,7 @@
         $('#ddlTopChildConversionToPlan').change(function () {
             istrigger = true;
             var _childValue = $("#ddlTopChildConversionToPlan").val();
+			 masterCustomFieldOptionId = _childValue;
             //ReloadConversionToPlanByCustomField(_childValue);
             GetConversionToPlanByCustomFilter(_childValue);
 
@@ -612,7 +586,7 @@
                     id = campaignId.toString();
 
                 }
-            debugger;
+            
             var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
             $("#dvConversionToPlan").load(_url);
             @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
