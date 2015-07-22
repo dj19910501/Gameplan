@@ -4272,11 +4272,29 @@ function Quarter() {
             $("a#divimpTactic").removeClass('1');
             $(this).parent().addClass('1');
         }
+        displayConfirmCommon('impTacticCommonClick(' + idTactic + ');');
         $('.taskpopup').css('display', 'none');
-    });
+        });
 
+        function displayConfirmCommon(functionName) {
+            eval(functionName);
+     
+    }
 
-    function ShowModels(mode, section, id, ParentId, RequestedModule) {
+        //Dharmraj Start 8July2014 Common function to handle tactic click event
+    function impTacticCommonClick(id) {
+        if (id == 0) {
+            var idProgram = ImpTacticId;// $("a#divimpTactic.1").attr('data-id-program');
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
+            return false;
+        }
+        else {
+            ShowModels("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
+            return false;
+        }
+    }
+
+        function ShowModels(mode, section, id, ParentId, RequestedModule) {
         removeDefaultModalPopupBackgroungColor();
         modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 
