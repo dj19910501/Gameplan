@@ -2454,6 +2454,7 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceIdCW = objBaselineModel.IntegrationInstanceIdCW;
                         objModel.IntegrationInstanceIdINQ = objBaselineModel.IntegrationInstanceIdINQ;
                         objModel.IntegrationInstanceIdMQL = objBaselineModel.IntegrationInstanceIdMQL;
+                        objModel.IntegrationInstanceIdProjMgmt = objBaselineModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 22 July 2015 for PL#1448
                         objModel.ModifiedBy = Sessions.User.UserId;
                         objModel.ModifiedDate = DateTime.Now;
                         objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
@@ -2515,7 +2516,7 @@ namespace RevenuePlanner.Controllers
             }
 
             List<IntegrationSelectionModel> lstIntegrationOverview = new List<IntegrationSelectionModel>();
-            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL };
+            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL, objModel.IntegrationInstanceIdProjMgmt };
 
             //// creating List of model integration instance 
             var lstInstance = (from integrationInstance in objDbMrpEntities.IntegrationInstances
