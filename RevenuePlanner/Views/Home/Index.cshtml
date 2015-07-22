@@ -925,7 +925,7 @@
 
     function UpdateResult() {
         // added by devanshi for #1431
-       if (document.getElementById("liGrid").className.indexOf("active")>=0){
+        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
             $("#CalenderView").hide();
             $("#divgridview").show();
             $.ajax({
@@ -984,9 +984,9 @@
             $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
             $('#errorMessageInspectPopup').slideUp(400);
             // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
-      //  window.location.reload();
+            //  window.location.reload();
+        }
     }
-
     function removeByValue(arr, val) {
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] == val) {
