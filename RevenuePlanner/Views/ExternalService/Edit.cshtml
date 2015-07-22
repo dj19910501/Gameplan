@@ -74,6 +74,10 @@
                     {
                     @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
                     }
+                    else if (Model.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString())
+                    {
+                        @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
+                    }
 @* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
                     @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)
                 }

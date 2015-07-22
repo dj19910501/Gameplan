@@ -1286,6 +1286,8 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IsModelIntegrated = true;
                     //Start addition by Brad Gray for PL#1734
                     var intInstance = objModel.IntegrationInstance;
+                    List<string> instanceIntegrations = new List<string>();
+                   // if (objModel.IntegrationInstance != null) { instanceIntegrations.Add(objModel.IntegrationInstance.Title)}
                     ViewBag.ModelIntegrationType = intInstance.Instance;
                     //End addition by Brad Gray for PL#1734
                 }
@@ -2595,6 +2597,24 @@ namespace RevenuePlanner.Controllers
                     }
                     lstIntegrationOverview.Add(objIntSelection);
                 }
+                  else if (key.ToString() == "IntegrationInstanceIdProjMgmt") //added by Brad Gray for PL#1448
+                {
+                    var objInstance = lstInstance.Where(instance => instance.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt).FirstOrDefault();
+                    objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
+                    if (objInstance != null)
+                    {
+                        objIntSelection.Instance = objInstance.Instance;
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
+                    }
+                    else
+                    {
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                    }
+                    lstIntegrationOverview.Add(objIntSelection);
+                }
             }
 
             ViewBag.IsAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
@@ -2666,9 +2686,13 @@ namespace RevenuePlanner.Controllers
 
 
             ViewData["IntegrationInstances"] = lstInstance;
+            
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
             string elqType = Enums.IntegrationInstanceType.Eloqua.ToString();
+            string workfrontType = Enums.IntegrationInstanceType.WorkFront.ToString(); //Added by Brad Gray for PL#1448
             ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Code == insType);
+            ViewData["IntegrationInstancesProjMgmt"] = lstInstance.Where(instance => instance.Code == workfrontType); //Added by Brad Gray for PL#1448
+            ViewData["IntegrationInstancesWithoutProjMgmt"] = lstInstance.Where(instance => instance.Code != workfrontType); //Added by Brad Gray for PL#1448
 
             #region "Filtered MQL Eloqua Integration Instances based on Client Integration Permisssion"
             Guid clientId = Sessions.User.ClientId;

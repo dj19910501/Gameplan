@@ -385,7 +385,8 @@ namespace RevenuePlanner.Helpers
             {"IntegrationInstanceId","Push Tactic Data"},
             {"IntegrationInstanceIdINQ","Pull Responses"},
             {"IntegrationInstanceIdMQL","Pull Qualified Leads"},
-            {"IntegrationInstanceIdCW","Pull Closed Deals"}
+            {"IntegrationInstanceIdCW","Pull Closed Deals"},
+            {"IntegrationInstanceIdProjMgmt","Sync Project Managment"} //added by Brad Gray for PL#1488
         };
         /*End :Added by Mitesh Vaishnav for PL ticket #659*/
         #region Notification

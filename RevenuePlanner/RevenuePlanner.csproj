@@ -906,6 +906,7 @@
     <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
+    <Content Include="Views\ExternalService\_ProjectMgmt.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
