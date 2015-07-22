@@ -378,7 +378,8 @@ namespace RevenuePlanner.Helpers
             Eloqua,
             Salesforce,
             Marketo,
-            WorkFront
+            WorkFront,
+            
         }
         public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
         {

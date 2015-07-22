@@ -74,13 +74,14 @@
                     {
                     @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
                     }
-                    else if (Model.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString())
+
+                    @* Modified by Brad Gray on 07/22/2015 for PL ticket #1453*@
+                    if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString())
                     {
-                        @Html.Partial("~/Views/ExternalService/_Responses.cshtml", Model.GameplanDataTypePullRevenueModelList)
+                        @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)@* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
                     }
-@* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
-                    @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)
-                }
+                }   
+
                 else
                 {
                     <div class="accordion-group">
