@@ -1642,6 +1642,21 @@ namespace RevenuePlanner.Helpers
                 }
 
             }
+            else
+            {
+                string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                if (string.IsNullOrEmpty(MQLStageLabel))
+                {
+                    objHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString();
+                }
+                else
+                {
+                    objHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
+                }
+
+                objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
+
+            }
             return objHomePlanModelHeader;
         }
 

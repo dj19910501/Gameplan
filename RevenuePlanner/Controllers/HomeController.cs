@@ -97,6 +97,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPlanEditable = IsPlanEditable;
             ViewBag.IsPublished = isPublished;
             //End
+            //New Added 
+            ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
+
 
             //// Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
             //// Check insepct popup shared link validation to open insepct pop up as per link
@@ -414,8 +417,6 @@ namespace RevenuePlanner.Controllers
                 planYear = DateTime.Now.Year.ToString();
             }
 
-            //New Added 
-            ViewBag.RedirectType = false;
 
             //// Get list of planIds from filtered plans
             var filteredPlanIds = lstPlans.Where(plan => plan.Year == planYear).ToList().Select(plan => plan.PlanId).ToList();

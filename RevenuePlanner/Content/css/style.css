@@ -5579,6 +5579,33 @@ a.link-gray {
     width: 700px !important;
 }
 
+@media (max-width: 1920px) {
+     /*by bheru 21-07-2015*/
+.full-width-header {
+        width: 97.9%;
+    }
+}
+@media (max-width: 1600px) {
+
+    /*by bheru 21-07-2015*/
+    .full-width-header {
+        width: 97.44%
+    }
+}
+@media (max-width: 1440px) {
+
+    /*by bheru 21-07-2015*/
+    .full-width-header {
+        width: 97.15%;
+    }
+}
+@media (max-width: 1366px) {
+
+    /*by bheru 21-07-2015*/
+    .full-width-header {
+        width:97.05%;
+    }
+}
 @media (max-width: 1306px) {
 
     .nav-tabs .title-header h2 {
@@ -12371,7 +12398,7 @@ li.close-list {
     line-height: 38px;
     margin-right: -3.3px;
     padding: 0.5% 6%;
-    width: 12.95%;
+    width: 12.96%;
     background-color: #f2f2f2;
 }
 
@@ -14131,6 +14158,10 @@ div.clue-bottom-default .cluetip-arrows {
     .volumechart {
         margin-left: 87px;
     }
+ /*by bheru 21-07-2015*/
+       .full-width-header {
+  width: 96.85%;
+}
 }
 
 .clue-tip-message-orange {
@@ -14633,15 +14664,9 @@ div.clue-bottom-default .cluetip-arrows {
  .region-data .data {
   border-right: 1px solid #e8e7e7;
   margin: 22px 0;
-  padding: 0;
-  text-align: center;
-  word-wrap: break-word;
+    padding: 0 3.4%;
 }
- #dvRevenueCardSection .region-data .data
-{
-/*width: 215px;*/
-  width: 17%;
-}
+
    /* by bheru 16-07-2015*/
  #ConversionCardID .region-data .data
 {
@@ -14967,23 +14992,23 @@ padding:0;
 font-size: 24px !important;
 }
 
-/*.n1-form-main.padding-assortment
+
+.n1-form-main.padding-assortment
 {
     padding: 20px 0 0 20px;
 
 }
-.n1-form-main .nl-field-toggle, .n1-form-main .nl-field-toggle:hover
+/*.n1-form-main .nl-field-toggle, .n1-form-main .nl-field-toggle:hover
  {
   color: #5693b3;
       font-family: source_sans_proregular;
-    font-weight: 700;
-    text-decoration: underline;
-}
+    font-weight: 700;/   text-decoration: underline;
+}*/
 .n1-form-main .nl-ti-text .nl-field-toggle {
-    background:none;
+   
      text-decoration: none;
 
-}*/
+}
 
 .letter-space {
    letter-spacing: 7px;
@@ -15009,13 +15034,43 @@ font-size: 24px !important;
 }
 .full-width-header h2
 {
+   color: #000;
+    font-family: source_sans_prosemibold;
     font-size: 29px !important;
-  font-family: source_sans_probold;
-font-weight:normal
+    font-weight: 500;
 }
 
 .create-plan-form {
 min-height:590px;
+}
+
+.n1-form-main .nl-field ul {
+  left: -25px;
+ 
+   top: 79%;
+}
+
+.full-width-header .white-chart #chart2 {
+    margin-left:31px !important;
+  
+}
+.create-plan-btn {
+min-width:16.5% !important;
+}
+.full-width-header .plantitle .nl-field-toggle {
+  display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 319px;
+  
+}
+.n1-form-main .nl-field ul {
+display:none;
+}
+.n1-form-main .nl-field.nl-field-open ul
+{
+  display:block;
 }
 
 /*End*/
