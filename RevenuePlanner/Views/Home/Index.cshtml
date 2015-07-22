@@ -682,6 +682,7 @@
 }
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
+<div id="divgridview" class="" style="display: none;"></div>
 
 <div id="CalenderView" class="tab-content all-height cf" style="padding-right: 18px;">
     <div class="tab-pane active all-height" id="panel-656352">
@@ -844,13 +845,24 @@
         $(this).addClass("active pull-left");
         var id = $(this).attr('id');
         if (id == "liCalender") {
-            $("#CalenderView").show()
+            $("#CalenderView").show();
+            $("#divgridview").hide();
             RefreshCurrentTab();
           
         }
         else {
-            $("#CalenderView").hide()
-            //Call the function for grid view
+            $("#CalenderView").hide() ;
+  $("#divgridview").show();
+            //Call the function for grid view 
+  $.ajax({
+            url: '@Url.Content("~/Home/LoadHomeGrid/")',
+            data: { planId: filters.SelectedPlans.toString() },
+            success: function (result) {
+                $("#divgridview").html('');
+                $("#divgridview").html(result);
+
+            }
+        });
         }
     });
   

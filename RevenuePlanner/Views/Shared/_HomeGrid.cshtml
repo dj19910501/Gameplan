@@ -1,0 +1,233 @@
+﻿
+<link href="@Url.Content("~/Content/css/dhtmlxtreegrid.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxTreeGrid.js")">
+</script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxgrid_split.js")">
+</script>
+
+<div>
+    <table width="100%">
+        <tr>
+            <td width="100%">
+                <div id="gridbox" width="100%" height="600px" style="background-color:white;"></div>
+            </td>
+            <td valign="top"></td>
+        </tr>
+        <tr>
+            <td>
+                <textarea id="mytextarea1" style="width:0px;height:0px;display:none;">@ViewBag.xmlstring</textarea>
+            </td>
+        </tr>
+
+    </table>
+</div>
+
+<script type="text/javascript">
+    var HomeGrid;
+
+    $(document).ready(
+        BindHomeGrid()
+       );
+    function Action(type, id)
+    {
+        alert("type=" + type + "<br/>id=" + id);
+    }
+    function BindHomeGrid() {
+        HomeGrid = new dhtmlXGridObject('gridbox');
+        HomeGrid.setImagePath("../../../codebase/imgs/");
+        //  HomeGrid.enableTreeGridLines();
+        HomeGrid.enableDragAndDrop(true);
+        //HomeGrid.setDragBehavior("sibling-next");
+        HomeGrid.init();
+        HomeGrid.attachEvent("onEditCell", doOnEditCell);
+        HomeGrid.attachEvent("onDrag", doOnDrag);
+        //   HomeGrid.splitAt(1);
+        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
+        HomeGrid.setColumnHidden(2, true);
+        $("#mytextarea1").val('');
+
+
+    }
+    function doOnDrag(sid, tid) {
+
+        var dragSourcePtype = HomeGrid.getParentId(sid).split(".")[0];
+        var dragSourcetype = sid.split(".")[0].toString()
+        var dragTargettype = tid.split(".")[0];
+        if (dragSourcetype == "tact") {
+            if (dragSourcePtype == dragTargettype) {
+                var splanid = HomeGrid.cells("plan." + sid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
+                var dplanid = HomeGrid.cells("plan." + tid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
+                if (dplanid == splanid) {
+                    var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
+                    var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
+                    $.ajax({
+
+                        type: 'POST',
+
+                        url: '@Url.Action("SaveGridDetail")', // we are calling json method
+                        data: { UpdateType: dragSourcetype, UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
+                        dataType: 'json',
+
+                        success: function (states) {
+
+                        }
+                    });
+                    return true;
+                }
+                else
+                    alert("Tactic can move only to same plan program."); return false;
+            }
+            else
+                alert(sid.split(".")[0].toString() + " can not move to " + dragTargettype.toString()); return false;
+        }
+        else {
+            alert("only tactic can move");
+            return false;
+        }
+
+    }
+    function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+        var updatetype = rowId.split(".")[0];
+        var Id;
+        var UpdateColumn;
+        var UpdateVal;
+
+        var isAssortment = true;
+        var mqlConversion = 0;
+        if (stage == 2) // start edit Shipping column
+        {
+            // var combo = HomeGrid.getCombo(4);
+            // for getting column value using name
+            var sdateindex = HomeGrid.getColIndexById('startdate');
+            var edateindex = HomeGrid.getColIndexById('enddate');
+            var idindex = HomeGrid.getColIndexById('id');
+            var costindex = HomeGrid.getColIndexById('plannedcost');
+            var value = HomeGrid.cells(rowId, index).getValue();
+            // end
+            var Colind = this.cell.cellIndex;
+            UpdateColumn = HomeGrid.getColLabel(Colind, 1);
+            if (UpdateColumn == "" || UpdateColumn == null)
+                UpdateColumn = HomeGrid.getColLabel(Colind, 0);
+            Id = HomeGrid.cells(rowId, idindex).getValue();
+
+            if (UpdateColumn == "Start Date") {
+
+                var startyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], sdateindex).getValue()).getFullYear();
+                var edate = HomeGrid.cells(rowId, edateindex).getValue();
+                if (!CheckDateYear(nValue, startyear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+                if (!validateDateCompare(nValue, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
+
+                if (updatetype == "prog") {
+                    var tsdate = HomeGrid.getUserData(rowId, "tsdate");
+                    if (!validateDateCompare(nValue, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
+                }
+                if (updatetype == "camp") {
+                    var psdate = HomeGrid.getUserData(rowId, "psdate");
+                    var tsdate = HomeGrid.getUserData(rowId, "tsdate");
+                    if (!validateDateCompare(nValue, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
+                        return false;
+                    }
+                    if (!validateDateCompare(nValue, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
+                        return false;
+                    }
+                }
+
+            }
+            if (UpdateColumn == "End Date") {
+                var endyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], edateindex).getValue()).getFullYear();
+                var sdate = HomeGrid.cells(rowId, sdateindex).getValue();
+
+                if (!CheckDateYear(nValue, endyear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+                if (!validateDateCompare(sdate, nValue, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
+
+                if (updatetype == "prog") {
+                    var tedate = HomeGrid.getUserData(rowId, "tedate");
+                    if (!validateDateCompare(tedate, nValue, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) return false;
+                }
+                if (updatetype == "camp") {
+                    var pedate = HomeGrid.getUserData(rowId, "pedate");
+                    var tedate = HomeGrid.getUserData(rowId, "tedate");
+                    if (!validateDateCompare(pedate, nValue, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
+                        return false;
+                    }
+                    if (!validateDateCompare(tedate, nValue, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
+                        return false;
+                    }
+                }
+            }
+            if (UpdateColumn == "Tactic Type") {
+
+                var tacticTypeId = nValue;
+                var pmql = 0;
+                var pcost = 0;
+                var projectedStageValue = 0;
+
+                if (tacticTypeId != '') {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
+                        data: { tacticTypeId: tacticTypeId },
+                        success: function (data) {
+                            pcost = data.revenue;
+                            projectedStageValue = data.projectedStageValue;
+                            // HomeGrid.cells(rowId, 8).setValue(data.stageTitle);
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '@Url.Content("~/Home/CalculateMQL")',
+                                data: {
+                                    tactictid: parseInt(Id), TacticTypeId: parseInt(tacticTypeId), projectedStageValue: projectedStageValue, RedirectType: isAssortment, isTacticTypeChange: true
+                                },
+                                success: function (data) {
+                                    if (data.mql == 'N/A') {
+                                        HomeGrid.cells(rowId, 9).setValue(data.mql);
+                                    }
+                                    else {
+                                        mqlConversion = data.mql;
+                                        var mqlValue = FormatCommas(mqlConversion.toString(), false);
+                                        HomeGrid.cells(rowId, 9).setValue(mqlValue);
+                                    }
+                                    HomeGrid.cells(rowId, 8).setValue('$' + number_format(data.revenue.toString(), 0, 0, ','));
+                                    if (nValue != oValue) {
+                                        UpdateVal = nValue;
+                                        $.ajax({
+
+                                            type: 'POST',
+
+                                            url: '@Url.Action("SaveGridDetail")', // we are calling json method
+                                            data: { UpdateType: updatetype, UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(Id) },
+                                            dataType: 'json',
+
+                                            success: function (states) {
+
+                                            }
+                                        });
+                                    }
+                                }
+
+                            });
+
+                        }
+                    });
+                }
+                return true;
+
+            }
+            if (nValue != oValue) {
+                UpdateVal = nValue;
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("SaveGridDetail")', // we are calling json method
+                    data: { UpdateType: updatetype, UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(Id) },
+                    dataType: 'json',
+                    success: function (states) {
+
+                    }
+                });
+            }
+            return true;
+        }
+    }
+
+
+</script>

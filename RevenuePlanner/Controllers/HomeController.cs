@@ -10,7 +10,9 @@ using System.Globalization;
 using RevenuePlanner.BDSService;
 using System.Data.Objects.SqlClient;
 using System.Web;
+using System.Xml;
 using System.Data;
+using Integration;
 
 /*
  *  Author: Manoj Limbachiya
@@ -4477,6 +4479,731 @@ namespace RevenuePlanner.Controllers
             }
             return _model;
         }
+
+			  //Added by Devanshi gandhi for #1431
+        #region load Gridview for home
+        /// <summary>
+        /// Action method to load gridview
+        /// </summary>
+        /// <CreatedBy>Devanshi gandhi</CreatedBy> 
+        /// <CreatedDate>10/7/2015</CreatedDate>
+        /// <param name="planId">plan Id</param>
+        /// <returns>returns partial view HomeGrid</returns>
+        public ActionResult LoadHomeGrid(string PlanId)
+        {
+
+            string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
+            string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+
+            string xmlstring = string.Empty;
+            string xmlUserlist = string.Empty;
+            string stageMQL = Enums.Stage.MQL.ToString();
+            double MQLs = 0;
+            List<User> lstUserDetails = new List<User>();
+            try
+            {
+                int levelMQL = objDbMrpEntities.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL) && stage.IsDeleted == false).Level.Value;
+
+                string StageTitle = objDbMrpEntities.Stages.Where(stg => stg.ClientId == Sessions.User.ClientId && stg.Level == levelMQL).FirstOrDefault().Title;
+                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                if (lstClientUsers.Count() > 0)
+                {
+                    string strUserList = string.Join(",", lstClientUsers);
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                    }
+                }
+
+                xmlstring = "<?xml version='1.0' encoding='iso-8859-1'?>";
+                xmlstring = xmlstring + "<rows>";
+
+                xmlstring = xmlstring + " <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Planned Cost,Tactic Type,Owner,Revenue," + StageTitle + "</param>";
+                //xmlstring =xmlstring+"        <param>color:#CCCCCC;bgcolor=#FFFFFF,color:#CCCCCC;bgcolor=#FFFFFF;,color:#CCCCCC;bgcolor=#FFFFFF;,color:#CCCCCC;bgcolor=#FFFFFF;,color:#CCCCCC;bgcolor=#FFFFFF;,color:#CCCCCC;bgcolor=#FFFFFF;,color:#CCCCCC;bgcolor=#FFFFFF;,color:#CCCCCC;bgcolor=#FFFFFF;</param>";
+                xmlstring = xmlstring + " </call></beforeInit>";
+
+                xmlstring = xmlstring + "<column width='25' type='tree' align='left' sort='str' id='taskname'>Task Name</column>";
+              
+                xmlstring = xmlstring + "<column type='ro' align='center' id='add' width='5' ></column>";
+                xmlstring = xmlstring + "<column type='ro' align='center' id='id' >id</column>";
+                xmlstring = xmlstring + "<column width='10' type='dhxCalendar' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>";
+                xmlstring = xmlstring + "<column width='10' type='dhxCalendar' align='center' id='enddate'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='10' type='price[=sum]' align='center' id='plannedcost'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='10' type='ro' align='center' id='tactictype'>#cspan</column>";
+
+                xmlstring = xmlstring + "<column width='10' type='co' align='center' id='owner' class='ui-multiselect ui-widget ui-state-default ui-corner-all'>#cspan";
+                if (lstUserDetails != null)
+                {
+                    foreach (var userlist in lstUserDetails)
+                    {
+                        xmlUserlist = xmlUserlist + "<option value='" + userlist.UserId + "'>" + string.Format("{0} {1}", HttpUtility.HtmlEncode(userlist.FirstName), HttpUtility.HtmlEncode(userlist.LastName)) + "</option>";
+                    }
+                }
+                xmlstring = xmlstring + xmlUserlist + " </column>";
+                xmlstring = xmlstring + "<column width='10' type='price[=sum]' align='center' id='revenue'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='10' type='ro[=sum]' align='center' id='qleads'>#cspan</column>";
+                xmlstring = xmlstring + "<settings><colwidth>%</colwidth> </settings> ";
+                xmlstring = xmlstring + "</head>";
+
+                //  List<Plan> lstplandetail = objDbMrpEntities.Plans.Where(m => m.PlanId == planId).ToList();
+                List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
+
+                List<Plan> lstplandetail = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
+
+                int PlanCnt = 1, CampCnt = 1, ProgCnt = 1, TactCnt = 1;
+
+                int planid = 0;
+                string type = string.Empty;
+                type = "Plan";
+                foreach (var planitem in lstplandetail)
+                {
+                    planid = planitem.PlanId;
+                    
+                    string Startdate = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                    string Enddate = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Max(r => r.EndDate).ToString("MM/dd/yyyy");
+
+                    xmlstring = xmlstring + "<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'>";
+
+                    xmlstring = xmlstring + "<cell>" + planitem.Title + "</cell> ";
+                    xmlstring = xmlstring + "<cell><![CDATA[<a href='#' onclick='return Action(\"plan\","+planitem.PlanId+");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                    xmlstring = xmlstring + "<cell>" + planitem.PlanId + "</cell> ";
+                
+                    xmlstring = xmlstring + "<cell>" + Startdate + "</cell> ";
+                    xmlstring = xmlstring + " <cell>" + Enddate + "</cell> ";
+                    xmlstring = xmlstring + " <cell></cell> ";
+                    xmlstring = xmlstring + " <cell>--</cell> ";
+                    xmlstring = xmlstring + " <cell>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> ";
+
+                    xmlstring = xmlstring + " <cell ></cell> ";
+                    xmlstring = xmlstring + " <cell ></cell> ";
+                    var lstcampaigndetail = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Take(3);
+                    CampCnt = 1;
+                    type="Campaign";
+                    foreach (var Campaignitem in lstcampaigndetail)
+                    {
+                        xmlstring = xmlstring + "<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'>";
+
+                        xmlstring = xmlstring + "<cell  bgColor='#C6EBF3'>" + Campaignitem.Title + "</cell> ";
+                        xmlstring = xmlstring + "<cell bgColor='#C6EBF3'><![CDATA[<a href='#' onclick='return Action(\"campaign\"," + Campaignitem.PlanCampaignId + ");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                        xmlstring = xmlstring + "<cell>" + Campaignitem.PlanCampaignId + "</cell> ";
+                     
+                        xmlstring = xmlstring + "<cell bgColor='#C6EBF3'>" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> ";
+                        xmlstring = xmlstring + " <cell bgColor='#C6EBF3'>" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ";
+                        xmlstring = xmlstring + " <cell bgColor='#C6EBF3'></cell> ";
+                        xmlstring = xmlstring + " <cell bgColor='#C6EBF3'>--</cell> ";
+                        xmlstring = xmlstring + " <cell bgColor='#C6EBF3'>" + Common.GetUserName(Campaignitem.CreatedBy.ToString()) + "</cell> ";
+
+                        xmlstring = xmlstring + " <cell bgColor='#C6EBF3'></cell> ";
+                        xmlstring = xmlstring + " <cell  bgColor='#C6EBF3'></cell> ";
+                        List<Plan_Campaign_Program> programdetail = objDbMrpEntities.Plan_Campaign_Program.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
+                        var tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.Plan_Campaign_Program.PlanCampaignId == Campaignitem.PlanCampaignId && _tactic.IsDeleted.Equals(false)).ToList();
+                        type = "Program";
+                        if (programdetail != null && programdetail.Count > 0)
+                        {
+                            string pStartdate = programdetail.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                            string pEnddate = programdetail.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                            xmlstring = xmlstring + "<userdata name='psdate'>" + pStartdate + "</userdata>";
+                            xmlstring = xmlstring + "<userdata name='pedate'>" + pEnddate + "</userdata>";
+                            if (tactic != null && tactic.Count > 0)
+                            {
+                                string tStartdate = tactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                string tEnddate = tactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                xmlstring = xmlstring + "<userdata name='tsdate'>" + tStartdate + "</userdata>";
+                                xmlstring = xmlstring + "<userdata name='tedate'>" + tEnddate + "</userdata>";
+                            }
+                            ProgCnt = 1;
+                            foreach (var Programitem in programdetail)
+                            {
+
+
+                                xmlstring = xmlstring + "<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8'>";
+
+                                xmlstring = xmlstring + "<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell> ";
+                                xmlstring = xmlstring + "<cell bgColor='#DFF0F8'><![CDATA[<a href='#' onclick='return Action(" + Programitem.PlanProgramId + ");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                                xmlstring = xmlstring + "<cell>" + Programitem.PlanProgramId + "</cell> ";
+                               
+                                xmlstring = xmlstring + "<cell bgColor='#DFF0F8'>" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell> ";
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ";
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'></cell> ";
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>--</cell> ";
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>" + Common.GetUserName(Programitem.CreatedBy.ToString()) + "</cell> ";
+
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'></cell> ";
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'></cell> ";
+
+
+                                List<Plan_Campaign_Program_Tactic> pcpt = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanProgramId.Equals(Programitem.PlanProgramId) && pcptobj.IsDeleted == false).ToList();
+                                if (pcpt != null && pcpt.Count > 0)
+                                {
+                                    string tStartdate = pcpt.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                    string tEnddate = pcpt.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                    xmlstring = xmlstring + "<userdata name='tsdate'>" + tStartdate + "</userdata>";
+                                    xmlstring = xmlstring + "<userdata name='tedate'>" + tEnddate + "</userdata>";
+                                    TactCnt = 1;
+                                    type = "Tactic";
+                                    foreach (var Tacticitem in pcpt)
+                                    {
+                                        double budgetAllocation = objDbMrpEntities.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => tacCost.PlanTacticId == Tacticitem.PlanTacticId).ToList().Sum(tacCost => tacCost.Value);
+
+                                        var cost = (Tacticitem.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == Tacticitem.PlanTacticId && s.IsDeleted == false)).Count() > 0
+                                   && Tacticitem.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByNone && Tacticitem.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy != statusAllocatedByDefault
+                                   ?
+                                   (budgetAllocation > 0 ? budgetAllocation : (Tacticitem.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanTacticId == Tacticitem.PlanTacticId && s.IsDeleted == false)).Sum(a => a.Cost))
+                                    : Tacticitem.Cost;
+                                        TacticStageValue varTacticStageValue = Common.GetTacticStageRelationForSingleTactic(Tacticitem, false);
+                                        int tacticStageLevel = Convert.ToInt32(Tacticitem.Stage.Level);
+                                        if (tacticStageLevel < levelMQL)
+                                        {
+                                            MQLs = varTacticStageValue.MQLValue;
+                                        }
+                                        else if (tacticStageLevel == levelMQL)
+                                        {
+                                            MQLs = Convert.ToDouble(Tacticitem.ProjectedStageValue);
+                                        }
+                                        else if (tacticStageLevel > levelMQL)
+                                        {
+                                            MQLs = 0;
+
+                                        }
+                                        MQLs = Math.Round((double)MQLs, 0, MidpointRounding.AwayFromZero);
+                                        xmlstring = xmlstring + "<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + TactCnt + "' bgColor='#E4F1E1'>";
+
+                                        xmlstring = xmlstring + "<cell bgColor='#E4F1E1'>" + Tacticitem.Title + "</cell> ";
+                                        xmlstring = xmlstring + "<cell bgColor='#E4F1E1'><![CDATA[<a href='#' onclick='return Action("+type+"," + Tacticitem.PlanTacticId + ");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                                        xmlstring = xmlstring + "<cell>" + Tacticitem.PlanTacticId + "</cell> ";
+                                      
+                                        xmlstring = xmlstring + "<cell bgColor='#E4F1E1'>" + Tacticitem.StartDate.ToString("MM/dd/yyyy") + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + Tacticitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1' type='ed'>" + cost + "</cell> ";
+
+                                        xmlstring = xmlstring + " <cell type='co' bgColor='#E4F1E1' xmlcontent='true'>" + Tacticitem.TacticType.Title;
+                                        string xmltactictype = string.Empty;
+                                        List<TacticType> tblTacticTypes = objDbMrpEntities.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false && tactype.ModelId == 212).ToList();
+                                        foreach (var typelist in tblTacticTypes)
+                                        {
+                                            xmltactictype = xmltactictype + "<option value='" + typelist.TacticTypeId + "'>" + typelist.Title + "</option>";
+                                        }
+                                        xmlstring = xmlstring + xmltactictype + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + Common.GetUserName(Tacticitem.CreatedBy.ToString()) + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + Math.Round(varTacticStageValue.RevenueValue, 2) + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + MQLs + "</cell> ";
+                                        xmlstring = xmlstring + "</row>";
+                                        TactCnt = TactCnt + 1;
+
+                                    }
+                                }
+                                xmlstring = xmlstring + "</row>";
+                                ProgCnt = ProgCnt + 1;
+                            }
+
+                        }
+
+                        xmlstring = xmlstring + "</row>";
+                        CampCnt = CampCnt + 1;
+                    }
+
+                    xmlstring = xmlstring + "</row>";
+                    PlanCnt = PlanCnt + 1;
+                }
+                xmlstring = xmlstring + "</rows>";
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            ViewBag.xmlstring = xmlstring;
+            return PartialView("_HomeGrid");
+        }
+        #endregion
+        #region Save gridview detail from home
+        /// <summary>
+        /// Added By:Devanshi Gandhi
+        /// Action to Save Tactic from grid.
+        /// </summary>
+        /// <param name="form">Form object of Plan_Campaign_Program_TacticModel.</param>
+
+        /// <returns>Returns Action Result.</returns>
+        [HttpPost]
+        public ActionResult SaveGridDetail(string UpdateType, string UpdateColumn, string UpdateVal, int id = 0)
+        {
+            string PeriodChar = "Y";
+            Guid oldOwnerId = new Guid();
+            int oldProgramId = 0;
+            string oldProgramTitle = "";
+            int oldCampaignId = 0;
+            try
+            {
+                #region update tactic detail
+                if (UpdateType == "tact")
+                {
+                    Plan_Campaign_Program_Tactic pcpobj = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcptobjw => pcptobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+
+                    // update tactic detail
+                    if (UpdateColumn == "Task Name")
+                    {
+                        var pcpvar = (from pcpt in objDbMrpEntities.Plan_Campaign_Program_Tactic
+                                      join pcp in objDbMrpEntities.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                      join pc in objDbMrpEntities.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                      where pcpt.Title.Trim().ToLower().Equals(UpdateVal) && !pcpt.PlanTacticId.Equals(12345) && pcpt.IsDeleted.Equals(false)
+                                      && pcp.PlanProgramId == pcpobj.Plan_Campaign_Program.PlanProgramId    //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
+                                      select pcp).FirstOrDefault();
+                        if (pcpvar != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                            return Json(new { IsDuplicate = true, redirect = Url.Action("LoadSetup", new { id = id }), errormsg = strDuplicateMessage });
+                        }
+                        else
+                            pcpobj.Title = UpdateVal;
+
+                    }
+                    else if (UpdateColumn == "Start Date")
+                    {
+                        //  var pstartdate = objDbMrpEntities.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.StartDate = Convert.ToDateTime(UpdateVal);
+                            var PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
+                            if (PStartDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.StartDate = Convert.ToDateTime(UpdateVal);
+                            }
+
+                            var CStartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
+
+                            if (CStartDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = Convert.ToDateTime(UpdateVal);
+                            }
+                            //objDbMrpEntities.Entry(pcpobj).State = EntityState.Modified;
+                            //objDbMrpEntities.SaveChanges();
+                        }
+                    }
+                    else if (UpdateColumn == "End Date")
+                    {
+                        //  var pstartdate = objDbMrpEntities.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.EndDate = Convert.ToDateTime(UpdateVal);
+                            var PEndDate = pcpobj.Plan_Campaign_Program.EndDate;
+                            if (PEndDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.EndDate = Convert.ToDateTime(UpdateVal);
+                            }
+
+                            var CEndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate;
+
+                            if (CEndDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = Convert.ToDateTime(UpdateVal);
+                            }
+                            //objDbMrpEntities.Entry(pcpobj).State = EntityState.Modified;
+                            //objDbMrpEntities.SaveChanges();
+                        }
+                    }
+                    else if (UpdateColumn == "Planned Cost")
+                    {
+                        if ((objDbMrpEntities.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == id).ToList()).Count() == 0 ||
+                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
+                                    || pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                        {
+                            pcpobj.Cost = Convert.ToDouble(UpdateVal);
+                        }
+
+                        List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                        double totalLineitemCost = 0;
+                        tblTacticLineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
+                        List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
+                        var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
+                        List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlist.Contains(lic.PlanLineItemId)).ToList();
+
+                        if (objtotalLineitemCost != null && objtotalLineitemCost.Count() > 0)
+                            totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
+                        if (totalLineitemCost > Convert.ToDouble(UpdateVal))
+                        {
+                            UpdateVal = totalLineitemCost.ToString();
+                        }
+                        if (Convert.ToDouble(UpdateVal) > pcpobj.Cost)
+                        {
+                            var diffcost = Convert.ToDouble(UpdateVal) - pcpobj.Cost;
+                            int startmonth = pcpobj.StartDate.Month;
+
+                            if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                            {
+                                pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
+
+                            }
+                            else
+                            {
+                                Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                objTacticCost.PlanTacticId = pcpobj.PlanTacticId;
+                                objTacticCost.Period = PeriodChar + startmonth;
+                                objTacticCost.Value = diffcost;
+                                objTacticCost.CreatedBy = Sessions.User.UserId;
+                                objTacticCost.CreatedDate = DateTime.Now;
+                                objDbMrpEntities.Entry(objTacticCost).State = EntityState.Added;
+                            }
+
+                        }
+                        else if (Convert.ToDouble(UpdateVal) < pcpobj.Cost)
+                        {
+                            var diffcost = pcpobj.Cost - Convert.ToDouble(UpdateVal);
+                            int endmonth = 12;
+                            while (diffcost > 0 && endmonth != 0)
+                            {
+                                if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
+                                {
+                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
+                                    double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                                    var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                                    if (DiffMonthCost > 0)
+                                    {
+                                        if (DiffMonthCost > diffcost)
+                                        {
+                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                            diffcost = 0;
+                                        }
+                                        else
+                                        {
+                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                            diffcost = diffcost - DiffMonthCost;
+                                        }
+                                    }
+                                }
+                                if (endmonth > 0)
+                                {
+                                    endmonth -= 1;
+                                }
+
+                            }
+
+                        }
+
+                        pcpobj.Cost = Convert.ToDouble(UpdateVal);
+
+                    }
+                    else if (UpdateColumn == "Tactic Type")
+                    {
+                        pcpobj.TacticTypeId = Convert.ToInt32(UpdateVal);
+                    }
+                    else if (UpdateColumn == "Owner")
+                    {
+                        oldOwnerId = pcpobj.CreatedBy;
+                        pcpobj.CreatedBy = new Guid(UpdateVal);
+                    }
+                    else if (UpdateColumn == "ParentID")
+                    {
+                        oldProgramId = pcpobj.PlanProgramId;
+                        oldCampaignId = pcpobj.Plan_Campaign_Program.PlanCampaignId;
+                        oldProgramTitle = pcpobj.Plan_Campaign_Program.Title;
+                        pcpobj.PlanProgramId = Convert.ToInt32(UpdateVal);
+                        objDbMrpEntities.Entry(pcpobj).State = EntityState.Modified;
+                        objDbMrpEntities.SaveChanges();
+                        pcpobj = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+                        DateTime PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
+                        DateTime PEndDate = pcpobj.Plan_Campaign_Program.EndDate;
+                        DateTime CStartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
+                        DateTime CEndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate;
+                        DateTime StartDate = pcpobj.StartDate;
+                        DateTime EndDate = pcpobj.EndDate;
+                        if (PStartDate > StartDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.StartDate = StartDate;
+                        }
+
+                        if (EndDate > PEndDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.EndDate = EndDate;
+                        }
+
+                        if (CStartDate > StartDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = StartDate;
+                        }
+
+                        if (EndDate > CEndDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = EndDate;
+                        }
+
+                    }
+                    objDbMrpEntities.Entry(pcpobj).State = EntityState.Modified;
+                    objDbMrpEntities.SaveChanges();
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                    if (result > 0)
+                    {
+                        if (UpdateColumn == "Owner")
+                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), pcpobj.Plan_Campaign_Program.Title.ToString(), pcpobj.Title.ToString());
+                        if (UpdateColumn == "ParentID")
+                        {
+                            if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
+                            {
+                                if (pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
+                                {
+                                    ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic, true);
+                                    externalIntegration.Sync();
+
+                                }
+                            }
+                            if (oldProgramId > 0)
+                            {
+                                var actionSuffix = oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
+                                Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix);
+                            }
+                            Common.ChangeProgramStatus(pcpobj.PlanProgramId, false);
+                            var PlanCampaignId = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pcpobj.PlanProgramId).Select(program => program.PlanCampaignId).Single();
+                            Common.ChangeCampaignStatus(PlanCampaignId, false);
+                            if (oldProgramId > 0)
+                            {
+                                Common.ChangeProgramStatus(oldProgramId, false);
+                                Common.ChangeCampaignStatus(oldCampaignId, false);
+                            }
+                        }
+                    }
+                }
+                #endregion
+                #region update program detail
+
+                if (UpdateType == "prog")
+                {
+                    Plan_Campaign_Program pcpobj = objDbMrpEntities.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
+                    if (UpdateColumn == "Task Name")
+                    {
+                        var pcpvar = (from pcp in objDbMrpEntities.Plan_Campaign_Program
+                                      join pc in objDbMrpEntities.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                      where pcp.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower()) && !pcp.PlanProgramId.Equals(id) && pcp.IsDeleted.Equals(false)
+                                      && pc.PlanCampaignId == pcpobj.Plan_Campaign.PlanCampaignId
+                                      select pcp).FirstOrDefault();
+                        //// if duplicate record exist then return with duplication message.
+                        if (pcpvar != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                            return Json(new { IsSaved = false, errormsg = strDuplicateMessage }, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                            pcpobj.Title = UpdateVal;
+                    }
+                    else if (UpdateColumn == "Start Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.StartDate = Convert.ToDateTime(UpdateVal);
+
+                            if (pcpobj.Plan_Campaign.StartDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign.StartDate = Convert.ToDateTime(UpdateVal);
+                            }
+                        }
+                    }
+                    else if (UpdateColumn == "End Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.EndDate = Convert.ToDateTime(UpdateVal);
+                            if (Convert.ToDateTime(UpdateVal) > pcpobj.Plan_Campaign.EndDate)
+                            {
+                                pcpobj.Plan_Campaign.EndDate = Convert.ToDateTime(UpdateVal);
+                            }
+                        }
+                    }
+                    else if (UpdateColumn == "Owner")
+                    {
+                        oldOwnerId = pcpobj.CreatedBy;
+                        pcpobj.CreatedBy = new Guid(UpdateVal);
+                    }
+                    objDbMrpEntities.Entry(pcpobj).State = EntityState.Modified;
+                    objDbMrpEntities.SaveChanges();
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                    if (result > 0)
+                    {
+                        if (UpdateColumn == "Owner")
+                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString());
+
+                    }
+                }
+
+
+                #endregion
+                #region update Campaign detail
+                if (UpdateType == "camp")
+                {
+                    int planId = objDbMrpEntities.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(id)).FirstOrDefault().PlanId;
+
+                    Plan_Campaign pcobj = objDbMrpEntities.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(id) && pcobjw.IsDeleted.Equals(false)).FirstOrDefault();
+                    if (UpdateColumn == "Task Name")
+                    {
+                        var pc = objDbMrpEntities.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower())
+                            && !plancampaign.PlanCampaignId.Equals(id))).FirstOrDefault();
+
+                        //// If record exist then return duplicatino message.
+                        if (pc != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                            return Json(new { isSaved = false, msg = strDuplicateMessage });
+                        }
+                        else
+                            pcobj.Title = UpdateVal;
+                    }
+                    else if (UpdateColumn == "Start Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                            pcobj.StartDate = Convert.ToDateTime(UpdateVal);
+
+                    }
+                    else if (UpdateColumn == "End Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                            pcobj.EndDate = Convert.ToDateTime(UpdateVal);
+
+                    }
+                    else if (UpdateColumn == "Owner")
+                    {
+                        oldOwnerId = pcobj.CreatedBy;
+                        pcobj.CreatedBy = new Guid(UpdateVal);
+                    }
+                    objDbMrpEntities.Entry(pcobj).State = EntityState.Modified;
+                    objDbMrpEntities.SaveChanges();
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                    if (result > 0)
+                    {
+                        if (UpdateColumn == "Owner")
+                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title);
+
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { });
+        }
+        #endregion
+
+        public JsonResult CalculateMQL(int tactictid, int TacticTypeId, double projectedStageValue, bool RedirectType, bool isTacticTypeChange)
+        {
+            DateTime StartDate = new DateTime();
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int tacticStageLevel = 0;
+            int levelMQL = objDbMrpEntities.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL) && stage.IsDeleted == false).Level.Value;
+
+            if (isTacticTypeChange)
+            {
+                tacticStageLevel = Convert.ToInt32(objDbMrpEntities.TacticTypes.FirstOrDefault(t => t.TacticTypeId == TacticTypeId).Stage.Level);
+            }
+
+
+            StartDate = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == tactictid).Select(t => t.StartDate).FirstOrDefault();
+
+            int modelId = objDbMrpEntities.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).FirstOrDefault();
+
+            Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
+            objTactic.StartDate = StartDate;
+
+            objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
+            objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
+            objTactic.ProjectedStageValue = projectedStageValue;
+            var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
+            double calculatedMQL = 0;
+            double CalculatedRevenue = 0;
+            calculatedMQL = lstTacticStageRelation.MQLValue;
+            CalculatedRevenue = lstTacticStageRelation.RevenueValue;
+            CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
+            calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
+            if (tacticStageLevel < levelMQL)
+            {
+                return Json(new { mql = calculatedMQL, revenue = CalculatedRevenue });
+            }
+            else if (tacticStageLevel == levelMQL)
+            {
+                return Json(new { mql = projectedStageValue, revenue = CalculatedRevenue });
+            }
+            else if (tacticStageLevel > levelMQL)
+            {
+                return Json(new { mql = "N/A", revenue = CalculatedRevenue });
+            }
+            else
+            {
+                return Json(new { mql = 0, revenue = CalculatedRevenue });
+            }
+
+
+
+        }
+
+        #region "Send Email Notification For Owner changed"
+        public void SendEmailnotification(Guid oldOwnerID, Guid NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title)
+        {
+
+            try
+            {
+                //Send Email Notification For Owner changed.
+                if (NewOwnerID != oldOwnerID && NewOwnerID != Guid.Empty)
+                {
+                    if (Sessions.User != null)
+                    {
+                        List<string> lstRecepientEmail = new List<string>();
+                        List<User> UsersDetails = new List<BDSService.User>();
+                        var csv = string.Concat(NewOwnerID.ToString(), ",", oldOwnerID.ToString(), ",", Sessions.User.UserId.ToString());
+
+                        try
+                        {
+                            UsersDetails = objBDSUserRepository.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                        }
+                        catch (Exception e)
+                        {
+                            ErrorSignal.FromCurrentContext().Raise(e);
+
+
+                        }
+
+                        var NewOwner = UsersDetails.Where(u => u.UserId == NewOwnerID).Select(u => u).FirstOrDefault();
+                        var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                        if (NewOwner.Email != string.Empty)
+                        {
+                            lstRecepientEmail.Add(NewOwner.Email);
+                        }
+                        string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                        string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+
+                        if (lstRecepientEmail.Count > 0)
+                        {
+                            // string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
+                            Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), "");// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                        }
+                    }
+                }
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+        }
+        #endregion
 
         #endregion
     }
