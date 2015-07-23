@@ -267,13 +267,19 @@ namespace Integration.WorkFront
             bool syncError = false;
             try
             {
-                //List<string> projectIDs = this.RetrieveProjectIDs();
+                //Retrieve list of all Models tied to the integratininstance and deployed to integration
+                List<Model> modelList = db.Models.Where(model => model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && model.IsDeleted == false).ToList(); //is there a flag for if a model is integrated?
+                foreach(var model in modelList)
+                {
+                    syncError = (syncError || SyncModel(model));
+                }
                 //Retrieves list of all tactics tied to the integrationinstance and deployed to integration
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true ).ToList();
-                foreach (var tactic in tacticList)
-                {
-                     syncError = (syncError || SyncTactic(tactic));
-                }
+                    foreach (var tactic in tacticList)
+                    {
+	                     syncError = (syncError || SyncTactic(tactic));
+	                }
+                
             }
             catch(Exception ex)
             {
@@ -283,6 +289,23 @@ namespace Integration.WorkFront
             return syncError;
             
        }
+
+        private bool SyncModel(Model model)
+        {
+            bool syncError = false;
+            //update WorkFront templates for the model
+            try
+            {
+                JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { fields = "ID" });
+            }
+            catch
+            {
+                syncError = true;
+                __errorMessage = "Failed to Sync Model";
+            }
+           
+            return syncError;
+        }
 
         /// <summary>
         /// Tactic Level sync method 
