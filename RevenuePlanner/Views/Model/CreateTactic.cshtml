@@ -84,7 +84,7 @@
         }
 
         //Start Brad Gray PL # 1374
-        if (ModelIntegrationType==Enums.IntegrationInstanceType.WorkFront.ToString())
+        if (ViewBag.isIntegratedWithWorkFront)
         {
             <label>WorkFront Template</label>
             <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>

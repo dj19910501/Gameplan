@@ -1285,10 +1285,10 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.IsModelIntegrated = true;
                     //Start addition by Brad Gray for PL#1734
-                    var intInstance = objModel.IntegrationInstance;
-                    List<string> instanceIntegrations = new List<string>();
-                   // if (objModel.IntegrationInstance != null) { instanceIntegrations.Add(objModel.IntegrationInstance.Title)}
-                    ViewBag.ModelIntegrationType = intInstance.Instance;
+                    var intInstanceProjMgmt = objModel.IntegrationInstance4;
+                     bool isIntegratedWithWorkFront = false;
+                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString())) { isIntegratedWithWorkFront = true; }
+                    ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                     //End addition by Brad Gray for PL#1734
                 }
                 else

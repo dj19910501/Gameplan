@@ -436,7 +436,7 @@ namespace Integration.WorkFront
                 //End push to WorkFront only sync
 
                 //Begin read only sync
-                
+                tactic.TacticCustomName = (string)project["data"]["name"];
                 if (_mappingTactic.ContainsValue(Fields.WorkFrontField.WORKFRONTPROJECTSTATUS.ToAPIString()))
                 {
                     CustomField_Entity customField;
