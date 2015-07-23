@@ -4480,8 +4480,8 @@ namespace RevenuePlanner.Controllers
             }
             return _model;
         }
-
-			  //Added by Devanshi gandhi for #1431
+        #endregion
+        //Added by Devanshi gandhi for #1431
         #region load Gridview for home
         /// <summary>
         /// Action method to load gridview
@@ -4570,7 +4570,7 @@ namespace RevenuePlanner.Controllers
                     xmlstring = xmlstring + "<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'>";
 
                     xmlstring = xmlstring + "<cell>" + planitem.Title + "</cell> ";
-                    xmlstring = xmlstring + "<cell><![CDATA[<a href='#' onclick='return Action(\"plan\","+planitem.PlanId+");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                    xmlstring = xmlstring + "<cell><![CDATA[<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" title=\"" + planitem.Title + "\">]]></cell>";
                     xmlstring = xmlstring + "<cell>" + planitem.PlanId + "</cell> ";
                 
                     xmlstring = xmlstring + "<cell>" + Startdate + "</cell> ";
@@ -4581,7 +4581,7 @@ namespace RevenuePlanner.Controllers
 
                     xmlstring = xmlstring + " <cell ></cell> ";
                     xmlstring = xmlstring + " <cell ></cell> ";
-                    var lstcampaigndetail = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Take(3);
+                    var lstcampaigndetail = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
                     type="Campaign";
                     foreach (var Campaignitem in lstcampaigndetail)
@@ -4589,7 +4589,7 @@ namespace RevenuePlanner.Controllers
                         xmlstring = xmlstring + "<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'>";
 
                         xmlstring = xmlstring + "<cell  bgColor='#C6EBF3'>" + Campaignitem.Title + "</cell> ";
-                        xmlstring = xmlstring + "<cell bgColor='#C6EBF3'><![CDATA[<a href='#' onclick='return Action(\"campaign\"," + Campaignitem.PlanCampaignId + ");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                        xmlstring = xmlstring + "<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" title=\"" + Campaignitem.Title + "\">]]></cell>";
                         xmlstring = xmlstring + "<cell>" + Campaignitem.PlanCampaignId + "</cell> ";
                      
                         xmlstring = xmlstring + "<cell bgColor='#C6EBF3'>" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> ";
@@ -4621,10 +4621,10 @@ namespace RevenuePlanner.Controllers
                             {
 
 
-                                xmlstring = xmlstring + "<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8'>";
+                                xmlstring = xmlstring + "<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>";
 
                                 xmlstring = xmlstring + "<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell> ";
-                                xmlstring = xmlstring + "<cell bgColor='#DFF0F8'><![CDATA[<a href='#' onclick='return Action(" + Programitem.PlanProgramId + ");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                                xmlstring = xmlstring + "<cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" title=\"" + Programitem.Title + "\">]]></cell>";
                                 xmlstring = xmlstring + "<cell>" + Programitem.PlanProgramId + "</cell> ";
                                
                                 xmlstring = xmlstring + "<cell bgColor='#DFF0F8'>" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell> ";
@@ -4674,7 +4674,7 @@ namespace RevenuePlanner.Controllers
                                         xmlstring = xmlstring + "<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + TactCnt + "' bgColor='#E4F1E1'>";
 
                                         xmlstring = xmlstring + "<cell bgColor='#E4F1E1'>" + Tacticitem.Title + "</cell> ";
-                                        xmlstring = xmlstring + "<cell bgColor='#E4F1E1'><![CDATA[<a href='#' onclick='return Action("+type+"," + Tacticitem.PlanTacticId + ");'><img src='../Content/images/icon-plus_in_circle.png'></a>]]></cell>";
+                                        xmlstring = xmlstring + "<cell bgColor='#E4F1E1'><![CDATA[<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + Tacticitem.PlanTacticId + "\" title=\"" + Tacticitem.Title + "\">]]></cell>";
                                         xmlstring = xmlstring + "<cell>" + Tacticitem.PlanTacticId + "</cell> ";
                                       
                                         xmlstring = xmlstring + "<cell bgColor='#E4F1E1'>" + Tacticitem.StartDate.ToString("MM/dd/yyyy") + "</cell> ";
@@ -5206,7 +5206,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #endregion
+      
     }
 
     public class ProgressModel

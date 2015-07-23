@@ -333,6 +333,8 @@
     <Content Include="Content\css\dhtmlxgrid.css" />
     <Content Include="Content\css\dhtmlxtreegrid.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
+    <Content Include="Content\css\DHTMLX\dhtmlxgrid.css" />
+    <Content Include="Content\css\DHTMLX\dhtmlxtreegrid.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
@@ -714,13 +716,7 @@
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
     <None Include="Service References\BDSService\BDSService1.disco" />
-    <Content Include="Scripts\dhtmlx.js" />
     <Content Include="Scripts\dhtmlxchart.js" />
-    <Content Include="Scripts\dhtmlxcombo.js" />
-    <Content Include="Scripts\dhtmlxgrid.js" />
-    <Content Include="Scripts\dhtmlXGrid_excell_combo.js" />
-    <Content Include="Scripts\dhtmlxgrid_split.js" />
-    <Content Include="Scripts\dhtmlxtreegrid.js" />
     <Content Include="Scripts\jquery.cluetip.js" />
     <Content Include="Scripts\jquery.cookie.js" />
     <Content Include="Scripts\jquery.form.js" />
@@ -735,7 +731,13 @@
     <Content Include="Scripts\js\check.js" />
     <Content Include="Scripts\js\dhtmlxchart.js" />
     <Content Include="Scripts\js\DHTMLX\danddcontrol.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlx.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxcombo.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgantt.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgrid.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlXGrid_excell_combo.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxgrid_split.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid.js" />
     <Content Include="Scripts\js\highcharts.js" />
     <Content Include="Scripts\js\html5shiv.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.js" />
@@ -981,7 +983,7 @@
     <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
-    <Content Include="Views\Shared\_HomeGrid.cshtml" />
+    <Content Include="Views\Home\_HomeGrid.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>

@@ -1,8 +1,8 @@
 ﻿
-<link href="@Url.Content("~/Content/css/dhtmlxtreegrid.css")" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxTreeGrid.js")">
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxTreeGrid.js")">
 </script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxgrid_split.js")">
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid_split.js")">
 </script>
 
 <div>
@@ -32,6 +32,16 @@
     {
         //alert("type=" + type + "<br/>id=" + id);
     }
+    $(".grid_add").click(function (e) {
+
+        var type = $(this).attr('id');
+        var name = $(this).attr('alt');
+        var title = $(this).attr('title');
+
+        DisplayPopUpMenu(type, name, title + "/true", e);
+
+    });
+
     function BindHomeGrid() {
         HomeGrid = new dhtmlXGridObject('gridbox');
         HomeGrid.setImagePath("../../../codebase/imgs/");
@@ -41,6 +51,7 @@
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
         HomeGrid.attachEvent("onDrag", doOnDrag);
+        HomeGrid.attachEvent("onMouseOver", function () { return false });
         //   HomeGrid.splitAt(1);
         HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
         HomeGrid.setColumnHidden(2, true);
