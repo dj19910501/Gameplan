@@ -8598,7 +8598,7 @@ namespace RevenuePlanner.Controllers
         {
             string returnValue = string.Empty;
 
-            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null)////Modiefied by Mitesh Vaishnav on 12/08/2014 for PL ticket #690
+            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null && objModel.IntegrationInstanceIdProjMgmt == null) ////Modiefied by Mitesh Vaishnav on 12/08/2014 for PL ticket #690 and Brad Gray 07/23/2015 PL#1448
                 returnValue = "N/A";
             else
             {

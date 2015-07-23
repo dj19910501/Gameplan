@@ -41,9 +41,10 @@ namespace RevenuePlanner.Models
         public Nullable<int> IntegrationInstanceIdINQ { get; set; }
         public Nullable<int> IntegrationInstanceIdMQL { get; set; }
         public Nullable<int> IntegrationInstanceIdCW { get; set; }
+        public Nullable<int> IntegrationInstanceIdProjMgmt { get; set; }
         public System.Guid ClientId { get; set; }
         public double AverageDealSize { get; set; }
-        public Nullable<int> IntegrationInstanceIdProjMgmt { get; set; }
+        
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }

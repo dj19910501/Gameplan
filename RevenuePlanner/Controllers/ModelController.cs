@@ -1152,8 +1152,8 @@ namespace RevenuePlanner.Controllers
             }
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
-            //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null)
+            //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683 and Brad Gray on 07/23/2015 for PL#1448
+            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
             {
                 ViewBag.IsModelIntegrated = true;
             }
@@ -1281,7 +1281,7 @@ namespace RevenuePlanner.Controllers
             {
                 var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                 //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null)
+                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
                 {
                     ViewBag.IsModelIntegrated = true;
                     //Start addition by Brad Gray for PL#1734
@@ -1355,7 +1355,7 @@ namespace RevenuePlanner.Controllers
         {
             var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null)
+            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
             {
                 ViewBag.IsModelIntegrated = true;
             }
@@ -2320,6 +2320,7 @@ namespace RevenuePlanner.Controllers
                             newModel.IntegrationInstanceIdCW = null;
                             newModel.IntegrationInstanceIdINQ = null;
                             newModel.IntegrationInstanceIdMQL = null;
+                            newModel.IntegrationInstanceIdProjMgmt = null; //Added Brad Gray 23 July 2015 PL#1448
                             newModel.EffectiveDate = null;
                         }
                     }
@@ -2337,6 +2338,7 @@ namespace RevenuePlanner.Controllers
                         newModel.IntegrationInstanceIdCW = oldModel.IntegrationInstanceIdCW;
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
                         newModel.IntegrationInstanceIdMQL = oldModel.IntegrationInstanceIdMQL;
+                        newModel.IntegrationInstanceIdProjMgmt = oldModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
                         newModel.ClientId = oldModel.ClientId;
                         newModel.AverageDealSize = oldModel.AverageDealSize;
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 
@@ -2661,6 +2663,7 @@ namespace RevenuePlanner.Controllers
             objBaselineModel.IntegrationInstanceIdCW = objModel.IntegrationInstanceIdCW;
             objBaselineModel.IntegrationInstanceIdINQ = objModel.IntegrationInstanceIdINQ;
             objBaselineModel.IntegrationInstanceIdMQL = objModel.IntegrationInstanceIdMQL;
+            objBaselineModel.IntegrationInstanceIdProjMgmt = objModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
             ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
