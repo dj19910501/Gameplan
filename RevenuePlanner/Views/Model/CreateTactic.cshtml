@@ -87,15 +87,17 @@
         if (ViewBag.isIntegratedWithWorkFront)
         {
             <label>WorkFront Template</label>
-            <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
+    <span class="simpleSelectBox">
+        @Html.DropDownListFor(model => model.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewData["WorkFrontInstanceTemplates"], "ID" , "Template_Name"), "None", new { @class = "hide" })
+    </span>
         }
         //End Brad Gray PL # 1374
     }
 
-    
+
 
 }
-        </div>
+</div>
         <!--End content-->
 
         <div class="content dark">
