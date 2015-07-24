@@ -1328,6 +1328,7 @@ namespace RevenuePlanner.Controllers
                 objTacticTypeMdoel.IsDeployedToIntegration = objTacticType.IsDeployedToIntegration;
                 objTacticTypeMdoel.StageId = objTacticType.StageId;
                 objTacticTypeMdoel.ModelId = objTacticType.ModelId;
+                objTacticTypeMdoel.WorkFront_Template = objTacticType.WorkFront_Template;
                 //// added by Dharmraj, ticket #592 : Tactic type data model
                 ViewBag.IsDeployed = objTacticType.IsDeployedToModel;
 

@@ -144,10 +144,23 @@ namespace Integration
         private void SyncTactic()
         {
             /// Write query to get integration instance id and integration type.
-            _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
-            if (_integrationInstanceId.HasValue)
+            int? integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+            int? integrationInstanceProjectManagmentId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
+           
+
+            //Modified by Brad Gray 07/24/2015 for WorkFront sync and separating instance ids
+            if (integrationInstanceId.HasValue) 
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+            }
+            else if (integrationInstanceProjectManagmentId.HasValue) 
+            {
+                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationInstanceProjectManagmentId).IntegrationType.Code;
+                _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
+            }
+            if (_integrationType != null && _integrationInstanceId.HasValue)
+            {
                 IdentifyIntegration();
             }
         }
