@@ -138,6 +138,8 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
         <AssociationConnector Association="MRPModel.FK_Model_Model1" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="1" PointY="1" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

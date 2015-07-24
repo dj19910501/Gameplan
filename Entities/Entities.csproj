@@ -130,6 +130,9 @@
     <Compile Include="Models\IntegrationTypeAttribute.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IntegrationWorkFrontTemplate.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\LineItemType.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

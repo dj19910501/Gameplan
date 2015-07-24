@@ -387,6 +387,16 @@
           <Property Name="AttributeType" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="IntegrationWorkFrontTemplates">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="TemplateId" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="Template Name" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="IsDeleted" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="LineItemType">
           <Key>
             <PropertyRef Name="LineItemTypeId" />
@@ -1183,6 +1193,18 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_IntegrationInstanceId">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontTemplates" Type="Self.IntegrationWorkFrontTemplates" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontTemplates">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_IntegrationInstanceLog_IntegrationInstance">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
           <End Role="IntegrationInstanceLog" Type="Self.IntegrationInstanceLog" Multiplicity="*" />
@@ -1728,6 +1750,7 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
           <EntitySet Name="IntegrationInstanceSection" EntityType="Self.IntegrationInstanceSection" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationType" EntityType="Self.IntegrationType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="Self.IntegrationTypeAttribute" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IntegrationWorkFrontTemplates" EntityType="Self.IntegrationWorkFrontTemplates" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItemType" EntityType="Self.LineItemType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterTacticType" EntityType="Self.MasterTacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Model" EntityType="Self.Model" Schema="dbo" store:Type="Tables" />
@@ -1874,6 +1897,10 @@ FROM [dbo].[Plan_Campaign_Program_Tactic_Actual] AS [Plan_Campaign_Program_Tacti
           <AssociationSet Name="FK_IntegrationInstanceExternalServer_IntegrationInstance" Association="Self.FK_IntegrationInstanceExternalServer_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="IntegrationInstanceExternalServer" EntitySet="IntegrationInstanceExternalServer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstanceId" Association="Self.FK_IntegrationInstanceId">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="IntegrationWorkFrontTemplates" EntitySet="IntegrationWorkFrontTemplates" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstanceLog_IntegrationInstance" Association="Self.FK_IntegrationInstanceLog_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
@@ -2405,6 +2432,11 @@ FROM [dbo].[Plan_Campaign_Program_Tactic_Actual] AS [Plan_Campaign_Program_Tacti
             <End Role="Model" EntitySet="Models" />
             <End Role="Model1" EntitySet="Models" />
           </AssociationSet>
+          <EntitySet Name="IntegrationWorkFrontTemplates" EntityType="MRPModel.IntegrationWorkFrontTemplate" />
+          <AssociationSet Name="FK_IntegrationInstanceId" Association="MRPModel.FK_IntegrationInstanceId">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="IntegrationWorkFrontTemplate" EntitySet="IntegrationWorkFrontTemplates" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -2672,6 +2704,7 @@ FROM [dbo].[Plan_Campaign_Program_Tactic_Actual] AS [Plan_Campaign_Program_Tacti
           <NavigationProperty Name="SyncFrequency" Relationship="MRPModel.FK_SyncFrequency_IntegrationInstance" FromRole="IntegrationInstance" ToRole="SyncFrequency" />
           <NavigationProperty Name="IntegrationInstance_UnprocessData" Relationship="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" FromRole="IntegrationInstance" ToRole="IntegrationInstance_UnprocessData" />
           <NavigationProperty Name="Models4" Relationship="MRPModel.FK_Model_IntegrationInstanceProjMgmt" FromRole="IntegrationInstance" ToRole="Model" />
+          <NavigationProperty Name="IntegrationWorkFrontTemplates" Relationship="MRPModel.FK_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontTemplate" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -4289,6 +4322,29 @@ FROM [dbo].[Plan_Campaign_Program_Tactic_Actual] AS [Plan_Campaign_Program_Tacti
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="IntegrationWorkFrontTemplate">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationInstanceId" Type="Int32" Nullable="false" />
+          <Property Name="TemplateId" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="Template_Name" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="IsDeleted" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceId" FromRole="IntegrationWorkFrontTemplate" ToRole="IntegrationInstance" />
+        </EntityType>
+        <Association Name="FK_IntegrationInstanceId">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontTemplate" Role="IntegrationWorkFrontTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontTemplate">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5205,6 +5261,17 @@ FROM [dbo].[Plan_Campaign_Program_Tactic_Actual] AS [Plan_Campaign_Program_Tacti
                 <ScalarProperty Name="EloquaCampaignID" ColumnName="EloquaCampaignID" />
                 <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontTemplates">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontTemplate">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontTemplates">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="Template_Name" ColumnName="Template Name" />
+                <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

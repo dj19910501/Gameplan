@@ -29,6 +29,7 @@ namespace RevenuePlanner.Models
             this.Models3 = new HashSet<Model>();
             this.IntegrationInstance_UnprocessData = new HashSet<IntegrationInstance_UnprocessData>();
             this.Models4 = new HashSet<Model>();
+            this.IntegrationWorkFrontTemplates = new HashSet<IntegrationWorkFrontTemplate>();
         }
     
         public int IntegrationInstanceId { get; set; }
@@ -64,5 +65,6 @@ namespace RevenuePlanner.Models
         public virtual SyncFrequency SyncFrequency { get; set; }
         public virtual ICollection<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
         public virtual ICollection<Model> Models4 { get; set; }
+        public virtual ICollection<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
     }
 }

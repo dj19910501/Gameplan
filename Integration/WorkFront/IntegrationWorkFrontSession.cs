@@ -220,36 +220,42 @@ namespace Integration.WorkFront
         /// <returns>returns flag for sync error</returns>
         public bool SyncData(out List<SyncError> lstSyncError)
         {
-            lstSyncError = new List<SyncError>();    
+            lstSyncError = new List<SyncError>();
+            try
+            {
+                // Insert log into IntegrationInstanceSection
+                _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
+                _isResultError = false;
+                SetMappingDetails();
+                if (EntityType.Tactic.Equals(_entityType)) //_entityType is Tactic on tactic approval
+                {
+                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _entityID).FirstOrDefault();
+                    List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                    // CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                    List<int> plnaIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
+                    _isResultError = SyncTactic(planTactic);
+                    db.SaveChanges();
+                }
+                else
+                {
+                    _isResultError = this.SyncInstanceData(); //this must find all tactics and sync
+                    db.SaveChanges();
+                }
 
-            // Insert log into IntegrationInstanceSection
-            _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
-            _isResultError = false;
-            SetMappingDetails();
-            if (EntityType.Tactic.Equals(_entityType)) //_entityType is Tactic on tactic approval
-            {
-                Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _entityID).FirstOrDefault();
-                List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-               // CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                List<int> plnaIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
-                _isResultError = SyncTactic(planTactic);
-                db.SaveChanges();
+                if (_isResultError)
+                {
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _errorMessage);
+                }
+                else
+                {
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
+                }
             }
-            else
-            {
-                _isResultError = this.SyncInstanceData(); //this must find all tactics and sync
-                db.SaveChanges();
+            catch(Exception ex) {
+                _errorMessage = "Error in Sync Data : " + ex.Message;
+                _isResultError = true;
             }
-
-            if (_isResultError)
-            {
-                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _errorMessage);
-            }
-            else
-            {
-                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
-            }
-
+        
             return _isResultError;
         }
 
@@ -297,6 +303,43 @@ namespace Integration.WorkFront
             try
             {
                 JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { fields = "ID" });
+                List<IntegrationWorkFrontTemplate> templateFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == model.IntegrationInstanceIdProjMgmt && template.IsDeleted==0).ToList();
+                Dictionary<string, string> templateDict = new Dictionary<string, string>();
+                List<string> templateIdsFromDB = new List<string>();
+                List<string> templateIdsFromWorkFront = new List<string>();
+                foreach (IntegrationWorkFrontTemplate template in templateFromDB)
+                {
+                    templateIdsFromDB.Add(template.TemplateId);
+                }
+              
+                foreach (var template in templateInfo["data"])
+                {
+                    string templID = template["ID"].ToString();
+                    templateIdsFromWorkFront.Add(templID);
+                    if (!templateIdsFromDB.Contains(templID))
+                    {
+                        IntegrationWorkFrontTemplate newTemplate = new IntegrationWorkFrontTemplate();
+                        newTemplate.IntegrationInstanceId = (int)model.IntegrationInstanceIdProjMgmt;
+                        newTemplate.TemplateId = templID;
+                        newTemplate.Template_Name = template["name"].ToString();
+                        newTemplate.IsDeleted = 0;
+                        db.Entry(newTemplate).State = EntityState.Added;
+                    }
+                    else {
+                        IntegrationWorkFrontTemplate templateToEdit = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == templID).FirstOrDefault();
+                        templateToEdit.Template_Name = template["name"].ToString();
+                        db.Entry(templateToEdit).State = EntityState.Modified;
+                    }
+
+                    //templates in the database that are not in WorkFront need to be set to deleted in 
+                    List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
+                    foreach (string id in inDatabaseButNotInWorkFront)
+                    {
+                        IntegrationWorkFrontTemplate templateToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == templID).FirstOrDefault();
+                        templateToDelete.IsDeleted = 1;
+                        db.Entry(templateToDelete).State = EntityState.Modified;
+                    }
+                }
             }
             catch
             {
@@ -306,6 +349,8 @@ namespace Integration.WorkFront
            
             return syncError;
         }
+
+
 
         /// <summary>
         /// Tactic Level sync method 
