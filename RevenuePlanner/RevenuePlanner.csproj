@@ -963,11 +963,7 @@
     <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
-<<<<<<< HEAD
     <Content Include="Views\Home\_HomeGrid.cshtml" />
-=======
-    <Content Include="Views\ExternalService\_ProjectMgmt.cshtml" />
->>>>>>> brad@hive9
     <None Include="Web.BulldogProduction.config" />
     <None Include="Web.Debug.Config">
       <DependentUpon>Web.Config</DependentUpon>
