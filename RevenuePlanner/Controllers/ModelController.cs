@@ -11,6 +11,7 @@ using System.Transactions;
 using System.Web.Mvc;
 using System.Xml;
 using System.Text.RegularExpressions;
+using Integration;
 
 /*
  *  Author: 
@@ -1151,8 +1152,8 @@ namespace RevenuePlanner.Controllers
             }
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
-            //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null)
+            //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683 and Brad Gray on 07/23/2015 for PL#1448
+            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
             {
                 ViewBag.IsModelIntegrated = true;
             }
@@ -1280,9 +1281,23 @@ namespace RevenuePlanner.Controllers
             {
                 var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                 //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null)
+                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
                 {
                     ViewBag.IsModelIntegrated = true;
+                    //Start addition by Brad Gray for PL#1734
+                    var intInstanceProjMgmt = objModel.IntegrationInstance4;
+                     bool isIntegratedWithWorkFront = false;
+                     List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
+                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString())) 
+                     {
+                         isIntegratedWithWorkFront = true;
+                         //ViewData["WorkFrontInstanceTemplates"] = workFrontTemplates.Where(template => template.Template_Name != null);
+                         workFrontTemplates = objModel.IntegrationInstance4.IntegrationWorkFrontTemplates.ToList();
+                         
+                     }
+                     ViewData["WorkFrontInstanceTemplates"] = workFrontTemplates;
+                    ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
+                    //End addition by Brad Gray for PL#1734
                 }
                 else
                 {
@@ -1313,6 +1328,7 @@ namespace RevenuePlanner.Controllers
                 objTacticTypeMdoel.IsDeployedToIntegration = objTacticType.IsDeployedToIntegration;
                 objTacticTypeMdoel.StageId = objTacticType.StageId;
                 objTacticTypeMdoel.ModelId = objTacticType.ModelId;
+                objTacticTypeMdoel.WorkFront_Template = objTacticType.WorkFront_Template;
                 //// added by Dharmraj, ticket #592 : Tactic type data model
                 ViewBag.IsDeployed = objTacticType.IsDeployedToModel;
 
@@ -1348,7 +1364,7 @@ namespace RevenuePlanner.Controllers
         {
             var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null)
+            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
             {
                 ViewBag.IsModelIntegrated = true;
             }
@@ -1456,10 +1472,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="modelID">model id</param>
         /// <param name="isDeployedToIntegration">isDeployedToIntegration flag</param>
         /// <param name="isDeployedToModel">isDeployedToModel flag</param>
+        /// <param name="WorkFrontTemplate">template id of workfront template as a string</param>
         /// <returns>returns json result object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel, string WorkFrontTemplate)
         {
             try
             {
@@ -1480,7 +1497,7 @@ namespace RevenuePlanner.Controllers
                 //// Start Manoj Limbachiya PL # 486
                 objtactic.ModelId = ModelId;
                 objtactic.IsDeployedToModel = isDeployedToModel;
-
+                objtactic.WorkFront_Template = WorkFrontTemplate; //added Brad Gray 07/24/2015 PL#1374 tactic type to workfront template mapping
                 if (!isDeployedToModel)
                 {
                     Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
@@ -2313,6 +2330,7 @@ namespace RevenuePlanner.Controllers
                             newModel.IntegrationInstanceIdCW = null;
                             newModel.IntegrationInstanceIdINQ = null;
                             newModel.IntegrationInstanceIdMQL = null;
+                            newModel.IntegrationInstanceIdProjMgmt = null; //Added Brad Gray 23 July 2015 PL#1448
                             newModel.EffectiveDate = null;
                         }
                     }
@@ -2330,6 +2348,7 @@ namespace RevenuePlanner.Controllers
                         newModel.IntegrationInstanceIdCW = oldModel.IntegrationInstanceIdCW;
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
                         newModel.IntegrationInstanceIdMQL = oldModel.IntegrationInstanceIdMQL;
+                        newModel.IntegrationInstanceIdProjMgmt = oldModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
                         newModel.ClientId = oldModel.ClientId;
                         newModel.AverageDealSize = oldModel.AverageDealSize;
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 
@@ -2447,6 +2466,7 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceIdCW = objBaselineModel.IntegrationInstanceIdCW;
                         objModel.IntegrationInstanceIdINQ = objBaselineModel.IntegrationInstanceIdINQ;
                         objModel.IntegrationInstanceIdMQL = objBaselineModel.IntegrationInstanceIdMQL;
+                        objModel.IntegrationInstanceIdProjMgmt = objBaselineModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 22 July 2015 for PL#1448
                         objModel.ModifiedBy = Sessions.User.UserId;
                         objModel.ModifiedDate = DateTime.Now;
                         objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
@@ -2508,7 +2528,7 @@ namespace RevenuePlanner.Controllers
             }
 
             List<IntegrationSelectionModel> lstIntegrationOverview = new List<IntegrationSelectionModel>();
-            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL };
+            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL, objModel.IntegrationInstanceIdProjMgmt };
 
             //// creating List of model integration instance 
             var lstInstance = (from integrationInstance in objDbMrpEntities.IntegrationInstances
@@ -2590,6 +2610,24 @@ namespace RevenuePlanner.Controllers
                     }
                     lstIntegrationOverview.Add(objIntSelection);
                 }
+                  else if (key.ToString() == "IntegrationInstanceIdProjMgmt") //added by Brad Gray for PL#1448
+                {
+                    var objInstance = lstInstance.Where(instance => instance.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt).FirstOrDefault();
+                    objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
+                    if (objInstance != null)
+                    {
+                        objIntSelection.Instance = objInstance.Instance;
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
+                    }
+                    else
+                    {
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                    }
+                    lstIntegrationOverview.Add(objIntSelection);
+                }
             }
 
             ViewBag.IsAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
@@ -2635,6 +2673,7 @@ namespace RevenuePlanner.Controllers
             objBaselineModel.IntegrationInstanceIdCW = objModel.IntegrationInstanceIdCW;
             objBaselineModel.IntegrationInstanceIdINQ = objModel.IntegrationInstanceIdINQ;
             objBaselineModel.IntegrationInstanceIdMQL = objModel.IntegrationInstanceIdMQL;
+            objBaselineModel.IntegrationInstanceIdProjMgmt = objModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
             ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
@@ -2661,9 +2700,13 @@ namespace RevenuePlanner.Controllers
 
 
             ViewData["IntegrationInstances"] = lstInstance;
+            
             string insType = Enums.IntegrationInstanceType.Salesforce.ToString();
             string elqType = Enums.IntegrationInstanceType.Eloqua.ToString();
+            string workfrontType = Enums.IntegrationInstanceType.WorkFront.ToString(); //Added by Brad Gray for PL#1448
             ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Code == insType);
+            ViewData["IntegrationInstancesProjMgmt"] = lstInstance.Where(instance => instance.Code == workfrontType); //Added by Brad Gray for PL#1448
+            ViewData["IntegrationInstancesWithoutProjMgmt"] = lstInstance.Where(instance => instance.Code != workfrontType); //Added by Brad Gray for PL#1448
 
             #region "Filtered MQL Eloqua Integration Instances based on Client Integration Permisssion"
             Guid clientId = Sessions.User.ClientId;

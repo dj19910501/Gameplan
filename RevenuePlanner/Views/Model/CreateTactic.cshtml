@@ -3,6 +3,7 @@
 @using RevenuePlanner.Helpers
 @{
     bool IsModelIntegrated = ViewBag.IsModelIntegrated;
+    string ModelIntegrationType = ViewBag.ModelIntegrationType;
     //Start Manoj Limbachiya PL # 486
     bool IsDeplyed = ViewBag.IsDeployed;
     //End Manoj Limbachiya PL # 486
@@ -55,7 +56,7 @@
             <label>Description</label>
             @Html.TextAreaFor(model => model.Description, new { placeholder = "Optional" })
 
-            <label>Target Stage</label>
+            <label>Target Stages</label>
             <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
 
             <label class="margin-top10">Status</label>
@@ -81,10 +82,23 @@
         {
                 <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Not Deployed to Integration" maxlength="18" readonly />
         }
+
+        //Start Brad Gray PL # 1374
+        if (Model.WorkFront_Template != null) { int a = 1;}
+        if (ViewBag.isIntegratedWithWorkFront)
+        {
+            <label>WorkFront Template</label>
+    <span class="simpleSelectBox">
+        @Html.DropDownListFor(model => model.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewData["WorkFrontInstanceTemplates"], "TemplateId" , "Template_Name"), "None", new { @class = "hide",require = "true"  })
+    </span>
+        }
+        //End Brad Gray PL # 1374
     }
-        
-            }
-        </div>
+
+
+
+}
+</div>
         <!--End content-->
 
         <div class="content dark">
@@ -128,9 +142,10 @@
             $("#projectStage").html('Projected [Stage]');
         }
 
+  
         $("#StageId").on('change', function (e) {
             var optionSelected = $("option:selected", this);
-            var valueSelected = optionSelected.val();
+            var valueSelected = optionSelected.val(); 
             var textSelected = optionSelected.text();
             if (textSelected != "Please Select") {
                 $("#projectStage").html();
@@ -141,6 +156,19 @@
                 $("#projectStage").html('Projected [Stage]');
             }
         });
+
+        //Start Brad Gray 07/24/2015 PL # 1374
+        /*
+        $("#WorkFront_Template").on('change', function (e) {
+            var optionSelected = $("option:selected", this);
+            var valueSelected = optionSelected.val();
+            var textSelected = optionSelected.text();
+            console.log(valueSelected);
+            console.log(textSelected);
+        });
+        */
+        //End Brad Gray 07/24/2015 PL # 1374
+
         $("#deleteTactic").click(function () {
             var uId = $(window).attr('name');   // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
@@ -354,6 +382,14 @@
             if (StageId == '' || StageId == 'Undefined') {
                 StageId = 'null';
             }
+            //Start Brad Gray 07/24/2015 PL # 1374
+            var TemplateId = $("#WorkFront_Template").val();
+            // console.log(TemplateId);
+            if (TemplateId == '' || TemplateId == 'Undefined') {
+                TemplateId = 'null';
+            }
+            console.log(TemplateId);
+            //End Brad Gray 07/24/2015 PL # 1374
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
             var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
@@ -388,7 +424,7 @@
                             data: 'Title=' + escape(Title) + '&Description=' + escape(Description) + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
                             + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
-                            + '&isDeployedToModel=' + isDeployedToModel,
+                            + '&isDeployedToModel=' + isDeployedToModel + '&WorkFrontTemplate=' + TemplateId,
                             success: function (data) {
                                
                                 if (data.redirect) {

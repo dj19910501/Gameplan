@@ -85,5 +85,6 @@ namespace RevenuePlanner.Models
         public DbSet<EntityTypeColor> EntityTypeColors { get; set; }
         public DbSet<ELMAH_Error> ELMAH_Error { get; set; }
         public DbSet<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
+        public DbSet<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
     }
 }

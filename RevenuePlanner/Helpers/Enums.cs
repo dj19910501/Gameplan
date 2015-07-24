@@ -377,14 +377,17 @@ namespace RevenuePlanner.Helpers
         {
             Eloqua,
             Salesforce,
-            Marketo
+            Marketo,
+            WorkFront,
+            
         }
         public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
         {
             {"IntegrationInstanceId","Push Tactic Data"},
             {"IntegrationInstanceIdINQ","Pull Responses"},
             {"IntegrationInstanceIdMQL","Pull Qualified Leads"},
-            {"IntegrationInstanceIdCW","Pull Closed Deals"}
+            {"IntegrationInstanceIdCW","Pull Closed Deals"},
+            {"IntegrationInstanceIdProjMgmt","Sync Project Managment"} //added by Brad Gray for PL#1488
         };
         /*End :Added by Mitesh Vaishnav for PL ticket #659*/
         #region Notification
@@ -808,6 +811,7 @@ namespace RevenuePlanner.Helpers
             Eloqua,
             Salesforce,
             Marketo,
+            WorkFront //added by Brad Gray for PL#1374
         }
 
         /// <summary>

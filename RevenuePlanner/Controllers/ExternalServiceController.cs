@@ -2128,6 +2128,16 @@ namespace RevenuePlanner.Controllers
                                         db.Entry(CW).State = EntityState.Modified;
                                     });
 
+                                //// Identify IntegrationInstanceId for Project Management in Model Table and set reference null
+                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdProjMgmt == form.IntegrationInstanceId).ToList().ForEach(
+                                    ProjMgmt =>
+                                    {
+                                        ProjMgmt.IntegrationInstanceIdProjMgmt = null;
+                                        ProjMgmt.ModifiedDate = DateTime.Now;
+                                        ProjMgmt.ModifiedBy = Sessions.User.UserId;
+                                        db.Entry(ProjMgmt).State = EntityState.Modified;
+                                    });
+
                                 db.SaveChanges();
                             }
 

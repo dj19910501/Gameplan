@@ -4355,7 +4355,7 @@ namespace RevenuePlanner.Helpers
         public static bool CheckModelIntegrationExist(Model objModel)
         {
             bool isIntegrationInstanceExist = true;
-            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null)
+            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null && objModel.IntegrationInstanceIdProjMgmt == null) //Modified Brad Gray 7/23/2015 PL#1448
             {
                 isIntegrationInstanceExist = false;
             }

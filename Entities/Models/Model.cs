@@ -43,6 +43,7 @@ namespace RevenuePlanner.Models
         public Nullable<int> IntegrationInstanceIdCW { get; set; }
         public System.Guid ClientId { get; set; }
         public double AverageDealSize { get; set; }
+        public Nullable<int> IntegrationInstanceIdProjMgmt { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
@@ -54,5 +55,8 @@ namespace RevenuePlanner.Models
         public virtual ICollection<Model_Stage> Model_Stage { get; set; }
         public virtual ICollection<Plan> Plans { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }
+        public virtual IntegrationInstance IntegrationInstance4 { get; set; }
+        public virtual Model Model11 { get; set; }
+        public virtual Model Model3 { get; set; }
     }
 }

@@ -136,10 +136,17 @@
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_ImprovementTacticType" />
         <EntityTypeShape EntityType="MRPModel.IntegrationInstance_UnprocessData" Width="1.5" PointX="7.25" PointY="38.125" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" />
+<<<<<<< HEAD
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="7.875" PointY="42.625" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
         <AssociationConnector Association="MRPModel.FK_Model_Model1" />
+=======
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
+        <AssociationConnector Association="MRPModel.FK_Model_Model1" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="1" PointY="1" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
+>>>>>>> brad@hive9
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

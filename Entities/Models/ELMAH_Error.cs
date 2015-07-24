@@ -25,5 +25,6 @@ namespace RevenuePlanner.Models
         public System.DateTime TimeUtc { get; set; }
         public int Sequence { get; set; }
         public string AllXml { get; set; }
+        public string Client { get; set; }
     }
 }

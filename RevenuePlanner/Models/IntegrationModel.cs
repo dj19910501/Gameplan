@@ -82,6 +82,10 @@ namespace RevenuePlanner.Models
         public IList<GameplanDataTypePullModel> GameplanDataTypePullRevenueModelList { get; set; }
         //Dharmraj End PL#680 Integration - UI - Pull responses from Salesforce
 
+        //Brad Gray Start PL#1367 Integration - UI - Sync Data with WorkFront
+        public IList<GameplanDataTypePullModel> GameplanDataTypeWorkFrontModelList { get; set; }
+        //Brad Gray End PL#1367 Integration - UI - Sync Data with WorkFront
+
         //// Start - Added by Sohel Pathan on 22/12/2014 - PL#1061 Integration - UI - Pull MQL responses from Eloqua
         public IList<GameplanDataTypePullModel> GameplanDataTypePullMQLModelList { get; set; }
         //// End - Added by Sohel Pathan on 22/12/2014 - PL#1061 Integration - UI - Pull MQL responses from Eloqua

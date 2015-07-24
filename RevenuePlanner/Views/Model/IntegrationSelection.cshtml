@@ -80,7 +80,7 @@
                     <label>Push Tactic Data</label>
 
                     <div class="selectBox" id="ddlIntegrationInstance">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
+                        @Html.DropDownListFor(model => model.IntegrationInstanceId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesWithoutProjMgmt"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>
@@ -88,7 +88,7 @@
                     <label>Pull Responses</label>
 
                     <div class="selectBox" id="ddlIntegrationInstanceINQ">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceIdINQ, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstances"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdINQ, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesWithoutProjMgmt"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>
@@ -107,7 +107,15 @@
                         @Html.DropDownListFor(model => model.IntegrationInstanceIdCW, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
-                </div>                
+                </div>
+                <div class="cf inputs-aligned-horizontal"> 
+                    <label>Sync Project Management</label>
+
+                    <div class="selectBox" id="ddlIntegrationInstanceProjMgmt">
+                        @Html.DropDownListFor(model => model.IntegrationInstanceIdProjMgmt, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesProjMgmt"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
+                    </div>
+
+                </div>
                 <div class="cf inputs-aligned-horizontal">
                     <div>
                         <input id="btnSubmit" type="button" value="Save" title="save" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" style="margin-left: 179px; float: left; margin-right: 30px;" />
