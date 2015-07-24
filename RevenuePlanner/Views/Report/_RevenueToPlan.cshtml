@@ -80,6 +80,10 @@
 
                 var BtnBack = document.getElementById('BtnBack');
                 BtnBack.style.display = "none";
+                if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') > -1 || marsterCustomField.indexOf('@Common.ProgramCustomTitle') > -1) {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                }
             }
 
 
@@ -282,7 +286,7 @@
         var _isNegativePercntg = _headerValue.IsNegative;
 
         formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
-
+        
         if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '') {
             $("#ddlCampaignRevenueToPlan").css('display', 'none');
             $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');

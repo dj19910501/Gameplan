@@ -66,7 +66,7 @@
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage", retperc = "_restPercentage";
         var _Inq_projId = '', _InqgoalId = '', _InqPercntgId = '', _Tql_projId = '', _TqlgoalId = '', _TqlPercntgId = '', _Cw_projId = '', _CwgoalId = '', _CwPercntgId = '', _Ads_projId = '', _AdsgoalId = '', _AdsPercntgId = '', tqlrestpercId = '', cwrestperceId = '';
         var _btnDetailsId = '';
-
+        var _Tqlact_proj = '', _Tqlgoal = '', _Tqlpercentange = '', _TqlIsNegative = '', _TqlCard = '', _InqCard = '', _CwCard = '', _AdsCard = '';
         // Add BY Nishant Sheth
         // Desc: For Card Section details button click argument
         var ParentLabel = '@ViewBag.ConvParentLabel';
@@ -92,20 +92,30 @@
             _Inq_proj = _Inqdata.Actual_Projected;
             _Inqgoal = _Inqdata.Goal;
             _Inqpercentange = _Inqdata.Percentage;
+            _InqCard = _Inqdata.CardType;
 
             _Tql_proj = _Tqldata.Actual_Projected;
             _Tqltgoal = _Tqldata.Goal;
             _Tqlpercentange = _Tqldata.Percentage;
             _Tqlrestpercentange = _Tqldata.RestPercentage;
+            // Add By Nishant Sheth
+            _TqlCard = _Tqldata.CardType;
+            _Tqlpercentange = _Tqldata.Percentage;
+            _Tqlact_proj = _Tqldata.Actual_Projected;
+            _Tqlgoal = _Tqldata.Goal;
+            _TqlIsNegative = _Tqldata.IsNegative;
+            // End By Nisahnt Sheth
 
             _Cw_proj = _Cwdata.Actual_Projected;
             _Cwgoal = _Cwdata.Goal;
             _Cwpercentange = _Cwdata.Percentage;
             _Cwrestpercentange = _Cwdata.RestPercentage;
+            _CwCard = _Cwdata.CardType;
 
 
             _Ads_proj = _Adsdata.Actual_Projected;
             _Adsgoal = _Adsdata.Goal;
+            _AdsCard = _Adsdata.CardType;
             //_Adspercentange = _Adsdata.Percentage;
 
             _fieldId = value.FieldId;
@@ -130,7 +140,7 @@
 
             //alert("key: " + key + ", Value: " + value.title);
             //_cardhtml = _cardhtml + '<div class="region-content">';
-            _cardhtml = _cardhtml + '<div class="region-content" inqval="' + _Inq_proj + '" tqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" adsval="' + _Ads_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
+            _cardhtml = _cardhtml + '<div class="region-content" inqval="' + _Inq_proj + '" mqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" adsval="' + _Ads_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
             _cardhtml = _cardhtml + '<div>';
             _cardhtml = _cardhtml + '<div class="report-btn-group">';
             _cardhtml = _cardhtml + '<div>';
@@ -138,7 +148,7 @@
             //_cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>';
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Tqlact_proj) + '","' + String(_Tqlgoal) + '","' + String(_Tqlpercentange) + '","' + String(_TqlIsNegative) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -151,19 +161,22 @@
             _cardhtml = _cardhtml + '<div class="region-data">';
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">INQ</span>';
+            //_cardhtml = _cardhtml + '<span class="title">INQ</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _InqCard + '</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Inq_proj + '" id="' + _Inq_projId + '">' + _Inq_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Inqgoal + '" id="' + _InqgoalId + '">' + _Inqgoal + '</span></p>';
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Inqpercentange + '" id="' + _InqPercntgId + '">' + _Inqpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">TQL</span>';
+            //_cardhtml = _cardhtml + '<span class="title">TQL</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _TqlCard + '</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="percentagevalue" orig-val="' + _Tqlpercentange + '" id="' + _TqlPercntgId + '">' + _Tqlpercentange + '</span> <span class="inner-sub-value"></span> <span class="percentageval" orig-val="' + _Tqlrestpercentange + '" id="' + tqlrestpercId + '">' + _Tqlrestpercentange + '</span></p>';
             _cardhtml = _cardhtml + '<span class="card sub-value" add-sep="true" orig-val="' + _Tql_proj + '" id="' + _Tql_projId + '">' + _Tql_proj + '</span><span class="inner-sub-value"></span>/<span class="card sub-value" add-sep="true" orig-val="' + _Tqltgoal + '" id="' + _TqlgoalId + '">' + _Tqltgoal + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">CW</span>';
+            //_cardhtml = _cardhtml + '<span class="title">CW</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _CwCard + '</span>';
             //_cardhtml = _cardhtml + '<p class="value"> <span class="carvdval-block" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span> <span class="sub-value"  orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">/' + _Cwgoal + '</span></p>';
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span>';
 
@@ -173,7 +186,8 @@
 
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">ADS</span>';
+            //_cardhtml = _cardhtml + '<span class="title">ADS</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _AdsCard + '</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Ads_proj + '" id="' + _Ads_projId + '">' + _Ads_proj + '</span><span class="cardsub sub-value"  orig-val="' + _Adsgoal + '" id="' + _AdsgoalId + '">' + _Adsgoal + '</span></p>';
             _cardhtml = _cardhtml + '</div>';
 
@@ -365,7 +379,7 @@
         });
     }
 
-    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval) {
+    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg) {
 
         var HeadTitle = document.getElementById('head-title');
 
@@ -377,6 +391,15 @@
 
         HeadTitle.innerHTML = HeadTitleval;
 
+        var _pushValue = {
+            ActualProjected: _MqlActualProj.toString(),
+            Goal: _MqlGoal.toString(),
+            Percentage: _MqlPercentage.toString(),
+            IsNegative: _MqlisNegativePercntg.toString().toLowerCase()
+        }
+        tempMqlHeader.push(_pushValue); // Push Card Values to Temp global variable declare at _ReportConverstion.cshtml page. This global variable use when user click on Back button.
+
+
         var AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         var Code = $("#ddlINQToPlan").val();
@@ -384,7 +407,7 @@
         
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvConversionToPlan").load(_url);
-
+        formatHeaderValues(_MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg);
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
                 $("#ddlCampaignConversionToPlan").css('display', 'none');
@@ -747,9 +770,9 @@
         //return aName - bName;
         return bName - aName;
     }
-    function SortByTQL(a, b) {
-        var aName = a.tqlval;
-        var bName = b.tqlval;
+    function SortByMQL(a, b) {
+        var aName = a.mqlval;
+        var bName = b.mqlval;
         //return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
         //return aName - bName;
         return bName - aName;
@@ -777,22 +800,22 @@
 
         $(a).each(function (index, element) {
             var _inqval = $(this).attr("inqval");
-            var _tqlval = $(this).attr("tqlval");
+            var _mqlval = $(this).attr("mqlval");
             var _cwval = $(this).attr("cwval");
             var _adsval = $(this).attr("adsval");
             var _id = $(this).attr("id");
             var _divhtml = $(this)[0].outerHTML;
             var _title = $(this).attr("title");
 
-            arrayval.push({ inqval: _inqval, tqlval: _tqlval, cwval: _cwval, adsval: _adsval, id: _id, divhtml: _divhtml, title: _title.toString().toLowerCase() });
+            arrayval.push({ inqval: _inqval, mqlval: _mqlval, cwval: _cwval, adsval: _adsval, id: _id, divhtml: _divhtml, title: _title.toString().toLowerCase() });
         });
 
         var sortval;
         if (sortBy == 'inqval') {
             sortval = arrayval.sort(SortByINQ);
         }
-        if (sortBy == 'tqlval') {
-            sortval = arrayval.sort(SortByTQL);
+        if (sortBy == 'mqlval') {
+            sortval = arrayval.sort(SortByMQL);
         }
         if (sortBy == 'cwval') {
             sortval = arrayval.sort(SortByCW);
@@ -819,7 +842,7 @@
         var numericallyOrderedDivs = $divs.sort(function (a, b) {
             return $(a).find("div[" + name + "]").val() > $(b).find("div[" + name + "]").val();
         });
-        alert(numericallyOrderedDivs);
+        //alert(numericallyOrderedDivs);
         $("#dvCardSectionData").html('');
         $("#dvCardSectionData").html(numericallyOrderedDivs);
     }

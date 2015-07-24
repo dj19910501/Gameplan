@@ -218,14 +218,14 @@ namespace RevenuePlanner.Helpers
         public enum SortByWaterFall
         {
             INQ,
-            TQL,
+            MQL,
             CW,
             ADS
         }
         public static Dictionary<string, string> SortByWaterFallDrp = new Dictionary<string, string>()
         {
             {SortByWaterFall.INQ.ToString(), "inqval"},
-            {SortByWaterFall.TQL.ToString(), "tqlval"},
+            {SortByWaterFall.MQL.ToString(), "mqlval"},
             {SortByWaterFall.CW.ToString(), "cwval"},
             {SortByWaterFall.ADS.ToString(), "adsval"}
             

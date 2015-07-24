@@ -64,8 +64,13 @@
         //end combine chart script
 
         // Nishant
-        
+        var ParentLabel = '@ViewBag.ConvParentLabel';
+        var childlabelType = '@ViewBag.ConvchildlabelType';
+        var childId = '@ViewBag.ConvchildId';
+        var optionmain = '@ViewBag.Convoption';
+        var BackHeadTitle = '@Convert.ToString(TempData["ConvBackParentLabel"])';
         var iscard = '@IsCard';
+
         if (iscard.toLowerCase() != "false") {
 
             var HeadTitle = document.getElementById('head-title');
@@ -82,14 +87,11 @@
 
                 var BtnBack = document.getElementById('BtnBack');
                 BtnBack.style.display = "none";
+                if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') > -1 || marsterCustomField.indexOf('@Common.ProgramCustomTitle') > -1) {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', 'inline-block');
+                }
             }
-
-
-            var ParentLabel = '@ViewBag.ConvParentLabel';
-            var childlabelType = '@ViewBag.ConvchildlabelType';
-            var childId = '@ViewBag.ConvchildId';
-            var optionmain = '@ViewBag.Convoption';
-            var BackHeadTitle = '@Convert.ToString(TempData["ConvBackParentLabel"])';
 
             var _cardUrl = "@Url.Content("~/Report/LoadConverstionCardSectionPartial")" + "?ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&childId=" + childId + "&option=" + optionmain;
             $("#ConversionCardID").load(_cardUrl);
@@ -223,7 +225,7 @@
     }
 
     function BtnBackClick() {
-        
+
         var code = $("#ddlINQToPlan").val();
         var AllocatedBy = $('#ddlTimeFrameSelectBox option:selected').text();
         var Qurt_Month = AllocatedBy;
@@ -235,6 +237,16 @@
         }*@
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
         $("#dvConversionToPlan").load(_url);
+
+        tempMqlHeader.splice(tempMqlHeader.length - 1, 1); // Remove last value from Temep Header global variable.
+        var _headerValue = tempMqlHeader[tempMqlHeader.length - 1]; // Get last value from global variable.
+
+        var _MqlActualProj = _headerValue.ActualProjected;
+        var _MqlGoal = _headerValue.Goal;
+        var _MqlPercentage = _headerValue.Percentage;
+        var _MqlisNegativePercntg = _headerValue.IsNegative;
+
+        formatHeaderValues(_MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg);
 
         if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '') {
             $("#ddlCampaignConversionToPlan").css('display', 'none');

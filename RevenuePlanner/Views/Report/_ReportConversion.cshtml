@@ -4,18 +4,18 @@
 @using Newtonsoft.Json;
 
 @{
-   
-    
+
+
     var revenue_Projected_Goal = Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal();
 
     var conversion_datatableModel = Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty;
     var conversion_barchartModel = Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty;
     var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
-    var _mqllabel = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()];
+    var _mqllabel = Common.GetLabel(Common.StageModeMQL);
 
     var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
 
-   
+
     // Add By Nishant Sheth For pagination dropdwon with Enums
     List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
     foreach (var PerPage in Enums.PerPageSize)
@@ -32,21 +32,17 @@
 }
 
 <style type="text/css">
-    .redLabel
-    {
+    .redLabel {
         color: #ff0000 !important;
     }
 
-    .greenLabel
-    {
+    .greenLabel {
         color: #009E26 !important;
     }
 
-    .margintop_5
-    {
+    .margintop_5 {
         margin-top: 5px !important;
     }
-   
 </style>
 <section class="report-overview-wraper conversion-wrapper">
     <div class="marketing-revenue-report">
@@ -65,11 +61,12 @@
             <span id="mqlActuals"></span>
             <span id="mqlActualPercentages"></span>
         </div>
-       <div class="projected disable-gray" style="height: 88px"> @*#1420 added by dashrath Prajalapti*@
+        <div class="projected disable-gray" style="height: 88px">
+            @*#1420 added by dashrath Prajalapti*@
             <span>Goal</span> @*#1378 Added by dashrath Prajapati*@
             <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
             @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
-           <p class="ellipsis-block FormatingBlock">@_mqllabel</p> @*#1378 Added by dashrath Prajapati*@
+            <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: block;padding: 0 5px;">@_mqllabel</p> @*#1378 Added by dashrath Prajapati*@
         </div>
         <div class="time-frame">
             <div class="geography-dropdown">
@@ -89,7 +86,7 @@
                 <span>
                     @Html.DropDownList("ddlINQToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.lstAllocated, "Value", "Text"))
                 </span>
-                <div id="CustomFieldChildDDL" style="display:none;" class="CustomDropdown" >
+                <div id="CustomFieldChildDDL" style="display:none;" class="CustomDropdown">
                     <span>
                         @Html.DropDownList("ddlTopChildConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
                     </span>
@@ -119,8 +116,8 @@
         <div style="margin:20px;">
             <div id="dvConversionToPlan">
                 @Html.Partial("_ConversionToPlan", Model.ConversionToPlanModel)
-        </div>
             </div>
+        </div>
 
     </div>
     <div class="revenue-filter">
@@ -182,7 +179,7 @@
 
     <div id="ConversionCardID">
         @Html.Partial("_ConversionCardSection", Conversion_cardsectionModel)
-                </div>
+    </div>
 </section>
 
 
@@ -197,6 +194,7 @@
     var programId = $('#ddlProgramConversionToPlan').val();
     var campaignId = $('#ddlCampaignConversionToPlan').val();
     var OptionMain = '';
+    var tempMqlHeader = [];
     $(document).ready(function () {
         var BtnBack = document.getElementById('BtnBack');
         BtnBack.style.display = "none";
@@ -208,7 +206,7 @@
 
         $("html, body").animate({ scrollTop: 0 }, 1000);//scroll up when page get from overview by click on detail button of convesrion section- Dashrath prajapati
 
-      
+
         //
         //start combine chart of bar chart and line chart script
 
@@ -232,210 +230,225 @@
             CustomProgramName: "@Common.ProgramCustomTitle",
             CustomTacticName: "@Common.TacticCustomTitle"
         });
+        var _MqlGoal = '@revenue_Projected_Goal.Goal';
+        var _MqlActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _MqlPercentage = '@revenue_Projected_Goal.Percentage';
+        var _MqlisNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';
+        
+        tempMqlHeader.push({
+            ActualProjected: _MqlActual_Projected.toString(),
+            Goal: _MqlGoal.toString(),
+            Percentage: _MqlPercentage.toString(),
+            IsNegative: _MqlisNegativePercentage.toString().toLowerCase()
+        });
+        formatHeaderValues(_MqlActual_Projected, _MqlGoal, _MqlPercentage, _MqlisNegativePercentage);
+    });
 
-        // Load header data
-        LoadHeaderData();
-        function LoadHeaderData() {
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/GetReportHeader/")',
-                data: {
-                    option: OptionMain,////This variable globally declare in parent view "Index"
-                    isRevenue: false
-                },
-                success: function (data) {
-                    if (data != undefined) {
-                        setLabel(data);
-                    }
+    // Load header data
+    LoadHeaderData();
+    function LoadHeaderData() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/GetReportHeader/")',
+            data: {
+                option: OptionMain,////This variable globally declare in parent view "Index"
+                isRevenue: false
+            },
+            success: function (data) {
+                if (data != undefined) {
+                    setLabel(data);
                 }
+            }
+        });
+    }
+    var _campaignLabel = '@Common.RevenueCampaign';
+
+    $('#ddlParentConversionSummery').bind('change', function () {
+        var _parentValue = $(this).val();
+        marsterCustomField = _parentValue;
+        if (_parentValue == _campaignLabel) {
+            $("#CustomFieldChildDDL").css('display', 'none');
+            $("#CampaignChildDDL").css('display', 'inline-block');
+
+            /*Start: Refresh Campaign, Program, Tactic dropdowns*/
+            $("#ddlCampaignConversionToPlan").val("0");
+            $("#ddlProgramConversionToPlan").val("0");
+            $("#ddlTacticConversionToPlan").val("0");
+            $("#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan").multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            }).multiselectfilter({
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
             });
+            //$("#ddlCampaignConversionToPlan").multiselect('refresh');
+            /*End: Refresh Campaign, Program, Tactic dropdowns*/
+
         }
-        var _campaignLabel = '@Common.RevenueCampaign';
+        else {
+            $("#CustomFieldChildDDL").css('display', 'inline-block');
+            $("#CampaignChildDDL").css('display', 'none');
+        }
 
-        $('#ddlParentConversionSummery').bind('change', function () {
-            var _parentValue = $(this).val();
-            marsterCustomField = _parentValue;
-            if (_parentValue == _campaignLabel) {
-                $("#CustomFieldChildDDL").css('display', 'none');
-                $("#CampaignChildDDL").css('display', 'inline-block');
+        loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
+        var _childValue = '0';
+        LoadDataConversionToPlanByCampaign();
+        //ReloadConversionCardByCustomField();
+    });
 
-                /*Start: Refresh Campaign, Program, Tactic dropdowns*/
-                $("#ddlCampaignConversionToPlan").val("0");
-                $("#ddlProgramConversionToPlan").val("0");
-                $("#ddlTacticConversionToPlan").val("0");
-                $("#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan").multiselect({
-                    multiple: false,
-                    noneSelectedText: "Please Select",
-                    selectedList: 1,
-                    CustomCampaignName: "@Common.CampaignCustomTitle",
-                    CustomProgramName: "@Common.ProgramCustomTitle",
-                    CustomTacticName: "@Common.TacticCustomTitle"
-                }).multiselectfilter({
-                    CustomCampaignName: "@Common.CampaignCustomTitle",
-                    CustomProgramName: "@Common.ProgramCustomTitle",
-                    CustomTacticName: "@Common.TacticCustomTitle"
+
+    // ddlParentConversionSummery
+    //$('#ddlParentConversionSummery').change(function () {
+
+    //});
+
+    $('#ddlCampaignConversionToPlan').change(function () {
+        $("#ddlProgramConversionToPlan").empty();
+        $('#ddlTacticConversionToPlan').empty();
+        fillProgramDropdown();
+    });
+
+    $('#ddlProgramConversionToPlan').change(function () {
+        $('#ddlTacticConversionToPlan').empty();
+        fillTacticDropdown();
+    });
+
+    $('#ddlTacticConversionToPlan').change(function () {
+        //LoadDataRevenueToPlanByCampaign();
+        LoadDataConversionToPlanByCampaign();
+    });
+
+    function fillProgramDropdown() {
+        var id = '';
+        campaignId = $('#ddlCampaignConversionToPlan').val();
+        if (campaignId > 0) {
+            id = campaignId.toString();
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadProgramDropDown/")',
+            data: {
+                id: id,
+                selectOption: OptionMain
+            },
+            success: function (data) {
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlProgramConversionToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
                 });
-                //$("#ddlCampaignConversionToPlan").multiselect('refresh');
-                /*End: Refresh Campaign, Program, Tactic dropdowns*/
-
+                fillTacticDropdown();
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+            },
+            error: function () {
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                fillTacticDropdown();
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+                GoToLogin();
             }
-            else {
-                $("#CustomFieldChildDDL").css('display', 'inline-block');
-                $("#CampaignChildDDL").css('display', 'none');
-            }
-
-            loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
-            var _childValue = '0';
-            LoadDataConversionToPlanByCampaign();
-            //ReloadConversionCardByCustomField();
         });
+    }
 
-
-        // ddlParentConversionSummery
-        //$('#ddlParentConversionSummery').change(function () {
-           
-        //});
-
-        $('#ddlCampaignConversionToPlan').change(function () {
-            $("#ddlProgramConversionToPlan").empty();
-            $('#ddlTacticConversionToPlan').empty();
-            fillProgramDropdown();
-        });
-
-        $('#ddlProgramConversionToPlan').change(function () {
-            $('#ddlTacticConversionToPlan').empty();
-            fillTacticDropdown();
-        });
-
-        $('#ddlTacticConversionToPlan').change(function () {
-            //LoadDataRevenueToPlanByCampaign();
-            LoadDataConversionToPlanByCampaign();
-        });
-
-        function fillProgramDropdown() {
-            var id = '';
-            campaignId = $('#ddlCampaignConversionToPlan').val();
-            if (campaignId > 0) {
-                id = campaignId.toString();
-            }
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/LoadProgramDropDown/")',
-                data: {
-                    id: id,
-                    selectOption: OptionMain
-                },
-                success: function (data) {
-                    $("#ddlProgramConversionToPlan").empty();
-                    $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
-                    $.each(data, function (index, optionData) {
-                        $("#ddlProgramConversionToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
-                    });
-                    fillTacticDropdown();
-                    $('#ddlProgramConversionToPlan').multiselect("refresh");
-                },
-                error: function () {
-                    $("#ddlProgramConversionToPlan").empty();
-                    $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
-                    fillTacticDropdown();
-                    $('#ddlProgramConversionToPlan').multiselect("refresh");
-                    GoToLogin();
-                }
-            });
+    function fillTacticDropdown() {
+        var id = '';
+        var Type = '';
+        programId = $('#ddlProgramConversionToPlan').val();
+        if (programId > 0) {
+            Type = '';
+            id = programId.toString();
+        }
+        else if (campaignId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+            id = campaignId.toString();
         }
 
-        function fillTacticDropdown() {
-            var id = '';
-            var Type = '';
-            programId = $('#ddlProgramConversionToPlan').val();
-            if (programId > 0) {
-                Type = '';
-                id = programId.toString();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadTacticDropDown/")',
+            data: {
+                id: id,
+                type: Type,
+                selectOption: OptionMain
+            },
+            success: function (data) {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlTacticConversionToPlan").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
+                });
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                LoadDataConversionToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                myApp.hidePleaseWait();
+            },
+            error: function () {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                LoadDataConversionToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                GoToLogin();
             }
-            else if (campaignId > 0) {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                    id = campaignId.toString();
-                }
+        });
 
-            $.ajax({
-                type: 'POST',
-                url: '@Url.Content("~/Report/LoadTacticDropDown/")',
-                data: {
-                    id: id,
-                    type: Type,
-                    selectOption: OptionMain
-                },
-                success: function (data) {
-                    $("#ddlTacticConversionToPlan").empty();
-                    $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
-                    $.each(data, function (index, optionData) {
-                        $("#ddlTacticConversionToPlan").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
-                    });
-                    $('#ddlTacticConversionToPlan').multiselect("refresh");
-                    //alert('call function!');
-                    LoadDataConversionToPlanByCampaign();
-                    //LoadDataRevenueRealization();
-                    myApp.hidePleaseWait();
-                },
-                error: function () {
-                    $("#ddlTacticConversionToPlan").empty();
-                    $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
-                    $('#ddlTacticConversionToPlan').multiselect("refresh");
-                    //alert('call function!');
-                    LoadDataConversionToPlanByCampaign();
-                    //LoadDataRevenueRealization();
-                    GoToLogin();
-                }
-            });
+    }
+    var ParentDrpVal = $("#ddlParentConversionSummery option:selected").val();
+    var currentOption;// = $("#ddlTopChildConversionToPlan option:selected").val();
+    var isParentChng = false;
+    function LoadDataConversionToPlanByCampaign() {
+        var _childValue = '0';
 
+        var id = '';
+        var Type = '';
+        var tacticId = $("#ddlTacticConversionToPlan").val();
+        var parentlabel = $("#ddlParentConversionSummery option:selected").val();
+
+        var Code = $("#ddlINQToPlan").val();
+        if (tacticId > 0) {
+            id = tacticId;
+            Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
         }
-        var ParentDrpVal = $("#ddlParentConversionSummery option:selected").val();
-        var isParentChng = false;
-        function LoadDataConversionToPlanByCampaign() {
-            var _childValue = '0';
-           
-            var id = '';
-            var Type = '';
-            var tacticId = $("#ddlTacticConversionToPlan").val();
-            var parentlabel = $("#ddlParentConversionSummery option:selected").val()
-            var Code = $("#ddlINQToPlan").val();
-            if (tacticId > 0) {
-                id = tacticId;
-                Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
-            }
-            else if (programId > 0) {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
-                id = programId.toString();
-            }
-            else if (campaignId > 0) {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                id = campaignId.toString();
-            }
-            else {
-                id = _childValue;
-            }
-            if (parentlabel != ParentDrpVal) {
-                ParentDrpVal = parentlabel;
-                isParentChng = true;
-            }
-            var DrpChange = 'CampaignDrp';
-            if (isParentChng) {
-                DrpChange = 'true';
-                Type = '';
-                id = _childValue;
-            }
-            // + "&DrpChange=" + (isParentChng == true) ? 'true' : 'CampaignDrp'
-            var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
-            var Qurt_MonthConv = AllocatedByConv;
-            var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&DrpChange=" + DrpChange;
-            $("#dvConversionToPlan").load(_url);
-            @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
+        else if (programId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
+            id = programId.toString();
+        }
+        else if (campaignId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+            id = campaignId.toString();
+        }
+        else {
+            id = _childValue;
+        }
+        if (parentlabel != ParentDrpVal) {
+            ParentDrpVal = parentlabel;
+            isParentChng = true;
+        }
+        var DrpChange = 'CampaignDrp';
+        if (isParentChng) {
+            DrpChange = 'true';
+            Type = '';
+            id = _childValue;
+        }
+        // + "&DrpChange=" + (isParentChng == true) ? 'true' : 'CampaignDrp'
+        var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
+        var Qurt_MonthConv = AllocatedByConv;
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&DrpChange=" + DrpChange;
+        $("#dvConversionToPlan").load(_url);
+        @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
             _LineChartCombine = JSON.stringify('@Model.ConversionToPlanModel.LineChartModel');
             formatDataTableValues();
             formatPercentageValue();
             //loadBarChart();
             loadCombineChart();*@
-            @*$.ajax({
+        @*$.ajax({
         dataType: 'json',
         type: 'POST',
         url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
@@ -461,141 +474,155 @@
                 //loadcardsection();
             }
             });*@
-           @* // $("#ConversionCardID").load(@Url.Action("LoadConversionCardSectionPartial", new { cardModel = _cardDat }));*@
-                    PopulateRevenueToPlanChildDDL(r, id);
-                }
+        @* // $("#ConversionCardID").load(@Url.Action("LoadConversionCardSectionPartial", new { cardModel = _cardDat }));*@
+        // PopulateRevenueToPlanChildDDL(r, id);
+
+    }
+    function loadChildListData(parentOption, id) {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/GetChildLabelData/")',
+            data: {
+                ParentLabel: parentOption,
+                selectOption: OptionMain,////This variable globally declare in parent view "Index"
+                IsAllInclude: true
+            },
+            success: function (r) {
+                PopulateRevenueToPlanChildDDL(r, id);
+            }
+        });
+    }
+
+    function PopulateRevenueToPlanChildDDL(items, id) {
+
+        var $dropdown = $("#" + id);
+        $dropdown.empty();
+        var $html = '';
+        if (items.length > 0) {
+
+            $.each(items, function (index, planobj) {
+
+                $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
+
             });
-        }
-
-        function PopulateRevenueToPlanChildDDL(items, id) {
-           
-            var $dropdown = $("#" + id);
-            $dropdown.empty();
-            var $html = '';
-            if (items.length > 0) {
-
-                $.each(items, function (index, planobj) {
-
-                    $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
-
-                });
-                $('#btnMultiselect_' + id).attr('style', 'display:block;');
-                if ($('#btnMultiselect_' + id).parent().parent().hasClass('margin-rigthminus20px')) {
-                    $('#btnMultiselect_' + id).parent().parent().removeClass('margin-rigthminus20px');
-                }
-            }
-            else {
-                $('#btnMultiselect_' + id).attr('style', 'display:none;');
-                $('#btnMultiselect_' + id).parent().parent().addClass('margin-rigthminus20px');
-            }
-            $dropdown.append($html);
-            $("#multipleselect_" + id).find("input[type='search']").val('');
-            $('#' + id).multiselect("refresh");
-        }
-
-        // bind header data
-        function setLabel(data) {
-           
-            var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
-            var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
-            setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, false);
-            setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
-            var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
-            if (parseFloat(data.ProjectedMQLValue) > 0) {
-                mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
-            }
-            if (parseFloat(data.ProjectedRevenueValue) > 0) {
-            }
-            //setPercentage("#mqlActualPercentages", mqlActualPercentage);
-            setPercentage("#mqlActualPercentages", _ConversionPercentage);
-        }
-
-        function setPercentage(id, value) {
-         
-            var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
-            var isNegative = value < 0;
-            if (isNegative) {
-                $(id).addClass("redLabel");
-                $(id).removeClass("greenLabel");
-                $(id).text("-" + absValue);
-            }
-            else {
-                $(id).addClass("greenLabel");
-                $(id).html("+" + absValue);
+            $('#btnMultiselect_' + id).attr('style', 'display:block;');
+            if ($('#btnMultiselect_' + id).parent().parent().hasClass('margin-rigthminus20px')) {
+                $('#btnMultiselect_' + id).parent().parent().removeClass('margin-rigthminus20px');
             }
         }
+        else {
+            $('#btnMultiselect_' + id).attr('style', 'display:none;');
+            $('#btnMultiselect_' + id).parent().parent().addClass('margin-rigthminus20px');
+        }
+        $dropdown.append($html);
+        $("#multipleselect_" + id).find("input[type='search']").val('');
+        $('#' + id).multiselect("refresh");
+    }
 
-        $("#ddlTimeFrameSelectBox select").selectbox();
+    // bind header data
+    function setLabel(data) {
 
-        $("#ddlConversionTimeFrame").change(function () {
-            AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
-            Qurt_Month = AllocatedBy;
-            LoadConversionData();
-        });
+        var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
+        setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, false);
+        setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
+        var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
+        if (parseFloat(data.ProjectedMQLValue) > 0) {
+            mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+        }
+        if (parseFloat(data.ProjectedRevenueValue) > 0) {
+        }
+        //setPercentage("#mqlActualPercentages", mqlActualPercentage);
+        setPercentage("#mqlActualPercentages", _ConversionPercentage);
+    }
+
+    function setPercentage(id, value) {
+
+        var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
+        var isNegative = value < 0;
+        if (isNegative) {
+            $(id).addClass("redLabel");
+            $(id).removeClass("greenLabel");
+            $(id).text("-" + absValue);
+        }
+        else {
+            $(id).addClass("greenLabel");
+            $(id).html("+" + absValue);
+        }
+    }
+
+    $("#ddlTimeFrameSelectBox select").selectbox();
+
+    $("#ddlConversionTimeFrame").change(function () {
+        AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
+        Qurt_Month = AllocatedBy;
+        LoadConversionData();
+    });
 
 
-        var istrigger = false;
-        $('#ddlTopChildConversionToPlan').change(function () {
-            istrigger = true;
-            var _childValue = $("#ddlTopChildConversionToPlan").val();
-			 masterCustomFieldOptionId = _childValue;
-            //ReloadConversionToPlanByCustomField(_childValue);
-            GetConversionToPlanByCustomFilter(_childValue);
+    var istrigger = false;
+    $('#ddlTopChildConversionToPlan').change(function () {
+        istrigger = true;
+        var _childValue = $("#ddlTopChildConversionToPlan").val();
+        masterCustomFieldOptionId = _childValue;
+        //ReloadConversionToPlanByCustomField(_childValue);
+        GetConversionToPlanByCustomFilter(_childValue);
 
-        });
+    });
+    //
+
+    $("#ddlINQToPlan").change(function () {
+        istrigger = true;
+        var _childValue = $("#ddlINQToPlan").val();
+        GetConversionToPlanByCode(_childValue);
+        //ReloadConversionToPlanByCustomFieldTop(_childValue);
+    });
+
+
+    //for test method
+    var FilterData;
+    var barchartData;
+    var _BarchartCombine;
+    var _LineChartCombine;
+    var _cardData;
+    var _Isfilter = false;
+    function GetConversionToPlanByCode(_Code) {
+
+        var _childid = $("#ddlTopChildConversionToPlan").val();
+        var tacticId = $("#ddlTacticConversionToPlan").val();
+        var parentlabel = $("#ddlParentConversionSummery option:selected").val()
+        var Type = '';
+        var Code = '';
+        Code = _Code;
+        var id = '';
+        id = _childid;
         //
+        if (tacticId > 0) {
+            id = tacticId;
+            Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
 
-        $("#ddlINQToPlan").change(function () {
-            istrigger = true;
-            var _childValue = $("#ddlINQToPlan").val();
-            GetConversionToPlanByCode(_childValue);
-            //ReloadConversionToPlanByCustomFieldTop(_childValue);
-        });
+        }
+        else if (programId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
+            id = programId.toString();
 
+        }
+        else if (campaignId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+            id = campaignId.toString();
 
-        //for test method
-        var FilterData;
-        var barchartData;
-        var _BarchartCombine;
-        var _LineChartCombine;
-        var _cardData;
-        var _Isfilter = false;
-        function GetConversionToPlanByCode(_Code) {
-         
-            var _childid = $("#ddlTopChildConversionToPlan").val();
-            var tacticId = $("#ddlTacticConversionToPlan").val();
-            var parentlabel = $("#ddlParentConversionSummery option:selected").val()
-            var Type = '';
-            var Code = '';
-            Code = _Code;
-            var id = '';
-            id = _childid;
-            //
-            if (tacticId > 0) {
-                id = tacticId;
-                Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
+        }
 
-            }
-            else if (programId > 0) {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
-                id = programId.toString();
-
-            }
-            else if (campaignId > 0) {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                    id = campaignId.toString();
-
-                }
-            
-            var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
-            $("#dvConversionToPlan").load(_url);
-            @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
+        $("#dvConversionToPlan").load(_url);
+        @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
             _LineChartCombine = JSON.stringify('@Model.ConversionToPlanModel.LineChartModel');
             formatDataTableValues();
             formatPercentageValue();
             //loadBarChart();
             loadCombineChart();*@
-            @*$.ajax({
+        @*$.ajax({
 
             dataType: 'json',
             type: 'POST',
@@ -621,23 +648,29 @@
                 loadCombineChart();
             }
             });*@
-           
+
     }
-        //up to here
+    //up to here
 
 
-        function GetConversionToPlanByCustomFilter(_childValue) {
+    function GetConversionToPlanByCustomFilter(_childValue) {
         
-            var code = $("#ddlINQToPlan").val();
-            var parentlabel = $("#ddlParentConversionSummery option:selected").val()
-            var Type = '';
-            var id = '';
-            id = _childValue;
-            var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
-            var Qurt_MonthConv = AllocatedByConv;
-            var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code;
-            $("#dvConversionToPlan").load(_url);
-            @*$.ajax({
+        currentOption = $("#ddlTopChildConversionToPlan option:selected").val();
+        var DrpChange = 'CampaignDrp';
+        if (previousOption != currentOption) {
+            DrpChange = 'true';
+        }
+
+        var code = $("#ddlINQToPlan").val();
+        var parentlabel = $("#ddlParentConversionSummery option:selected").val()
+        var Type = '';
+        var id = '';
+        id = _childValue;
+        var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
+        var Qurt_MonthConv = AllocatedByConv;
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&DrpChange=" + DrpChange;
+        $("#dvConversionToPlan").load(_url);
+        @*$.ajax({
                 dataType: 'json',
                 type: 'POST',
                 url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
@@ -661,35 +694,35 @@
                     loadCombineChart();
                 }
             });*@
-        }
+    }
 
 
-        function loadCombineChart() {
-            var _barchartdata = barchartData;
-            var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
-            _BarChartdata = JSON.parse(_BarChartdata);
+    function loadCombineChart() {
+        var _barchartdata = barchartData;
+        var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
+        _BarChartdata = JSON.parse(_BarChartdata);
 
 
-            var _linechartdata = _LineChartCombine;
-            var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
-            _LineChartdata = JSON.parse(_LineChartdata);
+        var _linechartdata = _LineChartCombine;
+        var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
+        _LineChartdata = JSON.parse(_LineChartdata);
 
-            //BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
+        //BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
 
-        }
+    }
 
-        //Start:- Method for bind ConversionDataTabel Script
-        @*function BindConversionToPlanDataTable() {
+    //Start:- Method for bind ConversionDataTabel Script
+    @*function BindConversionToPlanDataTable() {
             if (_Isfilter) {
                 var _dataTableModel = FilterData;
             }
             else {
                 var _dataTableModel = '@conversion_datatableModel';
             }
-           
+
         _dataTableModel = (_dataTableModel.toString().replace(/&quot;/g, '"'));
         _dataTableModel = JSON.parse(_dataTableModel);
-       
+
 
 
         var isQuarterly = _dataTableModel.IsQuarterly;
@@ -764,139 +797,177 @@
 
         $("#ConversionToPlanDataTable").html(_tbody);
         }*@
-        //End Script
+    //End Script
 
-        ////Start:- Combination Chart Script
-        //function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal, _pointLabelWidth) {
-        //    Highcharts.setOptions({
-        //        lang: {
-        //            numericSymbols: ["k", "M", "B", "T", "P", "E"]
-        //        }
-        //    });
-        //    var options = {
-        //        chart: {
-        //            //type: 'column'
-        //            height: 280,
-        //            spacingTop: 30
-        //            //width: 400
-        //        },
-        //        colors: ['#B04499', '#999999', '#006837'],
-        //        title: {
-        //            text: ''
-        //        },
-        //        legend: {
-        //            layout: 'vertical',
-        //            align: 'left',
-        //            verticalAlign: 'top',
-        //            floating: true,
-        //            x: 60,
-        //            y: 45
-        //        },
-        //        xAxis: {
-        //            categories: _categories,
-        //            tickWidth: 0,
-        //            labels: {
-        //                enabled: false
-        //            },
-        //            plotLines: [{
-        //                color: 'black', // Color value
-        //                dashStyle: 'longdash', // Style of the plot line. Default to solid
-        //                value: _plotlineVal, // Value of where the line will appear
-        //                width: 2, // Width of the line    
-        //                label: {
-        //                    text: 'Today',
-        //                    align: 'middle',
-        //                    verticalAlign: 'top',
-        //                    rotation: 0,
-        //                    x: -15,
-        //                    y: -2
-        //                }
-        //            }]
-        //            //plotBands: [{
-        //            //    color: '#ebebeb',
-        //            //    from: _plotBandFrom,
-        //            //    to: _plotBandTo
-        //            //}]
-        //        },
-        //        yAxis: {
-        //            gridLineWidth: 0,
-        //            labels: {
-        //                enabled: true,
-        //                align: 'left',
-        //                x: 7,
-        //                y: 2
-        //            },
-        //            title: {
-        //                enabled: false,
-        //                text: 'Values'
-        //            },
-        //            lineWidth: 1,
-        //            tickPosition: 'inside',
-        //            tickLength: 5,
-        //            tickWidth: 2
-        //        },
-        //        credits: {
-        //            enabled: false
-        //        },
-        //        tooltip: {
-        //            valueDecimals: 2,
-        //        },
-        //        plotOptions: {
-        //            series: {
-        //                //pointWidth: 20,
+    ////Start:- Combination Chart Script
+    //function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal, _pointLabelWidth) {
+    //    Highcharts.setOptions({
+    //        lang: {
+    //            numericSymbols: ["k", "M", "B", "T", "P", "E"]
+    //        }
+    //    });
+    //    var options = {
+    //        chart: {
+    //            //type: 'column'
+    //            height: 280,
+    //            spacingTop: 30
+    //            //width: 400
+    //        },
+    //        colors: ['#B04499', '#999999', '#006837'],
+    //        title: {
+    //            text: ''
+    //        },
+    //        legend: {
+    //            layout: 'vertical',
+    //            align: 'left',
+    //            verticalAlign: 'top',
+    //            floating: true,
+    //            x: 60,
+    //            y: 45
+    //        },
+    //        xAxis: {
+    //            categories: _categories,
+    //            tickWidth: 0,
+    //            labels: {
+    //                enabled: false
+    //            },
+    //            plotLines: [{
+    //                color: 'black', // Color value
+    //                dashStyle: 'longdash', // Style of the plot line. Default to solid
+    //                value: _plotlineVal, // Value of where the line will appear
+    //                width: 2, // Width of the line
+    //                label: {
+    //                    text: 'Today',
+    //                    align: 'middle',
+    //                    verticalAlign: 'top',
+    //                    rotation: 0,
+    //                    x: -15,
+    //                    y: -2
+    //                }
+    //            }]
+    //            //plotBands: [{
+    //            //    color: '#ebebeb',
+    //            //    from: _plotBandFrom,
+    //            //    to: _plotBandTo
+    //            //}]
+    //        },
+    //        yAxis: {
+    //            gridLineWidth: 0,
+    //            labels: {
+    //                enabled: true,
+    //                align: 'left',
+    //                x: 7,
+    //                y: 2
+    //            },
+    //            title: {
+    //                enabled: false,
+    //                text: 'Values'
+    //            },
+    //            lineWidth: 1,
+    //            tickPosition: 'inside',
+    //            tickLength: 5,
+    //            tickWidth: 2
+    //        },
+    //        credits: {
+    //            enabled: false
+    //        },
+    //        tooltip: {
+    //            valueDecimals: 2,
+    //        },
+    //        plotOptions: {
+    //            series: {
+    //                //pointWidth: 20,
 
-        //                //groupPadding: 0,
-        //                //borderWidth: 0,
-        //                //shadow: false
-        //            },
-        //            column: {
-        //                //grouping: false,
-        //                shadow: false,
-        //                borderWidth: 0,
-        //                //pointPadding: 5,
-        //                pointWidth: _pointLabelWidth
-        //                //groupPadding: 0
-        //            }
-        //        },
-        //        series: []
-        //    }
-        //    var serLength = _Barseries.length;
+    //                //groupPadding: 0,
+    //                //borderWidth: 0,
+    //                //shadow: false
+    //            },
+    //            column: {
+    //                //grouping: false,
+    //                shadow: false,
+    //                borderWidth: 0,
+    //                //pointPadding: 5,
+    //                pointWidth: _pointLabelWidth
+    //                //groupPadding: 0
+    //            }
+    //        },
+    //        series: []
+    //    }
+    //    var serLength = _Barseries.length;
 
-        //    for (var i = 0; i < serLength ; i++) {
-        //        options.series.push(eval(_Barseries[i]));
-        //    }
-        //    var _linechartseriesLength = _linechartseries.length;
-        //    for (var i = 0; i < _linechartseriesLength ; i++) {
-        //        options.series.push(eval(_linechartseries[i]));
+    //    for (var i = 0; i < serLength ; i++) {
+    //        options.series.push(eval(_Barseries[i]));
+    //    }
+    //    var _linechartseriesLength = _linechartseries.length;
+    //    for (var i = 0; i < _linechartseriesLength ; i++) {
+    //        options.series.push(eval(_linechartseries[i]));
 
-        //        //if (_series[i].type != null && _series[i].type != 'undefined') {
-        //        //    var datum = options.series[i];
-        //        //    datum.tooltip = {
-        //        //        shared: true,
-        //        //        useHTML: true,
-        //        //        headerFormat: '<table>',
-        //        //        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
-        //        //            '<td style="text-align: right"><b>{point.y}</b></td></tr> <tr><td style="color: {series.color}">{series.name}: </td>' +
-        //        //    '<td style="text-align: right"><b>{point.y}</b></td></tr>',
-        //        //        footerFormat: '</table>'
-        //        //    };
-        //        //    //if (_catLength == 4) {
-        //        //    //    datum.marker = {
-        //        //    //        symbol: 'line',
-        //        //    //        lineWidth: 2,
-        //        //    //        radius: 26,
-        //        //    //        lineColor: '#F0BE29'
-        //        //    //    };
-        //        //    //}
-        //        //}
-        //    }
+    //        //if (_series[i].type != null && _series[i].type != 'undefined') {
+    //        //    var datum = options.series[i];
+    //        //    datum.tooltip = {
+    //        //        shared: true,
+    //        //        useHTML: true,
+    //        //        headerFormat: '<table>',
+    //        //        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+    //        //            '<td style="text-align: right"><b>{point.y}</b></td></tr> <tr><td style="color: {series.color}">{series.name}: </td>' +
+    //        //    '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+    //        //        footerFormat: '</table>'
+    //        //    };
+    //        //    //if (_catLength == 4) {
+    //        //    //    datum.marker = {
+    //        //    //        symbol: 'line',
+    //        //    //        lineWidth: 2,
+    //        //    //        radius: 26,
+    //        //    //        lineColor: '#F0BE29'
+    //        //    //    };
+    //        //    //}
+    //        //}
+    //    }
 
-        //    //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
-        //    //    return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
-        //    //};
-        //    $(_ChartDivId).highcharts(options);
-        //}
-        ////End:- Combination Chart Script
+    //    //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
+    //    //    return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
+    //    //};
+    //    $(_ChartDivId).highcharts(options);
+    //}
+    ////End:- Combination Chart Script
 
+    //});
+    var previousOption;
+
+    (function () {
+
+        $("#ddlTopChildConversionToPlan").focus(function () {
+            // Store the current value on focus, before it changes
+            previousOption = this.value;
+        }).change(function () {
+            previousOption = this.value;
+        });
     });
+    function formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage) {
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';
+        var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _revPercentage = '@revenue_Projected_Goal.Percentage';
+        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+
+        var _formtPercentage = "0";
+        $("#mqlActuals").popover('destroy');
+        $("#mqlProjecteds").popover('destroy');
+        setBootstrapTooltip("#mqlActuals", _revActual_Projected, 5, true);
+        setBootstrapTooltip("#mqlProjecteds", _revGoal, 5, true);
+        if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+            _formtPercentage = "0";
+            $("#mqlActualPercentages").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (_isNegativePercentage.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+                $("#mqlActualPercentages").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+                $("#mqlActualPercentages").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $("#mqlActualPercentages").html(_formtPercentage);
+    }
 </script>

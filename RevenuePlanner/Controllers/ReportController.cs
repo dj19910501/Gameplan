@@ -8608,7 +8608,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Revenue"
-        public PartialViewResult GetRevenueToPlanByFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 )
+        public PartialViewResult GetRevenueToPlanByFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
@@ -8728,16 +8728,18 @@ namespace RevenuePlanner.Controllers
                 {
                     if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
                     {
+                        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
                         if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
                         {
                             TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
                         }
+
                     }
                     else
                     {
-                    TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                    }
                 }
-            }
             }
             else
             {
@@ -11083,6 +11085,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
                     {
+                        TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
                         if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
                         {
                             TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
@@ -11090,9 +11093,9 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                        TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                    }
                 }
-            }
             }
             else
             {
@@ -11137,7 +11140,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
                     {
-                        TempData["IsDispalyCustomFieldChildDDL"] = true;
+                        TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
                     }
                 }
                 marsterCustomField = string.Empty;
@@ -11296,11 +11299,11 @@ namespace RevenuePlanner.Controllers
 
                     #region Mapping Items for Card Section
                     /// Add By Nishant Sheth
-                   
+
                     // Fetch the respectives Campaign Ids and Program Ids from the tactic list
                     campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
                     programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
-                   
+
 
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
@@ -11862,7 +11865,7 @@ namespace RevenuePlanner.Controllers
 
                     #region "Add Static Values to Model"
                     objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
-                  
+
                     objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
 
@@ -12151,7 +12154,8 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
+                        objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString(); // Change By Nishat Sheth
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
@@ -12729,21 +12733,21 @@ namespace RevenuePlanner.Controllers
             {
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                        List<int> campaignIds = new List<int>();
-                        campaignIds = ProgramList.Select(p => p.PlanCampaignId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        ProgramList = ProgramList.Where(p => campaignIds.Contains(p.PlanCampaignId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                    List<int> campaignIds = new List<int>();
+                    campaignIds = ProgramList.Select(p => p.PlanCampaignId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    ProgramList = ProgramList.Where(p => campaignIds.Contains(p.PlanCampaignId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                        List<int> programIds = new List<int>();
-                        programIds = ProgramList.Select(p => p.PlanProgramId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        ProgramList = ProgramList.Where(p => programIds.Contains(p.PlanProgramId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                    List<int> programIds = new List<int>();
+                    programIds = ProgramList.Select(p => p.PlanProgramId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    ProgramList = ProgramList.Where(p => programIds.Contains(p.PlanProgramId)).ToList();
                 }
             }
 
@@ -12784,30 +12788,30 @@ namespace RevenuePlanner.Controllers
             {
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                        List<int> campaignIds = new List<int>();
-                        campaignIds = TacticList.Select(p => p.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        TacticList = TacticList.Where(t => campaignIds.Contains(t.Plan_Campaign_Program.PlanCampaignId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                    List<int> campaignIds = new List<int>();
+                    campaignIds = TacticList.Select(p => p.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticList = TacticList.Where(t => campaignIds.Contains(t.Plan_Campaign_Program.PlanCampaignId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                        List<int> programIds = new List<int>();
-                        programIds = TacticList.Select(p => p.PlanProgramId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        TacticList = TacticList.Where(t => programIds.Contains(t.PlanProgramId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                    List<int> programIds = new List<int>();
+                    programIds = TacticList.Select(p => p.PlanProgramId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticList = TacticList.Where(t => programIds.Contains(t.PlanProgramId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.TacticCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
-                        List<int> tacticIds = new List<int>();
-                        tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
+                    List<int> tacticIds = new List<int>();
+                    tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
                 }
             }
 
