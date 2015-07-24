@@ -1471,10 +1471,11 @@ namespace RevenuePlanner.Controllers
         /// <param name="modelID">model id</param>
         /// <param name="isDeployedToIntegration">isDeployedToIntegration flag</param>
         /// <param name="isDeployedToModel">isDeployedToModel flag</param>
+        /// <param name="WorkFrontTemplate">template id of workfront template as a string</param>
         /// <returns>returns json result object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel)
+        public ActionResult SaveTactic(string Title, string Description, int? StageId, double ProjectedStageValue, double ProjectedRevenue, int TacticTypeId, string modelID, bool isDeployedToIntegration, bool isDeployedToModel, string WorkFrontTemplate)
         {
             try
             {
@@ -1495,7 +1496,7 @@ namespace RevenuePlanner.Controllers
                 //// Start Manoj Limbachiya PL # 486
                 objtactic.ModelId = ModelId;
                 objtactic.IsDeployedToModel = isDeployedToModel;
-
+                objtactic.WorkFront_Template = WorkFrontTemplate; //added Brad Gray 07/24/2015 PL#1374 tactic type to workfront template mapping
                 if (!isDeployedToModel)
                 {
                     Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();

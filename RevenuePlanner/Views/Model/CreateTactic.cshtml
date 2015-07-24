@@ -88,7 +88,7 @@
         {
             <label>WorkFront Template</label>
     <span class="simpleSelectBox">
-        @Html.DropDownListFor(model => model.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewData["WorkFrontInstanceTemplates"], "ID" , "Template_Name"), "None", new { @class = "hide" })
+        @Html.DropDownListFor(model => model.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewData["WorkFrontInstanceTemplates"], "TemplateId" , "Template_Name"), "None", new { @class = "hide",require = "true"  })
     </span>
         }
         //End Brad Gray PL # 1374
@@ -141,9 +141,10 @@
             $("#projectStage").html('Projected [Stage]');
         }
 
+  
         $("#StageId").on('change', function (e) {
             var optionSelected = $("option:selected", this);
-            var valueSelected = optionSelected.val();
+            var valueSelected = optionSelected.val(); 
             var textSelected = optionSelected.text();
             if (textSelected != "Please Select") {
                 $("#projectStage").html();
@@ -154,6 +155,19 @@
                 $("#projectStage").html('Projected [Stage]');
             }
         });
+
+        //Start Brad Gray 07/24/2015 PL # 1374
+        /*
+        $("#WorkFront_Template").on('change', function (e) {
+            var optionSelected = $("option:selected", this);
+            var valueSelected = optionSelected.val();
+            var textSelected = optionSelected.text();
+            console.log(valueSelected);
+            console.log(textSelected);
+        });
+        */
+        //End Brad Gray 07/24/2015 PL # 1374
+
         $("#deleteTactic").click(function () {
             var uId = $(window).attr('name');   // Added by Sohel Pathan on 19/06/2014 for PL ticket #536
             if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
@@ -367,6 +381,14 @@
             if (StageId == '' || StageId == 'Undefined') {
                 StageId = 'null';
             }
+            //Start Brad Gray 07/24/2015 PL # 1374
+            var TemplateId = $("#WorkFront_Template").val();
+            // console.log(TemplateId);
+            if (TemplateId == '' || TemplateId == 'Undefined') {
+                TemplateId = 'null';
+            }
+            console.log(TemplateId);
+            //End Brad Gray 07/24/2015 PL # 1374
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
             var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
@@ -401,7 +423,7 @@
                             data: 'Title=' + escape(Title) + '&Description=' + escape(Description) + '&StageId=' + StageId + '&ProjectedStageValue=' + ProjectedStageValue
                             + '&ProjectedRevenue=' + ProjectedRevenue + '&TacticTypeId=' + TacticTypeId
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
-                            + '&isDeployedToModel=' + isDeployedToModel,
+                            + '&isDeployedToModel=' + isDeployedToModel + '&WorkFrontTemplate=' + TemplateId,
                             success: function (data) {
                                
                                 if (data.redirect) {
