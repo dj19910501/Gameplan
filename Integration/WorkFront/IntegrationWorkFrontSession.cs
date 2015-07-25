@@ -280,7 +280,7 @@ namespace Integration.WorkFront
                     syncError = (syncError || SyncModel(model));
                 }
                 //Retrieves list of all tactics tied to the integrationinstance and deployed to integration
-                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true ).ToList();
+                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true).ToList();
                     foreach (var tactic in tacticList)
                     {
 	                     syncError = (syncError || SyncTactic(tactic));
