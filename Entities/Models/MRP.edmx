@@ -1805,17 +1805,7 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="Self.Plan_Campaign_Program_Tactic_Actual" store:Type="Tables" store:Schema="dbo">
-            <DefiningQuery>SELECT 
-[Plan_Campaign_Program_Tactic_Actual].[PlanTacticId] AS [PlanTacticId], 
-[Plan_Campaign_Program_Tactic_Actual].[StageTitle] AS [StageTitle], 
-[Plan_Campaign_Program_Tactic_Actual].[Period] AS [Period], 
-[Plan_Campaign_Program_Tactic_Actual].[Actualvalue] AS [Actualvalue], 
-[Plan_Campaign_Program_Tactic_Actual].[CreatedDate] AS [CreatedDate], 
-[Plan_Campaign_Program_Tactic_Actual].[CreatedBy] AS [CreatedBy], 
-[Plan_Campaign_Program_Tactic_Actual].[ModifiedDate] AS [ModifiedDate], 
-[Plan_Campaign_Program_Tactic_Actual].[ModifiedBy] AS [ModifiedBy]
-FROM [dbo].[Plan_Campaign_Program_Tactic_Actual] AS [Plan_Campaign_Program_Tactic_Actual]</DefiningQuery>
+          <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="Self.Plan_Campaign_Program_Tactic_Actual" store:Type="Tables" Schema="dbo">
           </EntitySet>
           <AssociationSet Name="FK__Plan_Camp__PlanC__245D67DE" Association="Self.FK__Plan_Camp__PlanC__245D67DE">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />

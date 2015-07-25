@@ -210,6 +210,7 @@ namespace RevenuePlanner.Models
         public DateTime MinStartDate { get; set; }
         public int ImprovePlanId { get; set; }
         public Plan_Improvement_Campaign_Program_Tactic ImprovementTactic { get; set; }
+        public System.Guid CreatedBy { get; set; } 
     }
 
     public class CustomFields
@@ -234,6 +235,7 @@ namespace RevenuePlanner.Models
         public double CampaignProgress { get; set; }
         public double ProgramProgress { get; set; }
         public List<int> lstCustomEntityId { get; set; }
+        public System.Guid CreatedBy { get; set; } 
     }
 
     public class Plan_Tactic
@@ -245,6 +247,7 @@ namespace RevenuePlanner.Models
         public Plan_Campaign_Program objPlanTacticProgram { get; set; }
         public Plan_Campaign objPlanTacticCampaign { get; set; }
         public Plan objPlanTacticCampaignPlan { get; set; }
+        public System.Guid CreatedBy { get; set; }
     }
 
     public class CustomFieldsForFilter

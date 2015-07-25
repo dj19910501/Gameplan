@@ -50,9 +50,14 @@
     var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
     _LineChartdata = JSON.parse(_LineChartdata);
     //End: Get LineChart Model
+        //PL #1437 - dashrath
+    var _dataTooltip = '@revenue_datatableModel';
+    var _DatatTooltip = (_dataTooltip.toString().replace(/&quot;/g, '"'));
+    _DatatTooltip = JSON.parse(_DatatTooltip);
+        //up to here
 
         //BindRevenueBarChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId);
-    BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
+    BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth, _DatatTooltip.ActualList);
     // End:- Revenue To Plan BarChart script  
 
     // Start:- Revenue To Plan DataTable script  
