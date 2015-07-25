@@ -11,7 +11,7 @@ GO
 
 -- Add new column in Model called "IntegrationInstanceIdProjMgmt"
 if not exists (select * from sys.columns WHERE [name] = 'IntegrationInstanceIdProjMgmt')
-ALTER TABLE [dbo].[Model] ADD [IntegrationInstanceIdProjMgmt] nvarchar(255)
+ALTER TABLE [dbo].[Model] ADD [IntegrationInstanceIdProjMgmt] int
 go
 
 /****** Object:  Table [dbo].[IntegrationWorkFrontTemplates]    Script Date: 7/24/2015 5:24:25 PM ******/
