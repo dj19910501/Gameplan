@@ -2203,7 +2203,7 @@ function renderGantt(taskData) {
         gantt.config.date_scale = " %Y";
 
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' },{ name: "add", label: "", width: 44 } ];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         //// Getting quarter
@@ -2233,13 +2233,40 @@ function renderGantt(taskData) {
             return getCSSForTask(task);
         };
         gantt.parse(filteredTasks);
+
+        //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
+        //// display popup based on type and name and title.
+        $(".gantt_last_cell").dblclick(function (e) {
+            e.stopPropagation();
+        });
+
+        $(".gantt_add").click(function (e) {
+
+            var type = $(this).attr('id');
+            var name = $(this).attr('Name');
+            var title = $(this).attr('aria-label');
+            DisplayPopUpMenu(type, name, title, e);
+
+        });
+
+        var $doc = $(document);
+        $doc.click(function () {
+            $('#popupType').css('display', 'none');
+        });
+
+        $(document).mouseup(function (e) {
+            $('#popupType').css("display", "none");
+        });
+        $(".gantt_ver_scroll").scroll(function () {
+            $('#popupType').css('display', 'none');
+        });
     }
     else if (isQuater == "thismonth") {
         gantt.config.scale_unit = "month";
         gantt.config.step = 12;
         gantt.config.date_scale = " %Y";
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, { name: "add", label: "", width: 44 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date(), m = date.getMonth();
@@ -2257,7 +2284,6 @@ function renderGantt(taskData) {
         var filteredTasks = { data: filteredData };
 
         gantt.init("gantt_here");
-
         var json_length = tasks.data.length;
         var gantt_div = document.getElementById("gantt_here");
 
@@ -2272,6 +2298,32 @@ function renderGantt(taskData) {
 
         gantt.parse(filteredTasks);//Modified by Mitesh Vaishnav on 04/08/2014 for PL ticket #671 Plan: Freezing of Application with Please Wait Dialog Box (This Month Option)
 
+        //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
+        //// display popup based on type and name and title.
+        $(".gantt_last_cell").dblclick(function (e) {
+            e.stopPropagation();
+        });
+
+        $(".gantt_add").click(function (e) {
+
+            var type = $(this).attr('id');
+            var name = $(this).attr('Name');
+            var title = $(this).attr('aria-label');
+            DisplayPopUpMenu(type, name, title, e);
+
+        });
+
+        var $doc = $(document);
+        $doc.click(function () {
+            $('#popupType').css('display', 'none');
+        });
+
+        $(document).mouseup(function (e) {
+            $('#popupType').css("display", "none");
+        });
+        $(".gantt_ver_scroll").scroll(function () {
+            $('#popupType').css('display', 'none');
+        });
     }
     else if ($.isNumeric(isQuater)) {
         gantt.config.scale_unit = "year";
@@ -4007,7 +4059,7 @@ function Quarter() {
         }
 
         else {
-            if (permission == "Add") {
+            if (permission == "true") {
             ul = "<ul style='margin: 0;'>  <li class='new-prog' id='ImpsTactic'>New " + type + "</li> </ul>";
             }
             else {
@@ -4482,6 +4534,40 @@ function () {
     $('#sidebar.sidebar').css({ 'width': '50px', 'background': 'transparent', });
     $('.sidebar-toogle').css('border-bottom-width', '0');
 
+    ///new code  
+    var ganttwidth = $("#gantt_here").width();   
+    var totalWidth = ganttwidth - 230;
+    gantt._render_tasks_scales(totalWidth);
+    $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
+
+    $(".gantt_last_cell").dblclick(function (e) {
+        e.stopPropagation();
+    });
+
+    $(".gantt_last_cell").click(function (e) {
+        e.stopPropagation();
+    });
+
+    $(".gantt_add").click(function (e) {
+
+        var type = $(this).attr('id');
+        var name = $(this).attr('Name');
+        var title = $(this).attr('aria-label');
+        DisplayPopUpMenu(type, name, title, e);
+
+    });
+
+    var $doc = $(document);
+    $doc.click(function () {
+        $('#popupType').css('display', 'none');
+    });
+
+    $(document).mouseup(function (e) {
+        $('#popupType').css("display", "none");
+    });
+    $(".gantt_ver_scroll").scroll(function () {
+        $('#popupType').css('display', 'none');
+    });
 
 }, function () {
     $('#sidebar').css({
@@ -4499,7 +4585,41 @@ function () {
     $('#sidebar.sidebar').css({ 'width': '280px', 'background': '#e9e9e9 none repeat scroll 0 0', });
     $('.sidebar-toogle').css('border-bottom-width', '1px');
 
+    ///new code  
+    var ganttwidth = $("#gantt_here").width();    
+    var totalWidth = ganttwidth - 230;
+    gantt._render_tasks_scales(totalWidth);
 
+    $('#gantt_hor_scroll').attr('style', 'Width: 1483px;');    
+
+    $(".gantt_last_cell").dblclick(function (e) {
+        e.stopPropagation();
+    });
+
+    $(".gantt_last_cell").click(function (e) {
+        e.stopPropagation();
+    });
+
+    $(".gantt_add").click(function (e) {
+
+        var type = $(this).attr('id');
+        var name = $(this).attr('Name');
+        var title = $(this).attr('aria-label');
+        DisplayPopUpMenu(type, name, title, e);
+
+    });
+
+    var $doc = $(document);
+    $doc.click(function () {
+        $('#popupType').css('display', 'none');
+    });
+
+    $(document).mouseup(function (e) {
+        $('#popupType').css("display", "none");
+    });
+    $(".gantt_ver_scroll").scroll(function () {
+        $('#popupType').css('display', 'none');
+    });
 })
 
 </script>
