@@ -137,6 +137,7 @@
         <EntityTypeShape EntityType="MRPModel.IntegrationInstance_UnprocessData" Width="1.5" PointX="7.25" PointY="38.125" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" />
 <<<<<<< HEAD
+<<<<<<< HEAD
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="7.875" PointY="42.625" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
@@ -147,6 +148,8 @@
         
         
 &gt;&gt;&gt;&gt;&gt;&gt;&gt; brad@hive9
+=======
+>>>>>>> parent of f27571d... workfront integration merge
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
