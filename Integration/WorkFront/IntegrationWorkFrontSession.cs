@@ -372,7 +372,7 @@ namespace Integration.WorkFront
         private bool SyncTactic(Plan_Campaign_Program_Tactic tactic)  
         {
             bool tacticError = false;
-            TacticType tacticType = db.TacticTypes.Where(type =>  type.TacticTypeId == tactic.TacticTypeId && type.WorkFront_Template != null).FirstOrDefault();
+            TacticType tacticType = db.TacticTypes.Where(type =>  type.TacticTypeId == tactic.TacticTypeId).FirstOrDefault();
             
             IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
             try
@@ -398,10 +398,14 @@ namespace Integration.WorkFront
                     tactic.ModifiedDate = DateTime.Now;
                     tactic.ModifiedBy = _userId;
                     string templateToUse = tacticType.WorkFront_Template;
+                    if (templateToUse == null)
+                    {
+                        throw new ClientException("Tactic Type to Template Mapping Not Found");
+                    }
                     JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { ID = templateToUse });
                     if (templateInfo == null)
                     {
-                        throw new ClientException("Template Not Found");
+                        throw new ClientException("Template Not Found in WorkFront");
                     }
                     JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, groupID = _userGroupID });
                     if (project == null) 

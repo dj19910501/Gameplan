@@ -1291,11 +1291,10 @@ namespace RevenuePlanner.Controllers
                      if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString())) 
                      {
                          isIntegratedWithWorkFront = true;
-                         //ViewData["WorkFrontInstanceTemplates"] = workFrontTemplates.Where(template => template.Template_Name != null);
-                         workFrontTemplates = objModel.IntegrationInstance4.IntegrationWorkFrontTemplates.ToList();
-                         
                      }
-                     ViewData["WorkFrontInstanceTemplates"] = workFrontTemplates;
+                     ViewBag.WorkFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
+                                                                  modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name)
+                                                      .Select(modelTemplate => new { modelTemplate.TemplateId, modelTemplate.Template_Name }).Distinct().ToList();
                     ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                     //End addition by Brad Gray for PL#1734
                 }
