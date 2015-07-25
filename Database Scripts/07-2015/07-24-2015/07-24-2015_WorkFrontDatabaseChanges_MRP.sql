@@ -16,11 +16,10 @@ go
 
 /****** Object:  Table [dbo].[IntegrationWorkFrontTemplates]    Script Date: 7/24/2015 5:24:25 PM ******/
 
-declare @tablecreate int = 0;
 
 IF (not EXISTS (SELECT * FROM sys.TABLES WHERE name = 'IntegrationWorkFrontTemplates'))
 begin
-set @tablecreate = 1
+
 exec('SET ANSI_NULLS ON')
 exec('if (@tablecreate =1)SET QUOTED_IDENTIFIER ON')
 exec('
