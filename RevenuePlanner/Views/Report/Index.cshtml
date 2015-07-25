@@ -1706,7 +1706,7 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
     //End:- BarLineChart Script
 
     //Start:- Combination Chart Script
-        function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal,_pointLabelWidth) {
+        function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal, _pointLabelWidth, _actulValue) {
             Highcharts.setOptions({
                 lang: {
                     numericSymbols: ["k", "M", "B", "T", "P", "E"]
@@ -1800,7 +1800,7 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                 series: []
             }
             var serLength = _Barseries.length;
-
+            var _arractul = [];//add actual list -dashrath
             for (var i = 0; i < serLength ; i++) {
                 options.series.push(eval(_Barseries[i]));
             }
@@ -1808,6 +1808,11 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
             for (var i = 0; i < _linechartseriesLength ; i++) {
                 options.series.push(eval(_linechartseries[i]));
 
+                //start #1437 change actual tootlip on waterfall and revenue :- Dashrath Prajapati.
+
+                if (_linechartseries[i].name == "Actual") {
+                    _arractul.push(_linechartseries[i].data);
+                }
                 //if (_series[i].type != null && _series[i].type != 'undefined') {
                 //    var datum = options.series[i];
                 //    datum.tooltip = {
@@ -1829,7 +1834,74 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                 //    //}
                 //}
             }
+            //getting same value in projected and actual 
+            var sameVal;
+            var index;
+            var total = 0;
+            var ii = 1;
+            var arrActual = _arractul;
 
+            var _arrActual = arrActual.toString();
+            var Actualarray = _arrActual.split(',');
+            var _Actualarray = Actualarray.reverse();
+
+            for (var i = 0; i < _Actualarray.length; i++) {
+                if (ii == 1) {
+                    if (_Actualarray[i].toString() != "") {
+                        sameVal = _Actualarray[i].toString();
+                        ii++;
+                    }
+                }
+            }
+
+            _Actualarray.reverse();
+            index = $.inArray(sameVal, _Actualarray);
+            if (_Actualarray.length <= 5) {
+                for (var i = 0; i <= index - 1; i++) {
+                    total += _actulValue[i];
+                }
+            }
+            else {
+                for (var i = 0; i <= index - 2; i++) {
+                    total += _actulValue[i];
+                }
+            }
+            _Actualarray.splice(index, 1, total.toString());
+
+            options.tooltip = {
+                formatter: function () {
+                    debugger;
+                    var symbol = '●';
+                    var series = this.point.series.chart.series[0];
+                    switch (this.point.graphic.symbolName) {
+                        case 'circle':
+                            symbol = '●';
+                            break;
+                        case 'diamond':
+                            symbol = '♦';
+                            break;
+                        case 'square':
+                            symbol = '■';
+                            break;
+                        case 'triangle':
+                            symbol = '▲';
+                            break;
+                        case 'triangle-down':
+                            symbol = '▼';
+                            break;
+                    }
+
+                    if (this.point.series.name == "Actual") {
+                        var _point = this.point.series.data.indexOf(this.point);
+                        var _val = _Actualarray[_point];
+                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(_val) + '</b>';
+                    }
+                    else {
+                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(this.y) + '</b>';
+                    }
+                }
+            };
+            //end #1437
             //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
             //    return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
             //};

@@ -47,6 +47,12 @@
         BindConversionToPlanDataTable();
         formatDataTableValues();
         formatPercentageValue();
+
+        //PL #1437 - dashrath
+        var _dataTooltip = '@conversion_datatableModel';
+        var _DatatTooltip = (_dataTooltip.toString().replace(/&quot;/g, '"'));
+        _DatatTooltip = JSON.parse(_DatatTooltip);
+        //up to here
         //start bar chart
         var _barchartdata = "@conversion_barchartModel";
         var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
@@ -60,7 +66,7 @@
         //End: Get LineChart Model
 
         var barCombinechartDivId = "#dvConversionCombineChart";
-        BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
+        BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth, _DatatTooltip.ActualList);
         //end combine chart script
 
         // Nishant
