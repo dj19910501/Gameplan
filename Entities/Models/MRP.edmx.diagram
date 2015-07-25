@@ -142,11 +142,11 @@
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
         <AssociationConnector Association="MRPModel.FK_Model_Model1" />
 =======
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
-        <AssociationConnector Association="MRPModel.FK_Model_Model1" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="1" PointY="1" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
->>>>>>> brad@hive9
+        
+        
+        
+        
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; brad@hive9
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
