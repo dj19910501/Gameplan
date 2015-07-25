@@ -1642,21 +1642,6 @@ namespace RevenuePlanner.Helpers
                 }
 
             }
-            else
-            {
-                string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
-                if (string.IsNullOrEmpty(MQLStageLabel))
-                {
-                    objHomePlanModelHeader.mqlLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.ProjectedMQLLabel.ToString()].ToString();
-                }
-                else
-                {
-                    objHomePlanModelHeader.mqlLabel = "Projected " + MQLStageLabel;
-                }
-
-                objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Budget.ToString()].ToString();
-
-            }
             return objHomePlanModelHeader;
         }
 
@@ -4738,34 +4723,19 @@ namespace RevenuePlanner.Helpers
         /// <param name="description">attribute Text.</param>
         public static string GenerateHTMLAttribute(string attribute = "")
         {
-            bool isvalidformate = false;//PL #1341 added by dashrath prajapati
             string result = string.Empty;
             if (string.IsNullOrEmpty(attribute))
                 return result;
             try
             {
-                string[] _attribute=attribute.Split(' ');
-                for (int i = 0; i < _attribute.Length; i++)
+                result = attribute;
+                string regex = @"((www\.|(http|https|ftp|news|file)+\:\/\/)[&#95;.a-z0-9-]+\.[a-z0-9\/&#95;:@=.+?,_\[\]\(\)\!\$\*\|##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])";
+                Regex r = new Regex(regex, RegexOptions.IgnoreCase);
+                result = result.Replace("\n", "<br />");
+                result = r.Replace(result, "<a href=\"$1\" title=\"Click to open in a new window or tab\" target=\"&#95;blank\">$1</a>").Replace("href=\"www", "href=\"//www");
+                if (!result.Contains("www"))
                 {
-                    //isvalidformate = Regex.IsMatch(_attribute[i], @"^(?<http>(http:[/][/]|www.)([a-z]|[A-Z]|[0-9]|[/.]|[~])*)$");
-                    isvalidformate = Regex.IsMatch(_attribute[i], @"((www\.|(http|https|ftp|news|file)+\:\/\/)[&#95;.a-z0-9-]+\.[a-z0-9\/&#95;:@=.+?,_\[\]\(\)\!\$\*\|##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])");
-                    if (isvalidformate)
-                    {
-                        result += _attribute[i];
-                        string regex = @"((www\.|(http|https|ftp|news|file)+\:\/\/)[&#95;.a-z0-9-]+\.[a-z0-9\/&#95;:@=.+?,_\[\]\(\)\!\$\*\|##%&~-]*[^.|\'|\# |!|\(|?|,| |>|<|;|\)])";
-                        Regex r = new Regex(regex, RegexOptions.IgnoreCase);
-                        result = result.Replace("\n", "<br />");
-                        result = r.Replace(result, "<a href=\"$1\" title=\"Click to open in a new window or tab\" target=\"&#95;blank\">$1</a>").Replace("href=\"www", "href=\"//www");
-                        if (!result.Contains("www"))
-                        {
-                            result = "<a href=" + result + " title='Click to open in a new window or tab' target='_blank'>" + result + " </a>";
-                        }
-                        result = result + "&nbsp;";
-                    }
-                    else
-                    {
-                        result += _attribute[i] + "&nbsp;";
-                    }
+                    result = "<a href=" + result + " title='Click to open in a new window or tab' target='_blank'>" + result + " </a>";
                 }
             }
             catch (Exception ex)

@@ -266,9 +266,7 @@ namespace Integration.Helper
                 using (MRPEntities db = new MRPEntities())
                 {
                     List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
-                    /// Added By Bhavesh Date: 21/07/2015 - remove tolist from actual table
-                    List<int> lineItemIds = tblLineItems.Select(lineitem => lineitem.PlanLineItemId).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lineItemIds.Contains(lia.PlanLineItemId)).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lia => tblLineItems.Select(line => line.PlanLineItemId).Contains(lia.PlanLineItemId)).ToList();
                     List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => PlanTacticIds.Contains(pta.PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
                     foreach (int keyTactic in PlanTacticIds)
                     {

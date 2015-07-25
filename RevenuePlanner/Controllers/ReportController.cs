@@ -8608,7 +8608,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Revenue"
-        public PartialViewResult GetRevenueToPlanByFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
+        public PartialViewResult GetRevenueToPlanByFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 )
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
@@ -8645,7 +8645,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp")
             {
-                #region TempData for Back Button
+                #region ViewBag for Back Button
                 TempData["BackParentLabel"] = Common.RevenueCampaign;
                 TempData["BackChildLabel"] = "";
                 TempData["BackId"] = "";
@@ -8666,7 +8666,7 @@ namespace RevenuePlanner.Controllers
             }
 
             TempData["BackWithCustom"] = ParentLabel;
-            TempData["IsDispalyCustomFieldChildDDL"] = false;// For Campaign Child DDL Display Or Not
+
             string HeadHireachy = TempData["HeadHireachy"] as string;
             string BackParentHireachy = TempData["BackParentHireachy"] as string;
             string BackChildHireachy = TempData["BackChildHireachy"] as string;
@@ -8726,19 +8726,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
-                    {
-                        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
-                        {
-                            TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                        }
-
-                    }
-                    else
-                    {
-                        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                    }
+                    TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
                 }
             }
             else
@@ -8754,12 +8742,12 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
+                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 1]);
                 }
             }
             else
             {
-                if (ParentLabel == Common.RevenueCampaign && !string.IsNullOrEmpty(marsterCustomField))
+                if (ParentLabel == Common.RevenueCampaign)
                 {
                     TempData["BackChildLabel"] = childlabelType;
                 }
@@ -8772,12 +8760,6 @@ namespace RevenuePlanner.Controllers
             if (BackIdArray.Count() > 1)
             {
                 TempData["BackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
-
-                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
-                {
-                    TempData["IsDispalyCustomFieldChildDDL"] = true;
-                }
-
             }
             else
             {
@@ -8796,14 +8778,6 @@ namespace RevenuePlanner.Controllers
 
             if (IsBackClick)
             {
-                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
-                {
-                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
-                    {
-                        TempData["IsDispalyCustomFieldChildDDL"] = true;
-                    }
-                }
-                marsterCustomField = string.Empty;
                 BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
@@ -8865,10 +8839,6 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     TempData["BackId"] = "0";
-                    if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
-                    {
-                        TempData["IsDispalyCustomFieldChildDDL"] = true;
-                    }
                 }
 
                 if (HeadHireachyArray.Count() > 0)
@@ -10950,7 +10920,7 @@ namespace RevenuePlanner.Controllers
         /// <param name= ParentLabel ,childlabelType , childId ,  option ,Quarterly, code> </param>
         /// <returns>Return json data of filtered combine chart and Conversiondatatable </returns>
         #region "Get combine chart and Conversiondatatable result based on filter -dashrath Prajapati"
-        public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
+        public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp")
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
@@ -11002,7 +10972,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp")
             {
-                #region TempData for Back Button
+                #region ViewBag for Back Button
                 TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
                 TempData["ConvBackChildLabel"] = "";
                 TempData["ConvBackId"] = "";
@@ -11037,7 +11007,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp" || isDetails)
             {
-                HeadHireachy = HeadHireachy + "," + HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(BackHeadTitle));
+                HeadHireachy = HeadHireachy + "," + BackHeadTitle;
                 BackParentHireachy = BackParentHireachy + "," + ParentLabel;
                 BackChildHireachy = BackChildHireachy + "," + childlabelType;
             }
@@ -11083,18 +11053,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
-                    {
-                        TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
-                        {
-                            TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                        }
-                    }
-                    else
-                    {
-                        TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                    }
+                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
                 }
             }
             else
@@ -11114,10 +11073,6 @@ namespace RevenuePlanner.Controllers
             if (BackIdArray.Count() > 1)
             {
                 TempData["ConvBackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
-                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
-                {
-                    TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
-                }
             }
             else
             {
@@ -11136,14 +11091,6 @@ namespace RevenuePlanner.Controllers
 
             if (IsBackClick)
             {
-                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
-                {
-                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
-                    {
-                        TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
-                    }
-                }
-                marsterCustomField = string.Empty;
                 BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
@@ -11226,45 +11173,6 @@ namespace RevenuePlanner.Controllers
 
             #endregion
 
-            string customFieldOptionIdCardSection = string.Empty;
-            int customFieldIdCardSection = 0;
-            bool isTacticCustomFieldCardSection = false;
-            string customFieldTypeCardSection = string.Empty;
-            if (masterCustomFieldOptionId > 0)
-            {
-                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
-                {
-                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                    List<int> campaignIds = new List<int>();
-                    campaignIds = TacticData.Select(p => p.TacticObj.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
-                }
-                else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
-                {
-                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                    List<int> programIds = new List<int>();
-                    programIds = TacticData.Select(p => p.TacticObj.PlanProgramId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticData = TacticData.Where(t => programIds.Contains(t.TacticObj.PlanProgramId)).ToList();
-                }
-                else if (marsterCustomField.Contains(Common.TacticCustomTitle))
-                {
-                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
-                    customFieldIdCardSection = mastercustomfieldIdInner;
-                    isTacticCustomFieldCardSection = true;
-                    customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == mastercustomfieldIdInner).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                    List<int> tacticIds = new List<int>();
-                    tacticIds = TacticData.Select(p => p.TacticObj.PlanTacticId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    customFieldOptionIdCardSection = customfiledvalue;
-                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticData = TacticData.Where(t => tacticIds.Contains(t.TacticObj.PlanTacticId)).ToList();
-                }
-            }
-
             try
             {
                 //PlanTacticIdsList
@@ -11299,20 +11207,20 @@ namespace RevenuePlanner.Controllers
 
                     #region Mapping Items for Card Section
                     /// Add By Nishant Sheth
-
+                   
                     // Fetch the respectives Campaign Ids and Program Ids from the tactic list
                     campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
                     programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
-
+                   
 
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
-                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
 
-                        _lstTactic = tacticlist.ToList();
+                        //_lstTactic = tacticlist.ToList();
 
                         if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
                         {
@@ -11325,13 +11233,13 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueProgram))
                     {
-                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
 
                         _lstTactic = tacticlist.ToList();
-                        //if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
                         {
                             _lstTactic = _lstTactic.Where(t => t.PlanProgramId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanProgramId))
                                 .ToList();
@@ -11341,7 +11249,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueCampaign))
                     {
-                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueProgram;
                         }
@@ -11358,7 +11266,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueCampaign;
                         }
@@ -11600,7 +11508,7 @@ namespace RevenuePlanner.Controllers
                 OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
 
 
-                CardSectionListModel = GetConversionCardSectionList(_tacticdata, OverviewModelList, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, "", "", false, "", 0);
+                CardSectionListModel = GetConversionCardSectionList(_tacticdata, OverviewModelList, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), Common.RevenueCampaign.ToString(), "", "", false, "", 0);
                 //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
                 TempData["ConversionCard"] = objCardSectionModel;
@@ -11864,8 +11772,8 @@ namespace RevenuePlanner.Controllers
                     objCardSection = new CardSectionListModel();
 
                     #region "Add Static Values to Model"
-                    objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
-
+                    objCardSection.title = strParentTitle;      // Set ParentTitle Ex. (Campaign1) 
+                  
                     objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
 
@@ -12154,8 +12062,7 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        //objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString(); // Change By Nishat Sheth
+                        objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
@@ -12733,21 +12640,21 @@ namespace RevenuePlanner.Controllers
             {
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
-                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                    List<int> campaignIds = new List<int>();
-                    campaignIds = ProgramList.Select(p => p.PlanCampaignId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    ProgramList = ProgramList.Where(p => campaignIds.Contains(p.PlanCampaignId)).ToList();
+                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                        List<int> campaignIds = new List<int>();
+                        campaignIds = ProgramList.Select(p => p.PlanCampaignId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        ProgramList = ProgramList.Where(p => campaignIds.Contains(p.PlanCampaignId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
                 {
-                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                    List<int> programIds = new List<int>();
-                    programIds = ProgramList.Select(p => p.PlanProgramId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    ProgramList = ProgramList.Where(p => programIds.Contains(p.PlanProgramId)).ToList();
+                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                        List<int> programIds = new List<int>();
+                        programIds = ProgramList.Select(p => p.PlanProgramId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        ProgramList = ProgramList.Where(p => programIds.Contains(p.PlanProgramId)).ToList();
                 }
             }
 
@@ -12788,30 +12695,30 @@ namespace RevenuePlanner.Controllers
             {
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
-                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                    List<int> campaignIds = new List<int>();
-                    campaignIds = TacticList.Select(p => p.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticList = TacticList.Where(t => campaignIds.Contains(t.Plan_Campaign_Program.PlanCampaignId)).ToList();
+                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                        List<int> campaignIds = new List<int>();
+                        campaignIds = TacticList.Select(p => p.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        TacticList = TacticList.Where(t => campaignIds.Contains(t.Plan_Campaign_Program.PlanCampaignId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
                 {
-                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                    List<int> programIds = new List<int>();
-                    programIds = TacticList.Select(p => p.PlanProgramId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticList = TacticList.Where(t => programIds.Contains(t.PlanProgramId)).ToList();
+                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                        List<int> programIds = new List<int>();
+                        programIds = TacticList.Select(p => p.PlanProgramId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        TacticList = TacticList.Where(t => programIds.Contains(t.PlanProgramId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.TacticCustomTitle))
                 {
-                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
-                    List<int> tacticIds = new List<int>();
-                    tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
+                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
+                        List<int> tacticIds = new List<int>();
+                        tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
                 }
             }
 

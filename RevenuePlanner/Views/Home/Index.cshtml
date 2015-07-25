@@ -92,7 +92,7 @@
 @section Sidebar{
     <script type="text/javascript">
         //Added By komal rawal for #1283
-      //  var isTacticExist = false;
+        var isTacticExist = false;
 
 
         function GetTacticTypelist(Planids) {
@@ -282,7 +282,6 @@
                         GetCollaborators(CurrentPlanId); 
                         GetTacticTypelist(CurrentPlanId);
                         GetOwnerListForFilter(CurrentPlanId);
-                        LoadPlanGrid(CurrentPlanId);
                     }
                 }
                 PagePostRequest = false;
@@ -683,11 +682,7 @@
 }
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
-<div id="divgridview" class="" style="display: none;"></div>
-<div class="market-activity-main">
-    <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
-    </div>
-</div>
+
 <div id="CalenderView" class="tab-content all-height cf" style="padding-right: 18px;">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
@@ -716,8 +711,8 @@
 
                     <div id="gantt_here"></div>
 
-                    @*<div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
-                    </div>*@
+                    <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
+                    </div>
 
                 </div>
                 <div class="shadow-scroll-gantt"></div>
@@ -849,16 +844,13 @@
         $(this).addClass("active pull-left");
         var id = $(this).attr('id');
         if (id == "liCalender") {
-            $("#CalenderView").show();
-            $("#divgridview").hide();
+            $("#CalenderView").show()
             RefreshCurrentTab();
           
         }
         else {
-            $("#CalenderView").hide() ;
-  $("#divgridview").show();
-            //Call the function for grid view 
-           LoadPlanGrid(CurrentPlanId);
+            $("#CalenderView").hide()
+            //Call the function for grid view
         }
     });
   
@@ -920,27 +912,6 @@
     $("#PlanAllModule").css("display", "none");
 
     function UpdateResult() {
-        // added by devanshi for #1431
-        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                $("#CalenderView").hide();
-                $("#divgridview").show();
-                LoadPlanGrid(CurrentPlanId);
-              
-            }
-            else
-            {
-                UpdateCalenderView();
-            }
-        }
-        else {
-            UpdateCalenderView();
-        }
-    }
-
-    //Modified By komal Rawal 
-    function UpdateCalenderView() {
-
         requestPlanActiveTab(false);
         var SelectedPlanIds;
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
@@ -980,23 +951,13 @@
             }
         });
 
+        // Session set in This Method :  Added By Bhavesh
+
+        // Start - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
         $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
         $('#errorMessageInspectPopup').slideUp(400);
-    }
-    //End
-
-    function LoadPlanGrid(PlanID)
-    {
-        $.ajax({
-            url: '@Url.Content("~/Home/LoadHomeGrid/")',
-            data: { planId: PlanID.toString() },
-            success: function (result) {
-                $("#divgridview").html('');
-                $("#divgridview").html(result);
-
-            }
-        });
-
+        // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
+        window.location.reload();
     }
 
     function removeByValue(arr, val) {
@@ -1896,15 +1857,15 @@ function AjaxRequest() {
     var StatusIds = filters.StatusIds;
 
 
-    @*if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+    if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
         if (GetSelectedPlanNo > 1) {
             $('#PlanModulesSection').css("display", "none");
         }
         else {
             $('#PlanModulesSection').css("display", "block");
         }
-    }*@
-    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+    }
+    else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
         Planid = CurrentPlanId;
         GetSelectedPlanNo = 1;
@@ -2768,8 +2729,7 @@ function Quarter() {
                       $("#modal-container-186470").removeClass("transition_y");
                       addDefaultModalPopupBackgroungColor();
                       if (isDataModified) {
-                           //window.location.reload();
-                            RefreshCurrentTab();
+                          window.location.reload();
                       }
                       else {
                           $('body').removeClass('bodyOverflow');
@@ -3960,7 +3920,20 @@ function Quarter() {
         $("#spanMessageError").empty();
     }
 
-    
+    function Showmsg() {
+        if (ismsg != '') {
+            if (hdnisError == 'True') {
+                $('#cErrorDuplicatePlan').text(ismsg);
+                $("#errorMessageDuplicatePlan").slideDown(3000);
+                $("#successMessageDuplicatePlan").slideUp(10);
+            }
+            else {
+                $('#cSuccessDuplicatePlan').text(ismsg);
+                $("#successMessageDuplicatePlan").slideDown(3000);
+                $("#errorMessageDuplicatePlan").slideUp(10);
+            }
+        }
+    }
 
     function DisplayPopUpMenu(typeVal, nameVal, titleVal, e) {
     
@@ -4100,12 +4073,33 @@ function Quarter() {
                         }
                         else {
                             if (data.redirect) {
+                                var currentTab = "Setup";
+
+                                if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                                    currentTab = "Budget";
+                                }
+
+                                var planId = data.Id;
+                                var expandplanProgramId = data.expand;
+                                var planCampaignId = "";
+                                var planProgramId = "";
+                                loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
+
+                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                                    $("#hdnBudgetingExpandId").val(expandplanProgramId);
+                                    $("#hdnBudgetingIsSave").val("true");
+                                    $("#hdnBudgetingCurrentTab").val("aAllocated")
+                                    $("#hdnBudgetingCurrentPlanId").val(planId)
+                                }
+                                else {
+                                    RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, 0);
+                                }
+
                                 $("#successMessage").css("display", "block");
                                 $("#spanMessageSuccess").empty();
                                 $("#spanMessageSuccess").text(data.msg);
 
-                                window.location = data.redirect;
-                                //  RefreshCurrentTab();
+                                window.location.reload();
                                 return;
                             }
                             if (data.errormsg != '') {
@@ -4152,13 +4146,39 @@ function Quarter() {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-                        RefreshCurrentTab();
-                        ShowMessage(isError, data.msg);
+
+                    var currentTab = "Setup";
+
+                    if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                        currentTab = "Budget";
+                    }
+                    var planCampaignId = data.Id;
+                    var expandplanCampaignId = data.expand;
+                    var planProgramId = "";
+
+                    loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
+
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                        $("#hdnBudgetingExpandId").val(expandplanCampaignId);
+                        $("#hdnBudgetingIsSave").val("true");
+                    }
+                    else {
+                        RefreshCurrentTab('@RequestedModule', 0, 0, 0);
+                    }
+
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $("#errorMessage").css("display", "none");
+                    $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                    window.location.reload();
                     return;
                 }
                 else {
-                        isError = true;
-                        ShowMessage(isError, data.msg);
+                    $("#successMessageViewCampaign").slideUp(50);
+                    $("#errorMessageEditCampaign").slideDown(400);
+                    $("#spanMessageEditCampaign").empty();
+                    $("#spanMessageEditCampaign").val(data.msg);
                     return false;
                 }
             }
@@ -4196,13 +4216,40 @@ function Quarter() {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-                        RefreshCurrentTab();
-                        ShowMessage(isError, data.msg);
+
+                    var currentTab = "Setup";
+
+                    if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                        currentTab = "Budget";
+                    }
+
+                    var planProgramId = data.Id;
+                    var expandplanProgramId = data.expand;
+                    var planCampaignId = CampaignId;//@*@campaignId*@
+
+                    loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
+
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                        $("#hdnBudgetingExpandId").val(expandplanProgramId);
+                        $("#hdnBudgetingIsSave").val("true");
+                    }
+                    else {
+                        RefreshCurrentTab('@RequestedModule', planCampaignId, 0, 0);
+                    }
+
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $("#errorMessage").css("display", "none");
+                    $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                    window.location.reload();
                     return;
                 }
                 else {
-                        isError = true;
-                        ShowMessage(isError, data.msg);
+                    $("#successMessageViewProgram").slideUp(50);
+                    $("#errorMessageEditProgram").slideDown(400);
+                    $("#spanMessageEditProgram").empty();
+                    $("#spanMessageEditProgram").val(data.msg);
                     return false;
                 }
             }
@@ -4246,13 +4293,41 @@ function Quarter() {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-                        RefreshCurrentTab();
-                        ShowMessage(isError, data.msg);
+
+                    var currentTab = "Setup";
+
+                    if ('@RequestedModule' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                        currentTab = "Budget";
+                    }
+
+                    var planTacticId = data.Id;
+                    var expandPlanTacticId = data.expand;
+                    var planCampaignId = CampaignId;@* @campaignId*@
+                    var planProgramId = ProgramId; @*@PlanProgramId*@
+
+                    loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RequestedModule');
+
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RequestedModule') {
+                        $("#hdnBudgetingExpandId").val(expandPlanTacticId);
+                        $("#hdnBudgetingIsSave").val("true");
+                    }
+                    else {
+                        RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, planTacticId);
+                    }
+
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $("#errorMessage").css("display", "none");
+                    $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
+                    window.location.reload();
                     return;
                 }
                 else {
-                        isError = true;
-                        ShowMessage(isError, data.msg);
+                    $("#successMessage").slideUp(50);
+                    $("#errorMessage").slideDown(400);
+                    $("#spanMessageError").empty();
+                    $("#spanMessageError").val(data.msg);
                     return false;
                 }
             }
@@ -4267,6 +4342,13 @@ function Quarter() {
 
         //Improvments Tactic
         $('#ImpsTactic').click(function (e) {
+        isTacticExist = true;
+        if (!isTacticExist) {
+            ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
+            hdnisError = 'True';
+            Showmsg();
+            return false;
+        }
         e.stopPropagation();
         $.ajaxSetup({ cache: false });
         var idTactic = "0";//$(this).parent().attr("index");
@@ -4277,27 +4359,37 @@ function Quarter() {
         }
         displayConfirmCommon('impTacticCommonClick(' + idTactic + ');');
         $('.taskpopup').css('display', 'none');
-        });
+    });
 
-        function displayConfirmCommon(functionName) {
+    function displayConfirmCommon(functionName) {
+        if (isDataChanged()) {
+            $('#cErrorDuplicatePlan').html("You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
+            $("#errorMessageDuplicatePlan").slideDown(400);     // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
+            $("#btnConfirmOK").click(function () {
+                $('#cErrorDuplicatePlan').html("");
+                $("#errorMessageDuplicatePlan").hide();
+                eval(functionName);
+            });
+        }
+        else {
             eval(functionName);
-     
+        }
     }
 
         //Dharmraj Start 8July2014 Common function to handle tactic click event
     function impTacticCommonClick(id) {
         if (id == 0) {
             var idProgram = ImpTacticId;// $("a#divimpTactic.1").attr('data-id-program');
-            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
             return false;
         }
         else {
-            ShowModels("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
+            ShowModels("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
             return false;
         }
     }
 
-        function ShowModels(mode, section, id, ParentId, RequestedModule) {
+    function ShowModels(mode, section, id, ParentId, RequestedModule) {
         removeDefaultModalPopupBackgroungColor();
         modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
 

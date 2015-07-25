@@ -71,14 +71,14 @@
         var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
         _CardData = JSON.parse(_CardData);
         var _cardhtml = '';
-        var _masterParentLabel = '', _title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
+        var _masterParentLabel = '',_title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
         var _Revdata = '', _Costdata = '', _ROIdata = '', _lineChartData = '';
         var _fieldId = '';
         var rev = "Revenue", cost = "Cost", roi = "ROI";
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
         var _Revact_projId = '', _RevgoalId = '', _RevPercntgId = '', _Costact_projId = '', _CostgoalId = '', _CostPercntgId = '', _ROIact_projId = '', _ROIgoalId = '', _ROIPercntgId = '';
         var _btnDetailsId = '', _btnCompareId = '', _chkCompareId = '', _linechartDivId = '';
-        var _revIsNegative = '';
+
         // Add BY Nishant Sheth
         // Desc: For Card Section details button click argument
         var ParentLabel = '@ViewBag.ParentLabel';
@@ -101,7 +101,6 @@
             _Revact_proj = _Revdata.Actual_Projected;
             _Revgoal = _Revdata.Goal;
             _Revpercentange = _Revdata.Percentage;
-            _revIsNegative = _Revdata.IsNegative;
 
             _Costact_proj = _Costdata.Actual_Projected;
             _Costgoal = _Costdata.Goal;
@@ -142,7 +141,7 @@
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
 
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Revact_proj) + '","' + String(_Revgoal) + '","' + String(_Revpercentange) + '","' + String(_revIsNegative) + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -169,49 +168,11 @@
 
             _cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">ROI</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardvalroi carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            // Add BY Nishant Sheth
-            // Calculate Dynamic Width in pixel For Chart Div
-            var _tempCard = '';
-            _tempCard = _tempCard + '<div class="region-content">';
-            _tempCard = _tempCard + '<div>';
-            _tempCard = _tempCard + '<div class="report-btn-group">';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '<div class="region-data">';
-
-            _tempCard = _tempCard + '<div class="data">';
-            _tempCard = _tempCard + '<span class="title">Revenue</span>';
-            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
-            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
-            _tempCard = _tempCard + '</div>';
-
-            _tempCard = _tempCard + '<div class="data">';
-            _tempCard = _tempCard + '<span class="title">Cost</span>';
-            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
-            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
-            _tempCard = _tempCard + '</div>';
-
-            _tempCard = _tempCard + '<div class="data">';
-            _tempCard = _tempCard + '<span class="title">ROI</span>';
-            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
-            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
-            _tempCard = _tempCard + '</div>';
-
-            _tempCard = _tempCard + '<div id="tempdiv" style="height:100%; width:46%;float:left;" >';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '</div>';
-            $("#dvCardSectionData").html(_tempCard);
-            var tempdivwidth = $("#tempdiv").width();
-            $("#dvCardSectionData").html('');
-            //alert(tempdivwidth);
-            // End By Nishant Sheth
-
-            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:' + tempdivwidth + 'px;float:left;">';
+            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:200px;">';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '</div>';
@@ -223,8 +184,9 @@
 
         formatCardSectionValues();
         formatCardPercentageValue();
+        formatCardSectionROIValues();
         formatSetsubValues();
-
+        
         //LoadPagination();
 
         var a = $('#dvCardSectionData').children();
@@ -268,12 +230,21 @@
             var text = $(_Id).attr('orig-val');
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
-                if (_Id.indexOf("ROI") > 0) {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
-                }
-                else {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
-                }
+                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                //alert(_formatednumber);
+                //alert(_formatednumber);
+                //var _value = '';
+                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
+                //    //$(_Id).html( _formatednumber);
+                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
+                //        _value = '/' + _formatednumber.toString();
+                //    }
+                //}
+                //else {
+                //    _value = _formatednumber;
+                //}
+                //alert(_value);
+                //var _value = '/' + _formatednumber;
 
                 $(_Id).html(_formatednumber);
             }
@@ -283,6 +254,34 @@
         });
     }
 
+    function formatCardSectionROIValues() {
+
+        var _TypeCol = $(".cardvalroi");
+        var _formatednumber = '';
+        var _type = '';
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _Id = "#" + _cntrlId;
+            var text = $(_Id).attr('orig-val');
+            //_type = $(_Id).attr('add-sep');
+            if (text != null && text != 'undefined' && text != 'NaN') {
+                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                //alert(_formatednumber);
+                //var _value = '';
+                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
+                //    //$(_Id).html( _formatednumber);
+                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
+                //        _value = '/' + _formatednumber.toString();
+                //    }
+                //}
+                //else {
+                //    _value = _formatednumber;
+                //}
+                //alert(_value);
+                $(_Id).html(_formatednumber);
+            }
+        });
+    }
 
     function formatCardSectionValues() {
 
@@ -295,12 +294,19 @@
             var text = $(_Id).attr('orig-val');
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
-                if (_Id.indexOf("ROI") > 0) {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
-                }
-                else {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
-                }
+                _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                //alert(_formatednumber);
+                //var _value = '';
+                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
+                //    //$(_Id).html( _formatednumber);
+                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
+                //        _value = '/' + _formatednumber.toString();
+                //    }
+                //}
+                //else {
+                //    _value = _formatednumber;
+                //}
+                //alert(_value);
                 $(_Id).html(_formatednumber);
             }
         });
@@ -335,8 +341,8 @@
 
     /// Add By Nishant Sheth
     /// Desc: For card details section
-    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActualProj, _revGoal, _revPercentage, _isNegativePercntg) {
-
+    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval) {
+       
 
         var BtnBack = document.getElementById('BtnBack');
         BtnBack.style.display = "block";
@@ -344,33 +350,22 @@
         var marketingDiv = document.getElementById('div-mareketing-drp');
         marketingDiv.style.display = "none";
 
-        var _pushValue = {
-            ActualProjected: _revActualProj.toString(),
-            Goal: _revGoal.toString(),
-            Percentage: _revPercentage.toString(),
-            IsNegative: _isNegativePercntg.toString().toLowerCase()
-        }
-        tempRevenueHeader.push(_pushValue); // Push Card Values to Temp global variable declare at _Revenue.cshtml page. This global variable use when user click on Back button.
-
+       
 
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
-        myApp.showPleaseWait();
-
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvRevenueToPlan").load(_url);
-        myApp.hidePleaseWait();
-        formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
-
+       
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
                 $("#ddlCampaignRevenueToPlan").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
-                // $("#ddlProgramRevenueToPlan").css('display', 'block');
+               // $("#ddlProgramRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
 
-                //  $("#ddlTacticRevenueToPlan").css('display', 'block');
+              //  $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
                 fillCardProgramDropDown(id, Type);
             }
@@ -378,18 +373,16 @@
                 $("#ddlCampaignRevenueToPlan").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
-                //     $("#ddlProgramRevenueToPlan").css('display', 'none');
+           //     $("#ddlProgramRevenueToPlan").css('display', 'none');
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
 
-                //   $("#ddlTacticRevenueToPlan").css('display', 'block');
+             //   $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
                 fillCardTacticDropDown(id, Type);
             }
         }
         else if (masterlabel == '@Common.CampaignCustomTitle') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
-                $("#CampaignChildDDL").css('display', '');
-                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 // $("#ddlProgramRevenueToPlan").css('display', 'block');
@@ -400,8 +393,6 @@
                 fillCardProgramDropDown(id, Type);
             }
             else if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
-                $("#CampaignChildDDL").css('display', '');
-                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 //     $("#ddlProgramRevenueToPlan").css('display', 'none');
@@ -413,7 +404,7 @@
             }
             else {
                 $("#CampaignChildDDL").css('display', '');
-                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#CustomFieldChildDDL").css('display', 'none')
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
 
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
@@ -423,9 +414,7 @@
             }
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
-            if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
-                $("#CampaignChildDDL").css('display', '');
-                $("#CustomFieldChildDDL").css('display', 'none');
+           if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 //     $("#ddlProgramRevenueToPlan").css('display', 'none');
@@ -446,14 +435,14 @@
             }
         }
         else if (masterlabel == '@Common.TacticCustomTitle') {
-            //  $("#ddlCampaignRevenueToPlan").css('display', 'none');
+          //  $("#ddlCampaignRevenueToPlan").css('display', 'none');
             $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
             //CustomFieldChildDDL
-            //  $("#ddlProgramRevenueToPlan").css('display', 'none');
+          //  $("#ddlProgramRevenueToPlan").css('display', 'none');
             $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
             $("#CampaignChildDDL").css('display', '');
-            $("#CustomFieldChildDDL").css('display', 'none')
-            //  $("#ddlTacticRevenueToPlan").css('display', '');
+            $("#CustomFieldChildDDL").css('display','none')
+          //  $("#ddlTacticRevenueToPlan").css('display', '');
             $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
             fillCardTacticDropDown(id, "");
         }
@@ -485,12 +474,6 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlCampaignRevenueToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
                 });
-                if (parseInt(id) == 0) {
-
-                    $('#ddlCampaignRevenueToPlan').val('0');
-                }
-                marsterCustomField = marsterCustomField;
-                masterCustomFieldOptionId = masteroptionid;
                 fillCardProgramDropDown("0", type);
                 $('#ddlCampaignRevenueToPlan').multiselect("refresh");
             },
@@ -530,13 +513,11 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlProgramRevenueToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
                 });
-                marsterCustomField = marsterCustomField;
-                masterCustomFieldOptionId = masteroptionid;
                 fillCardTacticDropDown(campaignId, type);
                 $('#ddlProgramRevenueToPlan').multiselect("refresh");
             },
             error: function () {
-
+                
                 $("#ddlProgramRevenueToPlan").empty();
                 $("#ddlProgramRevenueToPlan").append("<option value='0'>All Programs</option>");
                 fillCardTacticDropDown(campaignId, type);
@@ -551,7 +532,7 @@
         var masteroptionid = masterCustomFieldOptionId;
         if (programId > 0) {
             if (Type == "") {
-                masteroptionid = parseInt(programId);
+                    masteroptionid = parseInt(programId);
             }
             else {
                 id = programId.toString();

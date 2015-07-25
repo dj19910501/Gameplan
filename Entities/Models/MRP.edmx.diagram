@@ -12,7 +12,6 @@
         <EntityTypeShape EntityType="MRPModel.Client_Integration_Permission" Width="1.5" PointX="8.5111712610866732" PointY="2.0390490899044318" />
         <EntityTypeShape EntityType="MRPModel.ClientTacticType" Width="1.5" PointX="6.7195151554045811" PointY="28.330362243731674" />
         <EntityTypeShape EntityType="MRPModel.CustomField" Width="1.5" PointX="11.053795521638261" PointY="7.2236992452403994" />
-        <EntityTypeShape EntityType="MRPModel.CustomField_Entity" Width="1.5" PointX="10.985801450435911" PointY="5.972686382929183" />
         <EntityTypeShape EntityType="MRPModel.CustomFieldOption" Width="1.5" PointX="3.8529066219240926" PointY="20.584678972412217" />
         <EntityTypeShape EntityType="MRPModel.CustomFieldType" Width="1.5" PointX="0.68708488749670094" PointY="11.024376173980709" />
         <EntityTypeShape EntityType="MRPModel.CustomRestriction" Width="1.5" PointX="5.9452790273098639" PointY="3.7487621473841193" />
@@ -66,7 +65,6 @@
         <AssociationConnector Association="MRPModel.FK_CampaignNameConvention_CustomField" />
         <AssociationConnector Association="MRPModel.FK_Client_Integration_Permission_IntegrationType" />
         <AssociationConnector Association="MRPModel.FK_CustomField_CustomFieldType" />
-        <AssociationConnector Association="MRPModel.FK_CustomField_Entity_CustomField" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldOption_CustomField" />
         <AssociationConnector Association="MRPModel.FK_CustomRestriction_CustomField" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceDataTypeMapping_CustomField_CustomFieldId" />
@@ -136,20 +134,12 @@
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_ImprovementTacticType" />
         <EntityTypeShape EntityType="MRPModel.IntegrationInstance_UnprocessData" Width="1.5" PointX="7.25" PointY="38.125" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" />
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="7.875" PointY="42.625" />
-        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
         <AssociationConnector Association="MRPModel.FK_Model_Model1" />
-=======
-        
-        
-        
-        
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; brad@hive9
-=======
->>>>>>> parent of f27571d... workfront integration merge
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="1" PointY="1" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
+        <EntityTypeShape EntityType="MRPModel.CustomField_Entity" Width="1.5" PointX="13.25" PointY="8.375" />
+        <AssociationConnector Association="MRPModel.FK_CustomField_Entity_CustomField" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
