@@ -1261,7 +1261,8 @@ namespace RevenuePlanner.Controllers
                 revenue = (tacticType.ProjectedRevenue == null) ? 0 : tacticType.ProjectedRevenue,
                 IsDeployedToIntegration = tacticType.IsDeployedToIntegration,
                 IsTargetStageOfModel = (tacticType.StageId == null) ? true : stagesList.Contains(Convert.ToInt32(tacticType.StageId)),     //// Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
-                IsDeployedToModel = tacticType.IsDeployedToModel //// added by dharmraj for #592 : Tactic type data model
+                IsDeployedToModel = tacticType.IsDeployedToModel, //// added by dharmraj for #592 : Tactic type data model
+                currentWorkFrontTemplate = tacticType.WorkFront_Template
             }).Select(tacticType => tacticType).Distinct().OrderBy(tacticType => tacticType.title , new AlphaNumericComparer());
 
             return Json(allTacticTypes, JsonRequestBehavior.AllowGet);
@@ -1295,6 +1296,8 @@ namespace RevenuePlanner.Controllers
                      ViewBag.WorkFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
                                                                   modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name)
                                                       .Select(modelTemplate => new { modelTemplate.TemplateId, modelTemplate.Template_Name }).Distinct().ToList();
+                     string scooby = objTacticTypeMdoel.WorkFront_Template;
+                     ViewBag.currentWorkFrontTemplate = objTacticTypeMdoel.WorkFront_Template;
                     ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                     //End addition by Brad Gray for PL#1734
                 }
@@ -1328,6 +1331,9 @@ namespace RevenuePlanner.Controllers
                 objTacticTypeMdoel.StageId = objTacticType.StageId;
                 objTacticTypeMdoel.ModelId = objTacticType.ModelId;
                 objTacticTypeMdoel.WorkFront_Template = objTacticType.WorkFront_Template;
+                
+                IntegrationWorkFrontTemplate wfTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(type => type.TemplateId == objTacticType.WorkFront_Template).FirstOrDefault();
+                ViewBag.templateName = wfTemplates.Template_Name;
                 //// added by Dharmraj, ticket #592 : Tactic type data model
                 ViewBag.IsDeployed = objTacticType.IsDeployedToModel;
 
@@ -1721,6 +1727,7 @@ namespace RevenuePlanner.Controllers
                                 objtactic.IsDeployedToModel = true;
                                 objtactic.TacticTypeId = tacticType.TacticTypeId;
                                 objtactic.IsDeleted = false;
+                                objtactic.WorkFront_Template = tacticType.WorkFront_Template; // Added Brad Gray 07/25/2015 WorkFront Template to Tactic Type mapping
 
                                 dbedit = new MRPEntities();
                                 dbedit.Entry(objtactic).State = EntityState.Modified;

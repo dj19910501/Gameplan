@@ -1,6 +1,9 @@
 ﻿@model RevenuePlanner.Models.Tactic_TypeModel
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
+@using System.Data;
+@using System.Data.Entity;
+@using System.Linq;
 @{
     bool IsModelIntegrated = ViewBag.IsModelIntegrated;
     string ModelIntegrationType = ViewBag.ModelIntegrationType;
@@ -9,7 +12,10 @@
     //End Manoj Limbachiya PL # 486
     // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
-    @Html.Hidden("hdnModelStatus", ModelStatus);
+    string templateName = ViewBag.templateName;
+    int? stageid = Model.StageId;
+    string currentTemplateId = Model.WorkFront_Template; 
+        @Html.Hidden("hdnModelStatus", ModelStatus);
                                                string TacticTypeStageId = Convert.ToString(ViewBag.TacticTypeStageId);
     @Html.Hidden("hdnStageId", TacticTypeStageId);
                                                  string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
@@ -58,7 +64,7 @@
 
             <label>Target Stages</label>
            
-            <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId", "Title"), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
+            <span class="simpleSelectBox">@Html.DropDownListFor(model => model.StageId, new SelectList((System.Collections.IEnumerable)ViewBag.Stages, "StageId","Title" ), "Please Select", new { @class = "ddlStyle hide", require = "true" })</span>
 
             <label class="margin-top10">Status</label>
             @{
@@ -87,26 +93,42 @@
         //Start Brad Gray PL # 1374
         if (ViewBag.isIntegratedWithWorkFront)
         {
-            <label>WorkFront Template</label>
+            <label>Current WorkFront Template</label>
+            @Html.TextBoxFor(m => templateName, new {  id="currentTempl", maxlength = "255" , @readonly = "true"})
+            string requiredField;
+                if (templateName == null)
+                {
+                    requiredField = "true";
+                }
+                else { requiredField = "false"; }
+
+
+            <label>Change Template</label>
             <span class="simpleSelectBox">
-                @Html.DropDownListFor(model => model.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "TemplateId", "Template_Name"), "None", new { @class = "ddlStyle hide", require = "true" })
+            @Html.DropDownListFor(m => m.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "TemplateId", "Template_Name"),"Please Select", new { @class = "ddlStyle hide", require = requiredField })
             </span>
-        }
+          }
         //End Brad Gray PL # 1374
-    }
+      }
 
 
 
-}
-</div>
-        <!--End content-->
+                }
+                </div>
+                        <!--End content-->
 
-        <div class="content dark">
-            <p>Add two or more projected or historical values for projection purposes.</p>
+                        <div class="content dark">
+                            <p>Add two or more projected or historical values for projection purposes.</p>
 
-            <label id="projectStage">Projected [Stage]</label>
-            @*//changes done by uday for #497*@
-            @Html.TextBoxFor(model => model.ProjectedStageValue, new { require = "true", id = "hdnProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
+                            <label id="projectStage">Projected [Stage]</label>
+                            @*//changes done by uday for #497*@
+<label></label>
+<span class="simpleSelectBox">
+</span>
+<label></label>
+            <span class="simpleSelectBox">
+            </span>
+@Html.TextBoxFor(model => model.ProjectedStageValue, new { require = "true", id = "hdnProjectedStageValue", @class = "priceValue", maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
 
             <label>Projected Cost</label>
             @Html.TextBoxFor(model => model.ProjectedRevenue, new { require = "true", id = "hdnProjectedRevenue", @class = "currency_dollar", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -372,8 +394,8 @@
             }
             //Start Brad Gray 07/24/2015 PL # 1374
             var TemplateId = $("#WorkFront_Template").val();
-            if (TemplateId == '' || TemplateId == 'Undefined') {
-                TemplateId = 'null';
+            if (TemplateId == '' || TemplateId == 'Undefined' || TemplateId=="Please Select") {
+                TemplateId = "55a7dd6600db3ef550348eb368ef6659";
             }
             //End Brad Gray 07/24/2015 PL # 1374
 
