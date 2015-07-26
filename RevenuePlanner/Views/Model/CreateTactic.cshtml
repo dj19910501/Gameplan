@@ -20,6 +20,8 @@
     @Html.Hidden("hdnStageId", TacticTypeStageId);
                                                  string ChangeTargetStageMsg = Convert.ToString(ViewBag.ChangeTargetStageMsg);
     @Html.Hidden("hdnChangeTargetStageMsg", ChangeTargetStageMsg);
+    @Html.Hidden("hdnWorkFrontTemplateId", currentTemplateId);
+    
             // End - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
 }
 <div class="head">
@@ -164,10 +166,10 @@
             $("#projectStage").html('Projected [Stage]');
         }
 
-  
+
         $("#StageId").on('change', function (e) {
             var optionSelected = $("option:selected", this);
-            var valueSelected = optionSelected.val(); 
+            var valueSelected = optionSelected.val();
             var textSelected = optionSelected.text();
             if (textSelected != "Please Select") {
                 $("#projectStage").html();
@@ -395,7 +397,8 @@
             //Start Brad Gray 07/24/2015 PL # 1374
             var TemplateId = $("#WorkFront_Template").val();
             if (TemplateId == '' || TemplateId == 'Undefined' || TemplateId=="Please Select") {
-                TemplateId = "55a7dd6600db3ef550348eb368ef6659";
+                //TemplateId = "55a7dd6600db3ef550348eb368ef6659";
+                TemplateId = $("#hdnWorkFrontTemplateId").val();;
             }
             //End Brad Gray 07/24/2015 PL # 1374
 
@@ -435,9 +438,9 @@
                            + '&modelID=' + modelID + '&isDeployedToIntegration=' + isDeployedToIntegration
                             + '&isDeployedToModel=' + isDeployedToModel + '&WorkFrontTemplate=' + TemplateId,
                             success: function (data) {
-                               
+
                                 if (data.redirect) {
-                                    
+
                                     $("#slidepanel").css("display", "none");
                                     $("#slidepanel-container").empty();
                                     var queryStringArr = [];
