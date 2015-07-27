@@ -16,6 +16,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Transactions;
+using System.Data.Common;
 
 #endregion
 
@@ -224,6 +225,36 @@ namespace Integration.Eloqua
             return targetDataTypeList.OrderBy(targetDataType => targetDataType).ToList();
         }
 
+        public List<EloquaObjectFieldDetails> GetEloquaFieldDetail()
+        {
+            var request = new RestRequest(Method.GET) { Resource = "/assets/campaign/fields?depth=complete", RequestFormat = DataFormat.Json, RootElement = "elements" };
+            var response = _client.Execute<List<CampaignFieldObject>>(request);
+            List<EloquaObjectFieldDetails> TargetDataTypeList = new List<EloquaObjectFieldDetails>();
+            response.Data.ForEach(rs => new EloquaObjectFieldDetails()
+                {
+                    TargetField = rs.name,
+                    TargetDatatype = rs.dataType,
+                });
+            return TargetDataTypeList.OrderBy(q => q.TargetField).ToList();
+
+        }
+
+        public class EloquaObjectFieldDetails
+        {
+            public string Section { get; set; }
+            public string TargetField { get; set; }
+            public string SourceField { get; set; }
+            public string TargetDatatype { get; set; }
+            public string SourceDatatype { get; set; }
+        }
+
+        public class CampaignFieldObject
+        {
+            public int id { get; set; } //"1",
+            public string name { get; set; } // "Campaign Type",
+            public string dataType { get; set; } //"text",
+        }
+
         /// <summary>
         /// Added By: Maninder Singh Wadhva
         /// Function to sync data from gameplan to eloqua.
@@ -247,18 +278,21 @@ namespace Integration.Eloqua
                 Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
                 if (planTactic != null)
                 {
-                    SetMappingDetails();
-                    // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                    List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-                    CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                    // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                    _isResultError= SetMappingDetails();
+                    if (!_isResultError)
+                    {
+                        // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                        List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                        CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                        // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
 
-                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-                    List<int> planIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
-                    SetMappingEloquaFolderIdsPlanId(planIdList);
-                    planTactic = SyncTacticData(planTactic, ref sb);
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sb.ToString());
-                    db.SaveChanges();
+                        _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+                        List<int> planIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
+                        SetMappingEloquaFolderIdsPlanId(planIdList);
+                        planTactic = SyncTacticData(planTactic, ref sb);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sb.ToString());
+                        db.SaveChanges();
+                    }
                 }
             }
             else if (EntityType.ImprovementTactic.Equals(_entityType))
@@ -266,11 +300,14 @@ namespace Integration.Eloqua
                 Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id && statusList.Contains(imptactic.Status) && imptactic.IsDeployedToIntegration && !imptactic.IsDeleted).FirstOrDefault();
                 if (planImprovementTactic != null)
                 {
-                    SetMappingDetails();
-                    List<int> planIdList = new List<int>() { planImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId };
-                    SetMappingEloquaFolderIdsPlanId(planIdList);
-                    planImprovementTactic = SyncImprovementData(planImprovementTactic, ref sb);
-                    db.SaveChanges();
+                    _isResultError=SetMappingDetails();
+                    if (!_isResultError)
+                    {
+                        List<int> planIdList = new List<int>() { planImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId };
+                        SetMappingEloquaFolderIdsPlanId(planIdList);
+                        planImprovementTactic = SyncImprovementData(planImprovementTactic, ref sb);
+                        db.SaveChanges();
+                    }
                 }
             }
             else
@@ -332,7 +369,7 @@ namespace Integration.Eloqua
         /// Added By: Maninder Singh Wadhva.
         /// Function to set mapping details.
         /// </summary>
-        private void SetMappingDetails()
+        private bool SetMappingDetails()
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for Integration Instance");
@@ -345,12 +382,33 @@ namespace Integration.Eloqua
             try
             {
                 // Start - Modified by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                List<EloquaObjectFieldDetails> lstMappingMisMatch = new List<EloquaObjectFieldDetails>();
+                EloquaObjectFieldDetails objfeildDetails;
+                List<EloquaObjectFieldDetails> lstEloquaforceFieldDetail = GetEloquaFieldDetail();
+
                 List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
                 _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
                                                     || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
                                                     (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
                                                 .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                foreach (KeyValuePair<string, string> entry in _mappingTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+                {
+                    if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
+                    {
+                        if (!Enums.ActualFieldDatatype[entry.Key].Contains(lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype))
+                        {
+                            objfeildDetails = new EloquaObjectFieldDetails();
+                            objfeildDetails.SourceField = entry.Key;
+                            objfeildDetails.TargetField = entry.Value;
+                            objfeildDetails.Section = Enums.EntityType.Tactic.ToString();
+                            objfeildDetails.TargetDatatype = lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
+                            objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
+                            lstMappingMisMatch.Add(objfeildDetails);
+                        }
+
+                    }
+                }
                 // End - Modified by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
 
                 // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
@@ -363,7 +421,37 @@ namespace Integration.Eloqua
                                                                        !gameplandata.GameplanDataType.IsGet)
                                                 .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+                foreach (KeyValuePair<string, string> entry in _mappingImprovementTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+                {
+                    if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
+                    {
+                        if (!Enums.ActualFieldDatatype[entry.Key].Contains(lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype))
+                        {
+                            objfeildDetails = new EloquaObjectFieldDetails();
+                            objfeildDetails.SourceField = entry.Key;
+                            objfeildDetails.TargetField = entry.Value;
+                            objfeildDetails.Section = Enums.EntityType.Tactic.ToString();
+                            objfeildDetails.TargetDatatype = lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
+                            objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
+                            lstMappingMisMatch.Add(objfeildDetails);
+                        }
+
+                    }
+                }
                 // End - Modified by Sohel Pathan on 05/12/2014 for PL ticket #995, 996, & 997
+
+                foreach (var Section in lstMappingMisMatch.Select(m => m.Section).Distinct().ToList())
+                {
+                    string msg = "Data type mismatch for " +
+                                string.Join(",", lstMappingMisMatch.Where(m => m.Section == Section).Select(m => m.SourceField).ToList()) +
+                                " in Eloqua for " + Section + ".";
+                    Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section, true);
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Error, DateTime.Now));
+                }
+                if (lstMappingMisMatch.Count > 0)
+                {
+                    return true;
+                }
 
                 _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
@@ -384,6 +472,7 @@ namespace Integration.Eloqua
 
                 IntegrationInstanceTacticIds = new List<string>();
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for Integration Instance");
+                return false;
             }
             catch (Exception ex)
             {
@@ -396,6 +485,7 @@ namespace Integration.Eloqua
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Entity Exception: Get Mapping detail for Integration Instance" + exMessage);
                 }
+                return true;
 
             }
 
@@ -423,7 +513,11 @@ namespace Integration.Eloqua
                 List<Plan_Improvement_Campaign_Program_Tactic> IMPtacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
                 if (tacticList.Count() > 0 || IMPtacticList.Count() > 0)
                 {
-                    SetMappingDetails();
+                  _isResultError=  SetMappingDetails();
+                  if (_isResultError)
+                  {
+                      return;
+                  }
                 }
 
                 if (tacticList.Count() > 0)
@@ -1536,32 +1630,48 @@ namespace Integration.Eloqua
             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for " + EntityType + " custom field(s)");
             try
             {
-                var CustomFieldList = db.CustomField_Entity.Where(ce => EntityIdList.Contains(ce.EntityId) && ce.CustomField.EntityType == EntityType)
-                                                        .Select(ce => new { ce.CustomField, ce.CustomFieldEntityId, ce.CustomFieldId, ce.EntityId, ce.Value, ce.CustomField.AbbreviationForMulti }).ToList();
-                List<int> CustomFieldIdList = CustomFieldList.Select(cf => cf.CustomFieldId).Distinct().ToList();
-                var CustomFieldOptionList = db.CustomFieldOptions.Where(cfo => CustomFieldIdList.Contains(cfo.CustomFieldId) && cfo.IsDeleted == false).Select(cfo => new { cfo.CustomFieldOptionId, cfo.Value });
-
-                _mappingCustomFields = new Dictionary<string, string>();
-
-                foreach (var item in CustomFieldList)
+                if (EntityIdList.Count > 0)
                 {
-                    string customKey = item.CustomFieldId + "-" + item.EntityId;
-                    if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
+                    string idList = string.Join(",", EntityIdList);
+
+                    String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
+                        "case  " +
+                           "    when A.keyi is not null then Extent2.AbbreviationForMulti " +
+                           "    when Extent3.[Name]='TextBox' then Extent1.Value " +
+                           "    when Extent3.[Name]='DropDownList' then Extent4.Value " +
+                        "End as ValueV " +
+
+                        " from CustomField_Entity Extent1 " +
+                        "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] AND [Extent2].[IsDeleted] = 0 " +
+                        "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
+                        "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and cast(Extent1.Value as nvarchar)=cast(Extent4.CustomFieldOptionID as nvarchar)" +
+                        "Left Outer join ( " +
+                        "select '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyi " +
+
+                        " from CustomField_Entity Extent1 " +
+                        "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] " +
+                        "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
+                        "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and Extent1.Value=Extent4.CustomFieldOptionID " +
+                        "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
+                        "group by '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
+                        "having count(*) > 1 " +
+                        ") A on A.keyi='" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
+                        "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
+                        "order by keyv";
+
+                    MRPEntities mp = new MRPEntities();
+                    DbConnection conn = mp.Database.Connection;
+                    conn.Open();
+                    DbCommand comm = conn.CreateCommand();
+                    comm.CommandText = Query;
+                    DbDataReader ddr = comm.ExecuteReader();
+
+                    while (ddr.Read())
                     {
-                        _mappingCustomFields.Add(customKey, item.Value);
+                        _mappingCustomFields.Add(!ddr.IsDBNull(0) ? ddr.GetString(0) : string.Empty, !ddr.IsDBNull(1) ? ddr.GetString(1) : string.Empty);
                     }
-                    else if (item.CustomField.CustomFieldType.Name == Enums.CustomFieldType.DropDownList.ToString())
-                    {
-                        if (_mappingCustomFields.ContainsKey(customKey))
-                        {
-                            _mappingCustomFields[customKey] = item.AbbreviationForMulti;    //// Added by Sohel Pathan on 29/01/2015 for PL ticket #1142
-                        }
-                        else
-                        {
-                            int CustomFieldOptionId = Convert.ToInt32(item.Value);
-                            _mappingCustomFields.Add(customKey, CustomFieldOptionList.Where(cfo => cfo.CustomFieldOptionId == CustomFieldOptionId).Select(cfo => cfo.Value).FirstOrDefault());
-                        }
-                    }
+                    conn.Close();
+                    mp.Dispose();
                 }
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for " + EntityType + " custom field(s), Found " + _mappingCustomFields.Count().ToString() + " custome field mapping");
             }

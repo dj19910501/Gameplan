@@ -35,6 +35,7 @@ namespace Integration.Helper
 
         public static string OpportunityObjectError = "Opportunity : ";
         public static string CampaignMemberObjectError = "Campaign Member : ";
+        public static string SalesForceCampaignObject = "Campaign";
 
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
 
