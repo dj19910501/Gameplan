@@ -66,6 +66,7 @@ namespace Integration.WorkFront
         }
         private Dictionary<string, string> WorkFrontFields { get; set; }
         private Dictionary<string, string> GameplanTacticFields { get; set; }
+        private List<string> statusList { get; set; }
 
         /// <summary>
         /// Empty Constructor - for further improvements
@@ -222,20 +223,24 @@ namespace Integration.WorkFront
         {
             lstSyncError = new List<SyncError>();
             try
-            {
+            {	   
+                 statusList = Common.GetStatusListAfterApproved();
                 // Insert log into IntegrationInstanceSection
                 _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
                 _isResultError = false;
                 SetMappingDetails();
                 if (EntityType.Tactic.Equals(_entityType)) //_entityType is Tactic on tactic approval
                 {
-                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _entityID).FirstOrDefault();
+                Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _entityID && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
+                if (planTactic != null)
+                {
                     List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
                     // CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     List<int> plnaIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
                     _isResultError = SyncTactic(planTactic);
                     db.SaveChanges();
                 }
+            }
                 else
                 {
                     _isResultError = this.SyncInstanceData(); //this must find all tactics and sync
@@ -280,7 +285,7 @@ namespace Integration.WorkFront
                     syncError = (syncError || SyncModel(model));
                 }
                 //Retrieves list of all tactics tied to the integrationinstance and deployed to integration
-                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true).ToList();
+                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
                     foreach (var tactic in tacticList)
                     {
 	                     syncError = (syncError || SyncTactic(tactic));
@@ -377,7 +382,7 @@ namespace Integration.WorkFront
             IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
             try
             {
-                Enums.Mode currentMode = Common.GetMode(tactic.IsDeleted, tactic.IsDeployedToIntegration, tactic.IntegrationInstanceTacticId, tactic.Status);
+                Enums.Mode currentMode = Common.GetMode(tactic.IntegrationInstanceTacticId);
                 
                 //logging begin
                 instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;

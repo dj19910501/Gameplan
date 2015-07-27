@@ -1,5 +1,7 @@
 ﻿using System.Xml;
 using System.Xml.XPath;
+using RevenuePlanner.Models;
+using System.Text;
 
 namespace RevenuePlanner.Helpers
 {
@@ -1608,7 +1610,7 @@ namespace RevenuePlanner.Helpers
                 _ValidateRequiredPermission = value;
             }
         }
-        
+
         private string _ValidateAtleastOneCampaign;
         public string ValidateAtleastOneCampaign
         {
@@ -1988,9 +1990,9 @@ namespace RevenuePlanner.Helpers
             {
                 _NoPlanFoundPlanSelector = value;
             }
-        }	 
+        }
 
-private string _CannotAllocateMorethanRemainingBudgeted;
+        private string _CannotAllocateMorethanRemainingBudgeted;
         public string CannotAllocateMorethanRemainingBudgeted
         {
             get { return _CannotAllocateMorethanRemainingBudgeted; }
@@ -2104,7 +2106,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _DataLoseErrorMessage = value; }
         }
         // End - Added by Sohel Pathan on 21/08/2014 for PL ticket #716.
-        
+
 
         #region Start - Manoj PL#679
         private string _DuplicateFileLocation;
@@ -2125,7 +2127,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _ServerConfigurationSaved; }
             set { _ServerConfigurationSaved = value; }
         }
-        #endregion 
+        #endregion
         //Added by Mitesh for PL ticket #559
         private string _IntegrationSelectionSaved;
         public string IntegrationSelectionSaved
@@ -2143,7 +2145,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
         }
         //End :Added by Mitesh for PL ticket #752
 
-       //Added by Pratik for PL ticket #754
+        //Added by Pratik for PL ticket #754
         private string _StagesConfigurationMissMatch;
         public string StagesConfigurationMissMatch
         {
@@ -2229,7 +2231,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _PlanEntityDuplicated; }
             set { _PlanEntityDuplicated = value; }
         }
-        
+
         // End - Added by Viral Kadiya on 17/11/2014 for PL ticket #947.
 
         private string _DataInconsistency;
@@ -2238,7 +2240,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             get { return _DataInconsistency; }
             set { _DataInconsistency = value; }
         }
-			  //// Start - Ticket #994, by Pratik chauhan
+        //// Start - Ticket #994, by Pratik chauhan
         private string _InvalidCharacterofDescription;
         public string InvalidCharacterofDescription
         {
@@ -2322,7 +2324,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             set { _DataTypeMappingPullMQLSaveSuccess = value; }
         }
         //// End - Added by :- Sohel Pathan on 23/12/2014 for PL #1061
-        
+
         ////Start - Added by Mitesh Vaishnav for PL ticket #1124
         private string _ValidateAttributeWeightSum;
         public string ValidateAttributeWeightSum
@@ -3026,7 +3028,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             _CannotAllocateLessThanPlanned = strMsgValue;
                                             break;
                                         // End - Added by Mitesh Vaishnav on 23/09/2014 for PL ticket #752.
-										// Start - Added by Pratik on 24/09/2014 for PL ticket #754.
+                                        // Start - Added by Pratik on 24/09/2014 for PL ticket #754.
                                         case "StagesConfigurationMissMatch":
                                             _StagesConfigurationMissMatch = strMsgValue;
                                             break;
@@ -3076,7 +3078,7 @@ private string _CannotAllocateMorethanRemainingBudgeted;
                                             break;
                                         case "NoPublishPlanAvailableOnReport":
                                             _NoPublishPlanAvailableOnReport = strMsgValue;
-											 break;
+                                            break;
                                         case "InvalidCharacterofDescription":
                                             _InvalidCharacterofDescription = strMsgValue;
                                             break;
@@ -3148,5 +3150,45 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             return strOutput;
         }
         #endregion
+
+        #region "Save IntegrationInstance Log Details Function"
+        public static void SaveIntegrationInstanceLogDetails(int _entityId, int? IntegrationInstanceLogId, Enums.MessageOperation MsgOprtn, string functionName, Enums.MessageLabel MsgLabel, string logMsg)
+        {
+            string logDescription = string.Empty, preMessage = string.Empty;
+            try
+            {
+                if (MsgOprtn.Equals(Enums.MessageOperation.None))
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + "---";
+                else
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + MsgOprtn.ToString() + " :";
+
+                if (MsgOprtn.Equals(Enums.MessageOperation.Start))
+                {
+                    logDescription = preMessage + " " + functionName + " : " + logMsg; // if MessageOperation:Start then Message will be like this: "Start : SyncNow : Sync Start"
+                }
+                else
+                {
+                    logDescription = preMessage + " " + functionName + " : " + logMsg; // In other case Message will be like this: "Success : End : SyncNow : Sync Start "
+                }
+
+                using (MRPEntities db = new MRPEntities())
+                {
+                    IntegrationInstanceLogDetail objLogDetails = new IntegrationInstanceLogDetail();
+                    objLogDetails.EntityId = _entityId;
+                    objLogDetails.IntegrationInstanceLogId = IntegrationInstanceLogId;
+                    objLogDetails.LogTime = System.DateTime.Now;
+                    objLogDetails.LogDescription = logDescription;
+                    db.Entry(objLogDetails).State = System.Data.EntityState.Added;
+                    db.SaveChanges();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
+
+

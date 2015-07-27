@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Integration.Helper
 {
@@ -152,5 +153,53 @@ namespace Integration.Helper
             Warning,
             Info
         }
+
+        /// <summary>
+        /// IntegrationInstance Message Operation
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>21/07/2015</CreatedDate>
+        public enum MessageOperation
+        {
+            Start,
+            End,
+            //Create,
+            None
+        }
+
+        /// <summary>
+        /// IntegrationInstance Message Label
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>21/07/2015</CreatedDate>
+        public enum MessageLabel
+        {
+            Error,
+            Success,
+            Info,
+            None
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Date: 07/22/2015
+        /// Enum for plan status.
+        /// </summary>
+        public enum PlanStatus
+        {
+            Draft = 0,
+            Published = 1,
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Date: 07/22/2015
+        /// Enum for plan status.
+        /// </summary>
+        public static Dictionary<string, string> PlanStatusValues = new Dictionary<string, string>()
+        {
+            {PlanStatus.Draft.ToString(), "Draft"},
+            {PlanStatus.Published.ToString(), "Published"}
+        };
     }
 }

@@ -100,28 +100,64 @@ namespace Integration
         /// </summary>
         public void Sync()
         {
+
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+
+            Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Check entity type");
             if (EntityType.Tactic.Equals(_entityType))
             {
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance started - Initiated by Approved Flow");
                 SyncTactic();
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance ended - Initiated by Approved Flow");
             }
+            // Start : These below functions(i.e For Program & Campaign) not call in current functiopnality - To be used in future
             else if (EntityType.Program.Equals(_entityType))
             {
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Program Instance started - Initiated by Approved Flow");
                 SyncProgram();
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Program Instance ended - Initiated by Approved Flow");
             }
             else if (EntityType.Campaign.Equals(_entityType))
             {
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Campaign Instance started - Initiated by Approved Flow");
                 SyncCampaing();
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Campaign Instance ended - Initiated by Approved Flow");
             }
+            // End : These below functions(i.e For Program & Campaign) not call in current functiopnality - To be used in future
             else if (EntityType.ImprovementTactic.Equals(_entityType))//new code added for #532 by uday
             {
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementTactic Instance started - Initiated by Approved Flow");
                 SyncImprovementTactic();
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementTactic Instance ended - Initiated by Approved Flow");
             }
             else
             {
+                var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _id).FirstOrDefault();
+                if (Instance != null && Instance.IsActive)
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Instance started - Initiated by Sync Now or Scheduler");
                 SyncInstance();
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Instance ended - Initiated by Sync Now or Scheduler");
+                }
+                else
+                {
+                    IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+                    instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_id);
+                    instanceLogStart.SyncStart = DateTime.Now;
+                    instanceLogStart.CreatedBy = _userId;
+                    instanceLogStart.CreatedDate = DateTime.Now;
+                    instanceLogStart.ErrorDescription = "Instance have inactive status.";
+                    instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
+                    db.Entry(instanceLogStart).State = EntityState.Added;
+                    Instance.LastSyncStatus = StatusResult.Error.ToString();
+                    db.Entry(Instance).State = EntityState.Modified;
+                    int resulValue = db.SaveChanges();
+                    Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                }
             }
 
-            SendSyncErrorEmail();
+            SendSyncErrorEmail(_integrationType);
+
         }
 
         /// <summary>
@@ -143,25 +179,59 @@ namespace Integration
         /// </summary>
         private void SyncTactic()
         {
-            /// Write query to get integration instance id and integration type.
-            int? integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
-            int? integrationInstanceProjectManagmentId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
-           
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            try
+            {
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Get Integration Instance Id based on PlanTacticId.");
+                /// Write query to get integration instance id and integration type.
+                int? integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+                int? integrationInstanceProjectManagmentId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
 
-            //Modified by Brad Gray 07/24/2015 for WorkFront sync and separating instance ids
-            if (integrationInstanceId.HasValue) 
-            {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
-                _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+
+                //Modified by Brad Gray 07/24/2015 for WorkFront sync and separating instance ids
+                if (integrationInstanceId.HasValue)
+                {
+                    _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                    _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+                }
+                else if (integrationInstanceProjectManagmentId.HasValue)
+                {
+                    _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationInstanceProjectManagmentId).IntegrationType.Code;
+                    _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
+                }
+                if (_integrationType != null && _integrationInstanceId.HasValue)
+                {
+                    var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+                    if (Instance != null && Instance.IsActive)
+                    {
+                        IdentifyIntegration();
+                    }
+                    else
+                    {
+
+                        IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+                        instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_id);
+                        instanceLogStart.SyncStart = DateTime.Now;
+                        instanceLogStart.CreatedBy = _userId;
+                        instanceLogStart.CreatedDate = DateTime.Now;
+                        instanceLogStart.ErrorDescription = "Instance have inactive status.";
+                        instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
+                        db.Entry(instanceLogStart).State = EntityState.Added;
+
+                        Instance.LastSyncStatus = StatusResult.Error.ToString();
+                        db.Entry(Instance).State = EntityState.Modified;
+                        int resulValue = db.SaveChanges();
+                        Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                    }
+                }
+                else
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "The Model of this tactic do not have integration enabled.");
+                }
             }
-            else if (integrationInstanceProjectManagmentId.HasValue) 
+            catch (Exception ex)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationInstanceProjectManagmentId).IntegrationType.Code;
-                _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
-            }
-            if (_integrationType != null && _integrationInstanceId.HasValue)
-            {
-                IdentifyIntegration();
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing SyncTactic :-" + ex.Message);
             }
         }
 
@@ -171,10 +241,10 @@ namespace Integration
         private void SyncProgram()
         {
             /// Write query to get integration instance id and integration type.
-            _integrationInstanceId = db.Plan_Campaign_Program.Single(p => p.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceId;
+            _integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
+                _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -185,10 +255,10 @@ namespace Integration
         private void SyncCampaing()
         {
             /// Write query to get integration instance id and integration type.
-            _integrationInstanceId = db.Plan_Campaign.Single(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceId;
+            _integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
+                _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -201,7 +271,7 @@ namespace Integration
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
             {
-                _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
+                _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
             }
         }
@@ -211,50 +281,75 @@ namespace Integration
         /// </summary>
         private void IdentifyIntegration()
         {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            string LogEndErrorDescription = string.Empty, LogEndStatus = string.Empty;
+            try
+            {
             ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
             Common.IsAutoSync = false;
 
             if (_userId == Guid.Empty)
             {
-                _userId = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).CreatedBy;
+                    _userId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).CreatedBy;
                 Common.IsAutoSync = true;
             }
 
             _isResultError = false;
+                int resulValue = 0;
+                Common.SaveIntegrationInstanceLogDetails(_id,null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Inserting log primary details to IntegrationInstanceLog table.");
             IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+                try
+                {
             instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
             instanceLogStart.SyncStart = DateTime.Now;
             instanceLogStart.CreatedBy = _userId;
             instanceLogStart.CreatedDate = DateTime.Now;
             db.Entry(instanceLogStart).State = EntityState.Added;
-            int resulValue = db.SaveChanges();
+                    resulValue = db.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id,null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while inserting log into IntegrationInstanceLog table. : " + ex.Message);
+                }
+                Common.SaveIntegrationInstanceLogDetails(_id,null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Inserting log primary details to IntegrationInstanceLog table.");
+
             bool IsAuthenticationError = false;
 
             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Start Time", instanceLogStart.SyncStart.ToString()), Enums.SyncStatus.Header, DateTime.Now));
 
-            if (resulValue > 0)
-            {
+                //if (resulValue > 0)
+                //{
                 int integrationinstanceLogId = instanceLogStart.IntegrationInstanceLogId;
-                IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
+                    
                 if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
                 {
                     IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationSalesforceClient.IsAuthenticated)
                     {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with salesforce Success.");
                         if (!_isTacticMoved)
                         {
-                            _isResultError = integrationSalesforceClient.SyncData();
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
+                                List<SyncError> lstSyncError = new List<SyncError>();
+                                _isResultError = integrationSalesforceClient.SyncData(out lstSyncError);
+                                _lstAllSyncError.AddRange(lstSyncError);
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
                         }
                         else
                         {
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Moved TacticData Start.");
                             _isResultError = integrationSalesforceClient.SyncMovedTacticData();
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Moved TacticData End.");
                         }
                     }
                     else
                     {
-                        instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
+                            LogEndErrorDescription = "Authentication Failed :" + integrationSalesforceClient._ErrorMessage;
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
+
                         _isResultError = true;
                         IsAuthenticationError = true;
+                            _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationSalesforceClient._ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.Eloqua.ToString()))
@@ -262,15 +357,20 @@ namespace Integration
                     IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationEloquaClient.IsAuthenticated)
                     {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with Eloqua Success.");
+
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Data Start.");
                         //// Start - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
                         List<SyncError> lstSyncError = new List<SyncError>();
                         _isResultError = integrationEloquaClient.SyncData(out lstSyncError);
                         _lstAllSyncError.AddRange(lstSyncError);
                         //// End - Modified by Sohel Pathan on 03/01/2015 for PL ticket #1068
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Data End.");
                     }
                     else
                     {
-                        instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
+                            LogEndErrorDescription = "Authentication Failed :" + integrationEloquaClient._ErrorMessage;
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
                         _isResultError = true;
                         IsAuthenticationError = true;
                         //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
@@ -286,13 +386,15 @@ namespace Integration
                     IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationWorkFrontClient.IsAuthenticated)
                     {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with WorkFront Success.");
                         List<SyncError> lstSyncError = new List<SyncError>();
                         _isResultError = integrationWorkFrontClient.SyncData(out lstSyncError);
                         _lstAllSyncError.AddRange(lstSyncError);
                     }
                     else
                     {
-                        instanceLogEnd.ErrorDescription = "Authentication Failed :" + integrationWorkFrontClient.errorMessage;
+                            LogEndErrorDescription = "Authentication Failed :" + integrationWorkFrontClient.errorMessage;
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, LogEndErrorDescription);
                         _isResultError = true;
                         IsAuthenticationError = true;
                         _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "Authentication Failed :" + integrationWorkFrontClient.errorMessage, Enums.SyncStatus.Error, DateTime.Now));
@@ -304,25 +406,31 @@ namespace Integration
                 {
                     IntegrationInstance integrationInstance = new IntegrationInstance();
                     integrationInstance = dbouter.IntegrationInstances.SingleOrDefault(instance => instance.IntegrationInstanceId == integrationinstanceId);
+                        
                 if (_isResultError)
                 {
-                    instanceLogEnd.Status = StatusResult.Error.ToString();
+                            LogEndStatus = StatusResult.Error.ToString();
                     integrationInstance.LastSyncStatus = StatusResult.Error.ToString();
                     if (!IsAuthenticationError)
                     {
-                            string errorSections = string.Join(", ", dbouter.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == instanceLogEnd.IntegrationInstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
-                        instanceLogEnd.ErrorDescription = "Error in section(s): " + errorSections;
+                                string errorSections = string.Join(", ", dbouter.IntegrationInstanceSections.Where(integrationSection => integrationSection.IntegrationInstanceLogId == integrationinstanceLogId && integrationSection.Status == "Error").Select(integrationSection => integrationSection.SectionName).ToList());
+                                LogEndErrorDescription = "Error in section(s): " + errorSections;
                     }
                 }
                 else
                 {
-                    instanceLogEnd.Status = StatusResult.Success.ToString();
+                            LogEndStatus = StatusResult.Success.ToString();
                     integrationInstance.LastSyncStatus = StatusResult.Success.ToString();
                 }
                     integrationInstance.LastSyncDate = DateTime.Now;
                     dbouter.Entry(integrationInstance).State = EntityState.Modified;
                     dbouter.SaveChanges();
                 }
+
+                    IntegrationInstanceLog instanceLogEnd = db.IntegrationInstanceLogs.SingleOrDefault(instance => instance.IntegrationInstanceLogId == integrationinstanceLogId);
+                    instanceLogEnd.Status = LogEndStatus;
+                    instanceLogEnd.ErrorDescription = LogEndErrorDescription;
+                    db.Entry(instanceLogEnd).State = EntityState.Modified;
 
                 instanceLogStart.SyncEnd = DateTime.Now;
                 db.Entry(instanceLogStart).State = EntityState.Modified;
@@ -339,13 +447,18 @@ namespace Integration
                     _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Instance Name used for syncing", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
                 }
                 //// End - Added by Sohel Pathan on 09/01/2015 for PL ticket #1068
+                //}
+            }
+            catch (Exception ex)
+            {
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing IdentifyIntegration : " + ex.Message);
             }
         }
 
         /// <summary>
         /// Function to prepare sync error email header data
         /// </summary>
-        private void PrepareSyncErroMailHeader()
+        private void PrepareSyncErroMailHeader(string integrationInstanceType)
         {
             //// get userdetails of the logged in user
             string ClientName = string.Empty;
@@ -379,6 +492,8 @@ namespace Integration
             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities successfully synced - Push Tactic Data", SuccessTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities failed due to some reason - Push Tactic Data", FailedTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
 
+            if (integrationInstanceType.Equals(Enums.IntegrationType.Eloqua.ToString()))
+            {
             bool PullMQLError = false;
             PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
             if (PullMQLError)
@@ -400,30 +515,55 @@ namespace Integration
             {
                 _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
             }
+            }
+            else if (integrationInstanceType.Equals(Enums.IntegrationType.Salesforce.ToString()))
+            {
+                bool PullClosedDealsError = false;
+                PullClosedDealsError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString()).Any();
+                if (PullClosedDealsError)
+                {
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Closed Deals Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                }
+                else
+                {
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Closed Deals Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                }
+
+                bool PullResponsesError = false;
+                PullResponsesError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullResponses.ToString()).Any();
+                if (PullResponsesError)
+                {
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                }
+                else
+                {
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                }
+            }
             /////
         }
 
         /// <summary>
         /// Function to send an error email while IntegrationInstance sync of Eloqua
         /// </summary>
-        private void SendSyncErrorEmail()
+        private void SendSyncErrorEmail(string integrationInstanceType)
         {
             try
             {
                 if (_lstAllSyncError.Count > 0)
                 {
                     //// In sucess case there is no need of sending error email.
-                    bool isMailSendRequired = _lstAllSyncError.Where(syncError => syncError.SyncStatus != Enums.SyncStatus.Header && syncError.SyncStatus != Enums.SyncStatus.Success).Any();
-                    if (isMailSendRequired)
-                    {
+                    //bool isMailSendRequired = _lstAllSyncError.Where(syncError => syncError.SyncStatus != Enums.SyncStatus.Header && syncError.SyncStatus != Enums.SyncStatus.Success).Any();
+                    //if (isMailSendRequired)
+                    //{
                         //// Retrieve mail template from db.
                         MRPEntities db = new MRPEntities();
                         string SyncIntegrationError = Enums.Custom_Notification.SyncIntegrationError.ToString();
-                        Notification objNotification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(SyncIntegrationError));
+                        Notification objNotification = (Notification)db.Notifications.FirstOrDefault(n => n.NotificationInternalUseOnly.Equals(SyncIntegrationError));
 
                         if (objNotification != null)
                         {
-                            PrepareSyncErroMailHeader();
+                            PrepareSyncErroMailHeader(integrationInstanceType);
 
                             //// Replace mail template tags with corresponding data
                             string emailBody = string.Empty;
@@ -453,7 +593,7 @@ namespace Integration
                                 }
                             }
                         }
-                    }
+                    //}
                 }
             }
             catch

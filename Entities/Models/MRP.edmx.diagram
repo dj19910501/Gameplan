@@ -140,6 +140,7 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
         <EntityTypeShape EntityType="MRPModel.CustomField_Entity" Width="1.5" PointX="13.25" PointY="8.375" />
         <AssociationConnector Association="MRPModel.FK_CustomField_Entity_CustomField" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLogDetail" Width="1.5" PointX="8.1016926374759954" PointY="23.106005649597385" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

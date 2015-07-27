@@ -92,33 +92,17 @@ namespace Integration.Helper
             return tacticStatus;
         }
 
-        internal static Enums.Mode GetMode(bool isDeleted, bool isDeployedToIntegration, string integrationInstanceTacticId, string status)
+        internal static Enums.Mode GetMode(string integrationInstanceTacticId)
         {
-            // delete reject status from list function
-            List<string> statusList = Common.GetStatusListAfterApproved();
             // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = null - isDeleted = false
-            if (statusList.Contains(status) && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
+            if (string.IsNullOrWhiteSpace(integrationInstanceTacticId))
             {
                 return Enums.Mode.Create;
             }
             // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = yes - isDeleted = false
-            else if (statusList.Contains(status) && isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
-            {
-                return Enums.Mode.Update;
-            }
-            else if (isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
-            {
-                return Enums.Mode.None;
-            }
-            else if (!string.IsNullOrWhiteSpace(integrationInstanceTacticId))
-            {
-                return Enums.Mode.None;
-                /*Commenting out for issue #1322*/
-//                return Enums.Mode.Delete;
-            }
             else
             {
-                return Enums.Mode.None;
+                return Enums.Mode.Update;
             }
         }
 
@@ -253,7 +237,7 @@ namespace Integration.Helper
         /// </summary>
         /// <param name="PlanTacticId"></param>
         /// <returns>Actual cost of a Tactic</returns>
-        public static Dictionary<int,string> CalculateActualCostTacticslist(List<int> PlanTacticIds)
+        public static Dictionary<int, string> CalculateActualCostTacticslist(List<int> PlanTacticIds)
         {
             string cost = "Cost";
             string strActualCost = "0";
@@ -266,32 +250,34 @@ namespace Integration.Helper
                 using (MRPEntities db = new MRPEntities())
                 {
                     List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lia => tblLineItems.Select(line => line.PlanLineItemId).Contains(lia.PlanLineItemId)).ToList();
+                    /// Added By Bhavesh Date: 21/07/2015 - remove tolist from actual table
+                    List<int> lineItemIds = tblLineItems.Select(lineitem => lineitem.PlanLineItemId).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lineItemIds.Contains(lia.PlanLineItemId)).ToList();
                     List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => PlanTacticIds.Contains(pta.PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
                     foreach (int keyTactic in PlanTacticIds)
                     {
                         lstLineItems = new List<int>();
                         lstLineItems = tblLineItems.Where(line => line.PlanTacticId.Equals(keyTactic)).Select(li => li.PlanLineItemId).ToList();
-                    if (lstLineItems.Count > 0)
-                    {
+                        if (lstLineItems.Count > 0)
+                        {
                             lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
                             lstLineItemActuals = tblLineItemActuals.Where(lia => lstLineItems.Contains(lia.PlanLineItemId)).ToList();
-                        if (lstLineItemActuals.Count > 0)
-                        {
-                            var actualCostSum = lstLineItemActuals.Sum(lia => lia.Value);
-                            strActualCost = actualCostSum.ToString();
+                            if (lstLineItemActuals.Count > 0)
+                            {
+                                var actualCostSum = lstLineItemActuals.Sum(lia => lia.Value);
+                                strActualCost = actualCostSum.ToString();
+                            }
                         }
-                    }
-                    else
-                    {
+                        else
+                        {
                             lstPlanTacticsActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
                             lstPlanTacticsActuals = tblPlanTacticsActuals.Where(pta => pta.PlanTacticId.Equals(keyTactic)).ToList();
-                        if (lstPlanTacticsActuals.Count > 0)
-                        {
-                            var actualCostSum = lstPlanTacticsActuals.Sum(pta => pta.Actualvalue);
-                            strActualCost = actualCostSum.ToString();
+                            if (lstPlanTacticsActuals.Count > 0)
+                            {
+                                var actualCostSum = lstPlanTacticsActuals.Sum(pta => pta.Actualvalue);
+                                strActualCost = actualCostSum.ToString();
+                            }
                         }
-                    }
                         dicTactic_ActualCost.Add(keyTactic, strActualCost);
                     }
                 }
@@ -328,7 +314,7 @@ namespace Integration.Helper
                         CustomFieldId = cf.CustomFieldId,
                         Type = cf.CustomField.CustomFieldType.Name,
                         Abbreviation = string.Compare(cf.CustomField.CustomFieldType.Name, Enums.CustomFieldType.TextBox.ToString(), true) == 0 ? cf.Value : !string.IsNullOrEmpty(cf.CustomField.CustomFieldOptions.Where(cfo => cfo.IsDeleted == false && cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault()) ? cf.CustomField.CustomFieldOptions.Where(cfo => cfo.IsDeleted == false && cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault() : cf.CustomField.CustomFieldOptions.Where(cfo => cfo.IsDeleted == false && cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Value).FirstOrDefault(),
-                        AbbreviationForMulti=cf.CustomField.AbbreviationForMulti
+                        AbbreviationForMulti = cf.CustomField.AbbreviationForMulti
                     });
 
                     foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
@@ -473,7 +459,7 @@ namespace Integration.Helper
             smtpSection = (SmtpSection)ConfigurationManager.GetSection("mailSettings/smtp_other");
             return smtpSection;
         }
-        
+
         #endregion
 
         /// <summary>
@@ -571,7 +557,7 @@ namespace Integration.Helper
 
                 return sbErroBody.ToString();
             }
-            
+
             return string.Empty;
         }
 
@@ -603,6 +589,44 @@ namespace Integration.Helper
             }
             return ClosedWonTitle;
         }
+
+        #region "Save IntegrationInstance Log Details Function"
+        public static void SaveIntegrationInstanceLogDetails(int _entityId, int? IntegrationInstanceLogId, Enums.MessageOperation MsgOprtn, string functionName, Enums.MessageLabel MsgLabel, string logMsg)
+        {
+            string logDescription = string.Empty, preMessage = string.Empty;
+            try
+            {
+                if (MsgOprtn.Equals(Enums.MessageOperation.None))
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + "---";
+                else
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + MsgOprtn.ToString() + " :";
+
+                if (MsgOprtn.Equals(Enums.MessageOperation.Start))
+                {
+                    logDescription = preMessage + " " + functionName + " : " + logMsg; // if MessageOperation:Start then Message will be like this: "Start : SyncNow : Sync Start"
+                }
+                else
+                {
+                    logDescription = preMessage + " " + functionName + " : " + logMsg; // In other case Message will be like this: "Success : End : SyncNow : Sync Start "
+                }
+
+                using (MRPEntities db = new MRPEntities())
+                {
+                    IntegrationInstanceLogDetail objLogDetails = new IntegrationInstanceLogDetail();
+                    objLogDetails.EntityId = _entityId;
+                    objLogDetails.IntegrationInstanceLogId = IntegrationInstanceLogId;
+                    objLogDetails.LogTime = System.DateTime.Now;
+                    objLogDetails.LogDescription = logDescription;
+                    db.Entry(objLogDetails).State = System.Data.EntityState.Added;
+                    db.SaveChanges();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 
     public class CRM_EloquaMapping
@@ -630,5 +654,5 @@ namespace Integration.Helper
         public DateTime TimeStamp { get; set; }
     }
 
-     
+
 }

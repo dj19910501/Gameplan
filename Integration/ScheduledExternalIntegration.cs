@@ -30,8 +30,12 @@ namespace Integration
             DateTime currentDate = DateTime.Now;
             int todaysDay = currentDate.Day;
             int currentHour = currentDate.Hour;
+            int currentMonth = currentDate.Month;
+            int currentYear = currentDate.Year;
             var lstIntegrationInstanceId = db.SyncFrequencies.Where(varS => varS.NextSyncDate.Value.Day == todaysDay &&
                                                                             varS.NextSyncDate.Value.Hour == currentHour &&
+                                                                            varS.NextSyncDate.Value.Month == currentMonth &&
+                                                                            varS.NextSyncDate.Value.Year == currentYear &&
                                                                             varS.IntegrationInstance.IsDeleted == false)////Modified by Mitesh Vaishnav For PL ticket #743 -Actuals Inspect: User Name for Scheduler Integration (Add condition for checking isDeleted flag)
                                                              .ToList()
                                                              .Select(varS => varS.IntegrationInstanceId);
@@ -39,7 +43,7 @@ namespace Integration
             foreach (var id in lstIntegrationInstanceId)
             {
                 UpdateNextSyncDate(id);
-                ExternalIntegration objInt = new ExternalIntegration(id,_applicationId);
+                ExternalIntegration objInt = new ExternalIntegration(id, _applicationId);
                 objInt.Sync();
             }
 

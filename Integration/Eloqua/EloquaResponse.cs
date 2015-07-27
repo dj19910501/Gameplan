@@ -48,15 +48,19 @@ namespace Integration.Eloqua
         /// <returns>True if SFTP connects successfully otherwise False</returns>
         public bool AuthenticateSFTP(string _ftpURL, string _UserName, string _Password, int _Port)
         {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             try
             {
+                Common.SaveIntegrationInstanceLogDetails(0, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SFTP Authentication");
                 //connect SFTP
                 Sftp client = new Sftp(_ftpURL, _UserName, _Password);
                 client.Connect(_Port);
+                Common.SaveIntegrationInstanceLogDetails(0, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SFTP Authentication");
                 return client.Connected;
             }
             catch (Exception ex)
             {
+                Common.SaveIntegrationInstanceLogDetails(0, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "SFTP Authentication Error: " + ex.Message);
                 return false;
             }
         }
@@ -72,9 +76,10 @@ namespace Integration.Eloqua
         public bool SetTacticMQLs(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, Guid _applicationId, EntityType _entityType, out List<SyncError> _lstSyncError)
         {
             _lstSyncError = new List<SyncError>();
-
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             //// Insert log into IntegrationInstanceSection
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), DateTime.Now, _userId);
+            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Set Tactic MQLs");
             try
             {
                 //// PlanIDs which has configured for "Pull MQL" from Eloqua instances
@@ -168,7 +173,7 @@ namespace Integration.Eloqua
                             #region Get Eloqua respopnse
 
                             //// Initialize eloqua integration instance
-                            IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(IntegrationInstanceId), 0, _entityType, _userId, IntegrationInstanceLogId, _applicationId);
+                            IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(IntegrationInstanceId), 0, EntityType.IntegrationInstance, _userId, IntegrationInstanceLogId, _applicationId);
 
                             //// define models for data manipulation from Eloqua response
                             ContactListDetailModel contactListDetails = new ContactListDetailModel();
@@ -176,91 +181,94 @@ namespace Integration.Eloqua
                             bool isError = false;
                             string errormsg = string.Empty;
                             //// allowed to enter only authenticated user.
-                                if (integrationEloquaClient.IsAuthenticated)
+                            if (integrationEloquaClient.IsAuthenticated)
+                            {
+                                //// Get list detail from eloqua for particular list id.
+                                var lstcontactDetails = integrationEloquaClient.GetEloquaContactListDetails(ListIdValue.ToString());
+
+                                //// Deserialize Object and store response into ContactListDetail Model
+                                contactListDetails = JsonConvert.DeserializeObject<ContactListDetailModel>(lstcontactDetails.Content);
+                                int page = 1;
+                                while (page > 0)
                                 {
-                                    //// Get list detail from eloqua for particular list id.
-                                    var lstcontactDetails = integrationEloquaClient.GetEloquaContactListDetails(ListIdValue.ToString());
+                                    //// Get contact list for particular ViewId and List Id.
+                                    var lstcontacts = integrationEloquaClient.GetEloquaContactList(ListIdValue.ToString(), ViewIdValue.ToString(), page);
 
-                                    //// Deserialize Object and store response into ContactListDetail Model
-                                    contactListDetails = JsonConvert.DeserializeObject<ContactListDetailModel>(lstcontactDetails.Content);
-                                    int page = 1;
-                                    while (page > 0)
+                                    //// Manipulation of contact list response and store into model
+                                    string TacticResult = lstcontacts.Content.ToString();
+                                    if (!string.IsNullOrEmpty(TacticResult))
                                     {
-                                        //// Get contact list for particular ViewId and List Id.
-                                        var lstcontacts = integrationEloquaClient.GetEloquaContactList(ListIdValue.ToString(), ViewIdValue.ToString(), page);
+                                        JObject joResponse = JObject.Parse(TacticResult);
+                                        JArray elementsArray = (JArray)joResponse["elements"];
 
-                                        //// Manipulation of contact list response and store into model
-                                        string TacticResult = lstcontacts.Content.ToString();
-                                        if (!string.IsNullOrEmpty(TacticResult))
+                                        //bool isAllCampaignIdExists = true;
+                                        //bool isAllMQLDateExists = true;
+
+                                        for (int i = 0; i < elementsArray.Count(); i++)
                                         {
-                                            JObject joResponse = JObject.Parse(TacticResult);
-                                            JArray elementsArray = (JArray)joResponse["elements"];
-
-                                            //bool isAllCampaignIdExists = true;
-                                            //bool isAllMQLDateExists = true;
-
-                                            for (int i = 0; i < elementsArray.Count(); i++)
+                                            elements elementsInner = new elements();
+                                            if (elementsArray[i][CampaignIdValue] != null && elementsArray[i][MQLDateValue] != null)
                                             {
-                                                elements elementsInner = new elements();
-                                                if (elementsArray[i][CampaignIdValue] != null && elementsArray[i][MQLDateValue] != null)
+                                                if (!string.IsNullOrEmpty(elementsArray[i][CampaignIdValue].ToString()) && !string.IsNullOrEmpty(elementsArray[i][MQLDateValue].ToString()))
                                                 {
-                                                    if (!string.IsNullOrEmpty(elementsArray[i][CampaignIdValue].ToString()) && !string.IsNullOrEmpty(elementsArray[i][MQLDateValue].ToString()))
-                                                    {
-                                                        elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
-                                                        elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
-                                                        elementsInner.peroid = new DateTime(elementsInner.peroid.Year, elementsInner.peroid.Month, 1);
-                                                        elementsInner.contactId = elementsArray[i]["contactId"].ToString();
-                                                        elementsInner.type = elementsArray[i]["type"].ToString();
-                                                        element.Add(elementsInner);
-                                                    }
+                                                    elementsInner.CampaignId = elementsArray[i][CampaignIdValue].ToString();
+                                                    elementsInner.peroid = integrationEloquaClient.ConvertTimestampToDateTime(elementsArray[i][MQLDateValue].ToString());
+                                                    elementsInner.peroid = new DateTime(elementsInner.peroid.Year, elementsInner.peroid.Month, 1);
+                                                    elementsInner.contactId = elementsArray[i]["contactId"].ToString();
+                                                    elementsInner.type = elementsArray[i]["type"].ToString();
+                                                    element.Add(elementsInner);
                                                 }
                                             }
-
-                                            if (elementsArray.Count == 0)
-                                            {
-                                                if (page == 1)
-                                                {
-                                                    errormsg = "No contact data found in Eloqua contact object.";
-                                                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
-                                                    isError = true;
-                                                }
-                                                page = 0;
-                                            }
-                                            else
-                                            {
-                                                page++;
-                                            }
-                                            //if (elementsArray.Count > 0 && listPullMapping.Count > 0)
-                                            //{
-                                            //    if (!isAllCampaignIdExists)
-                                            //    {
-                                            //        errormsg += CampaignIdValue + " for one or many record(s) does not exists.";
-                                            //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), CampaignIdValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
-                                            //        isError = true;
-                                            //    }
-                                            //    if (!isAllMQLDateExists)
-                                            //    {
-                                            //        errormsg += MQLDateValue + " for one or many record(s) does not exists.";
-                                            //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), MQLDateValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
-                                            //        isError = true;
-                                            //    }
-                                            //}
-
                                         }
-                                        else
+
+                                        if (elementsArray.Count == 0)
                                         {
                                             if (page == 1)
                                             {
                                                 errormsg = "No contact data found in Eloqua contact object.";
+                                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, errormsg);
                                                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
                                                 isError = true;
                                             }
                                             page = 0;
                                         }
+                                        else
+                                        {
+                                            page++;
+                                        }
+                                        //if (elementsArray.Count > 0 && listPullMapping.Count > 0)
+                                        //{
+                                        //    if (!isAllCampaignIdExists)
+                                        //    {
+                                        //        errormsg += CampaignIdValue + " for one or many record(s) does not exists.";
+                                        //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), CampaignIdValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
+                                        //        isError = true;
+                                        //    }
+                                        //    if (!isAllMQLDateExists)
+                                        //    {
+                                        //        errormsg += MQLDateValue + " for one or many record(s) does not exists.";
+                                        //        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), MQLDateValue + " for one or many record(s) does not exists.", Enums.SyncStatus.Error, DateTime.Now));
+                                        //        isError = true;
+                                        //    }
+                                        //}
+
+                                    }
+                                    else
+                                    {
+                                        if (page == 1)
+                                        {
+                                            errormsg = "No contact data found in Eloqua contact object.";
+                                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, errormsg);
+                                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
+                                            isError = true;
+                                        }
+                                        page = 0;
                                     }
                                 }
+                            }
                             else
                             {
+                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed");
                                 errormsg = "Authorization for " + Enums.IntegrationType.Eloqua.ToString() + " has been failed.";
                                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), errormsg, Enums.SyncStatus.Error, DateTime.Now));
                                 isError = true;
@@ -455,12 +463,14 @@ namespace Integration.Eloqua
                         }
                         else
                         {
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Data type mapping for pull mql is not found");
                             _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "Data type mapping for pull mql is not found.", Enums.SyncStatus.Error, DateTime.Now));
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForEloquaPullMQL);
                         }
                     }
                     catch (Exception e)
                     {
+                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while pulling mql from Eloqua : " + e.Message);
                         _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "System error occurred while pulling mql from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
                         string msg = e.Message;
                         // Update IntegrationInstanceSection log with Error status
@@ -473,9 +483,11 @@ namespace Integration.Eloqua
                     // Update IntegrationInstanceSection log with Success status,
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                 }
+                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Set Tactic MQLs");
             }
             catch (Exception ex)
             {
+                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Set Tactic MQLs : " + ex.Message);
                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "System error occurred while pulling mql from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
                 string msg = ex.Message;
                 // Update IntegrationInstanceSection log with Error status
@@ -494,7 +506,7 @@ namespace Integration.Eloqua
         public bool GetTacticResponse(int IntegrationInstanceId, Guid _userId, int IntegrationInstanceLogId, out List<SyncError> lstSyncError)
         {
             lstSyncError = new List<SyncError>();
-
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
             int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(IntegrationInstanceLogId, IntegrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
             try
@@ -544,6 +556,7 @@ namespace Integration.Eloqua
                     }
                     else
                     {
+                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Eloqua response folder path does not exists.");
                         lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Eloqua response folder path does not exists.", Enums.SyncStatus.Error, DateTime.Now));
                         // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                         Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Format(Common.msgDirectoryNotFound, localDestpath));
@@ -565,6 +578,7 @@ namespace Integration.Eloqua
                         }
                         catch (Exception ex)
                         {
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, Common.msgNotConnectToExternalServer + ex.Message);
                             lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgNotConnectToExternalServer, Enums.SyncStatus.Error, DateTime.Now));
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
                             //throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
@@ -621,14 +635,14 @@ namespace Integration.Eloqua
                                         else
                                         {
                                             lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "File : " + fileName + " : " + Common.msgRequiredColumnNotExistEloquaPullResponse, Enums.SyncStatus.Info, DateTime.Now));
-                                            
+
                                             // Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgRequiredColumnNotExistEloquaPullResponse);
                                             //throw new Exception(Common.msgRequiredColumnNotExistEloquaPullResponse);
                                         }
                                     }
                                 }
                             }
-                            
+
                             if (lstResponse.Count > 0)
                             {
                                 var lstEloquaTacticId = lstResponse.Where(t => !string.IsNullOrEmpty(t.eloquaTacticId)).Select(t => t.eloquaTacticId).ToList();
@@ -775,8 +789,8 @@ namespace Integration.Eloqua
                                     unprocessobj.CreatedBy = _userId;
                                     db.Entry(unprocessobj).State = EntityState.Added;
                                 }
-
-                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Of total records (" + uploadedrecord + ") uploaded, "  + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
+                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Of total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.");
+                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Of total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
                             }
 
 
@@ -809,6 +823,7 @@ namespace Integration.Eloqua
                                         }
                                         catch (Exception ex)
                                         {
+                                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "An error occurred while creating directory at external server." + ex.Message);
                                             //lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "An error occurred while creating directory at external server.", Enums.SyncStatus.Error, DateTime.Now));
                                         }
 
@@ -824,16 +839,19 @@ namespace Integration.Eloqua
                                 }
                             }
                             // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "");
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                         }
                         else //File location (directory) is exist, but empty – Success
                         {
                             // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, Common.msgFileNotFound);
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, Common.msgFileNotFound);
                         }
                     }
                     catch (Exception ex)
                     {
+                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message);
                         lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
                         // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                         Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
@@ -843,11 +861,13 @@ namespace Integration.Eloqua
                 else
                 {
                     // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                 }
             }
             catch (Exception ex)
             {
+                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
                 lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
                 Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
                 return true;
@@ -863,7 +883,10 @@ namespace Integration.Eloqua
             {
                 string tempColumnName = Convert.ToString(dt.Columns[i]);
                 tempColumnName = tempColumnName.Trim().ToLower();
-                ExcelColumns.Add(tempColumnName);
+                if (ExcelColumns.Contains(tempColumnName))
+                {
+                    ExcelColumns.Add(tempColumnName);
+                }
             }
             return ExcelColumns;
         }
