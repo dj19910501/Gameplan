@@ -987,9 +987,19 @@
         $('#errorMessageInspectPopup').slideUp(400);
         // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
         window.location.reload();
-	// modify by devanshi
-	  function LoadPlanGrid()
-    {
+	
+    }
+
+    function removeByValue(arr, val) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] == val) {
+                arr.splice(i, 1);
+                break;
+            }
+        }
+    }
+    // modify by devanshi
+    function LoadPlanGrid() {
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             SelectedPlanIds = filters.SelectedPlans.toString();
         }
@@ -1014,7 +1024,7 @@
         var TacticTypeids = filters.TacticTypeids; //Modified for #1283
 
         var StatusIds = filters.StatusIds;
-       
+
         $.ajax({
             url: '@Url.Content("~/Home/LoadHomeGrid/")',
             data: {
@@ -1032,17 +1042,6 @@
         });
 
     }
-    }
-
-    function removeByValue(arr, val) {
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] == val) {
-                arr.splice(i, 1);
-                break;
-            }
-        }
-    }
-
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function togglePlan(obj) {
         var id = $(obj).attr('id');
