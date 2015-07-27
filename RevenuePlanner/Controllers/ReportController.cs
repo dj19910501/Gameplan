@@ -2373,7 +2373,10 @@ namespace RevenuePlanner.Controllers
                     objCardSectionModel.CardSectionListModel = CardSectionListModel;
                     #endregion
 
-                    objReportModel.CardSectionModel = objCardSectionModel;
+                    //objReportModel.CardSectionModel = objCardSectionModel;
+                    TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+                    objReportModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString());
+                    objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
                 }
                 else
                 {
@@ -8645,7 +8648,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp")
             {
-                #region ViewBag for Back Button
+                #region TempData for Back Button
                 TempData["BackParentLabel"] = Common.RevenueCampaign;
                 TempData["BackChildLabel"] = "";
                 TempData["BackId"] = "";
@@ -8666,7 +8669,7 @@ namespace RevenuePlanner.Controllers
             }
 
             TempData["BackWithCustom"] = ParentLabel;
-
+            TempData["IsDispalyCustomFieldChildDDL"] = false;// For Campaign Child DDL Display Or Not
             string HeadHireachy = TempData["HeadHireachy"] as string;
             string BackParentHireachy = TempData["BackParentHireachy"] as string;
             string BackChildHireachy = TempData["BackChildHireachy"] as string;
@@ -8726,7 +8729,19 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
+                    {
                     TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
+                        {
+                            TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+                        }
+
+                    }
+                    else
+                    {
+                        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                    }
                 }
             }
             else
@@ -8742,12 +8757,12 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 1]);
+                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
                 }
             }
             else
             {
-                if (ParentLabel == Common.RevenueCampaign)
+                if (ParentLabel == Common.RevenueCampaign && !string.IsNullOrEmpty(marsterCustomField))
                 {
                     TempData["BackChildLabel"] = childlabelType;
                 }
@@ -8760,6 +8775,12 @@ namespace RevenuePlanner.Controllers
             if (BackIdArray.Count() > 1)
             {
                 TempData["BackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+
+                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
+                {
+                    TempData["IsDispalyCustomFieldChildDDL"] = true;
+                }
+
             }
             else
             {
@@ -8778,6 +8799,14 @@ namespace RevenuePlanner.Controllers
 
             if (IsBackClick)
             {
+                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+                {
+                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
+                    {
+                        TempData["IsDispalyCustomFieldChildDDL"] = true;
+                    }
+                }
+                marsterCustomField = string.Empty;
                 BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
@@ -8839,6 +8868,10 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     TempData["BackId"] = "0";
+                    if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+                    {
+                        TempData["IsDispalyCustomFieldChildDDL"] = true;
+                    }
                 }
 
                 if (HeadHireachyArray.Count() > 0)
@@ -9207,8 +9240,18 @@ namespace RevenuePlanner.Controllers
 
                 CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
-                objRevenueToPlanModel.CardSectionModel = objCardSectionModel;
-
+                //objRevenueToPlanModel.CardSectionModel = objCardSectionModel;
+                TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+                //string FilterParentLabel = ViewBag.ParentLabel;
+                //string FilterchildlabelType = ViewBag.childlabelType;
+                //string FilterchildId = ViewBag.childId;
+                //string Filteroption = ViewBag.option;
+                objRevenueToPlanModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString());
+                objRevenueToPlanModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
+                //ViewBag.ParentLabel = FilterParentLabel;
+                //ViewBag.childlabelType = FilterchildlabelType;
+                //ViewBag.childId = FilterchildId;
+                //ViewBag.option = Filteroption;
                 // End By Nishant Sheth
                 #region "Revenue Model Values"
 
@@ -10100,6 +10143,56 @@ namespace RevenuePlanner.Controllers
             }
             return objSubDataTableModel;
         }
+
+        public PartialViewResult SearchSortPaginataionRevenue(int PageNo = 0, int PageSize = 5, string SearchString = "", string SortBy = "", string ParentLabel = "", string childlabelType = "", string option = "")
+        {
+            ViewBag.ParentLabel = ParentLabel;
+            ViewBag.childlabelType = childlabelType;
+            ViewBag.option = option;
+            CardSectionModel cardModel = new CardSectionModel();
+            cardModel = RevenueCardSectionModelWithFilter(PageNo, PageSize, SearchString, SortBy);
+            //cardModel.TotalRecords = cardModel.TotalRecords;
+            return PartialView("_ReportCardSection", cardModel);
+        }
+        /// <summary>
+        /// Cretaed By Nishant Sheth
+        /// Desc: Get the limited data for card section with pagination, search, and sorting features on revenue.
+        /// </summary>
+        /// <param name="PageNo"></param>
+        /// <param name="PageSize"></param>
+        /// <param name="SearchString"></param>
+        /// <param name="SortBy"></param>
+        /// <returns></returns>
+        public CardSectionModel RevenueCardSectionModelWithFilter(int PageNo = 0, int PageSize = 5, string SearchString = "", string SortBy = "")
+        {
+            #region Declartion local variables
+
+            List<CardSectionListModel> objCardSectionList = (List<CardSectionListModel>)TempData["RevenueCardList"];
+            TempData["RevenueCardList"] = objCardSectionList;
+            CardSectionModel cardModel = new CardSectionModel();
+        #endregion
+            cardModel.TotalRecords = objCardSectionList.Count();
+            if (SortBy == Enums.SortByRevenue.Cost.ToString())
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.CostCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            else if (SortBy == Enums.SortByRevenue.ROI.ToString())
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.ROICardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            else
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+                //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            cardModel.CardSectionListModel = objCardSectionList;
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                cardModel.TotalRecords = objCardSectionList.Count();
+            }
+            cardModel.CuurentPageNum = PageNo;
+            return cardModel;
+        }
         #endregion
 
         #region "Conversion Report"
@@ -10444,7 +10537,10 @@ namespace RevenuePlanner.Controllers
             CardSectionListModel = GetConversionCardSectionList(tacticStageList, OverviewCardModelList, _cmpgnMappingList, timeFrameOption, IsQuarterly, Common.RevenueCampaign.ToString(), "", "", false, "", 0);
             //CardSectionListModel = GetConversionCardSectionDefaultData(tacticStageList, OverviewCardModelList, _cmpgnMappingList, timeFrameOption, IsQuarterly);
             objCardSectionModel.CardSectionListModel = CardSectionListModel;
-            objReportModel.CardSectionModel = objCardSectionModel;
+            //objReportModel.CardSectionModel = objCardSectionModel;
+            TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+            objReportModel.CardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());
+            objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
             #endregion
             objReportModel.ConversionToPlanModel = objConversionToPlanModel;
             return PartialView("_ReportConversion", objReportModel);
@@ -10920,7 +11016,7 @@ namespace RevenuePlanner.Controllers
         /// <param name= ParentLabel ,childlabelType , childId ,  option ,Quarterly, code> </param>
         /// <returns>Return json data of filtered combine chart and Conversiondatatable </returns>
         #region "Get combine chart and Conversiondatatable result based on filter -dashrath Prajapati"
-        public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp")
+        public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
@@ -10972,7 +11068,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp")
             {
-                #region ViewBag for Back Button
+                #region TempData for Back Button
                 TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
                 TempData["ConvBackChildLabel"] = "";
                 TempData["ConvBackId"] = "";
@@ -11007,7 +11103,7 @@ namespace RevenuePlanner.Controllers
 
             if (DrpChange != "CampaignDrp" || isDetails)
             {
-                HeadHireachy = HeadHireachy + "," + BackHeadTitle;
+                HeadHireachy = HeadHireachy + "," + HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(BackHeadTitle));
                 BackParentHireachy = BackParentHireachy + "," + ParentLabel;
                 BackChildHireachy = BackChildHireachy + "," + childlabelType;
             }
@@ -11053,7 +11149,18 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
+                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
+                    {
                     TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
+                        {
+                            TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+                        }
+                    }
+                    else
+                    {
+                        TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+                    }
                 }
             }
             else
@@ -11073,6 +11180,10 @@ namespace RevenuePlanner.Controllers
             if (BackIdArray.Count() > 1)
             {
                 TempData["ConvBackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
+                {
+                    TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
+                }
             }
             else
             {
@@ -11091,6 +11202,14 @@ namespace RevenuePlanner.Controllers
 
             if (IsBackClick)
             {
+                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+                {
+                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
+                    {
+                        TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
+                    }
+                }
+                marsterCustomField = string.Empty;
                 BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
@@ -11173,6 +11292,45 @@ namespace RevenuePlanner.Controllers
 
             #endregion
 
+            string customFieldOptionIdCardSection = string.Empty;
+            int customFieldIdCardSection = 0;
+            bool isTacticCustomFieldCardSection = false;
+            string customFieldTypeCardSection = string.Empty;
+            if (masterCustomFieldOptionId > 0)
+            {
+                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+                {
+                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                    List<int> campaignIds = new List<int>();
+                    campaignIds = TacticData.Select(p => p.TacticObj.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
+                }
+                else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
+                {
+                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                    List<int> programIds = new List<int>();
+                    programIds = TacticData.Select(p => p.TacticObj.PlanProgramId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticData = TacticData.Where(t => programIds.Contains(t.TacticObj.PlanProgramId)).ToList();
+                }
+                else if (marsterCustomField.Contains(Common.TacticCustomTitle))
+                {
+                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
+                    customFieldIdCardSection = mastercustomfieldIdInner;
+                    isTacticCustomFieldCardSection = true;
+                    customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == mastercustomfieldIdInner).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                    List<int> tacticIds = new List<int>();
+                    tacticIds = TacticData.Select(p => p.TacticObj.PlanTacticId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    customFieldOptionIdCardSection = customfiledvalue;
+                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticData = TacticData.Where(t => tacticIds.Contains(t.TacticObj.PlanTacticId)).ToList();
+                }
+            }
+
             try
             {
                 //PlanTacticIdsList
@@ -11215,12 +11373,12 @@ namespace RevenuePlanner.Controllers
 
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
 
-                        //_lstTactic = tacticlist.ToList();
+                        _lstTactic = tacticlist.ToList();
 
                         if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
                         {
@@ -11233,13 +11391,13 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueProgram))
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
 
                         _lstTactic = tacticlist.ToList();
-                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                        //if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
                         {
                             _lstTactic = _lstTactic.Where(t => t.PlanProgramId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanProgramId))
                                 .ToList();
@@ -11249,7 +11407,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (childlabelType.Contains(Common.RevenueCampaign))
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueProgram;
                         }
@@ -11266,7 +11424,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
                         {
                             ViewBag.ConvchildlabelType = Common.RevenueCampaign;
                         }
@@ -11508,9 +11666,12 @@ namespace RevenuePlanner.Controllers
                 OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
 
 
-                CardSectionListModel = GetConversionCardSectionList(_tacticdata, OverviewModelList, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), Common.RevenueCampaign.ToString(), "", "", false, "", 0);
+                CardSectionListModel = GetConversionCardSectionList(_tacticdata, OverviewModelList, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, "", "", false, "", 0);
                 //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+                objCardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());
+                objCardSectionModel.TotalRecords = CardSectionListModel.Count();
                 TempData["ConversionCard"] = objCardSectionModel;
 
                 // End By Nishant Sheth
@@ -11666,6 +11827,62 @@ namespace RevenuePlanner.Controllers
             return PartialView("_ConversionToPlan", objReportModel.ConversionToPlanModel);
         }
         #endregion
+
+        /// <summary>
+        /// Cretaed By Nishant Sheth
+        /// Desc: Get the limited data for card section with pagination, search, and sorting features on Converstion.
+        /// </summary>
+        /// <param name="PageNo"></param>
+        /// <param name="PageSize"></param>
+        /// <param name="SearchString"></param>
+        /// <param name="SortBy"></param>
+        /// <returns></returns>
+        /// 
+        public PartialViewResult SearchSortPaginataionConverstion(int PageNo = 0, int PageSize = 5, string SearchString = "", string SortBy = "", string ParentLabel = "", string childlabelType = "", string option = "")
+        {
+            ViewBag.ConvParentLabel = ParentLabel;
+            ViewBag.ConvchildlabelType = childlabelType;
+            ViewBag.Convoption = option;
+            CardSectionModel cardModel = new CardSectionModel();
+            cardModel = ConverstionCardSectionModelWithFilter(PageNo, PageSize, SearchString, SortBy);
+            //cardModel.TotalRecords = cardModel.TotalRecords;
+            return PartialView("_ConversionCardSection", cardModel);
+        }
+        public CardSectionModel ConverstionCardSectionModelWithFilter(int PageNo = 0, int PageSize = 5, string SearchString = "", string SortBy = "")
+        {
+            #region Declartion local variables
+
+            List<CardSectionListModel> objCardSectionList = (List<CardSectionListModel>)TempData["ConverstionCardList"];
+            TempData["ConverstionCardList"] = objCardSectionList;
+            CardSectionModel cardModel = new CardSectionModel();
+        #endregion
+            cardModel.TotalRecords = objCardSectionList.Count();
+            if (SortBy == Enums.SortByWaterFall.ADS.ToString())
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.ADSCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            else if (SortBy == Enums.SortByWaterFall.CW.ToString())
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.CWCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            else if ((SortBy == Enums.SortByWaterFall.MQL.ToString()))
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.TQLCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+                //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            else
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.INQCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+                //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            cardModel.CardSectionListModel = objCardSectionList;
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                cardModel.TotalRecords = objCardSectionList.Count();
+            }
+            cardModel.CuurentPageNum = PageNo;
+            return cardModel;
+        }
         #endregion
         public List<CardSectionListModel> GetConversionCardSectionList(List<TacticStageValue> _TacticData, List<TacticwiseOverviewModel> _objTacticWiseModel, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", string childlabelType = "", string childId = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0)
         {
@@ -11772,7 +11989,7 @@ namespace RevenuePlanner.Controllers
                     objCardSection = new CardSectionListModel();
 
                     #region "Add Static Values to Model"
-                    objCardSection.title = strParentTitle;      // Set ParentTitle Ex. (Campaign1) 
+                    objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
                   
                     objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
@@ -12062,7 +12279,8 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
+                        objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString(); // Change By Nishat Sheth
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;

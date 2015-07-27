@@ -17,15 +17,15 @@
 
 }
 <div class="revenue-to-plan-graph">
-            <div id="dvRevenuePlanBarChart" class="graph" style="height: 100%; padding-left: 0%; width:99%;"></div>
-            <div class="graph-table">
-                <div class="table-responsive">
-                    <table class="graph-table">
+    <div id="dvRevenuePlanBarChart" class="graph" style="height: 100%; padding-left: 0%; width:99%;"></div>
+    <div class="graph-table">
+        <div class="table-responsive">
+            <table class="graph-table">
                 <tbody id="RevenueToPlanDataTable"></tbody>
-                    </table>
-                </div>
-            </div>
+            </table>
         </div>
+    </div>
+</div>
 <script type="text/javascript">
     var BackParentLabel = '';
     var BackChildLabel = '';
@@ -33,8 +33,8 @@
     var IsBack = '';
     var BackHeadTitle = "";
 
-    $(document).ready(function(){
-        // Start:- Revenue To Plan Combination script 
+    $(document).ready(function () {
+        // Start:- Revenue To Plan Combination script
         BackParentLabel = '@TempData["BackParentLabel"]';
         BackChildLabel = '@TempData["BackChildLabel"]';
         BackId = '@TempData["BackId"]';
@@ -45,27 +45,27 @@
         var barchartDivId = "#dvRevenuePlanBarChart";
         //End: Get BarChart Model
 
-    //Start: Get LineChart Model
-    var _linechartdata = "@revenue_linechartModel";
-    var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
-    _LineChartdata = JSON.parse(_LineChartdata);
-    //End: Get LineChart Model
+        //Start: Get LineChart Model
+        var _linechartdata = "@revenue_linechartModel";
+        var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
+        _LineChartdata = JSON.parse(_LineChartdata);
+        //End: Get LineChart Model
         //PL #1437 - dashrath
-    var _dataTooltip = '@revenue_datatableModel';
-    var _DatatTooltip = (_dataTooltip.toString().replace(/&quot;/g, '"'));
-    _DatatTooltip = JSON.parse(_DatatTooltip);
+        var _dataTooltip = '@revenue_datatableModel';
+        var _DatatTooltip = (_dataTooltip.toString().replace(/&quot;/g, '"'));
+        _DatatTooltip = JSON.parse(_DatatTooltip);
         //up to here
 
         //BindRevenueBarChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId);
-    BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth, _DatatTooltip.ActualList);
-    // End:- Revenue To Plan BarChart script  
+        BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth, _DatatTooltip.ActualList);
+        // End:- Revenue To Plan BarChart script
 
-    // Start:- Revenue To Plan DataTable script  
-    BindRevenueToPlanDataTable();
-    formatDataTableValues();
-    formatPercentageValue();
-    formatROIValue();
-    // End:- Revenue To Plan DataTable script  
+        // Start:- Revenue To Plan DataTable script
+        BindRevenueToPlanDataTable();
+        formatDataTableValues();
+        formatPercentageValue();
+        formatROIValue();
+        // End:- Revenue To Plan DataTable script
 
         // Nishant
         var iscard = '@IsCard';
@@ -78,6 +78,7 @@
             else {
                 HeadTitle.innerHTML = '@Convert.ToString(TempData["HeadTitle"])';
             }
+            $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
 
             if ('@Convert.ToString(TempData["HeadTitle"])' == 'Marketing Revenue') {
                 var marketingDiv = document.getElementById('div-mareketing-drp');
@@ -85,6 +86,10 @@
 
                 var BtnBack = document.getElementById('BtnBack');
                 BtnBack.style.display = "none";
+                if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') > -1 || marsterCustomField.indexOf('@Common.ProgramCustomTitle') > -1) {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                }
             }
 
 
@@ -266,17 +271,27 @@
     }
     // Add By Nishant Sheth
     function BtnBackClick() {
-        
+
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         var InnerBackchildLabel = BackChildLabel;
-        if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
+        @*if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
             if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 InnerBackchildLabel = '@RevenuePlanner.Helpers.Common.RevenueCampaign';
             }
-        }
-        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&IsBackClick=" + true;
+        }*@
+        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
         $("#dvRevenueToPlan").load(_url);
+
+        tempRevenueHeader.splice(tempRevenueHeader.length - 1, 1); // Remove last value from Temep Header global variable.
+        var _headerValue = tempRevenueHeader[tempRevenueHeader.length - 1]; // Get last value from global variable.
+
+        var _revActualProj = _headerValue.ActualProjected;
+        var _revGoal = _headerValue.Goal;
+        var _revPercentage = _headerValue.Percentage;
+        var _isNegativePercntg = _headerValue.IsNegative;
+
+        formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
 
         if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '') {
             $("#ddlCampaignRevenueToPlan").css('display', 'none');
@@ -310,14 +325,20 @@
         }
         else if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
             if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
-                $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
+                $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 // $("#ddlProgramRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
 
                 //  $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
-                fillCardCampaignDropDown(BackId, '');
+                //fillCardCampaignDropDown(BackId, '');
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                } else {
+                    fillCardProgramDropDown(BackId, BackChildLabel); // Change By Nishant Sheth
+                }
             }
             else if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
@@ -327,22 +348,49 @@
 
                 //   $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
-                fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                } else {
+                    fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+                }
+            }
+            else if (BackChildLabel == '' && BackId > 0) {
+                $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', '');
+
+                //     $("#ddlProgramRevenueToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
+
+                //   $("#ddlTacticRevenueToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
+                //fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                } else {
+                    fillCardCampaignDropDown(BackId, ''); // Change BY Nishant Sheth
+                }
             }
             else {
                 $("#CampaignChildDDL").css('display', 'none');
                 $("#CustomFieldChildDDL").css('display', '')
             }
-    }
-    else if (marsterCustomField.indexOf('@Common.ProgramCustomTitle') >= 0) {
-            if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+        }
+        else if (marsterCustomField.indexOf('@Common.ProgramCustomTitle') >= 0) {
+            if (BackChildLabel == '' && BackId > 0) {
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
 
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
-                fillCardProgramDropDown(BackId, BackChildLabel);
+                if ('@Convert.ToBoolean(TempData["IsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', '');
+                }
+                else {
+                    fillCardProgramDropDown(BackId, BackChildLabel);
+                }
             }
             else {
                 $("#CampaignChildDDL").css('display', 'none');
@@ -356,7 +404,7 @@
             //  $("#ddlProgramRevenueToPlan").css('display', 'none');
             //   $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
             $("#CampaignChildDDL").css('display', 'none');
-            $("#CustomFieldChildDDL").css('display', '')
+            $("#CustomFieldChildDDL").css('display', '');
             //  $("#ddlTacticRevenueToPlan").css('display', '');
             //    $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
             //    fillCardTacticDropDown(id, "");

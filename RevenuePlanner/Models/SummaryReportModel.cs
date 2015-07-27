@@ -366,6 +366,8 @@ namespace RevenuePlanner.Models
     public class CardSectionModel
     {
         public List<CardSectionListModel> CardSectionListModel { get; set; }
+        public int TotalRecords { get; set; } // Add By Nishant Sheth
+        public int CuurentPageNum { get; set; }// Add By Nishant Sheth
     }
     public class CardSectionListModel
     {

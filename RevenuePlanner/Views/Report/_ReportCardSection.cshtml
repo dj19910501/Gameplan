@@ -4,51 +4,67 @@
 @using Newtonsoft.Json;
 @{
     var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
+
+    // Add By Nishant Sheth For pagination dropdwon with Enums
+    List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
+    foreach (var PerPage in Enums.PerPageSize)
+    {
+        ListPageSize.Add(new RevenuePlanner.Models.ViewByModel { Text = PerPage.Value, Value = PerPage.Value });
+    }
+
+    List<RevenuePlanner.Models.ViewByModel> ListSortBy = new List<RevenuePlanner.Models.ViewByModel>();
+    foreach (var SortBy in Enums.SortByRevenueDrp)
+    {
+        ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
+    }
+    var TotalRecords = Model.TotalRecords;
+    var CurrentPageNum = Model.CuurentPageNum;
+    // End By Nishant Sheth
 }
 <style>
     .carvdval-block {
         display: block;
     }
 </style>
-<div id="dvCardSectionData"></div>
-
-@*<div class="region-content">
-        <div id="conversionPartial">
-            <div class="report-btn-group">
-                <div>
-                    <p class="revanue-p">North America</p>
-                    <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>
-                    <a id="" class="btn  source-sans-proregular report-grey-btn hideReport" name=""><span>
-                        <img src="/Content/images/export.png"></span>Export</a>
-                </div>
-                <div>
-                    <p class="revanue-p-right">
-                        <input type="checkbox" /><label> Add to Compare</label>
-                    </p>
-                    <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="">Add Widget</button>
-                </div>
-            </div>
-            <div class="region-data">
-                <div class="data">
-                    <span class="title">Revenue</span>
-                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                    <span class="data-green">+11.8% </span>
-                </div>
-                <div class="data">
-                    <span class="title">Revenue</span>
-                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                    <span class="data-green">+11.8% </span>
-                </div>
-                <div class="data">
-                    <span class="title">Revenue</span>
-                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                    <span class="data-green">+11.8% </span>
-                </div>
-                <div id="dvNorthAmericaGraph1" class="region-graph">
-                </div>
+<div class="revenue-filter">
+    <div class="sorting">
+        <div class="geography-dropdown">
+            <h5>Sort By</h5>
+            <div class="select-sortby">
+                @Html.DropDownList("ddlSortby", new SelectList(ListSortBy.ToList(), "Value", "Text"), new { onchange = "javascript:SortByFunction();" })
             </div>
         </div>
-    </div>*@
+        <div class="geography-dropdown">
+            <h5>Items Per Page</h5>
+            <div class="select-item">
+                @Html.DropDownList("Itemsperpage", new SelectList(ListPageSize.ToList(), "Value", "Text"), new { onchange = "javascript:ItemsPerPagefunction();" })
+            </div>
+        </div>
+
+    </div>
+    <div class="paging" id="page_navigation">
+        @*<ul>
+                <li><a href="#">«</a></li>
+                <li class="active"><a>1</a></li>
+                <li><a href="#">2</a></li>
+                <li><a href="#">3</a></li>
+                <li><a href="#">4</a></li>
+                <li><a href="#">5</a></li>
+                <li><a href="#">6</a></li>
+                <li><a href="#">...</a></li>
+                <li>»</li>
+            </ul>*@
+    </div>
+    <input type='hidden' id='current_page' />
+    <input type='hidden' id='show_per_page' />
+    <div class="search">
+        <input id="txtSearch" />
+
+        <button class="search-btn" onclick="SearchByTitle($('#txtSearch').val())" id="btnSearch">search</button>
+    </div>
+</div>
+<div id="dvCardSectionData"></div>
+
 <script type="text/javascript">
 
     //var BackParentLabel = '';
@@ -61,6 +77,13 @@
     var listid = [];
     var SearchVal = [];
     var number_of_pages;
+    var ParentLabel = '@ViewBag.ParentLabel';
+    var childlabelType = '@ViewBag.childlabelType';
+    //var childId = '@ViewBag.childId';
+    var optionmain = '@ViewBag.option';
+    $(window).bind("load", function () {
+        //alert('Nishantr');
+    });
     $(document).ready(function () {
 
         @*BackParentLabel = '@TempData["BackParentLabel"]';
@@ -78,13 +101,10 @@
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
         var _Revact_projId = '', _RevgoalId = '', _RevPercntgId = '', _Costact_projId = '', _CostgoalId = '', _CostPercntgId = '', _ROIact_projId = '', _ROIgoalId = '', _ROIPercntgId = '';
         var _btnDetailsId = '', _btnCompareId = '', _chkCompareId = '', _linechartDivId = '';
-
+        var _revIsNegative = '';
         // Add BY Nishant Sheth
         // Desc: For Card Section details button click argument
-        var ParentLabel = '@ViewBag.ParentLabel';
-        var childlabelType = '@ViewBag.childlabelType';
-        //var childId = '@ViewBag.childId';
-        var optionmain = '@ViewBag.option';
+
         var divid = 1;// add by nishant sheth for give div id
         // End By Nishant Sheth
 
@@ -101,6 +121,7 @@
             _Revact_proj = _Revdata.Actual_Projected;
             _Revgoal = _Revdata.Goal;
             _Revpercentange = _Revdata.Percentage;
+            _revIsNegative = _Revdata.IsNegative;
 
             _Costact_proj = _Costdata.Actual_Projected;
             _Costgoal = _Costdata.Goal;
@@ -132,16 +153,59 @@
             _ROIPercntgId = roi + percntg + "_" + _fieldId;
 
             //alert("key: " + key + ", Value: " + value.title);
+
+            // Add BY Nishant Sheth
+            //Calculate Dynamic Width in pixel For Chart Div
+            var _tempCard = '';
+            _tempCard = _tempCard + '<div class="region-content">';
+            _tempCard = _tempCard + '<div>';
+            _tempCard = _tempCard + '<div class="report-btn-group">';
+            _tempCard = _tempCard + '</div>';
+            _tempCard = _tempCard + '<div class="region-data">';
+
+            _tempCard = _tempCard + '<div class="data" id="tempdivdata" style="width:10%;">';
+            _tempCard = _tempCard + '<span class="title">Revenue</span>';
+            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
+            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
+            _tempCard = _tempCard + '</div>';
+
+            _tempCard = _tempCard + '<div class="data">';
+            _tempCard = _tempCard + '<span class="title">Cost</span>';
+            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
+            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
+            _tempCard = _tempCard + '</div>';
+
+            _tempCard = _tempCard + '<div class="data">';
+            _tempCard = _tempCard + '<span class="title">ROI</span>';
+            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
+            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
+            _tempCard = _tempCard + '</div>';
+
+            _tempCard = _tempCard + '<div id="tempdivchart" style="height:100%; width:44%;float:left;" >';
+            _tempCard = _tempCard + '</div>';
+            _tempCard = _tempCard + '</div>';
+            _tempCard = _tempCard + '</div>';
+            _tempCard = _tempCard + '</div>';
+            $("#dvCardSectionData").html(_tempCard);
+            var tempdivchartwidth = $("#tempdivchart").width();
+            var tempdivdatawidth = $("#tempdivdata").width();
+            $("#dvCardSectionData").html('');
+            //alert(tempdivwidth);
+            //End By Nishant Sheth
+            var _titleSub = '';
+            if (_title.length > 41) {
+                _titleSub = '...';
+            }
             _cardhtml = _cardhtml + '<div class="region-content" revenueval="' + _Revact_proj + '" costval="' + _Costact_proj + '" roival="' + _ROIact_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
             _cardhtml = _cardhtml + '<div>';
             _cardhtml = _cardhtml + '<div class="report-btn-group">';
             _cardhtml = _cardhtml + '<div>';
-            _cardhtml = _cardhtml + '<p class="revanue-p">' + _title + '</p>';
+            _cardhtml = _cardhtml + '<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>';
             $("#titletext").val(_title).html();
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
 
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Revact_proj) + '","' + String(_Revgoal) + '","' + String(_Revpercentange) + '","' + String(_revIsNegative) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -154,25 +218,30 @@
 
             _cardhtml = _cardhtml + '<div class="region-data">';
 
-            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<div class="data" style="width:' + tempdivdatawidth + 'px">';
+            //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Revenue</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<div class="data" style="width:' + tempdivdatawidth + 'px">';
+            //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Cost</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<div class="data" style="width:' + tempdivdatawidth + 'px">';
+            //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">ROI</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardvalroi carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
             _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:200px;">';
+
+            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:' + tempdivchartwidth + 'px;float:left;">';
+            //_cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:419px;float:left;">';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '</div>';
@@ -184,26 +253,15 @@
 
         formatCardSectionValues();
         formatCardPercentageValue();
-        formatCardSectionROIValues();
         formatSetsubValues();
-        
-        //LoadPagination();
-
-        var a = $('#dvCardSectionData').children();
-
-        $(a).each(function (index, element) {
-            var _revenueval = $(this).attr("revenueval");
-            var _costval = $(this).attr("costval");
-            var _roival = $(this).attr("roival");
-            var _id = $(this).attr("id");
-            var _divhtml = $(this)[0].outerHTML;
-            var _title = $(this).attr("title");
-
-            SearchVal.push({ revenueval: _revenueval, costval: _costval, roival: _roival, id: _id, divhtml: _divhtml, title: _title.toString().toLowerCase() });
-        });
-
-        SortCardSection($("#ddlSortby :selected").val());
         loadlineChart(list, listid);
+        $("#ddlSortby,#Itemsperpage").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+    });
+        LoadPagination();
+
     });
 
     function loadlineChart(_chartdata, chartId) {
@@ -230,56 +288,18 @@
             var text = $(_Id).attr('orig-val');
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
+                if (_Id.indexOf("ROI") > 0) {
                 _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
-                //alert(_formatednumber);
-                //alert(_formatednumber);
-                //var _value = '';
-                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
-                //    //$(_Id).html( _formatednumber);
-                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
-                //        _value = '/' + _formatednumber.toString();
-                //    }
-                //}
-                //else {
-                //    _value = _formatednumber;
-                //}
-                //alert(_value);
-                //var _value = '/' + _formatednumber;
+                }
+                else {
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                }
 
                 $(_Id).html(_formatednumber);
             }
             var value = $(_Id).text();
             $(_Id).html("/" + value);
 
-        });
-    }
-
-    function formatCardSectionROIValues() {
-
-        var _TypeCol = $(".cardvalroi");
-        var _formatednumber = '';
-        var _type = '';
-        $.each(_TypeCol, function (key, _cntrl) {
-            var _cntrlId = $(_cntrl).attr('id');
-            var _Id = "#" + _cntrlId;
-            var text = $(_Id).attr('orig-val');
-            //_type = $(_Id).attr('add-sep');
-            if (text != null && text != 'undefined' && text != 'NaN') {
-                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
-                //alert(_formatednumber);
-                //var _value = '';
-                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
-                //    //$(_Id).html( _formatednumber);
-                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
-                //        _value = '/' + _formatednumber.toString();
-                //    }
-                //}
-                //else {
-                //    _value = _formatednumber;
-                //}
-                //alert(_value);
-                $(_Id).html(_formatednumber);
-            }
         });
     }
 
@@ -294,19 +314,12 @@
             var text = $(_Id).attr('orig-val');
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
+                if (_Id.indexOf("ROI") > 0) {
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                }
+                else {
                 _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
-                //alert(_formatednumber);
-                //var _value = '';
-                //if (_type != null && _type != '' && _type != 'undefined' && _type == 'true') {
-                //    //$(_Id).html( _formatednumber);
-                //    if (_formatednumber != '' && _formatednumber != 'undefined') {
-                //        _value = '/' + _formatednumber.toString();
-                //    }
-                //}
-                //else {
-                //    _value = _formatednumber;
-                //}
-                //alert(_value);
+                }
                 $(_Id).html(_formatednumber);
             }
         });
@@ -341,7 +354,7 @@
 
     /// Add By Nishant Sheth
     /// Desc: For card details section
-    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval) {
+    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActualProj, _revGoal, _revPercentage, _isNegativePercntg) {
        
 
         var BtnBack = document.getElementById('BtnBack');
@@ -350,12 +363,23 @@
         var marketingDiv = document.getElementById('div-mareketing-drp');
         marketingDiv.style.display = "none";
 
+        var _pushValue = {
+            ActualProjected: _revActualProj.toString(),
+            Goal: _revGoal.toString(),
+            Percentage: _revPercentage.toString(),
+            IsNegative: _isNegativePercntg.toString().toLowerCase()
+        }
+        tempRevenueHeader.push(_pushValue); // Push Card Values to Temp global variable declare at _Revenue.cshtml page. This global variable use when user click on Back button.
        
 
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
+        myApp.showPleaseWait();
+
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvRevenueToPlan").load(_url);
+        myApp.hidePleaseWait();
+        formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
        
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
@@ -383,6 +407,8 @@
         }
         else if (masterlabel == '@Common.CampaignCustomTitle') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 // $("#ddlProgramRevenueToPlan").css('display', 'block');
@@ -393,6 +419,8 @@
                 fillCardProgramDropDown(id, Type);
             }
             else if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 //     $("#ddlProgramRevenueToPlan").css('display', 'none');
@@ -415,6 +443,8 @@
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
            if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
                 //     $("#ddlProgramRevenueToPlan").css('display', 'none');
@@ -474,6 +504,12 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlCampaignRevenueToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
                 });
+                if (parseInt(id) == 0) {
+
+                    $('#ddlCampaignRevenueToPlan').val('0');
+                }
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
                 fillCardProgramDropDown("0", type);
                 $('#ddlCampaignRevenueToPlan').multiselect("refresh");
             },
@@ -513,6 +549,8 @@
                 $.each(data, function (index, optionData) {
                     $("#ddlProgramRevenueToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
                 });
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
                 fillCardTacticDropDown(campaignId, type);
                 $('#ddlProgramRevenueToPlan').multiselect("refresh");
             },
@@ -580,7 +618,8 @@
         //how much items per page to show
         var show_per_page = $('#Itemsperpage :selected').text();
         //getting the amount of elements inside content div
-        var number_of_items = $('#dvCardSectionData').children().size();
+        //var number_of_items = $('#dvCardSectionData').children().size();
+        var number_of_items = '@TotalRecords';
         //calculate the number of pages we are going to have
         number_of_pages = Math.ceil(number_of_items / show_per_page);
 
@@ -601,7 +640,7 @@
         $('#page_navigation').html(navigation_html);
 
         //add active_page class to the first page link
-        $('#page_navigation .page_link:first').addClass('active');
+        // $('#page_navigation .page_link:first').addClass('active');
 
         for (var i = 0; i <= number_of_pages; i++) {
             $('.page_link[longdesc=' + i + ']').css('display', 'none');
@@ -610,19 +649,23 @@
             $('.page_link[longdesc=' + j + ']').css('display', 'block');
         }
 
+        $('.page_link[longdesc=' + '@CurrentPageNum' + ']').addClass('active').siblings('.active').removeClass('active');
         //hide all the elements inside content div
-        $('#dvCardSectionData').children().css('display', 'none');
+        //$('#dvCardSectionData').children().css('display', 'none');
 
-        //and show the first n (show_per_page) elements
-        $('#dvCardSectionData').children().slice(0, show_per_page).css('display', 'block');
+        ////and show the first n (show_per_page) elements
+        //$('#dvCardSectionData').children().slice(0, show_per_page).css('display', 'block');
+
 
     }
 
     function previous() {
-
-        var pageNumber = parseInt($('#current_page').val());
-
-        new_page = parseInt($('#current_page').val()) - 1;
+        
+        //alert('Previous');
+        //var pageNumber = parseInt($('#current_page').val());
+        var pageNumber = '@CurrentPageNum';
+        //new_page = parseInt($('#current_page').val()) - 1;
+        new_page = parseInt(pageNumber) - 1;
         //if there is an item before the current active link run the function
         if ($('.active').prev('.page_link').length == true) {
             if (number_of_pages >= 6 && (pageNumber) < number_of_pages && ((pageNumber) / 6) % 1 === 0) {
@@ -635,9 +678,12 @@
     }
 
     function next() {
-
-        var pageNumber = parseInt($('#current_page').val());
-        new_page = parseInt($('#current_page').val()) + 1;
+        //alert('Next');
+        
+        //var pageNumber = parseInt($('#current_page').val());
+        var pageNumber = '@CurrentPageNum';
+        //new_page = parseInt($('#current_page').val()) + 1;
+        new_page = parseInt(pageNumber) + 1;
         //if there is an item after the current active link run the function
         if ($('.active').next('.page_link').length == true) {
             if (number_of_pages >= 6 && (pageNumber + 1) < number_of_pages && ((pageNumber + 1) / 6) % 1 === 0) {
@@ -660,7 +706,7 @@
         end_on = start_from + show_per_page;
 
         //hide all children elements of content div, get specific items and show them
-        $('#dvCardSectionData').children().css('display', 'none').slice(start_from, end_on).css('display', 'block');
+        //$('#dvCardSectionData').children().css('display', 'none').slice(start_from, end_on).css('display', 'block');
 
         /*get the page link that has longdesc attribute of the current page and add active_page class to it
         and remove that class from previously active page link*/
@@ -668,12 +714,28 @@
 
         //update the current page input field
         $('#current_page').val(page_num);
+
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        //myApp.showPleaseWait();
+        var SearchString = $('#txtSearch').val();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+
+        //myApp.hidePleaseWait();
+        //LoadPagination();
     }
 
-    $("#Itemsperpage").change(function () {
-        LoadPagination();
-    });
-
+    function ItemsPerPagefunction() {
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        //myApp.showPleaseWait();
+        var SearchString = $('#txtSearch').val();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+        //myApp.hidePleaseWait();
+        //LoadPagination();
+    }
     function PrevNextMorePage(pageNumber, button) {
 
         var nxtnum = 0;
@@ -766,7 +828,7 @@
         var divCardSection = $("#dvCardSectionData");
         divCardSection.html('');
         divCardSection.html(cardhtml);
-        LoadPagination();
+        //LoadPagination();
 
     }
     function SortByCard(name) {
@@ -779,53 +841,38 @@
         $("#dvCardSectionData").html(numericallyOrderedDivs);
     }
 
-    $("#ddlSortby").change(function () {
-        SortCardSection($("#ddlSortby :selected").val());
-    });
-
+    function SortByFunction() {
+        //SortCardSection($("#ddlSortby :selected").val());
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        //alert(sortBy);
+        //myApp.showPleaseWait();
+        var SearchString = $('#txtSearch').val();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+        //myApp.hidePleaseWait();
+        //LoadPagination();
+    }
     function SearchByTitle(TitleVal) {
 
-        var searcharray = [];
-        $(SearchVal).each(function (index, element) {
-
-            var searchstring = this.title;
-            if (searchstring != undefined && searchstring != 'undefined' && searchstring != null && searchstring != '') {
-                if (searchstring.indexOf(TitleVal.toLowerCase().trim()) > -1) {
-                    searcharray.push(this);
-                }
-            }
-        });
-        //var result = _.contains(arrayval, TitleVal);
-        var cardhtml = "";
-        $(searcharray).each(function () {
-
-            var CardString = this.divhtml;
-            cardhtml += CardString;
-        });
-        var divCardSection = $("#dvCardSectionData");
-        divCardSection.html('');
-
-        if (cardhtml != null && cardhtml != '') {
-            divCardSection.html(cardhtml);
-            $("#divCardNoRecord").attr("style", "display:none");
-            $("#page_navigation").attr("style", "display:block");
-        }
-        else {
-            // add BY Nishant Sheth for No Record found div : 06-July-2015
-            cardhtml += '<div class="region-content" style="display: block;" id="divCardNoRecord"><div><div class="report-btn-group"><div><p class="revanue">No records found</p></div><div> </div></div></div></div>';
-            // End By Nishant sheth
-            divCardSection.html(cardhtml);
-            $("#page_navigation").attr("style", "display:none");
-        }
-        SortCardSection($("#ddlSortby :selected").val());
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        var SearchString = $('#txtSearch').val();
+        //myApp.showPleaseWait();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+        //myApp.hidePleaseWait();
 
     }
-    $('#txtSearch').keypress(function (e) {
-        if (e.keyCode == 13) {
-            //$("#btnSearch").focus();
-            $("#btnSearch").click();
-        }
-    });
+    //$('#txtSearch').keypress(function (e) {
+    //    //alert('txtSearchKey');
+    //    if (e.keyCode == 13) {
+    //        //$("#btnSearch").focus();
+    //        var SearchString = $('#txtSearch').val();
+    //        SearchByTitle(SearchString);
+
+    //    }
+    //});
     /// End By Nishant Sheth
 
 </script>

@@ -9,19 +9,19 @@
     //var revenue_barchartModel = Model.RevenueToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanBarChartModel) : string.Empty;
     //var revenue_datatableModel = Model.RevenueToPlanDataModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanDataModel) : string.Empty;
 
-    // Add By Nishant Sheth For pagination dropdwon with Enums
-    List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
-    foreach (var PerPage in Enums.PerPageSize)
-    {
-        ListPageSize.Add(new RevenuePlanner.Models.ViewByModel { Text = PerPage.Value, Value = PerPage.Value });
-    }
+    //// Add By Nishant Sheth For pagination dropdwon with Enums
+    //List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
+    //foreach (var PerPage in Enums.PerPageSize)
+    //{
+    //    ListPageSize.Add(new RevenuePlanner.Models.ViewByModel { Text = PerPage.Value, Value = PerPage.Value });
+    //}
 
-    List<RevenuePlanner.Models.ViewByModel> ListSortBy = new List<RevenuePlanner.Models.ViewByModel>();
-    foreach (var SortBy in Enums.SortByRevenueDrp)
-    {
-        ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
-    }
-    // End By Nishant Sheth
+    //List<RevenuePlanner.Models.ViewByModel> ListSortBy = new List<RevenuePlanner.Models.ViewByModel>();
+    //foreach (var SortBy in Enums.SortByRevenueDrp)
+    //{
+    //    ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
+    //}
+    //// End By Nishant Sheth
 }
 <style type="text/css">
     .redLabel {
@@ -40,7 +40,7 @@
 
     <div class="marketing-revenue-report">
         <div class="dropdown-marketing">
-            <h2 id="head-title"></h2>
+            <h2 id="head-title" class="ellipsis-block"></h2>
             <div class="geography-dropdown" id="div-mareketing-drp">
                 <h5>View By:</h5>
                 <div class="revenue-summary-custom">
@@ -95,61 +95,24 @@
             @Html.Partial("_RevenueToPlan", revenue_to_planModel)
         </div>
     </div>
-    @*<div class="total-revenue">
-            <div class="total-revenue-title">
-                <h5>Total Revenue</h5>
-            </div>
-            <div class="toal-revenue-graph">
-                <div id="RevenueLineChart" style="height: 100%;">
-                </div>
-            </div>
-        </div>*@
-    <div class="revenue-filter">
+
+    @*<div class="revenue-filter">
         <div class="sorting">
             <div class="geography-dropdown">
                 <h5>Sort By</h5>
                 <div class="select-sortby">
                     @Html.DropDownList("ddlSortby", new SelectList(ListSortBy.ToList(), "Value", "Text"))
-                    @*<select name="custmDDL_Revenue" id="ddlSortby" class="ddlStyleReport hide" style="display: block;width:85px;">
-                            <option value="revenueval">Revenue</option>
-                            <option value="costval">Cost</option>
-                            <option value="roival">ROI</option>
-                        </select>*@
-                    @*<button id="btnMultiselect_custmDDL_Revenue" type="button" class="ui-multiselect ui-widget ui-state-default ui-corner-all" aria-haspopup="true" title="Audience"><span>revenue</span><span class="ui-icon ui-icon-triangle-1-s"></span></button>*@
                 </div>
             </div>
             <div class="geography-dropdown">
                 <h5>Items Per Page</h5>
                 <div class="select-item">
                     @Html.DropDownList("Itemsperpage", new SelectList(ListPageSize.ToList(), "Value", "Text"))
-                    @*<select name="Itemsperpage" id="Itemsperpage" class="ddlStyleReport hide" style="display: block;width:40px;">
-                            <option value="5">5</option>
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>*@
-                    @*<select name="custmDDL_Revenue" id="custmDDL_Revenue" class="revCustomFieldDDL" chartdivid="dvtable-sparkline_Revenue" style="display: none;">
-                            <option value="TacticCustom71">5</option>
-                        </select>*@
-                    @*<button id="btnMultiselect_custmDDL_Revenue" type="button" class="ui-multiselect ui-widget ui-state-default ui-corner-all" aria-haspopup="true" title="Audience"><span>1</span><span class="ui-icon ui-icon-triangle-1-s"></span></button>*@
                 </div>
             </div>
 
         </div>
         <div class="paging" id="page_navigation">
-            @*<ul>
-                    <li><a href="#">«</a></li>
-                    <li class="active"><a>1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">6</a></li>
-                    <li><a href="#">...</a></li>
-                    <li>»</li>
-                </ul>*@
         </div>
         <input type='hidden' id='current_page' />
         <input type='hidden' id='show_per_page' />
@@ -159,153 +122,19 @@
             <button class="search-btn" onclick="SearchByTitle($('#txtSearch').val())" id="btnSearch">search</button>
         </div>
 
-    </div>
+        </div>*@
     <div id="dvRevenueCardSection">
         @Html.Partial("_ReportCardSection", revenue_cardsectionModel)
     </div>
-    @*<div class="region-content">
-            <div id="conversionPartial">
-                <div class="report-btn-group">
-                    <div>
-                        <p class="revanue-p">North America</p>
-                        <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>
-                        <a id="" class="btn  source-sans-proregular report-grey-btn hideReport" name=""><span>
-                            <img src="/Content/images/export.png"></span>Export</a>
-                    </div>
-                    <div>
-                        <p class="revanue-p-right">
-                            <input type="checkbox" /><label> Add to Compare</label>
-                        </p>
-                        <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="">Add Widget</button>
-                    </div>
-                </div>
-                <div class="region-data">
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
 
-                    <div id="dvNorthAmericaGraph1" class="region-graph">
-                    </div>
-
-                </div>
-            </div>
-
-
-
-        </div>
-        <div class="region-content">
-            <div id="conversionPartial">
-                <div class="report-btn-group">
-                    <div>
-                        <p class="revanue-p">North America</p>
-                        <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-                        <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
-                            <img src="/Content/images/export.png"></span>Export</a>
-                    </div>
-                    <div>
-                        <p class="revanue-p-right">
-                            <input type="checkbox"><label> Add to Compare</label>
-                        </p>
-                        <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">Add Widget</button>
-                    </div>
-                </div>
-                <div class="region-data">
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-
-                    <div id="dvNorthAmericaGraph2" class="region-graph">
-                    </div>
-
-                </div>
-            </div>
-
-
-
-        </div>
-        <div class="region-content">
-            <div id="conversionPartial">
-                <div class="report-btn-group">
-
-                    <div>
-                        <p class="revanue-p">North America</p>
-                        <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-                        <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
-                            <img src="/Content/images/export.png"></span>Export</a>
-                    </div>
-                    <div>
-                        <p class="revanue-p-right">
-                            <input type="checkbox" id="x"><label for="x"> Add to Compare</label>
-                        </p>
-                        <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">Add Widget</button>
-                    </div>
-                </div>
-                <div class="region-data">
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-                    <div class="data">
-                        <span class="title">Revenue</span>
-                        <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                        <span class="data-green">+11.8% </span>
-                    </div>
-
-                    <div id="dvNorthAmericaGraph3" class="region-graph">
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <div class="paging bottom-paging">
-            <ul>
-                <li><a href="#">«</a></li>
-                <li class="active"><a>1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">6</a></li>
-                <li><a href="#">...</a></li>
-                <li>»</li>
-            </ul>
-        </div>*@
 </section>
 
 
 <script type="text/javascript">
     var marsterCustomField = '@Common.RevenueCampaign';
     var masterCustomFieldOptionId = 0;
+    var tempRevenueHeader = [];
+
     $(function () {
         var options = {
 
@@ -373,7 +202,7 @@
         OptionMain = '@ViewBag.option';
         var HeadTitle = document.getElementById('head-title');
         HeadTitle.innerHTML = '@TempData["HeadTitle"]';
-
+        $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
         $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
@@ -428,24 +257,33 @@
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _revPercentage = '@revenue_Projected_Goal.Percentage';
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';
-        var _formtPercentage = "0";
-        setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
-        setBootstrapTooltip("#revGoal", _revGoal, 5, true);
-        if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
-            _formtPercentage = "0";
-            $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
-        }
-        else {
-            if (_isNegativePercentage.toLowerCase() == 'true') {
-                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-                $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
-            }
-            else {
-                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-                $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
-            }
-        }
-        $("#revPercentage").html(_formtPercentage);
+
+        tempRevenueHeader.push({
+            ActualProjected: _revActual_Projected.toString(),
+            Goal: _revGoal.toString(),
+            Percentage: _revPercentage.toString(),
+            IsNegative: _isNegativePercentage.toString().toLowerCase()
+        });
+        formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage);
+
+        //var _formtPercentage = "0";
+        //setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
+        //setBootstrapTooltip("#revGoal", _revGoal, 5, true);
+        //if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+        //    _formtPercentage = "0";
+        //    $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
+        //}
+        //else {
+        //    if (_isNegativePercentage.toLowerCase() == 'true') {
+        //        _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+        //        $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
+        //    }
+        //    else {
+        //        _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+        //        $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
+        //    }
+        //}
+        //$("#revPercentage").html(_formtPercentage);
 
         @*// Start:- Revenue To Plan BarChart script
         var _barchartdata = "@revenue_barchartModel";
@@ -539,6 +377,9 @@
     });
     $('#ddlParentRevenueSummery').change(function () {
         var _childValue = '0';
+        if ($('#ddlParentRevenueSummery :selected').val() == '@Common.RevenueCampaign') {
+            fillCardCampaignDropDown("", "");
+        }
         ReloadRevenueToPlanByCustomField(_childValue);
         
     });
@@ -566,7 +407,7 @@
 
     }
     function LoadDataRevenueToPlanByCampaign() {
-        var id = '';
+        var id = '0';
         var Type = '';
         var tacticId = $("#ddlTacticRevenueToPlan").val();
         var parentlabel = $("#ddlParentRevenueSummery").val();
@@ -581,6 +422,15 @@
         else if (campaignId > 0) {
             Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
             id = campaignId.toString();
+        }
+        if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
+            if (id > 0) {
+                parentlabel = '@Common.RevenueCampaign';
+            }
+            if (parseInt(id) <= 0) {
+                id = masterCustomFieldOptionId;
+            }
+
         }
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
         $("#dvRevenueToPlan").load(_url);
@@ -662,6 +512,34 @@
             }
         });
 
+    }
+
+    function formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage) {
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';
+        var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _revPercentage = '@revenue_Projected_Goal.Percentage';
+        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+
+        var _formtPercentage = "0";
+        $("#revActual_Projected").popover('destroy');
+        $("#revGoal").popover('destroy');
+        setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
+        setBootstrapTooltip("#revGoal", _revGoal, 5, true);
+        if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+            _formtPercentage = "0";
+            $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (_isNegativePercentage.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+                $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+                $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $("#revPercentage").html(_formtPercentage);
     }
 
 </script>

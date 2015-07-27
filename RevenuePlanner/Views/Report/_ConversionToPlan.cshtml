@@ -70,7 +70,11 @@
         //end combine chart script
 
         // Nishant
-        debugger;
+        var ParentLabel = '@ViewBag.ConvParentLabel';
+        var childlabelType = '@ViewBag.ConvchildlabelType';
+        var childId = '@ViewBag.ConvchildId';
+        var optionmain = '@ViewBag.Convoption';
+        var BackHeadTitle = '@Convert.ToString(TempData["ConvBackParentLabel"])';
         var iscard = '@IsCard';
         if (iscard.toLowerCase() != "false") {
 
@@ -81,21 +85,18 @@
             else {
                 HeadTitle.innerHTML = '@Convert.ToString(TempData["ConvHeadTitle"])';
             }
-
+            $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
             if ('@Convert.ToString(TempData["ConvHeadTitle"])' == 'Waterfall') {
                 var marketingDiv = document.getElementById('div-mareketing-drp');
                 marketingDiv.style.display = "block";
 
                 var BtnBack = document.getElementById('BtnBack');
                 BtnBack.style.display = "none";
+                if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') > -1 || marsterCustomField.indexOf('@Common.ProgramCustomTitle') > -1) {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', 'inline-block');
+                }
             }
-
-
-            var ParentLabel = '@ViewBag.ConvParentLabel';
-            var childlabelType = '@ViewBag.ConvchildlabelType';
-            var childId = '@ViewBag.ConvchildId';
-            var optionmain = '@ViewBag.Convoption';
-            var BackHeadTitle = '@Convert.ToString(TempData["ConvBackParentLabel"])';
 
             var _cardUrl = "@Url.Content("~/Report/LoadConverstionCardSectionPartial")" + "?ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&childId=" + childId + "&option=" + optionmain;
             $("#ConversionCardID").load(_cardUrl);
@@ -233,7 +234,140 @@
         var code = $("#ddlINQToPlan").val();
         var AllocatedBy = $('#ddlTimeFrameSelectBox option:selected').text();
         var Qurt_Month = AllocatedBy;
-        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + BackChildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&IsBackClick=" + true;
+        var InnerBackchildLabel = BackChildLabel;
+        @*if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
+            if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                InnerBackchildLabel = '@RevenuePlanner.Helpers.Common.RevenueCampaign';
+            }
+        }*@
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + BackParentLabel + "&childlabelType=" + InnerBackchildLabel + "&childId=" + BackId + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&IsBackClick=" + true + "&marsterCustomField=" + marsterCustomField;
         $("#dvConversionToPlan").load(_url);
+
+        tempMqlHeader.splice(tempMqlHeader.length - 1, 1); // Remove last value from Temep Header global variable.
+        var _headerValue = tempMqlHeader[tempMqlHeader.length - 1]; // Get last value from global variable.
+
+        var _MqlActualProj = _headerValue.ActualProjected;
+        var _MqlGoal = _headerValue.Goal;
+        var _MqlPercentage = _headerValue.Percentage;
+        var _MqlisNegativePercntg = _headerValue.IsNegative;
+
+        formatHeaderValues(_MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg);
+
+        if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '') {
+            $("#ddlCampaignConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', '');
+            $("#ddlProgramConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+            $("#ddlTacticConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+            fillCardProgramDropDown(0, true);
+            //$("#ddlCampaignConversionToPlan elem").prop('selectedIndex', 0);
+            document.getElementById('ddlCampaignConversionToPlan').selectedIndex = 0;
+            var ddcampagin = $("#btnMultiselect_ddlCampaignConversionToPlan");
+            ddcampagin.find("span")[0].innerHTML = $('#ddlCampaignConversionToPlan option:selected').text();
+            $("#btnMultiselect_ddlCampaignConversionToPlan").attr('title', $('#ddlCampaignConversionToPlan option:selected').text());
+
+            var ddprogram = $("#btnMultiselect_ddlProgramConversionToPlan");
+            ddprogram.find("span")[0].innerHTML = $('#ddlProgramConversionToPlan option:selected').text();
+            $("#btnMultiselect_ddlProgramConversionToPlan").attr('title', $('#ddlProgramConversionToPlan option:selected').text());
+
+            var ddtactic = $("#btnMultiselect_ddlTacticConversionToPlan");
+            ddtactic.find("span")[0].innerHTML = $('#ddlTacticConversionToPlan option:selected').text();
+            $("#btnMultiselect_ddlTacticConversionToPlan").attr('title', $('#ddlTacticConversionToPlan option:selected').text());
+            //$("#btnMultiselect_ddlCampaignConversionToPlan span:first-child").innerHTML = 'Nishant';
+        }
+        if (marsterCustomField == '@RevenuePlanner.Helpers.Common.RevenueCampaign' && BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+            $("#ddlCampaignConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+            $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+            fillCardProgramDropDown(BackId, BackChildLabel);
+        }
+        else if (marsterCustomField.indexOf('@Common.CampaignCustomTitle') >= 0) {
+            if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                // $("#ddlProgramConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                //  $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                //fillCardCampaignDropDown(BackId, '');
+                if ('@Convert.ToBoolean(TempData["ConvIsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', 'inline-block');
+                } else {
+                    fillCardProgramDropDown(BackId, BackChildLabel); // Change By Nishant Sheth
+                }
+            }
+            else if (BackChildLabel == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                if ('@Convert.ToBoolean(TempData["ConvIsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', 'inline-block');
+                } else {
+                    fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+                }
+            }
+            else if (BackChildLabel == '' && BackId > 0) {
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', '');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                //fillCardProgramDropDown(BackId, '@RevenuePlanner.Helpers.Common.RevenueCampaign');
+                if ('@Convert.ToBoolean(TempData["ConvIsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', 'inline-block');
+                } else {
+                    fillCardCampaignDropDown(BackId, ''); // Change BY Nishant Sheth
+                }
+            }
+            else {
+                $("#CampaignChildDDL").css('display', 'none');
+                $("#CustomFieldChildDDL").css('display', 'inline-block')
+            }
+        }
+        else if (marsterCustomField.indexOf('@Common.ProgramCustomTitle') >= 0) {
+            if (BackChildLabel == '' && BackId > 0) {
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                if ('@Convert.ToBoolean(TempData["ConvIsDispalyCustomFieldChildDDL"])' == 'True') {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', 'inline-block');
+                }
+                else {
+                    fillCardProgramDropDown(BackId, BackChildLabel);
+                }
+            }
+            else {
+                $("#CampaignChildDDL").css('display', 'none');
+                $("#CustomFieldChildDDL").css('display', 'inline-block');
+            }
+        }
+        else if (marsterCustomField.indexOf('@Common.TacticCustomTitle') >= 0) {
+            //  $("#ddlCampaignConversionToPlan").css('display', 'none');
+            //   $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+            //CustomFieldChildDDL
+            //  $("#ddlProgramConversionToPlan").css('display', 'none');
+            //   $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+            $("#CampaignChildDDL").css('display', 'none');
+            $("#CustomFieldChildDDL").css('display', 'inline-block');
+            //  $("#ddlTacticConversionToPlan").css('display', '');
+            //    $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+            //    fillCardTacticDropDown(id, "");
+        }
     }
 </script>

@@ -4,61 +4,71 @@
 @using Newtonsoft.Json;
 @{
     var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
-   
+    // Add By Nishant Sheth For pagination dropdwon with Enums
+    List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
+    foreach (var PerPage in Enums.PerPageSize)
+    {
+        ListPageSize.Add(new RevenuePlanner.Models.ViewByModel { Text = PerPage.Value, Value = PerPage.Value });
+    }
+
+    List<RevenuePlanner.Models.ViewByModel> ListSortBy = new List<RevenuePlanner.Models.ViewByModel>();
+    foreach (var SortBy in Enums.SortByWaterFallDrp)
+    {
+        ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
+    }
+    // End By Nishant Sheth
+    var TotalRecords = Model.TotalRecords;
+    var CurrentPageNum = Model.CuurentPageNum;
 }
 <style>
-    .carvdval-block
-    {
+    .carvdval-block {
         display: block;
     }
 </style>
-<div id="dvCardSectionData"></div>
-@*<div class="region-content">
-        <div id="conversionPartial">
-            <div class="report-btn-group">
-                <div>
-                    <p class="revanue-p">North America</p>
-                    <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>
-                    <a id="" class="btn  source-sans-proregular report-grey-btn hideReport" name=""><span>
-                        <img src="/Content/images/export.png"></span>Export</a>
-                </div>
-                <div>
-                    <p class="revanue-p-right">
-                        <input type="checkbox" /><label> Add to Compare</label>
-                    </p>
-                    <button id="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="">Add Widget</button>
-                </div>
-            </div>
-            <div class="region-data">
-                <div class="data">
-                    <span class="title">Revenue</span>
-                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                    <span class="data-green">+11.8% </span>
-                </div>
-                <div class="data">
-                    <span class="title">Revenue</span>
-                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                    <span class="data-green">+11.8% </span>
-                </div>
-                <div class="data">
-                    <span class="title">Revenue</span>
-                    <p class="value">$28.5M<span class="sub-value">/$25.5M</span></p>
-                    <span class="data-green">+11.8% </span>
-                </div>
-                <div id="dvNorthAmericaGraph1" class="region-graph">
-                </div>
+<div class="revenue-filter">
+    <div class="sorting">
+        <div class="geography-dropdown">
+            <h5>Sort By</h5>
+            <div class="select-sortby">
+                @Html.DropDownList("ddlSortby", new SelectList(ListSortBy.ToList(), "Value", "Text"), new { onchange = "javascript:SortByFunction();" })
+
             </div>
         </div>
-    </div>*@
+        <div class="geography-dropdown">
+            <h5>Items Per Page</h5>
+            <div class="select-item">
+                @Html.DropDownList("Itemsperpage", new SelectList(ListPageSize.ToList(), "Value", "Text"), new { onchange = "javascript:ItemsPerPagefunction();" })
+            </div>
+        </div>
+
+    </div>
+    <div class="paging" id="page_navigation">
+
+    </div>
+    <input type='hidden' id='current_page' />
+    <input type='hidden' id='show_per_page' />
+    <div class="search">
+        <input id="txtSearch" />
+
+        <button class="search-btn" onclick="SearchByTitle($('#txtSearch').val())" id="btnSearch">search</button>
+    </div>
+
+</div>
+<div id="dvCardSectionData"></div>
+
 <script type="text/javascript">
     var SearchVal = [];
     var number_of_pages;
+    var ParentLabel = '@ViewBag.ConvParentLabel';
+    var childlabelType = '@ViewBag.ConvchildlabelType';
+    var optionmain = '@ViewBag.Convoption';
+
     $(document).ready(function () {
         var _carddata = "@cardsectionList";
         var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
         _CardData = JSON.parse(_CardData);
         var _cardhtml = '';
-        var _title = '', _Inq_proj = '', _Inqgoal = '', _Inqpercentange = '', _Tql_proj = '', _Tqltgoal = '', _Tqlpercentange = '', _Cw_proj = '', _Cwgoal = '', _Cwpercentange = '', _Ads_proj = '', _Adsgoal = '', _Adspercentange = '';
+        var _masterParentLabel = '', _title = '', _Inq_proj = '', _Inqgoal = '', _Inqpercentange = '', _Tql_proj = '', _Tqltgoal = '', _Tqlpercentange = '', _Cw_proj = '', _Cwgoal = '', _Cwpercentange = '', _Ads_proj = '', _Adsgoal = '', _Adspercentange = '';
         var _Inqdata = '', _Tqldata = '', _Cwdata = '', _Adsdata = '';
         var _fieldId = '';
         //var rev = "Revenue", cost = "Cost", roi = "ROI";
@@ -66,13 +76,13 @@
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage", retperc = "_restPercentage";
         var _Inq_projId = '', _InqgoalId = '', _InqPercntgId = '', _Tql_projId = '', _TqlgoalId = '', _TqlPercntgId = '', _Cw_projId = '', _CwgoalId = '', _CwPercntgId = '', _Ads_projId = '', _AdsgoalId = '', _AdsPercntgId = '', tqlrestpercId = '', cwrestperceId = '';
         var _btnDetailsId = '';
-
+        var _Tqlact_proj = '', _Tqlgoal = '', _Tqlpercentange = '', _TqlIsNegative = '', _TqlCard = '', _InqCard = '', _CwCard = '', _AdsCard = '';
         // Add BY Nishant Sheth
         // Desc: For Card Section details button click argument
-        var ParentLabel = '@ViewBag.ConvParentLabel';
+        @*var ParentLabel = '@ViewBag.ConvParentLabel';
         var childlabelType = '@ViewBag.ConvchildlabelType';
         //var childId = '@ViewBag.ConvchildId';
-        var optionmain = '@ViewBag.Convoption';
+        var optionmain = '@ViewBag.Convoption';*@
         var divid = 1;// add by nishant sheth for give div id
         // End By Nishant Sheth
 
@@ -83,6 +93,7 @@
             _btnDetailsId = 'buttonDtls_' + _fieldId;
             // End By Nishant Sheth
             _title = value.title;
+            _masterParentLabel = value.MasterParentlabel;
             _Inqdata = value.INQCardValues;
             _Tqldata = value.TQLCardValues;
             _Cwdata = value.CWCardValues;
@@ -91,20 +102,30 @@
             _Inq_proj = _Inqdata.Actual_Projected;
             _Inqgoal = _Inqdata.Goal;
             _Inqpercentange = _Inqdata.Percentage;
+            _InqCard = _Inqdata.CardType;
 
             _Tql_proj = _Tqldata.Actual_Projected;
             _Tqltgoal = _Tqldata.Goal;
             _Tqlpercentange = _Tqldata.Percentage;
             _Tqlrestpercentange = _Tqldata.RestPercentage;
+            // Add By Nishant Sheth
+            _TqlCard = _Tqldata.CardType;
+            _Tqlpercentange = _Tqldata.Percentage;
+            _Tqlact_proj = _Tqldata.Actual_Projected;
+            _Tqlgoal = _Tqldata.Goal;
+            _TqlIsNegative = _Tqldata.IsNegative;
+            // End By Nisahnt Sheth
 
             _Cw_proj = _Cwdata.Actual_Projected;
             _Cwgoal = _Cwdata.Goal;
             _Cwpercentange = _Cwdata.Percentage;
             _Cwrestpercentange = _Cwdata.RestPercentage;
+            _CwCard = _Cwdata.CardType;
 
 
             _Ads_proj = _Adsdata.Actual_Projected;
             _Adsgoal = _Adsdata.Goal;
+            _AdsCard = _Adsdata.CardType;
             //_Adspercentange = _Adsdata.Percentage;
 
             _fieldId = value.FieldId;
@@ -127,16 +148,21 @@
             _AdsgoalId = ads + goal + "_" + _fieldId;
             _AdsPercntgId = ads + percntg + "_" + _fieldId;
 
+            var _titleSub = '';
+            if (_title.length > 41) {
+                _titleSub = '...';
+            }
             //alert("key: " + key + ", Value: " + value.title);
             //_cardhtml = _cardhtml + '<div class="region-content">';
-            _cardhtml = _cardhtml + '<div class="region-content" inqval="' + _Inq_proj + '" tqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" adsval="' + _Ads_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
+            _cardhtml = _cardhtml + '<div class="region-content" inqval="' + _Inq_proj + '" mqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" adsval="' + _Ads_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
             _cardhtml = _cardhtml + '<div>';
             _cardhtml = _cardhtml + '<div class="report-btn-group">';
             _cardhtml = _cardhtml + '<div>';
-            _cardhtml = _cardhtml + '<p class="revanue-p">' + _title + '</p>';
+            _cardhtml = _cardhtml + '<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>';
             //_cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>';
+            var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + _title + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Tqlact_proj) + '","' + String(_Tqlgoal) + '","' + String(_Tqlpercentange) + '","' + String(_TqlIsNegative) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -149,19 +175,22 @@
             _cardhtml = _cardhtml + '<div class="region-data">';
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">INQ</span>';
+            //_cardhtml = _cardhtml + '<span class="title">INQ</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _InqCard + '</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Inq_proj + '" id="' + _Inq_projId + '">' + _Inq_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Inqgoal + '" id="' + _InqgoalId + '">' + _Inqgoal + '</span></p>';
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Inqpercentange + '" id="' + _InqPercntgId + '">' + _Inqpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">TQL</span>';
+            //_cardhtml = _cardhtml + '<span class="title">TQL</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _TqlCard + '</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="percentagevalue" orig-val="' + _Tqlpercentange + '" id="' + _TqlPercntgId + '">' + _Tqlpercentange + '</span> <span class="inner-sub-value"></span> <span class="percentageval" orig-val="' + _Tqlrestpercentange + '" id="' + tqlrestpercId + '">' + _Tqlrestpercentange + '</span></p>';
             _cardhtml = _cardhtml + '<span class="card sub-value" add-sep="true" orig-val="' + _Tql_proj + '" id="' + _Tql_projId + '">' + _Tql_proj + '</span><span class="inner-sub-value"></span>/<span class="card sub-value" add-sep="true" orig-val="' + _Tqltgoal + '" id="' + _TqlgoalId + '">' + _Tqltgoal + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">CW</span>';
+            //_cardhtml = _cardhtml + '<span class="title">CW</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _CwCard + '</span>';
             //_cardhtml = _cardhtml + '<p class="value"> <span class="carvdval-block" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span> <span class="sub-value"  orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">/' + _Cwgoal + '</span></p>';
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span>';
 
@@ -171,7 +200,8 @@
 
 
             _cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">ADS</span>';
+            //_cardhtml = _cardhtml + '<span class="title">ADS</span>';
+            _cardhtml = _cardhtml + '<span class="title">' + _AdsCard + '</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Ads_proj + '" id="' + _Ads_projId + '">' + _Ads_proj + '</span><span class="cardsub sub-value"  orig-val="' + _Adsgoal + '" id="' + _AdsgoalId + '">' + _Adsgoal + '</span></p>';
             _cardhtml = _cardhtml + '</div>';
 
@@ -190,21 +220,13 @@
         formatSetValues();
         formatSetsubValues();
 
-        var a = $('#dvCardSectionData').children();
+        $("#ddlSortby,#Itemsperpage").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1,
+        });
 
-        $(a).each(function (index, element) {
-            var _inqval = $(this).attr("inqval");
-            var _tqlval = $(this).attr("tqlval");
-            var _cwval = $(this).attr("cwval");
-            var _adsval = $(this).attr("adsval");
-            var _id = $(this).attr("id");
-            var _divhtml = $(this)[0].outerHTML;
-            var _title = $(this).attr("title");
-
-            SearchVal.push({ inqval: _inqval, tqlval: _tqlval, cwval: _cwval, adsval: _adsval, id: _id, divhtml: _divhtml, title: _title.toString().toLowerCase() });
-    });
-
-        SortCardSection($("#ddlSortby :selected").val());
+        LoadPagination();
     });
     function formatSetsubValues() {
         var _TypeCol = $(".cardsub");
@@ -363,7 +385,7 @@
         });
     }
 
-    function CardDetailsClick(parentlabel, Type, id, OptionMain, HeadTitleval) {
+    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg) {
 
         var HeadTitle = document.getElementById('head-title');
 
@@ -375,16 +397,245 @@
 
         HeadTitle.innerHTML = HeadTitleval;
 
+        var _pushValue = {
+            ActualProjected: _MqlActualProj.toString(),
+            Goal: _MqlGoal.toString(),
+            Percentage: _MqlPercentage.toString(),
+            IsNegative: _MqlisNegativePercntg.toString().toLowerCase()
+        }
+        tempMqlHeader.push(_pushValue); // Push Card Values to Temp global variable declare at _ReportConverstion.cshtml page. This global variable use when user click on Back button.
+
+
         var AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         var Code = $("#ddlINQToPlan").val();
 
-        debugger;
+
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvConversionToPlan").load(_url);
+        formatHeaderValues(_MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg);
+        if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+            if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+                $("#ddlCampaignConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
 
+                // $("#ddlProgramConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                //  $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardProgramDropDown(id, Type);
+            }
+            else if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#ddlCampaignConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardTacticDropDown(id, Type);
+            }
+        }
+        else if (masterlabel == '@Common.CampaignCustomTitle') {
+            if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                // $("#ddlProgramConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                //  $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardProgramDropDown(id, Type);
+            }
+            else if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardTacticDropDown(id, Type);
+            }
+            else {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', '');
+
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardCampaignDropDown(id, Type);
+            }
+        }
+        else if (masterlabel == '@Common.ProgramCustomTitle') {
+            if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+
+                //     $("#ddlProgramConversionToPlan").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+
+                //   $("#ddlTacticConversionToPlan").css('display', 'block');
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardTacticDropDown(id, Type);
+            }
+            else {
+                $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+                $("#CampaignChildDDL").css('display', '');
+                $("#CustomFieldChildDDL").css('display', 'none');
+                $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+
+                $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+                fillCardProgramDropDown(id, Type);
+            }
+        }
+        else if (masterlabel == '@Common.TacticCustomTitle') {
+            //  $("#ddlCampaignConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
+            //CustomFieldChildDDL
+            //  $("#ddlProgramConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlProgramConversionToPlan").css('display', 'none');
+            $("#CampaignChildDDL").css('display', '');
+            $("#CustomFieldChildDDL").css('display', 'none')
+            //  $("#ddlTacticConversionToPlan").css('display', '');
+            $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
+            fillCardTacticDropDown(id, "");
+        }
     }
+    function fillCardCampaignDropDown(campaignId, type) {
 
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        //campaignId = $('#ddlCampaignConversionToPlan').val();
+        if (campaignId > 0) {
+            if (type == '') {
+                masteroptionid = parseInt(campaignId);
+            }
+            else {
+                id = campaignId.toString();
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadCampaignDropDownDynamic/")',
+            data: {
+                marsterCustomField: marsterCustomField,
+                masterCustomFieldOptionId: masteroptionid
+            },
+            success: function (data) {
+                $("#ddlCampaignConversionToPlan").empty();
+                $("#ddlCampaignConversionToPlan").append("<option value='0'>All Campaigns</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlCampaignConversionToPlan").append("<option value='" + optionData.PlanCampaignId + "'>" + optionData.Title + "</option>");
+                });
+
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
+                fillCardProgramDropDown("0", type);
+                $('#ddlCampaignConversionToPlan').multiselect("refresh");
+            },
+            error: function () {
+
+                $("#ddlCampaignConversionToPlan").empty();
+                $("#ddlCampaignConversionToPlan").append("<option value='0'>All Programs</option>");
+                fillCardProgramDropDown("0", type);
+                $('#ddlCampaignConversionToPlan').multiselect("refresh");
+                GoToLogin();
+            }
+        });
+    }
+    function fillCardProgramDropDown(campaignId, type) {
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        if (campaignId > 0) {
+            if (type === undefined || type == null || type.length <= 0) {
+                masteroptionid = parseInt(campaignId);
+            }
+            else {
+                id = campaignId.toString();
+            }
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadProgramDropDownDynamic/")',
+            data: {
+                id: id,
+                marsterCustomField: marsterCustomField,
+                masterCustomFieldOptionId: masteroptionid
+            },
+            success: function (data) {
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlProgramConversionToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
+                });
+                marsterCustomField = marsterCustomField;
+                masterCustomFieldOptionId = masteroptionid;
+                fillCardTacticDropDown(campaignId, type);
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+            },
+            error: function () {
+
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                fillCardTacticDropDown(campaignId, type);
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+                GoToLogin();
+            }
+        });
+    }
+    function fillCardTacticDropDown(programId, Type) {
+        var id = '';
+        var masteroptionid = masterCustomFieldOptionId;
+        if (programId > 0) {
+            if (Type == "") {
+                masteroptionid = parseInt(programId);
+            }
+            else {
+                id = programId.toString();
+            }
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadTacticDropDownDynamic/")',
+            data: {
+                id: id,
+                type: Type,
+                marsterCustomField: marsterCustomField,
+                masterCustomFieldOptionId: masteroptionid
+            },
+            success: function (data) {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlTacticConversionToPlan").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
+                });
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                //LoadDataRevenueToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                myApp.hidePleaseWait();
+            },
+            error: function () {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                //LoadDataRevenueToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                GoToLogin();
+            }
+        });
+    }
     /// Add By Nishant Sheth For Pagination and sorting: 03-Jul-2015
 
     function LoadPagination() {
@@ -392,7 +643,8 @@
         //how much items per page to show
         var show_per_page = $('#Itemsperpage :selected').text();
         //getting the amount of elements inside content div
-        var number_of_items = $('#dvCardSectionData').children().size();
+        //var number_of_items = $('#dvCardSectionData').children().size();
+        var number_of_items = '@TotalRecords';
         //calculate the number of pages we are going to have
         number_of_pages = Math.ceil(number_of_items / show_per_page);
 
@@ -413,7 +665,7 @@
         $('#page_navigation').html(navigation_html);
 
         //add active_page class to the first page link
-        $('#page_navigation .page_link:first').addClass('active');
+        //$('#page_navigation .page_link:first').addClass('active');
 
         for (var i = 0; i <= number_of_pages; i++) {
             $('.page_link[longdesc=' + i + ']').css('display', 'none');
@@ -422,19 +674,20 @@
             $('.page_link[longdesc=' + j + ']').css('display', 'block');
         }
 
-        //hide all the elements inside content div
-        $('#dvCardSectionData').children().css('display', 'none');
+        $('.page_link[longdesc=' + '@CurrentPageNum' + ']').addClass('active').siblings('.active').removeClass('active');
+        ////hide all the elements inside content div
+        //$('#dvCardSectionData').children().css('display', 'none');
 
-        //and show the first n (show_per_page) elements
-        $('#dvCardSectionData').children().slice(0, show_per_page).css('display', 'block');
+        ////and show the first n (show_per_page) elements
+        //$('#dvCardSectionData').children().slice(0, show_per_page).css('display', 'block');
 
     }
 
     function previous() {
+        var pageNumber = '@CurrentPageNum';
+        //var pageNumber = parseInt($('#current_page').val());
 
-        var pageNumber = parseInt($('#current_page').val());
-
-        new_page = parseInt($('#current_page').val()) - 1;
+        new_page = parseInt(pageNumber) - 1;
         //if there is an item before the current active link run the function
         if ($('.active').prev('.page_link').length == true) {
             if (number_of_pages >= 6 && (pageNumber) < number_of_pages && ((pageNumber) / 6) % 1 === 0) {
@@ -448,8 +701,9 @@
 
     function next() {
 
-        var pageNumber = parseInt($('#current_page').val());
-        new_page = parseInt($('#current_page').val()) + 1;
+        //var pageNumber = parseInt($('#current_page').val());
+        var pageNumber = '@CurrentPageNum';
+        new_page = parseInt(pageNumber) + 1;
         //if there is an item after the current active link run the function
         if ($('.active').next('.page_link').length == true) {
             if (number_of_pages >= 6 && (pageNumber + 1) < number_of_pages && ((pageNumber + 1) / 6) % 1 === 0) {
@@ -480,11 +734,27 @@
 
         //update the current page input field
         $('#current_page').val(page_num);
-    }
 
-    $("#Itemsperpage").change(function () {
-        LoadPagination();
-    });
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        //myApp.showPleaseWait();
+        var SearchString = $('#txtSearch').val();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+    }
+    function ItemsPerPagefunction() {
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        //myApp.showPleaseWait();
+        var SearchString = $('#txtSearch').val();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+        //myApp.hidePleaseWait();
+        //LoadPagination();
+    }
+    //$("#Itemsperpage").change(function () {
+    //    LoadPagination();
+    //});
 
     function PrevNextMorePage(pageNumber, button) {
 
@@ -525,9 +795,9 @@
         //return aName - bName;
         return bName - aName;
     }
-    function SortByTQL(a, b) {
-        var aName = a.tqlval;
-        var bName = b.tqlval;
+    function SortByMQL(a, b) {
+        var aName = a.mqlval;
+        var bName = b.mqlval;
         //return ((aName < bName) ? -1 : ((aName > bName) ? 1 : 0));
         //return aName - bName;
         return bName - aName;
@@ -555,22 +825,22 @@
 
         $(a).each(function (index, element) {
             var _inqval = $(this).attr("inqval");
-            var _tqlval = $(this).attr("tqlval");
+            var _mqlval = $(this).attr("mqlval");
             var _cwval = $(this).attr("cwval");
             var _adsval = $(this).attr("adsval");
             var _id = $(this).attr("id");
             var _divhtml = $(this)[0].outerHTML;
             var _title = $(this).attr("title");
 
-            arrayval.push({ inqval: _inqval, tqlval: _tqlval, cwval: _cwval, adsval: _adsval, id: _id, divhtml: _divhtml, title: _title.toString().toLowerCase() });
+            arrayval.push({ inqval: _inqval, mqlval: _mqlval, cwval: _cwval, adsval: _adsval, id: _id, divhtml: _divhtml, title: _title.toString().toLowerCase() });
         });
 
         var sortval;
         if (sortBy == 'inqval') {
             sortval = arrayval.sort(SortByINQ);
         }
-        if (sortBy == 'tqlval') {
-            sortval = arrayval.sort(SortByTQL);
+        if (sortBy == 'mqlval') {
+            sortval = arrayval.sort(SortByMQL);
         }
         if (sortBy == 'cwval') {
             sortval = arrayval.sort(SortByCW);
@@ -597,57 +867,43 @@
         var numericallyOrderedDivs = $divs.sort(function (a, b) {
             return $(a).find("div[" + name + "]").val() > $(b).find("div[" + name + "]").val();
         });
-        alert(numericallyOrderedDivs);
+        //alert(numericallyOrderedDivs);
         $("#dvCardSectionData").html('');
         $("#dvCardSectionData").html(numericallyOrderedDivs);
     }
 
-    $("#ddlSortby").change(function () {
-        SortCardSection($("#ddlSortby :selected").val());
-    });
+    function SortByFunction() {
+        //SortCardSection($("#ddlSortby :selected").val());
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        //alert(sortBy);
+        //myApp.showPleaseWait();
+        var SearchString = $('#txtSearch').val();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+        //myApp.hidePleaseWait();
+        //LoadPagination();
+    }
+    //$("#ddlSortby").change(function () {
+    //    SortCardSection($("#ddlSortby :selected").val());
+    //});
 
     function SearchByTitle(TitleVal) {
 
-        var searcharray = [];
-        $(SearchVal).each(function (index, element) {
-
-            var searchstring = this.title;
-            if (searchstring != undefined && searchstring != 'undefined' && searchstring != null && searchstring != '') {
-                if (searchstring.indexOf(TitleVal.toLowerCase().trim()) > -1) {
-                    searcharray.push(this);
-                }
-            }
-        });
-        //var result = _.contains(arrayval, TitleVal);
-        var cardhtml = "";
-        $(searcharray).each(function () {
-
-            var CardString = this.divhtml;
-            cardhtml += CardString;
-        });
-        var divCardSection = $("#dvCardSectionData");
-        divCardSection.html('');
-
-        if (cardhtml != null && cardhtml != '') {
-            divCardSection.html(cardhtml);
-            $("#divCardNoRecord").attr("style", "display:none");
-            $("#page_navigation").attr("style", "display:block");
-        }
-        else {
-            // add BY Nishant Sheth for No Record found div : 06-July-2015
-            cardhtml += '<div class="region-content" style="display: block;" id="divCardNoRecord"><div><div class="report-btn-group"><div><p class="revanue">No records found</p></div><div> </div></div></div></div>';
-            // End By Nishant sheth
-            divCardSection.html(cardhtml);
-            $("#page_navigation").attr("style", "display:none");
-        }
-        SortCardSection($("#ddlSortby :selected").val());
+        var ItemPerPage = $('#Itemsperpage :selected').text();
+        var sortBy = $("#ddlSortby :selected").text();
+        var SearchString = $('#txtSearch').val();
+        //myApp.showPleaseWait();
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        $("#dvCardSectionData").load(_url);
+        //myApp.hidePleaseWait();
 
     }
-    $('#txtSearch').keypress(function (e) {
-        if (e.keyCode == 13) {
-            //$("#btnSearch").focus();
-            $("#btnSearch").click();
-        }
-    });
+    //$('#txtSearch').keypress(function (e) {
+    //    if (e.keyCode == 13) {
+    //        //$("#btnSearch").focus();
+    //        $("#btnSearch").click();
+    //    }
+    //});
     /// End By Nishant Sheth
 </script>
