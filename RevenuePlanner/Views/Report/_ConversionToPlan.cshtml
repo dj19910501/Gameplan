@@ -10,7 +10,7 @@
     var conversion_barchartModel = Model.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanBarChartModel) : string.Empty;
     var Conversion_linechartModel = Model.LineChartModel != null ? JsonConvert.SerializeObject(Model.LineChartModel) : string.Empty;
     var _mqllabel = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()];
-
+     
     //var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
     var Conversion_cardsectionModel = TempData["ConversionCard"];
     bool IsCard = false;

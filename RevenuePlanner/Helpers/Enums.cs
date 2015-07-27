@@ -143,7 +143,7 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #region Model
-        /// <summary>
+        /// <summary> 
         /// Added By: Maninder Singh Wadhva.
         /// Date: 11/26/2013
         /// Enum for model status.

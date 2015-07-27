@@ -15,7 +15,7 @@ namespace RevenuePlanner.Models
         //// Modified By: Maninder Singh Wadhva to address TFS Bug 296:Close and realize numbers in Revenue Summary are incorrectly calculated.
         public double ProjectedRevenue { get; set; }
         public double MQLs { get; set; }
-        public string Revenue { get; set; }
+        public string Revenue { get; set; } 
         public double MQLsPercentage { get; set; }
         public double RevenuePercentage { get; set; }
 

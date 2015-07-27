@@ -2,7 +2,7 @@
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
-@{
+@{ 
     var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
 
     // Add By Nishant Sheth For pagination dropdwon with Enums
