@@ -41,4 +41,7 @@ exec('ALTER TABLE [dbo].[IntegrationWorkFrontTemplates] CHECK CONSTRAINT [FK_Int
 
 end
 
+GO
+
+
 
