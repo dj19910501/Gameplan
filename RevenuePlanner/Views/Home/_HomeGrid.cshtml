@@ -2,8 +2,8 @@
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxTreeGrid.js")">
 </script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid_split.js")">
-</script>
+@*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid_split.js")">
+    </script>*@
 
 <div>
     <table width="100%">
@@ -28,8 +28,18 @@
     $(document).ready(
         BindHomeGrid()
        );
-    function Action(type, id)
-    {
+    var $doc = $(document);
+    $doc.click(function () {
+        $('#popupType').css('display', 'none');
+    });
+
+    $(document).mouseup(function (e) {
+        $('#popupType').css("display", "none");
+    });
+    $(".grid_ver_scroll").scroll(function () {
+        $('#popupType').css('display', 'none');
+    });
+    function Action(type, id) {
         //alert("type=" + type + "<br/>id=" + id);
     }
     $(".grid_add").click(function (e) {
@@ -38,13 +48,14 @@
         var name = $(this).attr('alt');
         var title = $(this).attr('title');
 
-        DisplayPopUpMenu(type, name, title + "/true", e);
+        DisplayPopUpMenu(type, name, title, e);
 
     });
 
     function BindHomeGrid() {
         HomeGrid = new dhtmlXGridObject('gridbox');
-        HomeGrid.setImagePath("../../../codebase/imgs/");
+        var imgpath = '@Url.Content("~/codebase/imgs/")';
+        HomeGrid.setImagePath(imgpath);
         //  HomeGrid.enableTreeGridLines();
         HomeGrid.enableDragAndDrop(true);
         //HomeGrid.setDragBehavior("sibling-next");
@@ -71,6 +82,11 @@
                 if (dplanid == splanid) {
                     var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
                     var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
+                    var tacticname = HomeGrid.cells(sid, 0).getValue();
+                    var programname = HomeGrid.cells(tid, 0).getValue();
+                  
+                    var con = confirm("Are you sure to move Tactic : " + tacticname + "  to Program : " + programname);
+                    if (con == true) {
                     $.ajax({
 
                         type: 'POST',
@@ -80,10 +96,13 @@
                         dataType: 'json',
 
                         success: function (states) {
-
+                                // LoadPlanGrid();
                         }
                     });
                     return true;
+                    }
+                    else
+                        return false;
                 }
                 else
                     alert("Tactic can move only to same plan program."); return false;
@@ -104,7 +123,7 @@
         var UpdateVal;
 
         var isAssortment = true;
-        var mqlConversion = 0;
+
         if (stage == 2) // start edit Shipping column
         {
             // var combo = HomeGrid.getCombo(4);
@@ -113,7 +132,7 @@
             var edateindex = HomeGrid.getColIndexById('enddate');
             var idindex = HomeGrid.getColIndexById('id');
             var costindex = HomeGrid.getColIndexById('plannedcost');
-            var value = HomeGrid.cells(rowId, index).getValue();
+            // var value = HomeGrid.cells(rowId, index).getValue();
             // end
             var Colind = this.cell.cellIndex;
             UpdateColumn = HomeGrid.getColLabel(Colind, 1);
@@ -194,6 +213,8 @@
                                         HomeGrid.cells(rowId, 9).setValue(data.mql);
                                     }
                                     else {
+                                        var mqlConversion = 0;
+                                        if (data.mql != null)
                                         mqlConversion = data.mql;
                                         var mqlValue = FormatCommas(mqlConversion.toString(), false);
                                         HomeGrid.cells(rowId, 9).setValue(mqlValue);
@@ -210,7 +231,7 @@
                                             dataType: 'json',
 
                                             success: function (states) {
-
+                                               // LoadPlanGrid();
                                             }
                                         });
                                     }
@@ -232,7 +253,7 @@
                     data: { UpdateType: updatetype, UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(Id) },
                     dataType: 'json',
                     success: function (states) {
-
+                      //  LoadPlanGrid();
                     }
                 });
             }

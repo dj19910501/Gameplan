@@ -282,6 +282,7 @@
                         GetCollaborators(CurrentPlanId); 
                         GetTacticTypelist(CurrentPlanId);
                         GetOwnerListForFilter(CurrentPlanId);
+                        LoadPlanGrid();
                     }
                 }
                 PagePostRequest = false;
@@ -682,7 +683,11 @@
 }
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
-
+<div id="divgridview" class="" style="display: none;"></div>
+<div class="market-activity-main">
+    <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
+    </div>
+</div>
 <div id="CalenderView" class="tab-content all-height cf" style="padding-right: 18px;">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
@@ -711,8 +716,8 @@
 
                     <div id="gantt_here"></div>
 
-                    <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
-                    </div>
+                    @*<div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
+                    </div>*@
 
                 </div>
                 <div class="shadow-scroll-gantt"></div>
@@ -844,13 +849,16 @@
         $(this).addClass("active pull-left");
         var id = $(this).attr('id');
         if (id == "liCalender") {
-            $("#CalenderView").show()
+            $("#CalenderView").show();
+            $("#divgridview").hide();
             RefreshCurrentTab();
           
         }
         else {
-            $("#CalenderView").hide()
+            $("#CalenderView").hide() ;
+  $("#divgridview").show();
             //Call the function for grid view
+           LoadPlanGrid();
         }
     });
   
@@ -912,6 +920,27 @@
     $("#PlanAllModule").css("display", "none");
 
     function UpdateResult() {
+        // added by devanshi for #1431
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                $("#CalenderView").hide();
+                $("#divgridview").show();
+                LoadPlanGrid();
+               
+            }
+            else
+            {
+                UpdateCalenderView();
+            }
+        }
+        else {
+            UpdateCalenderView();
+        }
+    }
+  
+    //Modified By komal Rawal 
+    function UpdateCalenderView() {
+
         requestPlanActiveTab(false);
         var SelectedPlanIds;
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
@@ -958,6 +987,51 @@
         $('#errorMessageInspectPopup').slideUp(400);
         // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
         window.location.reload();
+	// modify by devanshi
+	  function LoadPlanGrid()
+    {
+        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+            SelectedPlanIds = filters.SelectedPlans.toString();
+        }
+        else {
+            SelectedPlanIds = CurrentPlanId;
+        }
+        filters.customFieldIds = [];
+
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.customFieldIds.push(chkid);
+                }
+            }
+        });
+        //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
+
+
+        var CustomFieldId = filters.customFieldIds;
+        var OwnerIds = filters.OwnerIds;
+        var TacticTypeids = filters.TacticTypeids; //Modified for #1283
+
+        var StatusIds = filters.StatusIds;
+       
+        $.ajax({
+            url: '@Url.Content("~/Home/LoadHomeGrid/")',
+            data: {
+                planId: SelectedPlanIds.toString(),
+                ownerIds: OwnerIds.toString(),
+                TacticTypeid: TacticTypeids.toString(),
+                StatusIds: StatusIds.toString(),
+                customFieldIds: CustomFieldId.toString()
+            },
+            success: function (result) {
+                $("#divgridview").html('');
+                $("#divgridview").html(result);
+
+            }
+        });
+
+    }
     }
 
     function removeByValue(arr, val) {
