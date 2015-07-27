@@ -252,7 +252,6 @@
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
-    <Content Include="bin\evointernal.dll" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left.gif" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left_abs.gif" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left_abs_dis.gif" />
@@ -974,6 +973,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="bin\" />
     <Folder Include="Filters\" />
   </ItemGroup>
   <ItemGroup>
