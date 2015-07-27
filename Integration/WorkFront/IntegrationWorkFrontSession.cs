@@ -341,7 +341,7 @@ namespace Integration.WorkFront
                List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
                foreach (string id in inDatabaseButNotInWorkFront)
                {
-                 IntegrationWorkFrontTemplate templateToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == templID).FirstOrDefault();
+                 IntegrationWorkFrontTemplate templateToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == id).FirstOrDefault();
                  templateToDelete.IsDeleted = 1;
                  db.Entry(templateToDelete).State = EntityState.Modified;
                 }
