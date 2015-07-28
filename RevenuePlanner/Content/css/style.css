@@ -388,9 +388,9 @@ span.info-icon {
 /*---------------------------
           Main Nav
 -----------------------------*/
-/*body {
+body {
     overflow: auto;
-}*/
+}
 
 .main-nav {
     width: 400px;
@@ -5582,7 +5582,7 @@ a.link-gray {
 @media (max-width: 1920px) {
      /*by bheru 21-07-2015*/
 .full-width-header {
-        width: 97.9%;
+        width: 97.49%;
     }
 }
 @media (max-width: 1600px) {
