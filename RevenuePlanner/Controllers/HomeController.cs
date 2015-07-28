@@ -48,7 +48,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false)
         {
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -65,7 +65,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ShowInspectForPlanCampaignId = planCampaignId;
             ViewBag.ShowInspectForPlanProgramId = planProgramId;
             ViewBag.IsImprovement = isImprovement;
-
+            ViewBag.GridView = isGridView;
             // Added by Komal Rawal  for new homepage ui publish button
             if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
             {
@@ -97,6 +97,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPlanEditable = IsPlanEditable;
             ViewBag.IsPublished = isPublished;
             //End
+            //New Added 
+            ViewBag.RedirectType = Enums.InspectPopupRequestedModules.Index.ToString();
+
 
             //// Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
             //// Check insepct popup shared link validation to open insepct pop up as per link
@@ -414,8 +417,6 @@ namespace RevenuePlanner.Controllers
                 planYear = DateTime.Now.Year.ToString();
             }
 
-            //New Added 
-            ViewBag.RedirectType = false;
 
             //// Get list of planIds from filtered plans
             var filteredPlanIds = lstPlans.Where(plan => plan.Year == planYear).ToList().Select(plan => plan.PlanId).ToList();

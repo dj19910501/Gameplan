@@ -3274,9 +3274,10 @@ namespace RevenuePlanner.Controllers
         /// Action to Get Improvement Tactic list for Plan Campaign.
         /// </summary>
         /// <returns>Returns Json Result.</returns>
-        public JsonResult GetImprovementTactic()
+        public JsonResult GetImprovementTactic(int PlanId)
         {
-            var tactics = db.Plan_Improvement_Campaign_Program_Tactic.Where(pc => pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            //Modified By Komal Rawal for #1432 to get improvement tactics according to current plan .
+            var tactics = db.Plan_Improvement_Campaign_Program_Tactic.Where(pc => pc.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
             var tacticobj = tactics.Select(_tac => new
             {
                 id = _tac.ImprovementPlanTacticId,
@@ -3335,6 +3336,44 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { });
         }
+
+        //Added By komal Rawal for #1432
+        [HttpPost]
+        public ActionResult DeleteImprovementTacticFromGrid(int id = 0, bool RedirectType = false)
+        {
+            try
+            {
+                using (MRPEntities mrp = new MRPEntities())
+                {
+                    using (var scope = new TransactionScope())
+                    {
+                        int returnValue;
+                        string Title = "";
+                        // Chage flag isDeleted to true.
+                        Plan_Improvement_Campaign_Program_Tactic pcpt = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTac => _imprvTac.ImprovementPlanTacticId == id).FirstOrDefault();
+                        pcpt.IsDeleted = true;
+                        db.Entry(pcpt).State = EntityState.Modified;
+                        returnValue = db.SaveChanges();
+                        Title = pcpt.Title;
+                        returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pcpt.ImprovementPlanTacticId, pcpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
+                        if (returnValue >= 1)
+                        {
+                            scope.Complete();
+                            TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ImprovementTacticDeleteSuccess, Title);
+
+                            return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId, isGridView = true }) });
+                           
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return Json(new { });
+        }
+        //End
 
         /// <summary>
         /// Get Improvement Stage With Improvement Calculation.
@@ -3830,7 +3869,9 @@ namespace RevenuePlanner.Controllers
                 result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 if (result >= 1)
                 {
-                    return Json(new { redirect = Url.Action("Assortment") });
+                   // return Json(new { redirect = Url.Action("Assortment") }); 
+                    //Modified By Komal rawal for #1432
+                    return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId, isGridView = true }) });
                 }
                 return Json(new { });
             }
@@ -8868,6 +8909,78 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
+
+        public PartialViewResult LoadImprovementGrid(int id)
+        {
+             bool IsTacticExist = false;
+            double TotalMqls = 0;
+            double TotalCost = 0;
+            //Added By komal rawal for #1432
+            List<Plan_Campaign_Program> ProgramList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId.Equals(id) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList();
+            List<int> ProgramIds = ProgramList.Select(pcp => pcp.PlanProgramId).ToList();
+            List<Plan_Campaign_Program_Tactic> TacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => ProgramIds.Contains(pcpt.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList();
+            List<int> TacticIds = TacticList.Select(pcpt => pcpt.PlanTacticId).ToList();
+            List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => TacticIds.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
+            List<int> LineItemIds = LineItemList.Select(pcptl => pcptl.PlanLineItemId).ToList();
+           
+            if (TacticList != null && TacticList.Count > 0)
+                IsTacticExist = true;
+            ViewBag.IsTacticExists = IsTacticExist;
+            var NoOfPrograms = ProgramIds.Count();
+
+            //To Get Mql And Cost
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && _imprvTactic.IsDeleted == false).Select(_imprvTactic => _imprvTactic).ToList();
+            List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+            List<StageList> stageListType = Common.GetStageList();
+            int? ModelId = db.Plans.Where(_plan => _plan.PlanId == Sessions.PlanId).Select(_plan => _plan.ModelId).FirstOrDefault();
+            List<ModelDateList> modelDateList = new List<ModelDateList>();
+            var ModelList = db.Models.Where(mdl => mdl.IsDeleted == false);
+            int MainModelId = (int)ModelId;
+            while (ModelId != null)
+            {
+                var model = ModelList.Where(mdl => mdl.ModelId == ModelId).Select(mdl => mdl).FirstOrDefault();
+                modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                ModelId = model.ParentModelId;
+            }
+
+            List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(mdl => mdl.ModelId).ToList());
+
+            var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
+            List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+            List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+
+            List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelationForSinglePlan(TacticList, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, false);
+
+            List<Plan_Tactic_Values> ListTacticMQLValue = (from tactic in TacticDataWithoutImprovement
+                                                           select new Plan_Tactic_Values
+                                                           {
+                                                               PlanTacticId = tactic.TacticObj.PlanTacticId,
+                                                               MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
+                                                               Revenue = tactic.RevenueValue
+                                                           }).ToList();
+        
+            TotalMqls = ListTacticMQLValue.Sum(tactic => tactic.MQL);
+            TotalCost = LineItemList.Sum(l => l.Cost);
+            ViewBag.TotalCost = TotalCost;
+            ViewBag.TotalMqls = TotalMqls;
+            ViewBag.Progrmas = NoOfPrograms;
+
+            //End
+            
+            
+            int improvementProgramId = db.Plan_Improvement_Campaign_Program.Where(prgrm => prgrm.Plan_Improvement_Campaign.ImprovePlanId == id).Select(prgrm => prgrm.ImprovementPlanProgramId).FirstOrDefault();
+            if (improvementProgramId != 0)
+            {
+                ViewBag.ImprovementPlanProgramId = improvementProgramId;
+            }
+            else
+            {
+                CreatePlanImprovementCampaignAndProgram();
+                ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == id).Select(p => p.ImprovementPlanProgramId).FirstOrDefault();
+            }
+            return PartialView("_GridImprovement");
+            //End
+        }
 
         #region "Common Methods"
         /// <summary>

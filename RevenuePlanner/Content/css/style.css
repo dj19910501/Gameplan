@@ -388,9 +388,9 @@ span.info-icon {
 /*---------------------------
           Main Nav
 -----------------------------*/
-body {
+/*body {
     overflow: auto;
-}
+}*/
 
 .main-nav {
     width: 400px;
@@ -5589,9 +5589,10 @@ a.link-gray {
 
     /*by bheru 21-07-2015*/
     .full-width-header {
-        width: 97.44%
+        width: 97.44%;
     }
 }
+
 @media (max-width: 1440px) {
 
     /*by bheru 21-07-2015*/
@@ -13747,6 +13748,18 @@ div.clue-bottom-default .cluetip-arrows {
     .budgeting-linechart {
         padding: 10px 25px;
     }
+    .improvement-grid-wrapper .element-disable .gray-title-steps .pull-right {
+  margin-right: 31px !important;
+}
+    .improvement-grid-wrapper .element-disable .add-improvement .gray-title-steps .pull-right {
+  margin-right: 27px !important;
+}
+    .add-tatic-td {
+  margin-right: 0;
+}
+    .close-icon .accordion-campaign a.accordion-toggle {
+   padding: 0 0 0 10px !important;
+}
 }
 
 /*for ticket # 1221 added by tirthak*/
@@ -13890,6 +13903,7 @@ div.clue-bottom-default .cluetip-arrows {
     float: left;
     width: 50px;
 }
+
    .headefix {
         margin: 0 auto;
         position: relative;
@@ -14254,7 +14268,8 @@ div.clue-bottom-default .cluetip-arrows {
     }
     @media (max-width:1024px){ 
         .headerfix{ 
-        left:0; width:100%; 
+        left: 0;
+        width: 100%;
         } 
     }
 
@@ -15074,4 +15089,100 @@ display:none;
   display:block;
 }
 
+.improvement-grid {
+      min-height: 620px;
+    margin-top: 80px !important;
+}
 /*End*/
+
+
+.GoToPlan-icon::after {
+    background-position: 0 3px;
+    background-repeat: no-repeat;
+    content: "Go to Plan";
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: lighter;
+    height: 14px;
+    line-height: 34px;
+    margin-left: 10px;
+    margin-top: 12px;
+    vertical-align: top;
+}
+
+.GoToPlan-icon {
+    float: right;
+    padding-left: 2px;
+    width: 80px;
+}
+.btn-Green {
+   background: #2f6d30 none repeat scroll 0 0 !important;
+    border: medium none !important;
+    color: #fff;
+    display: block;
+    height: 35px !important;
+    margin-bottom: 18px;
+    max-width: 220px !important;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+/* for improvment frid 27-07-2015 by bheru*/
+.improvement-grid-wrapper .element-disable {
+  border: 1px solid #cccccc;
+  margin: 0 22px !important;
+}
+.improvement-grid-wrapper {
+margin-top:70px;
+}
+.improvement-grid-wrapper .element-disable  .gray-title-steps {
+    
+      padding-bottom: 5px;
+}
+.improvement-grid-wrapper .element-disable .gray-title-steps .pull-right {
+   
+    margin-right: 40px !important;
+    padding: 15px 0 0;
+   }
+.improvement-grid-wrapper .element-disable .font-dark {
+      font-weight: 600;
+       padding-top: 22px;
+         padding-left: 20px;
+}
+.improvement-grid-wrapper  .activity-value span {
+color:#000;
+    font-family: source_sans_prosemibold;
+    font-size: 26px;
+}
+.improvement-grid-wrapper .element-disable  .gray-title-steps.activity-value {
+  padding-bottom: 20px;
+}
+/*.add-improvement .light-blue-background{
+    padding:7px !important
+}*/
+.improvement-grid-wrapper .element-disable .add-improvement .gray-title-steps .pull-right {
+padding:0;
+margin-right:34px !important
+}
+.add-improvement .underline {
+  color: #3f3f3f !important;
+  font-family: source_sans_prosemibold;
+  text-decoration: underline !important;
+}
+.add-improvement .total {
+  color: #d4d4d4;
+  font-family: source_sans_probold;
+}
+.add-tatic-td
+{
+margin-right: 12px;
+}
+.task-tbl
+{
+     margin: 0 20px;
+    overflow: auto;
+}
+
+.add-improvement .accordion-campaign .cf-arrow {
+     font-family: source_sans_probold;
+}

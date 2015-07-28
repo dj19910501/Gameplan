@@ -436,6 +436,9 @@
                             
                             return;
                         }
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
                         }
                         else{
                             if (data.errormsg != "") {

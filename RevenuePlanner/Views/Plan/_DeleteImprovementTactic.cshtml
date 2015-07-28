@@ -41,7 +41,7 @@
                 var isAssortment = $("#hdnRedirectType").val();
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Content("~/Plan/DeleteImprovementTactic")',
+                    url: '@Url.Content("~/Plan/DeleteImprovementTacticFromGrid")', //Modified for #1432 by Komal Rawal
                     data: {
                         ID: idTactic,
                         RedirectType: isAssortment

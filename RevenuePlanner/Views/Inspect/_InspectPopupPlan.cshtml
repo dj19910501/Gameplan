@@ -109,8 +109,13 @@
                     else
                     {
                         <span class="tipsyclassTitle ConcatTextlength" title="@Html.Raw(planDetails.Title)">@Html.Raw(planDetails.Title)</span>
+                        <div style="float: right; position: relative;">
+                            <button id="BtnPlan" class="GoToPlan-icon btn-Green btn-large" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" type="button" onclick="window.location.href=' @Url.Action("Index", "Home",new{activemenu = Enums.ActiveMenu.Plan,currentPlanId = planDetails.PlanId}) '"></button>
+                        </div>
                     }
+
                 </h2>
+
             </div>
 </form>
 <div>
@@ -204,6 +209,7 @@
         loadInnerTabs(planId, tabtext);
         }
     });
+
 
     //Added By Komal Rawal for #1327
     function SaveAllData(activeTab) {

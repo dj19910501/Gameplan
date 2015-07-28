@@ -25,6 +25,7 @@
  var Successmsgduplicate = (string)ViewBag.SuccessMessageDuplicatePlan;
     var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
     var ListBudgetingPlan = Model.objplanhomemodelheader.plans; //Added By Komal Rawal for new homepage UI
+    var IsGridView = (bool)ViewBag.GridView;
 
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
@@ -40,6 +41,7 @@
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
+@Html.Hidden("IsGridView", IsGridView)
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
@@ -283,6 +285,7 @@
                         GetTacticTypelist(CurrentPlanId);
                         GetOwnerListForFilter(CurrentPlanId);
                         LoadPlanGrid();
+                        LoadImprovementGrid(CurrentPlanId);
                     }
                 }
                 PagePostRequest = false;
@@ -683,7 +686,11 @@
 }
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
-<div id="divgridview" class="" style="display: none;"></div>
+<div id="divgridview" class="task-tbl" style="display: none;"></div>
+@*Added by Komal Rawal for #1432*@
+    <div id="ImprovementGrid" style="display:none;" class="improvement-grid-wrapper">
+
+</div>
 <div class="market-activity-main">
     <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
     </div>
@@ -851,14 +858,21 @@
         if (id == "liCalender") {
             $("#CalenderView").show();
             $("#divgridview").hide();
+            $("#ImprovementGrid").hide();
             RefreshCurrentTab();
           
         }
         else {
+
             $("#CalenderView").hide() ;
   $("#divgridview").show();
+            $("#ImprovementGrid").show();
+
             //Call the function for grid view
-           LoadPlanGrid();
+            LoadPlanGrid();
+            LoadImprovementGrid(CurrentPlanId);
+
+
         }
     });
   
@@ -925,7 +939,9 @@
             if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                 $("#CalenderView").hide();
                 $("#divgridview").show();
+                $("#ImprovementGrid").show();
                 LoadPlanGrid();
+                LoadImprovementGrid(CurrentPlanId);
                
             }
             else
@@ -1587,6 +1603,11 @@
         GetTacticTypelist(PlanIdsCustom);
         $('#hdnSelectedPlanIds').val(PlanIdsCustom);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
+     
+        if ($('#IsGridView').val() == "True") {
+            $("#CalenderView").hide();
+            $("#liGrid").click();
+        }
     });
 
     function LoadPlan() {
@@ -1612,34 +1633,13 @@
             $(this).closest(".alert").slideUp(400);
         });
 
-        //if ($('#cSuccessDuplicatePlan').html() == '') {
-        //    $("#successMessageDuplicatePlan").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
-        //}
-        //else {
-        //    $("#successMessageDuplicatePlan").removeClass("message-position");
-        //    $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-        //    $('#cSuccessDuplicatePlan').html('<strong>Success. </strong> ' + $('#cSuccessDuplicatePlan').html())
-        //    $("#successMessageDuplicatePlan").slideDown(3000);
-        //}
-
         if (Successmsgduplicate != "") {
             ShowMessage(isError, Successmsgduplicate, 3000);
-          //  $("#SuccessMsg").slideDown(3000);
         }
-
-        //if ($('#cErrorDuplicatePlan').html() == '') {
-        //    $("#errorMessageDuplicatePlan").slideUp(400);
-        //}
-        //else {
-        //    $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-        //    $('#cErrorDuplicatePlan').html('<strong>Error! </strong> ' + $('#cErrorDuplicatePlan').html())
-        //    $("#errorMessageDuplicatePlan").slideDown(400);
-        //}
 
         if (Errormsgduplicate != "") {
             isError = true;
             ShowMessage(isError, Errormsgduplicate,400);
-           // $("#errorMsg").slideDown(400);
         }
     }
 
@@ -2133,29 +2133,9 @@ function GetCurrentPlanPermissionDetail() {
             }
             else {
                 if (data.IsPlanEditable) {
-                        //switch ($('#ActiveMenu').val().toLowerCase()) {
-                        //    case 'home':
-                        //        // $("#divPlanEditButtonHome").show();
-                        //        if ($("#IsTacticActualsAddEditAuthorized").val().toLowerCase() == 'true')
-                        //            $("#divAddActuals").show();
-                        //        break;
-                        //    case 'plan':
-                        //        // $("#divPlanEditButtonPlan").show();
-                        //        $("#divAddActuals").hide();
-                        //        break;
-                        //}
                     $("#isViewOnly").val(true);
                 }
                 else {
-                        //switch ($('#ActiveMenu').val().toLowerCase()) {
-                        //    case 'home':
-                        //        //$("#divPlanEditButtonHome").hide();
-                        //        $("#divAddActuals").hide();
-                        //        break;
-                        //    case 'plan':
-                        //        //$("#divPlanEditButtonPlan").hide();
-                        //        break;
-                        //}
                     $("#isViewOnly").val(false);
                 }
             }
@@ -2854,7 +2834,8 @@ function Quarter() {
                       $("#modal-container-186470").removeClass("transition_y");
                       addDefaultModalPopupBackgroungColor();
                       if (isDataModified) {
-                          window.location.reload();
+                window.location.reload();
+               
                       }
                       else {
                           $('body').removeClass('bodyOverflow');
@@ -3980,6 +3961,7 @@ function Quarter() {
 </script>
 
 <script>
+    var ImpTacticId;
     $(document).ready(function () {
         function toggleChevron(e) {
             $(e.target)

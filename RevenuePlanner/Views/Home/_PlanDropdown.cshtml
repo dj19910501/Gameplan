@@ -62,7 +62,11 @@
         isQuater = Currenttime;
         onClickPlanTitle();
         SetAttributeData();
+
         RefreshCurrentTab();
+        if ($('#IsGridView').val() == "True") {
+            $("#CalenderView").hide();
+        }
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             GetCollaborators(CurrentPlanId);
             $("#lblMarkringActivitiestitle").show();
