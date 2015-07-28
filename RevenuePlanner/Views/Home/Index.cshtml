@@ -1004,7 +1004,15 @@
         // End - Added by Sohel Pathan on 12/12/2014 for PL ticket #1021
         window.location.reload();
 	
+    }	 
+
+ //Added By Komal Rawal for #1432
+    function LoadImprovementGrid(PlanID) {
+        var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
+        // $("#ImprovementGrid").empty();
+        $("#ImprovementGrid").load(url + '?id=' + PlanID);
     }
+    //End
 
     function removeByValue(arr, val) {
         for (var i = 0; i < arr.length; i++) {
