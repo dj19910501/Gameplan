@@ -1633,6 +1633,7 @@ namespace Integration.Eloqua
             {
                 if (EntityIdList.Count > 0)
                 {
+                    _mappingCustomFields = new Dictionary<string, string>();
                     string idList = string.Join(",", EntityIdList);
 
                     String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
