@@ -269,7 +269,8 @@ namespace Integration.Eloqua
             _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             _isResultError = false;
             // TODO: Move this function in internal level so it called if tactic exist
-
+            // Set Client ID based on integration instance.
+            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
             statusList = Common.GetStatusListAfterApproved();
             bool IsInstanceSync = false;
             StringBuilder sb = new StringBuilder();
@@ -453,7 +454,7 @@ namespace Integration.Eloqua
                     return true;
                 }
 
-                _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                
 
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
                 _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
