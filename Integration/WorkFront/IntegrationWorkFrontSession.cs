@@ -335,15 +335,15 @@ namespace Integration.WorkFront
                         templateToEdit.Template_Name = template["name"].ToString();
                         db.Entry(templateToEdit).State = EntityState.Modified;
                     }
+                }
 
-                    //templates in the database that are not in WorkFront need to be set to deleted in 
-                    List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
-                    foreach (string id in inDatabaseButNotInWorkFront)
-                    {
-                        IntegrationWorkFrontTemplate templateToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == templID).FirstOrDefault();
-                        templateToDelete.IsDeleted = 1;
-                        db.Entry(templateToDelete).State = EntityState.Modified;
-                    }
+               //templates in the database that are not in WorkFront need to be set to deleted in 
+               List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
+               foreach (string id in inDatabaseButNotInWorkFront)
+               {
+                 IntegrationWorkFrontTemplate templateToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == id).FirstOrDefault();
+                 templateToDelete.IsDeleted = 1;
+                 db.Entry(templateToDelete).State = EntityState.Modified;
                 }
             }
             catch
