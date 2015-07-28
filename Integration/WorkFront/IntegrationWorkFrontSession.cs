@@ -523,9 +523,29 @@ namespace Integration.WorkFront
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.Title + "'");
                     }
-                    else if (tacticField.Key == Fields.ToStringEnums(Fields.GamePlanTacticFields.DESCRIPTION))
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.DESCRIPTION))
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.Description + "'");
+                    }
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.START_DATE) )
+                    {
+                        updateList.Append(tacticField.Value + ":'" + tactic.StartDate + "'");
+                    }
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.END_DATE))
+                    {
+                        updateList.Append(tacticField.Value + ":'" + tactic.EndDate + "'");
+                    }
+                     else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.COST))
+                    {
+                        updateList.Append(tacticField.Value + ":'" + tactic.Cost + "'");
+                    }
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.TACTIC_BUDGET))
+                    {
+                        updateList.Append(tacticField.Value + ":'" + tactic.TacticBudget + "'");
+                    }
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.STATUS))
+                    {
+                        updateList.Append(tacticField.Value + ":'" + tactic.Status + "'");
                     }
                     else { notUsedFieldCount++; }
                     updateList.Append(",");
@@ -602,7 +622,9 @@ namespace Integration.WorkFront
             string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
             string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
             string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
-
+            List<Fields.WorkFrontField> wfFields = Fields.GetWorkFrontFieldDetails();
+            List<string> mappingTypeErrors = new List<string>();
+            bool mappingError = false;
             List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
           
               _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
@@ -610,6 +632,19 @@ namespace Integration.WorkFront
                                                   (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
                                               .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
                                               .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+
+              foreach (KeyValuePair<string, string> entry in _mappingTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+              {
+                  if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && wfFields.Where(wf => wf.value == entry.Value).FirstOrDefault() != null)
+                  {
+                      if (!Enums.ActualFieldDatatype[entry.Key].Contains(wfFields.Where(Sfd => Sfd.value == entry.Value).FirstOrDefault().dataType))
+                      {
+
+                          mappingTypeErrors.Add("Cannot map " + entry.Key + " to " + entry.Value + ".");
+                          mappingError = true;
+                      }
+                  }
+              }
             
             dataTypeMapping = dataTypeMapping.Where(gp => gp.GameplanDataType != null).Select(gp => gp).ToList();
             _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
@@ -626,6 +661,8 @@ namespace Integration.WorkFront
                                                      clientId = c.ClientId
                                                  }).Select(c => c).ToList();
             IntegrationInstanceTacticIds = new List<string>();
+
+           
            
         }
 
@@ -849,20 +886,5 @@ namespace Integration.WorkFront
         {
             return Fields.ReturnAllWorkFrontFields_AsAPI();
         }
-
-        private void GenerateFields()
-        {
-
-
-            WorkFrontFields.Add("name", "Name");
-            WorkFrontFields.Add("description", "Description");
-
-            GameplanTacticFields.Add("WorkFrontProjectStatus", "Work Front Project Status");
-
-
-
-        }
-
-
     }
 }

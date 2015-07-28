@@ -24,7 +24,6 @@ namespace Integration.WorkFront
     public class Fields
     {
 
-        /// <summary>
         /// Very good method to Override ToString on Enums
         /// Case : Suppose your enum value is EncryptionProviderType and you want 
         /// enumVar.Tostring() to retrun "Encryption Provider Type" then you should use this method.
@@ -57,13 +56,23 @@ namespace Integration.WorkFront
             }
             return en.ToString();
         }
- 
+
         public enum GamePlanTacticFields
         {
             [Description("Title")]
             TITLE = 1,
             [Description("Description")]
             DESCRIPTION = 3,
+            [Description("Start Date")]
+            START_DATE = 5,
+            [Description("End Date")]
+            END_DATE = 7,
+            [Description("Cost")]
+            COST = 10,
+            [Description("Tactic Budget")]
+            TACTIC_BUDGET = 12,
+            [Description("Tactic Status")]
+            STATUS = 14
         }
 
         public static List<string> ReturnAllWorkFrontFields_AsUserText()
@@ -97,25 +106,43 @@ namespace Integration.WorkFront
             temp.Add(WorkFrontField.DURATIONMINUTES.ToAPIString());
             return temp;
         }
+
+        public static List<WorkFrontField> GetWorkFrontFieldDetails()
+        {
+            List<WorkFrontField> fieldDetails = new List<WorkFrontField>();
+            fieldDetails.Add(WorkFrontField.NAME);
+            fieldDetails.Add(WorkFrontField.DESCRIPTION);
+            fieldDetails.Add(WorkFrontField.PLANNEDSTARTDATE);
+            fieldDetails.Add(WorkFrontField.WORKFRONTPROJECTSTATUS);
+            fieldDetails.Add(WorkFrontField.ACTUALBENEFIT);
+            fieldDetails.Add(WorkFrontField.ACTUALCOST);
+            fieldDetails.Add(WorkFrontField.ACTUALDURATIONMINUTES);
+            fieldDetails.Add(WorkFrontField.ACTUALCOMPLETIONDATE);
+            fieldDetails.Add(WorkFrontField.BUDGET);
+            fieldDetails.Add(WorkFrontField.DURATIONMINUTES);
+            return fieldDetails;
+        }
        
         public class WorkFrontField
         {
-            public static readonly WorkFrontField NAME = new WorkFrontField("name", "Name");
-            public static readonly WorkFrontField DESCRIPTION = new WorkFrontField("description", "Description");
-            public static readonly WorkFrontField PLANNEDSTARTDATE = new WorkFrontField("plannedStartDate", "Planned Start Date");
-            public static readonly WorkFrontField WORKFRONTPROJECTSTATUS = new WorkFrontField("WorkFront Project Status", "WorkFront Project Status");
-            public static readonly WorkFrontField ACTUALBENEFIT = new WorkFrontField("actualBenefit", "Actual Benefit");
-            public static readonly WorkFrontField ACTUALCOST = new WorkFrontField("actualCost", "Actual Cost");
-            public static readonly WorkFrontField ACTUALDURATIONMINUTES = new WorkFrontField("actualDurationMinutes", "Actual Duration in Minutes");
-            public static readonly WorkFrontField ACTUALCOMPLETIONDATE = new WorkFrontField("actualCompletionDate", "Actual Completion Date");
-            public static readonly WorkFrontField BUDGET = new WorkFrontField("budget", "Budget");
-            public static readonly WorkFrontField DURATIONMINUTES = new WorkFrontField("durationMinutes", "Duration in Minutes");
+            public static readonly WorkFrontField NAME = new WorkFrontField("name", "Name", "string", true);
+            public static readonly WorkFrontField DESCRIPTION = new WorkFrontField("description", "Description", "string", true);
+            public static readonly WorkFrontField PLANNEDSTARTDATE = new WorkFrontField("plannedStartDate", "Planned Start Date", "date", true);
+            public static readonly WorkFrontField WORKFRONTPROJECTSTATUS = new WorkFrontField("WorkFront Project Status", "WorkFront Project Status", "string", false);
+            public static readonly WorkFrontField ACTUALBENEFIT = new WorkFrontField("actualBenefit", "Actual Benefit", "int", true);
+            public static readonly WorkFrontField ACTUALCOST = new WorkFrontField("actualCost", "Actual Cost", "int", true);
+            public static readonly WorkFrontField ACTUALDURATIONMINUTES = new WorkFrontField("actualDurationMinutes", "Actual Duration in Minutes", "int", true);
+            public static readonly WorkFrontField ACTUALCOMPLETIONDATE = new WorkFrontField("actualCompletionDate", "Actual Completion Date", "date", true);
+            public static readonly WorkFrontField BUDGET = new WorkFrontField("budget", "Budget", "int", true);
+            public static readonly WorkFrontField DURATIONMINUTES = new WorkFrontField("durationMinutes", "Duration in Minutes", "int", true);
 
             /// <summary>
             /// String representation of the Fields
             /// </summary>
             public string apiString { get; private set; }
             public string value { get; private set; }
+            public string dataType { get; private set; }
+            public bool writeable { get; private set; }
 
             /// <summary>
             /// Creates a new Fields with the given value
@@ -123,10 +150,12 @@ namespace Integration.WorkFront
             /// <param name="val">
             /// Object code value as needed for the object URI
             /// </param>
-            private WorkFrontField(string fieldName, string fieldValue)
+            private WorkFrontField(string fieldName, string fieldValue, string datatype, bool writeable)
             {
                 this.apiString = fieldName;
                 this.value = fieldValue;
+                this.dataType = datatype;
+                this.writeable = writeable;
             }
 
             /// <summary>
