@@ -15186,3 +15186,16 @@ margin-right: 12px;
 .add-improvement .accordion-campaign .cf-arrow {
      font-family: source_sans_probold;
 }
+
+/*added by dashrath Prajapati*/
+.login-header
+{
+    color: rgb(0, 0, 0);
+    font-family: 'source sans pro';
+    font-size: 17px;
+    font-weight: 600;
+    padding-top: 18px;
+    background-color: rgb(230, 230, 230);
+    padding-bottom: 15px;
+    text-align: center;
+}/*added by dashrath Prajapati*/   
