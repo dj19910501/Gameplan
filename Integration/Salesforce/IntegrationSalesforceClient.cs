@@ -2635,14 +2635,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> campaign = GetCampaign(planCampaign);
 
-            if (_mappingTactic.ContainsKey("Title") && planCampaign != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (campaign.ContainsKey(titleMappedValue))
-                {
-                    campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingCampaign.ContainsKey("ActivityType"))
             {
@@ -2660,14 +2652,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Create);
 
-            if (_mappingTactic.ContainsKey("Title") && planProgram != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (program.ContainsKey(titleMappedValue))
-                {
-                    program[titleMappedValue] = Common.TruncateName(program[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingProgram.ContainsKey("ActivityType"))
             {
@@ -2689,7 +2673,13 @@ namespace Integration.Salesforce
                 {
                     tactic[titleMappedValue] = planTactic.TacticCustomName == null ? Common.GenerateCustomName(planTactic, _clientId) : planTactic.TacticCustomName;
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
-                    tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
+                    int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == titleMappedValue).FirstOrDefault().Length;
+                    string customvalue = planTactic.TacticCustomName;
+                    if (valuelength != 0)
+                    {
+                        customvalue = customvalue.Length > valuelength ? customvalue.Substring(0, valuelength - 1) : customvalue;
+                    }
+                    tactic[titleMappedValue] = customvalue;
                 }
             }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
@@ -2707,14 +2697,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> campaign = GetImprovementCampaign(planIMPCampaign);
 
-            if (_mappingTactic.ContainsKey("Title") && planIMPCampaign != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (campaign.ContainsKey(titleMappedValue))
-                {
-                    campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingTactic.ContainsKey("ActivityType"))
             {
@@ -2730,14 +2712,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> program = GetImprovementProgram(planIMPProgram, Enums.Mode.Create);
 
-            if (_mappingTactic.ContainsKey("Title") && planIMPProgram != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (program.ContainsKey(titleMappedValue))
-                {
-                    program[titleMappedValue] = Common.TruncateName(program[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingTactic.ContainsKey("ActivityType"))
             {
@@ -2753,14 +2727,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Create);
 
-            if (_mappingTactic.ContainsKey("Title") && planIMPTactic != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (tactic.ContainsKey(titleMappedValue))
-                {
-                    tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingTactic.ContainsKey("ActivityType"))
             {
@@ -2776,14 +2742,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> campaign = GetCampaign(planCampaign);
 
-            if (_mappingTactic.ContainsKey("Title") && planCampaign != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (campaign.ContainsKey(titleMappedValue))
-                {
-                    campaign[titleMappedValue] = Common.TruncateName(campaign[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingCampaign.ContainsKey("ActivityType"))
             {
@@ -2800,14 +2758,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> program = GetProgram(planProgram, Enums.Mode.Update);
 
-            if (_mappingTactic.ContainsKey("Title") && planProgram != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (program.ContainsKey(titleMappedValue))
-                {
-                    program[titleMappedValue] = Common.TruncateName(program[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingProgram.ContainsKey("ActivityType"))
             {
@@ -2829,7 +2779,13 @@ namespace Integration.Salesforce
 
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = Common.TruncateName(planTactic.TacticCustomName.ToString());
+                    int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == titleMappedValue).FirstOrDefault().Length;
+                    string customvalue = planTactic.TacticCustomName;
+                    if (valuelength != 0)
+                    {
+                        customvalue = customvalue.Length > valuelength ? customvalue.Substring(0, valuelength - 1) : customvalue;
+                    }
+                    tactic[titleMappedValue] = customvalue;
                 }
             }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
@@ -2846,14 +2802,6 @@ namespace Integration.Salesforce
         {
             Dictionary<string, object> tactic = GetImprovementTactic(planIMPTactic, Enums.Mode.Update);
 
-            if (_mappingTactic.ContainsKey("Title") && planIMPTactic != null)
-            {
-                string titleMappedValue = _mappingTactic["Title"].ToString();
-                if (tactic.ContainsKey(titleMappedValue))
-                {
-                    tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
-                }
-            }
             //Added by Mitesh Vaishnav for PL ticket 1335 - Integration - Gameplan type field for SFDC
             if (_mappingTactic.ContainsKey("ActivityType"))
             {
@@ -2984,7 +2932,7 @@ namespace Integration.Salesforce
                     else
                     {
                         int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
-                        if (valuelength != null || valuelength != 0)
+                        if (valuelength != 0)
                         {
                             value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
                         }
@@ -2996,12 +2944,22 @@ namespace Integration.Salesforce
                 // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 else
                 {
+                    string customvalue = string.Empty;
+                    string customkey = string.Empty;
+                    int valuelength = 0;
                     var mappedData = MapCustomField<T>(obj, sourceProps, mapping);
                     if (mappedData != null)
                     {
                         if (mappedData.Length > 0)
                         {
-                            keyvaluepair.Add(mappedData[0].ToString(), mappedData[1].ToString());
+                            customkey = Convert.ToString(mappedData[0]);
+                            valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
+                            customvalue = Convert.ToString(mappedData[1]);
+                            if (valuelength != 0)
+                            {
+                                customvalue = customvalue.Length > valuelength ? customvalue.Substring(0, valuelength - 1) : customvalue;
+                            }
+                            keyvaluepair.Add(customkey, customvalue);
                         }
                     }
                 }
