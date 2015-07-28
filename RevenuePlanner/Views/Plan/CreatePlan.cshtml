@@ -195,11 +195,11 @@
     <div>
         @if (strPlanId == "0")
         {
-            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20" type="button" style="min-width: 20%; margin-left: 8px">Create Plan</button>
+            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20 create-plan-btn" type="button" style="min-width: 20%; margin-left: 20px">Create Plan</button>
         }
         else
         {
-            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20" type="button" style="min-width: 20%; margin-left: 8px">Save</button>
+            <button id="button-save" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top20 create-plan-btn" type="button" style="min-width: 20%; margin-left: 20px">Save</button>
         }
     </div>
 
@@ -617,22 +617,40 @@
 
     function isDataChanged() {
         var changed = false;
+        var ChangedValue = false;
+        var ChangedValueFormat = false;
 
         $('.myValue').each(function () {
             var iv = $(this).attr("placeholder");
-            if ($(this).val() != iv) {
-                changed = true;
+            if ($(this).val() != iv && iv != "") {
+                ChangedValue = true;
                 return false;
+            }
+            else
+            {
+                ChangedValue = false;
             }
         });
         $('.myValueFormat').each(function () {
             var iv = $(this).attr("placeholder");
             if (ReplaceCC($(this).val()) != ReplaceCC(iv)) {
-                changed = true;
+                ChangedValueFormat = true;
                 return false;
+            }
+            else
+            {
+                ChangedValueFormat = false;
             }
         });
 
+        if (ChangedValue == true || ChangedValueFormat == true)
+        {
+            changed = true;
+        }
+        else
+        {
+            changed = false;
+        }
         return changed;
     }
 

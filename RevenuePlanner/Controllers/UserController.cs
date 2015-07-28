@@ -185,11 +185,12 @@ namespace RevenuePlanner.Controllers
                                 //Update last login date for user
                                 objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
 
-                                if (Sessions.User.SecurityQuestionId == null)
-                                {
-                                    Sessions.RedirectToSetSecurityQuestion = true;
-                                    return RedirectToAction("SetSecurityQuestion", "Login");
-                                }
+                                //Commented By Komal Rawal for #1457
+                                //if (Sessions.User.SecurityQuestionId == null)
+                                //{
+                                //    Sessions.RedirectToSetSecurityQuestion = true;
+                                //    return RedirectToAction("SetSecurityQuestion", "Login");
+                                //}
 
                                 return RedirectToAction("Index", "Home");
                             }

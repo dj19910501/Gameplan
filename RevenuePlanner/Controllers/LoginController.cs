@@ -208,15 +208,17 @@ namespace RevenuePlanner.Controllers
                         Sessions.RedirectToChangePassword = true;
                         return RedirectToAction("ChangePassword", "User");
                     }
-                    if (obj.SecurityQuestionId == null)
-                    {
-                        Sessions.RedirectToSetSecurityQuestion = true;
-                        return RedirectToAction("SetSecurityQuestion", "Login");
-                    }
-                    else
-                    {
-                        Sessions.RedirectToSetSecurityQuestion = false;
-                    }
+
+                    //Commented By Komal Rawal for #1457
+                    //if (obj.SecurityQuestionId == null)
+                    //{
+                    //    Sessions.RedirectToSetSecurityQuestion = true;
+                    //    return RedirectToAction("SetSecurityQuestion", "Login");
+                    //}
+                    //else
+                    //{
+                    //    Sessions.RedirectToSetSecurityQuestion = false;
+                    //}
 
                     //Update last login date for user
                     objBDSServiceClient.UpdateLastLoginDate(Sessions.User.UserId, Sessions.ApplicationId);
@@ -690,8 +692,6 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if (objUser.SecurityQuestionId != null)
-                    {
                         BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
                         objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
                         objPasswordResetRequest.UserId = objUser.UserId;
@@ -725,12 +725,6 @@ namespace RevenuePlanner.Controllers
 
 
                             form.IsSuccess = true;
-                        }
-                    }
-                    else
-                    {
-                        TempData["ErrorMessage"] = Common.objCached.SecurityQuestionNotFound;
-                        return RedirectToAction("Index", "Login", new { returnUrl = "" });
                     }
                 }
             }
