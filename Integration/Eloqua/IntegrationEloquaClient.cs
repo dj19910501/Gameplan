@@ -269,7 +269,8 @@ namespace Integration.Eloqua
             _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             _isResultError = false;
             // TODO: Move this function in internal level so it called if tactic exist
-
+            // Set Client ID based on integration instance.
+            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
             statusList = Common.GetStatusListAfterApproved();
             bool IsInstanceSync = false;
             StringBuilder sb = new StringBuilder();
@@ -453,7 +454,7 @@ namespace Integration.Eloqua
                     return true;
                 }
 
-                _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                
 
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
                 _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
@@ -1632,6 +1633,7 @@ namespace Integration.Eloqua
             {
                 if (EntityIdList.Count > 0)
                 {
+                    _mappingCustomFields = new Dictionary<string, string>();
                     string idList = string.Join(",", EntityIdList);
 
                     String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
