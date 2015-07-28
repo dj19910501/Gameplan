@@ -221,7 +221,7 @@ namespace Integration.Helper
             {Enums.ActualFields.ActivityType.ToString(),"string,text"},
             {Enums.ActualFields.Cost.ToString(),"int,double,float,numeric"},
             {Enums.ActualFields.CostActual.ToString(),"int,double,float,numeric"},
-            {Enums.ActualFields.CreatedBy.ToString(),"date,datetime"},
+            {Enums.ActualFields.CreatedBy.ToString(),"string,text"},
             {Enums.ActualFields.Description.ToString(),"string,text"},
             {Enums.ActualFields.EffectiveDate.ToString(),"date,datetime"},
             {Enums.ActualFields.EndDate.ToString(),"date,datetime"},

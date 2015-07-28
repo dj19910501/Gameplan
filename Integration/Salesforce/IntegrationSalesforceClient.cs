@@ -1593,7 +1593,11 @@ namespace Integration.Salesforce
             {
                 // Start - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
-
+                if (!dataTypeMapping.Any()) // check if there is no field mapping configure then log error to IntegrationInstanceLogDetails table.
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "You have not configure any single field with Salesforce field.");
+                    return true;    // return true value that means error exist and do not proceed for the further mapping list.
+                }
                 lstSalesforceFieldDetail = GetTargetDataTypeWithLengthAndDatatype(Common.SalesForceCampaignObject.ToString());
 
                 List<SalesForceObjectFieldDetails> lstMappingMisMatch = new List<SalesForceObjectFieldDetails>();
@@ -1661,6 +1665,7 @@ namespace Integration.Salesforce
                                 " in salesforce for " + Section + ".";
                     Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section,true);
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Error, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, msg);
                 }
                 if (lstMappingMisMatch.Count > 0)
                 {
