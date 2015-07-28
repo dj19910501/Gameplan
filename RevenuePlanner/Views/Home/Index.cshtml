@@ -689,7 +689,6 @@
 <div id="divgridview" class="task-tbl" style="display: none;"></div>
 @*Added by Komal Rawal for #1432*@
     <div id="ImprovementGrid" style="display:none;" class="improvement-grid-wrapper">
-
 </div>
 <div class="market-activity-main">
     <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
@@ -4490,16 +4489,18 @@ function Quarter() {
             eval(functionName);
         }
     }
+ 
+    }
 
-        //Dharmraj Start 8July2014 Common function to handle tactic click event
+    //Dharmraj Start 8July2014 Common function to handle tactic click event
     function impTacticCommonClick(id) {
         if (id == 0) {
             var idProgram = ImpTacticId;// $("a#divimpTactic.1").attr('data-id-program');
-            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
             return false;
         }
         else {
-            ShowModels("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Assortment.ToString()');
+            ShowModels("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
             return false;
         }
     }
@@ -4573,7 +4574,6 @@ function Quarter() {
         }
         modalBackdropDisplayNone();
     };
-}
 
 </script>		 
 <script>
