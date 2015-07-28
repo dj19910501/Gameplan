@@ -3976,7 +3976,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="goalType">goal type of selected plan</param>
         /// <param name="goalValue">goal value for goal type of selected plan</param>
         /// <returns>return BudgetAllocationModel object</returns>
-        public static BudgetAllocationModel CalculateBudgetInputs(int modelId, string goalType, string goalValue, double averageDealSize)
+        public static BudgetAllocationModel CalculateBudgetInputs(int modelId, string goalType, string goalValue, double averageDealSize, bool IsCw=false)
         {
             BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
             try
@@ -4016,6 +4016,14 @@ namespace RevenuePlanner.Helpers
                         double RevenueValue = (inputValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize;
                         RevenueValue = (RevenueValue.Equals(double.NaN) || RevenueValue.Equals(double.NegativeInfinity) || RevenueValue.Equals(double.PositiveInfinity)) ? 0 : RevenueValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.RevenueValue = RevenueValue;
+
+                        // Calculate CW   -- Added by devanshi gandhi for pl #1430
+                        if (IsCw == true)
+                        {
+                            double CWValue = (inputValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
+                            CWValue = (CWValue.Equals(double.NaN) || CWValue.Equals(double.NegativeInfinity) || CWValue.Equals(double.PositiveInfinity)) ? 0 : CWValue;
+                            objBudgetAllocationModel.CWValue = CWValue;
+                        }
                     }
                     else if (goalType == Enums.PlanGoalType.MQL.ToString())
                     {
@@ -4034,6 +4042,13 @@ namespace RevenuePlanner.Helpers
                         RevenueValue = (RevenueValue.Equals(double.NaN) || RevenueValue.Equals(double.NegativeInfinity) || RevenueValue.Equals(double.PositiveInfinity)) ? 0 : RevenueValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.RevenueValue = RevenueValue;
 
+                        // Calculate CW   -- Added by devanshi gandhi for pl #1430
+                        if (IsCw == true)
+                        {
+                            double CWValue = (inputValue) * (modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
+                            CWValue = (CWValue.Equals(double.NaN) || CWValue.Equals(double.NegativeInfinity) || CWValue.Equals(double.PositiveInfinity)) ? 0 : CWValue;
+                            objBudgetAllocationModel.CWValue = CWValue;
+                        }
                     }
                     else if (goalType == Enums.PlanGoalType.Revenue.ToString().ToUpper())
                     {
@@ -4051,6 +4066,14 @@ namespace RevenuePlanner.Helpers
                         double MQLValue = (inputValue) / (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)) * averageDealSize); // Modified by Sohel Pathan on 12/09/2014 for PL ticket #775
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
                         objBudgetAllocationModel.MQLValue = MQLValue;
+
+                        // Calculate CW   -- Added by devanshi gandhi for pl #1430
+                        if (IsCw == true)
+                        {
+                            double CWValue = (inputValue) /averageDealSize;
+                            CWValue = (CWValue.Equals(double.NaN) || CWValue.Equals(double.NegativeInfinity) || CWValue.Equals(double.PositiveInfinity)) ? 0 : CWValue;
+                            objBudgetAllocationModel.CWValue = CWValue;
+                        }
                     }
                 }
                 return objBudgetAllocationModel;

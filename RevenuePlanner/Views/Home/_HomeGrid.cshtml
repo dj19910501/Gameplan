@@ -5,11 +5,30 @@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid_split.js")">
     </script>*@
 
+<script>
+
+    var revenue = "Revenue : $" + number_format('@ViewBag.Revenue', 0, '.', ',');
+    $("#spnrevenue").html(revenue);
+    var mql = '@ViewBag.MQLLable' + " : " + number_format('@ViewBag.MQLValue', 0, '.', ',');
+    $("#spnmql").html(mql);
+    var inq = '@ViewBag.INQLable' + " : " + number_format('@ViewBag.INQValue', 0, '.', ',');
+    $("#spninq").html(inq);
+
+    var cw = '@ViewBag.CWLable' + " : " + number_format('@ViewBag.CWValue', 0, '.', ',');
+    $("#spncw").html(cw);
+</script>
+<div class="goals-wrapper" id="goalwrapper">
+    <span class="goal-text">Goals</span>
+    <span id="spnrevenue"></span>
+    <span id="spninq"></span>
+    <span id="spnmql"></span>
+    <span id="spncw"></span>
+</div>
 <div>
     <table width="100%">
         <tr>
             <td width="100%">
-                <div id="gridbox" width="100%" height="600px" style="background-color:white;"></div>
+                <div id="gridbox" width="100%" style="background-color:white;"></div>
             </td>
             <td valign="top"></td>
         </tr>
@@ -21,7 +40,27 @@
 
     </table>
 </div>
+<div class="row-fluid calc-height">
+    <div class="span12">
+        <div id="divMovetacticPopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div>
+                <form>
 
+                    <h2 class="primary-title source-sans-prosemibold resubmission_header">Moving a Tactic</h2>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to move a tactic to a diffrent program called </label>
+
+
+                    <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
+                    <input type="hidden" id="hdnsourceid" />
+                    <input type="hidden" id="hdndestid" />
+                    <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button">Proceed</button>
+                    <button id="cancel-button" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
     var HomeGrid;
 
@@ -59,6 +98,10 @@
         //  HomeGrid.enableTreeGridLines();
         HomeGrid.enableDragAndDrop(true);
         //HomeGrid.setDragBehavior("sibling-next");
+        HomeGrid.enableAutoHeight(true);
+        HomeGrid.setNumberFormat("$0,000.00", 5, ".", ",");
+        HomeGrid.setNumberFormat("0,000.00", 9, ".", ",");
+        HomeGrid.setNumberFormat("$0,000.00", 10, ".", ",");
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
         HomeGrid.attachEvent("onDrag", doOnDrag);
@@ -83,26 +126,12 @@
                     var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
                     var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
                     var tacticname = HomeGrid.cells(sid, 0).getValue();
-                    var programname = HomeGrid.cells(tid, 0).getValue();
-                  
-                    var con = confirm("Are you sure to move Tactic : " + tacticname + "  to Program : " + programname);
-                    if (con == true) {
-                    $.ajax({
+                    ProgarmName = HomeGrid.cells(tid, 0).getValue();
+                    $("#lipname").html(ProgarmName);
+                    $("#hdnsourceid").val(sourseid);
+                    $("#hdndestid").val(destinatinId);
+                    $("#divMovetacticPopup").modal('show');
 
-                        type: 'POST',
-
-                        url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                        data: { UpdateType: dragSourcetype, UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
-                        dataType: 'json',
-
-                        success: function (states) {
-                                // LoadPlanGrid();
-                        }
-                    });
-                    return true;
-                    }
-                    else
-                        return false;
                 }
                 else
                     alert("Tactic can move only to same plan program."); return false;
@@ -116,13 +145,29 @@
         }
 
     }
+    function SaveMoveTactic() {
+        var sourseid = $("#hdnsourceid").val();
+        var destinatinId = $("#hdndestid").val();
+        $.ajax({
+
+            type: 'POST',
+
+            url: '@Url.Action("SaveGridDetail")', // we are calling json method
+            data: { UpdateType: "tact", UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
+            dataType: 'json',
+
+            success: function (states) {
+                LoadPlanGrid();
+            }
+        });
+    }
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var updatetype = rowId.split(".")[0];
         var Id;
         var UpdateColumn;
         var UpdateVal;
 
-        var isAssortment = true;
+
 
         if (stage == 2) // start edit Shipping column
         {
@@ -132,6 +177,7 @@
             var edateindex = HomeGrid.getColIndexById('enddate');
             var idindex = HomeGrid.getColIndexById('id');
             var costindex = HomeGrid.getColIndexById('plannedcost');
+            var stageindex = HomeGrid.getColIndexById('inq');
             // var value = HomeGrid.cells(rowId, index).getValue();
             // end
             var Colind = this.cell.cellIndex;
@@ -185,66 +231,29 @@
                     }
                 }
             }
+            if (UpdateColumn.toString().trim() == "Projected Stage Value") {
+
+                var tactictypeindex = HomeGrid.getColIndexById('tactictype');
+                var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
+                GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue);
+                return true;
+            }
             if (UpdateColumn == "Tactic Type") {
 
                 var tacticTypeId = nValue;
-                var pmql = 0;
-                var pcost = 0;
-                var projectedStageValue = 0;
+
 
                 if (tacticTypeId != '') {
-                    $.ajax({
-                        type: 'POST',
-                        url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
-                        data: { tacticTypeId: tacticTypeId },
-                        success: function (data) {
-                            pcost = data.revenue;
-                            projectedStageValue = data.projectedStageValue;
-                            // HomeGrid.cells(rowId, 8).setValue(data.stageTitle);
+                    if (nValue != oValue) {
+                        var projectedStageValue = HomeGrid.cells(rowId, stageindex).getValue();
+                        GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue);
 
-                            $.ajax({
-                                type: 'POST',
-                                url: '@Url.Content("~/Home/CalculateMQL")',
-                                data: {
-                                    tactictid: parseInt(Id), TacticTypeId: parseInt(tacticTypeId), projectedStageValue: projectedStageValue, RedirectType: isAssortment, isTacticTypeChange: true
-                                },
-                                success: function (data) {
-                                    if (data.mql == 'N/A') {
-                                        HomeGrid.cells(rowId, 9).setValue(data.mql);
-                                    }
-                                    else {
-                                        var mqlConversion = 0;
-                                        if (data.mql != null)
-                                        mqlConversion = data.mql;
-                                        var mqlValue = FormatCommas(mqlConversion.toString(), false);
-                                        HomeGrid.cells(rowId, 9).setValue(mqlValue);
-                                    }
-                                    HomeGrid.cells(rowId, 8).setValue('$' + number_format(data.revenue.toString(), 0, 0, ','));
-                                    if (nValue != oValue) {
-                                        UpdateVal = nValue;
-                                        $.ajax({
 
-                                            type: 'POST',
-
-                                            url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                                            data: { UpdateType: updatetype, UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(Id) },
-                                            dataType: 'json',
-
-                                            success: function (states) {
-                                               // LoadPlanGrid();
-                                            }
-                                        });
-                                    }
-                                }
-
-                            });
-
-                        }
-                    });
+                    }
+                    else return false;
                 }
-                return true;
-
             }
+
             if (nValue != oValue) {
                 UpdateVal = nValue;
                 $.ajax({
@@ -253,13 +262,73 @@
                     data: { UpdateType: updatetype, UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(Id) },
                     dataType: 'json',
                     success: function (states) {
-                      //  LoadPlanGrid();
+                        //  LoadPlanGrid();
                     }
                 });
             }
             return true;
         }
     }
+    function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageValue, rowid, UpdateVal) {
+        var pmql = 0;
+        var pcost = 0;
+        var isAssortment = true;
+        var projectedStageValue = 0;
 
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Home/CalculateMQL")',
+            data: {
+                tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: projectedStageValue, RedirectType: isAssortment, isTacticTypeChange: true
+            },
+            success: function (data) {
+                if (data.mql == 'N/A') {
+                    HomeGrid.cells(rowid, 9).setValue(data.mql);
+                }
+                else {
+                    var mqlConversion = 0;
+                    if (data.mql != null)
+                        mqlConversion = data.mql;
+                    var mqlValue = FormatCommas(mqlConversion.toString(), false);
+                    HomeGrid.cells(rowid, 9).setValue(mqlValue);
+                }
+                HomeGrid.cells(rowid, 10).setValue(data.revenue);
+
+
+                $.ajax({
+
+                    type: 'POST',
+
+                    url: '@Url.Action("SaveGridDetail")', // we are calling json method
+                    data: { UpdateType: "tact", UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(TacticID) },
+                    dataType: 'json',
+
+                    success: function (states) {
+                        // LoadPlanGrid();
+                    }
+                });
+
+            }
+
+        });
+
+    }
+
+
+    $(document).ready(function () {
+        $('#cancel-button').on("click", function () {
+            $('#divMovetacticPopup').modal("hide");
+
+
+        });
+
+        //// Proceed to save data.
+        $('#proceed-button').on("click", function () {
+
+            SaveMoveTactic();
+            $('#divMovetacticPopup').modal("hide");
+        });
+    });
 
 </script>

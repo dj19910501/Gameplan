@@ -4547,9 +4547,9 @@ namespace RevenuePlanner.Controllers
                 {
                     lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
                 }
-                int levelMQL = objDbMrpEntities.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL) && stage.IsDeleted == false).Level.Value;
-
-                string StageTitle = objDbMrpEntities.Stages.Where(stg => stg.ClientId == Sessions.User.ClientId && stg.Level == levelMQL).FirstOrDefault().Title;
+                List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
+               
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
@@ -4574,17 +4574,17 @@ namespace RevenuePlanner.Controllers
                 xmlstring = "<?xml version='1.0' encoding='iso-8859-1'?>";
                 xmlstring = xmlstring + "<rows>";
 
-                xmlstring = xmlstring + " <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Planned Cost,Tactic Type,Owner,Revenue," + StageTitle + "</param>";
+                xmlstring = xmlstring + " <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Projected Stage Value," + MQLTitle + ",Revenue</param>";
                 xmlstring = xmlstring + "        <param>align=center;align=center;align=center;align=center;align=center;align=center;align=center;align=center;align=center;align=center;</param>";
                 xmlstring = xmlstring + " </call></beforeInit>";
 
                 xmlstring = xmlstring + "<column width='25' type='tree' align='left' sort='str' id='taskname'>Task Name</column>";
 
-                xmlstring = xmlstring + "<column type='ro' align='center' id='add' width='5' ></column>";
+                xmlstring = xmlstring + "<column type='ro' align='center' id='add' width='3' ></column>";
                 xmlstring = xmlstring + "<column type='ro' align='center' id='id' >id</column>";
-                xmlstring = xmlstring + "<column width='10' type='dhxCalendar' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>";
-                xmlstring = xmlstring + "<column width='10' type='dhxCalendar' align='center' id='enddate'>#cspan</column>";
-                xmlstring = xmlstring + "<column width='10' type='price' align='center' id='plannedcost'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='7' type='dhxCalendar' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>";
+                xmlstring = xmlstring + "<column width='7' type='dhxCalendar' align='center' id='enddate'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='11' type='ron' align='center' id='plannedcost'>#cspan</column>";
                 xmlstring = xmlstring + "<column width='10' type='ro' align='center' id='tactictype'>#cspan</column>";
 
                 xmlstring = xmlstring + "<column width='10' type='co' align='center' id='owner' class='ui-multiselect ui-widget ui-state-default ui-corner-all'>#cspan";
@@ -4596,14 +4596,19 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 xmlstring = xmlstring + xmlUserlist + " </column>";
-                xmlstring = xmlstring + "<column width='10' type='price' align='center' id='revenue'>#cspan</column>";
-                xmlstring = xmlstring + "<column width='10' type='ro' align='center' id='qleads'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='10' type='ron' align='center' id='inq'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='10' type='ron' align='center' id='mql'>#cspan</column>";
+                xmlstring = xmlstring + "<column width='7' type='ron' align='center' id='revenue'>#cspan</column>";
+
                 xmlstring = xmlstring + "<settings><colwidth>%</colwidth> </settings> ";
                 xmlstring = xmlstring + "</head>";
 
                 List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
 
                 List<Plan> lstplandetail = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
+
+                GetGoalValue(lstplandetail, modelId.ToString()); // for plan grid header to bind goal detail
+
                 var lstcampaigndetail = objDbMrpEntities.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && campaign.IsDeleted == false).ToList();
 
                 List<int> lstCampaignId = lstcampaigndetail.Select(campaign => campaign.PlanCampaignId).ToList();
@@ -4615,7 +4620,8 @@ namespace RevenuePlanner.Controllers
                 var programtactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(_tactic => lstprogramId.Contains(_tactic.PlanProgramId) && _tactic.IsDeleted.Equals(false)).ToList();
 
                 List<int> lsttacticId = programtactic.Select(tactic => tactic.PlanTacticId).ToList();
-                var tacticCost = objDbMrpEntities.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => lsttacticId.Contains(tacCost.PlanTacticId)).ToList();
+
+
                 #region calculate cost , revenue and tql value
 
                 List<ModelDateList> modelDateList = new List<ModelDateList>();
@@ -4634,7 +4640,7 @@ namespace RevenuePlanner.Controllers
                 List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(mdl => mdl.ModelId).ToList());
                 var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
                 List<ImprovementTacticType_Metric> improvementTacticTypeMetric = objDbMrpEntities.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
-                List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+
 
                 List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelationForSinglePlan(programtactic, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, false);
 
@@ -4685,9 +4691,10 @@ namespace RevenuePlanner.Controllers
                     xmlstring = xmlstring + " <cell>--</cell> ";
                     xmlstring = xmlstring + " <cell>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> ";
 
-                  
-                    xmlstring = xmlstring + " <cell >"+plantotalrevenue+"</cell> ";
+                  				   xmlstring = xmlstring + " <cell >--</cell> ";
+                    
                     xmlstring = xmlstring + " <cell >" + planmql + "</cell> ";
+								 xmlstring = xmlstring + " <cell >"+plantotalrevenue+"</cell> ";
                     var filterlstcampaigndetail = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
                     type = "Campaign";
@@ -4720,8 +4727,10 @@ namespace RevenuePlanner.Controllers
                         xmlstring = xmlstring + " <cell bgColor='#C6EBF3' >"+campaigntotalcost+"</cell> ";
                         xmlstring = xmlstring + " <cell bgColor='#C6EBF3'>--</cell> ";
                         xmlstring = xmlstring + " <cell bgColor='#C6EBF3'>" + Common.GetUserName(Campaignitem.CreatedBy.ToString()) + "</cell> ";
-                        xmlstring = xmlstring + " <cell  bgColor='#C6EBF3'>" + campaigntotalRevenue + "</cell> ";
-                        xmlstring = xmlstring + " <cell bgColor='#C6EBF3'>"+campaigntotalMQL+"</cell> ";
+ xmlstring = xmlstring + " <cell  bgColor='#C6EBF3'>--</cell> ";           
+     xmlstring = xmlstring + " <cell bgColor='#C6EBF3'>"+campaigntotalMQL+"</cell> ";            
+ xmlstring = xmlstring + " <cell  bgColor='#C6EBF3'>" + campaigntotalRevenue + "</cell> ";
+                   
                      
                         var filterprogramdetail = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
                         type = "Program";
@@ -4770,9 +4779,9 @@ namespace RevenuePlanner.Controllers
                                 xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>"+programtotalcost+"</cell> ";
                                 xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>--</cell> ";
                                 xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>" + Common.GetUserName(Programitem.CreatedBy.ToString()) + "</cell> ";
-                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>" + programtotalrevenue + "</cell> ";
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>--</cell> ";
                                 xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>"+programtotalMQL+"</cell> ";
-                            
+                                xmlstring = xmlstring + " <cell bgColor='#DFF0F8'>" + programtotalrevenue + "</cell> ";
 
 
                                 //List<Plan_Campaign_Program_Tactic> pcpt = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanProgramId.Equals(Programitem.PlanProgramId) && pcptobj.IsDeleted == false).ToList();
@@ -4862,14 +4871,16 @@ namespace RevenuePlanner.Controllers
 
                                         xmlstring = xmlstring + "<cell bgColor='#E4F1E1'>" + Tacticitem.StartDate.ToString("MM/dd/yyyy") + "</cell> ";
                                         xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + Tacticitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ";
-                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1' type='ed'>" + tactictotalcost + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1' type='edn' actcost=\"" + tactictotalcost + "\">" + tactictotalcost + "</cell> ";
 
                                         xmlstring = xmlstring + " <cell type='co' bgColor='#E4F1E1' xmlcontent='true' title=\"" + Tacticitem.TacticType.Title + "\">" + Tacticitem.TacticType.Title;
 
                                         xmlstring = xmlstring + xmltactictype + "</cell> ";
                                         xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + Common.GetUserName(Tacticitem.CreatedBy.ToString()) + "</cell> ";
-                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + (tactictotalRevenue) + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1' type='edn' tactictype=\"" + Tacticitem.TacticTypeId + "\"> " + Tacticitem.ProjectedStageValue + " </cell> ";
                                         xmlstring = xmlstring + " <cell bgColor='#E4F1E1'>" + tactictotalMQL + "</cell> ";
+                                        xmlstring = xmlstring + " <cell bgColor='#E4F1E1' actrevenue=\"" + tactictotalRevenue + "\">" + tactictotalRevenue + "</cell> ";
+
                                         xmlstring = xmlstring + "</row>";
                                         TactCnt = TactCnt + 1;
 
@@ -5073,6 +5084,10 @@ namespace RevenuePlanner.Controllers
                     else if (UpdateColumn == "Tactic Type")
                     {
                         pcpobj.TacticTypeId = Convert.ToInt32(UpdateVal);
+                    }
+                    else if (UpdateColumn == "Projected Stage Value")
+                    {
+                        pcpobj.ProjectedStageValue = Convert.ToDouble(UpdateVal);
                     }
                     else if (UpdateColumn == "Owner")
                     {
@@ -5292,7 +5307,16 @@ namespace RevenuePlanner.Controllers
 
             if (isTacticTypeChange)
             {
-                tacticStageLevel = Convert.ToInt32(objDbMrpEntities.TacticTypes.FirstOrDefault(t => t.TacticTypeId == TacticTypeId).Stage.Level);
+
+                Stage objstage = objDbMrpEntities.TacticTypes.FirstOrDefault(t => t.TacticTypeId == TacticTypeId).Stage;
+
+                if (objstage != null)
+                {
+                    string stagelevel = objstage.Level.ToString();
+                    tacticStageLevel = Convert.ToInt32(stagelevel);
+                }
+                else
+                    tacticStageLevel = 0;
             }
 
 
@@ -5380,6 +5404,101 @@ namespace RevenuePlanner.Controllers
             catch (Exception objException)
             {
                 ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+        }
+        #endregion
+
+        #region method for getting goal value for homegrid
+        protected void GetGoalValue(List<Plan> plandetail, string modelId)
+        {
+            int ModelID = 0;
+            string MQLLable = string.Empty;
+            string INQLable = string.Empty;
+            string MQLValue = string.Empty;
+            string INQValue = string.Empty;
+            string Revenue = string.Empty;
+            string CWLable = string.Empty;
+            string CWValue = string.Empty;
+            try
+            {
+                if (!string.IsNullOrEmpty(modelId))
+                    ModelID = Convert.ToInt32(modelId);
+                if (plandetail != null)
+                {
+
+                    string goalType = plandetail.FirstOrDefault().GoalType;
+                    string goalValue = plandetail.FirstOrDefault().GoalValue.ToString();
+
+                    double ADS = 0;
+
+                    if (ModelID != 0)
+                    {
+                        double ADSValue = objDbMrpEntities.Models.FirstOrDefault(m => m.ModelId == ModelID).AverageDealSize;
+                        ADS = ADSValue;
+                    }
+
+                    if (goalType.ToString() != "")
+                    {
+                        BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
+                        bool isGoalValueExists = false;
+                        goalValue = goalValue.Replace(",", "");
+                        if (goalValue != "" && Convert.ToInt64(goalValue) != 0)
+                        {
+                            isGoalValueExists = true;
+                            objBudgetAllocationModel = Common.CalculateBudgetInputs(ModelID, goalType, goalValue, ADS, true);
+                        }
+
+                        List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        MQLLable = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        INQLable = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        CWLable = stageList.Where(stage => stage.Code.ToLower() == "cw").Select(stage => stage.Title.ToLower()).FirstOrDefault();
+
+                        //// Set Input & Message based on GoalType value.
+                        if (goalType.ToString().ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower())
+                        {
+                            MQLValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                            INQValue = goalValue.ToString();
+                            Revenue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                            CWValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.CWValue.ToString();
+
+                        }
+                        else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
+                        {
+                            INQValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                            MQLValue = goalValue.ToString();
+                            Revenue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                            CWValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.CWValue.ToString();
+
+                        }
+                        else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
+                        {
+                            MQLValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                            INQValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                            CWValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.CWValue.ToString();
+                            Revenue = goalValue.ToString();
+                        }
+                        else if (goalType.ToString().ToLower() == "cw")
+                        {
+                            MQLValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                            INQValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                            Revenue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                            CWValue = goalValue.ToString();
+                        }
+                    }
+
+                }
+
+                ViewBag.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
+                ViewBag.INQLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(INQLable);
+                ViewBag.MQLValue = MQLValue;
+                ViewBag.INQValue = INQValue;
+                ViewBag.Revenue = Revenue;
+                ViewBag.CWLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CWLable);
+                ViewBag.CWValue = CWValue;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
             }
         }
         #endregion
