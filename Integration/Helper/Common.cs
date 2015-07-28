@@ -52,6 +52,14 @@ namespace Integration.Helper
         public static readonly int CustomNameLimitSet = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CustomNameLimitSet"]); ////Added by :- Pratik Chauhan on 04/02/2015 for PL ticket #1147
         public static readonly string DateFormatForSalesforce = "yyyy-MM-ddTHH:mm:ss.000+0000";
         public static bool IsAutoSync = false;
+
+        /// <summary>
+        /// Added by Bhavesh
+        /// Date: 28/7/2015
+        /// Ticket : #1385	Enable TLS 1.1 or higher Encryption for Salesforce
+        /// </summary>
+        public static readonly string EnableTLS1AndHigher = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["EnableTLS1AndHigher"]);
+
         /// <summary>
         /// Decrypt string
         /// </summary>
