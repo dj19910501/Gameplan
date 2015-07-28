@@ -51,7 +51,7 @@
 
 html, body {
     height: 100% !important;
-    background: #e9e9e9;
+	/*background: #e9e9e9;*/
     min-width: 1250px;
 }
 
@@ -59,7 +59,7 @@ html {
 }
 
 body.gradient {
-    background: url("../images/gradient-body.jpg") repeat-x #fff;
+    background: #fff;
 }
 
 body {
@@ -15223,7 +15223,7 @@ margin-right: 12px;
 /*added byPL #1441 dashrath Prajapati*/
 .login-header {
     color: rgb(0, 0, 0);
-    font-family: 'source sans pro';
+   font-family: source_sans_prolight;
     font-size: 17px;
     font-weight: 600;
     padding-top: 18px;
@@ -15238,7 +15238,7 @@ margin-right: 12px;
     background: #e6e6e6 none repeat scroll 0 0;
     font-family: source_sans_prosemibold;
     font-size: 20px;
-    margin: 20px 0px;
+    margin: 20px;
 }
 
     .goals-wrapper span {
@@ -15253,4 +15253,52 @@ margin-right: 12px;
         display: inline-block;
         font-family: source_sans_probold;
     }
+
+    /* bheru 28-07-2015 */
+.login-header a {
+  color: rgb(80, 181, 234);
+  text-decoration: underline;
+}
+
+.login-header p
+{
+ margin: 18px 0 0;
+}
+.region-data-reveune.region-data .dataR  
+{
+width: 141px !important;
+}
+.region-data-reveune.region-data .dataR .title {
+  color: #4d4d4d;
+  font-family: source_sans_proregular;
+ font-size: 15px;
+}
+.region-data-reveune.region-data .dataR .value {
+  color: #1e2b33;
+  display: block;
+  font-family: source_sans_proregular;
+  font-size: 42px;
+  padding-top: 26px;
+}
+.region-data-reveune.region-data .dataR  .below {
+  color: #006837;
+  font-family: source_sans_prosemibold;
+}
+.region-data-reveune.region-data .dataR .sub-value
+{
+ color: #4d4d4d;
+  font-size: 15px;
+    font-family: source_sans_proregular;
+}
+.region-data-waterfall.region-data .data .sub-value
+{
+    color: #4d4d4d;
+    font-family: source_sans_prolight;
+    font-size: 15px;
+}
+.region-data.region-data-waterfall .data.data-arrow
+{
+    margin-top: 64px;
+}
+/*end */
 /*end */
