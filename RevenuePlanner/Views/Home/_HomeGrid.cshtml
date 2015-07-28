@@ -5,11 +5,31 @@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid_split.js")">
     </script>*@
 
+
+<script>
+
+    var revenue = "Revenue : $" + number_format('@ViewBag.Revenue', 0, '.', ',');
+    $("#spnrevenue").html(revenue);
+    var mql = '@ViewBag.MQLLable' + " : " + number_format('@ViewBag.MQLValue', 0, '.', ',');
+    $("#spnmql").html(mql);
+    var inq = '@ViewBag.INQLable' + " : " + number_format('@ViewBag.INQValue', 0, '.', ',');
+    $("#spninq").html(inq);
+
+    var cw = '@ViewBag.CWLable' + " : " + number_format('@ViewBag.CWValue', 0, '.', ',');
+    $("#spncw").html(cw);
+</script>
+<div class="goals-wrapper" id="goalwrapper">
+    <span class="goal-text">Goals</span>
+    <span id="spnrevenue"></span>
+    <span id="spninq"></span>
+    <span id="spnmql"></span>
+    <span id="spncw"></span>
+</div>
 <div>
     <table width="100%">
         <tr>
             <td width="100%">
-                <div id="gridbox" width="100%" height="600px" style="background-color:white;"></div>
+                <div id="gridbox" width="100%" style="background-color:white;"></div>
             </td>
             <td valign="top"></td>
         </tr>
@@ -59,6 +79,7 @@
         //  HomeGrid.enableTreeGridLines();
         HomeGrid.enableDragAndDrop(true);
         //HomeGrid.setDragBehavior("sibling-next");
+        HomeGrid.enableAutoHeight(true);
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
         HomeGrid.attachEvent("onDrag", doOnDrag);
@@ -84,22 +105,22 @@
                     var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
                     var tacticname = HomeGrid.cells(sid, 0).getValue();
                     var programname = HomeGrid.cells(tid, 0).getValue();
-                  
-                    var con = confirm("Are you sure to move Tactic : " + tacticname + "  to Program : " + programname);
+                    var msg = "You are about to move a tactic to  [ " + programname + " ].\n Do you want to proceed?";
+                    var con = confirm(msg);
                     if (con == true) {
-                    $.ajax({
+                        $.ajax({
 
-                        type: 'POST',
+                            type: 'POST',
 
-                        url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                        data: { UpdateType: dragSourcetype, UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
-                        dataType: 'json',
+                            url: '@Url.Action("SaveGridDetail")', // we are calling json method
+                            data: { UpdateType: dragSourcetype, UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
+                            dataType: 'json',
 
-                        success: function (states) {
+                            success: function (states) {
                                 // LoadPlanGrid();
-                        }
-                    });
-                    return true;
+                            }
+                        });
+                        return true;
                     }
                     else
                         return false;
@@ -215,7 +236,7 @@
                                     else {
                                         var mqlConversion = 0;
                                         if (data.mql != null)
-                                        mqlConversion = data.mql;
+                                            mqlConversion = data.mql;
                                         var mqlValue = FormatCommas(mqlConversion.toString(), false);
                                         HomeGrid.cells(rowId, 9).setValue(mqlValue);
                                     }
@@ -231,7 +252,7 @@
                                             dataType: 'json',
 
                                             success: function (states) {
-                                               // LoadPlanGrid();
+                                                // LoadPlanGrid();
                                             }
                                         });
                                     }
@@ -253,7 +274,7 @@
                     data: { UpdateType: updatetype, UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(Id) },
                     dataType: 'json',
                     success: function (states) {
-                      //  LoadPlanGrid();
+                        //  LoadPlanGrid();
                     }
                 });
             }

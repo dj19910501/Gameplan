@@ -394,6 +394,7 @@ namespace RevenuePlanner.Models
         public double MQLValue { get; set; }
         public double RevenueValue { get; set; }
         public double ADSValue { get; set; }
+        public double CWValue { get; set; } // added y devanshi for plangrid goal
     }
 
     /// <summary>

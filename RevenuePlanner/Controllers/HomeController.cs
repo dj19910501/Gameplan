@@ -4604,6 +4604,9 @@ namespace RevenuePlanner.Controllers
                 List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
 
                 List<Plan> lstplandetail = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
+
+                GetGoalValue(lstplandetail, modelId.ToString()); // for plan grid header to bind goal detail
+
                 var lstcampaigndetail = objDbMrpEntities.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && campaign.IsDeleted == false).ToList();
 
                 List<int> lstCampaignId = lstcampaigndetail.Select(campaign => campaign.PlanCampaignId).ToList();
@@ -5292,7 +5295,16 @@ namespace RevenuePlanner.Controllers
 
             if (isTacticTypeChange)
             {
-                tacticStageLevel = Convert.ToInt32(objDbMrpEntities.TacticTypes.FirstOrDefault(t => t.TacticTypeId == TacticTypeId).Stage.Level);
+
+                Stage objstage = objDbMrpEntities.TacticTypes.FirstOrDefault(t => t.TacticTypeId == TacticTypeId).Stage;
+
+                if (objstage != null)
+                {
+                    string stagelevel = objstage.Level.ToString();
+                    tacticStageLevel = Convert.ToInt32(stagelevel);
+                }
+                else
+                    tacticStageLevel = 0;
             }
 
 
@@ -5384,6 +5396,100 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        #region method for getting goal value for homegrid
+        protected void GetGoalValue(List<Plan> plandetail, string modelId)
+        {
+            int ModelID = 0;
+            string MQLLable = string.Empty;
+            string INQLable = string.Empty;
+            string MQLValue = string.Empty;
+            string INQValue = string.Empty;
+            string Revenue = string.Empty;
+            string CWLable = string.Empty;
+            string CWValue = string.Empty;
+            try
+            {
+                if (!string.IsNullOrEmpty(modelId))
+                    ModelID = Convert.ToInt32(modelId);
+                if (plandetail != null)
+                {
+
+                    string goalType = plandetail.FirstOrDefault().GoalType;
+                    string goalValue = plandetail.FirstOrDefault().GoalValue.ToString();
+
+                    double ADS = 0;
+
+                    if (ModelID != 0)
+                    {
+                        double ADSValue = objDbMrpEntities.Models.FirstOrDefault(m => m.ModelId == ModelID).AverageDealSize;
+                        ADS = ADSValue;
+                    }
+
+                    if (goalType.ToString() != "")
+                    {
+                        BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
+                        bool isGoalValueExists = false;
+                        goalValue = goalValue.Replace(",", "");
+                        if (goalValue != "" && Convert.ToInt64(goalValue) != 0)
+                        {
+                            isGoalValueExists = true;
+                            objBudgetAllocationModel = Common.CalculateBudgetInputs(ModelID, goalType, goalValue, ADS, true);
+                        }
+
+                        List<Stage> stageList = objDbMrpEntities.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        MQLLable = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        INQLable = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        CWLable = stageList.Where(stage => stage.Code.ToLower() == "cw").Select(stage => stage.Title.ToLower()).FirstOrDefault();
+
+                        //// Set Input & Message based on GoalType value.
+                        if (goalType.ToString().ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower())
+                        {
+                            MQLValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                            INQValue = goalValue.ToString();
+                            Revenue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                            CWValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.CWValue.ToString();
+
+                        }
+                        else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
+                        {
+                            INQValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                            MQLValue = goalValue.ToString();
+                            Revenue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                            CWValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.CWValue.ToString();
+
+                        }
+                        else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
+                        {
+                            MQLValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                            INQValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                            CWValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.CWValue.ToString();
+                            Revenue = goalValue.ToString();
+                        }
+                        else if (goalType.ToString().ToLower() == "cw")
+                        {
+                            MQLValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                            INQValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                            Revenue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                            CWValue = goalValue.ToString();
+                        }
+                    }
+
+                }
+
+                ViewBag.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
+                ViewBag.INQLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(INQLable);
+                ViewBag.MQLValue = MQLValue;
+                ViewBag.INQValue = INQValue;
+                ViewBag.Revenue = Revenue;
+                ViewBag.CWLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CWLable);
+                ViewBag.CWValue = CWValue;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+        }
+        #endregion
 
     }
 
