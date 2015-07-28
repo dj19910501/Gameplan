@@ -217,12 +217,15 @@ namespace Integration.Salesforce
             // Insert log into IntegrationInstanceSection, Dharmraj PL#684
             _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
             _isResultError = false;
+            /// Set client Id based on integration instance.
+            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
             bool IsInstanceSync = false;
             statusList = Common.GetStatusListAfterApproved();
             StringBuilder sbMessage = new StringBuilder();
             try
             {
+                
                 if (EntityType.Tactic.Equals(_entityType))
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process start.");
@@ -1568,6 +1571,7 @@ namespace Integration.Salesforce
 
             try
             {
+                
                 // Start - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
 
@@ -1643,7 +1647,7 @@ namespace Integration.Salesforce
                 {
                     return true;
                 }
-                _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                
 
                 try
                 {
