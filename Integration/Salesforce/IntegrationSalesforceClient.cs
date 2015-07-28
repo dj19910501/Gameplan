@@ -176,6 +176,7 @@ namespace Integration.Salesforce
 
         /// <summary>
         /// Modified By Mitesh on 25-07-2015
+        /// To Fetch salesforce target field details 
         /// </summary>
         /// <param name="objectName">Sales force object name</param>
         /// <returns>Returns property list with length and data type of sales-force object</returns>
@@ -1522,12 +1523,19 @@ namespace Integration.Salesforce
             public double actualCost { get; set; }
         }
 
-
+        /// <summary>
+        /// Added by Mitesh Vaishnav on 28-07-2015
+        /// To Identify data mismatch between salesforce target field and gp source field
+        /// </summary>
+        /// <param name="lstSourceTargetMapping">list of configured field mapping for source field and target field </param>
+        /// <param name="lstSalesForceFieldDetails">sales force target field details with data type</param>
+        /// <param name="Section">list of mis matched source field and target field</param>
+        /// <returns></returns>
         private List<SalesForceObjectFieldDetails> IdentifyDataTypeMisMatch(Dictionary<string, string> lstSourceTargetMapping, List<SalesForceObjectFieldDetails> lstSalesForceFieldDetails, string Section)
         {
             List<SalesForceObjectFieldDetails> lstMappingMisMatch = new List<SalesForceObjectFieldDetails>();
             SalesForceObjectFieldDetails objfeildDetails;
-            foreach (KeyValuePair<string, string> entry in lstSourceTargetMapping.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+            foreach (KeyValuePair<string, string> entry in lstSourceTargetMapping)
             {
                 if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && lstSalesForceFieldDetails.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
                 {
@@ -1543,12 +1551,27 @@ namespace Integration.Salesforce
                     }
 
                 }
+                else if (lstSalesForceFieldDetails.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
+                {
+                    if (!Enums.ActualFieldDatatype[Enums.ActualFields.Other.ToString()].Contains(lstSalesForceFieldDetails.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype))
+                    {
+                        objfeildDetails = new SalesForceObjectFieldDetails();
+                        objfeildDetails.SourceField = entry.Key;
+                        objfeildDetails.TargetField = entry.Value;
+                        objfeildDetails.Section = Section;
+                        objfeildDetails.TargetDatatype = lstSalesForceFieldDetails.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
+                        objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
+                        lstMappingMisMatch.Add(objfeildDetails);
+                    }
+                }
             }
             return lstMappingMisMatch;
         }
 
         /// <summary>
         /// Function to set mapping details.
+        /// modified by Mitesh vaishnav : convert return type void to bool 
+        /// if mapping has not data type mismatch and not any other exception then it returns false else true.
         /// </summary>
         private bool SetMappingDetails()
         {
