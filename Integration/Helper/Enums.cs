@@ -74,7 +74,8 @@ namespace Integration.Helper
             Tactic,
             ImprovementCampaign,
             ImprovementProgram,
-            ImprovementTactic
+            ImprovementTactic,
+            IntegrationInstance //Added by Brad Gray 07/28/2015 for logging sync errors at Instance level
         }
 
         /// <summary>

@@ -221,7 +221,7 @@ namespace Integration.WorkFront
         /// <returns>returns flag for sync error</returns>
         public bool SyncData(out List<SyncError> lstSyncError)
         {
-            lstSyncError = new List<SyncError>();
+            List<SyncError> SyncErrors = new List<SyncError>();
             try
             {	   
                  statusList = Common.GetStatusListAfterApproved();
@@ -237,13 +237,13 @@ namespace Integration.WorkFront
                     List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
                     // CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
                     List<int> plnaIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
-                    _isResultError = SyncTactic(planTactic);
+                    _isResultError = SyncTactic(planTactic, ref SyncErrors);
                     db.SaveChanges();
                 }
             }
                 else
                 {
-                    _isResultError = this.SyncInstanceData(); //this must find all tactics and sync
+                    _isResultError = this.SyncInstanceData(ref SyncErrors); //this must find all tactics and sync
                     db.SaveChanges();
                 }
 
@@ -257,10 +257,20 @@ namespace Integration.WorkFront
                 }
             }
             catch(Exception ex) {
-                _errorMessage = "Error in Sync Data : " + ex.Message;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.SectionName = "Sync Data";
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
                 _isResultError = true;
             }
-        
+            finally
+            {
+                lstSyncError = SyncErrors;
+            }
             return _isResultError;
         }
 
@@ -273,7 +283,7 @@ namespace Integration.WorkFront
         /// <returns>
         /// Bool: true if sync error, false otherwise
         /// </param>
-        private bool SyncInstanceData()
+        private bool SyncInstanceData(ref List<SyncError> SyncErrors)
         {
             bool syncError = false;
             try
@@ -287,25 +297,32 @@ namespace Integration.WorkFront
                 }
                  * */
 
-                SyncInstanceTemplates();
+                SyncInstanceTemplates(ref SyncErrors);
                 //Retrieves list of all tactics tied to the integrationinstance and deployed to integration
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
                     foreach (var tactic in tacticList)
                     {
-	                     syncError = (syncError || SyncTactic(tactic));
+                        syncError = (syncError || SyncTactic(tactic, ref SyncErrors));
 	                }
                 
             }
             catch(Exception ex)
             {
-                _errorMessage = ex.Message;
                 syncError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync SyncInstanceData";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
             }
             return syncError;
             
        }
 
-        private bool SyncInstanceTemplates()
+        private bool SyncInstanceTemplates(ref List<SyncError> SyncErrors)
         {
             bool syncError = false;
             //update WorkFront templates for the instance
@@ -350,10 +367,17 @@ namespace Integration.WorkFront
                  db.Entry(templateToDelete).State = EntityState.Modified;
                 }
             }
-            catch
+            catch (Exception ex)
             {
                 syncError = true;
-                __errorMessage = "Failed to Sync Integration templates";
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync Integration Templates";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
             }
             return syncError;
         }
@@ -377,7 +401,7 @@ namespace Integration.WorkFront
         /// <returns>
         /// Bool: true if sync error, false otherwise
         /// </returns>
-        private bool SyncTactic(Plan_Campaign_Program_Tactic tactic)  
+        private bool SyncTactic(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors)  
         {
             bool tacticError = false;
             TacticType tacticType = db.TacticTypes.Where(type =>  type.TacticTypeId == tactic.TacticTypeId).FirstOrDefault();
@@ -408,17 +432,17 @@ namespace Integration.WorkFront
                     string templateToUse = tacticType.WorkFront_Template;
                     if (templateToUse == null)
                     {
-                        throw new ClientException("Tactic Type to Template Mapping Not Found");
+                        throw new ClientException("Tactic Type to Template Mapping Not Found for tactic " + tactic.Title + ".");
                     }
                     JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { ID = templateToUse });
                     if (templateInfo == null)
                     {
-                        throw new ClientException("Template Not Found in WorkFront");
+                        throw new ClientException("Template " + templateToUse + " not Found in WorkFront");
                     }
                     JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, groupID = _userGroupID });
                     if (project == null) 
                     { 
-                        throw new ClientException("Project Not Created"); 
+                        throw new ClientException("Project Not Created for Tactic " + tactic.Title + "."); 
                     }
                     tactic.IntegrationWorkFrontProjectID = (string)project["data"]["ID"];
                     tactic.IntegrationInstanceTacticId = (string)project["data"]["ID"]; //needed only as place filler for Common.GetMode. Not used elsewhere.
@@ -426,12 +450,12 @@ namespace Integration.WorkFront
                     client.Update(ObjCode.PROJECT, new { ID = (string)project["data"]["ID"], action = "attachTemplate", templateID = templateID });
                     JToken scheduleEdits = JToken.Parse("{scheduleMode:'C', plannedCompletionDate:'" + tactic.StartDate + "'}");
                     client.Update(ObjCode.PROJECT, new { id = (string)project["data"]["ID"], updates = scheduleEdits });
-                    tacticError = UpdateTacticInfo(tactic);
+                    tacticError = UpdateTacticInfo(tactic, ref SyncErrors);
                 }
                 else if (currentMode.Equals(Enums.Mode.Update))
                 {
                     instanceLogTactic.Operation = Operation.Update.ToString();
-                    tacticError = UpdateTacticInfo(tactic);
+                    tacticError = UpdateTacticInfo(tactic, ref SyncErrors);
                 }
                
                 //Add tactic review comment when sync tactic
@@ -452,25 +476,22 @@ namespace Integration.WorkFront
                 db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
                 
             }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                _errorMessage = "Template Information not found. Template not attached to project.";
-                tacticError = true;
-                instanceLogTactic.Status = StatusResult.Error.ToString();
-                instanceLogTactic.ErrorDescription = errorMessage;
-            }
             catch(Exception ex)
             {
-                _errorMessage = ex.Message;
                 tacticError = true;
                 instanceLogTactic.Status = StatusResult.Error.ToString();
-                instanceLogTactic.ErrorDescription = errorMessage;
-
+                instanceLogTactic.ErrorDescription = ex.Message;
+                SyncError error = new SyncError();
+                error.EntityId = tactic.PlanTacticId;
+                error.EntityType = Enums.EntityType.Tactic;
+                error.SectionName = "Sync Tactic Data";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
             }
             return tacticError;
-   
         }
-
 
         /// <summary>
         /// Tactic Level update method 
@@ -487,7 +508,7 @@ namespace Integration.WorkFront
         /// <returns>
         /// Bool: true if sync error, false otherwise
         /// </returns>
-        private bool UpdateTacticInfo(Plan_Campaign_Program_Tactic tactic)
+        private bool UpdateTacticInfo(Plan_Campaign_Program_Tactic tactic, ref List<SyncError> SyncErrors)
         {
             bool updateError = false;
             try
@@ -551,9 +572,17 @@ namespace Integration.WorkFront
                 }
                 //End read only sync
             }
-            catch(Exception)
+            catch(Exception ex)
             {
                 updateError = true;
+                SyncError error = new SyncError();
+                error.EntityId = tactic.PlanTacticId;
+                error.EntityType = Enums.EntityType.Tactic;
+                error.SectionName = "Update Tactic Data";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
             }
             return updateError;
         }
