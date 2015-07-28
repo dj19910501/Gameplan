@@ -1262,7 +1262,7 @@ namespace RevenuePlanner.Controllers
                 IsDeployedToIntegration = tacticType.IsDeployedToIntegration,
                 IsTargetStageOfModel = (tacticType.StageId == null) ? true : stagesList.Contains(Convert.ToInt32(tacticType.StageId)),     //// Added by :- Sohel Pathan on 06/06/2014 for PL ticket #516.
                 IsDeployedToModel = tacticType.IsDeployedToModel, //// added by dharmraj for #592 : Tactic type data model
-                currentWorkFrontTemplate = tacticType.WorkFront_Template
+                currentWorkFrontTemplate = tacticType.WorkFront_Template //added by Brad Gray 7/28/2015 PL#1374, #1373
             }).Select(tacticType => tacticType).Distinct().OrderBy(tacticType => tacticType.title , new AlphaNumericComparer());
 
             return Json(allTacticTypes, JsonRequestBehavior.AllowGet);
@@ -1285,10 +1285,10 @@ namespace RevenuePlanner.Controllers
                 if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
                 {
                     ViewBag.IsModelIntegrated = true;
-                    //Start addition by Brad Gray for PL#1734
+                    //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
                     var intInstanceProjMgmt = objModel.IntegrationInstance4;
                      bool isIntegratedWithWorkFront = false;
-                     List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
+                     List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>(); 
                      if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString())) 
                      {
                          isIntegratedWithWorkFront = true;
@@ -1296,8 +1296,6 @@ namespace RevenuePlanner.Controllers
                      ViewBag.WorkFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
                                                                   modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name)
                                                       .Select(modelTemplate => new { modelTemplate.TemplateId, modelTemplate.Template_Name }).Distinct().ToList();
-                     string scooby = objTacticTypeMdoel.WorkFront_Template;
-                     ViewBag.currentWorkFrontTemplate = objTacticTypeMdoel.WorkFront_Template;
                     ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                     //End addition by Brad Gray for PL#1734
                 }
@@ -1331,9 +1329,7 @@ namespace RevenuePlanner.Controllers
                 objTacticTypeMdoel.StageId = objTacticType.StageId;
                 objTacticTypeMdoel.ModelId = objTacticType.ModelId;
                 objTacticTypeMdoel.WorkFront_Template = objTacticType.WorkFront_Template;
-                
-                IntegrationWorkFrontTemplate wfTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(type => type.TemplateId == objTacticType.WorkFront_Template).FirstOrDefault();
-                ViewBag.templateName = wfTemplates.Template_Name;
+
                 //// added by Dharmraj, ticket #592 : Tactic type data model
                 ViewBag.IsDeployed = objTacticType.IsDeployedToModel;
 
@@ -1477,7 +1473,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="modelID">model id</param>
         /// <param name="isDeployedToIntegration">isDeployedToIntegration flag</param>
         /// <param name="isDeployedToModel">isDeployedToModel flag</param>
-        /// <param name="WorkFrontTemplate">template id of workfront template as a string</param>
+        /// <param name="WorkFrontTemplate">template id of workfront template as a string - Added by Brad Gray 7/24/2015 for PL#1373, 1374</param>
         /// <returns>returns json result object</returns>
         [HttpPost]
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic

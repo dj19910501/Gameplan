@@ -279,11 +279,15 @@ namespace Integration.WorkFront
             try
             {
                 //Retrieve list of all Models tied to the integratininstance and deployed to integration
+                /*
                 List<Model> modelList = db.Models.Where(model => model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && model.IsDeleted == false).ToList(); //is there a flag for if a model is integrated?
                 foreach(var model in modelList)
                 {
                     syncError = (syncError || SyncModel(model));
                 }
+                 * */
+
+                SyncInstanceTemplates();
                 //Retrieves list of all tactics tied to the integrationinstance and deployed to integration
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
                     foreach (var tactic in tacticList)
@@ -301,30 +305,30 @@ namespace Integration.WorkFront
             
        }
 
-        private bool SyncModel(Model model)
+        private bool SyncInstanceTemplates()
         {
             bool syncError = false;
-            //update WorkFront templates for the model
+            //update WorkFront templates for the instance
             try
             {
                 JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { fields = "ID" });
-                List<IntegrationWorkFrontTemplate> templateFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == model.IntegrationInstanceIdProjMgmt && template.IsDeleted==0).ToList();
+                List<IntegrationWorkFrontTemplate> templateFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == _integrationInstanceId && template.IsDeleted==0).ToList();
                 Dictionary<string, string> templateDict = new Dictionary<string, string>();
                 List<string> templateIdsFromDB = new List<string>();
                 List<string> templateIdsFromWorkFront = new List<string>();
                 foreach (IntegrationWorkFrontTemplate template in templateFromDB)
                 {
-                    templateIdsFromDB.Add(template.TemplateId);
+                    templateIdsFromDB.Add(template.TemplateId.Trim()); 
                 }
               
                 foreach (var template in templateInfo["data"])
                 {
-                    string templID = template["ID"].ToString();
+                    string templID = template["ID"].ToString().Trim(); //WorkFront template IDs come with excess whitespace
                     templateIdsFromWorkFront.Add(templID);
                     if (!templateIdsFromDB.Contains(templID))
                     {
                         IntegrationWorkFrontTemplate newTemplate = new IntegrationWorkFrontTemplate();
-                        newTemplate.IntegrationInstanceId = (int)model.IntegrationInstanceIdProjMgmt;
+                        newTemplate.IntegrationInstanceId = _integrationInstanceId;
                         newTemplate.TemplateId = templID;
                         newTemplate.Template_Name = template["name"].ToString();
                         newTemplate.IsDeleted = 0;
@@ -349,9 +353,8 @@ namespace Integration.WorkFront
             catch
             {
                 syncError = true;
-                __errorMessage = "Failed to Sync Model";
+                __errorMessage = "Failed to Sync Integration templates";
             }
-           
             return syncError;
         }
 
