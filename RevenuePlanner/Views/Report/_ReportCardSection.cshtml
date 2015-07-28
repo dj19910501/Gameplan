@@ -25,6 +25,8 @@
     .carvdval-block {
         display: block;
     }
+  
+
 </style>
 <div class="revenue-filter">
     <div class="sorting">
@@ -163,19 +165,19 @@
             _tempCard = _tempCard + '</div>';
             _tempCard = _tempCard + '<div class="region-data">';
 
-            _tempCard = _tempCard + '<div class="data" id="tempdivdata" style="width:10%;">';
+            _tempCard = _tempCard + '<div class="dataR" id="tempdivdata" style="width:10%;">';
             _tempCard = _tempCard + '<span class="title">Revenue</span>';
             _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
             _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             _tempCard = _tempCard + '</div>';
 
-            _tempCard = _tempCard + '<div class="data">';
+            _tempCard = _tempCard + '<div class="dataR">';
             _tempCard = _tempCard + '<span class="title">Cost</span>';
             _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
             _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
             _tempCard = _tempCard + '</div>';
 
-            _tempCard = _tempCard + '<div class="data">';
+            _tempCard = _tempCard + '<div class="dataR">';
             _tempCard = _tempCard + '<span class="title">ROI</span>';
             _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
             _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
@@ -218,25 +220,31 @@
 
             _cardhtml = _cardhtml + '<div class="region-data">';
 
-            _cardhtml = _cardhtml + '<div class="data" style="width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="width:' + tempdivdatawidth + 'px">';
             //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Revenue</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="title">Goal (YTD):</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span>';
+            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span></p>';
+            //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="data" style="width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="width:' + tempdivdatawidth + 'px">';
             //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Cost</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="title">Projected (YTD):</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span>';
+            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span></p>';
+            //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="data" style="width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="width:' + tempdivdatawidth + 'px">';
             //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">ROI</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="title">Goal (YTD):</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">' + _ROIgoal + '</span>';
+            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span></p>';
+            //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
 
@@ -298,7 +306,7 @@
                 $(_Id).html(_formatednumber);
             }
             var value = $(_Id).text();
-            $(_Id).html("/" + value);
+            //$(_Id).html("/" + value);
 
         });
     }

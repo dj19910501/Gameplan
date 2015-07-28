@@ -391,7 +391,8 @@ namespace RevenuePlanner.Models
         public double Actual_Projected { get; set; }
         public double Goal { get; set; }
         public double Percentage { get; set; }
-        public double RestPercentage { get; set; }
+        //public double RestPercentage { get; set; }
+        public double ConversePercentage { get; set; }//dashrath
         public bool? IsNegative { get; set; }
     }
     public class TacticMappingItem

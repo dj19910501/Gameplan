@@ -14694,14 +14694,21 @@ div.clue-bottom-default .cluetip-arrows {
 
  /* by bheru on 16-07-2015 */
  .region-data .data {
-  border-right: 1px solid #e8e7e7;
+  /*border-right: 1px solid #e8e7e7; by dashrath*/ 
   margin: 22px 0;
     padding: 0 3.4%;
 }
-
+ /*Added by for set alignment in card section of revenue dashrath prajapati*/
+.region-data .dataR {
+  border-right: 1px solid #e8e7e7;
+  margin: 22px 0;
+    padding: 0 3.4%;
+     float: left;
+}
+/*End */
    /* by bheru 16-07-2015*/
 #ConversionCardID .region-data .data {
-    width: 24.9%;
+   width: 18.9%;/*changed by dashrath*/
     padding: 0;
   text-align: center;
   word-wrap: break-word;
@@ -15213,7 +15220,7 @@ margin-right: 12px;
      font-family: source_sans_probold;
 }
 
-/*added by dashrath Prajapati*/
+/*added byPL #1441 dashrath Prajapati*/
 .login-header {
     color: rgb(0, 0, 0);
     font-family: 'source sans pro';

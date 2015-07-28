@@ -11924,11 +11924,11 @@ namespace RevenuePlanner.Controllers
             ProjectedTrendList = new List<ProjectedTrendModel>();
             OverviewModelList = new List<TacticwiseOverviewModel>();
             ActualTacticTrendList = new List<ActualTrendModel>();
-            string strMQLStageCode = Enums.InspectStage.MQL.ToString();
-            string strCWStageCode = Enums.InspectStage.CW.ToString();
-            double _Benchmark = 0, _inqActual = 0, _mqlActual = 0, _cwActual = 0, stageVolumePercntg = 0;
+           // string strMQLStageCode = Enums.InspectStage.MQL.ToString();
+           // string strCWStageCode = Enums.InspectStage.CW.ToString();
+            double _Benchmark = 0, _inqActual = 0, _mqlActual = 0, _cwActual = 0;// stageVolumePercntg = 0;
             string revStageCode = Enums.InspectStage.Revenue.ToString();
-            string inqStageCode = Enums.InspectStage.INQ.ToString();
+            //string inqStageCode = Enums.InspectStage.INQ.ToString();
             string mqlStageCode = Enums.InspectStage.MQL.ToString();
             string cwStageCode = Enums.InspectStage.CW.ToString();
             string projectedStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
@@ -11946,18 +11946,18 @@ namespace RevenuePlanner.Controllers
             List<TacticDataTable> _TacticDataTable = new List<TacticDataTable>();
             List<TacticMonthValue> _TacticListMonth = new List<TacticMonthValue>();
             List<ProjectedTacticModel> _TacticList = new List<ProjectedTacticModel>();
-            double ProjvsGoal = 0, Percentage = 0;
+            double ProjvsGoal = 0, Percentage = 0, _ConversePercentage = 0, _value = 0;
 
             _childDDLId = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
             ParentIdsList = TacticMappingList.Select(card => card.ParentId).Distinct().ToList();
             List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
 
-            double _stagevolumeMQL = 0;
-            double _stagebenchmarkMQL = 0;
-            double restpercentageMQL = 0;
-            double _stagevolumeCW = 0;
-            double _stagebenchmarkCW = 0;
-            double restpercentageCW = 0;
+            //double _stagevolumeMQL = 0;
+            //double _stagebenchmarkMQL = 0;
+            //double restpercentageMQL = 0;
+            //double _stagevolumeCW = 0;
+            //double _stagebenchmarkCW = 0;
+            //double restpercentageCW = 0;
             try
             {
                 if (ParentLabel != Common.RevenueCampaign)
@@ -12039,11 +12039,12 @@ namespace RevenuePlanner.Controllers
                                                   TrendValue = tac.Key.TrendValue
                                               }).Distinct().ToList();
 
+                        _inqActual = 0;
                         _inqActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
                         objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
-                        objCardSectionSubModel.Actual_Projected = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        objCardSectionSubModel.Actual_Projected = _inqActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
@@ -12095,34 +12096,36 @@ namespace RevenuePlanner.Controllers
                                               }).Distinct().ToList();
 
                         #region "stagebenchmark"
-                        List<Stage_Benchmark> StageBenchmarkList = new List<Stage_Benchmark>();
-                        string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
-                        List<string> StageCodeList = new List<string>();
-                        StageCodeList.Add(strMQLStageCode);
-                        StageCodeList.Add(strCWStageCode);
-                        StageBenchmarkList = GetStagewiseBenchmark(fltrTacticData, StageCodeList);
-                        _Benchmark = stageVolumePercntg = 0;
+                        //List<Stage_Benchmark> StageBenchmarkList = new List<Stage_Benchmark>();
+                        //string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                        //List<string> StageCodeList = new List<string>();
+                        //StageCodeList.Add(strMQLStageCode);
+                        //StageCodeList.Add(strCWStageCode);
+                        //StageBenchmarkList = GetStagewiseBenchmark(fltrTacticData, StageCodeList);
+                        //_Benchmark = stageVolumePercntg = 0;
 
-                        if (ActualTacticTrendList != null)
-                        {
-                            _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
-                            stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
-                        }
+                        //if (ActualTacticTrendList != null)
+                        //{
+                        //    _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        //    stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
+                        //}
 
-                        _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
-                        Conversion_Benchmark_Model mqlStageBenchmarkmodel = new Conversion_Benchmark_Model();
+                        //_Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
+                        //Conversion_Benchmark_Model mqlStageBenchmarkmodel = new Conversion_Benchmark_Model();
 
-                        mqlStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
-                        mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
-                        _stagevolumeMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.stageVolume) ? double.Parse(mqlStageBenchmarkmodel.stageVolume) : 0;
-                        _stagebenchmarkMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.Benchmark) ? double.Parse(mqlStageBenchmarkmodel.Benchmark) : 0;
-                        restpercentageMQL = (_stagebenchmarkMQL) - (_stagevolumeMQL);
+                        //mqlStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
+                        //mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
+                        //_stagevolumeMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.stageVolume) ? double.Parse(mqlStageBenchmarkmodel.stageVolume) : 0;
+                        //_stagebenchmarkMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.Benchmark) ? double.Parse(mqlStageBenchmarkmodel.Benchmark) : 0;
+                        //restpercentageMQL = (_stagebenchmarkMQL) - (_stagevolumeMQL);
                         #endregion
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
                         objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString();
-                        objCardSectionSubModel.Actual_Projected = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        _mqlActual = 0;
+                        _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue); ;
+                        objCardSectionSubModel.Actual_Projected = _mqlActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
                         Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
@@ -12131,7 +12134,13 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageMQL);
+                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageMQL);
+                        #region  "ConversePercentage Added by dashrath prajapati"
+                        _value = 0;
+                        _value = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
+                        _ConversePercentage = _value * 100;
+                        objCardSectionSubModel.ConversePercentage = _ConversePercentage;
+                        #endregion
                         objCardSection.TQLCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
                         double cwActualvalue = 0;
@@ -12175,26 +12184,27 @@ namespace RevenuePlanner.Controllers
                                               }).Distinct().ToList();
 
                         #region"CW Benchmkark"
-                        _Benchmark = stageVolumePercntg = 0;
-                        if (ActualTacticTrendList != null)
-                        {
-                            _cwActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
-                            stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
-                        }
-                        _Benchmark = 0;
-                        _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
-                        Conversion_Benchmark_Model cwStageBenchmarkmodel = new Conversion_Benchmark_Model();
-                        cwStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
-                        cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
+                        //_Benchmark = stageVolumePercntg = 0;
+                        //if (ActualTacticTrendList != null)
+                        //{
+                        //    _cwActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        //    stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
+                        //}
+                        //_Benchmark = 0;
+                        //_Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
+                        //Conversion_Benchmark_Model cwStageBenchmarkmodel = new Conversion_Benchmark_Model();
+                        //cwStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
+                        //cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
 
-                        _stagevolumeCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.stageVolume) ? double.Parse(cwStageBenchmarkmodel.stageVolume) : 0;
-                        _stagebenchmarkCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.Benchmark) ? double.Parse(cwStageBenchmarkmodel.Benchmark) : 0;
-                        restpercentageCW = (_stagebenchmarkCW) - (_stagevolumeCW);
+                        //_stagevolumeCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.stageVolume) ? double.Parse(cwStageBenchmarkmodel.stageVolume) : 0;
+                        //_stagebenchmarkCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.Benchmark) ? double.Parse(cwStageBenchmarkmodel.Benchmark) : 0;
+                        //restpercentageCW = (_stagebenchmarkCW) - (_stagevolumeCW);
                         #endregion
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
                         objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
+                        cwActualvalue = 0;
                         cwActualvalue = ActualTacticTrendList.Sum(actual => actual.TrendValue);
                         objCardSectionSubModel.Actual_Projected = cwActualvalue;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
@@ -12205,31 +12215,37 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageCW);
+                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageCW);
+                        #region  "ConversePercentage Added by dashrath prajapati"
+                        _value = 0;
+                        _value = _mqlActual > 0 ? (cwActualvalue / _mqlActual) : 0;
+                        _ConversePercentage = _value * 100;
+                        objCardSectionSubModel.ConversePercentage = _ConversePercentage;
+                        #endregion
                         objCardSection.CWCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
-                        double revenueActual = 0;
-                        ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                        ActualRevenueDataTable = new List<ActualDataTable>();
-                        ActualTacticTrendList = new List<ActualTrendModel>();
-                        ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(revStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
-                        ActualTacticList = ActualTacticList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
-                        ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, ParentId.ToString(), CustomFieldType, Enums.InspectStage.Revenue, ActualTacticList, _TacticData, IsTacticCustomField);
-                        ActualTacticTrendList = GetActualTrendModelForRevenue(_TacticData, ActualRevenueDataTable, Enums.InspectStage.Revenue.ToString());
-                        revenueActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
-                        double adsgoal = 0;
-                        if (cwActualvalue > 0)
-                        {
-                            adsgoal = revenueActual / cwActualvalue;
-                        }
+                        //double revenueActual = 0;
+                        //ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                        //ActualRevenueDataTable = new List<ActualDataTable>();
+                        //ActualTacticTrendList = new List<ActualTrendModel>();
+                        //ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(revStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
+                        //ActualTacticList = ActualTacticList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
+                        //ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, ParentId.ToString(), CustomFieldType, Enums.InspectStage.Revenue, ActualTacticList, _TacticData, IsTacticCustomField);
+                        //ActualTacticTrendList = GetActualTrendModelForRevenue(_TacticData, ActualRevenueDataTable, Enums.InspectStage.Revenue.ToString());
+                        //revenueActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        //double adsgoal = 0;
+                        //if (cwActualvalue > 0)
+                        //{
+                        //    adsgoal = revenueActual / cwActualvalue;
+                        //}
 
-                        // Start convertion CardSection SubModel Data
-                        objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.ADS.ToString();
-                        objCardSectionSubModel.Actual_Projected = _ChildIdsList.Any() ? db.Models.Where(m => (db.Plan_Campaign_Program_Tactic.Where(t => _ChildIdsList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(m.ModelId)).Sum(mf => mf.AverageDealSize) : 0;
-                        objCardSectionSubModel.Goal = adsgoal;
-                        objCardSectionSubModel.IsNegative = false;
-                        objCardSection.ADSCardValues = objCardSectionSubModel;
+                        //// Start convertion CardSection SubModel Data
+                        //objCardSectionSubModel = new CardSectionListSubModel();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.ADS.ToString();
+                        //objCardSectionSubModel.Actual_Projected = _ChildIdsList.Any() ? db.Models.Where(m => (db.Plan_Campaign_Program_Tactic.Where(t => _ChildIdsList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(m.ModelId)).Sum(mf => mf.AverageDealSize) : 0;
+                        //objCardSectionSubModel.Goal = adsgoal;
+                        //objCardSectionSubModel.IsNegative = false;
+                        //objCardSection.ADSCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
 
                     }
@@ -12258,23 +12274,23 @@ namespace RevenuePlanner.Controllers
                         _mqlActual = 0;
                         _mqlActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == mqlStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
                         #region "stagebenchmark"
-                        List<Stage_Benchmark> StageBenchmarkList = new List<Stage_Benchmark>();
-                        string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
-                        List<string> StageCodeList = new List<string>();
-                        StageCodeList.Add(strMQLStageCode);
-                        StageCodeList.Add(strCWStageCode);
-                        StageBenchmarkList = GetStagewiseBenchmark(fltrTacticData, StageCodeList);
-                        _Benchmark = stageVolumePercntg = 0;
-                        stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
+                        //List<Stage_Benchmark> StageBenchmarkList = new List<Stage_Benchmark>();
+                        //string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+                        //List<string> StageCodeList = new List<string>();
+                        //StageCodeList.Add(strMQLStageCode);
+                        //StageCodeList.Add(strCWStageCode);
+                        //StageBenchmarkList = GetStagewiseBenchmark(fltrTacticData, StageCodeList);
+                        //_Benchmark = stageVolumePercntg = 0;
+                        //stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
 
-                        _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
-                        Conversion_Benchmark_Model mqlStageBenchmarkmodel = new Conversion_Benchmark_Model();
+                        //_Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
+                        //Conversion_Benchmark_Model mqlStageBenchmarkmodel = new Conversion_Benchmark_Model();
 
-                        mqlStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
-                        mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
-                        _stagevolumeMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.stageVolume) ? double.Parse(mqlStageBenchmarkmodel.stageVolume) : 0;
-                        _stagebenchmarkMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.Benchmark) ? double.Parse(mqlStageBenchmarkmodel.Benchmark) : 0;
-                        restpercentageMQL = (_stagebenchmarkMQL) - (_stagevolumeMQL);
+                        //mqlStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
+                        //mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
+                        //_stagevolumeMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.stageVolume) ? double.Parse(mqlStageBenchmarkmodel.stageVolume) : 0;
+                        //_stagebenchmarkMQL = !string.IsNullOrEmpty(mqlStageBenchmarkmodel.Benchmark) ? double.Parse(mqlStageBenchmarkmodel.Benchmark) : 0;
+                        //restpercentageMQL = (_stagebenchmarkMQL) - (_stagevolumeMQL);
                         #endregion
 
                         // Start convertion CardSection SubModel Data
@@ -12290,7 +12306,14 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageMQL);
+                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageMQL);
+                        #region  "ConversePercentage Added by dashrath prajapati"
+                        _value = 0;
+                        _value = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
+                        _ConversePercentage = _value * 100;
+                        objCardSectionSubModel.ConversePercentage = _ConversePercentage;
+                        #endregion
+
                         objCardSection.TQLCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
                         ProjectedTrendList = new List<ProjectedTrendModel>();
@@ -12298,18 +12321,18 @@ namespace RevenuePlanner.Controllers
                         _cwActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == cwStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
 
                         ProjectedTrendList = CalculateProjectedTrend(fltrTacticData, includeMonth, Enums.InspectStage.CW.ToString());
-                        _Benchmark = stageVolumePercntg = 0;
+                       // _Benchmark = stageVolumePercntg = 0;
                         #region"CW Benchmkark"
-                        stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
+                        //stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
 
-                        _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
-                        Conversion_Benchmark_Model cwStageBenchmarkmodel = new Conversion_Benchmark_Model();
-                        cwStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
-                        cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
+                        //_Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
+                        //Conversion_Benchmark_Model cwStageBenchmarkmodel = new Conversion_Benchmark_Model();
+                        //cwStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
+                        //cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
 
-                        _stagevolumeCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.stageVolume) ? double.Parse(cwStageBenchmarkmodel.stageVolume) : 0;
-                        _stagebenchmarkCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.Benchmark) ? double.Parse(cwStageBenchmarkmodel.Benchmark) : 0;
-                        restpercentageCW = (_stagebenchmarkCW) - (_stagevolumeCW);
+                        //_stagevolumeCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.stageVolume) ? double.Parse(cwStageBenchmarkmodel.stageVolume) : 0;
+                        //_stagebenchmarkCW = !string.IsNullOrEmpty(cwStageBenchmarkmodel.Benchmark) ? double.Parse(cwStageBenchmarkmodel.Benchmark) : 0;
+                        //restpercentageCW = (_stagebenchmarkCW) - (_stagevolumeCW);
                         #endregion
 
                         // Start convertion CardSection SubModel Data
@@ -12324,30 +12347,36 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageCW);
+                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageCW);
+                        #region  "ConversePercentage Added by dashrath prajapati"
+                        _value = 0;
+                        _value = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
+                        _ConversePercentage = _value * 100;
+                        objCardSectionSubModel.ConversePercentage = _ConversePercentage;
+                        #endregion
                         objCardSection.CWCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
 
-                        double revenueActual = 0;
-                        ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                        ActualRevenueDataTable = new List<ActualDataTable>();
-                        ActualTacticTrendList = new List<ActualTrendModel>();
-                        revenueActual = 0;
-                        revenueActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == revStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
+                        //double revenueActual = 0;
+                        //ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                        //ActualRevenueDataTable = new List<ActualDataTable>();
+                        //ActualTacticTrendList = new List<ActualTrendModel>();
+                        //revenueActual = 0;
+                        //revenueActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == revStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
 
-                        double adsgoal = 0;
-                        if (_cwActual > 0)
-                        {
-                            adsgoal = revenueActual / _cwActual;
-                        }
+                        //double adsgoal = 0;
+                        //if (_cwActual > 0)
+                        //{
+                        //    adsgoal = revenueActual / _cwActual;
+                        //}
 
-                        // Start convertion CardSection SubModel Data
-                        objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.ADS.ToString();
-                        objCardSectionSubModel.Actual_Projected = _ChildIdsList.Any() ? db.Models.Where(m => (db.Plan_Campaign_Program_Tactic.Where(t => _ChildIdsList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(m.ModelId)).Sum(mf => mf.AverageDealSize) : 0;
-                        objCardSectionSubModel.Goal = adsgoal;
-                        objCardSectionSubModel.IsNegative = false;
-                        objCardSection.ADSCardValues = objCardSectionSubModel;
+                        //// Start convertion CardSection SubModel Data
+                        //objCardSectionSubModel = new CardSectionListSubModel();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.ADS.ToString();
+                        //objCardSectionSubModel.Actual_Projected = _ChildIdsList.Any() ? db.Models.Where(m => (db.Plan_Campaign_Program_Tactic.Where(t => _ChildIdsList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(m.ModelId)).Sum(mf => mf.AverageDealSize) : 0;
+                        //objCardSectionSubModel.Goal = adsgoal;
+                        //objCardSectionSubModel.IsNegative = false;
+                        //objCardSection.ADSCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
 
                     }

@@ -24,6 +24,11 @@
     .carvdval-block {
         display: block;
     }
+     .arrow
+    {
+          width: 249px;
+          font-size: 40px;
+    }
 </style>
 <div class="revenue-filter">
     <div class="sorting">
@@ -68,13 +73,13 @@
         var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
         _CardData = JSON.parse(_CardData);
         var _cardhtml = '';
-        var _masterParentLabel = '', _title = '', _Inq_proj = '', _Inqgoal = '', _Inqpercentange = '', _Tql_proj = '', _Tqltgoal = '', _Tqlpercentange = '', _Cw_proj = '', _Cwgoal = '', _Cwpercentange = '', _Ads_proj = '', _Adsgoal = '', _Adspercentange = '';
-        var _Inqdata = '', _Tqldata = '', _Cwdata = '', _Adsdata = '';
+        var _masterParentLabel = '', _title = '', _Inq_proj = '', _Inqgoal = '', _Inqpercentange = '', _Tql_proj = '', _Tqltgoal = '', _Tqlpercentange = '', _Cw_proj = '', _Cwgoal = '', _Cwpercentange = '', _ConPercentageFirst = '', _ConPercentageSecond = '';
+        var _Inqdata = '', _Tqldata = '', _Cwdata = '';
         var _fieldId = '';
         //var rev = "Revenue", cost = "Cost", roi = "ROI";
-        var inq = "Inq", tql = "Tql", cw = "Cw", ads = "Ads";
-        var actproj = "_act_proj", goal = "_goal", percntg = "_percentage", retperc = "_restPercentage";
-        var _Inq_projId = '', _InqgoalId = '', _InqPercntgId = '', _Tql_projId = '', _TqlgoalId = '', _TqlPercntgId = '', _Cw_projId = '', _CwgoalId = '', _CwPercntgId = '', _Ads_projId = '', _AdsgoalId = '', _AdsPercntgId = '', tqlrestpercId = '', cwrestperceId = '';
+        var inq = "Inq", tql = "Tql", cw = "Cw", ConvPer = "ConversePercentage";
+        var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
+        var _Inq_projId = '', _InqgoalId = '', _InqPercntgId = '', _Tql_projId = '', _TqlgoalId = '', _TqlPercntgId = '', _Cw_projId = '', _CwgoalId = '', _CwPercntgId = '', _ConPercentageFirstId = '', _ConPercentageSecondId = '';
         var _btnDetailsId = '';
         var _Tqlact_proj = '', _Tqlgoal = '', _Tqlpercentange = '', _TqlIsNegative = '', _TqlCard = '', _InqCard = '', _CwCard = '', _AdsCard = '';
         // Add BY Nishant Sheth
@@ -97,7 +102,7 @@
             _Inqdata = value.INQCardValues;
             _Tqldata = value.TQLCardValues;
             _Cwdata = value.CWCardValues;
-            _Adsdata = value.ADSCardValues;
+            //_Adsdata = value.ADSCardValues;
 
             _Inq_proj = _Inqdata.Actual_Projected;
             _Inqgoal = _Inqdata.Goal;
@@ -107,7 +112,9 @@
             _Tql_proj = _Tqldata.Actual_Projected;
             _Tqltgoal = _Tqldata.Goal;
             _Tqlpercentange = _Tqldata.Percentage;
-            _Tqlrestpercentange = _Tqldata.RestPercentage;
+            //_Tqlrestpercentange = _Tqldata.RestPercentage;
+            _ConPercentageFirst = _Tqldata.ConversePercentage;
+
             // Add By Nishant Sheth
             _TqlCard = _Tqldata.CardType;
             _Tqlpercentange = _Tqldata.Percentage;
@@ -119,13 +126,14 @@
             _Cw_proj = _Cwdata.Actual_Projected;
             _Cwgoal = _Cwdata.Goal;
             _Cwpercentange = _Cwdata.Percentage;
-            _Cwrestpercentange = _Cwdata.RestPercentage;
+            // _Cwrestpercentange = _Cwdata.RestPercentage;
+            _ConPercentageSecond = _Cwdata.ConversePercentage;
             _CwCard = _Cwdata.CardType;
 
 
-            _Ads_proj = _Adsdata.Actual_Projected;
-            _Adsgoal = _Adsdata.Goal;
-            _AdsCard = _Adsdata.CardType;
+            //_Ads_proj = _Adsdata.Actual_Projected;
+           // _Adsgoal = _Adsdata.Goal;
+            //_AdsCard = _Adsdata.CardType;
             //_Adspercentange = _Adsdata.Percentage;
 
             _fieldId = value.FieldId;
@@ -134,19 +142,23 @@
             _InqgoalId = inq + goal + "_" + _fieldId;
             _InqPercntgId = inq + percntg + "_" + _fieldId;
 
+            _ConPercentageFirstId = ConvPer + "_" + _fieldId;
+
             _Tql_projId = tql + actproj + "_" + _fieldId;
             _TqlgoalId = tql + goal + "_" + _fieldId;
             _TqlPercntgId = tql + percntg + "_" + _fieldId;
-            tqlrestpercId = tql + retperc + "_" + _fieldId;
+            // tqlrestpercId = tql + retperc + "_" + _fieldId;
+
+            _ConPercentageSecondId = "second" + ConvPer + "_" + _fieldId;
 
             _Cw_projId = cw + actproj + "_" + _fieldId;
             _CwgoalId = cw + goal + "_" + _fieldId;
             _CwPercntgId = cw + percntg + "_" + _fieldId;
-            cwrestperceId = cw + retperc + "_" + _fieldId;
+           // cwrestperceId = cw + retperc + "_" + _fieldId;
 
-            _Ads_projId = ads + actproj + "_" + _fieldId;
-            _AdsgoalId = ads + goal + "_" + _fieldId;
-            _AdsPercntgId = ads + percntg + "_" + _fieldId;
+            //_Ads_projId = ads + actproj + "_" + _fieldId;
+           // _AdsgoalId = ads + goal + "_" + _fieldId;
+           // _AdsPercntgId = ads + percntg + "_" + _fieldId;
 
             var _titleSub = '';
             if (_title.length > 41) {
@@ -154,7 +166,7 @@
             }
             //alert("key: " + key + ", Value: " + value.title);
             //_cardhtml = _cardhtml + '<div class="region-content">';
-            _cardhtml = _cardhtml + '<div class="region-content" inqval="' + _Inq_proj + '" mqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" adsval="' + _Ads_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
+            _cardhtml = _cardhtml + '<div class="region-content" inqval="' + _Inq_proj + '" tqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
             _cardhtml = _cardhtml + '<div>';
             _cardhtml = _cardhtml + '<div class="report-btn-group">';
             _cardhtml = _cardhtml + '<div>';
@@ -177,15 +189,27 @@
             _cardhtml = _cardhtml + '<div class="data">';
             //_cardhtml = _cardhtml + '<span class="title">INQ</span>';
             _cardhtml = _cardhtml + '<span class="title">' + _InqCard + '</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Inq_proj + '" id="' + _Inq_projId + '">' + _Inq_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Inqgoal + '" id="' + _InqgoalId + '">' + _Inqgoal + '</span></p>';
-            //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Inqpercentange + '" id="' + _InqPercntgId + '">' + _Inqpercentange + '</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Inq_proj + '" id="' + _Inq_projId + '">' + _Inq_proj + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="title">Goal (YTD):</span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Inqgoal + '" id="' + _InqgoalId + '">' + _Inqgoal + '</span>';
+            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Inqpercentange + '" id="' + _InqPercntgId + '">' + _Inqpercentange + '</span></p>';
+            _cardhtml = _cardhtml + '</div>';
+
+            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<p><span class="percentageConverval" orig-val="' + _ConPercentageFirst + '" id="' + _ConPercentageFirstId + '">' + _ConPercentageFirst + '</span></p>';
+            _cardhtml = _cardhtml + '<p><span class="arrow">➜</span></p>';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '<div class="data">';
             //_cardhtml = _cardhtml + '<span class="title">TQL</span>';
             _cardhtml = _cardhtml + '<span class="title">' + _TqlCard + '</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="percentagevalue" orig-val="' + _Tqlpercentange + '" id="' + _TqlPercntgId + '">' + _Tqlpercentange + '</span> <span class="inner-sub-value"></span> <span class="percentageval" orig-val="' + _Tqlrestpercentange + '" id="' + tqlrestpercId + '">' + _Tqlrestpercentange + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="card sub-value" add-sep="true" orig-val="' + _Tql_proj + '" id="' + _Tql_projId + '">' + _Tql_proj + '</span><span class="inner-sub-value"></span>/<span class="card sub-value" add-sep="true" orig-val="' + _Tqltgoal + '" id="' + _TqlgoalId + '">' + _Tqltgoal + '</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Tql_proj + '" id="' + _Tql_projId + '">' + _Tql_proj + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="title">Goal (YTD):</span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Tqltgoal + '" id="' + _TqlgoalId + '">' + _Tqltgoal + '</span>';
+            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Tqlpercentange + '" id="' + _TqlPercntgId + '">' + _Tqlpercentange + '</span></p>';
+            _cardhtml = _cardhtml + '</div>';
+
+            _cardhtml = _cardhtml + '<div class="data">';
+            _cardhtml = _cardhtml + '<p><span class="percentageConverval" orig-val="' + _ConPercentageSecond + '" id="' + _ConPercentageSecondId + '">' + _ConPercentageSecond + '</span></p>';
+            _cardhtml = _cardhtml + '<p><span class="arrow">➜</span></p>';
             _cardhtml = _cardhtml + '</div>';
 
             _cardhtml = _cardhtml + '<div class="data">';
@@ -194,16 +218,17 @@
             //_cardhtml = _cardhtml + '<p class="value"> <span class="carvdval-block" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span> <span class="sub-value"  orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">/' + _Cwgoal + '</span></p>';
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span>';
 
-            _cardhtml = _cardhtml + '<p class="value"> <span class="percentagevalue" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span> <span class="inner-sub-value"></span><span class="percentageval" orig-val="' + _Cwrestpercentange + '" id="' + cwrestperceId + '">' + _Cwrestpercentange + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="card sub-value" add-sep="true" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span><span class="inner-sub-value"></span>/<span class="card sub-value" add-sep="true" orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">/' + _Cwgoal + '</span>';
+            _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span></p>';
+            _cardhtml = _cardhtml + '<span class="title">Goal (YTD):</span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">' + _Cwgoal + '</span>';
+            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span></p>';
             _cardhtml = _cardhtml + '</div>';
 
 
-            _cardhtml = _cardhtml + '<div class="data">';
+           // _cardhtml = _cardhtml + '<div class="data">';
             //_cardhtml = _cardhtml + '<span class="title">ADS</span>';
-            _cardhtml = _cardhtml + '<span class="title">' + _AdsCard + '</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Ads_proj + '" id="' + _Ads_projId + '">' + _Ads_proj + '</span><span class="cardsub sub-value"  orig-val="' + _Adsgoal + '" id="' + _AdsgoalId + '">' + _Adsgoal + '</span></p>';
-            _cardhtml = _cardhtml + '</div>';
+           // _cardhtml = _cardhtml + '<span class="title">' + _AdsCard + '</span>';
+           // _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Ads_proj + '" id="' + _Ads_projId + '">' + _Ads_proj + '</span><span class="cardsub sub-value"  orig-val="' + _Adsgoal + '" id="' + _AdsgoalId + '">' + _Adsgoal + '</span></p>';
+           // _cardhtml = _cardhtml + '</div>';
 
             //_cardhtml = _cardhtml + '<div id="dvNorthAmericaGraph1" class="region-graph">';
             //_cardhtml = _cardhtml + '</div>';
@@ -217,6 +242,7 @@
         formatCardSectionValues();
         formatCardPercentageValue();
         formatPercentageValue();
+        formatCardConversionPercentageValue();
         formatSetValues();
         formatSetsubValues();
 
@@ -352,6 +378,39 @@
         });
     }
 
+    function formatCardConversionPercentageValue() {
+        var _TypeCol = $(".percentageConverval");
+        $.each(_TypeCol, function (key, _cntrl) {
+            var _cntrlId = $(_cntrl).attr('id');
+            var _lblPercentage = "#" + _cntrlId;
+            var _text = $(_lblPercentage).attr('orig-val');
+            var _percentage = parseFloat(_text);
+            if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
+                _formtPercentage = "--";
+
+                //$(_lblPercentage).removeClass("above").removeClass("below");
+                //$(_lblPercentage).removeClass("below").addClass("above");
+            }
+            else {
+                //if (_percentage < 0) {
+                _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                // $(_lblPercentage).removeClass("above").addClass("below")
+                //$(_lblPercentage).removeClass("below").addClass("above");
+                //}
+                // else {
+                //  _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);
+                // $(_lblPercentage).removeClass("below").addClass("above");
+                // }
+            }
+            if (_formtPercentage == "--") {
+                _formtPercentage = "0";
+                _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);
+            }
+            $(_lblPercentage).css('font-size', 'large');
+            $(_lblPercentage).html(_formtPercentage);
+        });
+    }
+
     function formatCardPercentageValue() {
         var _TypeCol = $(".percentageval");
         $.each(_TypeCol, function (key, _cntrl) {
@@ -380,7 +439,7 @@
                 _formtPercentage = "0";
                 _formtPercentage = FormatNumber(Math.abs(parseFloat(_percentage)), true);
             }
-            $(_lblPercentage).css('font-size', 'large');
+            $(_lblPercentage).css('font-size', 'small');
             $(_lblPercentage).html(_formtPercentage);
         });
     }
