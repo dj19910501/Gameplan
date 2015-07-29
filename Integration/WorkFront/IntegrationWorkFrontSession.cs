@@ -9,6 +9,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using System.Text;
 using System.Data;
+using System.Data.Common;
 
 namespace Integration.WorkFront
 {
@@ -37,6 +38,7 @@ namespace Integration.WorkFront
         private Guid _applicationId = Guid.Empty;
         private Guid _userId { get; set; }
         private Dictionary<string, string> _mappingTactic { get; set; }
+        private List<string> _customFieldIds { get; set; }
         private Guid _clientId { get; set; }
         //api URL must be prepended with the company name
         private string apiURL;
@@ -228,19 +230,19 @@ namespace Integration.WorkFront
                 // Insert log into IntegrationInstanceSection
                 _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
                 _isResultError = false;
-                SetMappingDetails();
                 if (EntityType.Tactic.Equals(_entityType)) //_entityType is Tactic on tactic approval
                 {
-                Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _entityID && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
-                if (planTactic != null)
-                {
-                    List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-                    // CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                    List<int> plnaIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
-                    _isResultError = SyncTactic(planTactic, ref SyncErrors);
-                    db.SaveChanges();
+                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _entityID && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
+                    if (planTactic != null)
+                    {
+                        List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                        _isResultError = SetMappingDetails(ref SyncErrors);
+                        _isResultError = CreateCustomFieldIdList(tacticIdList, ref SyncErrors);
+                        List<int> plnaIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
+                        _isResultError = SyncTactic(planTactic, ref SyncErrors);
+                        db.SaveChanges();
+                    }
                 }
-            }
                 else
                 {
                     _isResultError = this.SyncInstanceData(ref SyncErrors); //this must find all tactics and sync
@@ -274,36 +276,39 @@ namespace Integration.WorkFront
             return _isResultError;
         }
 
-
         /// <summary>
         /// Instance Level sync method 
         /// Retrieves list of all tactics tied to the integrationinstance and deployed to integration, then called further methods to sync
         /// those tactics
         /// </summary>
+        /// <param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
         /// <returns>
         /// Bool: true if sync error, false otherwise
-        /// </param>
+        /// </returns>
         private bool SyncInstanceData(ref List<SyncError> SyncErrors)
         {
             bool syncError = false;
             try
             {
-                //Retrieve list of all Models tied to the integratininstance and deployed to integration
-                /*
-                List<Model> modelList = db.Models.Where(model => model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && model.IsDeleted == false).ToList(); //is there a flag for if a model is integrated?
-                foreach(var model in modelList)
-                {
-                    syncError = (syncError || SyncModel(model));
-                }
-                 * */
-
                 SyncInstanceTemplates(ref SyncErrors);
                 //Retrieves list of all tactics tied to the integrationinstance and deployed to integration
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
+                if (tacticList.Count() > 0 )
+                {
+                    _isResultError = SetMappingDetails(ref SyncErrors);
+                    if (_isResultError)
+                    {
+                        throw new ClientException("error in field mapping");
+                    }
+                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                    CreateCustomFieldIdList(tacticIdList, ref SyncErrors);
                     foreach (var tactic in tacticList)
                     {
                         syncError = (syncError || SyncTactic(tactic, ref SyncErrors));
 	                }
+                }
                 
             }
             catch(Exception ex)
@@ -322,6 +327,10 @@ namespace Integration.WorkFront
             
        }
 
+        
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
         private bool SyncInstanceTemplates(ref List<SyncError> SyncErrors)
         {
             bool syncError = false;
@@ -397,6 +406,9 @@ namespace Integration.WorkFront
         /// </summary>
         ///  <param name="tactic">
         /// the tactic to by synced
+        /// </param>
+        ///<param name="SyncErrors">
+        /// error list for tracking
         /// </param>
         /// <returns>
         /// Bool: true if sync error, false otherwise
@@ -505,6 +517,9 @@ namespace Integration.WorkFront
         ///  <param name="tactic">
         /// the tactic to by synced
         /// </param>
+        /// <param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
         /// <returns>
         /// Bool: true if sync error, false otherwise
         /// </returns>
@@ -519,33 +534,44 @@ namespace Integration.WorkFront
                 var last = _mappingTactic.Last();
                 foreach (var tacticField in _mappingTactic) //create JSON for editing
                 {
-                    if (tacticField.Key == Fields.ToStringEnums(Fields.GamePlanTacticFields.TITLE))
+                    if (tacticField.Key == Fields.ToStringEnums(Fields.GamePlanFields.TITLE))
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.Title + "'");
                     }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.DESCRIPTION))
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.DESCRIPTION))
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.Description + "'");
                     }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.START_DATE) )
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.START_DATE) )
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.StartDate + "'");
                     }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.END_DATE))
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.END_DATE))
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.EndDate + "'");
                     }
-                     else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.COST))
+                     else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.COST))
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.Cost + "'");
                     }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.TACTIC_BUDGET))
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.TACTIC_BUDGET))
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.TacticBudget + "'");
                     }
-                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanTacticFields.STATUS))
+                    else if (tacticField.Key ==Fields.ToStringEnums(Fields.GamePlanFields.STATUS))
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.Status + "'");
+                    }
+                    //else if (tacticField.Key == Fields.ToStringEnums(Fields.GamePlanFields.CREATEDBY))  --to be added later
+                   // {
+                    //    updateList.Append(tacticField.Value + ":'" + tactic.CreatedBy.ToString() + "'");
+                   // }
+                    else if (_customFieldIds.Contains(tacticField.Key))
+                    {
+                        int keyAsInt;
+                        if (!Int32.TryParse(tacticField.Key, out keyAsInt)) { throw new ClientException("Error converting Custom Field ID to integer"); }
+                        CustomField_Entity cfe = db.CustomField_Entity.Where(field => field.CustomFieldId == keyAsInt && tactic.PlanTacticId == field.EntityId).FirstOrDefault();
+                        updateList.Append(tacticField.Value + ":'" + cfe.Value + "'");
                     }
                     else { notUsedFieldCount++; }
                     updateList.Append(",");
@@ -607,63 +633,76 @@ namespace Integration.WorkFront
             return updateError;
         }
 
-        static string GetName<T>(T item) where T : class
-        {
-            return typeof(T).GetProperties()[0].Name;
-        }
-        
-
         /// <summary>
         /// Function to set mapping details.
         /// </summary>
-        private void SetMappingDetails()
+        /// <param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// true if errors encountered
+        /// </returns>
+        private bool SetMappingDetails(ref List<SyncError> SyncErrors)
         {
-            string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
-            string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
-            string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
-            string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
-            List<Fields.WorkFrontField> wfFields = Fields.GetWorkFrontFieldDetails();
             List<string> mappingTypeErrors = new List<string>();
             bool mappingError = false;
-            List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
-          
-              _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
-                                                  || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
-                                                  (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
-                                              .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
-                                              .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
+            try
+            {
+                string Global = Enums.IntegrantionDataTypeMappingTableName.Global.ToString();
+                string Tactic_EntityType = Enums.EntityType.Tactic.ToString();
+                string Plan_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Campaign_Program_Tactic.ToString();
+                string Plan_Improvement_Campaign_Program_Tactic = Enums.IntegrantionDataTypeMappingTableName.Plan_Improvement_Campaign_Program_Tactic.ToString();
+                List<Fields.WorkFrontField> wfFields = Fields.GetWorkFrontFieldDetails();
+                List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
+                _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
+                                                    || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
+                                                    (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
+                                                .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
+                                                .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
 
-              foreach (KeyValuePair<string, string> entry in _mappingTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
-              {
-                  if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && wfFields.Where(wf => wf.value == entry.Value).FirstOrDefault() != null)
-                  {
-                      if (!Enums.ActualFieldDatatype[entry.Key].Contains(wfFields.Where(Sfd => Sfd.value == entry.Value).FirstOrDefault().dataType))
-                      {
+                foreach (KeyValuePair<string, string> entry in _mappingTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+                {
+                    if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && wfFields.Where(wf => wf.value == entry.Value).FirstOrDefault() != null)
+                    {
+                        if (!Enums.ActualFieldDatatype[entry.Key].Contains(wfFields.Where(Sfd => Sfd.value == entry.Value).FirstOrDefault().dataType))
+                        {
 
-                          mappingTypeErrors.Add("Cannot map " + entry.Key + " to " + entry.Value + ".");
-                          mappingError = true;
-                      }
-                  }
-              }
-            
-            dataTypeMapping = dataTypeMapping.Where(gp => gp.GameplanDataType != null).Select(gp => gp).ToList();
-            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
-            BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-            _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
-            var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
-            var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
-            var clientApplicationActivityList = (from c in clientActivityList
-                                                 join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
-                                                 select new
-                                                 {
-                                                     Code = ca.Code,
-                                                     ActivityTitle = ca.ActivityTitle,
-                                                     clientId = c.ClientId
-                                                 }).Select(c => c).ToList();
-            IntegrationInstanceTacticIds = new List<string>();
+                            mappingTypeErrors.Add("Cannot map " + entry.Key + " to " + entry.Value + ".");
+                            mappingError = true;
+                        }
+                    }
+                }
 
-           
-           
+                dataTypeMapping = dataTypeMapping.Where(gp => gp.GameplanDataType != null).Select(gp => gp).ToList();
+                _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
+                _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
+                var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
+                var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
+                var clientApplicationActivityList = (from c in clientActivityList
+                                                     join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
+                                                     select new
+                                                     {
+                                                         Code = ca.Code,
+                                                         ActivityTitle = ca.ActivityTitle,
+                                                         clientId = c.ClientId
+                                                     }).Select(c => c).ToList();
+                if (mappingError) { throw new ClientException("Error in field mapping"); }
+            }
+            catch(Exception ex)
+            {
+                string mappingErrors = string.Join(",", mappingTypeErrors);
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.SectionName = "Sync Data";
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.Message = string.Concat(ex.Message, " : ", mappingErrors) ;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+
+            return mappingError;
         }
 
         /// <summary>
@@ -882,9 +921,67 @@ namespace Integration.WorkFront
             
         }
 
+
+        /// <summary>Returns a list of all workfront fields as an API as stored in Fields.cs  </summary>
+        /// <returns>
+        /// list of all workfront fields as strings
+        /// </returns>
         public List<string> getWorkFrontFields()
         {
             return Fields.ReturnAllWorkFrontFields_AsAPI();
         }
+
+        /// <summary>
+        /// Description : Taken and modified from Sohel Pathan's method CreateMappingCustomFieldDictionary in IntegrationEloquaClient.cs
+        /// Provides a List of Custom Field IDs for comparing against _mappingTactic Dictionary.
+        /// </summary>
+        /// <param name="EntityIdList">List of tactic ids for comparing against custom field entity ids.</param>
+        /// <param name="SyncErrors"> error list for tracking </param>
+        ///<returns> true if errors encountered </param>
+        private bool CreateCustomFieldIdList(List<int> EntityIdList, ref List<SyncError> SyncErrors)
+        {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            bool mappingError = false;
+            try
+            {
+                if (EntityIdList.Count > 0)
+                {
+                    _customFieldIds = new List<string>();
+                    string idList = string.Join(",", EntityIdList);
+
+                    String Query = "select cast(cf.CustomFieldId as nvarchar) from [dbo].[CustomField] cf inner join [dbo].[CustomField_Entity]" +
+                            "cfe on cfe.CustomFieldId = cf.CustomFieldId where cf.EntityType = 'Tactic' and cf.IsDeleted = 0 and cfe.EntityId in (" + idList + ")";
+
+                    MRPEntities mp = new MRPEntities();
+                    DbConnection conn = mp.Database.Connection;
+                    conn.Open();
+                    DbCommand comm = conn.CreateCommand();
+                    comm.CommandText = Query;
+                    DbDataReader ddr = comm.ExecuteReader();
+
+                    while (ddr.Read())
+                    {
+                        _customFieldIds.Add(!ddr.IsDBNull(0) ? ddr.GetString(0) : string.Empty);
+                    }
+                    conn.Close();
+                    mp.Dispose();
+                }
+            }
+            catch (Exception ex)
+            {
+                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                mappingError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.SectionName = "Sync Data";
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            return mappingError;
+        }
+        
     }
 }
