@@ -666,9 +666,10 @@ namespace Integration.WorkFront
 
                 foreach (KeyValuePair<string, string> entry in _mappingTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
                 {
-                    if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && wfFields.Where(wf => wf.value == entry.Value).FirstOrDefault() != null)
+                    if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && wfFields.Where(wf => wf.apiString == entry.Value).FirstOrDefault() != null)
                     {
-                        if (!Enums.ActualFieldDatatype[entry.Key].Contains(wfFields.Where(Sfd => Sfd.value == entry.Value).FirstOrDefault().dataType))
+                        
+                        if (!Enums.ActualFieldDatatype[entry.Key].Contains(wfFields.Where(wf => wf.apiString == entry.Value).FirstOrDefault().dataType))
                         {
 
                             mappingTypeErrors.Add("Cannot map " + entry.Key + " to " + entry.Value + ".");
