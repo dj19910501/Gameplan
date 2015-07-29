@@ -1672,7 +1672,8 @@ namespace Integration.Eloqua
                     _mappingCustomFields = new Dictionary<string, string>();
                     string idList = string.Join(",", EntityIdList);
 
-                    String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
+                    // In Eloqua, It uses MappingKey format like 'CustomfieldId-EntityId' (ex.: '56-39073') to retrieve customfield value from list in "MapCustomField" method.
+                    String Query = "select distinct cast(Extent1.CustomFieldID as nvarchar) + '-' + cast(EntityId as nvarchar) as keyv, " +
                         "case  " +
                            "    when A.keyi is not null then Extent2.AbbreviationForMulti " +
                            "    when Extent3.[Name]='TextBox' then Extent1.Value " +
@@ -1684,16 +1685,16 @@ namespace Integration.Eloqua
                         "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
                         "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and cast(Extent1.Value as nvarchar)=cast(Extent4.CustomFieldOptionID as nvarchar)" +
                         "Left Outer join ( " +
-                        "select '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyi " +
+                        "select cast(Extent1.CustomFieldID as nvarchar) + '-' + cast(EntityId as nvarchar) as keyi " +
 
                         " from CustomField_Entity Extent1 " +
                         "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] " +
                         "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
                         "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and Extent1.Value=Extent4.CustomFieldOptionID " +
                         "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
-                        "group by '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
+                        "group by cast(Extent1.CustomFieldID as nvarchar) + '-' + cast(EntityId as nvarchar) " +
                         "having count(*) > 1 " +
-                        ") A on A.keyi='" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
+                        ") A on A.keyi=cast(Extent1.CustomFieldID as nvarchar) + '-' + cast(EntityId as nvarchar) " +
                         "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
                         "order by keyv";
 
