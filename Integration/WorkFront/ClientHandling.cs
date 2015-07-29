@@ -216,11 +216,15 @@ namespace Integration.WorkFront
 		/// A <see cref="JToken"/>
 		/// </returns>
 		public JToken Update(ObjCode objcode, object parameters) {
-			VerifySignedIn();
-            string[] p = parameterObjectToStringArray(parameters);
-            JToken json = client.DoPut(string.Format("/{0}", objcode), SessionID, p);
-            if (json == null) { throw new ClientException("Update not completed!"); }
-			return json;
+            try
+            {
+                VerifySignedIn();
+                string[] p = parameterObjectToStringArray(parameters);
+                JToken json = client.DoPut(string.Format("/{0}", objcode), SessionID, p);
+                return json; //JSON will be null if updates fail
+            }
+            catch { throw new ClientException("Error updating " + objcode + " in Section: Update"); }
+			
 		}
 
  		/// <summary>

@@ -379,17 +379,26 @@ namespace Integration
                     }
                 }
                 ///Added by Brad Gray for WorkFront Sync PL ticket #1368
-                ///WorkFront is only in play at a tactic Level - thus instance sync must find
-                ///all tactics tied to the instance and update accordingly
+                ///WorkFront is in play at a tactic and instance level
+                ///WorkFront templates are tied to instance integration ID
+                ///instance sync must find all tactics tied to the instance and update accordingly
                 else if (_integrationType.Equals(Integration.Helper.Enums.IntegrationType.WorkFront.ToString()))
                 {
                     IntegrationWorkFrontSession integrationWorkFrontClient = new IntegrationWorkFrontSession(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, integrationinstanceLogId, _applicationId);
                     if (integrationWorkFrontClient.IsAuthenticated)
                     {
-                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with WorkFront Success.");
+                        Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Authentication with WorkFront Success.");
                         List<SyncError> lstSyncError = new List<SyncError>();
                         _isResultError = integrationWorkFrontClient.SyncData(out lstSyncError);
                         _lstAllSyncError.AddRange(lstSyncError);
+                        if(lstSyncError.Count>0)
+                        {
+                            Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "WorkFront Sync Error");
+                            foreach(SyncError e in lstSyncError)
+                            {
+                                Common.SaveIntegrationInstanceLogDetails(_id, integrationinstanceLogId, Enums.MessageOperation.None, e.SectionName, Enums.MessageLabel.Error, e.Message);
+                            }
+                        }
                     }
                     else
                     {

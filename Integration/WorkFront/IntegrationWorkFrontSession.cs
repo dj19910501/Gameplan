@@ -582,6 +582,7 @@ namespace Integration.WorkFront
                 updateList.Append("}");
                 JToken jUpdates = JToken.FromObject(updateList.ToString());
                 JToken project = client.Update(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, updates = jUpdates });
+                if (project == null) { throw new ClientException("Update not completed on " + tactic.Title + "."); }
                 //End push to WorkFront only sync
 
                 //Begin read only sync
