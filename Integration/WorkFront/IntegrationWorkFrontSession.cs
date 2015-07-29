@@ -249,14 +249,6 @@ namespace Integration.WorkFront
                     db.SaveChanges();
                 }
 
-                if (_isResultError)
-                {
-                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _errorMessage);
-                }
-                else
-                {
-                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
-                }
             }
             catch(Exception ex) {
                 SyncError error = new SyncError();
@@ -272,6 +264,14 @@ namespace Integration.WorkFront
             finally
             {
                 lstSyncError = SyncErrors;
+                if (_isResultError)
+                {
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _errorMessage);
+                }
+                else
+                {
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
+                }
             }
             return _isResultError;
         }
@@ -459,9 +459,11 @@ namespace Integration.WorkFront
                     tactic.IntegrationWorkFrontProjectID = (string)project["data"]["ID"];
                     tactic.IntegrationInstanceTacticId = (string)project["data"]["ID"]; //needed only as place filler for Common.GetMode. Not used elsewhere.
                     string templateID = (string)templateInfo["data"][0]["ID"];
-                    client.Update(ObjCode.PROJECT, new { ID = (string)project["data"]["ID"], action = "attachTemplate", templateID = templateID });
+                    JToken update = client.Update(ObjCode.PROJECT, new { ID = (string)project["data"]["ID"], action = "attachTemplate", templateID = templateID });
+                    if (update == null) { throw new ClientException("Project created without template for " + tactic.Title + ".");   }
                     JToken scheduleEdits = JToken.Parse("{scheduleMode:'C', plannedCompletionDate:'" + tactic.StartDate + "'}");
-                    client.Update(ObjCode.PROJECT, new { id = (string)project["data"]["ID"], updates = scheduleEdits });
+                    JToken update2 = client.Update(ObjCode.PROJECT, new { id = (string)project["data"]["ID"], updates = scheduleEdits });
+                    if (update2 == null) { throw new ClientException("Project could not be properly scheduled for " + tactic.Title + "."); }
                     tacticError = UpdateTacticInfo(tactic, ref SyncErrors);
                 }
                 else if (currentMode.Equals(Enums.Mode.Update))
@@ -469,24 +471,25 @@ namespace Integration.WorkFront
                     instanceLogTactic.Operation = Operation.Update.ToString();
                     tacticError = UpdateTacticInfo(tactic, ref SyncErrors);
                 }
-               
-                //Add tactic review comment when sync tactic
-                Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                objTacticComment.PlanTacticId = tactic.PlanTacticId;
-                objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.WorkFront.ToString();
-                objTacticComment.CreatedDate = DateTime.Now;
-                if (Common.IsAutoSync)
-                {
-                    objTacticComment.CreatedBy = new Guid();
-                }
-                else
-                {
-                    objTacticComment.CreatedBy = this._userId;
-                }
 
-                db.Entry(objTacticComment).State = EntityState.Added;
-                db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
-                
+                if (!tacticError) //don't leave a sync comment if it didn't sync
+                {
+                    //Add tactic review comment when sync tactic
+                    Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                    objTacticComment.PlanTacticId = tactic.PlanTacticId;
+                    objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.WorkFront.ToString();
+                    objTacticComment.CreatedDate = DateTime.Now;
+                    if (Common.IsAutoSync)
+                    {
+                        objTacticComment.CreatedBy = new Guid();
+                    }
+                    else
+                    {
+                        objTacticComment.CreatedBy = this._userId;
+                    }
+                    db.Entry(objTacticComment).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
+                }
             }
             catch(Exception ex)
             {
