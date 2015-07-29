@@ -37,14 +37,16 @@
             <input type="button" id="BtnBack" class="btn btn-blue text-shadow-blue source-sans-proregular" value="< Back" onclick="javascript:BtnBackClick();" /> @*Add By Nishant Sheth*@
         </div>
         <div class="projected disable-gray">
-            <span>Projected</span>
+            <span>Actual</span>
             <span id="revActual_Projected">$1.58M</span>
-            <span id="revPercentage"></span>
+            <span>Goal (YTD):</span> <span id="revGoalYTD">0</span>
+            <span id="revActualPercentage"></span>
         </div>
         <div class="projected disable-gray">
-            <span>Goal</span>
-            <span id="revGoal"></span>
-            <span>Revenue</span>
+            <span>Projected(Year)</span>
+            <span id="revProjected"></span>
+            <span>Goal (Year):</span> <span id="revGoalYear">0</span>
+            <span id="revProjectedPercentage"></span>
         </div>
         <div class="time-frame">
             <div class="geography-dropdown">
@@ -240,18 +242,31 @@
             }
         });
 
-        var _revGoal = '@revenue_Projected_Goal.Goal';
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
-        var _revPercentage = '@revenue_Projected_Goal.Percentage';
-        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';
+        var _revProjected = '@revenue_Projected_Goal.Projected';
+        @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
+        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+        var _revGoalYTD = '@revenue_Projected_Goal.GoalYTD';
+        var _revGoalYear = '@revenue_Projected_Goal.GoalYear';
+        var _revActualPercentage = '@revenue_Projected_Goal.ActualPercentage';
+        var _revProjectedPercentage = '@revenue_Projected_Goal.ProjectedPercentage';
+        var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
+        var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
 
         tempRevenueHeader.push({
             ActualProjected: _revActual_Projected.toString(),
-            Goal: _revGoal.toString(),
-            Percentage: _revPercentage.toString(),
-            IsNegative: _isNegativePercentage.toString().toLowerCase()
+            //Goal: _revGoal.toString(),
+            revProjected: _revProjected.toString(),
+            //Percentage: _revPercentage.toString(),
+            //IsNegative: _isNegativePercentage.toString().toLowerCase(),
+            revGoalYTD: _revGoalYTD.toString(),
+            revActualPercentage: _revActualPercentage.toString(),
+            revProjectedPercentage: _revProjectedPercentage.toString(),
+            revActualPercentageIsnegative: _revActualPercentageIsnegative.toString().toLowerCase(),
+            revProjectedPercentageIsnegative: _revProjectedPercentageIsnegative.toString().toLowerCase()
         });
-        formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage);
+        formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
 
         //var _formtPercentage = "0";
         //setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
@@ -500,8 +515,8 @@
         });
 
     }
-
-    function formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage) {
+    //formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
+    function formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative) {
         @*var _revGoal = '@revenue_Projected_Goal.Goal';
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _revPercentage = '@revenue_Projected_Goal.Percentage';
@@ -509,24 +524,44 @@
 
         var _formtPercentage = "0";
         $("#revActual_Projected").popover('destroy');
-        $("#revGoal").popover('destroy');
+        $("#revProjected").popover('destroy');
+        $("#revGoalYTD").popover('destroy');
         setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
-        setBootstrapTooltip("#revGoal", _revGoal, 5, true);
-        if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+        setBootstrapTooltip("#revProjected", _revProjected, 5, true);
+        setBootstrapTooltip("#revGoalYTD", _revGoalYTD, 5, true);
+        setBootstrapTooltip("#revGoalYear", _revGoalYear, 5, true);
+        
+        if (_revActualPercentage == null || _revActualPercentage == 'undefined' || _revActualPercentage == '' || _revActualPercentage == 'NaN' || _revActualPercentage == '-NaN') {
             _formtPercentage = "0";
-            $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
+            $("#revActualPercentage").removeClass("greenLabel").removeClass("redLabel");
         }
         else {
-            if (_isNegativePercentage.toLowerCase() == 'true') {
-                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-                $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
+            if (_revActualPercentageIsnegative.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revActualPercentage)), true);
+                $("#revActualPercentage").removeClass("greenLabel").addClass("redLabel");
             }
             else {
-                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-                $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revActualPercentage)), true);
+                $("#revActualPercentage").removeClass("redLabel").addClass("greenLabel");
             }
         }
-        $("#revPercentage").html(_formtPercentage);
+        $("#revActualPercentage").html(_formtPercentage);
+
+        if (_revProjectedPercentage == null || _revProjectedPercentage == 'undefined' || _revProjectedPercentage == '' || _revProjectedPercentage == 'NaN' || _revProjectedPercentage == '-NaN') {
+            _formtPercentage = "0";
+            $("#revProjectedPercentage").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (_revProjectedPercentageIsnegative.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revProjectedPercentage)), true);
+                $("#revProjectedPercentage").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revProjectedPercentage)), true);
+                $("#revProjectedPercentage").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $("#revProjectedPercentage").html(_formtPercentage);
     }
 
 </script>

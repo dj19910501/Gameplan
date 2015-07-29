@@ -68,6 +68,13 @@ namespace RevenuePlanner.Models
         public string Goal { get; set; }
         public string Percentage { get; set; }
         public bool IsnegativePercentage { get; set; }
+        public string Projected { get; set; }
+        public string GoalYTD { get; set; }// Add BY Nishant Sheth #1397
+        public string GoalYear { get; set; }// Add BY Nishant Sheth #1397
+        public string ActualPercentage { get; set; }// Add BY Nishant Sheth #1397
+        public bool ActualPercentageIsnegative { get; set; }// Add BY Nishant Sheth #1397
+        public string ProjectedPercentage { get; set; }// Add BY Nishant Sheth #1397
+        public bool ProjectedPercentageIsnegative { get; set; }// Add BY Nishant Sheth #1397
     }
     public class lineChartData
     {
@@ -243,6 +250,7 @@ namespace RevenuePlanner.Models
         public RevenueDataTable RevenueToPlanDataModel { get; set; }
         public lineChartData LineChartModel { get; set; }
         public CardSectionModel CardSectionModel { get; set; }
+        public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
     }
     public class RevenueDataTable
     {
@@ -361,6 +369,7 @@ namespace RevenuePlanner.Models
         public List<double> CostList { get; set; }//cost list added by dashrath
         public bool IsQuarterly { get; set; }
         public string timeframeOption { get; set; }
+        public List<double> GoalYTD { get; set; }// Add By Nishant Sheth
     }
 
     public class CardSectionModel
@@ -368,6 +377,11 @@ namespace RevenuePlanner.Models
         public List<CardSectionListModel> CardSectionListModel { get; set; }
         public int TotalRecords { get; set; } // Add By Nishant Sheth
         public int CuurentPageNum { get; set; }// Add By Nishant Sheth
+        //public List<Projected_Goal> RevenueHeaderModel { get; set; } // Add By Nishant SHeth
+    }
+    public class RevenueCardList
+    {
+        public static List<CardSectionListModel> CardSectionListModel { get; set; }
     }
     public class CardSectionListModel
     {
@@ -384,6 +398,7 @@ namespace RevenuePlanner.Models
         public string MasterParentlabel { get; set; }
         public double FieldId { get; set; }
         public string FieldType { get; set; }
+        public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
     }
     public class CardSectionListSubModel
     {

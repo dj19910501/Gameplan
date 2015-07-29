@@ -98,6 +98,7 @@
         var _cardhtml = '';
         var _masterParentLabel = '',_title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
         var _Revdata = '', _Costdata = '', _ROIdata = '', _lineChartData = '';
+        var _HeaderValue = '', _revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative;
         var _fieldId = '';
         var rev = "Revenue", cost = "Cost", roi = "ROI";
         var actproj = "_act_proj", goal = "_goal", percntg = "_percentage";
@@ -118,6 +119,7 @@
             _Costdata = value.CostCardValues;
             _ROIdata = value.ROICardValues;
             _lineChartData = value.LineChartData;
+            _HeaderValue = value.RevenueHeaderModel;
             list.push(_lineChartData);
 
             _Revact_proj = _Revdata.Actual_Projected;
@@ -135,6 +137,24 @@
 
             _fieldId = value.FieldId;
 
+            //// Start Header value
+            //_revActual_Projected = _HeaderValue.Actual_Projected;
+            //_revProjected = _HeaderValue.Projected;
+            //_revGoalYTD = _HeaderValue.GoalYTD;
+            //_revGoalYear = _HeaderValue.GoalYear;
+            //_revActualPercentage = _HeaderValue.ActualPercentage;
+            //_revActualPercentageIsnegative = _HeaderValue.ActualPercentageIsnegative;
+            //_revProjectedPercentage = _HeaderValue.ProjectedPercentage;
+            //_revProjectedPercentageIsnegative = _HeaderValue.ProjectedPercentageIsnegative;
+            _revActual_Projected = '';
+            _revProjected = '';
+            _revGoalYTD = '';
+            _revGoalYear = '';
+            _revActualPercentage = '';
+            _revActualPercentageIsnegative = '';
+            _revProjectedPercentage = '';
+            _revProjectedPercentageIsnegative = '';
+            // End Header value
             // Configure Details & Compare buttonID and CompareCheckbox ID.
             _btnDetailsId = 'buttonDtls_' + _fieldId;
             _btnCompareId = "buttonCmpr_" + _fieldId;
@@ -207,7 +227,7 @@
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
 
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Revact_proj) + '","' + String(_Revgoal) + '","' + String(_Revpercentange) + '","' + String(_revIsNegative) + '")>Details</button>';
+                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_revActual_Projected) + '","' + String(_revProjected) + '","' + String(_revGoalYTD) + '","' + String(_revGoalYear) + '","' + String(_revActualPercentage) + '","' + String(_revActualPercentageIsnegative) + '","' + String(_revProjectedPercentage) + '","' + String(_revProjectedPercentageIsnegative) + '")>Details</button>';
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
@@ -362,7 +382,7 @@
 
     /// Add By Nishant Sheth
     /// Desc: For card details section
-    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActualProj, _revGoal, _revPercentage, _isNegativePercntg) {
+    function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative) {
        
 
         var BtnBack = document.getElementById('BtnBack');
@@ -372,10 +392,16 @@
         marketingDiv.style.display = "none";
 
         var _pushValue = {
-            ActualProjected: _revActualProj.toString(),
-            Goal: _revGoal.toString(),
-            Percentage: _revPercentage.toString(),
-            IsNegative: _isNegativePercntg.toString().toLowerCase()
+            ActualProjected: _revActual_Projected.toString(),
+            //Goal: _revGoal.toString(),
+            revProjected: _revProjected.toString(),
+            //Percentage: _revPercentage.toString(),
+            //IsNegative: _isNegativePercentage.toString().toLowerCase(),
+            revGoalYTD: _revGoalYTD.toString(),
+            revActualPercentage: _revActualPercentage.toString(),
+            revProjectedPercentage: _revProjectedPercentage.toString(),
+            revActualPercentageIsnegative: _revActualPercentageIsnegative.toString().toLowerCase(),
+            revProjectedPercentageIsnegative: _revProjectedPercentageIsnegative.toString().toLowerCase()
         }
         tempRevenueHeader.push(_pushValue); // Push Card Values to Temp global variable declare at _Revenue.cshtml page. This global variable use when user click on Back button.
        
@@ -387,7 +413,8 @@
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvRevenueToPlan").load(_url);
         myApp.hidePleaseWait();
-        formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
+        //formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
+        //formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
        
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {

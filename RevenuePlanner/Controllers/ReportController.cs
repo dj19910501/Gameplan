@@ -2039,6 +2039,138 @@ namespace RevenuePlanner.Controllers
         //} 
         #endregion
 
+        /// <summary>
+        ///  Get Header value for reveneue #1397
+        ///  Created By Nishant Sheth
+        /// </summary>
+        public ReportModel GetRevenueHeaderValue(BasicModel objBasicModel, string timeFrameOption)
+        {
+            double _actualval, _actualtotal = 0, _projectedval, _projectedtotal = 0, _goalval, _goaltotal = 0, _goalYTD = 0;
+            double _ActualPercentage, _ProjectedPercentage;
+            string currentyear = DateTime.Now.Year.ToString();
+            int currentEndMonth = 12;
+            ReportModel objReportModel = new ReportModel();
+            Projected_Goal objProjectedGoal = new Projected_Goal();
+            objProjectedGoal.ActualPercentageIsnegative = true;
+            objProjectedGoal.ProjectedPercentageIsnegative = true;
+            List<string> categories = new List<string>();
+            categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+            int categorieslength = 4;
+            categorieslength = categories.Count;   // Set categories list count.
+            List<ProjectedTrendModel> ProjectedTrendModelList = new List<ProjectedTrendModel>();
+            if (objBasicModel.IsQuarterly)
+            {
+
+                //List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+                //List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+                //List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+                //List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+
+                //List<string> _curntQuarterList = new List<string>();
+
+                //for (int i = 1; i <= categorieslength; i++)
+                //{
+                //    #region "Get Quarter list based on loop value"
+                //    if (i == 1)
+                //    {
+                //        _curntQuarterList = Q1.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    else if (i == 2)
+                //    {
+                //        _curntQuarterList = Q2.Where(q2 => Convert.ToInt32(q2.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    else if (i == 3)
+                //    {
+                //        _curntQuarterList = Q3.Where(q3 => Convert.ToInt32(q3.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    else if (i == 4)
+                //    {
+                //        _curntQuarterList = Q4.Where(q4 => Convert.ToInt32(q4.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    #endregion
+
+                //}
+
+                _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
+                _goalYTD = objBasicModel.GoalYTD.Sum(goalYTD => goalYTD);
+            }
+            else
+            {
+
+                if (timeFrameOption.ToLower() == currentyear.ToLower())
+                {
+                    currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
+                }
+                #region Calculate GoalYTD
+                for (int i = 0; i < 12; i++)
+                {
+                    _goalval = objBasicModel.GoalList.ToList()[i];
+                    if (currentEndMonth > i)
+                    {
+                        if (_goalval != 0.0)
+                        {
+                            _goalYTD = _goalYTD + _goalval;
+                        }
+                    }
+                    else
+                    {
+                        _goalYTD += 0;
+                    }
+                    //_monthTrendList.Add(_actualtotal);
+                }
+                #endregion
+
+                #region Calculate GoalTotoal/Goal Year
+                _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
+                #endregion
+
+                #region Calculate Actual Value
+                _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
+                //for (int i = 0; i < 12; i++)
+                //{
+                //    _actualval = objBasicModel.ActualList.ToList()[i];
+                //    if (currentEndMonth > i)
+                //    {
+                //        if (_actualval != 0.0)
+                //        {
+                //            _actualtotal = _actualtotal + _actualval;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        _actualtotal += 0;
+                //    }
+                //    //_monthTrendList.Add(_actualtotal);
+                //}
+                #endregion
+
+                #region Calculate Projected Value
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                #endregion
+            }
+            _ActualPercentage = _goalYTD != 0 ? (((_actualtotal - _goalYTD) / _goalYTD) * 100) : 0;
+            if (_ActualPercentage > 0)
+            {
+                objProjectedGoal.ActualPercentageIsnegative = false;
+            }
+            _ProjectedPercentage = _goaltotal != 0 ? (((_actualtotal - _goaltotal) / _goaltotal) * 100) : 0;
+            if (_ProjectedPercentage > 0)
+            {
+                objProjectedGoal.ProjectedPercentageIsnegative = false;
+            }
+            objProjectedGoal.GoalYTD = Convert.ToString(_goalYTD);
+            objProjectedGoal.GoalYear = Convert.ToString(_goaltotal);
+            objProjectedGoal.Actual_Projected = Convert.ToString(_actualtotal);
+            objProjectedGoal.Projected = Convert.ToString(_projectedtotal);
+            objProjectedGoal.ActualPercentage = Convert.ToString(_ActualPercentage);
+            objProjectedGoal.ProjectedPercentage = Convert.ToString(_ProjectedPercentage);
+            objReportModel.RevenueHeaderModel = objProjectedGoal;
+
+            return objReportModel;
+        }
+
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]
         public ActionResult GetRevenueData(string option = "thisquarter", string isQuarterly = "Quarterly")
         {
@@ -2205,9 +2337,12 @@ namespace RevenuePlanner.Controllers
 
                     #region "Set Linechart & Revenue Overview data to model"
                     objLineChartData = GetCombinationLineChartData(objBasicModel);
-                    objProjectedGoal = GetRevenueOverviewData(OverviewModelList, option);
+                    //objProjectedGoal = GetRevenueOverviewData(OverviewModelList, option);
                     //objReportModel.RevenueLineChartModel = objLineChartData != null ? objLineChartData : new lineChartData();
-                    objReportModel.RevenueHeaderModel = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
+                    // Add By NIshant Sheth For change the logic of header value as per #1397
+                    objReportModel.RevenueHeaderModel = GetRevenueHeaderValue(objBasicModel, option).RevenueHeaderModel;
+
+                    //objReportModel.RevenueHeaderModel = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
                     #endregion
 
                     #endregion
@@ -2371,10 +2506,12 @@ namespace RevenuePlanner.Controllers
                     CardSectionListModel = GetCardSectionDefaultData(Tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, option, IsQuarterly, Common.RevenueCampaign.ToString(), false, "", 0);
 
                     objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                    //objReportModel.RevenueHeaderModel = objCardSectionModel.RevenueHeaderModel;
                     #endregion
 
                     //objReportModel.CardSectionModel = objCardSectionModel;
                     TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+                    //RevenueCardList.RevenueCardListModel = CardSectionListModel;// For Pagination Sorting and searching
                     objReportModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString());
                     objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
                 }
@@ -8509,8 +8646,12 @@ namespace RevenuePlanner.Controllers
             List<double> _actuallist = new List<double>();
             List<double> _projectedlist = new List<double>();
             List<double> _goallist = new List<double>();
-            double _Actual = 0, _Projected = 0, _Goal = 0, _prevActual = 0, _prevProjected = 0, _prevGoal = 0;
+            List<double> _goalYTDList = new List<double>();
+            double _Actual = 0, _Projected = 0, _Goal = 0, _prevActual = 0, _prevProjected = 0, _prevGoal = 0, _GoalYTD = 0;
             List<string> categories = new List<string>();
+            // Add By Nishant Sheth
+            string currentyear = DateTime.Now.Year.ToString();
+            int currentEndMonth = 12;
             #endregion
             try
             {
@@ -8527,7 +8668,10 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 categorieslength = categories.Count;   // Set categories list count.
-
+                if (currentYear == timeframeOption)
+                {
+                    currentEndMonth = DateTime.Now.Month;
+                }
                 #region "Monthly/Quarterly Calculate Actual, Projected & Goal Total"
                 if (IsQuarterly)
                 {
@@ -8536,30 +8680,51 @@ namespace RevenuePlanner.Controllers
                     List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
                     List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
 
-                    List<string> _curntQuarterList = new List<string>();
-
+                    List<string> _curntQuarterListActual = new List<string>();
+                    List<string> _curntQuarterListProjected = new List<string>();// Add By Nishant Sheth
+                    List<string> _curntQuarterListGoal = new List<string>();// Add By Nishant Sheth
                     for (int i = 1; i <= categorieslength; i++)
                     {
                         #region "Get Quarter list based on loop value"
                         if (i == 1)
-                            _curntQuarterList = Q1;
+                        {
+                            _curntQuarterListActual = Q1.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListProjected = Q1.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) >= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListGoal = Q1;
+                        }
                         else if (i == 2)
-                            _curntQuarterList = Q2;
+                        {
+                            _curntQuarterListActual = Q2.Where(q2 => Convert.ToInt32(q2.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListProjected = Q2.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) >= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListGoal = Q2;
+                        }
                         else if (i == 3)
-                            _curntQuarterList = Q3;
+                        {
+                            _curntQuarterListActual = Q3.Where(q3 => Convert.ToInt32(q3.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListProjected = Q3.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) >= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListGoal = Q3;
+                        }
                         else if (i == 4)
-                            _curntQuarterList = Q4;
+                        {
+                            _curntQuarterListActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListProjected = Q4.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) >= Convert.ToInt32(currentEndMonth)).ToList();
+                            _curntQuarterListGoal = Q4;
+                        }
                         #endregion
 
-                        _Actual = ActualTrendList.Where(actual => _curntQuarterList.Contains(actual.Month)).Sum(actual => actual.TrendValue);
+                        _Actual = ActualTrendList.Where(actual => _curntQuarterListActual.Contains(actual.Month)).Sum(actual => actual.TrendValue);
                         _actuallist.Add(_Actual);
 
 
-                        _Projected = ProjectedTrendModelList.Where(_projected => _curntQuarterList.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
+                        _Projected = ProjectedTrendModelList.Where(_projected => _curntQuarterListProjected.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
                         _projectedlist.Add(_Projected);
 
-                        _Goal = ProjectedTrendModelList.Where(_projected => _curntQuarterList.Contains(_projected.Month)).Sum(_projected => _projected.Value);
+                        _Goal = ProjectedTrendModelList.Where(_projected => _curntQuarterListGoal.Contains(_projected.Month)).Sum(_projected => _projected.Value);
                         _goallist.Add(_Goal);
+
+                        // Addd For Rveneue header value Goal Yeat to Date
+                        _GoalYTD = ProjectedTrendModelList.Where(_projected => _curntQuarterListActual.Contains(_projected.Month)).Sum(_projected => _projected.Value);
+                        _goalYTDList.Add(_GoalYTD);
                     }
                 }
                 else
@@ -8569,14 +8734,18 @@ namespace RevenuePlanner.Controllers
                     for (int i = 1; i <= categorieslength; i++)
                     {
                         curntPeriod = PeriodPrefix + i;
-                        _Actual = ActualTrendList.Where(actual => actual.Month.Equals(curntPeriod)).Sum(actual => actual.TrendValue);
-                        _Projected = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.TrendValue);
+                        //_Actual = ActualTrendList.Where(actual => actual.Month.Equals(curntPeriod)).Sum(actual => actual.TrendValue);
+                        _Actual = ActualTrendList.Where(actual => Convert.ToInt32(curntPeriod.Replace("Y", "")) <= currentEndMonth ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.TrendValue);
+                        _Projected = ProjectedTrendModelList.Where(_projected => Convert.ToInt32(curntPeriod.Replace("Y", "")) >= currentEndMonth ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue);
                         _Goal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
 
                         _actuallist.Add(_Actual);
                         _projectedlist.Add(_Projected);
                         _goallist.Add(_Goal);
                     }
+
+                    //_Actual = ActualTrendList.Where(actual => Convert.ToDateTime(DateTime.Now.Date.ToString("dd") + "-" + actual.Month + "-" + DateTime.Now.Year).Month <= currentEndMonth).Sum(actual => actual.TrendValue);
+                    //_actuallist.Add(_Actual);
                 }
 
                 #endregion
@@ -8586,6 +8755,7 @@ namespace RevenuePlanner.Controllers
                 objBasicModel.GoalList = _goallist;
                 objBasicModel.IsQuarterly = IsQuarterly;
                 objBasicModel.timeframeOption = timeframeOption;
+                objBasicModel.GoalYTD = _goalYTDList;
             }
             catch (Exception ex)
             {
@@ -9260,6 +9430,10 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(IsQuarterly) && IsQuarterly.Equals(Enums.ViewByAllocated.Quarterly.ToString()))
                     _isquarterly = true;
                 BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, option, _isquarterly);
+                #endregion
+                
+                #region Header values
+                objRevenueToPlanModel.RevenueHeaderModel = GetRevenueHeaderValue(objBasicModel, option).RevenueHeaderModel;
                 #endregion
 
                 #region "Set Linechart & Revenue Overview data to model"
