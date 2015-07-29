@@ -388,6 +388,14 @@ namespace Integration.Eloqua
                 List<EloquaObjectFieldDetails> lstEloquaforceFieldDetail = GetEloquaFieldDetail();
 
                 List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
+                if (!dataTypeMapping.Any()) // check if there is no field mapping configure then log error to IntegrationInstanceLogDetails table.
+                {
+                    Enums.EntityType entityType = _entityType.Equals(EntityType.IntegrationInstance) ? Enums.EntityType.Tactic : ((Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(_entityType), true));
+                    _ErrorMessage = "You have not configure any single field with Eloqua field.";
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityType, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), _ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, _ErrorMessage);
+                    return true;    // return true value that means error exist and do not proceed for the further mapping list.
+                }
                 _mappingTactic = dataTypeMapping.Where(gameplandata => (gameplandata.GameplanDataType != null ? (gameplandata.GameplanDataType.TableName == Plan_Campaign_Program_Tactic
                                                     || gameplandata.GameplanDataType.TableName == Global) : gameplandata.CustomField.EntityType == Tactic_EntityType) &&
                                                     (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
@@ -448,6 +456,7 @@ namespace Integration.Eloqua
                                 " in Eloqua for " + Section + ".";
                     Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section, true);
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Error, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, msg);
                 }
                 if (lstMappingMisMatch.Count > 0)
                 {
@@ -1239,6 +1248,7 @@ namespace Integration.Eloqua
                             }
                             else
                             {
+                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, parentFolderId + " folder does not exists for plan \"" + _plan.Title + "\".");
                                 //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                                 _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), parentFolderId + " folder does not exists for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                                 //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
@@ -1254,7 +1264,7 @@ namespace Integration.Eloqua
                         }
                         else
                         {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Folder path has not been specified for plan \"" + _plan.Title);
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Folder path has not been specified for plan \"" + _plan.Title);
                             //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                             _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Folder path has not been specified for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                             //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
@@ -1265,12 +1275,12 @@ namespace Integration.Eloqua
                     }
                     else
                     {
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Deserialize eloqa folder search response");
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Deserialize eloqa folder search response");
                     }
                 }
                 else
                 {
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Folder path has not been specified for plan \"" + _plan.Title);
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Folder path has not been specified for plan \"" + _plan.Title);
                     //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     _lstSyncError.Add(Common.PrepareSyncErrorList(_plan.PlanId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Folder path has not been specified for plan \"" + _plan.Title + "\".", Enums.SyncStatus.Info, DateTime.Now));
                     //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
