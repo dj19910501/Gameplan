@@ -606,19 +606,11 @@ namespace Integration.Helper
             try
             {
                 if (MsgOprtn.Equals(Enums.MessageOperation.None))
-                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + "---";
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + "---";   // if message operation "None" than Message prefix should be "---" ex: . 
                 else
-                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + MsgOprtn.ToString() + " :";
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : (MsgOprtn.Equals(Enums.MessageOperation.Start)) ? string.Empty : (MsgLabel.ToString() + " : ")) + MsgOprtn.ToString() + " :";
 
-                if (MsgOprtn.Equals(Enums.MessageOperation.Start))
-                {
-                    logDescription = preMessage + " " + functionName + " : " + logMsg; // if MessageOperation:Start then Message will be like this: "Start : SyncNow : Sync Start"
-                }
-                else
-                {
-                    logDescription = preMessage + " " + functionName + " : " + logMsg; // In other case Message will be like this: "Success : End : SyncNow : Sync Start "
-                }
-
+                logDescription = preMessage + " " + functionName + " : " + logMsg;
                 using (MRPEntities db = new MRPEntities())
                 {
                     IntegrationInstanceLogDetail objLogDetails = new IntegrationInstanceLogDetail();

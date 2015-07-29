@@ -883,7 +883,7 @@ namespace Integration.Eloqua
             {
                 string tempColumnName = Convert.ToString(dt.Columns[i]);
                 tempColumnName = tempColumnName.Trim().ToLower();
-                if (ExcelColumns.Contains(tempColumnName))
+                if (!ExcelColumns.Contains(tempColumnName))
                 {
                     ExcelColumns.Add(tempColumnName);
                 }

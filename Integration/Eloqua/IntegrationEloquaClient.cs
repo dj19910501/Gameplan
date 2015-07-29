@@ -230,11 +230,11 @@ namespace Integration.Eloqua
             var request = new RestRequest(Method.GET) { Resource = "/assets/campaign/fields?depth=complete", RequestFormat = DataFormat.Json, RootElement = "elements" };
             var response = _client.Execute<List<CampaignFieldObject>>(request);
             List<EloquaObjectFieldDetails> TargetDataTypeList = new List<EloquaObjectFieldDetails>();
-            response.Data.ForEach(rs => new EloquaObjectFieldDetails()
-                {
-                    TargetField = rs.name,
-                    TargetDatatype = rs.dataType,
-                });
+            TargetDataTypeList = response.Data.Select(rs => new EloquaObjectFieldDetails()
+                 {
+                     TargetField = rs.name,
+                     TargetDatatype = rs.dataType,
+                 }).ToList();
             return TargetDataTypeList.OrderBy(q => q.TargetField).ToList();
 
         }
@@ -401,7 +401,7 @@ namespace Integration.Eloqua
                                                     (gameplandata.GameplanDataType != null ? !gameplandata.GameplanDataType.IsGet : true))
                                                 .Select(mapping => new { ActualFieldName = mapping.GameplanDataType != null ? mapping.GameplanDataType.ActualFieldName : mapping.CustomFieldId.ToString(), mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
-                foreach (KeyValuePair<string, string> entry in _mappingTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+                foreach (KeyValuePair<string, string> entry in _mappingTactic)
                 {
                     if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
                     {
@@ -417,6 +417,19 @@ namespace Integration.Eloqua
                         }
 
                     }
+                    else if (lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
+                    {
+                        if (!Enums.ActualFieldDatatype[Enums.ActualFields.Other.ToString()].Contains(lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype))
+                        {
+                            objfeildDetails = new EloquaObjectFieldDetails();
+                            objfeildDetails.SourceField = entry.Key;
+                            objfeildDetails.TargetField = entry.Value;
+                            objfeildDetails.Section = Enums.EntityType.Tactic.ToString();
+                            objfeildDetails.TargetDatatype = lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
+                            objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
+                            lstMappingMisMatch.Add(objfeildDetails);
+                        }
+                    }
                 }
                 // End - Modified by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
 
@@ -430,7 +443,7 @@ namespace Integration.Eloqua
                                                                        !gameplandata.GameplanDataType.IsGet)
                                                 .Select(mapping => new { mapping.GameplanDataType.ActualFieldName, mapping.TargetDataType })
                                                 .ToDictionary(mapping => mapping.ActualFieldName, mapping => mapping.TargetDataType);
-                foreach (KeyValuePair<string, string> entry in _mappingImprovementTactic.Where(mt => Enums.ActualFieldDatatype.Keys.Contains(mt.Key)))
+                foreach (KeyValuePair<string, string> entry in _mappingImprovementTactic)
                 {
                     if (Enums.ActualFieldDatatype.ContainsKey(entry.Key) && lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
                     {
@@ -445,6 +458,19 @@ namespace Integration.Eloqua
                             lstMappingMisMatch.Add(objfeildDetails);
                         }
 
+                    }
+                    else if (lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault() != null)
+                    {
+                        if (!Enums.ActualFieldDatatype[Enums.ActualFields.Other.ToString()].Contains(lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype))
+                        {
+                            objfeildDetails = new EloquaObjectFieldDetails();
+                            objfeildDetails.SourceField = entry.Key;
+                            objfeildDetails.TargetField = entry.Value;
+                            objfeildDetails.Section = Enums.EntityType.Tactic.ToString();
+                            objfeildDetails.TargetDatatype = lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
+                            objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
+                            lstMappingMisMatch.Add(objfeildDetails);
+                        }
                     }
                 }
                 // End - Modified by Sohel Pathan on 05/12/2014 for PL ticket #995, 996, & 997

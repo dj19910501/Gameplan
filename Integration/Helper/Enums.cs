@@ -214,21 +214,23 @@ namespace Integration.Helper
             StartDate,
             Status,
             TacticType,
-            Title
+            Title,
+            Other
         }
         public static Dictionary<string, string> ActualFieldDatatype = new Dictionary<string, string>()
         {
             {Enums.ActualFields.ActivityType.ToString(),"string,text"},
             {Enums.ActualFields.Cost.ToString(),"int,double,float,numeric"},
             {Enums.ActualFields.CostActual.ToString(),"int,double,float,numeric"},
-            {Enums.ActualFields.CreatedBy.ToString(),"date,datetime"},
+            {Enums.ActualFields.CreatedBy.ToString(),"string,text"},
             {Enums.ActualFields.Description.ToString(),"string,text"},
             {Enums.ActualFields.EffectiveDate.ToString(),"date,datetime"},
             {Enums.ActualFields.EndDate.ToString(),"date,datetime"},
             {Enums.ActualFields.StartDate.ToString(),"date,datetime"},
             {Enums.ActualFields.Status.ToString(),"string,text"},
             {Enums.ActualFields.TacticType.ToString(),"string,text"},
-            {Enums.ActualFields.Title.ToString(),"string,text"}
+            {Enums.ActualFields.Title.ToString(),"string,text"},
+            {Enums.ActualFields.Other.ToString(),"string,text"}
 };
     }
 }
