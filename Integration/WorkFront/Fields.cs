@@ -138,7 +138,7 @@ namespace Integration.WorkFront
             public static readonly WorkFrontField NAME = new WorkFrontField("name", "Name", "string", true);
             public static readonly WorkFrontField DESCRIPTION = new WorkFrontField("description", "Description", "string", true);
             public static readonly WorkFrontField PLANNEDSTARTDATE = new WorkFrontField("plannedStartDate", "Planned Start Date", "date", false);
-            public static readonly WorkFrontField WORKFRONTPROJECTSTATUS = new WorkFrontField("WorkFront Project Status", "WorkFront Project Status", "string", false);
+            public static readonly WorkFrontField WORKFRONTPROJECTSTATUS = new WorkFrontField("status", "WorkFront Project Status", "string", false);
             public static readonly WorkFrontField ACTUALBENEFIT = new WorkFrontField("actualBenefit", "Actual Benefit", "int", true);
             public static readonly WorkFrontField ACTUALCOST = new WorkFrontField("actualCost", "Actual Cost", "int", true);
             public static readonly WorkFrontField ACTUALDURATIONMINUTES = new WorkFrontField("actualDurationMinutes", "Actual Duration in Minutes", "int", true);
