@@ -500,7 +500,7 @@ namespace Integration.WorkFront
                 error.EntityId = tactic.PlanTacticId;
                 error.EntityType = Enums.EntityType.Tactic;
                 error.SectionName = "Sync Tactic Data";
-                error.Message = ex.Message;
+                error.Message = "In tactic " + tactic.Title + " : " + ex.Message;
                 error.SyncStatus = Enums.SyncStatus.Error;
                 error.TimeStamp = DateTime.Now;
                 SyncErrors.Add(error);
@@ -574,7 +574,8 @@ namespace Integration.WorkFront
                         int keyAsInt;
                         if (!Int32.TryParse(tacticField.Key, out keyAsInt)) { throw new ClientException("Error converting Custom Field ID to integer"); }
                         CustomField_Entity cfe = db.CustomField_Entity.Where(field => field.CustomFieldId == keyAsInt && tactic.PlanTacticId == field.EntityId).FirstOrDefault();
-                        updateList.Append(tacticField.Value + ":'" + cfe.Value + "'");
+                        CustomField cf = db.CustomFields.Where(field => field.CustomFieldId == cfe.CustomFieldId).FirstOrDefault();
+                        if ((!(cfe == null))) { updateList.Append(tacticField.Value + ":'" + cfe.Value + "'"); }
                     }
                     else { notUsedFieldCount++; }
                     updateList.Append(",");
@@ -629,7 +630,7 @@ namespace Integration.WorkFront
                 error.EntityId = tactic.PlanTacticId;
                 error.EntityType = Enums.EntityType.Tactic;
                 error.SectionName = "Update Tactic Data";
-                error.Message = ex.Message;
+                error.Message = "In tactic " + tactic.Title + ": " + ex.Message;
                 error.SyncStatus = Enums.SyncStatus.Error;
                 error.TimeStamp = DateTime.Now;
                 SyncErrors.Add(error);
