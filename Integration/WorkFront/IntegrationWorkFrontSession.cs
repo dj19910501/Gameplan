@@ -574,8 +574,15 @@ namespace Integration.WorkFront
                         int keyAsInt;
                         if (!Int32.TryParse(tacticField.Key, out keyAsInt)) { throw new ClientException("Error converting Custom Field ID to integer"); }
                         CustomField_Entity cfe = db.CustomField_Entity.Where(field => field.CustomFieldId == keyAsInt && tactic.PlanTacticId == field.EntityId).FirstOrDefault();
-                        CustomField cf = db.CustomFields.Where(field => field.CustomFieldId == cfe.CustomFieldId).FirstOrDefault();
-                        if ((!(cfe == null))) { updateList.Append(tacticField.Value + ":'" + cfe.Value + "'"); }
+                        
+                        if ( !(cfe == null) ) {
+                            CustomField cf = db.CustomFields.Where(field => field.CustomFieldId == cfe.CustomFieldId).FirstOrDefault();
+                            if (!(cf.IsGet))
+                            {
+                                updateList.Append(tacticField.Value + ":'" + cfe.Value + "'");
+                            }
+                            else { notUsedFieldCount++; }
+                        }else { notUsedFieldCount++; }
                     }
                     else { notUsedFieldCount++; }
                     updateList.Append(",");

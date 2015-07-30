@@ -38,6 +38,7 @@ namespace RevenuePlanner.Models
         public bool IsDisplayForFilter { get; set; }
         public string AbbreviationForMulti { get; set; }
         public bool IsDefault { get; set; }
+        public bool IsGet { get; set; }
     
         public virtual ICollection<CampaignNameConvention> CampaignNameConventions { get; set; }
         public virtual CustomFieldType CustomFieldType { get; set; }
