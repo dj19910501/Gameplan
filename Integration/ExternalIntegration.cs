@@ -102,7 +102,8 @@ namespace Integration
         {
 
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-
+            try
+            {
             Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Check entity type");
             if (EntityType.Tactic.Equals(_entityType))
             {
@@ -157,6 +158,12 @@ namespace Integration
             }
 
             SendSyncErrorEmail(_integrationType);
+            }
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred while syncing data based on entity: " + exMessage);
+            }
 
         }
 
@@ -231,7 +238,8 @@ namespace Integration
             }
             catch (Exception ex)
             {
-                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing SyncTactic :-" + ex.Message);
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing SyncTactic :-" + exMessage);
             }
         }
 
@@ -240,6 +248,9 @@ namespace Integration
         /// </summary>
         private void SyncProgram()
         {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            try
+            {
             /// Write query to get integration instance id and integration type.
             _integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
@@ -248,12 +259,21 @@ namespace Integration
                 IdentifyIntegration();
             }
         }
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing SyncProgram :-" + exMessage);
+            }
+        }
 
         /// <summary>
         /// Campaign synchronization
         /// </summary>
         private void SyncCampaing()
         {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            try
+            {
             /// Write query to get integration instance id and integration type.
             _integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
@@ -262,17 +282,32 @@ namespace Integration
                 IdentifyIntegration();
             }
         }
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing SyncCampaign :-" + exMessage);
+            }
+        }
 
         /// <summary>
         /// synchronization all data integrated with selected Instance.
         /// </summary>
         private void SyncInstance()
         {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            try
+            {
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
             {
                 _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
                 IdentifyIntegration();
+            }
+        }
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while synchronizing all tactic data. :-" + exMessage);
             }
         }
 
@@ -309,7 +344,8 @@ namespace Integration
                 }
                 catch (Exception ex)
                 {
-                    Common.SaveIntegrationInstanceLogDetails(_id,null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while inserting log into IntegrationInstanceLog table. : " + ex.Message);
+                    string exMessage = Common.GetInnermostException(ex);
+                    Common.SaveIntegrationInstanceLogDetails(_id,null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while inserting log into IntegrationInstanceLog table. : " + exMessage);
                 }
                 Common.SaveIntegrationInstanceLogDetails(_id,null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Inserting log primary details to IntegrationInstanceLog table.");
 
@@ -460,7 +496,8 @@ namespace Integration
             }
             catch (Exception ex)
             {
-                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing IdentifyIntegration : " + ex.Message);
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while proccessing IdentifyIntegration : " + exMessage);
             }
         }
 

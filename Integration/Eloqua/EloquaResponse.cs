@@ -60,7 +60,8 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                Common.SaveIntegrationInstanceLogDetails(0, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "SFTP Authentication Error: " + ex.Message);
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(0, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "SFTP Authentication Error: " + exMessage);
                 return false;
             }
         }
@@ -470,11 +471,11 @@ namespace Integration.Eloqua
                     }
                     catch (Exception e)
                     {
-                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while pulling mql from Eloqua : " + e.Message);
+                        string exMessage = Common.GetInnermostException(e);
+                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while pulling mql from Eloqua : " + exMessage);
                         _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "System error occurred while pulling mql from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
-                        string msg = e.Message;
                         // Update IntegrationInstanceSection log with Error status
-                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
                         return true;
                     }
                 }
@@ -487,11 +488,11 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Set Tactic MQLs : " + ex.Message);
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Set Tactic MQLs : " + exMessage);
                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "System error occurred while pulling mql from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
-                string msg = ex.Message;
                 // Update IntegrationInstanceSection log with Error status
-                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
                 return true;
             }
             return false;
@@ -578,9 +579,10 @@ namespace Integration.Eloqua
                         }
                         catch (Exception ex)
                         {
-                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, Common.msgNotConnectToExternalServer + ex.Message);
+                            string exMessage = Common.GetInnermostException(ex);
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, Common.msgNotConnectToExternalServer + exMessage);
                             lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgNotConnectToExternalServer, Enums.SyncStatus.Error, DateTime.Now));
-                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
+                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
                             //throw new Exception(Common.msgNotConnectToExternalServer, ex.InnerException);
                             return true;
                         }
@@ -823,7 +825,8 @@ namespace Integration.Eloqua
                                         }
                                         catch (Exception ex)
                                         {
-                                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "An error occurred while creating directory at external server." + ex.Message);
+                                            string exMessage = Common.GetInnermostException(ex);
+                                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "An error occurred while creating directory at external server." + exMessage);
                                             //lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "An error occurred while creating directory at external server.", Enums.SyncStatus.Error, DateTime.Now));
                                         }
 
@@ -851,10 +854,11 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
-                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message);
-                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
+                        string exMessage = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while processing tactic response from Eloqua. Exception: " + exMessage);
+                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
                         return true;
                     }
                 }
@@ -867,9 +871,10 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
-                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
-                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, ex.Message);
+                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while processing tactic response from Eloqua. Exception: " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
                 return true;
             }
             return false;

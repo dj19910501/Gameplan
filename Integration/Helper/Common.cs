@@ -628,6 +628,23 @@ namespace Integration.Helper
             }
         }
         #endregion
+
+        #region "Get Most inner level Exception"
+        public static string GetInnermostException(Exception e)
+        {
+            if (e == null)
+            {
+                return new ArgumentNullException("e").Message;
+            }
+
+            while (e.InnerException != null)
+            {
+                e = e.InnerException;
+            }
+
+            return e.Message;
+        }
+        #endregion
     }
 
     public class CRM_EloquaMapping

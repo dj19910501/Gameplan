@@ -263,106 +263,113 @@ namespace Integration.Eloqua
         public bool SyncData(out List<SyncError> lstSyncError)
         {
             lstSyncError = new List<SyncError>();    //// Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-
-            // Insert log into IntegrationInstanceSection, Dharmraj PL#684
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
-            _isResultError = false;
-            // TODO: Move this function in internal level so it called if tactic exist
-            // Set Client ID based on integration instance.
-            _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
-            statusList = Common.GetStatusListAfterApproved();
-            bool IsInstanceSync = false;
-            StringBuilder sb = new StringBuilder();
-            if (EntityType.Tactic.Equals(_entityType))
+            try
             {
-                Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
-                if (planTactic != null)
+                // Insert log into IntegrationInstanceSection, Dharmraj PL#684
+                
+                _integrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), DateTime.Now, _userId);
+                _isResultError = false;
+                // TODO: Move this function in internal level so it called if tactic exist
+                // Set Client ID based on integration instance.
+                _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
+                statusList = Common.GetStatusListAfterApproved();
+                bool IsInstanceSync = false;
+                StringBuilder sb = new StringBuilder();
+                if (EntityType.Tactic.Equals(_entityType))
                 {
-                    _isResultError= SetMappingDetails();
-                    if (!_isResultError)
+                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
+                    if (planTactic != null)
                     {
-                        // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                        List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
-                        CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                        // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                        _isResultError = SetMappingDetails();
+                        if (!_isResultError)
+                        {
+                            // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                            List<int> tacticIdList = new List<int>() { planTactic.PlanTacticId };
+                            CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                            // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
 
-                        _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-                        List<int> planIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
-                        SetMappingEloquaFolderIdsPlanId(planIdList);
-                        planTactic = SyncTacticData(planTactic, ref sb);
-                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sb.ToString());
-                        db.SaveChanges();
+                            _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+                            List<int> planIdList = new List<int>() { planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId };
+                            SetMappingEloquaFolderIdsPlanId(planIdList);
+                            planTactic = SyncTacticData(planTactic, ref sb);
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sb.ToString());
+                            db.SaveChanges();
+                        }
                     }
                 }
-            }
-            else if (EntityType.ImprovementTactic.Equals(_entityType))
-            {
-                Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id && statusList.Contains(imptactic.Status) && imptactic.IsDeployedToIntegration && !imptactic.IsDeleted).FirstOrDefault();
-                if (planImprovementTactic != null)
+                else if (EntityType.ImprovementTactic.Equals(_entityType))
                 {
-                    _isResultError=SetMappingDetails();
-                    if (!_isResultError)
+                    Plan_Improvement_Campaign_Program_Tactic planImprovementTactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => imptactic.ImprovementPlanTacticId == _id && statusList.Contains(imptactic.Status) && imptactic.IsDeployedToIntegration && !imptactic.IsDeleted).FirstOrDefault();
+                    if (planImprovementTactic != null)
                     {
-                        List<int> planIdList = new List<int>() { planImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId };
-                        SetMappingEloquaFolderIdsPlanId(planIdList);
-                        planImprovementTactic = SyncImprovementData(planImprovementTactic, ref sb);
-                        db.SaveChanges();
+                        _isResultError = SetMappingDetails();
+                        if (!_isResultError)
+                        {
+                            List<int> planIdList = new List<int>() { planImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId };
+                            SetMappingEloquaFolderIdsPlanId(planIdList);
+                            planImprovementTactic = SyncImprovementData(planImprovementTactic, ref sb);
+                            db.SaveChanges();
+                        }
                     }
-                }
-            }
-            else
-            {
-                IsInstanceSync = true;
-                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Syncing process with multiple tactic.");
-                SyncInstanceData();
-                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Syncing process with multiple tactic.");
-            }
-
-            if (_isResultError)
-            {
-                // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
-                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, _ErrorMessage);
-            }
-            else
-            {
-                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
-                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Pushing data process completed.");
-            }
-
-            ////Added By: Maninder Singh Wadhva
-            ////Added Date: 08/20/2014
-            ////Ticket #717 	Pulling from Eloqua - Actual Cost 
-            if (IsInstanceSync)
-            {
-                bool isImport = false;
-                isImport = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IsImportActuals;
-
-                //// Check isimport flag.
-                if (isImport)
-                {
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Import actuals is enabled");
-                    string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
-                    int IntegrationTypeId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IntegrationTypeId;
-
-                    //// Pull responses from Eloqua
-                    GetDataForTacticandUpdate();
-
-                    if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(_clientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
-                        GetDataPullEloqua();
-
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Import actuals is enabled");
                 }
                 else
                 {
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Import actuals is not enabled");
+                    IsInstanceSync = true;
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Syncing process with multiple tactic.");
+                    SyncInstanceData();
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Syncing process with multiple tactic.");
                 }
+
+                if (_isResultError)
+                {
+                    // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Error, _ErrorMessage);
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, _ErrorMessage);
+                }
+                else
+                {
+                    // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                    Common.UpdateIntegrationInstanceSection(_integrationInstanceSectionId, StatusResult.Success, string.Empty);
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Pushing data process completed.");
+                }
+
+                ////Added By: Maninder Singh Wadhva
+                ////Added Date: 08/20/2014
+                ////Ticket #717 	Pulling from Eloqua - Actual Cost 
+                if (IsInstanceSync)
+                {
+                    bool isImport = false;
+                    isImport = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IsImportActuals;
+
+                    //// Check isimport flag.
+                    if (isImport)
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Import actuals is enabled");
+                        string strPermissionCode_MQL = Enums.ClientIntegrationPermissionCode.MQL.ToString();
+                        int IntegrationTypeId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId)).IntegrationTypeId;
+
+                        //// Pull responses from Eloqua
+                        GetDataForTacticandUpdate();
+
+                        if (db.Client_Integration_Permission.Any(intPermission => (intPermission.ClientId.Equals(_clientId)) && (intPermission.IntegrationTypeId.Equals(IntegrationTypeId)) && (intPermission.PermissionCode.ToUpper().Equals(strPermissionCode_MQL.ToUpper()))))
+                            GetDataPullEloqua();
+
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Import actuals is enabled");
+                    }
+                    else
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Import actuals is not enabled");
+                    }
+                }
+
+                lstSyncError.AddRange(_lstSyncError);
             }
-
-            lstSyncError.AddRange(_lstSyncError);
-
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while push/pull multiple tactic data: " + exMessage);
+            }
             return _isResultError;
         }
 
@@ -512,7 +519,7 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 if (ex is System.ServiceModel.EndpointNotFoundException)
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Auth Service Exception: Get Mapping detail for Integration Instance" + exMessage);
@@ -581,7 +588,7 @@ namespace Integration.Eloqua
                                 lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
 
                                 // Save 10 log records to Table.
-                                if (((index + 1) / 10).Equals(1))
+                                if (((index + 1) / pageSize).Equals(1))
                                 {
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
                                     sbMessage = new StringBuilder();
@@ -620,7 +627,7 @@ namespace Integration.Eloqua
                                 lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index], ref sbMessage);
 
                                 // Save 10 log records to Table.
-                                if (((index + 1) / 10).Equals(1))
+                                if (((index + 1) / pageSize).Equals(1))
                                 {
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
                                     sbMessage = new StringBuilder();
@@ -641,10 +648,11 @@ namespace Integration.Eloqua
             }
             catch (Exception e)
             {
-                string exMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                string exMessage = Common.GetInnermostException(e);
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while syncing data with Eloqua" + exMessage);
                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
-                _ErrorMessage = GetErrorMessage(e);
+                _ErrorMessage = exMessage;//GetErrorMessage(e);
+                _isResultError = true;
             }
         }
 
@@ -667,10 +675,10 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while pulling response from Eloqua. Exception :" + exMessage);
-                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while pulling response from Eloqua. Exception :" + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
-                _ErrorMessage = GetErrorMessage(ex);
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while pulling response from Eloqua. ", Enums.SyncStatus.Error, DateTime.Now));
+                _ErrorMessage = exMessage;
                 _isResultError = true;
             }
         }
@@ -847,7 +855,7 @@ namespace Integration.Eloqua
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);//GetErrorMessage(e);
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
@@ -896,7 +904,7 @@ namespace Integration.Eloqua
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + ")");
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = Common.GetInnermostException(e); 
                     }
                 }
 
@@ -1071,7 +1079,7 @@ namespace Integration.Eloqua
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                    instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);
                     sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                 }
 
@@ -1122,7 +1130,7 @@ namespace Integration.Eloqua
                     {
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                     }
 
@@ -1151,7 +1159,7 @@ namespace Integration.Eloqua
                 titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = planTactic.TacticCustomName == null ? Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId) : planTactic.TacticCustomName;
+                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId)) : (planTactic.TacticCustomName);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                 }
             }
@@ -1333,7 +1341,7 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while Get folder id from GP database: " + exMessage);
             }
             //Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get folder id from GP database");
@@ -1716,7 +1724,7 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Get Mapping detail for " + EntityType + " custom field(s): " + exMessage);
             }
 
@@ -1750,11 +1758,11 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "An error ocured while authenticating with Eloqua: " + exMessage);
                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "An error ocured while authenticating with Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
                 _isResultError = true;
-                _ErrorMessage = GetErrorMessage(ex);
+                _ErrorMessage = exMessage;
                 _isAuthenticated = false;
             }
         }
@@ -1843,10 +1851,10 @@ namespace Integration.Eloqua
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "System error occurred while pulling mql from Eloqua :" + exMessage);
                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "System error occurred while pulling mql from Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
-                _ErrorMessage = GetErrorMessage(ex);
+                _ErrorMessage = exMessage;
                 _isResultError = true;
             }
         }

@@ -938,8 +938,10 @@ namespace RevenuePlanner.Controllers
                     return Json(new { }, JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                string exMessage = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message;
+                Message.SaveIntegrationInstanceLogDetails(id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred while syncing data to external service: " + exMessage);
                 return Json(new { status = "Error", lastSync = DateTime.Now.ToString(DateFormat) }, JsonRequestBehavior.AllowGet);
                 throw;
             }

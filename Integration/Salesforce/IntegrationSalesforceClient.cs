@@ -150,10 +150,10 @@ namespace Integration.Salesforce
             }
             catch (SalesforceException ex)
             {
-                //Console.WriteLine("Authentication failed: {0} : {1}", ex.Error, ex.Message);
-                _ErrorMessage = GetErrorMessage(ex);
+                string exMessage = Common.GetInnermostException(ex);
+                _ErrorMessage = exMessage;
                 _isAuthenticated = false;
-                Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "An error ocured while authenticating with Salesforce: " + _ErrorMessage);
+                Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "An error ocured while authenticating with Salesforce: " + exMessage);
             }
         }
 
@@ -378,9 +378,9 @@ namespace Integration.Salesforce
             }
             catch (Exception e)
             {
+                string exMessage = Common.GetInnermostException(e);
                 _isResultError = true;
-                _ErrorMessage = e.Message;
-                string exMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                _ErrorMessage = exMessage;
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing Tactic :- " + exMessage);
             }
 
@@ -515,8 +515,8 @@ namespace Integration.Salesforce
                     }
                     catch (Exception ex)
                     {
-                        string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while pulling EloquaId for Salesforce and Eloqua mapping. Exception :" + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
+                        string exMessage = Common.GetInnermostException(ex);
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "System error occurred while pulling EloquaId for Salesforce and Eloqua mapping. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while create mapping list of EloquaId and SalesforceId :- " + exMessage);
                         continue;
                     }
@@ -589,8 +589,9 @@ namespace Integration.Salesforce
                                     }
                                     catch (SalesforceException e)
                                     {
+                                        string exMessage = Common.GetInnermostException(e);
                                         ErrorFlag = true;
-                                        _ErrorMessage = GetErrorMessage(e);
+                                        _ErrorMessage = exMessage;
                                         string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
 
                                         //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
@@ -609,16 +610,17 @@ namespace Integration.Salesforce
                                         instanceTactic.Operation = Operation.Pull_Responses.ToString();
                                         instanceTactic.SyncTimeStamp = DateTime.Now;
                                         instanceTactic.CreatedDate = DateTime.Now;
-                                        instanceTactic.ErrorDescription = GetErrorMessage(e);
+                                        instanceTactic.ErrorDescription = exMessage;
                                         instanceTactic.CreatedBy = _userId;
                                         db.Entry(instanceTactic).State = EntityState.Added;
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from Salesforce:- " + _ErrorMessage);
-                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Error occurred while getting Campaign from Salesforce. Exception :" + e.Message, Enums.SyncStatus.Error, DateTime.Now));
+                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from Salesforce:- " + exMessage);
+                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Error occurred while getting Campaign from Salesforce. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                                     }
                                     catch (Exception e)
                                     {
+                                        string exMessage = Common.GetInnermostException(e);
                                         ErrorFlag = true;
-                                        _ErrorMessage = e.Message;
+                                        _ErrorMessage = exMessage;
                                         string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
 
                                         //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
@@ -637,12 +639,11 @@ namespace Integration.Salesforce
                                         instanceTactic.Operation = Operation.Pull_Responses.ToString();
                                         instanceTactic.SyncTimeStamp = DateTime.Now;
                                         instanceTactic.CreatedDate = DateTime.Now;
-                                        instanceTactic.ErrorDescription = e.Message;
+                                        instanceTactic.ErrorDescription = exMessage;
                                         instanceTactic.CreatedBy = _userId;
                                         db.Entry(instanceTactic).State = EntityState.Added;
-                                        string exMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from Salesforce:- " + exMessage);
-                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Error occurred while getting Campaign from Salesforce. Exception :" + e.Message, Enums.SyncStatus.Error, DateTime.Now));
+                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Error occurred while getting Campaign from Salesforce. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                                     }
 
                                 }
@@ -744,11 +745,11 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
-                        string msg = GetErrorMessage(e);
+                        string exMessage = Common.GetInnermostException(e);
                         // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
                         //Common.SaveIntegrationInstanceLogDetails(_id, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while Pulling Campaign from Salesforce:- " + e.Message);
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), " Error occurred while pulling campaign from Salesforce: " + msg, Enums.SyncStatus.Error, DateTime.Now));
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), " Error occurred while pulling campaign from Salesforce: " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
                 else
@@ -759,8 +760,8 @@ namespace Integration.Salesforce
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), " Error occurred while Pulling Resoponses from Salesforce: " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
+                string exMessage = Common.GetInnermostException(ex);
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), " Error occurred while Pulling Resoponses from Salesforce: " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while Pulling Resoponses:- " + exMessage);
             }
 
@@ -833,7 +834,7 @@ namespace Integration.Salesforce
                             }
                             catch (SalesforceException e)
                             {
-                                string exMessage = GetErrorMessage(e);
+                                string exMessage = Common.GetInnermostException(e);
                                 _isResultError = true;
                                 instanceLogCampaign.Status = StatusResult.Error.ToString();
                                 instanceLogCampaign.ErrorDescription = exMessage;
@@ -888,7 +889,7 @@ namespace Integration.Salesforce
                             }
                             catch (SalesforceException e)
                             {
-                                string exMessage = GetErrorMessage(e);
+                                string exMessage = Common.GetInnermostException(e);
                                 _isResultError = true;
                                 instanceLogProgram.Status = StatusResult.Error.ToString();
                                 instanceLogProgram.ErrorDescription = exMessage;
@@ -932,7 +933,7 @@ namespace Integration.Salesforce
                         }
                         catch (SalesforceException e)
                         {
-                            string exMessage = GetErrorMessage(e);
+                            string exMessage = Common.GetInnermostException(e);
                             _isResultError = true;
                             instanceLogTactic.Status = StatusResult.Error.ToString();
                             instanceLogTactic.ErrorDescription = exMessage;
@@ -952,7 +953,7 @@ namespace Integration.Salesforce
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while SyncMovedTacticData function executing:- " + exMessage);
             }
             return _isResultError;
@@ -1066,8 +1067,8 @@ namespace Integration.Salesforce
                     }
                     catch (Exception ex)
                     {
-                        string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling EloquaId for Salesforce and Eloqua mapping. Exception :" + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
+                        string exMessage = Common.GetInnermostException(ex);
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling EloquaId for Salesforce and Eloqua mapping. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while create mapping list of EloquaId and SalesforceId :- " + exMessage);
                         continue;
                     }
@@ -1181,19 +1182,20 @@ namespace Integration.Salesforce
                                     }
                                     catch (SalesforceException e)
                                     {
+                                        string exMessage = Common.GetInnermostException(e);
                                         errorcount++;
-                                        _ErrorMessage = GetErrorMessage(e);
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting data from Opportunity table :- " + _ErrorMessage);
-                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling data from Opportunity. Exception :" + e.Message, Enums.SyncStatus.Error, DateTime.Now));
+                                        _ErrorMessage = exMessage;
+                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting data from Opportunity table :- " + exMessage);
+                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling data from Opportunity. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                                         continue;
                                     }
                                     catch (Exception e)
                                     {
+                                        string exMessage = Common.GetInnermostException(e);
                                         errorcount++;
-                                        _ErrorMessage = e.Message;
-                                        string exMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
+                                        _ErrorMessage = exMessage;
                                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting data from Opportunity table :- " + exMessage);
-                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling data from Opportunity. Exception :" + e.Message, Enums.SyncStatus.Error, DateTime.Now));
+                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling data from Opportunity. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                                         continue;
                                     }
 
@@ -1262,6 +1264,7 @@ namespace Integration.Salesforce
                                         }
                                         catch (SalesforceException e)
                                         {
+                                            string exMessage = Common.GetInnermostException(e);
                                             errorcount++;
                                             string TacticId = Convert.ToString(jobj[CampaignId]);
                                             if (TacticId != string.Empty)
@@ -1276,7 +1279,7 @@ namespace Integration.Salesforce
                                                 if (_PlanTacticId != 0)
                                                 {
                                                     ErrorFlag = true;
-                                                    _ErrorMessage = GetErrorMessage(e);
+                                                    _ErrorMessage = exMessage;
                                                     IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                                                     instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
                                                     instanceTactic.IntegrationInstanceId = _integrationInstanceId;
@@ -1286,18 +1289,19 @@ namespace Integration.Salesforce
                                                     instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
                                                     instanceTactic.SyncTimeStamp = DateTime.Now;
                                                     instanceTactic.CreatedDate = DateTime.Now;
-                                                    instanceTactic.ErrorDescription = Common.CampaignMemberObjectError + GetErrorMessage(e);
+                                                    instanceTactic.ErrorDescription = Common.CampaignMemberObjectError + exMessage;
                                                     instanceTactic.CreatedBy = _userId;
                                                     db.Entry(instanceTactic).State = EntityState.Added;
-                                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from CampaignMember table within Salesforce :- " + _ErrorMessage);
+                                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from CampaignMember table within Salesforce :- " + exMessage);
                                                 }
                                             }
-                                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling Campaign data. Exception :" + e.Message, Enums.SyncStatus.Error, DateTime.Now));
+                                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling Campaign data. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                                             continue;
                                         }
                                         catch (Exception e)
                                         {
                                             errorcount++;
+                                            string exMessage = Common.GetInnermostException(e);
                                             string TacticId = Convert.ToString(jobj[CampaignId]);
                                             if (TacticId != string.Empty)
                                             {
@@ -1311,7 +1315,7 @@ namespace Integration.Salesforce
                                                 if (_PlanTacticId != 0)
                                                 {
                                                     ErrorFlag = true;
-                                                    _ErrorMessage = e.Message;
+                                                    _ErrorMessage = exMessage;
                                                     IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                                                     instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
                                                     instanceTactic.IntegrationInstanceId = _integrationInstanceId;
@@ -1321,14 +1325,13 @@ namespace Integration.Salesforce
                                                     instanceTactic.Operation = Operation.Pull_ClosedWon.ToString();
                                                     instanceTactic.SyncTimeStamp = DateTime.Now;
                                                     instanceTactic.CreatedDate = DateTime.Now;
-                                                    instanceTactic.ErrorDescription = Common.CampaignMemberObjectError + e.Message;
+                                                    instanceTactic.ErrorDescription = Common.CampaignMemberObjectError + exMessage;
                                                     instanceTactic.CreatedBy = _userId;
                                                     db.Entry(instanceTactic).State = EntityState.Added;
-                                                    string exMessage = e.InnerException != null ? e.InnerException.Message : e.Message;
                                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from CampaignMember table within Salesforce :- " + exMessage);
                                                 }
                                             }
-                                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling Campaign data. Exception :" + e.Message, Enums.SyncStatus.Error, DateTime.Now));
+                                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "System error occurred while pulling Campaign data. Exception :" + exMessage, Enums.SyncStatus.Error, DateTime.Now));
                                             continue;
                                         }
                                     }
@@ -1500,10 +1503,10 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
-                        string msg = GetErrorMessage(e);
+                        string exMessage = Common.GetInnermostException(e);
                         // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
-                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, msg);
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), msg, Enums.SyncStatus.Error, DateTime.Now));
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
                 else
@@ -1514,9 +1517,9 @@ namespace Integration.Salesforce
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while Pulling CWRevenue:- " + exMessage);
-                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Error occurred while Pulling CWRevenue:- " + ex.Message, Enums.SyncStatus.Error, DateTime.Now));
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Error occurred while Pulling CWRevenue:- " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
             }
         }
 
@@ -1699,15 +1702,14 @@ namespace Integration.Salesforce
                 }
                 catch (Exception ex)
                 {
-                    
-                    string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                    string exMessage = Common.GetInnermostException(ex);
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while executing BDS Service:- " + exMessage);
                     return true;
                 }
             }
             catch (Exception ex)
             {
-                string exMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                string exMessage = Common.GetInnermostException(ex);
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Mapping list:- " + exMessage);
                 return false;
             }
@@ -1739,9 +1741,10 @@ namespace Integration.Salesforce
                 }
                 catch (SalesforceException e)
                 {
+                    string exMessage = Common.GetInnermostException(e);
                     sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                     instanceLogCampaign.Status = StatusResult.Error.ToString();
-                    instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                    instanceLogCampaign.ErrorDescription = exMessage;
                     _lstSyncError.Add(Common.PrepareSyncErrorList(planCampaign.PlanCampaignId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing campaign \"" + planCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                 }
                 instanceLogCampaign.CreatedBy = this._userId;
@@ -1788,9 +1791,10 @@ namespace Integration.Salesforce
                     }
                     else
                     {
+                        string exMessage = Common.GetInnermostException(e);
                         sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogCampaign.Status = StatusResult.Error.ToString();
-                        instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                        instanceLogCampaign.ErrorDescription = exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planCampaign.PlanCampaignId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing campaign \"" + planCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
@@ -1834,9 +1838,10 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
+                        string exMessage = Common.GetInnermostException(e);
                         sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogCampaign.Status = StatusResult.Error.ToString();
-                        instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                        instanceLogCampaign.ErrorDescription = exMessage;
                        // _lstSyncError.Add(Common.PrepareSyncErrorList(planCampaign.PlanCampaignId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing campaign \"" + planCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     }
                     instanceLogCampaign.CreatedBy = this._userId;
@@ -1865,9 +1870,10 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
+                        string exMessage = Common.GetInnermostException(e);
                         sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogProgram.Status = StatusResult.Error.ToString();
-                        instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                        instanceLogProgram.ErrorDescription = exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planProgram.PlanProgramId, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing program \"" + planProgram.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     }
 
@@ -1917,9 +1923,10 @@ namespace Integration.Salesforce
                     }
                     else
                     {
+                        string exMessage = Common.GetInnermostException(e);
                         sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogProgram.Status = StatusResult.Error.ToString();
-                        instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                        instanceLogProgram.ErrorDescription = exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planProgram.PlanProgramId, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing program \"" + planProgram.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
@@ -1966,9 +1973,20 @@ namespace Integration.Salesforce
                         }
                         catch (SalesforceException e)
                         {
+                            string exMessage = Common.GetInnermostException(e);
+                            _parentId = string.Empty;
                             sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogCampaign.Status = StatusResult.Error.ToString();
-                            instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                            instanceLogCampaign.ErrorDescription = exMessage;
+                            //_lstSyncError.Add(Common.PrepareSyncErrorList(planCampaign.PlanCampaignId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing campaign \"" + planCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                        }
+                        catch (Exception e)
+                        {
+                            string exMessage = Common.GetInnermostException(e);
+                            _parentId = string.Empty;
+                            sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
+                            instanceLogCampaign.Status = StatusResult.Error.ToString();
+                            instanceLogCampaign.ErrorDescription = "System error occurred while syncing campaign \"" + planCampaign.Title + "\": " + exMessage;
                             //_lstSyncError.Add(Common.PrepareSyncErrorList(planCampaign.PlanCampaignId, Enums.EntityType.Campaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing campaign \"" + planCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         }
                         instanceLogCampaign.CreatedBy = this._userId;
@@ -1998,9 +2016,20 @@ namespace Integration.Salesforce
                         }
                         catch (SalesforceException e)
                         {
+                            string exMessage = Common.GetInnermostException(e);
+                            _parentId = string.Empty;
                             sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogProgram.Status = StatusResult.Error.ToString();
-                            instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                            instanceLogProgram.ErrorDescription = exMessage;
+                            //_lstSyncError.Add(Common.PrepareSyncErrorList(planProgram.PlanProgramId, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing program \"" + planProgram.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                        }
+                        catch (Exception e)
+                        {
+                            string exMessage = Common.GetInnermostException(e);
+                            _parentId = string.Empty;
+                            sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
+                            instanceLogProgram.Status = StatusResult.Error.ToString();
+                            instanceLogProgram.ErrorDescription = "System error occurred while syncing program \"" + planProgram.Title + "\": " + exMessage;
                             //_lstSyncError.Add(Common.PrepareSyncErrorList(planProgram.PlanProgramId, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing program \"" + planProgram.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         }
 
@@ -2047,9 +2076,20 @@ namespace Integration.Salesforce
                     }
                     catch (SalesforceException e)
                     {
+                        string exMessage = Common.GetInnermostException(e);
+                        _parentId = string.Empty;
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = exMessage;
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    }
+                    catch (Exception e)
+                    {
+                        string exMessage = Common.GetInnermostException(e);
+                        _parentId = string.Empty;
+                        sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
+                        instanceLogTactic.Status = StatusResult.Error.ToString();
+                        instanceLogTactic.ErrorDescription = "System error occurred while syncing tactic \"" + planTactic.Title + "\": " + exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     }
 
@@ -2097,12 +2137,19 @@ namespace Integration.Salesforce
                     }
                     else
                     {
+                        string exMessage = Common.GetInnermostException(e);
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = exMessage;
                     }
                 }
-
+                catch (Exception e)
+                {
+                    string exMessage = Common.GetInnermostException(e);
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    instanceLogTactic.Status = StatusResult.Error.ToString();
+                    instanceLogTactic.ErrorDescription = "System error occurred while syncing tactic \"" + planTactic.Title + "\": " + exMessage;
+                }
                 instanceLogTactic.CreatedBy = this._userId;
                 instanceLogTactic.CreatedDate = DateTime.Now;
                 db.Entry(instanceLogTactic).State = EntityState.Added;
@@ -2152,8 +2199,9 @@ namespace Integration.Salesforce
                         }
                         else
                         {
+                            string exMessage = Common.GetInnermostException(e);
                             instanceLogProgram.Status = StatusResult.Error.ToString();
-                            instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                            instanceLogProgram.ErrorDescription = exMessage;
                         }
                     }
 
@@ -2196,8 +2244,9 @@ namespace Integration.Salesforce
                         }
                         else
                         {
+                            string exMessage = Common.GetInnermostException(e);
                             instanceLogCampaign.Status = StatusResult.Error.ToString();
-                            instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                            instanceLogCampaign.ErrorDescription = exMessage;
                         }
                     }
 
@@ -2244,7 +2293,7 @@ namespace Integration.Salesforce
                         {
                             sb.Append("ImprovementCampaign: " + planIMPCampaign.ImprovementPlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogCampaign.Status = StatusResult.Error.ToString();
-                            instanceLogCampaign.ErrorDescription = GetErrorMessage(e);
+                            instanceLogCampaign.ErrorDescription = Common.GetInnermostException(e);
                             //_lstSyncError.Add(Common.PrepareSyncErrorList(planIMPCampaign.ImprovementPlanCampaignId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing improvement campaign \"" + planIMPCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         }
                         instanceLogCampaign.CreatedBy = this._userId;
@@ -2274,7 +2323,7 @@ namespace Integration.Salesforce
                         {
                             sb.Append("ImprovementProgram: " + planIMPProgram.ImprovementPlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogProgram.Status = StatusResult.Error.ToString();
-                            instanceLogProgram.ErrorDescription = GetErrorMessage(e);
+                            instanceLogProgram.ErrorDescription = Common.GetInnermostException(e);
                             //_lstSyncError.Add(Common.PrepareSyncErrorList(planIMPProgram.ImprovementPlanProgramId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing improvement program \"" + planIMPProgram.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         }
 
@@ -2325,7 +2374,7 @@ namespace Integration.Salesforce
                     {
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     }
 
@@ -2377,7 +2426,7 @@ namespace Integration.Salesforce
                     {
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = GetErrorMessage(e);
+                        instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
@@ -2481,7 +2530,7 @@ namespace Integration.Salesforce
                                     lstPagedlistCampaign[index] = SyncCampaingData(lstPagedlistCampaign[index], ref sbMessage);
 
                                     // Save 10 log records to Table.
-                                    if (((index + 1) / 10).Equals(1))
+                                    if (((index + 1) / pageSize).Equals(1))
                                     {
                                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
                                         sbMessage = new StringBuilder();
@@ -2533,7 +2582,7 @@ namespace Integration.Salesforce
                                     lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
 
                                     // Save 10 log records to Table.
-                                    if (((index + 1) / 10).Equals(1))
+                                    if (((index + 1) / pageSize).Equals(1))
                                     {
                                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
                                         sbMessage = new StringBuilder();
@@ -2584,7 +2633,7 @@ namespace Integration.Salesforce
                                     lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
 
                                     // Save 10 log records to Table.
-                                    if (((index + 1) / 10).Equals(1))
+                                    if (((index + 1) / pageSize).Equals(1))
                                     {
                                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
                                         sbMessage = new StringBuilder();
@@ -2626,7 +2675,7 @@ namespace Integration.Salesforce
                                     lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index], ref sbMessage);
 
                                     // Save 10 log records to Table.
-                                    if (((index + 1) / 10).Equals(1))
+                                    if (((index + 1) / pageSize).Equals(1))
                                     {
                                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
                                         sbMessage = new StringBuilder();
@@ -2676,8 +2725,15 @@ namespace Integration.Salesforce
             {
                 _isResultError = true;
                 _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
-                _ErrorMessage = GetErrorMessage(e);
+                _ErrorMessage = Common.GetInnermostException(e);
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing with multiple Tactic: " + _ErrorMessage);
+            }
+            catch (Exception e)
+            {
+                string exMessage = Common.GetInnermostException(e);
+                _isResultError = true;
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing data with Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while syncing with multiple Tactic: " + exMessage);
             }
         }
 
@@ -2721,13 +2777,13 @@ namespace Integration.Salesforce
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = planTactic.TacticCustomName == null ? Common.GenerateCustomName(planTactic, _clientId) : planTactic.TacticCustomName;
+                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic, _clientId)) : (planTactic.TacticCustomName);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                     int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == titleMappedValue).FirstOrDefault().Length;
                     string customvalue = planTactic.TacticCustomName;
                     if (valuelength != 0)
                     {
-                        customvalue = customvalue.Length > valuelength ? customvalue.Substring(0, valuelength - 1) : customvalue;
+                        customvalue = (customvalue.Length > valuelength) ? (customvalue.Substring(0, valuelength - 1)) : customvalue;
                     }
                     tactic[titleMappedValue] = customvalue;
                 }
@@ -2821,7 +2877,6 @@ namespace Integration.Salesforce
 
         private bool UpdateTactic(Plan_Campaign_Program_Tactic planTactic)
         {
-
             Dictionary<string, object> tactic = GetTactic(planTactic, Enums.Mode.Update);
             if (!string.IsNullOrEmpty(planTactic.TacticCustomName) && _mappingTactic.ContainsKey("Title"))
             {
@@ -3161,7 +3216,8 @@ namespace Integration.Salesforce
             }
             catch (Exception ex)
             {
-                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while mapping CustomFieldDictionary with it's value:- " + ex.Message);
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while mapping CustomFieldDictionary with it's value:- " + exMessage);
             }
             return CustomFieldsList;
         }
