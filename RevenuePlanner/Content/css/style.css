@@ -78,6 +78,7 @@ body {
 /* added by kapil - #139 - to resolve popup issue */
 .row-fluid.calc-height {
     min-width: 1280px;
+    background-color: #fff;/*PL#1441 Added by Dashrath Prajapati*/
 }
 /* */
 
@@ -1179,7 +1180,7 @@ body {
         helper classes
 -----------------------------*/
 .all-height {
-    height: 100% !important;
+    height: 80% !important;
 }
 
 .calc-height {
@@ -15270,7 +15271,7 @@ width: 141px !important;
 }
 .region-data-reveune.region-data .dataR .title {
   color: #4d4d4d;
-  font-family: source_sans_proregular;
+  font-family: source_sans_prolight;
  font-size: 15px;
 }
 .region-data-reveune.region-data .dataR .value {
@@ -15281,14 +15282,14 @@ width: 141px !important;
   padding-top: 26px;
 }
 .region-data-reveune.region-data .dataR  .below {
-  color: #006837;
+  /*color: #006837;*/
   font-family: source_sans_prosemibold;
 }
 .region-data-reveune.region-data .dataR .sub-value
 {
  color: #4d4d4d;
   font-size: 15px;
-    font-family: source_sans_proregular;
+    font-family: source_sans_prolight;
 }
 .region-data-waterfall.region-data .data .sub-value
 {
