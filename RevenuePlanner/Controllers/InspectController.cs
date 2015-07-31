@@ -653,23 +653,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.PlanTitle = objPlan.Title;
             #endregion
 
-            try
-            {
-                ViewBag.OwnerName = Common.GetUserName(Sessions.User.UserId.ToString());
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+           
 
-                //// To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
+            ViewBag.OwnerName =  Sessions.User.FirstName + " " + Sessions.User.LastName;//Common.GetUserName(Sessions.User.UserId.ToString());
 
             //// Set Plan_CampaignModel data to pass into partialview.
             Plan_CampaignModel pc = new Plan_CampaignModel();
@@ -686,7 +672,7 @@ namespace RevenuePlanner.Controllers
             double planRemainingBudget = planBudget - allCampaignBudget;
             ViewBag.planRemainingBudget = planRemainingBudget;
             #endregion
-
+          
             return PartialView("_EditSetupCampaign", pc);
         }
 
@@ -2210,29 +2196,8 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsCreated = true;
             ViewBag.CampaignTitle = pcp.Title;
-            User userName = new User();
-            try
-            {
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                ViewBag.IsServiceUnavailable = false;
-                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
-            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
+            
+            ViewBag.OwnerName = Sessions.User.FirstName + " " + Sessions.User.LastName;
 
             #region "Set Plan_Campaign_ProgramModel to pass into Partialview"
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
@@ -3792,38 +3757,15 @@ namespace RevenuePlanner.Controllers
             pcptm.TacticCost = 0;
             pcptm.AllocatedBy = objPlan.AllocatedBy;
 
-            User userName = new User();
-            try
-            {
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                ViewBag.IsServiceUnavailable = false;
-
-                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
-
-            pcptm.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+           
+            pcptm.Owner = (Sessions.User.FirstName + " " + Sessions.User.LastName).ToString();
             #endregion
 
             if (tactics.ToList().Count == 1)
             {
                 pcptm.TacticTypeId = tactics.FirstOrDefault().TacticTypeId;
             }
-
+          
             return PartialView("SetupEditAdd", pcptm);
         }
 
@@ -4806,27 +4748,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.RedirectType = false;
                 ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
 
-
-                User userName = new User();
-                try
-                {
-                    userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-                }
-                catch (Exception e)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-
-                    //To handle unavailability of BDSService
-                    if (e is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        //// Flag to indicate unavailability of web service.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-                    }
-                }
-
-                pitm.Owner = userName.FirstName + " " + userName.LastName;
+                pitm.Owner = Sessions.User.FirstName + " " + Sessions.User.LastName;
                 ViewBag.TacticDetail = pitm;
                 return PartialView("_SetupImprovementTactic", pitm);
             }
@@ -6423,29 +6345,8 @@ namespace RevenuePlanner.Controllers
                 item.Title = HttpUtility.HtmlDecode(item.Title);
             }
             ViewBag.lineItemTypes = lineItemTypes;
-            User userName = new User();
-            try
-            {
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                ViewBag.IsServiceUnavailable = false;
-                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
-            ViewBag.Owner = userName.FirstName + " " + userName.LastName;
+            
+            ViewBag.Owner = Sessions.User.FirstName + " " + Sessions.User.LastName;
 
             #region "Set data to Plan_Campaign_Program_Tactic_LineItemModel to pass into PartialView"
             Plan_Campaign_Program_Tactic_LineItemModel pc = new Plan_Campaign_Program_Tactic_LineItemModel();

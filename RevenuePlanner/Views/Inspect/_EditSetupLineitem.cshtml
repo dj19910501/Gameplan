@@ -295,7 +295,7 @@
                                     inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                                 }
                             loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);
+                            //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);
                             }
                             else{
                         //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
@@ -305,7 +305,7 @@
                             $("#hdnBudgetingIsSave").val("true");
                         }
                         else {
-                            RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         }
                         returnparameter = true;
                     }

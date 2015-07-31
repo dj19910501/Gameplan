@@ -4250,7 +4250,7 @@ namespace RevenuePlanner.Helpers
             //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
             StringBuilder sb = new StringBuilder(string.Empty);
-
+           
             //fieldCounter variable for defining raw style
             if (customFieldList.Count != 0)
             {
@@ -4268,10 +4268,12 @@ namespace RevenuePlanner.Helpers
 
                 //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                 bool IsDefaultCustomRestrictionsEditable = Common.IsDefaultCustomRestrictionsEditable();
-
+                string className, inputclassName, customFieldEntityValue, DropDownStyle, divPosition, require, name,
+                        displayCheckbox, selectionMode, footerText, singlehover, trhover, footerclose, enableCheck, inputcolorcss;
+                bool editableOptions, isEditable;
                 foreach (var item in customFieldList)
                 {
-                    string className = "span3 margin-top10";
+                   className = "span3 margin-top10";
                     if (fieldCounter % 4 != 0 && fieldCounter != 0)
                     {
                         className += " paddingleft25px";
@@ -4282,7 +4284,7 @@ namespace RevenuePlanner.Helpers
                     }
 
                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
-                    bool editableOptions = false;
+                    editableOptions = false;
                     if (userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == item.customFieldId).Any())  //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                     {
                         editableOptions = lstEditableRestrictions.Where(customRestriction => customRestriction.CustomFieldId == item.customFieldId).Any();
@@ -4303,10 +4305,10 @@ namespace RevenuePlanner.Helpers
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
-                        string inputclassName = "span12 input-small";
+                        inputclassName = "span12 input-small";
                         inputclassName += item.isRequired ? " resubmission" : string.Empty;
                         //When item value contains double quots then it would be replaced 
-                        string customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
+                        customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
                            // sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
@@ -4332,10 +4334,10 @@ namespace RevenuePlanner.Helpers
                     {
                         if (mode == Enums.InspectPopupMode.Edit.ToString() && editableOptions == true)
                         {
-                            string DropDownStyle = " style=\"";
-                            string divPosition = "style=\"position:relative;\"";
-                            string require = "";
-                            string name = "";
+                            DropDownStyle = " style=\"";
+                            divPosition = "style=\"position:relative;\"";
+                            require = "";
+                            name = "";
                             string addResubmissionClass = "";
                             if (item.isRequired)
                             {
@@ -4348,12 +4350,12 @@ namespace RevenuePlanner.Helpers
                                 //divPosition = "style=\"position:relative;\"";
                             }
 
-                            string displayCheckbox = "";
-                            string selectionMode = "Multi";
-                            string footerText = "< Single-selection";
-                            string singlehover = "";
-                            string trhover = "";
-                            string footerclose = "";
+                             displayCheckbox = "";
+                             selectionMode = "Multi";
+                             footerText = "< Single-selection";
+                             singlehover = "";
+                             trhover = "";
+                             footerclose = "";
                             if ((item.value == null) || (item.value != null && item.value.Count <= 1))
                             {
                                 displayCheckbox = "style=\"display:none;\"";
@@ -4384,7 +4386,7 @@ namespace RevenuePlanner.Helpers
                                 foreach (var objOption in item.option)
                                 {
                                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
-                                    bool isEditable = false;
+                                    isEditable = false;
                                     if (userCustomRestrictionList.Count() == 0 && IsDefaultCustomRestrictionsEditable)  //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                                     {
                                         isEditable = true;
@@ -4400,8 +4402,8 @@ namespace RevenuePlanner.Helpers
 
                                     if (isEditable) //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                                     {
-                                        string enableCheck = string.Empty;
-                                        string inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
+                                        enableCheck = string.Empty;
+                                        inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
                                         if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
                                         {
                                             name += objOption.value + ", ";
@@ -4438,7 +4440,7 @@ namespace RevenuePlanner.Helpers
 
                                 foreach (var objOption in item.option)
                                 {
-                                    string enableCheck = string.Empty;
+                                    enableCheck = string.Empty;
 
                                     if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
                                     {
@@ -4466,7 +4468,7 @@ namespace RevenuePlanner.Helpers
                         }
                         else if (mode == Enums.InspectPopupMode.ReadOnly.ToString())
                         {
-                            string customFieldEntityValue = "";
+                            customFieldEntityValue = "";
                             if (item.option.Count != 0)
                             {
                                 sb.Append("<input type=\"text\" readonly = \"true\" value=\"#CUSTOMFEILD_VALUE#\" title=\"#CUSTOMFEILD_VALUE#\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"span12 input-small\"/>");
@@ -4475,8 +4477,8 @@ namespace RevenuePlanner.Helpers
 
                                 if (section == Enums.EntityType.Tactic.ToString() && item.value != null && item.value.Count > 1)
                                 {
-                                    string DropDownStyle = "";
-                                    string divPosition = "";
+                                     DropDownStyle = "";
+                                     divPosition = "";
                                     if (fieldCounter % 4 == 3)
                                     {
                                         DropDownStyle = " style=\"top:0px;\"";
