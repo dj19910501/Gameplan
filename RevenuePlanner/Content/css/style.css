@@ -15321,3 +15321,14 @@ width: 141px !important;
 }
 /*end */
 /*end */
+
+/* Add BY Nishant Sheth */
+.card-pagination {
+    display: block;
+    float: left;
+    margin: 0px 2% 2%;
+    width: 95%;
+    text-align: center;
+}
+
+/* End*/

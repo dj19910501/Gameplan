@@ -25,8 +25,6 @@
     .carvdval-block {
         display: block;
     }
-  
-
 </style>
 <div class="revenue-filter">
     <div class="sorting">
@@ -44,7 +42,31 @@
         </div>
 
     </div>
-    <div class="paging" id="page_navigation">
+    @*<div class="paging" id="page_navigation">
+            <ul>
+                    <li><a href="#">«</a></li>
+                    <li class="active"><a>1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">4</a></li>
+                    <li><a href="#">5</a></li>
+                    <li><a href="#">6</a></li>
+                    <li><a href="#">...</a></li>
+                    <li>»</li>
+                </ul>
+        </div>	*@
+    <input type='hidden' id='current_page' />
+    <input type='hidden' id='show_per_page' />
+    <div class="search">
+        <input id="txtSearch" />
+
+        <button class="search-btn" onclick="SearchByTitle($('#txtSearch').val())" id="btnSearch">search</button>
+    </div>
+</div>
+<div id="dvCardSectionData"></div>
+<div class="card-pagination">
+    <div class="paging" id="page_navigation" style="width:100%">
+    </div>
         @*<ul>
                 <li><a href="#">«</a></li>
                 <li class="active"><a>1</a></li>
@@ -57,16 +79,6 @@
                 <li>»</li>
             </ul>*@
     </div>
-    <input type='hidden' id='current_page' />
-    <input type='hidden' id='show_per_page' />
-    <div class="search">
-        <input id="txtSearch" />
-
-        <button class="search-btn" onclick="SearchByTitle($('#txtSearch').val())" id="btnSearch">search</button>
-    </div>
-</div>
-<div id="dvCardSectionData"></div>
-
 <script type="text/javascript">
 
     //var BackParentLabel = '';
@@ -81,6 +93,7 @@
     var number_of_pages;
     var ParentLabel = '@ViewBag.ParentLabel';
     var childlabelType = '@ViewBag.childlabelType';
+    // var RevIsnextprev = false;
     //var childId = '@ViewBag.childId';
     var optionmain = '@ViewBag.option';
     $(window).bind("load", function () {
@@ -383,7 +396,13 @@
     /// Add By Nishant Sheth
     /// Desc: For card details section
     function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative) {
-       
+        var _BackFwdVar = {
+            BackParentLabel: parentlabel,
+            BackChildLabel: Type,
+            BackId: id,
+            HeadHireachy: decodeURIComponent(HeadTitleval)
+        }
+        BackFwdRevenueList.push(_BackFwdVar);
 
         var BtnBack = document.getElementById('BtnBack');
         BtnBack.style.display = "block";
@@ -412,7 +431,7 @@
 
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvRevenueToPlan").load(_url);
-        myApp.hidePleaseWait();
+
         //formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
         //formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
        
@@ -511,6 +530,7 @@
             $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
             fillCardTacticDropDown(id, "");
         }
+        //myApp.hidePleaseWait();
     }
 
     function fillCardCampaignDropDown(campaignId, type) {
@@ -631,7 +651,7 @@
                 //alert('call function!');
                 //LoadDataRevenueToPlanByCampaign();
                 //LoadDataRevenueRealization();
-                myApp.hidePleaseWait();
+                // myApp.hidePleaseWait();
             },
             error: function () {
                 $("#ddlTacticRevenueToPlan").empty();
@@ -652,6 +672,7 @@
 
         //how much items per page to show
         var show_per_page = $('#Itemsperpage :selected').text();
+        // var show_per_page = 1;
         //getting the amount of elements inside content div
         //var number_of_items = $('#dvCardSectionData').children().size();
         var number_of_items = '@TotalRecords';
@@ -659,7 +680,7 @@
         number_of_pages = Math.ceil(number_of_items / show_per_page);
 
         //set the value of our hidden input fields
-        $('#current_page').val(0);
+        $('#current_page').val('@CurrentPageNum');
         $('#show_per_page').val(show_per_page);
 
         var navigation_html = '<ul> <li><a href="javascript:previous();">«</a> </li>';
@@ -676,14 +697,30 @@
 
         //add active_page class to the first page link
         // $('#page_navigation .page_link:first').addClass('active');
-
+        if (typeof RevIsnextprev == 'undefined') {
         for (var i = 0; i <= number_of_pages; i++) {
             $('.page_link[longdesc=' + i + ']').css('display', 'none');
         }
         for (var j = 0; j <= 5; j++) {
             $('.page_link[longdesc=' + j + ']').css('display', 'block');
         }
-
+        } else if (RevIsnextprev == false) {
+            for (var i = 0; i <= number_of_pages; i++) {
+                $('.page_link[longdesc=' + i + ']').css('display', 'none');
+            }
+            for (var j = 0; j <= 5; j++) {
+                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+            }
+        }
+        else {
+            for (var i = 0; i <= number_of_pages; i++) {
+                $('.page_link[longdesc=' + i + ']').css('display', 'none');
+            }
+            for (var j = '@CurrentPageNum'; j <= parseInt('@CurrentPageNum') + 5; j++) {
+                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+            }
+        }
+        RevIsnextprev = false;
         $('.page_link[longdesc=' + '@CurrentPageNum' + ']').addClass('active').siblings('.active').removeClass('active');
         //hide all the elements inside content div
         //$('#dvCardSectionData').children().css('display', 'none');
@@ -703,9 +740,9 @@
         new_page = parseInt(pageNumber) - 1;
         //if there is an item before the current active link run the function
         if ($('.active').prev('.page_link').length == true) {
-            if (number_of_pages >= 6 && (pageNumber) < number_of_pages && ((pageNumber) / 6) % 1 === 0) {
-
-                PrevNextMorePage(pageNumber, 'prev');
+            if (number_of_pages >= 6 && (parseInt(pageNumber)) < number_of_pages && ((parseInt(pageNumber)) / 6) % 1 === 0) {
+                RevIsnextprev = true;
+                PrevNextMorePage(parseInt(pageNumber), 'prev');
             }
             go_to_page(new_page);
         }
@@ -721,9 +758,9 @@
         new_page = parseInt(pageNumber) + 1;
         //if there is an item after the current active link run the function
         if ($('.active').next('.page_link').length == true) {
-            if (number_of_pages >= 6 && (pageNumber + 1) < number_of_pages && ((pageNumber + 1) / 6) % 1 === 0) {
-
-                PrevNextMorePage(pageNumber, 'next');
+            if (number_of_pages >= 6 && (parseInt(pageNumber) + 1) < number_of_pages && ((parseInt(pageNumber) + 1) / 6) % 1 === 0) {
+                RevIsnextprev = true;
+                PrevNextMorePage(parseInt(pageNumber), 'next');
             }
             go_to_page(new_page);
         }
@@ -781,11 +818,12 @@
             for (var i = 0; i <= pageNumber + 1; i++) {
                 if (count == 7)
                 { break; }
-                $('.page_link[longdesc=' + (pageNumber - i) + ']').css('display', 'none');
-                $('.page_link[longdesc=' + (pageNumber + i) + ']').css('display', 'block');
+                $('.page_link[longdesc=' + (parseInt(pageNumber) + i) + ']').css('display', 'block');
+                $('.page_link[longdesc=' + (parseInt(pageNumber) - i) + ']').css('display', 'none');
+
                 count++;
             }
-            $('.page_link[longdesc=' + (pageNumber) + ']').css('display', 'none');
+            $('.page_link[longdesc=' + (parseInt(pageNumber)) + ']').css('display', 'none');
         }
         if (button == 'prev') {
 

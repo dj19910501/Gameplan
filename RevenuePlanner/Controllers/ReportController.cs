@@ -2220,20 +2220,20 @@ namespace RevenuePlanner.Controllers
             ViewBag.childId = 0;
             ViewBag.option = option;
             #region ViewBag for Back Button
-            TempData["BackParentLabel"] = Common.RevenueCampaign;
-            TempData["BackChildLabel"] = "";
-            TempData["BackId"] = "";
-            TempData["IsBack"] = "";
-            TempData["HeadHireachy"] = "Marketing Revenue";
-            TempData["HeadTitle"] = "Marketing Revenue";
-            TempData["BackWithCustom"] = Common.RevenueCampaign;
+            //TempData["BackParentLabel"] = Common.RevenueCampaign;
+            //TempData["BackChildLabel"] = "";
+            //TempData["BackId"] = "";
+            //TempData["IsBack"] = "";
+            //TempData["HeadHireachy"] = "Marketing Revenue";
+            //TempData["HeadTitle"] = "Marketing Revenue";
+            //TempData["BackWithCustom"] = Common.RevenueCampaign;
 
-            TempData["HeadHireachy"] = string.Empty;
-            TempData["BackParentHireachy"] = string.Empty;
-            TempData["BackChildHireachy"] = string.Empty;
-            TempData["BackHeadTitle"] = string.Empty;
-            TempData["BackIdHireachy"] = string.Empty;
-            TempData["BackDummyId"] = string.Empty;
+            //TempData["HeadHireachy"] = "";
+            //TempData["BackParentHireachy"] = "";
+            //TempData["BackChildHireachy"] = "";
+            //TempData["BackHeadTitle"] = "";
+            //TempData["BackIdHireachy"] = "";
+            //TempData["BackDummyId"] = "";
             //ViewBag.HeadTitleHearichy = "";
             #endregion
             // End By Nishant Sheth
@@ -2515,6 +2515,7 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     //objReportModel.CardSectionModel = objCardSectionModel;
+                    TempData["RevenueCardList"] = null;
                     TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
                     //RevenueCardList.RevenueCardListModel = CardSectionListModel;// For Pagination Sorting and searching
                     objReportModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString());
@@ -5785,6 +5786,7 @@ namespace RevenuePlanner.Controllers
                 //// Calculate Value for ecah tactic
                 List<TacticStageValue> Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
                 //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+                TempData["ReportData"] = "";// Add BY Nishant SHeth
                 TempData["ReportData"] = Tacticdata;
 
                 // Start - Added by Arpita Soni for Ticket #1148 on 01/30/2015
@@ -8815,254 +8817,255 @@ namespace RevenuePlanner.Controllers
             ViewBag.childId = childId;
             ViewBag.option = option;
 
-            #region TempData for Back Button
+            //#region TempData for Back Button
 
-            if (DrpChange != "CampaignDrp")
-            {
-                #region TempData for Back Button
-                TempData["BackParentLabel"] = Common.RevenueCampaign;
-                TempData["BackChildLabel"] = "";
-                TempData["BackId"] = "";
-                TempData["IsBack"] = "";
-                TempData["HeadHireachy"] = "Marketing Revenue";
-                TempData["HeadTitle"] = "Marketing Revenue";
-                TempData["BackWithCustom"] = Common.RevenueCampaign;
+            //if (DrpChange != "CampaignDrp")
+            //{
+            //    #region TempData for Back Button
+            //    //TempData["BackParentLabel"] = Common.RevenueCampaign;
+            //    //TempData["BackChildLabel"] = "";
+            //    //TempData["BackId"] = "";
+            //    //TempData["IsBack"] = "";
+            //    //TempData["HeadHireachy"] = "Marketing Revenue";
+            //    //TempData["HeadTitle"] = "Marketing Revenue";
+            //    //TempData["BackWithCustom"] = Common.RevenueCampaign;
 
-                TempData["HeadHireachy"] = string.Empty;
-                TempData["BackParentHireachy"] = string.Empty;
-                TempData["BackChildHireachy"] = string.Empty;
-                TempData["BackHeadTitle"] = string.Empty;
-                TempData["BackIdHireachy"] = string.Empty;
-                TempData["BackDummyId"] = string.Empty;
+            //    //TempData["HeadHireachy"] = string.Empty;
+            //    //TempData["BackParentHireachy"] = string.Empty;
+            //    //TempData["BackChildHireachy"] = string.Empty;
+            //    //TempData["BackHeadTitle"] = string.Empty;
+            //    //TempData["BackIdHireachy"] = string.Empty;
+            //    //TempData["BackDummyId"] = string.Empty;
 
-                #endregion
+            //    #endregion
 
-            }
+            //}
 
-            TempData["BackWithCustom"] = ParentLabel;
-            TempData["IsDispalyCustomFieldChildDDL"] = false;// For Campaign Child DDL Display Or Not
-            string HeadHireachy = TempData["HeadHireachy"] as string;
-            string BackParentHireachy = TempData["BackParentHireachy"] as string;
-            string BackChildHireachy = TempData["BackChildHireachy"] as string;
-            string BackTitleHireachy = TempData["BackHeadTitle"] as string;
-            string BackIdHireachy = TempData["BackIdHireachy"] as string;
-            string BackDummyId = TempData["BackDummyId"] as string;
-            string[] BackParentArray = { };
-            string[] BackChildArray = { };
-            string[] BackIdArray = { };
-            string[] BackDummyArray = { };
+            ////TempData["BackWithCustom"] = ParentLabel;
+            ////TempData["IsDispalyCustomFieldChildDDL"] = false;// For Campaign Child DDL Display Or Not
+            ////string HeadHireachy = TempData["HeadHireachy"] as string;
+            ////string BackParentHireachy = TempData["BackParentHireachy"] as string;
+            ////string BackChildHireachy = TempData["BackChildHireachy"] as string;
+            ////string BackTitleHireachy = TempData["BackHeadTitle"] as string;
+            ////string BackIdHireachy = TempData["BackIdHireachy"] as string;
+            ////string BackDummyId = TempData["BackDummyId"] as string;
+            //string[] BackParentArray = { };
+            //string[] BackChildArray = { };
+            //string[] BackIdArray = { };
+            //string[] BackDummyArray = { };
 
-            if (DrpChange != "CampaignDrp" || isDetails)
-            {
-                HeadHireachy = HeadHireachy + "," + HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(BackHeadTitle));
-                BackParentHireachy = BackParentHireachy + "," + ParentLabel;
-                BackChildHireachy = BackChildHireachy + "," + childlabelType;
-            }
+            //if (DrpChange != "CampaignDrp" || isDetails)
+            //{
+            //    HeadHireachy = HeadHireachy + "," + HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(BackHeadTitle));
+            //    BackParentHireachy = BackParentHireachy + "," + ParentLabel;
+            //    BackChildHireachy = BackChildHireachy + "," + childlabelType;
+            //}
 
-            string TempDummyid = ((!string.IsNullOrEmpty(ParentLabel) ? ParentLabel.Substring(0, 3) : "Parent") + "-" + (!string.IsNullOrEmpty(childlabelType) ? childlabelType.Substring(0, 3) : "Child") + childId);
+            //string TempDummyid = ((!string.IsNullOrEmpty(ParentLabel) ? ParentLabel.Substring(0, 3) : "Parent") + "-" + (!string.IsNullOrEmpty(childlabelType) ? childlabelType.Substring(0, 3) : "Child") + childId);
 
-            BackDummyId = BackDummyId + "," + TempDummyid;
+            //BackDummyId = BackDummyId + "," + TempDummyid;
 
-            BackDummyArray = BackDummyId.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            //BackDummyArray = BackDummyId.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
 
-            List<string> dummyids = BackDummyArray.ToList<string>();
+            //List<string> dummyids = BackDummyArray.ToList<string>();
 
-            var readdummy = from n in dummyids where n == TempDummyid select new { n };
-            var x = dummyids.GroupBy(s => s).Select(s => new { id = s.Key, count = s.Key.Count() }).ToList().Where(s => s.count == 1 && s.id == TempDummyid).Select(s => s.id).ToList();
-
-
-            if ((!IsBackClick && isDetails) || DrpChange == "true")
-            {
-                BackIdHireachy = BackIdHireachy + "," + childId;
-            }
-
-            BackDummyArray = dummyids.Distinct().ToArray();
-
-            TempData["BackDummyId"] = BackDummyArray;
-
-            TempData["HeadHireachy"] = HeadHireachy;
-            TempData["BackParentHireachy"] = BackParentHireachy;
-            TempData["BackChildHireachy"] = BackChildHireachy;
-            TempData["BackIdHireachy"] = BackIdHireachy;
-
-            string[] HeadHireachyArray = HeadHireachy.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-
-            BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-            BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-            //if (isDetails)
-            BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-
-            if (BackParentArray.Count() > 1)
-            {
-                if (BackIdArray.Count() == 4)
-                {
-                    TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                }
-                else
-                {
-                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
-                    {
-                    TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
-                        {
-                            TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                        }
-
-                    }
-                    else
-                    {
-                        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                    }
-                }
-            }
-            else
-            {
-                TempData["BackParentLabel"] = (BackParentArray.Count() > 0) ? Convert.ToString(BackParentArray[0]) : string.Empty;
-            }
-
-            if (BackChildArray.Count() > 1)
-            {
-                if (marsterCustomField == Common.RevenueCampaign)
-                {
-                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
-                }
-                else
-                {
-                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
-                }
-            }
-            else
-            {
-                if (ParentLabel == Common.RevenueCampaign && !string.IsNullOrEmpty(marsterCustomField))
-                {
-                    TempData["BackChildLabel"] = childlabelType;
-                }
-                else
-                {
-                    TempData["BackChildLabel"] = string.Empty;
-                }
-            }
-
-            if (BackIdArray.Count() > 1)
-            {
-                TempData["BackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
-
-                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
-                {
-                    TempData["IsDispalyCustomFieldChildDDL"] = true;
-                }
-
-            }
-            else
-            {
-                TempData["BackId"] = "0";
-            }
-
-            if (HeadHireachyArray.Count() == 0)
-            {
-                TempData["HeadTitle"] = "Marketing Revenue";
-            }
-            else
-            {
-                TempData["HeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
-            }
+            //var readdummy = from n in dummyids where n == TempDummyid select new { n };
+            //var x = dummyids.GroupBy(s => s).Select(s => new { id = s.Key, count = s.Key.Count() }).ToList().Where(s => s.count == 1 && s.id == TempDummyid).Select(s => s.id).ToList();
 
 
-            if (IsBackClick)
-            {
-                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
-                {
-                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
-                    {
-                        TempData["IsDispalyCustomFieldChildDDL"] = true;
-                    }
-                }
-                marsterCustomField = string.Empty;
-                BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                if (BackDummyArray.Count() > 0)
-                {
-                    List<string> y = BackDummyArray.ToList<string>();
-                    y.RemoveAt(BackDummyArray.Count() - 1);
-                    BackDummyArray = y.ToArray();
-                    TempData["BackDummyId"] = string.Join(",", BackDummyArray);
-                }
+            //if ((!IsBackClick && isDetails) || DrpChange == "true")
+            //{
+            //    BackIdHireachy = BackIdHireachy + "," + childId;
+            //}
 
-                if (BackParentArray.Count() > 1)
-                {
-                    List<string> y = BackParentArray.ToList<string>();
-                    y.RemoveAt(BackParentArray.Count() - 1);
-                    BackParentArray = y.ToArray();
-                    TempData["BackParentHireachy"] = string.Join(",", BackParentArray);
-                }
-                if (BackChildArray.Count() > 0)
-                {
-                    List<string> y = BackChildArray.ToList<string>();
-                    y.RemoveAt(BackChildArray.Count() - 1);
-                    BackChildArray = y.ToArray();
-                    TempData["BackChildHireachy"] = string.Join(",", BackChildArray);
-                }
-                if (BackIdArray.Count() > 0)
-                {
-                    List<string> y = BackIdArray.ToList<string>();
-                    //if (BackChildArray[0] != Common.RevenueCampaign && BackChildArray.Count() != 1)
-                    {
-                        y.RemoveAt(BackIdArray.Count() - 1);
-                    }
-                    BackIdArray = y.ToArray();
-                    TempData["BackIdHireachy"] = string.Join(",", BackIdArray);
-                }
+            //BackDummyArray = dummyids.Distinct().ToArray();
 
-                if (BackParentArray.Count() > 1)
-                {
-                    TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                }
-                else
-                {
-                    TempData["BackParentLabel"] = Convert.ToString(BackParentArray[0]);
-                }
+            //TempData["BackDummyId"] = BackDummyArray;
 
-                if (BackChildArray.Count() > 1)
-                {
-                    TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 1]);
-                }
-                else
-                {
-                    TempData["BackChildLabel"] = string.Empty;
-                }
+            //TempData["HeadHireachy"] = HeadHireachy;
+            //TempData["BackParentHireachy"] = BackParentHireachy;
+            //TempData["BackChildHireachy"] = BackChildHireachy;
+            //TempData["BackIdHireachy"] = BackIdHireachy;
 
-                if (BackIdArray.Count() > 1)
-                {
-                    TempData["BackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
-                }
-                else
-                {
-                    TempData["BackId"] = "0";
-                    if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
-                    {
-                        TempData["IsDispalyCustomFieldChildDDL"] = true;
-                    }
-                }
+            //string[] HeadHireachyArray = HeadHireachy.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
 
-                if (HeadHireachyArray.Count() > 0)
-                {
-                    List<string> y = HeadHireachyArray.ToList<string>();
-                    y.RemoveAt(HeadHireachyArray.Count() - 1);
-                    HeadHireachyArray = y.ToArray();
-                    TempData["HeadHireachy"] = string.Join(",", HeadHireachyArray);
-                    if (HeadHireachyArray.Count() == 0)
-                    {
-                        TempData["HeadTitle"] = "Marketing Revenue";
-                    }
-                    else
-                    {
-                        TempData["HeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
-                    }
-                }
-            }
+            //BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            //BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            ////if (isDetails)
+            //BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
 
-            #endregion
+            //if (BackParentArray.Count() > 1)
+            //{
+            //    if (BackIdArray.Count() == 4)
+            //    {
+            //        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+            //    }
+            //    else
+            //    {
+            //        if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
+            //        {
+            //            TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+            //            if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
+            //            {
+            //                TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+            //            }
+
+            //        }
+            //        else
+            //        {
+            //            TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    TempData["BackParentLabel"] = (BackParentArray.Count() > 0) ? Convert.ToString(BackParentArray[0]) : string.Empty;
+            //}
+
+            //if (BackChildArray.Count() > 1)
+            //{
+            //    if (marsterCustomField == Common.RevenueCampaign)
+            //    {
+            //        TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
+            //    }
+            //    else
+            //    {
+            //        TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
+            //    }
+            //}
+            //else
+            //{
+            //    if (ParentLabel == Common.RevenueCampaign && !string.IsNullOrEmpty(marsterCustomField))
+            //    {
+            //        TempData["BackChildLabel"] = childlabelType;
+            //    }
+            //    else
+            //    {
+            //        TempData["BackChildLabel"] = string.Empty;
+            //    }
+            //}
+
+            //if (BackIdArray.Count() > 1)
+            //{
+            //    TempData["BackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+
+            //    if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
+            //    {
+            //        TempData["IsDispalyCustomFieldChildDDL"] = true;
+            //    }
+
+            //}
+            //else
+            //{
+            //    TempData["BackId"] = "0";
+            //}
+
+            //if (HeadHireachyArray.Count() == 0)
+            //{
+            //    TempData["HeadTitle"] = "Marketing Revenue";
+            //}
+            //else
+            //{
+            //    TempData["HeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
+            //}
+
+
+            //if (IsBackClick)
+            //{
+            //    if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+            //    {
+            //        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
+            //        {
+            //            TempData["IsDispalyCustomFieldChildDDL"] = true;
+            //        }
+            //    }
+            //    marsterCustomField = string.Empty;
+            //    BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            //    BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            //    BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+            //    if (BackDummyArray.Count() > 0)
+            //    {
+            //        List<string> y = BackDummyArray.ToList<string>();
+            //        y.RemoveAt(BackDummyArray.Count() - 1);
+            //        BackDummyArray = y.ToArray();
+            //        TempData["BackDummyId"] = string.Join(",", BackDummyArray);
+            //    }
+
+            //    if (BackParentArray.Count() > 1)
+            //    {
+            //        List<string> y = BackParentArray.ToList<string>();
+            //        y.RemoveAt(BackParentArray.Count() - 1);
+            //        BackParentArray = y.ToArray();
+            //        TempData["BackParentHireachy"] = string.Join(",", BackParentArray);
+            //    }
+            //    if (BackChildArray.Count() > 0)
+            //    {
+            //        List<string> y = BackChildArray.ToList<string>();
+            //        y.RemoveAt(BackChildArray.Count() - 1);
+            //        BackChildArray = y.ToArray();
+            //        TempData["BackChildHireachy"] = string.Join(",", BackChildArray);
+            //    }
+            //    if (BackIdArray.Count() > 0)
+            //    {
+            //        List<string> y = BackIdArray.ToList<string>();
+            //        //if (BackChildArray[0] != Common.RevenueCampaign && BackChildArray.Count() != 1)
+            //        {
+            //            y.RemoveAt(BackIdArray.Count() - 1);
+            //        }
+            //        BackIdArray = y.ToArray();
+            //        TempData["BackIdHireachy"] = string.Join(",", BackIdArray);
+            //    }
+
+            //    if (BackParentArray.Count() > 1)
+            //    {
+            //        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
+            //    }
+            //    else
+            //    {
+            //        TempData["BackParentLabel"] = Convert.ToString(BackParentArray[0]);
+            //    }
+
+            //    if (BackChildArray.Count() > 1)
+            //    {
+            //        TempData["BackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 1]);
+            //    }
+            //    else
+            //    {
+            //        TempData["BackChildLabel"] = string.Empty;
+            //    }
+
+            //    if (BackIdArray.Count() > 1)
+            //    {
+            //        TempData["BackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
+            //    }
+            //    else
+            //    {
+            //        TempData["BackId"] = "0";
+            //        if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+            //        {
+            //            TempData["IsDispalyCustomFieldChildDDL"] = true;
+            //        }
+            //    }
+
+            //    if (HeadHireachyArray.Count() > 0)
+            //    {
+            //        List<string> y = HeadHireachyArray.ToList<string>();
+            //        y.RemoveAt(HeadHireachyArray.Count() - 1);
+            //        HeadHireachyArray = y.ToArray();
+            //        TempData["HeadHireachy"] = string.Join(",", HeadHireachyArray);
+            //        if (HeadHireachyArray.Count() == 0)
+            //        {
+            //            TempData["HeadTitle"] = "Marketing Revenue";
+            //        }
+            //        else
+            //        {
+            //            TempData["HeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
+            //        }
+            //    }
+            //}
+
+            //#endregion
+
             List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
 
 
@@ -9411,6 +9414,7 @@ namespace RevenuePlanner.Controllers
                 CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
                 //objRevenueToPlanModel.CardSectionModel = objCardSectionModel;
+                TempData["RevenueCardList"] = null;
                 TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
                 //string FilterParentLabel = ViewBag.ParentLabel;
                 //string FilterchildlabelType = ViewBag.childlabelType;
@@ -10336,6 +10340,139 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Conversion Report"
+        /// <summary>
+        ///  Get Header value for reveneue #1397
+        ///  Created By Nishant Sheth
+        /// </summary>
+        public ReportModel GetConverstionHeaderValue(BasicModel objBasicModel, string timeFrameOption)
+        {
+            double _actualval, _actualtotal = 0, _projectedval, _projectedtotal = 0, _goalval, _goaltotal = 0, _goalYTD = 0;
+            double _ActualPercentage, _ProjectedPercentage;
+            string currentyear = DateTime.Now.Year.ToString();
+            int currentEndMonth = 12;
+            ReportModel objReportModel = new ReportModel();
+            Projected_Goal objProjectedGoal = new Projected_Goal();
+            objProjectedGoal.ActualPercentageIsnegative = true;
+            objProjectedGoal.ProjectedPercentageIsnegative = true;
+            List<string> categories = new List<string>();
+            categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+            int categorieslength = 4;
+            categorieslength = categories.Count;   // Set categories list count.
+            List<ProjectedTrendModel> ProjectedTrendModelList = new List<ProjectedTrendModel>();
+            if (objBasicModel.IsQuarterly)
+            {
+
+                //List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+                //List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+                //List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+                //List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+
+                //List<string> _curntQuarterList = new List<string>();
+
+                //for (int i = 1; i <= categorieslength; i++)
+                //{
+                //    #region "Get Quarter list based on loop value"
+                //    if (i == 1)
+                //    {
+                //        _curntQuarterList = Q1.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    else if (i == 2)
+                //    {
+                //        _curntQuarterList = Q2.Where(q2 => Convert.ToInt32(q2.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    else if (i == 3)
+                //    {
+                //        _curntQuarterList = Q3.Where(q3 => Convert.ToInt32(q3.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    else if (i == 4)
+                //    {
+                //        _curntQuarterList = Q4.Where(q4 => Convert.ToInt32(q4.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                //    }
+                //    #endregion
+
+                //}
+
+                _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
+                _goalYTD = objBasicModel.GoalYTD.Sum(goalYTD => goalYTD);
+            }
+            else
+            {
+
+                if (timeFrameOption.ToLower() == currentyear.ToLower())
+                {
+                    currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
+                }
+                #region Calculate GoalYTD
+                for (int i = 0; i < 12; i++)
+                {
+                    _goalval = objBasicModel.GoalList.ToList()[i];
+                    if (currentEndMonth > i)
+                    {
+                        if (_goalval != 0.0)
+                        {
+                            _goalYTD = _goalYTD + _goalval;
+                        }
+                    }
+                    else
+                    {
+                        _goalYTD += 0;
+                    }
+                    //_monthTrendList.Add(_actualtotal);
+                }
+                #endregion
+
+                #region Calculate GoalTotoal/Goal Year
+                _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
+                #endregion
+
+                #region Calculate Actual Value
+                _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
+                //for (int i = 0; i < 12; i++)
+                //{
+                //    _actualval = objBasicModel.ActualList.ToList()[i];
+                //    if (currentEndMonth > i)
+                //    {
+                //        if (_actualval != 0.0)
+                //        {
+                //            _actualtotal = _actualtotal + _actualval;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        _actualtotal += 0;
+                //    }
+                //    //_monthTrendList.Add(_actualtotal);
+                //}
+                #endregion
+
+                #region Calculate Projected Value
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                #endregion
+            }
+            _ActualPercentage = _goalYTD != 0 ? (((_actualtotal - _goalYTD) / _goalYTD) * 100) : 0;
+            if (_ActualPercentage > 0)
+            {
+                objProjectedGoal.ActualPercentageIsnegative = false;
+            }
+            _ProjectedPercentage = _goaltotal != 0 ? (((_actualtotal - _goaltotal) / _goaltotal) * 100) : 0;
+            if (_ProjectedPercentage > 0)
+            {
+                objProjectedGoal.ProjectedPercentageIsnegative = false;
+            }
+            objProjectedGoal.GoalYTD = Convert.ToString(_goalYTD);
+            objProjectedGoal.GoalYear = Convert.ToString(_goaltotal);
+            objProjectedGoal.Actual_Projected = Convert.ToString(_actualtotal);
+            objProjectedGoal.Projected = Convert.ToString(_projectedtotal);
+            objProjectedGoal.ActualPercentage = Convert.ToString(_ActualPercentage);
+            objProjectedGoal.ProjectedPercentage = Convert.ToString(_ProjectedPercentage);
+            objReportModel.RevenueHeaderModel = objProjectedGoal;
+
+            return objReportModel;
+        }
+
+
         #region "Get Conversion data Main method"
         //added for new Main method of conversion partial view page-Dashrath Prajapati
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]
@@ -10452,13 +10589,15 @@ namespace RevenuePlanner.Controllers
             ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
             OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
 
-            objProjectedGoal = new Projected_Goal();
-            objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeFrameOption);
-            objReportModel.RevenueHeaderModel = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
+            //objProjectedGoal = new Projected_Goal();
+            //objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeFrameOption);
+            //objReportModel.RevenueHeaderModel = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
             //up o hereOverviewModelList
 
-            
-            
+            #region Set Header Value
+            BasicModel objBasicConverstionHeader = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, (isQuarterly.ToLower() == "quarterly" ? true : false));
+            objReportModel.RevenueHeaderModel = GetConverstionHeaderValue(objBasicConverstionHeader, timeFrameOption).RevenueHeaderModel;
+            #endregion
             
             
 
@@ -10671,6 +10810,7 @@ namespace RevenuePlanner.Controllers
             //CardSectionListModel = GetConversionCardSectionDefaultData(tacticStageList, OverviewCardModelList, _cmpgnMappingList, timeFrameOption, IsQuarterly);
             objCardSectionModel.CardSectionListModel = CardSectionListModel;
             //objReportModel.CardSectionModel = objCardSectionModel;
+            TempData["ConverstionCardList"] = null;
             TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
             objReportModel.CardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());
             objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
@@ -11185,7 +11325,8 @@ namespace RevenuePlanner.Controllers
             ViewBag.ConvParentLabel = ParentLabel;
             ViewBag.ConvchildId = childId;
             ViewBag.Convoption = option;
-
+            List<ProjectedTrendModel> MqlProjected = new List<ProjectedTrendModel>();// Header projected
+            List<ActualTrendModel> MqlActual = new List<ActualTrendModel>();
             #region TempData for Back Button
 
             if (DrpChange != "CampaignDrp")
@@ -11481,8 +11622,23 @@ namespace RevenuePlanner.Controllers
                     ActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
                     ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
 
+                    List<string> MqlStageList = new List<string>();
+                    MqlStageList.Add(Enums.Stage.MQL.ToString());
+
+                    List<ActualTacticListByStage> MqlTacticStageLsit = GetActualListInTacticInterval(_tacticdata, option, MqlStageList, IsTillCurrentMonth);
+
+                    MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit);
+
                     #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
                     ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
+                    if (StageCode != Enums.Stage.MQL.ToString())
+                    {
+                        MqlProjected = CalculateProjectedTrend(_tacticdata, includeMonth, Enums.Stage.MQL.ToString());
+                    }
+                    else
+                    {
+                        MqlProjected = ProjectedTrendList;
+                    }
                     #endregion
 
                     #region Mapping Items for Card Section
@@ -11594,8 +11750,6 @@ namespace RevenuePlanner.Controllers
                     {
                         TacticData = TacticData.ToList();
                     }
-
-
 
                     #region "New Code"
                     List<int> entityids = new List<int>();
@@ -11722,10 +11876,19 @@ namespace RevenuePlanner.Controllers
                         }
                         //ProjectedStageValue
                         ActualTacticTrendList = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, StageCode);
+                        if (StageCode != Enums.Stage.MQL.ToString())
+                        {
+                            MqlActual = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, Enums.Stage.MQL.ToString());
+                        }
+                        else
+                        {
+                            MqlActual = ActualTacticTrendList;
+                        }
                     }
                     else
                     {
                         ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
+                        MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList).Where(act => act.StageCode.Equals(Enums.Stage.MQL)).ToList();
                     }
                     #endregion
                     //cmplete
@@ -11773,12 +11936,55 @@ namespace RevenuePlanner.Controllers
                                                   TrendValue = tac.Key.TrendValue
                                               }).Distinct().ToList();
                         #endregion
+
+                        // Mql Projected for header value 
+                        _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, _tacticdata, IsTacticCustomField, true);
+                        _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
+                        _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
+                        {
+                            TacticId = tac.Id,
+                            StartMonth = tac.StartMonth,
+                            EndMonth = tac.EndMonth,
+                            Value = tac.Value,
+                            Year = tac.StartYear
+                        }).Distinct().ToList();
+                        MqlProjected = GetProjectedTrendModel(_TacticList);
+                        MqlProjected = (from _prjTac in ProjectedTrendList
+                                        group _prjTac by new
+                                        {
+                                            _prjTac.PlanTacticId,
+                                            _prjTac.Month,
+                                            _prjTac.Value,
+                                            _prjTac.TrendValue
+                                        } into tac
+                                        select new ProjectedTrendModel
+                                        {
+                                            PlanTacticId = tac.Key.PlanTacticId,
+                                            Month = tac.Key.Month,
+                                            Value = tac.Key.Value,
+                                            TrendValue = tac.Key.TrendValue
+                                        }).Distinct().ToList();
+
                     }
                     else
                     {
                         ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
+                        if (StageCode != Enums.Stage.MQL.ToString())
+                        {
+                            MqlProjected = CalculateProjectedTrend(_tacticdata, includeMonth, Enums.Stage.MQL.ToString());
+                        }
                     }
                 }
+
+                #region Set Header Value
+                BasicModel objBasicConverstionHeader = new BasicModel();
+                //List<ActualTrendModel> MqlActual = ActualTacticTrendList.Where(act => act.StageCode.Equals(Enums.Stage.MQL)).ToList();
+
+                objBasicConverstionHeader = GetValuesListByTimeFrame(MqlActual, MqlProjected, option, (IsQuarterly.ToLower() == "quarterly" ? true : false));
+                Projected_Goal objHeaderProjected = new Projected_Goal();
+                objHeaderProjected = GetConverstionHeaderValue(objBasicConverstionHeader, option).RevenueHeaderModel;
+                objConversionToPlanModel.RevenueHeaderModel = objHeaderProjected;
+                #endregion
 
                 /// Add By Nishant Sheth : 07-July-2015 
                 /// Desc : Fill card section with filter option , Ticket no:#1397 
@@ -11791,9 +11997,11 @@ namespace RevenuePlanner.Controllers
                 CardSectionListModel = GetConversionCardSectionList(_tacticdata,_cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, false, "", 0);
                 //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                TempData["ConverstionCardList"] = null;
                 TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
                 objCardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());
                 objCardSectionModel.TotalRecords = CardSectionListModel.Count();
+                TempData["ConversionCard"] = null;
                 TempData["ConversionCard"] = objCardSectionModel;
 
                 // End By Nishant Sheth
@@ -11979,8 +12187,11 @@ namespace RevenuePlanner.Controllers
             CardSectionModel cardModel = new CardSectionModel();
         #endregion
             cardModel.TotalRecords = objCardSectionList.Count();
-        
-            if (SortBy == Enums.SortByWaterFall.CW.ToString())
+            if (SortBy == Enums.SortByWaterFall.ADS.ToString())
+            {
+                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.ADSCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            }
+            else if (SortBy == Enums.SortByWaterFall.CW.ToString())
             {
                 objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.CWCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }

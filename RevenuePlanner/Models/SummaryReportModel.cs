@@ -188,6 +188,7 @@ namespace RevenuePlanner.Models
         public ConversionDataTable ConversionToPlanDataTableModel { get; set; }
         public BarChartModel ConversionToPlanBarChartModel { get; set; }
         public lineChartData LineChartModel { get; set; }//dashrath
+        public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
     }
     public class ConversionDataTable
     {

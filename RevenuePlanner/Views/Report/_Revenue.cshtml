@@ -39,13 +39,13 @@
         <div class="projected disable-gray">
             <span>Actual</span>
             <span id="revActual_Projected">$1.58M</span>
-            <span>Goal (YTD):</span> <span id="revGoalYTD">0</span>
+            <span style="display:none;">Goal (YTD):</span> <span id="revGoalYTD" style="display:none;">0</span>
             <span id="revActualPercentage"></span>
         </div>
         <div class="projected disable-gray">
-            <span>Projected(Year)</span>
+            <span>Projected</span>
             <span id="revProjected"></span>
-            <span>Goal (Year):</span> <span id="revGoalYear">0</span>
+            <span style="display:none;">Goal (Year):</span> <span id="revGoalYear" style="display:none;">0</span>
             <span id="revProjectedPercentage"></span>
         </div>
         <div class="time-frame">
@@ -123,7 +123,8 @@
     var marsterCustomField = '@Common.RevenueCampaign';
     var masterCustomFieldOptionId = 0;
     var tempRevenueHeader = [];
-
+    var BackFwdRevenueList = [];
+    var RevIsnextprev = false;
     $(function () {
         var options = {
 
@@ -187,11 +188,19 @@
         BackId = '@TempData["BackId"]';*@
         var BtnBack = document.getElementById('BtnBack');
         BtnBack.style.display = "none";
+        var _BackFwdVar = {
+            BackParentLabel: '@Common.RevenueCampaign',
+            BackChildLabel: '',
+            BackId: '',
+            HeadHireachy: 'Marketing Revenue'
+        }
+        BackFwdRevenueList.push(_BackFwdVar);
 
+        var _BackHeadValues = BackFwdRevenueList[BackFwdRevenueList.length - 1];
         OptionMain = '@ViewBag.option';
         var HeadTitle = document.getElementById('head-title');
-        HeadTitle.innerHTML = '@TempData["HeadTitle"]';
-        $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
+        HeadTitle.innerHTML = decodeURIComponent(_BackHeadValues.HeadHireachy);
+        $("#head-title").attr('title', '' + decodeURIComponent(HeadTitle.innerHTML) + '');
         $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
@@ -317,7 +326,13 @@
     $("#ddlRevenueTimeFrame").change(function () {
         AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         Qurt_Month = AllocatedBy;
-        LoadRevenueData();
+        var _BackHeadValues = BackFwdRevenueList[BackFwdRevenueList.length - 1];
+        var parentlabel = _BackHeadValues.BackParentLabel;
+        var Type = _BackHeadValues.BackChildLabel;
+        var id = _BackHeadValues.BackId;
+        var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&DrpChange=" + 'true';
+        $("#dvRevenueToPlan").load(_url);
+        //LoadRevenueData();
     });
 
     function loadChildListData(parentOption, id) {
@@ -391,11 +406,19 @@
         ReloadRevenueToPlanByCustomField(_childValue);
     });
     function ReloadRevenueToPlanByCustomField(_childvalue) {
+        myApp.showPleaseWait();
         var parentlabel = $("#ddlParentRevenueSummery").val();
         var Type = '';
         var id = '';
         id = _childvalue;
-
+        BackFwdRevenueList.length = 0;
+        var _BackFwdVar = {
+            BackParentLabel: parentlabel,
+            BackChildLabel: '',
+            BackId: id,
+            HeadHireachy: 'Marketing Revenue'
+        }
+        BackFwdRevenueList.push(_BackFwdVar);
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&DrpChange=" + 'true';
         $("#dvRevenueToPlan").load(_url);
 
@@ -406,9 +429,10 @@
         $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
         $("#ddlTacticRevenueToPlan").css('display', 'none');
         $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
-
+        //myApp.hidePleaseWait();
     }
     function LoadDataRevenueToPlanByCampaign() {
+        myApp.showPleaseWait();
         var id = '0';
         var Type = '';
         var tacticId = $("#ddlTacticRevenueToPlan").val();
@@ -436,9 +460,11 @@
         }
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
         $("#dvRevenueToPlan").load(_url);
+       // myApp.hidePleaseWait();
     }
 
     function fillProgramDropdown() {
+        myApp.showPleaseWait();
         var id = '';
         campaignId = $('#ddlCampaignRevenueToPlan').val();
         if (campaignId > 0) {
@@ -459,6 +485,7 @@
                 });
                 fillTacticDropdown();
                 $('#ddlProgramRevenueToPlan').multiselect("refresh");
+                //myApp.hidePleaseWait();
             },
             error: function () {
                 $("#ddlProgramRevenueToPlan").empty();
@@ -471,6 +498,7 @@
     }
 
     function fillTacticDropdown() {
+        myApp.showPleaseWait();
         var id = '';
         var Type = '';
         programId = $('#ddlProgramRevenueToPlan').val();
@@ -501,7 +529,7 @@
                 //alert('call function!');
                 LoadDataRevenueToPlanByCampaign();
                 //LoadDataRevenueRealization();
-                myApp.hidePleaseWait();
+               // myApp.hidePleaseWait();
             },
             error: function () {
                 $("#ddlTacticRevenueToPlan").empty();
