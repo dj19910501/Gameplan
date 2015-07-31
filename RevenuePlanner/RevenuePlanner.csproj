@@ -812,9 +812,6 @@
     <Content Include="Views\Model\Tactics.cshtml" />
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
-    <Content Include="Web.Config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Views\Boost\BestInClass.cshtml" />
     <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
     <Content Include="Views\Boost\Index.cshtml" />
@@ -966,12 +963,7 @@
     <Content Include="Views\Home\_HomeGrid.cshtml" />
     <Content Include="Views\Plan\_GridImprovement.cshtml" />
     <None Include="Web.BulldogProduction.config" />
-    <None Include="Web.Debug.Config">
-      <DependentUpon>Web.Config</DependentUpon>
-    </None>
-    <None Include="Web.Release.Config">
-      <DependentUpon>Web.Config</DependentUpon>
-    </None>
+    <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

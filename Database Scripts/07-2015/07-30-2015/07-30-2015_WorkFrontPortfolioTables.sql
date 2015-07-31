@@ -1,4 +1,4 @@
-USE [BulldogGameplanMay2015]
+
 GO
 
 /****** Object:  Table [dbo].[IntegrationWorkFrontPortfolios]    Script Date: 7/30/2015 3:55:15 PM ******/
@@ -26,7 +26,7 @@ end
 GO
 
 /****** Object:  Table [dbo].[IntegrationWorkFrontPortolio_Mapping]    Script Date: 7/30/2015 3:55:49 PM ******/
-IF (not EXISTS (SELECT * FROM sys.TABLES WHERE name = 'IntegrationWorkFrontPortfolio_Mapping'))
+IF (not EXISTS (SELECT * FROM sys.TABLES WHERE name = 'IntegrationWorkFrontPortolio_Mapping'))
 begin
 CREATE TABLE [dbo].[IntegrationWorkFrontPortolio_Mapping](
 	[ID] [int] NOT NULL,
