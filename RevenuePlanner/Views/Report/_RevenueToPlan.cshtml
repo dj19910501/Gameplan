@@ -278,7 +278,7 @@
             var _text = $(_lblPercentage).attr('orig-val');
             var _percentage = parseFloat(_text);
             if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN' || _percentage == '0') {
-                $(_lblPercentage).html('--');
+                _formtPercentage = "--";
                 $(_lblPercentage).removeClass("above").removeClass("below");
             }
             else {
