@@ -421,8 +421,11 @@ namespace Integration.WorkFront
             IntegrationInstancePlanEntityLog instanceLogTactic = new IntegrationInstancePlanEntityLog();
             try
             {
-                Enums.Mode currentMode = Common.GetMode(tactic.IntegrationInstanceTacticId);
-                
+                Enums.Mode currentMode = Common.GetMode(tactic.IntegrationWorkFrontProjectID);
+                //if IntegrationWorkFrontProjectID doesn't exist in WorkFront, create a new one
+                JToken checkExists = client.Search(ObjCode.PROJECT, new { ID = tactic.IntegrationWorkFrontProjectID, map = true});
+                if (checkExists == null || checkExists["data"].HasValues == false)
+                { currentMode = Enums.Mode.Create;   }
                 //logging begin
                 instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
@@ -447,12 +450,12 @@ namespace Integration.WorkFront
                         throw new ClientException("Tactic Type to Template Mapping Not Found for tactic " + tactic.Title + ".");
                     }
                     JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { ID = templateToUse });
-                    if (templateInfo == null)
+                    if (templateInfo == null || !templateInfo["data"].HasValues)
                     {
                         throw new ClientException("Template " + templateToUse + " not Found in WorkFront");
                     }
-                    JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, groupID = _userGroupID });
-                    if (project == null) 
+                    JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, groupID = _userGroupID, map = true });
+                    if (project == null || !project["data"].HasValues) 
                     { 
                         throw new ClientException("Project Not Created for Tactic " + tactic.Title + "."); 
                     }
