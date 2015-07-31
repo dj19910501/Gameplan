@@ -12343,6 +12343,24 @@ li.close-list {
     padding: 5px 0 5px 1px;
 }
 
+.top_spacing_geography .trdropdownhover:focus,
+.tbodycampaignprogram .trdropdownhover:focus {
+    background: none repeat scroll 0 0 #009ad5;
+    color: #fff;
+    padding: 5px 0 5px 1px;
+}
+
+.setfocusTr {
+     background: none repeat scroll 0 0 #009ad5;
+    color: #fff;
+    padding: 5px 0 5px 1px;
+}
+
+.setfocusTr:focus {
+     background: none repeat scroll 0 0 #009ad5;
+    color: #fff;
+    padding: 5px 0 5px 1px;
+}
 .top_spacing_geography .trdropdownhover,
 .tbodycampaignprogram .trdropdownhover,
 .top_spacing_geography .trdropdownhover p,
