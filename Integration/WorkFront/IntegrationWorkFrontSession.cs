@@ -371,9 +371,12 @@ namespace Integration.WorkFront
                List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
                foreach (string id in inDatabaseButNotInWorkFront)
                {
-                 IntegrationWorkFrontTemplate templateToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == id).FirstOrDefault();
-                 templateToDelete.IsDeleted = 1;
-                 db.Entry(templateToDelete).State = EntityState.Modified;
+                 List<IntegrationWorkFrontTemplate> templatesToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == id).ToList();
+                 foreach (IntegrationWorkFrontTemplate template in templatesToDelete) //in case there are duplicates in the database
+                 {
+                     template.IsDeleted = 1;
+                     db.Entry(template).State = EntityState.Modified;
+                 }
                 }
             }
             catch (Exception ex)
@@ -454,7 +457,7 @@ namespace Integration.WorkFront
                     {
                         throw new ClientException("Template " + templateToUse + " not Found in WorkFront");
                     }
-                    JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, groupID = _userGroupID, map = true });
+                    JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, groupID = _userGroupID});
                     if (project == null || !project["data"].HasValues) 
                     { 
                         throw new ClientException("Project Not Created for Tactic " + tactic.Title + "."); 
@@ -492,6 +495,8 @@ namespace Integration.WorkFront
                     }
                     db.Entry(objTacticComment).State = EntityState.Added;
                     db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
+                    //add success message to IntegrationInstanceLogDetails
+                    Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Tactic", Enums.MessageLabel.Success, "Sync success on Tactic " + tactic.Title);
                 }
             }
             catch(Exception ex)
