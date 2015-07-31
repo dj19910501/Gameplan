@@ -337,21 +337,16 @@ namespace Integration.WorkFront
             //update WorkFront templates for the instance
             try
             {
-                JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { fields = "ID" });
-                List<IntegrationWorkFrontTemplate> templateFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == _integrationInstanceId && template.IsDeleted==0).ToList();
-                Dictionary<string, string> templateDict = new Dictionary<string, string>();
-                List<string> templateIdsFromDB = new List<string>();
+                JToken templateInfoFromWorkFront = client.Search(ObjCode.TEMPLATE, new { fields = "ID" }); 
+                List<IntegrationWorkFrontTemplate> templatesFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == _integrationInstanceId && template.IsDeleted==0).ToList();
+                List<string> templateIdsFromDB = templatesFromDB.Select(tmpl => tmpl.TemplateId).ToList();
                 List<string> templateIdsFromWorkFront = new List<string>();
-                foreach (IntegrationWorkFrontTemplate template in templateFromDB)
-                {
-                    templateIdsFromDB.Add(template.TemplateId.Trim()); 
-                }
               
-                foreach (var template in templateInfo["data"])
+                foreach (var template in templateInfoFromWorkFront["data"])
                 {
                     string templID = template["ID"].ToString().Trim(); //WorkFront template IDs come with excess whitespace
                     templateIdsFromWorkFront.Add(templID);
-                    if (!templateIdsFromDB.Contains(templID))
+                    if ( !templateIdsFromDB.Contains(templID))
                     {
                         IntegrationWorkFrontTemplate newTemplate = new IntegrationWorkFrontTemplate();
                         newTemplate.IntegrationInstanceId = _integrationInstanceId;
@@ -369,15 +364,12 @@ namespace Integration.WorkFront
 
                //templates in the database that are not in WorkFront need to be set to deleted in 
                List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
-               foreach (string id in inDatabaseButNotInWorkFront)
-               {
-                 List<IntegrationWorkFrontTemplate> templatesToDelete = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == id).ToList();
-                 foreach (IntegrationWorkFrontTemplate template in templatesToDelete) //in case there are duplicates in the database
+               List<IntegrationWorkFrontTemplate> templatesToDelete = db.IntegrationWorkFrontTemplates.Where(t => inDatabaseButNotInWorkFront.Contains(t.TemplateId)).ToList();
+               foreach (IntegrationWorkFrontTemplate template in templatesToDelete)
                  {
                      template.IsDeleted = 1;
                      db.Entry(template).State = EntityState.Modified;
                  }
-                }
             }
             catch (Exception ex)
             {
