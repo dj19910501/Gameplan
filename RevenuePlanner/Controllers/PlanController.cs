@@ -9929,27 +9929,37 @@ namespace RevenuePlanner.Controllers
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
                     }
                 }
-                strHeader.Append("<?xml version='1.0' encoding='iso-8859-1'?><rows>");
+                strHeader.Append("<?xml version='1.0' encoding='iso-8859-1'?>");
+                strHeader.Append("<rows>");
 
-                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Projected Stage Value," + MQLTitle + ",Revenue</param></call></beforeInit>");
+                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Projected Stage Value," + MQLTitle + ",Revenue</param>");
+                strHeader.Append(" </call></beforeInit>");
+
+                strHeader.Append("<column width='25' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
+
+                strHeader.Append("<column type='ro' align='center' id='add' width='3' ></column>");
+                strHeader.Append("<column type='ro' align='center' id='id' >id</column>");
+                strHeader.Append("<column width='7' type='dhxCalendar' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>");
+                strHeader.Append("<column width='7' type='dhxCalendar' align='center' id='enddate'>#cspan</column>");
+                strHeader.Append("<column width='11' type='ron' align='center' id='plannedcost'>#cspan</column>");
+                strHeader.Append("<column width='10' type='ro' align='center' id='tactictype'>#cspan</column>");
+
               
-                strHeader.Append("<column  type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
-
-                strHeader.Append("<column type='ro' align='center' id='add'  ></column><column type='ro' align='center' id='id' >id</column><column type='dhxCalendar' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column><column  type='dhxCalendar' align='center' id='enddate'>#cspan</column><column  type='ron' align='center' id='plannedcost'>#cspan</column><column  type='ro' align='center' id='tactictype'>#cspan</column>");
-
-                // strHeader.Append("<column width='10' type='co' align='center' id='owner' >#cspan");
-                string struserlist = string.Empty;
                 if (lstUserDetails != null)
                 {
                     XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "10"), new XAttribute("align", "center"), new XAttribute("id", "owner"), "#cspan",
                         lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlEncode(i.FirstName), HttpUtility.HtmlEncode(i.LastName)))));
 
-                    struserlist = xmlElements.ToString();
+                    xmlUserlist = xmlElements.ToString();
                   
                 }
 
-                strHeader.Append(struserlist);
-                strHeader.Append("<column  type='ron' align='center' id='inq'>#cspan</column><column  type='ron' align='center' id='mql'>#cspan</column><column  type='ron' align='center' id='revenue'>#cspan</column><settings><colwidth>%</colwidth> </settings></head>");
+                strHeader.Append(xmlUserlist);
+                 strHeader.Append("<column width='10' type='ron' align='center' id='inq'>#cspan</column>");
+                strHeader.Append("<column width='10' type='ron' align='center' id='mql'>#cspan</column>");
+                strHeader.Append("<column width='7' type='ron' align='center' id='revenue'>#cspan</column>");
+                strHeader.Append("<settings><colwidth>%</colwidth> </settings> ");
+                strHeader.Append("</head>");
             }
             catch (Exception objException)
             {
