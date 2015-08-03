@@ -2,7 +2,7 @@
 @using RevenuePlanner.Models
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
-@{ 
+@{
     var cardsectionList = Model.CardSectionListModel != null ? JsonConvert.SerializeObject(Model.CardSectionListModel) : string.Empty;
 
     // Add By Nishant Sheth For pagination dropdwon with Enums
@@ -67,18 +67,18 @@
 <div class="card-pagination">
     <div class="paging" id="page_navigation" style="width:100%">
     </div>
-        @*<ul>
-                <li><a href="#">«</a></li>
-                <li class="active"><a>1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">6</a></li>
-                <li><a href="#">...</a></li>
-                <li>»</li>
-            </ul>*@
-    </div>
+    @*<ul>
+            <li><a href="#">«</a></li>
+            <li class="active"><a>1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li><a href="#">6</a></li>
+            <li><a href="#">...</a></li>
+            <li>»</li>
+        </ul>*@
+</div>
 <script type="text/javascript">
 
     //var BackParentLabel = '';
@@ -109,7 +109,7 @@
         var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
         _CardData = JSON.parse(_CardData);
         var _cardhtml = '';
-        var _masterParentLabel = '',_title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
+        var _masterParentLabel = '', _title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';
         var _Revdata = '', _Costdata = '', _ROIdata = '', _lineChartData = '';
         var _HeaderValue = '', _revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative;
         var _fieldId = '';
@@ -244,10 +244,10 @@
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
-          //  _cardhtml = _cardhtml + ' <p class="revanue-p-right">';
-          //  _cardhtml = _cardhtml + '<input "' + _chkCompareId + '" type="checkbox" /><label> Add to Compare</label>';
-          //  _cardhtml = _cardhtml + '</p>';
-          //  _cardhtml = _cardhtml + '<button id="' + _btnCompareId + '" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="' + _btnCompareId + '">Compare</button>';
+            //  _cardhtml = _cardhtml + ' <p class="revanue-p-right">';
+            //  _cardhtml = _cardhtml + '<input "' + _chkCompareId + '" type="checkbox" /><label> Add to Compare</label>';
+            //  _cardhtml = _cardhtml + '</p>';
+            //  _cardhtml = _cardhtml + '<button id="' + _btnCompareId + '" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="' + _btnCompareId + '">Compare</button>';
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '</div>';
 
@@ -300,7 +300,7 @@
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1,
-    });
+        });
         LoadPagination();
 
     });
@@ -330,7 +330,7 @@
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
                 if (_Id.indexOf("ROI") > 0) {
-                _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
                 }
                 else {
                     _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
@@ -359,7 +359,7 @@
                     _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
                 }
                 else {
-                _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
+                    _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
                 }
                 $(_Id).html(_formatednumber);
             }
@@ -423,7 +423,7 @@
             revProjectedPercentageIsnegative: _revProjectedPercentageIsnegative.toString().toLowerCase()
         }
         tempRevenueHeader.push(_pushValue); // Push Card Values to Temp global variable declare at _Revenue.cshtml page. This global variable use when user click on Back button.
-       
+
 
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
@@ -434,16 +434,16 @@
 
         //formatHeaderValues(_revActualProj, _revGoal, _revPercentage, _isNegativePercntg);
         //formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
-       
+
         if (masterlabel == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
                 $("#ddlCampaignRevenueToPlan").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
-               // $("#ddlProgramRevenueToPlan").css('display', 'block');
+                // $("#ddlProgramRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', '');
 
-              //  $("#ddlTacticRevenueToPlan").css('display', 'block');
+                //  $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
                 fillCardProgramDropDown(id, Type);
             }
@@ -451,10 +451,10 @@
                 $("#ddlCampaignRevenueToPlan").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
 
-           //     $("#ddlProgramRevenueToPlan").css('display', 'none');
+                //     $("#ddlProgramRevenueToPlan").css('display', 'none');
                 $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
 
-             //   $("#ddlTacticRevenueToPlan").css('display', 'block');
+                //   $("#ddlTacticRevenueToPlan").css('display', 'block');
                 $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
                 fillCardTacticDropDown(id, Type);
             }
@@ -496,7 +496,7 @@
             }
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
-           if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
+            if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
                 $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
@@ -519,14 +519,14 @@
             }
         }
         else if (masterlabel == '@Common.TacticCustomTitle') {
-          //  $("#ddlCampaignRevenueToPlan").css('display', 'none');
+            //  $("#ddlCampaignRevenueToPlan").css('display', 'none');
             $("#btnMultiselect_ddlCampaignRevenueToPlan").css('display', 'none');
             //CustomFieldChildDDL
-          //  $("#ddlProgramRevenueToPlan").css('display', 'none');
+            //  $("#ddlProgramRevenueToPlan").css('display', 'none');
             $("#btnMultiselect_ddlProgramRevenueToPlan").css('display', 'none');
             $("#CampaignChildDDL").css('display', '');
-            $("#CustomFieldChildDDL").css('display','none')
-          //  $("#ddlTacticRevenueToPlan").css('display', '');
+            $("#CustomFieldChildDDL").css('display', 'none')
+            //  $("#ddlTacticRevenueToPlan").css('display', '');
             $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
             fillCardTacticDropDown(id, "");
         }
@@ -610,7 +610,7 @@
                 $('#ddlProgramRevenueToPlan').multiselect("refresh");
             },
             error: function () {
-                
+
                 $("#ddlProgramRevenueToPlan").empty();
                 $("#ddlProgramRevenueToPlan").append("<option value='0'>All Programs</option>");
                 fillCardTacticDropDown(campaignId, type);
@@ -625,7 +625,7 @@
         var masteroptionid = masterCustomFieldOptionId;
         if (programId > 0) {
             if (Type == "") {
-                    masteroptionid = parseInt(programId);
+                masteroptionid = parseInt(programId);
             }
             else {
                 id = programId.toString();
@@ -678,7 +678,29 @@
         var number_of_items = '@TotalRecords';
         //calculate the number of pages we are going to have
         number_of_pages = Math.ceil(number_of_items / show_per_page);
+        var NumberOfArray = Math.ceil(number_of_pages / 6);
+        var SeriresofNum = new Array();
+        var x = 0;
+        for (var i = 0; i < NumberOfArray; i++) {
+            var ser = "";
+            var count = 0;
+            for (var j = x; j < (x + 5) ; j++) {
+                ser += i + j + ",";
+                count++;
+            }
+            ser += i + j;
+            x += count;
+            SeriresofNum.push(ser);
+        }
+        var abc = SeriresofNum;
 
+
+        Array.min = function (array) {
+            return Math.min.apply(Math, array);
+        };
+        Array.max = function (array) {
+            return Math.max.apply(Math, array);
+        };
         //set the value of our hidden input fields
         $('#current_page').val('@CurrentPageNum');
         $('#show_per_page').val(show_per_page);
@@ -698,13 +720,6 @@
         //add active_page class to the first page link
         // $('#page_navigation .page_link:first').addClass('active');
         if (typeof RevIsnextprev == 'undefined') {
-        for (var i = 0; i <= number_of_pages; i++) {
-            $('.page_link[longdesc=' + i + ']').css('display', 'none');
-        }
-        for (var j = 0; j <= 5; j++) {
-            $('.page_link[longdesc=' + j + ']').css('display', 'block');
-        }
-        } else if (RevIsnextprev == false) {
             for (var i = 0; i <= number_of_pages; i++) {
                 $('.page_link[longdesc=' + i + ']').css('display', 'none');
             }
@@ -713,11 +728,28 @@
             }
         }
         else {
-            for (var i = 0; i <= number_of_pages; i++) {
+            @*for (var i = 0; i <= number_of_pages; i++) {
                 $('.page_link[longdesc=' + i + ']').css('display', 'none');
             }
             for (var j = '@CurrentPageNum'; j <= parseInt('@CurrentPageNum') + 5; j++) {
                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
+            }*@
+            for (var i = 0; i <= number_of_pages; i++) {
+                $('.page_link[longdesc=' + i + ']').css('display', 'none');
+            }
+            for (var i = 0; i < NumberOfArray; i++) {
+
+                var PageSeries = SeriresofNum[i].split(',');
+                if (PageSeries.indexOf("@CurrentPageNum") > -1) {
+                    var minimum = Array.min(PageSeries);
+                    var maximum = Array.max(PageSeries);
+                    for (var j = minimum; j <= maximum; j++) {
+                        if (j <= number_of_pages) {
+                            $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                        }
+                    }
+                    break;
+                }
             }
         }
         RevIsnextprev = false;
@@ -732,7 +764,7 @@
     }
 
     function previous() {
-        
+
         //alert('Previous');
         //var pageNumber = parseInt($('#current_page').val());
         var pageNumber = '@CurrentPageNum';
@@ -751,7 +783,7 @@
 
     function next() {
         //alert('Next');
-        
+
         //var pageNumber = parseInt($('#current_page').val());
         var pageNumber = '@CurrentPageNum';
         //new_page = parseInt($('#current_page').val()) + 1;
@@ -768,6 +800,9 @@
     }
     function go_to_page(page_num) {
 
+        if (RevIsnextprev == false) {
+            IsGotoPage = true;
+        }
         //get the number of items shown per page
         var show_per_page = parseInt($('#show_per_page').val());
 

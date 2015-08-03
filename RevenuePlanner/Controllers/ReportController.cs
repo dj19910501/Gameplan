@@ -2162,7 +2162,7 @@ namespace RevenuePlanner.Controllers
             {
                 objProjectedGoal.ActualPercentageIsnegative = false;
             }
-            _ProjectedPercentage = _goaltotal != 0 ? (((_actualtotal - _goaltotal) / _goaltotal) * 100) : 0;
+            _ProjectedPercentage = _goaltotal != 0 ? (((_projectedtotal - _goaltotal) / _goaltotal) * 100) : 0;
             if (_ProjectedPercentage > 0)
             {
                 objProjectedGoal.ProjectedPercentageIsnegative = false;
@@ -10458,7 +10458,7 @@ namespace RevenuePlanner.Controllers
             {
                 objProjectedGoal.ActualPercentageIsnegative = false;
             }
-            _ProjectedPercentage = _goaltotal != 0 ? (((_actualtotal - _goaltotal) / _goaltotal) * 100) : 0;
+            _ProjectedPercentage = _goaltotal != 0 ? (((_projectedtotal - _goaltotal) / _goaltotal) * 100) : 0;
             if (_ProjectedPercentage > 0)
             {
                 objProjectedGoal.ProjectedPercentageIsnegative = false;
