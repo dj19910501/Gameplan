@@ -300,8 +300,11 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
-
-                objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
+                if (!string.IsNullOrEmpty(Sessions.User.Answer)) //PL #1457 Security question error during reset password :- added by dasharth prajapati 
+                {
+                    objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
+                }
+              
                 objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
                 objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
             }
