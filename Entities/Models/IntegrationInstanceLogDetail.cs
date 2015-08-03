@@ -14,9 +14,12 @@ namespace RevenuePlanner.Models
     
     public partial class IntegrationInstanceLogDetail
     {
+        public int Id { get; set; }
         public int EntityId { get; set; }
         public Nullable<int> IntegrationInstanceLogId { get; set; }
         public System.DateTime LogTime { get; set; }
         public string LogDescription { get; set; }
+    
+        public virtual IntegrationInstanceLog IntegrationInstanceLog { get; set; }
     }
 }

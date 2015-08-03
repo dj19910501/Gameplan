@@ -17,6 +17,7 @@ namespace RevenuePlanner.Models
         public IntegrationInstanceLog()
         {
             this.IntegrationInstanceSections = new HashSet<IntegrationInstanceSection>();
+            this.IntegrationInstanceLogDetails = new HashSet<IntegrationInstanceLogDetail>();
         }
     
         public int IntegrationInstanceLogId { get; set; }
@@ -30,5 +31,6 @@ namespace RevenuePlanner.Models
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual ICollection<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
+        public virtual ICollection<IntegrationInstanceLogDetail> IntegrationInstanceLogDetails { get; set; }
     }
 }

@@ -337,9 +337,9 @@
         </EntityType>
         <EntityType Name="IntegrationInstanceLogDetails">
           <Key>
-            <PropertyRef Name="EntityId" />
-            <PropertyRef Name="LogTime" />
+            <PropertyRef Name="Id" />
           </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="EntityId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstanceLogId" Type="int" />
           <Property Name="LogTime" Type="datetime" Nullable="false" />
@@ -396,6 +396,26 @@
           <Property Name="IntegrationTypeId" Type="int" Nullable="false" />
           <Property Name="Attribute" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="AttributeType" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationWorkFrontPortfolio_Mapping">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="PortfolioTableId" Type="int" Nullable="false" />
+          <Property Name="ProjectId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationWorkFrontPortfolios">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="PortfolioId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="PortfolioName" Type="nvarchar" MaxLength="250" Nullable="false" />
+          <Property Name="PlanProgramId" Type="int" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationWorkFrontTemplates">
@@ -1228,6 +1248,18 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_IntegrationInstanceLogID">
+          <End Role="IntegrationInstanceLog" Type="Self.IntegrationInstanceLog" Multiplicity="0..1" />
+          <End Role="IntegrationInstanceLogDetails" Type="Self.IntegrationInstanceLogDetails" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstanceLog">
+              <PropertyRef Name="IntegrationInstanceLogId" />
+            </Principal>
+            <Dependent Role="IntegrationInstanceLogDetails">
+              <PropertyRef Name="IntegrationInstanceLogId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
           <End Role="IntegrationInstancePlanEntityLog" Type="Self.IntegrationInstancePlanEntityLog" Multiplicity="*" />
@@ -1684,6 +1716,18 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_PortfolioTableId">
+          <End Role="IntegrationWorkFrontPortfolios" Type="Self.IntegrationWorkFrontPortfolios" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontPortfolio_Mapping" Type="Self.IntegrationWorkFrontPortfolio_Mapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontPortfolios">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontPortfolio_Mapping">
+              <PropertyRef Name="PortfolioTableId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SyncFrequency_IntegrationInstance">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
           <End Role="SyncFrequency" Type="Self.SyncFrequency" Multiplicity="0..1" />
@@ -1773,6 +1817,8 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
           <EntitySet Name="IntegrationInstanceSection" EntityType="Self.IntegrationInstanceSection" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationType" EntityType="Self.IntegrationType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationTypeAttribute" EntityType="Self.IntegrationTypeAttribute" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IntegrationWorkFrontPortfolio_Mapping" EntityType="Self.IntegrationWorkFrontPortfolio_Mapping" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IntegrationWorkFrontPortfolios" EntityType="Self.IntegrationWorkFrontPortfolios" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontTemplates" EntityType="Self.IntegrationWorkFrontTemplates" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItemType" EntityType="Self.LineItemType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterTacticType" EntityType="Self.MasterTacticType" Schema="dbo" store:Type="Tables" />
@@ -1805,7 +1851,17 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="Self.Plan_Campaign_Program_Tactic_Actual" store:Type="Tables" Schema="dbo">
+          <EntitySet Name="Plan_Campaign_Program_Tactic_Actual" EntityType="Self.Plan_Campaign_Program_Tactic_Actual" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+[Plan_Campaign_Program_Tactic_Actual].[PlanTacticId] AS [PlanTacticId], 
+[Plan_Campaign_Program_Tactic_Actual].[StageTitle] AS [StageTitle], 
+[Plan_Campaign_Program_Tactic_Actual].[Period] AS [Period], 
+[Plan_Campaign_Program_Tactic_Actual].[Actualvalue] AS [Actualvalue], 
+[Plan_Campaign_Program_Tactic_Actual].[CreatedDate] AS [CreatedDate], 
+[Plan_Campaign_Program_Tactic_Actual].[CreatedBy] AS [CreatedBy], 
+[Plan_Campaign_Program_Tactic_Actual].[ModifiedDate] AS [ModifiedDate], 
+[Plan_Campaign_Program_Tactic_Actual].[ModifiedBy] AS [ModifiedBy]
+FROM [dbo].[Plan_Campaign_Program_Tactic_Actual] AS [Plan_Campaign_Program_Tactic_Actual]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK__Plan_Camp__PlanC__245D67DE" Association="Self.FK__Plan_Camp__PlanC__245D67DE">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
@@ -1918,6 +1974,10 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
           <AssociationSet Name="FK_IntegrationInstanceLog_IntegrationInstance" Association="Self.FK_IntegrationInstanceLog_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLog" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationInstanceLogID" Association="Self.FK_IntegrationInstanceLogID">
+            <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLog" />
+            <End Role="IntegrationInstanceLogDetails" EntitySet="IntegrationInstanceLogDetails" />
           </AssociationSet>
           <AssociationSet Name="FK_IntegrationInstancePlanEntityLog_IntegrationInstance" Association="Self.FK_IntegrationInstancePlanEntityLog_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
@@ -2070,6 +2130,10 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
           <AssociationSet Name="FK_Plan_Plan" Association="Self.FK_Plan_Plan">
             <End Role="Model" EntitySet="Model" />
             <End Role="Plan" EntitySet="Plan" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PortfolioTableId" Association="Self.FK_PortfolioTableId">
+            <End Role="IntegrationWorkFrontPortfolios" EntitySet="IntegrationWorkFrontPortfolios" />
+            <End Role="IntegrationWorkFrontPortfolio_Mapping" EntitySet="IntegrationWorkFrontPortfolio_Mapping" />
           </AssociationSet>
           <AssociationSet Name="FK_SyncFrequency_IntegrationInstance" Association="Self.FK_SyncFrequency_IntegrationInstance">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
@@ -2469,7 +2533,17 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
             <End Role="CustomField" EntitySet="CustomFields" />
             <End Role="CustomField_Entity" EntitySet="CustomField_Entity" />
           </AssociationSet>
+          <EntitySet Name="IntegrationWorkFrontPortfolio_Mapping" EntityType="MRPModel.IntegrationWorkFrontPortfolio_Mapping" />
+          <EntitySet Name="IntegrationWorkFrontPortfolios" EntityType="MRPModel.IntegrationWorkFrontPortfolio" />
+          <AssociationSet Name="FK_PortfolioTableId" Association="MRPModel.FK_PortfolioTableId">
+            <End Role="IntegrationWorkFrontPortfolio" EntitySet="IntegrationWorkFrontPortfolios" />
+            <End Role="IntegrationWorkFrontPortfolio_Mapping" EntitySet="IntegrationWorkFrontPortfolio_Mapping" />
+          </AssociationSet>
           <EntitySet Name="IntegrationInstanceLogDetails" EntityType="MRPModel.IntegrationInstanceLogDetail" />
+          <AssociationSet Name="FK_IntegrationInstanceLogID" Association="MRPModel.FK_IntegrationInstanceLogID">
+            <End Role="IntegrationInstanceLog" EntitySet="IntegrationInstanceLogs" />
+            <End Role="IntegrationInstanceLogDetail" EntitySet="IntegrationInstanceLogDetails" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -2799,6 +2873,7 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
           <Property Type="Guid" Name="CreatedBy" />
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" FromRole="IntegrationInstanceLog" ToRole="IntegrationInstance" />
           <NavigationProperty Name="IntegrationInstanceSections" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstanceLog" FromRole="IntegrationInstanceLog" ToRole="IntegrationInstanceSection" />
+          <NavigationProperty Name="IntegrationInstanceLogDetails" Relationship="MRPModel.FK_IntegrationInstanceLogID" FromRole="IntegrationInstanceLog" ToRole="IntegrationInstanceLogDetail" />
         </EntityType>
         <EntityType Name="IntegrationInstancePlanEntityLog">
           <Key>
@@ -4379,16 +4454,63 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="IntegrationWorkFrontPortfolio_Mapping">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="PortfolioTableId" Type="Int32" Nullable="false" />
+          <Property Name="ProjectId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="IntegrationWorkFrontPortfolio" Relationship="MRPModel.FK_PortfolioTableId" FromRole="IntegrationWorkFrontPortfolio_Mapping" ToRole="IntegrationWorkFrontPortfolio" />
+        </EntityType>
+        <EntityType Name="IntegrationWorkFrontPortfolio">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationInstanceId" Type="Int32" Nullable="false" />
+          <Property Name="PortfolioId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PortfolioName" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="PlanProgramId" Type="Int32" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="IntegrationWorkFrontPortfolio_Mapping" Relationship="MRPModel.FK_PortfolioTableId" FromRole="IntegrationWorkFrontPortfolio" ToRole="IntegrationWorkFrontPortfolio_Mapping" />
+        </EntityType>
+        <Association Name="FK_PortfolioTableId">
+          <End Type="MRPModel.IntegrationWorkFrontPortfolio" Role="IntegrationWorkFrontPortfolio" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontPortfolio_Mapping" Role="IntegrationWorkFrontPortfolio_Mapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontPortfolio">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontPortfolio_Mapping">
+              <PropertyRef Name="PortfolioTableId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="IntegrationInstanceLogDetail">
           <Key>
-            <PropertyRef Name="EntityId" />
-            <PropertyRef Name="LogTime" />
+            <PropertyRef Name="Id" />
           </Key>
-          <Property Type="Int32" Name="EntityId" Nullable="false" />
-          <Property Type="Int32" Name="IntegrationInstanceLogId" />
-          <Property Type="DateTime" Name="LogTime" Nullable="false" Precision="3" />
-          <Property Type="String" Name="LogDescription" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EntityId" Type="Int32" Nullable="false" />
+          <Property Name="IntegrationInstanceLogId" Type="Int32" />
+          <Property Name="LogTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LogDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="IntegrationInstanceLog" Relationship="MRPModel.FK_IntegrationInstanceLogID" FromRole="IntegrationInstanceLogDetail" ToRole="IntegrationInstanceLog" />
         </EntityType>
+        <Association Name="FK_IntegrationInstanceLogID">
+          <End Type="MRPModel.IntegrationInstanceLog" Role="IntegrationInstanceLog" Multiplicity="0..1" />
+          <End Type="MRPModel.IntegrationInstanceLogDetail" Role="IntegrationInstanceLogDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstanceLog">
+              <PropertyRef Name="IntegrationInstanceLogId" />
+            </Principal>
+            <Dependent Role="IntegrationInstanceLogDetail">
+              <PropertyRef Name="IntegrationInstanceLogId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5323,6 +5445,28 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontPortfolio_Mapping">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontPortfolio_Mapping">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontPortfolio_Mapping">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="ProjectId" ColumnName="ProjectId" />
+                <ScalarProperty Name="PortfolioTableId" ColumnName="PortfolioTableId" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontPortfolios">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontPortfolio">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontPortfolios">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="PlanProgramId" ColumnName="PlanProgramId" />
+                <ScalarProperty Name="PortfolioName" ColumnName="PortfolioName" />
+                <ScalarProperty Name="PortfolioId" ColumnName="PortfolioId" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="IntegrationInstanceLogDetails">
             <EntityTypeMapping TypeName="MRPModel.IntegrationInstanceLogDetail">
               <MappingFragment StoreEntitySet="IntegrationInstanceLogDetails">
@@ -5330,6 +5474,7 @@ warning 6002: The table/view 'BulldogGameplanMay2015.dbo.Plan_Campaign_Program_T
                 <ScalarProperty Name="LogTime" ColumnName="LogTime" />
                 <ScalarProperty Name="IntegrationInstanceLogId" ColumnName="IntegrationInstanceLogId" />
                 <ScalarProperty Name="EntityId" ColumnName="EntityId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

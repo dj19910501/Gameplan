@@ -16,7 +16,7 @@ namespace RevenuePlanner.Models
     {
         public IntegrationWorkFrontPortfolio()
         {
-            this.IntegrationWorkFrontPortolio_Mapping = new HashSet<IntegrationWorkFrontPortolio_Mapping>();
+            this.IntegrationWorkFrontPortfolio_Mapping = new HashSet<IntegrationWorkFrontPortfolio_Mapping>();
         }
     
         public int Id { get; set; }
@@ -26,6 +26,6 @@ namespace RevenuePlanner.Models
         public int PlanProgramId { get; set; }
         public bool IsDeleted { get; set; }
     
-        public virtual ICollection<IntegrationWorkFrontPortolio_Mapping> IntegrationWorkFrontPortolio_Mapping { get; set; }
+        public virtual ICollection<IntegrationWorkFrontPortfolio_Mapping> IntegrationWorkFrontPortfolio_Mapping { get; set; }
     }
 }

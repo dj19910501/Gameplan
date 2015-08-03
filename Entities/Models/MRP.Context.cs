@@ -89,6 +89,8 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
         public DbSet<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
         public DbSet<CustomField_Entity> CustomField_Entity { get; set; }
+        public DbSet<IntegrationWorkFrontPortfolio_Mapping> IntegrationWorkFrontPortfolio_Mapping { get; set; }
+        public DbSet<IntegrationWorkFrontPortfolio> IntegrationWorkFrontPortfolios { get; set; }
         public DbSet<IntegrationInstanceLogDetail> IntegrationInstanceLogDetails { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)

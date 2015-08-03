@@ -140,7 +140,11 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
         <EntityTypeShape EntityType="MRPModel.CustomField_Entity" Width="1.5" PointX="13.25" PointY="8.375" />
         <AssociationConnector Association="MRPModel.FK_CustomField_Entity_CustomField" />
-        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLogDetail" Width="1.5" PointX="8.1016926374759954" PointY="23.106005649597385" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontPortfolio_Mapping" Width="1.5" PointX="15.625" PointY="13.125" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontPortfolio" Width="1.5" PointX="13.375" PointY="13" />
+        <AssociationConnector Association="MRPModel.FK_PortfolioTableId" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLogDetail" Width="1.5" PointX="15.375" PointY="0.75" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLogID" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
