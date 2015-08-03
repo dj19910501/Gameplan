@@ -8,6 +8,14 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Transactions;
 using Newtonsoft.Json;
+using System.Text;
+using RevenuePlanner.BDSService;
+using System.Globalization;
+using Integration;
+using System.Diagnostics;
+using RestSharp.Contrib;
+using System.Xml.Linq;
+using System.Xml;
 
 /*
  * Added By :
@@ -28,8 +36,13 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarEndDate;
         private string PeriodChar = "Y";
         public const string TacticCustomTitle = "TacticCustom";
-        #endregion
 
+        #endregion
+        #region variable for load plan grid
+        List<Plan_Tactic_Values> ListTacticMQLValue = new List<Plan_Tactic_Values>();
+        List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
+        List<Stage> stageList = new List<Stage>();
+        #endregion
       
         //public ActionResult Create(int id = 0, bool isBackFromAssortment = false)
         //{
@@ -6941,7 +6954,7 @@ namespace RevenuePlanner.Controllers
                                                                                                         (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
                                                                                                         intList.Contains(customFieldEntity.EntityId))
                                                                                                 .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
-            List<CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
+            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
             foreach (var item in model)
             {
                 if (item.ActivityType == ActivityType.ActivityPlan)
@@ -7504,7 +7517,7 @@ namespace RevenuePlanner.Controllers
                                                                                                         (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
                                                                                                         intList.Contains(customFieldEntity.EntityId))
                                                                                                 .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
-            List<CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
+            List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
             foreach (var item in model)
             {
 
@@ -8982,6 +8995,1024 @@ namespace RevenuePlanner.Controllers
             //End
         }
 
+        //Added by Devanshi gandhi for #1431
+
+        #region load Gridview for home
+        /// <summary>
+        /// Action method to load editable           gridview for plan only.
+        /// </summary>
+        /// <CreatedBy>Devanshi gandhi</CreatedBy> 
+        /// <CreatedDate>10/7/2015</CreatedDate>
+        /// <param name="planId">plan Id</param>
+        /// <returns>returns partial view HomeGrid</returns>
+        public ActionResult LoadHomeGrid(string PlanId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        {
+            bool IsPlanCreateAll = false;
+            bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+
+            List<Stage> stageList = new List<Stage>();
+            string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
+            string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
+
+            string xmlstring = string.Empty;
+            string xmlUserlist = string.Empty;
+            string stageMQL = Enums.Stage.MQL.ToString();
+            double MQLs = 0;
+            StringBuilder GridString = new StringBuilder();
+            bool IsTacticExist = false;
+
+            try
+            {
+
+                //// Owner filter criteria.
+                List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+
+                //Modified by komal rawal for #1283
+                //TacticType filter criteria
+                List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+                //TacticType filter criteria
+                List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+
+                if (IsPlanCreateAllAuthorized)
+                {
+                    IsPlanCreateAll = true;
+                }
+                List<Guid> lstSubordinatesIds = new List<Guid>();
+                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                if (IsTacticAllowForSubordinates)
+                {
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                }
+                stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
+
+
+                int? modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).FirstOrDefault();
+
+                string xmltactictype = string.Empty;
+                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false && tactype.ModelId == modelId).ToList();
+                foreach (var typelist in tblTacticTypes)
+                {
+                    xmltactictype = xmltactictype + "<option value='" + typelist.TacticTypeId + "'>" + typelist.Title + "</option>";
+                }
+
+                GridString = GenerateXMHeader(GridString, MQLTitle);
+
+
+                List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
+
+                List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
+
+                GetGoalValue(lstplandetail, modelId.ToString(), stageList); // for plan grid header to bind goal detail
+
+                var lstcampaigndetail = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && campaign.IsDeleted == false).ToList();
+
+                List<int> lstCampaignId = lstcampaigndetail.Select(campaign => campaign.PlanCampaignId).ToList();
+
+                List<Plan_Campaign_Program> programdetail = db.Plan_Campaign_Program.Where(prog => lstCampaignId.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).ToList();
+
+                List<int> lstprogramId = programdetail.Select(program => program.PlanProgramId).ToList();
+                //  var campaigntactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => lstCampaignId.Contains(_tactic.Plan_Campaign_Program.PlanCampaignId) && _tactic.IsDeleted.Equals(false)).ToList();
+                var programtactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => lstprogramId.Contains(_tactic.PlanProgramId) && _tactic.IsDeleted.Equals(false)).ToList();
+
+                List<int> lsttacticId = programtactic.Select(tactic => tactic.PlanTacticId).ToList();
+
+                if (programtactic != null && programtactic.Count > 0)
+                    IsTacticExist = true;
+                ViewBag.IsTacticExists = IsTacticExist;
+                var NoOfPrograms = lstprogramId.Count();
+                ViewBag.Progrmas = NoOfPrograms;
+                int id = Convert.ToInt32(planIds[0].ToString());
+                int improvementProgramId = db.Plan_Improvement_Campaign_Program.Where(prgrm => prgrm.Plan_Improvement_Campaign.ImprovePlanId == id).Select(prgrm => prgrm.ImprovementPlanProgramId).FirstOrDefault();
+                if (improvementProgramId != 0)
+                {
+                    ViewBag.ImprovementPlanProgramId = improvementProgramId;
+                }
+                else
+                {
+                    CreatePlanImprovementCampaignAndProgram();
+                    ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == id).Select(p => p.ImprovementPlanProgramId).FirstOrDefault();
+                }
+                CalculateTacticCostRevenue(modelId, lsttacticId, programtactic);
+
+                List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                //// Custom Field Filter Criteria.
+                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                if (filteredCustomFields.Count > 0)
+                {
+                    filteredCustomFields.ForEach(customField =>
+                    {
+                        string[] splittedCustomField = customField.Split('_');
+                        lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                    });
+
+                }
+
+
+                int PlanCnt = 1, CampCnt = 1, ProgCnt = 1;
+
+                int planid = 0;
+                string type = string.Empty;
+                string Startdate = string.Empty;
+                string Enddate = string.Empty;
+                double totalcost;
+                double totalmql;
+                double totalrevenue;
+                List<Plan_Campaign> Campaignfilterlst = new List<Plan_Campaign>();
+                List<Plan_Campaign_Program> Programfilterlst = new List<Plan_Campaign_Program>();
+                List<Plan_Campaign_Program_Tactic> TacticfilterList = new List<Plan_Campaign_Program_Tactic>();
+                List<int> lstTacticIds = new List<int>();
+                List<int> lstAllowedEntityIds = new List<int>();
+                type = "Plan";
+               // var watch = Stopwatch.StartNew();
+                foreach (var planitem in lstplandetail)
+                {
+                    planid = planitem.PlanId;
+                    if (lstcampaigndetail.Count > 0)
+                    {
+                        Startdate = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                        Enddate = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList().Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                    }
+                    else
+                    {
+                        Startdate = new DateTime(DateTime.Now.Year, 1, 1).ToString("MM/dd/yyyy");
+                        Enddate = new DateTime(DateTime.Now.Year, 12, 31).ToString("MM/dd/yyyy");
+                    }
+                    totalcost = LineItemList.Count > 0 ? LineItemList.Where(l => (programtactic.Where(pcpt => (programdetail.Where(pcp => (lstcampaigndetail.Where(pc => pc.PlanId == planid).Select(pc => pc.PlanCampaignId).ToList()).Contains(pcp.PlanCampaignId)).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost) : 0;
+                    totalmql = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => (programtactic.Where(pcpt => (programdetail.Where(pcp => (lstcampaigndetail.Where(pc => pc.PlanId == planid).Select(pc => pc.PlanCampaignId).ToList()).Contains(pcp.PlanCampaignId)).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
+                    totalrevenue = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => (programtactic.Where(pcpt => (programdetail.Where(pcp => (lstcampaigndetail.Where(pc => pc.PlanId == planid).Select(pc => pc.PlanCampaignId).ToList()).Contains(pcp.PlanCampaignId)).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
+
+                    if (IsPlanCreateAll == false)
+                    {
+                        if (planitem.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(planitem.CreatedBy))
+                            IsPlanCreateAll = true;
+                        else
+                            IsPlanCreateAll = false;
+                    }
+                    GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>" + planitem.Title + "</cell> ");
+                    GridString.Append("<cell><![CDATA[<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
+                    GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell>" + Startdate + "</cell> <cell>" + Enddate + "</cell>  <cell>" + totalcost + "</cell> ");
+                    GridString.Append(" <cell>--</cell> <cell>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell >--</cell> <cell >" + totalmql + "</cell> <cell >" + totalrevenue + "</cell> ");
+                    Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
+                    CampCnt = 1;
+                    type = "Campaign";
+                    if (Campaignfilterlst.Count > 0)
+                    {
+                        foreach (var Campaignitem in Campaignfilterlst)
+                        {
+                            if (IsPlanCreateAll == false)
+                            {
+                                if (Campaignitem.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(Campaignitem.CreatedBy))
+                                    IsPlanCreateAll = true;
+                                else
+                                    IsPlanCreateAll = false;
+                            }
+                            totalcost = LineItemList.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == Campaignitem.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost);
+                            totalmql = ListTacticMQLValue.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == Campaignitem.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.MQL);
+
+                            totalrevenue = ListTacticMQLValue.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == Campaignitem.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Revenue);
+
+                            GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3'>" + Campaignitem.Title + "</cell> ");
+                            GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" title=\"" + Campaignitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
+                            GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
+                            GridString.Append(" <cell bgColor='#C6EBF3' >" + totalcost + "</cell> <cell bgColor='#C6EBF3'>--</cell> <cell bgColor='#C6EBF3'>" + Common.GetUserName(Campaignitem.CreatedBy.ToString()) + "</cell>  <cell  bgColor='#C6EBF3'>--</cell> <cell bgColor='#C6EBF3'>" + totalmql + "</cell>  <cell  bgColor='#C6EBF3'>" + totalrevenue + "</cell> ");
+
+
+                            Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
+                            type = "Program";
+                            if (Programfilterlst != null && Programfilterlst.Count > 0)
+                            {
+                                Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                Enddate = Programfilterlst.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                GridString.Append("<userdata name='psdate'>" + Startdate + "</userdata>");
+                                GridString.Append("<userdata name='pedate'>" + Enddate + "</userdata>");
+                                if (programtactic != null && programtactic.Count > 0)
+                                {
+                                    Startdate = programtactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                    Enddate = programtactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                    GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
+                                    GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
+                                }
+                                ProgCnt = 1;
+
+                                foreach (var Programitem in Programfilterlst)
+                                {
+                                    if (IsPlanCreateAll == false)
+                                    {
+                                        if (Programitem.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(Programitem.CreatedBy))
+                                            IsPlanCreateAll = true;
+                                        else
+                                            IsPlanCreateAll = false;
+                                    }
+
+                                    totalcost = LineItemList.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == Programitem.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.Cost);
+                                    totalmql = ListTacticMQLValue.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == Programitem.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.MQL);
+                                    totalrevenue = ListTacticMQLValue.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == Programitem.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.Revenue);
+
+                                    GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>");
+
+                                    GridString.Append("<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" title=\"" + Programitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
+                                    GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8'>" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8'>" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
+                                    GridString.Append(" <cell bgColor='#DFF0F8'>" + totalcost + "</cell> <cell bgColor='#DFF0F8'>--</cell>  <cell bgColor='#DFF0F8'>" + Common.GetUserName(Programitem.CreatedBy.ToString()) + "</cell> ");
+                                    GridString.Append(" <cell bgColor='#DFF0F8'>--</cell>  <cell bgColor='#DFF0F8'>" + totalmql + "</cell>  <cell bgColor='#DFF0F8'>" + totalrevenue + "</cell> ");
+
+
+                                    TacticfilterList = programtactic.Where(pcptobj => pcptobj.PlanProgramId.Equals(Programitem.PlanProgramId) && pcptobj.IsDeleted == false &&
+                                           (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                            (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                            (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+
+                                    //// Apply Custom restriction for None type
+                                    if (TacticfilterList.Count() > 0)
+                                    {
+                                        lstTacticIds = TacticfilterList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                                        if (filteredCustomFields.Count > 0)
+                                        {
+                                            lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                                            //// get Allowed Entity Ids
+                                            TacticfilterList = TacticfilterList.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                                        }
+                                        lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                                        TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId)).Select(tacticlist => tacticlist).ToList();
+                                    }
+                                    if (TacticfilterList != null && TacticfilterList.Count > 0)
+                                    {
+                                        Startdate = TacticfilterList.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                        Enddate = TacticfilterList.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                        GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
+                                        GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
+                                     
+                                        type = "Tactic";
+                                        //  foreach (var Tacticitem in pcpt)
+                                      
+                                        var lsttacticTaskData = TacticfilterList.Select((taskdata, index) => new
+                                        {
+                                            index = index,
+                                            totalcost = LineItemList.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Cost),
+                                            totalmql = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.MQL),
+                                            PlanTacticId = taskdata.PlanTacticId,
+                                            totalrevenue = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Revenue),
+                                            title = taskdata.Title,
+                                            startdate = taskdata.StartDate,
+                                            enddate = taskdata.EndDate,
+                                            tactictypetitle = taskdata.TacticType.Title,
+                                            createdby = taskdata.CreatedBy,
+                                            tactictypeid = taskdata.TacticTypeId,
+                                            projectedstagevalue = taskdata.ProjectedStageValue,
+                                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true
+
+                                        });
+
+                                        var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
+                                                                               select new XElement("row", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.title),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XCData("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">")),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.PlanTacticId),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.enddate.ToString("MM/dd/yyyy")),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.totalcost),
+
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("xmlcontent", "true"), new XAttribute("type", "co"), tactic.tactictypetitle,
+                                                                                        tblTacticTypes.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title))),
+
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), Common.GetUserName(tactic.createdby.ToString())),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
+                                                                                    new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.totalmql),
+                                                                                     new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.totalrevenue)));
+
+                                        string finltactic = xmlElements.ToString().Remove(0, 6);
+                                        GridString.Append(HttpUtility.HtmlDecode(finltactic.Remove(finltactic.ToString().Length - 7, 7)));
+                                        //watch.Stop();
+                                       // Debug.WriteLine("Total Time taken by functions is {0}", watch.ElapsedMilliseconds);//using Elapsed Milliseconds
+
+                                       
+                                    }
+                                    GridString.Append("</row>");
+                                    ProgCnt = ProgCnt + 1;
+                                }
+
+                            }
+
+                            GridString.Append("</row>");
+                            CampCnt = CampCnt + 1;
+                        }
+                    }
+                    GridString.Append("</row>");
+                    PlanCnt = PlanCnt + 1;
+
+                }
+                GridString.Append("</rows>");
+                // watch.Stop();
+                //  Debug.WriteLine("Total Time taken by functions is {0}", watch.ElapsedMilliseconds);//using Elapsed Milliseconds
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            ViewBag.xmlstring = GridString;
+            return PartialView("_GridImprovement");
+        }
+        #endregion
+        #region Save gridview detail from home
+        /// <summary>
+        /// Added By:Devanshi Gandhi
+        /// Action to Save Tactic from grid.
+        /// </summary>
+        /// <param name="form">Form object of Plan_Campaign_Program_TacticModel.</param>
+
+        /// <returns>Returns Action Result.</returns>
+        [HttpPost]
+        public ActionResult SaveGridDetail(string UpdateType, string UpdateColumn, string UpdateVal, int id = 0)
+        {
+            string PeriodChar = "Y";
+            Guid oldOwnerId = new Guid();
+            int oldProgramId = 0;
+            string oldProgramTitle = "";
+            int oldCampaignId = 0;
+            try
+            {
+                #region update tactic detail
+                if (UpdateType == "tact")
+                {
+                    Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcptobjw => pcptobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+
+                    // update tactic detail
+                    if (UpdateColumn == "Task Name")
+                    {
+                        var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
+                                      join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                      join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                      where pcpt.Title.Trim().ToLower().Equals(UpdateVal) && !pcpt.PlanTacticId.Equals(12345) && pcpt.IsDeleted.Equals(false)
+                                      && pcp.PlanProgramId == pcpobj.Plan_Campaign_Program.PlanProgramId    //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
+                                      select pcp).FirstOrDefault();
+                        if (pcpvar != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                            return Json(new { IsDuplicate = true, redirect = Url.Action("LoadSetup", new { id = id }), errormsg = strDuplicateMessage });
+                        }
+                        else
+                            pcpobj.Title = UpdateVal;
+
+                    }
+                    else if (UpdateColumn == "Start Date")
+                    {
+                        //  var pstartdate = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.StartDate = Convert.ToDateTime(UpdateVal);
+                            var PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
+                            if (PStartDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.StartDate = Convert.ToDateTime(UpdateVal);
+                            }
+
+                            var CStartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
+
+                            if (CStartDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = Convert.ToDateTime(UpdateVal);
+                            }
+                            //db.Entry(pcpobj).State = EntityState.Modified;
+                            //db.SaveChanges();
+                        }
+                    }
+                    else if (UpdateColumn == "End Date")
+                    {
+                        //  var pstartdate = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.EndDate = Convert.ToDateTime(UpdateVal);
+                            var PEndDate = pcpobj.Plan_Campaign_Program.EndDate;
+                            if (PEndDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.EndDate = Convert.ToDateTime(UpdateVal);
+                            }
+
+                            var CEndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate;
+
+                            if (CEndDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = Convert.ToDateTime(UpdateVal);
+                            }
+                            //db.Entry(pcpobj).State = EntityState.Modified;
+                            //db.SaveChanges();
+                        }
+                    }
+                    else if (UpdateColumn == "Planned Cost")
+                    {
+                        if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == id).ToList()).Count() == 0 ||
+                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
+                                    || pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower())
+                        {
+                            pcpobj.Cost = Convert.ToDouble(UpdateVal);
+                        }
+
+                        List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                        double totalLineitemCost = 0;
+                        tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
+                        List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
+                        var lineitemidlist = objtotalLineitemCost.Select(lineitem => lineitem.PlanLineItemId).ToList();
+                        List<Plan_Campaign_Program_Tactic_LineItem_Cost> lineitemcostlist = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lic => lineitemidlist.Contains(lic.PlanLineItemId)).ToList();
+
+                        if (objtotalLineitemCost != null && objtotalLineitemCost.Count() > 0)
+                            totalLineitemCost = objtotalLineitemCost.Sum(l => l.Cost);
+                        if (totalLineitemCost > Convert.ToDouble(UpdateVal))
+                        {
+                            UpdateVal = totalLineitemCost.ToString();
+                        }
+                        if (Convert.ToDouble(UpdateVal) > pcpobj.Cost)
+                        {
+                            var diffcost = Convert.ToDouble(UpdateVal) - pcpobj.Cost;
+                            int startmonth = pcpobj.StartDate.Month;
+
+                            if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                            {
+                                pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
+
+                            }
+                            else
+                            {
+                                Plan_Campaign_Program_Tactic_Cost objTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                objTacticCost.PlanTacticId = pcpobj.PlanTacticId;
+                                objTacticCost.Period = PeriodChar + startmonth;
+                                objTacticCost.Value = diffcost;
+                                objTacticCost.CreatedBy = Sessions.User.UserId;
+                                objTacticCost.CreatedDate = DateTime.Now;
+                                db.Entry(objTacticCost).State = EntityState.Added;
+                            }
+
+                        }
+                        else if (Convert.ToDouble(UpdateVal) < pcpobj.Cost)
+                        {
+                            var diffcost = pcpobj.Cost - Convert.ToDouble(UpdateVal);
+                            int endmonth = 12;
+                            while (diffcost > 0 && endmonth != 0)
+                            {
+                                if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
+                                {
+                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
+                                    double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                                    var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                                    if (DiffMonthCost > 0)
+                                    {
+                                        if (DiffMonthCost > diffcost)
+                                        {
+                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                            diffcost = 0;
+                                        }
+                                        else
+                                        {
+                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                            diffcost = diffcost - DiffMonthCost;
+                                        }
+                                    }
+                                }
+                                if (endmonth > 0)
+                                {
+                                    endmonth -= 1;
+                                }
+
+                            }
+
+                        }
+
+                        pcpobj.Cost = Convert.ToDouble(UpdateVal);
+
+                    }
+                    else if (UpdateColumn == "Tactic Type")
+                    {
+                        pcpobj.TacticTypeId = Convert.ToInt32(UpdateVal);
+                    }
+                    else if (UpdateColumn == "Projected Stage Value")
+                    {
+                        pcpobj.ProjectedStageValue = Convert.ToDouble(UpdateVal);
+                    }
+                    else if (UpdateColumn == "Owner")
+                    {
+                        oldOwnerId = pcpobj.CreatedBy;
+                        pcpobj.CreatedBy = new Guid(UpdateVal);
+                    }
+                    else if (UpdateColumn == "ParentID")
+                    {
+                        oldProgramId = pcpobj.PlanProgramId;
+                        oldCampaignId = pcpobj.Plan_Campaign_Program.PlanCampaignId;
+                        oldProgramTitle = pcpobj.Plan_Campaign_Program.Title;
+                        pcpobj.PlanProgramId = Convert.ToInt32(UpdateVal);
+                        db.Entry(pcpobj).State = EntityState.Modified;
+                        db.SaveChanges();
+                        pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
+                        DateTime PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
+                        DateTime PEndDate = pcpobj.Plan_Campaign_Program.EndDate;
+                        DateTime CStartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
+                        DateTime CEndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate;
+                        DateTime StartDate = pcpobj.StartDate;
+                        DateTime EndDate = pcpobj.EndDate;
+                        if (PStartDate > StartDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.StartDate = StartDate;
+                        }
+
+                        if (EndDate > PEndDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.EndDate = EndDate;
+                        }
+
+                        if (CStartDate > StartDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = StartDate;
+                        }
+
+                        if (EndDate > CEndDate)
+                        {
+                            pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = EndDate;
+                        }
+
+                    }
+                    db.Entry(pcpobj).State = EntityState.Modified;
+                    db.SaveChanges();
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                    if (result > 0)
+                    {
+                        if (UpdateColumn == "Owner")
+                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), pcpobj.Plan_Campaign_Program.Title.ToString(), pcpobj.Title.ToString());
+                        if (UpdateColumn == "ParentID")
+                        {
+                            if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
+                            {
+                                if (pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
+                                {
+                                    ExternalIntegration externalIntegration = new ExternalIntegration(pcpobj.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic, true);
+                                    externalIntegration.Sync();
+
+                                }
+                            }
+                            if (oldProgramId > 0)
+                            {
+                                var actionSuffix = oldProgramTitle + " to " + pcpobj.Plan_Campaign_Program.Title;
+                                Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.moved, actionSuffix);
+                            }
+                            Common.ChangeProgramStatus(pcpobj.PlanProgramId, false);
+                            var PlanCampaignId = db.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && program.PlanProgramId == pcpobj.PlanProgramId).Select(program => program.PlanCampaignId).Single();
+                            Common.ChangeCampaignStatus(PlanCampaignId, false);
+                            if (oldProgramId > 0)
+                            {
+                                Common.ChangeProgramStatus(oldProgramId, false);
+                                Common.ChangeCampaignStatus(oldCampaignId, false);
+                            }
+                        }
+                    }
+                }
+                #endregion
+                #region update program detail
+
+                if (UpdateType == "prog")
+                {
+                    Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
+                    if (UpdateColumn == "Task Name")
+                    {
+                        var pcpvar = (from pcp in db.Plan_Campaign_Program
+                                      join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                      where pcp.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower()) && !pcp.PlanProgramId.Equals(id) && pcp.IsDeleted.Equals(false)
+                                      && pc.PlanCampaignId == pcpobj.Plan_Campaign.PlanCampaignId
+                                      select pcp).FirstOrDefault();
+                        //// if duplicate record exist then return with duplication message.
+                        if (pcpvar != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                            return Json(new { IsSaved = false, errormsg = strDuplicateMessage }, JsonRequestBehavior.AllowGet);
+                        }
+                        else
+                            pcpobj.Title = UpdateVal;
+                    }
+                    else if (UpdateColumn == "Start Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.StartDate = Convert.ToDateTime(UpdateVal);
+
+                            if (pcpobj.Plan_Campaign.StartDate > Convert.ToDateTime(UpdateVal))
+                            {
+                                pcpobj.Plan_Campaign.StartDate = Convert.ToDateTime(UpdateVal);
+                            }
+                        }
+                    }
+                    else if (UpdateColumn == "End Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                        {
+                            pcpobj.EndDate = Convert.ToDateTime(UpdateVal);
+                            if (Convert.ToDateTime(UpdateVal) > pcpobj.Plan_Campaign.EndDate)
+                            {
+                                pcpobj.Plan_Campaign.EndDate = Convert.ToDateTime(UpdateVal);
+                            }
+                        }
+                    }
+                    else if (UpdateColumn == "Owner")
+                    {
+                        oldOwnerId = pcpobj.CreatedBy;
+                        pcpobj.CreatedBy = new Guid(UpdateVal);
+                    }
+                    db.Entry(pcpobj).State = EntityState.Modified;
+                    db.SaveChanges();
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanProgramId, pcpobj.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                    if (result > 0)
+                    {
+                        if (UpdateColumn == "Owner")
+                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString());
+
+                    }
+                }
+
+
+                #endregion
+                #region update Campaign detail
+                if (UpdateType == "camp")
+                {
+                    int planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(id)).FirstOrDefault().PlanId;
+
+                    Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(id) && pcobjw.IsDeleted.Equals(false)).FirstOrDefault();
+                    if (UpdateColumn == "Task Name")
+                    {
+                        var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower())
+                            && !plancampaign.PlanCampaignId.Equals(id))).FirstOrDefault();
+
+                        //// If record exist then return duplicatino message.
+                        if (pc != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                            return Json(new { isSaved = false, msg = strDuplicateMessage });
+                        }
+                        else
+                            pcobj.Title = UpdateVal;
+                    }
+                    else if (UpdateColumn == "Start Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                            pcobj.StartDate = Convert.ToDateTime(UpdateVal);
+
+                    }
+                    else if (UpdateColumn == "End Date")
+                    {
+                        if (!string.IsNullOrEmpty(UpdateVal))
+                            pcobj.EndDate = Convert.ToDateTime(UpdateVal);
+
+                    }
+                    else if (UpdateColumn == "Owner")
+                    {
+                        oldOwnerId = pcobj.CreatedBy;
+                        pcobj.CreatedBy = new Guid(UpdateVal);
+                    }
+                    db.Entry(pcobj).State = EntityState.Modified;
+                    db.SaveChanges();
+                    int result = Common.InsertChangeLog(Sessions.PlanId, null, pcobj.PlanCampaignId, pcobj.Title, Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+
+                    if (result > 0)
+                    {
+                        if (UpdateColumn == "Owner")
+                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title);
+
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+
+                //To handle unavailability of BDSService
+                if (e is System.ServiceModel.EndpointNotFoundException)
+                {
+                    //// Flag to indicate unavailability of web service.
+                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                    //// Ticket: 942 Exception handeling in Gameplan.
+                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return Json(new { });
+        }
+        #endregion
+
+        public JsonResult CalculateMQL(int tactictid, int TacticTypeId, double projectedStageValue, bool RedirectType, bool isTacticTypeChange)
+        {
+            DateTime StartDate = new DateTime();
+            DateTime EndDate = new DateTime();
+            string stageMQL = Enums.Stage.MQL.ToString();
+            int tacticStageLevel = 0;
+            try
+            {
+                int levelMQL = db.Stages.Single(stage => stage.ClientId.Equals(Sessions.User.ClientId) && stage.Code.Equals(stageMQL) && stage.IsDeleted == false).Level.Value;
+
+                if (isTacticTypeChange)
+                {
+
+                    Stage objstage = db.TacticTypes.FirstOrDefault(t => t.TacticTypeId == TacticTypeId).Stage;
+
+                    if (objstage != null)
+                    {
+                        string stagelevel = objstage.Level.ToString();
+                        tacticStageLevel = Convert.ToInt32(stagelevel);
+                    }
+                    else
+                        tacticStageLevel = 0;
+                }
+
+                var tacticdata = db.Plan_Campaign_Program_Tactic.Where(t => t.PlanTacticId == tactictid).FirstOrDefault();
+                StartDate = tacticdata.StartDate;
+                EndDate = tacticdata.EndDate;
+                int StageId = tacticdata.StageId;
+
+                int modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).FirstOrDefault();
+
+                Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
+                objTactic.StartDate = StartDate;
+                objTactic.EndDate = EndDate;
+                objTactic.StageId = StageId;
+                objTactic.Plan_Campaign_Program = new Plan_Campaign_Program() { Plan_Campaign = new Plan_Campaign() { PlanId = Sessions.PlanId, Plan = new Plan() { } } };
+                objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId = modelId;
+                objTactic.ProjectedStageValue = projectedStageValue;
+                var lstTacticStageRelation = Common.GetTacticStageRelationForSingleTactic(objTactic, false);
+                double calculatedMQL = 0;
+                double CalculatedRevenue = 0;
+                calculatedMQL = lstTacticStageRelation.MQLValue;
+                CalculatedRevenue = lstTacticStageRelation.RevenueValue;
+                CalculatedRevenue = Math.Round(CalculatedRevenue, 2); // Modified by Sohel Pathan on 16/09/2014 for PL ticket #760
+                calculatedMQL = Math.Round(calculatedMQL, 0, MidpointRounding.AwayFromZero);
+                if (tacticStageLevel < levelMQL)
+                {
+                    return Json(new { mql = calculatedMQL, revenue = CalculatedRevenue });
+                }
+                else if (tacticStageLevel == levelMQL)
+                {
+                    return Json(new { mql = projectedStageValue, revenue = CalculatedRevenue });
+                }
+                else if (tacticStageLevel > levelMQL)
+                {
+                    return Json(new { mql = "N/A", revenue = CalculatedRevenue });
+                }
+                else
+                {
+                    return Json(new { mql = 0, revenue = CalculatedRevenue });
+                }
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                //// To handle unavailability of BDSService
+                if (objException is System.ServiceModel.EndpointNotFoundException)
+                {
+                    return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                    return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+            }
+
+        }
+
+        #region "Send Email Notification For Owner changed"
+        public void SendEmailnotification(Guid oldOwnerID, Guid NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title)
+        {
+
+            try
+            {
+                //Send Email Notification For Owner changed.
+                if (NewOwnerID != oldOwnerID && NewOwnerID != Guid.Empty)
+                {
+                    if (Sessions.User != null)
+                    {
+                        List<string> lstRecepientEmail = new List<string>();
+                        List<User> UsersDetails = new List<BDSService.User>();
+                        var csv = string.Concat(NewOwnerID.ToString(), ",", oldOwnerID.ToString(), ",", Sessions.User.UserId.ToString());
+
+                        try
+                        {
+                            UsersDetails = objBDSServiceClient.GetMultipleTeamMemberDetails(csv, Sessions.ApplicationId);
+                        }
+                        catch (Exception e)
+                        {
+                            ErrorSignal.FromCurrentContext().Raise(e);
+
+
+                        }
+
+                        var NewOwner = UsersDetails.Where(u => u.UserId == NewOwnerID).Select(u => u).FirstOrDefault();
+                        var ModifierUser = UsersDetails.Where(u => u.UserId == Sessions.User.UserId).Select(u => u).FirstOrDefault();
+                        if (NewOwner.Email != string.Empty)
+                        {
+                            lstRecepientEmail.Add(NewOwner.Email);
+                        }
+                        string NewOwnerName = NewOwner.FirstName + " " + NewOwner.LastName;
+                        string ModifierName = ModifierUser.FirstName + " " + ModifierUser.LastName;
+
+                        if (lstRecepientEmail.Count > 0)
+                        {
+                            // string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
+                            Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), "");// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                        }
+                    }
+                }
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+            }
+        }
+        #endregion
+
+        #region method for getting goal value for homegrid
+        protected void GetGoalValue(List<Plan> plandetail, string modelId, List<Stage> stageList)
+        {
+            int ModelID = 0;
+            string MQLLable = string.Empty;
+            string INQLable = string.Empty;
+            string MQLValue = string.Empty;
+            string INQValue = string.Empty;
+            string Revenue = string.Empty;
+            string CWLable = string.Empty;
+            string CWValue = string.Empty;
+            try
+            {
+                if (!string.IsNullOrEmpty(modelId))
+                    ModelID = Convert.ToInt32(modelId);
+                if (plandetail != null)
+                {
+
+                    string goalType = plandetail.FirstOrDefault().GoalType;
+                    string goalValue = plandetail.FirstOrDefault().GoalValue.ToString();
+
+                    double ADS = 0;
+
+                    if (ModelID != 0)
+                    {
+                        double ADSValue = db.Models.FirstOrDefault(m => m.ModelId == ModelID).AverageDealSize;
+                        ADS = ADSValue;
+                    }
+
+                    if (goalType.ToString() != "")
+                    {
+                        BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
+                        bool isGoalValueExists = false;
+                        goalValue = goalValue.Replace(",", "");
+                        if (goalValue != "" && Convert.ToInt64(goalValue) != 0)
+                        {
+                            isGoalValueExists = true;
+                            objBudgetAllocationModel = Common.CalculateBudgetInputs(ModelID, goalType, goalValue, ADS, true);
+                        }
+
+                        stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
+                        MQLLable = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        INQLable = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        CWLable = stageList.Where(stage => stage.Code.ToLower() == Enums.Stage.CW.ToString().ToLower()).Select(stage => stage.Title.ToLower()).FirstOrDefault();
+                        //values
+                        MQLValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.MQLValue.ToString();
+                        INQValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.INQValue.ToString();
+                        Revenue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.RevenueValue.ToString();
+                        CWValue = isGoalValueExists.Equals(false) ? "0" : objBudgetAllocationModel.CWValue.ToString();
+                        //// Set Input & Message based on GoalType value.
+                        if (goalType.ToString().ToLower() == Enums.PlanGoalType.INQ.ToString().ToLower())
+                            INQValue = goalValue.ToString();
+
+                        else if (goalType.ToString().ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower())
+                            MQLValue = goalValue.ToString();
+
+                        else if (goalType.ToString().ToLower() == Enums.PlanGoalType.Revenue.ToString().ToLower())
+                            Revenue = goalValue.ToString();
+
+                        else if (goalType.ToString().ToLower() == Enums.Stage.CW.ToString())
+                            CWValue = goalValue.ToString();
+
+                    }
+
+                }
+
+                ViewBag.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
+                ViewBag.INQLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(INQLable);
+                ViewBag.MQLValue = MQLValue;
+                ViewBag.INQValue = INQValue;
+                ViewBag.Revenue = Revenue;
+                ViewBag.CWLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CWLable);
+                ViewBag.CWValue = CWValue;
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+        }
+        #endregion
+
+        #region method to generate grid header
+        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle)
+        {
+            List<User> lstUserDetails = new List<User>();
+            string xmlUserlist = string.Empty;
+            try
+            {
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                if (lstClientUsers.Count() > 0)
+                {
+                    string strUserList = string.Join(",", lstClientUsers);
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                    }
+                }
+                strHeader.Append("<?xml version='1.0' encoding='iso-8859-1'?><rows>");
+
+                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Projected Stage Value," + MQLTitle + ",Revenue</param></call></beforeInit>");
+              
+                strHeader.Append("<column  type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
+
+                strHeader.Append("<column type='ro' align='center' id='add'  ></column><column type='ro' align='center' id='id' >id</column><column type='dhxCalendar' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column><column  type='dhxCalendar' align='center' id='enddate'>#cspan</column><column  type='ron' align='center' id='plannedcost'>#cspan</column><column  type='ro' align='center' id='tactictype'>#cspan</column>");
+
+                // strHeader.Append("<column width='10' type='co' align='center' id='owner' >#cspan");
+                string struserlist = string.Empty;
+                if (lstUserDetails != null)
+                {
+                    XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "10"), new XAttribute("align", "center"), new XAttribute("id", "owner"), "#cspan",
+                        lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlEncode(i.FirstName), HttpUtility.HtmlEncode(i.LastName)))));
+
+                    struserlist = xmlElements.ToString();
+                  
+                }
+
+                strHeader.Append(struserlist);
+                strHeader.Append("<column  type='ron' align='center' id='inq'>#cspan</column><column  type='ron' align='center' id='mql'>#cspan</column><column  type='ron' align='center' id='revenue'>#cspan</column><settings><colwidth>%</colwidth> </settings></head>");
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+            }
+            return strHeader;
+        }
+        #endregion
+
+        #region method to calculate tactic cost , revenue and MQl
+        protected void CalculateTacticCostRevenue(int? modelId, List<int> lsttacticId, List<Plan_Campaign_Program_Tactic> programtactic)
+        {
+
+            List<ModelDateList> modelDateList = new List<ModelDateList>();
+            var ModelList = db.Models.Where(mdl => mdl.IsDeleted == false);
+            int MainModelId = (int)modelId;
+            double TotalMqls = 0;
+            double TotalCost = 0;
+            try
+            {
+
+                while (modelId != null)
+                {
+                    var model = ModelList.Where(mdl => mdl.ModelId == modelId).Select(mdl => mdl).FirstOrDefault();
+                    modelDateList.Add(new ModelDateList { ModelId = model.ModelId, ParentModelId = model.ParentModelId, EffectiveDate = model.EffectiveDate });
+                    modelId = model.ParentModelId;
+                }
+                List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
+                List<StageList> stageListType = Common.GetStageList();
+                LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => lsttacticId.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
+                List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && _imprvTactic.IsDeleted == false).Select(_imprvTactic => _imprvTactic).ToList();
+                List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(mdl => mdl.ModelId).ToList());
+                var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
+                List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
+
+
+                List<TacticStageValue> TacticDataWithoutImprovement = Common.GetTacticStageRelationForSinglePlan(programtactic, bestInClassStageRelation, stageListType, modleStageRelationList, improvementTacticTypeMetric, improvementActivities, modelDateList, MainModelId, stageList, false);
+
+                ListTacticMQLValue = (from tactic in TacticDataWithoutImprovement
+                                      select new Plan_Tactic_Values
+                                      {
+                                          PlanTacticId = tactic.TacticObj.PlanTacticId,
+                                          MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
+                                          Revenue = tactic.RevenueValue
+                                      }).ToList();
+                TotalMqls = ListTacticMQLValue.Sum(tactic => tactic.MQL);
+                TotalCost = LineItemList.Sum(l => l.Cost);
+                ViewBag.TotalCost = TotalCost;
+                ViewBag.TotalMqls = TotalMqls;
+
+
+                //End
+
+
+
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+        }
+        #endregion
         #region "Common Methods"
         /// <summary>
         /// Added By: Viral Kadiya.
