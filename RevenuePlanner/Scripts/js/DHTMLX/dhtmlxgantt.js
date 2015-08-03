@@ -103,23 +103,23 @@ gantt._render_grid_item = function (t) {
         var a, s, r = i == e.length - 1, o = e[i];
         if ("add" == o.name && i == e.length - 1) {
               if (t.type == "Plan" && t.Permission == true) {
-                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "/" + t.Permission + "' ></div>  ";
+                  s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text  + "' Permission='" + t.Permission + "'></div>  ";
             }
 
             else if (t.type == "Campaign" && t.Permission == true) {
-                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "/" + t.Permission + "' ></div>  ";
+                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' Permission='" + t.Permission + "'></div>  ";
             }
 
             else if (t.type == "Program" && t.Permission == true) {
-                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "/" + t.Permission + "' ></div>  ";
+                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' Permission='" + t.Permission + "'></div>  ";
             }
 
             else if (t.type == "Tactic" && t.Permission == true) {
-                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "/" + t.Permission + "' ></div>  ";
+                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' Permission='" + t.Permission + "'></div>  ";
             }
 
             else if (t.type == "Imp Tactic" && t.Permission == true) {
-                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "/" + t.Permission + "' ></div>  ";
+                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' Permission='" + t.Permission + "' ></div>  ";
             }           
         }
         else {
