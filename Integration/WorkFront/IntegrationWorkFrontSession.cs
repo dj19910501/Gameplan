@@ -299,22 +299,17 @@ namespace Integration.WorkFront
             try
             {
                 SyncInstanceTemplates(ref SyncErrors);
-                //Retrieves list of all tactics tied to the integrationinstance and deployed to integration
-                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt ==  _integrationInstanceId  && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
-                if (tacticList.Count() > 0 )
+                //Retrieves list of all programs tied to the integration instance and deployed to integration
+                List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => program.IsDeleted == false && program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && program.IsDeployedToIntegration == true && statusList.Contains(program.Status)).ToList();
+                if(programList.Count() > 0)
                 {
-                    _isResultError = SetMappingDetails(ref SyncErrors);
-                    if (_isResultError)
+                    foreach(Plan_Campaign_Program program in programList)
                     {
-                        throw new ClientException("error in field mapping");
+                        syncError = (syncError || syncProgram(program, ref SyncErrors));
                     }
-                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
-                    CreateCustomFieldIdList(tacticIdList, ref SyncErrors);
-                    foreach (var tactic in tacticList)
-                    {
-                        syncError = (syncError || SyncTactic(tactic, ref SyncErrors));
-	                }
                 }
+                
+                
                 
             }
             catch(Exception ex)
@@ -333,10 +328,159 @@ namespace Integration.WorkFront
             
        }
 
+       /// <summary>
+       /// Program Level sync method 
+       /// Gameplan programs are tied to WorkFront Portfolios to allow for a similar heirarchical structure
+       /// sets up integration logs, create new portfolio or updates existing portfolio
+       /// Both creation and update sync comments are created for display in tactic review comment log.
+       /// Searches for all program tactics that are deployed to the integration and calls method to sync those tactics.
+       /// </summary>
+       ///  <param name="program">
+       /// the program to by synced
+       /// </param>
+       ///<param name="SyncErrors">
+       /// error list for tracking
+       /// </param>
+       /// <returns>
+       /// Bool: true if sync error, false otherwise
+       /// </returns>
+       private bool syncProgram(Plan_Campaign_Program program, ref List<SyncError> SyncErrors)
+       {
+           bool syncError = false;
+           IntegrationInstancePlanEntityLog instanceLogProgram = new IntegrationInstancePlanEntityLog();
+           try
+           {
+               //Each program must be linked to a WorkFront portfolio
+               IntegrationWorkFrontPortfolio portfolio = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == program.PlanProgramId && port.IntegrationInstanceId == program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
+               Enums.Mode currentMode;
+               if(portfolio != null)
+               {
+                   JToken existingInWorkFront = client.Search(ObjCode.PORTFOLIO, new { ID = portfolio.PortfolioId});
+                   if (existingInWorkFront == null || !existingInWorkFront["data"].HasValues) //portfolio was deleted from WorkFront
+                   {
+                       portfolio.IsDeleted = true;
+                       db.Entry(instanceLogProgram).State = EntityState.Modified;
+                       currentMode = Enums.Mode.Create;
+                       
+                   }
+                   else 
+                   {
+                       currentMode = Common.GetMode(portfolio.PortfolioId);
+                   }
+               }
+               else { currentMode = Enums.Mode.Create; }
+               //logging begin
+               instanceLogProgram.IntegrationInstanceSectionId = _integrationInstanceSectionId;
+               instanceLogProgram.IntegrationInstanceId = _integrationInstanceId;
+               instanceLogProgram.EntityId = program.PlanProgramId;
+               instanceLogProgram.EntityType = EntityType.Tactic.ToString();
+               instanceLogProgram.SyncTimeStamp = DateTime.Now;
+               instanceLogProgram.Status = StatusResult.Success.ToString();
+               instanceLogProgram.CreatedBy = this._userId;
+               instanceLogProgram.CreatedDate = DateTime.Now;
+               db.Entry(instanceLogProgram).State = EntityState.Added;
+               //logging end
+
+               program.LastSyncDate = DateTime.Now;
+               program.ModifiedDate = DateTime.Now;
+               program.ModifiedBy = _userId;
+               db.Entry(program).State = EntityState.Modified;
+                             
+               if (currentMode.Equals(Enums.Mode.Create))
+               {
+                   instanceLogProgram.Operation = Operation.Create.ToString();
+                   program.LastSyncDate = DateTime.Now;
+                   program.ModifiedDate = DateTime.Now;
+                   program.ModifiedBy = _userId;
+                   string defaultPortfolioName = program.Plan_Campaign.Title + " : " + program.Title;
+                   JToken createdPortfolio = client.Create(ObjCode.PORTFOLIO, new { name = defaultPortfolioName});
+                   if (createdPortfolio == null || !createdPortfolio["data"].HasValues)
+                   {
+                       throw new ClientException("WorkFront Portfolio Not Created for Tactic " + program.Title + ".");
+                   }
+                   portfolio = new IntegrationWorkFrontPortfolio();
+                   portfolio.IntegrationInstanceId = (int) program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
+                   portfolio.PortfolioName = defaultPortfolioName;
+                   portfolio.IsDeleted = false;
+                   portfolio.PortfolioId = (string) createdPortfolio["data"]["ID"];
+                   portfolio.PlanProgramId = program.PlanProgramId;
+                   db.Entry(portfolio).State = EntityState.Added;
+                   syncError = false;
+               }
+               else if (currentMode.Equals(Enums.Mode.Update))
+               {
+                   instanceLogProgram.Operation = Operation.Update.ToString();
+                   JToken existingPortfolio = client.Search(ObjCode.PORTFOLIO, new { ID = portfolio.PortfolioId });
+                   if (existingPortfolio == null) { throw new ClientException("Portfolio Not found in WorkFront but exists in Database."); }
+                   portfolio.PortfolioName = (string)existingPortfolio["data"][0]["name"];
+                   portfolio.IsDeleted = false;
+                   db.Entry(portfolio).State = EntityState.Modified;
+                   syncError = false;
+               }
+
+               if (!syncError) //don't leave a sync comment if it didn't sync
+               {
+                   //Add program review comment when synced
+                   Plan_Campaign_Program_Tactic_Comment objProgramComment = new Plan_Campaign_Program_Tactic_Comment();
+                   objProgramComment.PlanProgramId = program.PlanProgramId;
+                   objProgramComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.WorkFront.ToString();
+                   objProgramComment.CreatedDate = DateTime.Now;
+                   if (Common.IsAutoSync)
+                   {
+                       objProgramComment.CreatedBy = new Guid();
+                   }
+                   else { objProgramComment.CreatedBy = this._userId;    }
+
+                   db.Entry(objProgramComment).State = EntityState.Added;
+                   db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment);
+                   //add success message to IntegrationInstanceLogDetails
+                   Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Program", Enums.MessageLabel.Success, "Sync success - Program to Portfolio on " + program.Title);
+                }
+               
+               //Retrieves list of all tactics tied to the integrationinstance and deployed to integrationtic
+               List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanProgramId == program.PlanProgramId && tactic.IsDeleted == false && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
+               if (tacticList.Count() > 0)
+               {
+                   _isResultError = SetMappingDetails(ref SyncErrors);
+                   if (_isResultError)
+                   {
+                       throw new ClientException("error in field mapping");
+                   }
+                   List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                   CreateCustomFieldIdList(tacticIdList, ref SyncErrors);
+                   foreach (Plan_Campaign_Program_Tactic tactic in tacticList)
+                   {
+                       syncError = (syncError || SyncTactic(tactic, ref SyncErrors));
+                   }
+               }
+               
+               if (syncError){
+                   throw new ClientException("Sycn Error for Program " + program.Title);
+               }
+               else { Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Program", Enums.MessageLabel.Success, "Sync success - Program " + program.Title); }
+            }
+            catch (Exception ex)
+            {
+                syncError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync Program";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            return syncError;
+      }
+
         
         ///<param name="SyncErrors">
         /// error list for tracking
         /// </param>
+       /// <returns>
+       /// Bool: true if sync error, false otherwise
+       /// </returns>
         private bool SyncInstanceTemplates(ref List<SyncError> SyncErrors)
         {
             bool syncError = false;
@@ -439,13 +583,22 @@ namespace Integration.WorkFront
                 db.Entry(instanceLogTactic).State = EntityState.Added;
                 //logging end
 
+                tactic.LastSyncDate = DateTime.Now;
+                tactic.ModifiedDate = DateTime.Now;
+                tactic.ModifiedBy = _userId;
+                db.Entry(tactic).State = EntityState.Modified;
+
+                //program portfolio information -- all programs should be linked to a portfolio in WorkFront
+                
+
                 if (currentMode.Equals(Enums.Mode.Create))
                 {
                     instanceLogTactic.Operation = Operation.Create.ToString();
-                    tactic.LastSyncDate = DateTime.Now;
-                    tactic.ModifiedDate = DateTime.Now;
-                    tactic.ModifiedBy = _userId;
                     string templateToUse = tacticType.WorkFront_Template;
+                    IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
+                    port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt).FirstOrDefault();
+                    if (portfolioInfo == null) { throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); }
+
                     if (templateToUse == null)
                     {
                         throw new ClientException("Tactic Type to Template Mapping Not Found for tactic " + tactic.Title + ".");
@@ -455,25 +608,32 @@ namespace Integration.WorkFront
                     {
                         throw new ClientException("Template " + templateToUse + " not Found in WorkFront");
                     }
-                    JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, groupID = _userGroupID});
+                    string templateID = (string)templateInfo["data"][0]["ID"];
+
+                    //consolidated creation : create project with appropriate template, timeline & place in correct portfolio
+                    JToken project = client.Create(ObjCode.PROJECT, new { name = tactic.Title, templateID = templateID, scheduleMode = 'C', 
+                        plannedCompletionDate = tactic.StartDate, portfolioID = portfolioInfo.PortfolioId, groupID = _userGroupID });
                     if (project == null || !project["data"].HasValues) 
                     { 
                         throw new ClientException("Project Not Created for Tactic " + tactic.Title + "."); 
                     }
+
+                    //Enter information into WorkFront portfolio to project mapping table in database
+                    IntegrationWorkFrontPortfolio_Mapping createdPortfolioProject = new IntegrationWorkFrontPortfolio_Mapping();
+                    createdPortfolioProject.PortfolioTableId = portfolioInfo.Id;
+                    createdPortfolioProject.ProjectId = (string)project["data"]["ID"];
+                    db.Entry(createdPortfolioProject).State = EntityState.Added;
+
                     tactic.IntegrationWorkFrontProjectID = (string)project["data"]["ID"];
                     tactic.IntegrationInstanceTacticId = (string)project["data"]["ID"]; //needed only as place filler for Common.GetMode. Not used elsewhere.
-                    string templateID = (string)templateInfo["data"][0]["ID"];
-                    JToken update = client.Update(ObjCode.PROJECT, new { ID = (string)project["data"]["ID"], action = "attachTemplate", templateID = templateID });
-                    if (update == null) { throw new ClientException("Project created without template for " + tactic.Title + ".");   }
-                    JToken scheduleEdits = JToken.Parse("{scheduleMode:'C', plannedCompletionDate:'" + tactic.StartDate + "'}");
-                    JToken update2 = client.Update(ObjCode.PROJECT, new { id = (string)project["data"]["ID"], updates = scheduleEdits });
-                    if (update2 == null) { throw new ClientException("Project could not be properly scheduled for " + tactic.Title + "."); }
                     tacticError = UpdateTacticInfo(tactic, ref SyncErrors);
                 }
                 else if (currentMode.Equals(Enums.Mode.Update))
                 {
                     instanceLogTactic.Operation = Operation.Update.ToString();
                     tacticError = UpdateTacticInfo(tactic, ref SyncErrors);
+
+                    
                 }
 
                 if (!tacticError) //don't leave a sync comment if it didn't sync
@@ -537,8 +697,34 @@ namespace Integration.WorkFront
             bool updateError = false;
             try
             {
+                StringBuilder updateList = new StringBuilder("{"); //use for update JSON
+
+                IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
+                    port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt).FirstOrDefault();
+                if (portfolioInfo == null) { throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); }
+
+                JToken projectForEdits = client.Search(ObjCode.PROJECT, new { id = tactic.IntegrationWorkFrontProjectID, fields = "portfolioID" });
+                if (projectForEdits == null) { throw new ClientException("Cannot find project for updating in tactic " + tactic.Title); }
+
+                //Ensure projects are under the correct portfolio in WorkFront
+                string workFrontPortfolio = (string) projectForEdits["data"][0]["portfolioID"];
+                if (workFrontPortfolio == null || workFrontPortfolio != portfolioInfo.PortfolioId) //project is not organized into a correct portfolio in WorkFront
+                {
+                    updateList.Append("portfolioID: '" + portfolioInfo.PortfolioId + "',"); //add the correct portfolio information to the updates JSON
+                }
+
+
+                //Ensure mapping is correct in Gameplan
+               IntegrationWorkFrontPortfolio_Mapping existingMap = db.IntegrationWorkFrontPortfolio_Mapping.Where(map => map.ProjectId == tactic.IntegrationWorkFrontProjectID && map.PortfolioTableId==portfolioInfo.Id).FirstOrDefault();
+               if (existingMap == null) //either the mapping doesn't exist, or the project is mapped to the wrong portfolio
+               {
+                   IntegrationWorkFrontPortfolio_Mapping newMap = new IntegrationWorkFrontPortfolio_Mapping();
+                   newMap.ProjectId = tactic.IntegrationWorkFrontProjectID;
+                   newMap.PortfolioTableId = portfolioInfo.Id;
+                   db.Entry(newMap).State = EntityState.Added;
+               }
+
                 //Begin push to WorkFront only sync
-                StringBuilder updateList = new StringBuilder("{");
                 int notUsedFieldCount = 0;
                 var last = _mappingTactic.Last();
                 foreach (var tacticField in _mappingTactic) //create JSON for editing
@@ -571,10 +757,6 @@ namespace Integration.WorkFront
                     {
                         updateList.Append(tacticField.Value + ":'" + tactic.Status + "'");
                     }
-                    //else if (tacticField.Key == Fields.ToStringEnums(Fields.GamePlanFields.CREATEDBY))  --to be added later
-                   // {
-                    //    updateList.Append(tacticField.Value + ":'" + tactic.CreatedBy.ToString() + "'");
-                   // }
                     else if (_customFieldIds.Contains(tacticField.Key))
                     {
                         int keyAsInt;
@@ -635,6 +817,8 @@ namespace Integration.WorkFront
                     }
                 }
                 //End read only sync
+
+               
             }
             catch(Exception ex)
             {
