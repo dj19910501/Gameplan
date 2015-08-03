@@ -67,7 +67,9 @@ namespace RevenuePlanner.Controllers
  				else
                 {
                     // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
-                    int planid = db.Plans.Where(plan => plan.Status == Convert.ToString(Enums.PlanStatus.Published) && !plan.IsDeleted && plan.Year == Convert.ToString(DateTime.Now.Year)).FirstOrDefault().PlanId;
+                    string published = Convert.ToString(Enums.PlanStatus.Published);
+                    string year = Convert.ToString(DateTime.Now.Year);
+                    int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).FirstOrDefault().PlanId;
                     Sessions.ReportPlanIds.Add(planid);
                 }
             //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
@@ -143,8 +145,8 @@ namespace RevenuePlanner.Controllers
                 objYear.Selected = year == selectedYear ? true : false;
                 lstYear.Add(objYear);
             }
-            SelectListItem thisQuarter = new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString() };
-            lstYear.Add(thisQuarter);
+           // SelectListItem thisQuarter = new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString() };
+           // lstYear.Add(thisQuarter);
 
 
             ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
