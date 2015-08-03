@@ -47,9 +47,7 @@
         </div>
 
     </div>
-    <div class="paging" id="page_navigation">
 
-    </div>
     <input type='hidden' id='current_page' />
     <input type='hidden' id='show_per_page' />
     <div class="search">
@@ -60,7 +58,11 @@
 
 </div>
 <div id="dvCardSectionData"></div>
+<div class="card-pagination">
+    <div class="paging" id="page_navigation" style="width:100%">
+    </div>
 
+</div>
 <script type="text/javascript">
     var SearchVal = [];
     var number_of_pages;
@@ -445,6 +447,13 @@
     }
 
     function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg) {
+        var _BackFwdVar = {
+            BackParentLabel: parentlabel,
+            BackChildLabel: Type,
+            BackId: id,
+            HeadHireachy: decodeURIComponent(HeadTitleval)
+        }
+        BackFwdConverstionList.push(_BackFwdVar);
 
         var HeadTitle = document.getElementById('head-title');
 
@@ -706,9 +715,29 @@
         var number_of_items = '@TotalRecords';
         //calculate the number of pages we are going to have
         number_of_pages = Math.ceil(number_of_items / show_per_page);
+        var NumberOfArray = Math.ceil(number_of_pages / 6);
+        var SeriresofNum = new Array();
+        var x = 0;
+        for (var i = 0; i < NumberOfArray; i++) {
+            var ser = "";
+            var count = 0;
+            for (var j = x; j < (x + 5) ; j++) {
+                ser += i + j + ",";
+                count++;
+            }
+            ser += i + j;
+            x += count;
+            SeriresofNum.push(ser);
+        }
 
+        Array.min = function (array) {
+            return Math.min.apply(Math, array);
+        };
+        Array.max = function (array) {
+            return Math.max.apply(Math, array);
+        };
         //set the value of our hidden input fields
-        $('#current_page').val(0);
+        $('#current_page').val('@CurrentPageNum');
         $('#show_per_page').val(show_per_page);
 
         var navigation_html = '<ul> <li><a href="javascript:previous();">«</a> </li>';
@@ -726,13 +755,40 @@
         //add active_page class to the first page link
         //$('#page_navigation .page_link:first').addClass('active');
 
+        if (typeof RevIsnextprev == 'undefined') {
         for (var i = 0; i <= number_of_pages; i++) {
             $('.page_link[longdesc=' + i + ']').css('display', 'none');
         }
         for (var j = 0; j <= 5; j++) {
             $('.page_link[longdesc=' + j + ']').css('display', 'block');
         }
+        }
+        else {
+            @*for (var i = 0; i <= number_of_pages; i++) {
+                $('.page_link[longdesc=' + i + ']').css('display', 'none');
+            }
+            for (var j = '@CurrentPageNum'; j <= parseInt('@CurrentPageNum') + 5; j++) {
+                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+            }*@
+            for (var i = 0; i <= number_of_pages; i++) {
+                $('.page_link[longdesc=' + i + ']').css('display', 'none');
+            }
+            for (var i = 0; i < NumberOfArray; i++) {
 
+                var PageSeries = SeriresofNum[i].split(',');
+                if (PageSeries.indexOf("@CurrentPageNum") > -1) {
+                    var minimum = Array.min(PageSeries);
+                    var maximum = Array.max(PageSeries);
+                    for (var j = minimum; j <= maximum; j++) {
+                        if (j <= number_of_pages) {
+                            $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        RevIsnextprev = false;
         $('.page_link[longdesc=' + '@CurrentPageNum' + ']').addClass('active').siblings('.active').removeClass('active');
         ////hide all the elements inside content div
         //$('#dvCardSectionData').children().css('display', 'none');
@@ -743,15 +799,16 @@
     }
 
     function previous() {
-        var pageNumber = '@CurrentPageNum';
+        //alert('Previous');
         //var pageNumber = parseInt($('#current_page').val());
-
+        var pageNumber = '@CurrentPageNum';
+        //new_page = parseInt($('#current_page').val()) - 1;
         new_page = parseInt(pageNumber) - 1;
         //if there is an item before the current active link run the function
         if ($('.active').prev('.page_link').length == true) {
-            if (number_of_pages >= 6 && (pageNumber) < number_of_pages && ((pageNumber) / 6) % 1 === 0) {
-
-                PrevNextMorePage(pageNumber, 'prev');
+            if (number_of_pages >= 6 && (parseInt(pageNumber)) < number_of_pages && ((parseInt(pageNumber)) / 6) % 1 === 0) {
+                RevIsnextprev = true;
+                PrevNextMorePage(parseInt(pageNumber), 'prev');
             }
             go_to_page(new_page);
         }
@@ -760,21 +817,26 @@
 
     function next() {
 
+        //alert('Next');
+
         //var pageNumber = parseInt($('#current_page').val());
         var pageNumber = '@CurrentPageNum';
+        //new_page = parseInt($('#current_page').val()) + 1;
         new_page = parseInt(pageNumber) + 1;
         //if there is an item after the current active link run the function
         if ($('.active').next('.page_link').length == true) {
-            if (number_of_pages >= 6 && (pageNumber + 1) < number_of_pages && ((pageNumber + 1) / 6) % 1 === 0) {
-
-                PrevNextMorePage(pageNumber, 'next');
+            if (number_of_pages >= 6 && (parseInt(pageNumber) + 1) < number_of_pages && ((parseInt(pageNumber) + 1) / 6) % 1 === 0) {
+                RevIsnextprev = true;
+                PrevNextMorePage(parseInt(pageNumber), 'next');
             }
             go_to_page(new_page);
         }
 
     }
     function go_to_page(page_num) {
-
+        if (RevIsnextprev == false) {
+            IsGotoPage = true;
+        }
         //get the number of items shown per page
         var show_per_page = parseInt($('#show_per_page').val());
 
@@ -785,7 +847,7 @@
         end_on = start_from + show_per_page;
 
         //hide all children elements of content div, get specific items and show them
-        $('#dvCardSectionData').children().css('display', 'none').slice(start_from, end_on).css('display', 'block');
+        //$('#dvCardSectionData').children().css('display', 'none').slice(start_from, end_on).css('display', 'block');
 
         /*get the page link that has longdesc attribute of the current page and add active_page class to it
         and remove that class from previously active page link*/
@@ -797,7 +859,7 @@
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
-        var SearchString = $('#txtSearch').val();
+        // var SearchString = $('#txtSearch').val();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
     }
@@ -805,7 +867,7 @@
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
-        var SearchString = $('#txtSearch').val();
+        //var SearchString = $('#txtSearch').val();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
@@ -917,7 +979,7 @@
         var divCardSection = $("#dvCardSectionData");
         divCardSection.html('');
         divCardSection.html(cardhtml);
-        LoadPagination();
+        //LoadPagination();
 
     }
     function SortByCard(name) {
@@ -937,7 +999,7 @@
         var sortBy = $("#ddlSortby :selected").text();
         //alert(sortBy);
         //myApp.showPleaseWait();
-        var SearchString = $('#txtSearch').val();
+        //var SearchString = $('#txtSearch').val();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
@@ -951,7 +1013,7 @@
 
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
-        var SearchString = $('#txtSearch').val();
+        SearchString = $('#txtSearch').val();
         //myApp.showPleaseWait();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);

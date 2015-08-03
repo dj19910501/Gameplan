@@ -61,10 +61,11 @@
         </div>
         <div class="projected disable-gray" style="height: 88px">
             @*#1420 added by dashrath Prajalapti*@
-            <span>Goal</span> @*#1378 Added by dashrath Prajapati*@
+            <span>Projected</span> @*#1378 Added by dashrath Prajapati*@
             <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
+            <span id="mqlProjectedPercentages"></span>
             @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
-            <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: block;padding: 0 5px;">@_mqllabel</p> @*#1378 Added by dashrath Prajapati*@
+            @* <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: block;padding: 0 5px;">@_mqllabel</p> #1378 Added by dashrath Prajapati*@
         </div>
         <div class="time-frame">
             <div class="geography-dropdown">
@@ -138,13 +139,24 @@
     var campaignId = $('#ddlCampaignConversionToPlan').val();
     var OptionMain = '';
     var tempMqlHeader = [];
+    var BackFwdConverstionList = [];
+    var RevIsnextprev = false;
+    var IsGotoPage = true;
     $(document).ready(function () {
         var BtnBack = document.getElementById('BtnBack');
         BtnBack.style.display = "none";
+        var _BackFwdVar = {
+            BackParentLabel: '@Common.RevenueCampaign',
+            BackChildLabel: '',
+            BackId: '',
+            HeadHireachy: 'Waterfall'
+        }
+        BackFwdConverstionList.push(_BackFwdVar);
 
+        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
         OptionMain = '@ViewBag.Convoption';
         var HeadTitle = document.getElementById('head-title');
-        HeadTitle.innerHTML = '@TempData["ConvHeadTitle"]';
+        HeadTitle.innerHTML = _BackHeadValues.HeadHireachy;
         $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
 
         $("html, body").animate({ scrollTop: 0 }, 1000);//scroll up when page get from overview by click on detail button of convesrion section- Dashrath prajapati
@@ -173,22 +185,28 @@
             CustomProgramName: "@Common.ProgramCustomTitle",
             CustomTacticName: "@Common.TacticCustomTitle"
         });
-        var _MqlGoal = '@revenue_Projected_Goal.Goal';
+        @*var _MqlGoal = '@revenue_Projected_Goal.Goal';
         var _MqlActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _MqlPercentage = '@revenue_Projected_Goal.Percentage';
-        var _MqlisNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';
+        var _MqlisNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
+        var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _revProjected = '@revenue_Projected_Goal.Projected';
+        @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
+        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+        var _revGoalYTD = '@revenue_Projected_Goal.GoalYTD';
+        var _revGoalYear = '@revenue_Projected_Goal.GoalYear';
+        var _revActualPercentage = '@revenue_Projected_Goal.ActualPercentage';
+        var _revProjectedPercentage = '@revenue_Projected_Goal.ProjectedPercentage';
+        var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
+        var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
 
-        tempMqlHeader.push({
-            ActualProjected: _MqlActual_Projected.toString(),
-            Goal: _MqlGoal.toString(),
-            Percentage: _MqlPercentage.toString(),
-            IsNegative: _MqlisNegativePercentage.toString().toLowerCase()
-        });
-        formatHeaderValues(_MqlActual_Projected, _MqlGoal, _MqlPercentage, _MqlisNegativePercentage);
+
+        formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
     });
 
     // Load header data
-    LoadHeaderData();
+    //LoadHeaderData();
     function LoadHeaderData() {
         $.ajax({
             type: 'POST',
@@ -379,6 +397,15 @@
             DrpChange = 'true';
             Type = '';
             id = _childValue;
+
+            BackFwdConverstionList.length = 0;
+            var _BackFwdVar = {
+                BackParentLabel: parentlabel,
+                BackChildLabel: '',
+                BackId: id,
+                HeadHireachy: 'Waterfall'
+            }
+            BackFwdConverstionList.push(_BackFwdVar);
         }
         // + "&DrpChange=" + (isParentChng == true) ? 'true' : 'CampaignDrp'
         var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
@@ -500,7 +527,16 @@
     $("#ddlConversionTimeFrame").change(function () {
         AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
         Qurt_Month = AllocatedBy;
-        LoadConversionData();
+        AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
+        Qurt_Month = AllocatedBy;
+        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+        var parentlabel = _BackHeadValues.BackParentLabel;
+        var Type = _BackHeadValues.BackChildLabel;
+        var id = _BackHeadValues.BackId;
+        var Code = $("#ddlINQToPlan").val();
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
+        $("#dvConversionToPlan").load(_url);
+        //LoadConversionData();
     });
 
 
@@ -534,14 +570,14 @@
 
         var _childid = $("#ddlTopChildConversionToPlan").val();
         var tacticId = $("#ddlTacticConversionToPlan").val();
-        var parentlabel = $("#ddlParentConversionSummery option:selected").val()
+       // var parentlabel = $("#ddlParentConversionSummery option:selected").val()
         var Type = '';
-        var Code = '';
+      //  var Code = '';
         Code = _Code;
-        var id = '';
+       // var id = '';
         id = _childid;
         //
-        if (tacticId > 0) {
+        @*if (tacticId > 0) {
             id = tacticId;
             Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
 
@@ -555,8 +591,11 @@
             Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
             id = campaignId.toString();
 
-        }
-        
+        }*@
+        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+        var parentlabel = _BackHeadValues.BackParentLabel;
+        var Type = _BackHeadValues.BackChildLabel;
+        var id = _BackHeadValues.BackId;
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
         $("#dvConversionToPlan").load(_url);
         @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
@@ -611,6 +650,15 @@
         id = _childValue;
         var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
         var Qurt_MonthConv = AllocatedByConv;
+
+        BackFwdConverstionList.length = 0;
+        var _BackFwdVar = {
+            BackParentLabel: parentlabel,
+            BackChildLabel: '',
+            BackId: id,
+            HeadHireachy: 'Waterfall'
+        }
+        BackFwdConverstionList.push(_BackFwdVar);
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&DrpChange=" + DrpChange;
         $("#dvConversionToPlan").load(_url);
         @*$.ajax({
@@ -886,31 +934,51 @@
             previousOption = this.value;
         });
     });
-    function formatHeaderValues(_revActual_Projected, _revGoal, _revPercentage, _isNegativePercentage) {
+    function formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative) {
         @*var _revGoal = '@revenue_Projected_Goal.Goal';
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _revPercentage = '@revenue_Projected_Goal.Percentage';
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
-
+        //<p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
+        //    <span id="mqlProjectedPercentages"></span>
         var _formtPercentage = "0";
         $("#mqlActuals").popover('destroy');
         $("#mqlProjecteds").popover('destroy');
+
         setBootstrapTooltip("#mqlActuals", _revActual_Projected, 5, true);
-        setBootstrapTooltip("#mqlProjecteds", _revGoal, 5, true);
-        if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+        setBootstrapTooltip("#mqlProjecteds", _revProjected, 5, true);
+
+
+        if (_revActualPercentage == null || _revActualPercentage == 'undefined' || _revActualPercentage == '' || _revActualPercentage == 'NaN' || _revActualPercentage == '-NaN') {
             _formtPercentage = "0";
             $("#mqlActualPercentages").removeClass("greenLabel").removeClass("redLabel");
         }
         else {
-            if (_isNegativePercentage.toLowerCase() == 'true') {
-                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+            if (_revActualPercentageIsnegative.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revActualPercentage)), true);
                 $("#mqlActualPercentages").removeClass("greenLabel").addClass("redLabel");
             }
             else {
-                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revActualPercentage)), true);
                 $("#mqlActualPercentages").removeClass("redLabel").addClass("greenLabel");
             }
         }
         $("#mqlActualPercentages").html(_formtPercentage);
+
+        if (_revProjectedPercentage == null || _revProjectedPercentage == 'undefined' || _revProjectedPercentage == '' || _revProjectedPercentage == 'NaN' || _revProjectedPercentage == '-NaN') {
+            _formtPercentage = "0";
+            $("#mqlProjectedPercentages").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (_revProjectedPercentageIsnegative.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revProjectedPercentage)), true);
+                $("#mqlProjectedPercentages").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revProjectedPercentage)), true);
+                $("#mqlProjectedPercentages").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $("#mqlProjectedPercentages").html(_formtPercentage);
     }
 </script>
