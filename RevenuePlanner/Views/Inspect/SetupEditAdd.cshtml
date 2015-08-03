@@ -250,7 +250,6 @@
 
     ///tactic
     $('.dropdown_new_btn').click(function () {
-        debugger;
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
         $('.dropdown_new_btn').removeAttr("id", "test1");
@@ -262,8 +261,7 @@
         $prevtext = '';
     });
 
-    $(document).keypress(function (e) {
-        debugger;
+    $("#test1").keypress(function (e) {
         var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
         var $this = $('#test').find('.top_spacing_geography');
 
@@ -271,19 +269,15 @@
         var cur_check = '';
         cur_check = selectbox_keys + theChar.toLowerCase();
 
-        $this.find(".trdropdownhover").each(function () {
-            debugger;
+        $this.find(".trdropdownhover").each(function () {         
             var p = $(this).find('p');
             var text = jQuery(p).text().toLowerCase();
-            if ($prevtext == '' || cur_check.length > 1) {
-                debugger;
-                if (text.indexOf(cur_check) == 0) {
-                    debugger;
+            if ($prevtext == '' || cur_check.length > 1) {            
+                if (text.indexOf(cur_check) == 0) {                 
                     $prevtext = text;
                     if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
                         $($_prevdata).parent().removeClass('setfocusTr');
-                    }
-                    debugger;
+                    }                
                     $_prevdata = jQuery(this);
                     $nextdata = jQuery(this);
                     $nextdata.addClass('setfocusTr');
@@ -297,14 +291,12 @@
                 var _nextdatas = '';
                 _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
                 var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
-                $.each(_nextdatas, function (key, value) {
-                    debugger;
+                $.each(_nextdatas, function (key, value) {                  
                     var _anchor = $(value).find('p');
                     var _atext = $(_anchor).text().toLowerCase();
 
                     //// Compare current "li" anchor text is with previous selected anchor text.
-                    if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                        debugger;
+                    if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {                    
                         $prevtext = _atext; // set previous text variable with selected text.
                         $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
                         $_prevdata = jQuery(this);
@@ -317,11 +309,9 @@
                     }
                 });
                 /// find search_text from start of the dropdown list.
-                if (cntr == 0) {
-                    debugger;
+                if (cntr == 0) {                   
                     _nextdatas = $('#test').find('.top_spacing_geography').find('tr'); //$('.tbodycampaignprogram').nextAll('tr');
-                    $.each(_nextdatas, function (key, value) {
-                        debugger;
+                    $.each(_nextdatas, function (key, value) {                        
                         var _anchor = $(value).find('p');
                         var _atext = $(_anchor).text().toLowerCase();
 
@@ -343,8 +333,7 @@
                 }
             }
         });
-        if ($nextdata != -1) {
-            debugger;
+        if ($nextdata != -1) {           
             $nextdata.removeClass('trdropdownhover');
             // $("trdropdownhover", $this).removeClass('trdropdownhover');
             $nextdata.addClass('trdropdownhover').focus();
@@ -359,6 +348,7 @@
         e.stopPropagation();
         return false;
     });
+
     var hdnYear;
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.

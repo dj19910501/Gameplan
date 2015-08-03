@@ -466,6 +466,7 @@
                 $('#slidepanel-container').load(url + '?ModelId=' + lastModelId);
                 $("#slidepanel").css("right", "0px");
             }
+            $("#slidepanel").css("Style", "display: none;");
         });
 
         $(document).on('click', '#table_tactics tbody tr td span.circle-check-icon-gray', function (e) {
