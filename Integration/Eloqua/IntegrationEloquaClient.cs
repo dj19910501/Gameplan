@@ -496,8 +496,6 @@ namespace Integration.Eloqua
                     return true;
                 }
 
-                
-
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
                 _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
@@ -540,6 +538,7 @@ namespace Integration.Eloqua
         /// </summary>
         private void SyncInstanceData()
         {
+            int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
             string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
             StringBuilder sbMessage;
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
@@ -547,14 +546,9 @@ namespace Integration.Eloqua
             SetMappingEloquaFolderIdsPlanId(planIds);
             try
             {
-                int page = 0;
-                int total = 0;
-                int pageSize = 10;
-                int maxpage = 0;
-
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
                 List<Plan_Improvement_Campaign_Program_Tactic> IMPtacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
-                if (tacticList.Count() > 0 || IMPtacticList.Count() > 0)
+                if (tacticList.Count > 0 || IMPtacticList.Count > 0)
                 {
                   _isResultError=  SetMappingDetails();
                   if (_isResultError)
@@ -563,88 +557,75 @@ namespace Integration.Eloqua
                   }
                 }
 
-                if (tacticList.Count() > 0)
+                if (tacticList.Count > 0)
                 {
-                    // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
-                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-                    CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                    // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                    page = 0;
-                    total = tacticList.Count();
-                    maxpage = (total / pageSize);
-                    List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
-                    while (page <= maxpage)
+                    try
                     {
-                        lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
-                        lstPagedlistTactic = tacticList.Skip(page * pageSize).Take(pageSize).ToList();
-                        using (var scope = new TransactionScope())
+                        // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                        List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                        _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+                        CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                        // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + tacticList.Count);
+                        sbMessage = new StringBuilder();
+
+                        for (int index = 0; index < tacticList.Count; index++)
                         {
-                            sbMessage = new StringBuilder();
+                            tacticList[index] = SyncTacticData(tacticList[index], ref sbMessage);
 
-                            for (int index = 0; index < lstPagedlistTactic.Count; index++)
+                            // Save 10 log records to Table.
+                            if (((index + 1) % logRecordSize) == 0)
                             {
-                                lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
-
-                                // Save 10 log records to Table.
-                                if (((index + 1) / pageSize).Equals(1))
-                                {
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                    sbMessage = new StringBuilder();
-                                }
-                            }
-                            if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                            {
-                                // Save remaining log records to Table.
                                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                sbMessage = new StringBuilder();
                             }
-                            db.SaveChanges();
-                            scope.Complete();
                         }
-                        page++;
+                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                        {
+                            // Save remaining log records to Table.
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        }
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                        string exMessage = Common.GetInnermostException(ex);
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Eloqua: " + exMessage);
                     }
                 }
 
-
-                if (IMPtacticList.Count() > 0)
+                if (IMPtacticList.Count > 0)
                 {
-                    page = 0;
-                    total = IMPtacticList.Count();
-                    maxpage = (total / pageSize);
-                    List<Plan_Improvement_Campaign_Program_Tactic> lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of ImprovementTactics: " + total);
-                    while (page <= maxpage)
+                    try
                     {
-                        lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
-                        lstPagedlistIMPTactic = IMPtacticList.Skip(page * pageSize).Take(pageSize).ToList();
-                        using (var scope = new TransactionScope())
+                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of ImprovementTactics: " + IMPtacticList.Count);
+                        sbMessage = new StringBuilder();
+
+                        for (int index = 0; index < IMPtacticList.Count; index++)
                         {
-                            sbMessage = new StringBuilder();
+                            IMPtacticList[index] = SyncImprovementData(IMPtacticList[index], ref sbMessage);
 
-                            for (int index = 0; index < lstPagedlistIMPTactic.Count; index++)
+                            // Save 10 log records to Table.
+                            if (((index + 1) % logRecordSize) == 0)
                             {
-                                lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index], ref sbMessage);
-
-                                // Save 10 log records to Table.
-                                if (((index + 1) / pageSize).Equals(1))
-                                {
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                    sbMessage = new StringBuilder();
-                                }
-                            }
-                            if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                            {
-                                // Save remaining log records to Table.
                                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                sbMessage = new StringBuilder();
                             }
-                            db.SaveChanges();
-                            scope.Complete();
                         }
-                        page++;
+                        if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                        {
+                            // Save remaining log records to Table.
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                        }
+                        db.SaveChanges();
+                    }
+                    catch (Exception ex)
+                    {
+                       string exMessage = Common.GetInnermostException(ex);
+                       Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing ImprovementTactic data to Eloqua: " + exMessage);
                     }
                 }
-
             }
             catch (Exception e)
             {
