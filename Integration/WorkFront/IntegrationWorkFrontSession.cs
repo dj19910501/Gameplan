@@ -156,7 +156,11 @@ namespace Integration.WorkFront
                 this._companyName = companyname;
                 this._apiURL = url;
                 doLogin_Authentication();
-                _isResultError = false;
+                if (isAuthenticated()) 
+                { 
+                    _isResultError = false;
+                }
+                else { _isResultError = true; }
                 
             }
             catch(Exception ex)
@@ -181,9 +185,11 @@ namespace Integration.WorkFront
                 _userGroupID = _user["data"].Value<string>("homeGroupID");
                 _isAuthenticated = true;
             }
-            catch
+            catch (Exception ex)
             {
                 _isAuthenticated = false;
+                _errorMessage = ex.Message;
+                Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Tactic", Enums.MessageLabel.Success, "Authentication Failure : " + ex.Message);
             }
           
         }

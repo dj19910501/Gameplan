@@ -75,8 +75,10 @@ namespace Integration.WorkFront
                         return ReadResponse(responseStream);
                     }
                 }
-
-
+            }
+            catch (UriFormatException)
+            {
+                throw new ClientException("Invalid URL. Please ensure the company name matches the name in the WorkFront URL.");
             }
             catch (Exception)
             {
