@@ -10318,6 +10318,10 @@ namespace RevenuePlanner.Controllers
             CardSectionModel cardModel = new CardSectionModel();
         #endregion
             cardModel.TotalRecords = objCardSectionList.Count();
+            if (!string.IsNullOrEmpty(SearchString))
+            {
+                cardModel.TotalRecords = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).Count();
+            }
             if (SortBy == Enums.SortByRevenue.Cost.ToString())
             {
                 objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.CostCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
@@ -10332,10 +10336,7 @@ namespace RevenuePlanner.Controllers
                 //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
             cardModel.CardSectionListModel = objCardSectionList;
-            if (!string.IsNullOrEmpty(SearchString))
-            {
-                cardModel.TotalRecords = objCardSectionList.Count();
-            }
+            
             cardModel.CuurentPageNum = PageNo;
             return cardModel;
         }
@@ -10510,23 +10511,23 @@ namespace RevenuePlanner.Controllers
             ViewBag.ConvchildlabelType = Common.RevenueCampaign;
             ViewBag.ConvchildId = 0;
             ViewBag.Convoption = timeFrameOption;
-            #region TempData for Back Button
-            TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
-            TempData["ConvBackChildLabel"] = "";
-            TempData["ConvBackId"] = "";
-            TempData["ConvIsBack"] = "";
-            TempData["ConvHeadHireachy"] = "Waterfall";
-            TempData["ConvHeadTitle"] = "Waterfall";
-            TempData["ConvBackWithCustom"] = Common.RevenueCampaign;
+            //#region TempData for Back Button
+            //TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
+            //TempData["ConvBackChildLabel"] = "";
+            //TempData["ConvBackId"] = "";
+            //TempData["ConvIsBack"] = "";
+            //TempData["ConvHeadHireachy"] = "Waterfall";
+            //TempData["ConvHeadTitle"] = "Waterfall";
+            //TempData["ConvBackWithCustom"] = Common.RevenueCampaign;
 
-            TempData["ConvHeadHireachy"] = string.Empty;
-            TempData["ConvBackParentHireachy"] = string.Empty;
-            TempData["ConvBackChildHireachy"] = string.Empty;
-            TempData["ConvBackHeadTitle"] = string.Empty;
-            TempData["ConvBackIdHireachy"] = string.Empty;
-            TempData["ConvBackDummyId"] = string.Empty;
-            //ViewBag.HeadTitleHearichy = "";
-            #endregion
+            //TempData["ConvHeadHireachy"] = string.Empty;
+            //TempData["ConvBackParentHireachy"] = string.Empty;
+            //TempData["ConvBackChildHireachy"] = string.Empty;
+            //TempData["ConvBackHeadTitle"] = string.Empty;
+            //TempData["ConvBackIdHireachy"] = string.Empty;
+            //TempData["ConvBackDummyId"] = string.Empty;
+            ////ViewBag.HeadTitleHearichy = "";
+            //#endregion
             // End By Nishant Sheth
 
             //// Get list of month display in view
@@ -11329,233 +11330,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Convoption = option;
             List<ProjectedTrendModel> MqlProjected = new List<ProjectedTrendModel>();// Header projected
             List<ActualTrendModel> MqlActual = new List<ActualTrendModel>();
-            #region TempData for Back Button
 
-            if (DrpChange != "CampaignDrp")
-            {
-                #region TempData for Back Button
-                TempData["ConvBackParentLabel"] = Common.RevenueCampaign;
-                TempData["ConvBackChildLabel"] = "";
-                TempData["ConvBackId"] = "";
-                TempData["ConvIsBack"] = "";
-                TempData["ConvHeadHireachy"] = "Waterfall";
-                TempData["ConvHeadTitle"] = "Waterfall";
-                TempData["ConvBackWithCustom"] = Common.RevenueCampaign;
-
-                TempData["ConvHeadHireachy"] = string.Empty;
-                TempData["ConvBackParentHireachy"] = string.Empty;
-                TempData["ConvBackChildHireachy"] = string.Empty;
-                TempData["ConvBackHeadTitle"] = string.Empty;
-                TempData["ConvBackIdHireachy"] = string.Empty;
-                TempData["ConvBackDummyId"] = string.Empty;
-
-                #endregion
-
-            }
-
-            TempData["ConvBackWithCustom"] = ParentLabel;
-
-            string HeadHireachy = TempData["ConvHeadHireachy"] as string;
-            string BackParentHireachy = TempData["ConvBackParentHireachy"] as string;
-            string BackChildHireachy = TempData["ConvBackChildHireachy"] as string;
-            string BackTitleHireachy = TempData["ConvBackHeadTitle"] as string;
-            string BackIdHireachy = TempData["ConvBackIdHireachy"] as string;
-            string BackDummyId = TempData["ConvBackDummyId"] as string;
-            string[] BackParentArray = { };
-            string[] BackChildArray = { };
-            string[] BackIdArray = { };
-            string[] BackDummyArray = { };
-
-            if (DrpChange != "CampaignDrp" || isDetails)
-            {
-                HeadHireachy = HeadHireachy + "," + HttpUtility.HtmlDecode(HttpUtility.HtmlDecode(BackHeadTitle));
-                BackParentHireachy = BackParentHireachy + "," + ParentLabel;
-                BackChildHireachy = BackChildHireachy + "," + childlabelType;
-            }
-
-            string TempDummyid = ((!string.IsNullOrEmpty(ParentLabel) ? ParentLabel.Substring(0, 3) : "Parent") + "-" + (!string.IsNullOrEmpty(childlabelType) ? childlabelType.Substring(0, 3) : "Child") + childId);
-
-            BackDummyId = BackDummyId + "," + TempDummyid;
-
-            BackDummyArray = BackDummyId.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-
-            List<string> dummyids = BackDummyArray.ToList<string>();
-
-            var readdummy = from n in dummyids where n == TempDummyid select new { n };
-            var x = dummyids.GroupBy(s => s).Select(s => new { id = s.Key, count = s.Key.Count() }).ToList().Where(s => s.count == 1 && s.id == TempDummyid).Select(s => s.id).ToList();
-
-
-            if ((!IsBackClick && isDetails) || DrpChange == "true")
-            {
-                BackIdHireachy = BackIdHireachy + "," + childId;
-            }
-
-            BackDummyArray = dummyids.Distinct().ToArray();
-
-            TempData["ConvBackDummyId"] = BackDummyArray;
-
-            TempData["ConvHeadHireachy"] = HeadHireachy;
-            TempData["ConvBackParentHireachy"] = BackParentHireachy;
-            TempData["ConvBackChildHireachy"] = BackChildHireachy;
-            TempData["ConvBackIdHireachy"] = BackIdHireachy;
-
-            string[] HeadHireachyArray = HeadHireachy.Split(',').Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-
-            BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-            BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-            //if (isDetails)
-            BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-
-            if (BackParentArray.Count() > 1)
-            {
-                if (BackIdArray.Count() == 4)
-                {
-                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                }
-                else
-                {
-                    if (BackParentArray[0].Contains(Common.CampaignCustomTitle))
-                    {
-                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                        if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueProgram)
-                        {
-                            TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                        }
-                    }
-                    else
-                    {
-                        TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 2]);
-                    }
-                }
-            }
-            else
-            {
-                TempData["ConvBackParentLabel"] = (BackParentArray.Count() > 0) ? Convert.ToString(BackParentArray[0]) : string.Empty;
-            }
-
-            if (BackChildArray.Count() > 1)
-            {
-                TempData["ConvBackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 2]);
-            }
-            else
-            {
-                TempData["ConvBackChildLabel"] = string.Empty;
-            }
-
-            if (BackIdArray.Count() > 1)
-            {
-                TempData["ConvBackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
-                if (BackIdArray.Count() == 2 && BackParentArray[0].Contains(Common.ProgramCustomTitle) && ParentLabel == Common.RevenueCampaign && childlabelType == Common.RevenueProgram)
-                {
-                    TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
-                }
-            }
-            else
-            {
-                TempData["ConvBackId"] = "0";
-            }
-
-            if (HeadHireachyArray.Count() == 0)
-            {
-                TempData["ConvHeadTitle"] = "Waterfall";
-            }
-            else
-            {
-                TempData["ConvHeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
-            }
-
-
-            if (IsBackClick)
-            {
-                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
-                {
-                    if (BackIdArray.Count() == 3 && childlabelType == Common.RevenueCampaign)
-                    {
-                        TempData["ConvIsDispalyCustomFieldChildDDL"] = true;
-                    }
-                }
-                marsterCustomField = string.Empty;
-                BackParentArray = BackParentHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                BackChildArray = BackChildHireachy.Split(',').Distinct().ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                BackIdArray = BackIdHireachy.Split(',').ToArray().Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                if (BackDummyArray.Count() > 0)
-                {
-                    List<string> y = BackDummyArray.ToList<string>();
-                    y.RemoveAt(BackDummyArray.Count() - 1);
-                    BackDummyArray = y.ToArray();
-                    TempData["ConvBackDummyId"] = string.Join(",", BackDummyArray);
-                }
-
-                if (BackParentArray.Count() > 1)
-                {
-                    List<string> y = BackParentArray.ToList<string>();
-                    y.RemoveAt(BackParentArray.Count() - 1);
-                    BackParentArray = y.ToArray();
-                    TempData["ConvBackParentHireachy"] = string.Join(",", BackParentArray);
-                }
-                if (BackChildArray.Count() > 0)
-                {
-                    List<string> y = BackChildArray.ToList<string>();
-                    y.RemoveAt(BackChildArray.Count() - 1);
-                    BackChildArray = y.ToArray();
-                    TempData["ConvBackChildHireachy"] = string.Join(",", BackChildArray);
-                }
-                if (BackIdArray.Count() > 0)
-                {
-                    List<string> y = BackIdArray.ToList<string>();
-                    //if (BackChildArray[0] != Common.RevenueCampaign && BackChildArray.Count() != 1)
-                    {
-                        y.RemoveAt(BackIdArray.Count() - 1);
-                    }
-                    BackIdArray = y.ToArray();
-                    TempData["ConvBackIdHireachy"] = string.Join(",", BackIdArray);
-                }
-
-                if (BackParentArray.Count() > 1)
-                {
-                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[BackParentArray.Count() - 1]);
-                }
-                else
-                {
-                    TempData["ConvBackParentLabel"] = Convert.ToString(BackParentArray[0]);
-                }
-
-                if (BackChildArray.Count() > 1)
-                {
-                    TempData["ConvBackChildLabel"] = Convert.ToString(BackChildArray[BackChildArray.Count() - 1]);
-                }
-                else
-                {
-                    TempData["ConvBackChildLabel"] = string.Empty;
-                }
-
-                if (BackIdArray.Count() > 1)
-                {
-                    TempData["ConvBackId"] = Convert.ToString(BackIdArray[BackIdArray.Count() - 2]);
-                }
-                else
-                {
-                    TempData["ConvBackId"] = "0";
-                }
-
-                if (HeadHireachyArray.Count() > 0)
-                {
-                    List<string> y = HeadHireachyArray.ToList<string>();
-                    y.RemoveAt(HeadHireachyArray.Count() - 1);
-                    HeadHireachyArray = y.ToArray();
-                    TempData["ConvHeadHireachy"] = string.Join(",", HeadHireachyArray);
-                    if (HeadHireachyArray.Count() == 0)
-                    {
-                        TempData["ConvHeadTitle"] = "Waterfall";
-                    }
-                    else
-                    {
-                        TempData["ConvHeadTitle"] = Convert.ToString(HeadHireachyArray[HeadHireachyArray.Count() - 1]);
-                    }
-                }
-            }
-
-            #endregion
 
             string customFieldOptionIdCardSection = string.Empty;
             int customFieldIdCardSection = 0;
@@ -11890,7 +11665,13 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
-                        MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList).Where(act => act.StageCode.Equals(Enums.Stage.MQL)).ToList();
+                        //MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList).Where(act => act.StageCode.Equals(Enums.Stage.MQL.ToString())).ToList();
+                        List<string> MqlStageList = new List<string>();
+                        MqlStageList.Add(Enums.Stage.MQL.ToString());
+
+                        List<ActualTacticListByStage> MqlTacticStageLsit = GetActualListInTacticInterval(_tacticdata, option, MqlStageList, IsTillCurrentMonth);
+
+                        MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit);
                     }
                     #endregion
                     //cmplete
@@ -11974,6 +11755,10 @@ namespace RevenuePlanner.Controllers
                         if (StageCode != Enums.Stage.MQL.ToString())
                         {
                             MqlProjected = CalculateProjectedTrend(_tacticdata, includeMonth, Enums.Stage.MQL.ToString());
+                        }
+                        else
+                        {
+                            MqlProjected = ProjectedTrendList;
                         }
                     }
                 }
@@ -12189,11 +11974,15 @@ namespace RevenuePlanner.Controllers
             CardSectionModel cardModel = new CardSectionModel();
         #endregion
             cardModel.TotalRecords = objCardSectionList.Count();
-            if (SortBy == Enums.SortByWaterFall.ADS.ToString())
+            if (!string.IsNullOrEmpty(SearchString))
             {
-                objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.ADSCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+                cardModel.TotalRecords = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).Count();
             }
-            else if (SortBy == Enums.SortByWaterFall.CW.ToString())
+            //if (SortBy == Enums.SortByWaterFall.ADS.ToString())
+            //{
+            //    objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.ADSCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
+            //}
+            if (SortBy == Enums.SortByWaterFall.CW.ToString())
             {
                 objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.CWCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
@@ -12208,10 +11997,7 @@ namespace RevenuePlanner.Controllers
                 //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
             cardModel.CardSectionListModel = objCardSectionList;
-            if (!string.IsNullOrEmpty(SearchString))
-            {
-                cardModel.TotalRecords = objCardSectionList.Count();
-            }
+            
             cardModel.CuurentPageNum = PageNo;
             return cardModel;
         }

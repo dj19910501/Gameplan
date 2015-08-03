@@ -219,15 +219,15 @@ namespace RevenuePlanner.Helpers
         {
             INQ,
             MQL,
-            CW,
-            ADS
+            CW
+
         }
         public static Dictionary<string, string> SortByWaterFallDrp = new Dictionary<string, string>()
         {
             {SortByWaterFall.INQ.ToString(), "inqval"},
             {SortByWaterFall.MQL.ToString(), "mqlval"},
-            {SortByWaterFall.CW.ToString(), "cwval"},
-            {SortByWaterFall.ADS.ToString(), "adsval"}
+            {SortByWaterFall.CW.ToString(), "cwval"}
+            //{SortByWaterFall.ADS.ToString(), "adsval"}
             
         };
         // End By Nishant Sheth

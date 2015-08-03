@@ -40,7 +40,7 @@
             <span>Actual</span>
             <span id="revActual_Projected">$1.58M</span>
             <span style="display:none;">Goal (YTD):</span> <span id="revGoalYTD" style="display:none;">0</span>
-            <span id="revActualPercentage" style="display:none;"></span>
+            <span id="revActualPercentage"></span>
         </div>
         <div class="projected disable-gray">
             <span>Projected</span>
@@ -264,18 +264,6 @@
         var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
         var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
 
-        tempRevenueHeader.push({
-            ActualProjected: _revActual_Projected.toString(),
-            //Goal: _revGoal.toString(),
-            revProjected: _revProjected.toString(),
-            //Percentage: _revPercentage.toString(),
-            //IsNegative: _isNegativePercentage.toString().toLowerCase(),
-            revGoalYTD: _revGoalYTD.toString(),
-            revActualPercentage: _revActualPercentage.toString(),
-            revProjectedPercentage: _revProjectedPercentage.toString(),
-            revActualPercentageIsnegative: _revActualPercentageIsnegative.toString().toLowerCase(),
-            revProjectedPercentageIsnegative: _revProjectedPercentageIsnegative.toString().toLowerCase()
-        });
         formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
 
         //var _formtPercentage = "0";
