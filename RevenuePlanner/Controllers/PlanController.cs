@@ -9272,7 +9272,7 @@ namespace RevenuePlanner.Controllers
                                                                                    new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.PlanTacticId),
                                                                                    new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.enddate.ToString("MM/dd/yyyy")),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.totalcost),
+                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("type", "edn"), tactic.totalcost),
 
                                                                                    new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("xmlcontent", "true"), new XAttribute("type", "co"), tactic.tactictypetitle,
                                                                                         tblTacticTypes.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title))),
@@ -9406,7 +9406,7 @@ namespace RevenuePlanner.Controllers
                             //db.SaveChanges();
                         }
                     }
-                    else if (UpdateColumn == "Planned Cost")
+                    else if (UpdateColumn == "Tactic Planned Cost")
                     {
                         if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == id).ToList()).Count() == 0 ||
                                     pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
