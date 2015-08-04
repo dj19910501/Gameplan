@@ -308,6 +308,23 @@ namespace Integration.WorkFront
                         syncError = (syncError || syncProgram(program, ref SyncErrors));
                     }
                 }
+
+                //Retrieves list of all tactics tied to the integrated programs and deployed to integrationtic
+                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => programList.Contains(tactic.Plan_Campaign_Program)  && tactic.IsDeleted == false && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
+                if (tacticList.Count() > 0)
+                {
+                    _isResultError = SetMappingDetails(ref SyncErrors);
+                    if (_isResultError)
+                    {
+                        throw new ClientException("error in field mapping");
+                    }
+                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
+                    CreateCustomFieldIdList(tacticIdList, ref SyncErrors);
+                    foreach (Plan_Campaign_Program_Tactic tactic in tacticList)
+                    {
+                        syncError = (syncError || SyncTactic(tactic, ref SyncErrors));
+                    }
+                }
                 
                 
                 
@@ -434,25 +451,9 @@ namespace Integration.WorkFront
                    db.Entry(objProgramComment).State = EntityState.Added;
                    db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment);
                    //add success message to IntegrationInstanceLogDetails
-                   Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Program", Enums.MessageLabel.Success, "Sync success - Program to Portfolio on " + program.Title);
                 }
                
-               //Retrieves list of all tactics tied to the integrationinstance and deployed to integrationtic
-               List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanProgramId == program.PlanProgramId && tactic.IsDeleted == false && tactic.IsDeployedToIntegration == true && statusList.Contains(tactic.Status)).ToList();
-               if (tacticList.Count() > 0)
-               {
-                   _isResultError = SetMappingDetails(ref SyncErrors);
-                   if (_isResultError)
-                   {
-                       throw new ClientException("error in field mapping");
-                   }
-                   List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).ToList();
-                   CreateCustomFieldIdList(tacticIdList, ref SyncErrors);
-                   foreach (Plan_Campaign_Program_Tactic tactic in tacticList)
-                   {
-                       syncError = (syncError || SyncTactic(tactic, ref SyncErrors));
-                   }
-               }
+               
                
                if (syncError){
                    throw new ClientException("Sycn Error for Program " + program.Title);

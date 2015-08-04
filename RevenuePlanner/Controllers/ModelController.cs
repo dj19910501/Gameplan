@@ -1368,6 +1368,18 @@ namespace RevenuePlanner.Controllers
             if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
             {
                 ViewBag.IsModelIntegrated = true;
+                var intInstanceProjMgmt = objModel.IntegrationInstance4;
+                bool isIntegratedWithWorkFront = false;
+                List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
+                if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString()))
+                {
+                    isIntegratedWithWorkFront = true;
+                }
+                ViewBag.WorkFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
+                                                             modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name)
+                                                 .Select(modelTemplate => new { modelTemplate.TemplateId, modelTemplate.Template_Name }).Distinct().ToList();
+                ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
+                //End addition by Brad Gray for PL#1734
             }
             else
             {
