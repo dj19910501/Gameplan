@@ -4318,7 +4318,7 @@ namespace RevenuePlanner.Helpers
              List<int> customfieldids = customfieldlist.Select(cfl => cfl.CustomFieldId).ToList();
             // Check tacticid exists or not then use concat
             List<int> allentityids = tacticids.Concat(programids).Concat(campaignids).ToList();
-            List<CustomField_Entity> customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId) && allentityids.Contains(cfe.EntityId)).Select(cfe => cfe).ToList();
+            var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId) && allentityids.Contains(cfe.EntityId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
 
 
             var campaigncustomids = customfieldentity.Where(cfe => campaignids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
