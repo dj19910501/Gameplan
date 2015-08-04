@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[IntegrationWorkFrontPortfolios](
 	[PortfolioName] [nvarchar](250) NOT NULL,
 	[PlanProgramId] [int] NOT NULL,
 	[IsDeleted] [bit] NOT NULL,
- CONSTRAINT [PK_IntegrationWorkFrontPortfolios_1] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_IntegrationWorkFrontPortfolios] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -25,15 +25,15 @@ CREATE TABLE [dbo].[IntegrationWorkFrontPortfolios](
 end
 GO
 
-/****** Object:  Table [dbo].[IntegrationWorkFrontPortolio_Mapping]    Script Date: 7/30/2015 3:55:49 PM ******/
-IF (not EXISTS (SELECT * FROM sys.TABLES WHERE name = 'IntegrationWorkFrontPortolio_Mapping'))
+/****** Object:  Table [dbo].[IntegrationWorkFrontPortfolio_Mapping]    Script Date: 7/30/2015 3:55:49 PM ******/
+IF (not EXISTS (SELECT * FROM sys.TABLES WHERE name = 'IntegrationWorkFrontPortfolio_Mapping'))
 begin
-CREATE TABLE [dbo].[IntegrationWorkFrontPortolio_Mapping](
+CREATE TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping](
 	[ID] [int] NOT NULL,
 	[PortfolioTableId] [int] NOT NULL,
 	[ProjectId] [nvarchar](50) NOT NULL,
 	[IsDeleted] [bit] NOT NULL,
- CONSTRAINT [PK_IntegrationWorkFrontPortolio_Mapping] PRIMARY KEY CLUSTERED 
+ CONSTRAINT [PK_IntegrationWorkFrontPortfolio_Mapping] PRIMARY KEY CLUSTERED 
 (
 	[ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
@@ -44,9 +44,9 @@ GO
 IF not exists (SELECT * FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
 	 WHERE CONSTRAINT_NAME ='FK_PortfolioTableId' )
 begin
-ALTER TABLE [dbo].[IntegrationWorkFrontPortolio_Mapping]  WITH CHECK ADD  CONSTRAINT [FK_PortfolioTableId] FOREIGN KEY([PortfolioTableId])
+ALTER TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping]  WITH CHECK ADD  CONSTRAINT [FK_PortfolioTableId] FOREIGN KEY([PortfolioTableId])
 REFERENCES [dbo].[IntegrationWorkFrontPortfolios] ([Id])
-ALTER TABLE [dbo].[IntegrationWorkFrontPortolio_Mapping] CHECK CONSTRAINT [FK_PortfolioTableId]
+ALTER TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping] CHECK CONSTRAINT [FK_PortfolioTableId]
 end
 GO
 
