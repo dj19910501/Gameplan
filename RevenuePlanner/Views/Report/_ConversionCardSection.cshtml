@@ -477,7 +477,7 @@
         var AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         var Code = $("#ddlINQToPlan").val();
-
+        myApp.showPleaseWait();// New
 
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvConversionToPlan").load(_url);

@@ -8950,7 +8950,9 @@ namespace RevenuePlanner.Controllers
                                     {
                                         Title = customfieldoption.Where(cfo => cfo.CustomFieldOptionId == pc.Key.id).FirstOrDefault().title,
                                         CustomFieldOptionid = pc.Key.id,
-                                        planTacticList = pc.Select(c => c.EntityId).ToList()
+                                        planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
+                                              (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
+
                                     }).ToList();
                     }
                     else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())

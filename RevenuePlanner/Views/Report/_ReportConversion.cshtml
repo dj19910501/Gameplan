@@ -299,6 +299,7 @@
     });
 
     function fillProgramDropdown() {
+        myApp.showPleaseWait(); // New
         var id = '';
         campaignId = $('#ddlCampaignConversionToPlan').val();
         if (campaignId > 0) {
@@ -331,6 +332,7 @@
     }
 
     function fillTacticDropdown() {
+        myApp.showPleaseWait();//New
         var id = '';
         var Type = '';
         programId = $('#ddlProgramConversionToPlan').val();
@@ -424,6 +426,9 @@
         // + "&DrpChange=" + (isParentChng == true) ? 'true' : 'CampaignDrp'
         var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
         var Qurt_MonthConv = AllocatedByConv;
+
+        myApp.showPleaseWait();// New
+
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&DrpChange=" + DrpChange;
         $("#dvConversionToPlan").load(_url);
         @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
