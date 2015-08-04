@@ -1791,22 +1791,24 @@ a {
 	width:440px;
     margin-right: -1px;
 	box-shadow:none;*/
-    position: relative; /* edited by KAPIL 140414 - UI Change in Improvement Tactics */
+    /*position: absolute; /* Commented By komal*/
     /*float:none;*/ /* removed by KAPIL 140414 - UI Change in Improvement Tactics */
-    right: -1px;
+   
     /*top:40px;*/ /* removed by KAPIL 140414 - UI Change in Improvement Tactics */
     height: auto;
     width: 400px; /* edited by KAPIL 140414 - UI Change in Improvement Tactics */
     box-shadow: none;
+     margin-right: -2px;
+    
     padding-top: 0; /* Added by KAPIL 140414 - UI Change in Improvement Tactics */
     border: 1px solid #a8a8a8; /* Added by KAPIL 140414 - UI Change in Improvement Tactics */
     border-top: none; /* Added by KAPIL 140414 - UI Change in Improvement Tactics */
 }
 
     .improvement-area .gray-add-container p:first-child {
-        margin: 0 10px;
+        margin: 0 0;
         padding-top: 10px;
-        border-top: 1px solid #A8A8A8;
+        /*border-top: 1px solid #A8A8A8;*/
         font-size: small;
     }
 /* */
@@ -3251,3 +3253,51 @@ a:focus {
     width:90%;
 }
 /* End - Added by Sohel Pathan on 08/12/2014 for PL ticket #993 */
+
+.accordion-header .tipsyclass.cost-data {
+padding-right:17px;
+}
+/*@media (max-width: 1920px) {
+    /*by bheru 29-07-2015*/
+    /*.improvement-area .gray-add-container {
+  right: -402px;
+  top: 40px;
+
+}
+}*/
+@media screen and (max-width: 1600px) {
+    /*by bheru 29-07-2015*/
+    
+}
+@media screen and (max-width: 1441px) {
+    /*by bheru 29-07-2015*/
+    
+}
+  @media screen and (max-width: 1280px) {
+
+        .gray-add-container .text2 {
+            font-size: 14px;
+        }
+
+        .improvement-area .gray-add-container {
+                width: 259.2px;
+            right: -100px;
+                }
+      .improvement-area   .width150px.improvementTotal.total {
+     width: 53px !important;
+    word-break: break-all;
+}
+    .last-col.width100px {
+    width: 80px !important;
+    }
+    .improvement-grid {
+        min-height: 398px;
+    }
+    .improvement-area .width50px.pull-right-assortment {
+        min-width:24px;
+}
+    .improvement-grid-wrapper .add-improvement .total {
+        position: relative;
+    right: -97px;
+    }
+   }

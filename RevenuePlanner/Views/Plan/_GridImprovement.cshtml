@@ -192,18 +192,23 @@
                     LoadClickEvents();
                 }
 
-                loadscript();
+                loadscript(ImprovementTactic.length);
             }
         });
     }
 
     function FillGrayImprovementContainerEmpty() {
-        var $html = '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
+        $("#grayFullContainer").css("display", "block");
+        $('.grey-container-full').css("display", "block");
+        var $html = '<div class=" imp-tatic-content" style="display:block;">' +
+                                          '<div id="imp-tactics" class="gray-add-container border-cf"  style="display:block;">' +
+         '<p class="text1">Adding improvement tactics can boost your planned efforts.</p>' +
                                         '<p class="text2">Add your marketing activities first, then add</br> improvement tactics.' +
                                         'The impact of improvement tactics across Average Deal Size,' +
-                                        'Stage Velocity and Funnel Conversion can be seen here.</p>';
-        var $ContainerImprovement = $('#grayImprovementContainer');
+                                        'Stage Velocity and Funnel Conversion can be seen here.</p></div></div>';
 
+       var $ContainerImprovement = $('#grayFullContainer');
+       $ContainerImprovement.empty();
         $ContainerImprovement.append($html);
     }
 
@@ -227,33 +232,36 @@
         }
 
         $html += '<div class="accordion-header campaign-default">' +
-                       '<a class="accordion-toggle" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId + '" id="divimpTactic" index="0">' +
+                       '<a class="accordion-toggle noborderbottom" data-toggle="collapse" data-id-program="' + ImprovementPlanProgramId + '" id="divimpTactic" index="0">' +
                            '<span class="pull-left width55" id="divPanelImp"><span class="pull-left font-black"></span><span class="font-black underline">Add Improvement Tactic</span></span>' +
                            '<span class="pull-right width50px"><div class="add-icon-old impTactic" data-slidepanel="panel"></div></span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
-                           '<span class="pull-right width150px text-right font-black tipsyclass">$' + 0 + '</span>' +
+                           '<span class="pull-right width150px text-right font-black tipsyclass cost-data">$' + 0 + '</span>' +
                            '<span class="pull-right width100px text-right font-black">&nbsp;</span>' +
                        '</a>' +
                    '</div>';
 
-        $html += '<div class="cf border-cf improvement-activities">' +
-                                '<div class="pull-left first-columns font_size16 border-cf-right suggested-tactics" data-id="1"><span class="cf-arrow">SUGGESTED</span><span class="border-bottom"></span></div>' +
-                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="2"><span class="cf-arrow"><span class="cf-icon ads-icon"></span><span id="spanSuggestedADS">+$0</span></span><span class="border-bottom"></span></div>' +
-                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="3"><span class="cf-arrow"><span class="cf-icon velocity-icon"></span><span id="spanSuggestedCW">+0</span> CWs</span><span class="border-bottom"></span></div>' +
-                                '<div class="pull-left first-columns font_size16" data-id="4"><span class="cf-arrow"><span class="cf-icon conversion-icon"></span><span id="spanSuggestedVelocity">-0</span> DAYS</span><span class="border-bottom"></span></div>' +
+       
+
+        $html += '<div id="impdiv" class="cf border-cf improvement-activities improve-act">' +
+                                '<div class="pull-left first-columns font_size16 border-cf-right suggested-tactics" data-id="1"><span class="cf-arrow">SUGGESTED</span></div>' +
+                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="2"><span class="cf-arrow"><span class="cf-icon ads-icon"></span><span id="spanSuggestedADS">+$0</span></span></div>' +
+                                '<div class="pull-left first-columns font_size16 border-cf-right" data-id="3"><span class="cf-arrow"><span class="cf-icon velocity-icon"></span><span id="spanSuggestedCW">+0</span> CWs</span></div>' +
+                                '<div class="pull-left first-columns font_size16" data-id="4"><span class="cf-arrow"><span class="cf-icon conversion-icon"></span><span id="spanSuggestedVelocity">-0</span> DAYS</span></div>' +
                                 '<div class="pull-right-assortment width50px total"><span class="cf-arrow cf-arrow-blue pull-right"></span></div>' +
 
                             '<div class="total improvementTotal pull-right width100px text-right tipsyclass">' + FormatCommas(programTotal.toString(), false) + '</div>' +
                             '<div class="total improvementTotal pull-right width150px text-right tipsyclass Cost_Improvement_Activities">$' + FormatCommas(costTotal.toString(), false) + '</div>' +
-                            '<div class="total improvementTotal pull-right width100px text-right border-cf-left" id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
-                            '<div class="gray-add-container border-cf" id="grayImprovementContainer"></div>' +
+                            '<div class="total improvementTotal pull-right width100px text-right border-cf-left last-col " id="DivImprovementTotal">' + FormatCommas(mqlTotal.toString(), false) + '</div>' +
+                            //'<div class="gray-add-container border-cf" id="grayImprovementContainer"></div>' +
                             '<div class="grey-container-full" id="grayFullContainer">' +
                                                         '</div>' +
                         '</div>';
-
         var $tableImprovementCampaigns = $('.accordion-campaign > #improvementAccordionGroup');
 
         $tableImprovementCampaigns.append($html);
+
+      
         if (!isImpCount) {
             $(".improvementTotal").each(function () {
                 $(this).css("color", "#D4D4D4");
@@ -298,7 +306,11 @@
             },
             success: function (data) {
                 if (typeof data != 'undefined') {
-                    var $html = '<p class="text1">Executing ';
+                    $("#grayFullContainer").css("display", "block");
+                    $('.grey-container-full').css("display", "block");
+                    var $html = '<div class="imp-tatic-content" style="display:block;">' +
+                                                      '<div id="imp-tactics" class="gray-add-container border-cf" style="display:block;">';
+                     $html += '<p class="text1">Executing ';
                     if (impcount > 1) {
                         $html += 'these improvement tactics';
                     }
@@ -381,10 +393,10 @@
                         $html += '<span id="spanRevenuecostValue" >' + FormatCurrency(costValue.toString(), false) + '</span>' + ' increased';
                     }
 
-                    $html += ' spend.</p>';
+                    $html += ' spend.</p></div></div>';
 
-                    var $ContainerImprovement = $('#grayImprovementContainer');
-
+                    var $ContainerImprovement = $('#grayFullContainer');
+                    $ContainerImprovement.empty();
                     $ContainerImprovement.append($html);
 
                     //Fetch all the row values from the tables
@@ -407,14 +419,23 @@
         return false;
     }
 
-    function loadscript() {
+    function loadscript(ImprovementTacticlength) {
+       
         $('.total .cf-arrow').click(function () {
-            $('.grey-container-full').fadeOut();
+            $("#grayFullContainer").css("display", "block");
+            if (ImprovementTacticlength) {
+                FillGrayImprovementContainer(ImprovementTactic.length);
+            }
+            FillGrayImprovementContainerEmpty();
+           
+            //$('.grey-container-full').fadeOut();
             $('.first-columns').removeClass('active-column');
 
-            if ($('#grayImprovementContainer').css("display") != "block") {
-                $(this).addClass('cf-arrow-blue');
-            }
+            //if ($('#grayFullContainer').css("display") != "block") {
+            //    $('#impdiv').removeClass('improvement-activities');
+            //    $('#impdiv').addClass('impdiv');
+            //    $(this).addClass('cf-arrow-blue');
+            //}
 
             $('.gray-add-container').slideDown(200);
             $("#btnSaveAndContinue").css("display", "block");
@@ -427,6 +448,11 @@
             var dataId = $(this).attr('data-id');
             FillFullContainer(dataId);
             $('.gray-add-container').slideUp();
+
+           // if ($('#grayImprovementContainer').css("display") != "block") {
+                //$('#impdiv').removeClass('impdiv');
+                //$('#impdiv').addClass('improvement-activities');
+           // }
 
             $('.improvement-activities').find('.active-column').each(function () {
                 $(this).removeClass('active-column');
@@ -441,7 +467,6 @@
             $('.grey-container-content > div').fadeIn(200);
         });
     }
-
     function FillFullContainer(dataid) {
         var $html = '';
         if (dataid == 1) {
@@ -452,7 +477,7 @@
                                                '<thead>' +
                                                    '<tr>' +
                                                        '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
-                                                       '<th data-column="2" class="noRightBorder tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
+                                                       '<th data-column="2" class="noRightBorder tacticTable-arrow-icon arrow-bottom cost-arrow" width="9%" sortText="Cost">Cost</th>' +
                                                        '<th data-column="3" class="noRightBorder" width="15%">Projected Revenue Without Tactic</th>' +
                                                        '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected Revenue With Tactic<!--<span class="tacticTable-arrow-icon arrow-bottom"></span> --></th>' +
                                                        '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
@@ -473,7 +498,7 @@
                                              '<thead>' +
                                                  '<tr>' +
                                                      '<th data-column="1" class="left-text">Improvement Tactic Type</th>' +
-                                                     '<th data-column="2" class="tacticTable-arrow-icon arrow-bottom" width="9%" sortText="Cost">Cost</th>' +
+                                                     '<th data-column="2" class=" noRightBorder tacticTable-arrow-icon arrow-bottom cost-arrow" width="9%" sortText="Cost">Cost</th>' +
                                                      '<th data-column="3" class="noRightBorder" width="15%">Projected ADS Without Tactic</th>' +
                                                      '<th data-column="4" class="tacticTable-arrow-icon arrow-bottom" width="17%" sortText="ProjectedRevenueWithTactic">Projected ADS With Tactic</th>' +
                                                      '<th id="defaultSortingId" data-column="5" class="tacticTable-arrow-icon arrow-bottom" width="13%" sortText="ProjectedRevenueLift">Projected Revenue Lift</th>' +
@@ -785,7 +810,7 @@
 
             html += '<thead><tr>' +
                             '<th class="left-text">Improvement Tactic Type</th>' +
-                            '<th class="tacticTable-arrow-icon arrow-bottom" width="9%" data-column="2" sortText="Cost">Cost</th>';
+                            '<th class=" noRightBorder tacticTable-arrow-icon arrow-bottom cost-arrow" width="9%" data-column="2" sortText="Cost">Cost</th>';
 
             if (RecommendedImprovementTacticType.datametriclist.length) {
                 var maxLength = RecommendedImprovementTacticType.datametriclist.length;
@@ -947,7 +972,7 @@
     function LoadScriptForTableRow() {
 
         $("#tableImprovementTypeSuggested").find(".addToPlan span").click(function () {
-            debugger;
+           // debugger;
             if ($(this).hasClass('circle-check-icon-gray')) {
                 // Add in plan
                 $(this).removeClass('circle-check-icon-gray');

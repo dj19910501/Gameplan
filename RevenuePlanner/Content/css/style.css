@@ -7735,7 +7735,7 @@ h2.title-header {
     font-weight: normal;
     padding: 5px 8px;
     padding-left: 15px;
-    border-bottom: 1px solid #c7c7c7;
+    border-bottom: 2px solid #c7c7c7;
     border-right: 2px solid #c7c7c7;
     line-height: 20px;
     font-size: 14px;
@@ -7743,9 +7743,10 @@ h2.title-header {
 }
 
 .grayContent-tacticTable th {
-    vertical-align: bottom;
-    font-family: 'source_sans_probold', Arial;
+   font-family: source_sans_probold;
+    font-size: 15px;
     font-weight: normal;
+    vertical-align: middle;
 }
 
     .grayContent-tacticTable th.noRightBorder, .grayContent-tacticTable td.noRightBorder {
@@ -7802,6 +7803,12 @@ span.circle-check-icon-gray {
 
 /* Added by KAPIL 140414 - UI Change in Improvement Tactics */
 .improvement-activities {
+       /*height: 40px;*/
+    height:auto;
+}
+
+.impdiv
+{
     height: 40px;
 }
 
@@ -10897,7 +10904,7 @@ li.close-list {
 
 #grayImprovementContainer {
     margin-bottom: 50px;
-}
+}*/
 
 .ui-multiselect-single ul li:hover {
     background-color: #0081c2 !important;
@@ -14253,6 +14260,10 @@ div.clue-bottom-default .cluetip-arrows {
     .pop-body-wraper {
         width: 100%;
     }
+    .improvement-area .gray-add-container {
+        right: -1px;
+        top: 0;
+    }
 }
 
 /*Added for #1318*/
@@ -15135,7 +15146,8 @@ font-size: 24px !important;
 }
 
 .improvement-grid {
-      min-height: 620px;
+    /*min-height: 358px;*/
+    /*display: inline-block;*/
     margin-top: 80px !important;
 }
 /*End*/
@@ -15181,6 +15193,7 @@ font-size: 24px !important;
 
 .improvement-grid-wrapper {
     margin-top: 70px;
+    margin-bottom:5px;
 }
     
     .improvement-grid-wrapper .element-disable .gray-title-steps {
@@ -15188,7 +15201,8 @@ font-size: 24px !important;
 }
 
 .improvement-grid-wrapper .element-disable .gray-title-steps .pull-right {
-    margin-right: 40px !important;
+   
+    margin-right: 34px !important;
     padding: 15px 0 0;
    }
 
@@ -15332,3 +15346,76 @@ width: 141px !important;
 }
 
 /* End*/
+	 
+	   .add-improvement .accordion-campaign .cf-arrow {
+     font-family: source_sans_probold;
+}
+       /* bheru 29-7-2015*/
+.improvement-activities.border-cf {
+  border-left: 2px solid #c7c7c7;
+  border-right: 2px solid #c7c7c7;
+  border-top: 2px solid #c7c7c7;
+  margin: 12px 0 0 20px;
+  padding-left: 1px;
+  width: 98%;
+}
+.suggest-tbl.grayContent-tacticTable th, .grayContent-tacticTable.suggest-tbl td {
+      border-bottom: 2px solid #c7c7c7;
+        border-right: 2px solid #c7c7c7;
+}
+.grey-container-full .grey-container-content h2{
+   border-bottom: 2px solid #c7c7c7;
+   border-top: 2px solid #c7c7c7
+}
+.grayContent-tacticTable td[data-column="2"] {
+
+    border-right: none;
+}
+.grayContent-tacticTable td[data-column="5"],.grayContent-tacticTable  th[data-column="5"] {
+
+   background-color: #dff0f8;
+    color: #5693b3;
+}
+.grey-container-full {
+  border-left:none;
+  border-right:none;
+  border-bottom:none;
+}
+.grayContent-tacticTable tr:last-child td {
+border-bottom:none;
+}
+.improvement-activities .border-cf-right {
+  border-right: 2px solid #c7c7c7;
+}
+.grayContent-tacticTable th, .grayContent-tacticTable td {
+ font-family: source_sans_prosemibold;
+    font-size: 15px;
+}
+
+.improve-act {
+margin-left:20px;
+border-top: 1px solid #a8a8a8;
+}
+.arrow-bottom.cost-arrow {
+background-position: right 0 bottom 9px !important;
+}
+.grayContent-tacticTable th {
+  font-family: source_sans_probold;
+}
+.improvement-area .gray-add-container p:first-child {
+  border-top: none;
+
+}
+
+.noborderbottom{
+     border-bottom: medium none !important;
+}
+
+/* bheru 29-7-2015*/
+
+.grey-container-full .imp-tatic-content {
+  float: left;
+  margin-top: -1px;
+  width: 100%;
+  border-top: 1px solid #a8a8a8;
+}
