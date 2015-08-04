@@ -692,8 +692,11 @@
         }
         //navigation_html += '<li id="nextmore">...</li>';
         navigation_html += '<li> <a href="javascript:next();">»</a></li> </ul>';
-
+        if (number_of_items > 0) {
         $('#page_navigation').html(navigation_html);
+        } else {
+            $('#page_navigation').html('');
+        }
 
         //add active_page class to the first page link
         // $('#page_navigation .page_link:first').addClass('active');

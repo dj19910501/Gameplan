@@ -2197,6 +2197,9 @@ namespace RevenuePlanner.Controllers
                 //// check planids selected or not
                 if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 && plan != null)
                 {
+                //// set viewbag to display plan or msg
+                ViewBag.IsPlanExistToShowReport = true;
+
             #region "Declare Local Variables"
             List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
             List<int> campaignlist = new List<int>();
@@ -10040,7 +10043,11 @@ namespace RevenuePlanner.Controllers
             
            
             // End By Nishant Sheth
-
+             //// check planids selected or not
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 )
+            {
+                //// set viewbag to display plan or msg
+                ViewBag.IsPlanExistToShowReport = true;
             //// Get list of month display in view
             ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
             //// get tactic list
@@ -10327,6 +10334,7 @@ namespace RevenuePlanner.Controllers
             objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
             #endregion
             objReportModel.ConversionToPlanModel = objConversionToPlanModel;
+            }
             return PartialView("_ReportConversion", objReportModel);
         }
         #endregion

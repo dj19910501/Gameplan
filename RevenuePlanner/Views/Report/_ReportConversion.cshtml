@@ -3,15 +3,20 @@
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
 @{
+    bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport);
+    if (string.IsNullOrEmpty(Convert.ToString(ViewBag.IsPlanExistToShowReport)))
+    {
+        isPlanExistToShowReport = false;
+    }
 
-    var revenue_Projected_Goal = Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal();
+    var revenue_Projected_Goal = isPlanExistToShowReport == true ? Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal() : new RevenuePlanner.Models.Projected_Goal();
 
-    var conversion_datatableModel = Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty;
-    var conversion_barchartModel = Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty;
-    var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
+    var conversion_datatableModel = isPlanExistToShowReport == true ? Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty : string.Empty;
+    var conversion_barchartModel = isPlanExistToShowReport == true ? Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty : string.Empty;
+    var Conversion_linechartModel = isPlanExistToShowReport == true ? Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty : string.Empty;
     var _mqllabel = Common.GetLabel(Common.StageModeMQL);
 
-    var Conversion_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel(); //card section
+    var Conversion_cardsectionModel = isPlanExistToShowReport == true ? Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel() : new RevenuePlanner.Models.CardSectionModel(); //card section
 
 
     // Add By Nishant Sheth For pagination dropdwon with Enums
@@ -42,88 +47,93 @@
         margin-top: 5px !important;
     }
 </style>
+@Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
 <section class="report-overview-wraper conversion-wrapper">
-    <div class="marketing-revenue-report">
-        <div class="dropdown-marketing" style="width: 323px;">
-            <h2 id="head-title" class="ellipsis-block"></h2>
-            <div class="geography-dropdown" id="div-mareketing-drp">
-                <h5>View By:</h5>
-                <div class="revenue-summary-custom">
-                    @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text"))
+    <div id="DivNoPlanToShowReport" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
+    @if (isPlanExistToShowReport)
+    {
+        <div class="marketing-revenue-report">
+            <div class="dropdown-marketing" style="width: 323px;">
+                <h2 id="head-title" class="ellipsis-block"></h2>
+                <div class="geography-dropdown" id="div-mareketing-drp">
+                    <h5>View By:</h5>
+                    <div class="revenue-summary-custom">
+                        @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text"))
+                    </div>
+                </div>
+                <input type="button" id="BtnBack" class="btn btn-blue text-shadow-blue source-sans-proregular" value="< Back" onclick="javascript:BtnBackClick();" /> @*Add By Nishant Sheth*@
+            </div>
+            <div class="projected disable-gray" style="margin-left: 9px;">
+                <span>Actual</span>
+                <span id="mqlActuals"></span>
+                <span id="mqlActualPercentages"></span>
+            </div>
+            <div class="projected disable-gray" style="height: 88px">
+                @*#1420 added by dashrath Prajalapti*@
+                <span>Projected</span> @*#1378 Added by dashrath Prajapati*@
+                <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
+                <span id="mqlProjectedPercentages"></span>
+                @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
+                @* <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: block;padding: 0 5px;">@_mqllabel</p> #1378 Added by dashrath Prajapati*@
+            </div>
+            <div class="time-frame">
+                <div class="geography-dropdown">
+                    @*<h5>Time frame:</h5>*@
+                    <div class="revenue-summary-custom">
+                        <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
+                            @Html.DropDownList("ddlConversionTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
+                        </span>
+                    </div>
                 </div>
             </div>
-            <input type="button" id="BtnBack" class="btn btn-blue text-shadow-blue source-sans-proregular" value="< Back" onclick="javascript:BtnBackClick();" /> @*Add By Nishant Sheth*@
         </div>
-        <div class="projected disable-gray" style="margin-left: 9px;">
-            <span>Actual</span>
-            <span id="mqlActuals"></span>
-            <span id="mqlActualPercentages"></span>
-        </div>
-        <div class="projected disable-gray" style="height: 88px">
-            @*#1420 added by dashrath Prajalapti*@
-            <span>Projected</span> @*#1378 Added by dashrath Prajapati*@
-            <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
-            <span id="mqlProjectedPercentages"></span>
-            @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
-            @* <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: block;padding: 0 5px;">@_mqllabel</p> #1378 Added by dashrath Prajapati*@
-        </div>
-        <div class="time-frame">
-            <div class="geography-dropdown">
-                @*<h5>Time frame:</h5>*@
-                <div class="revenue-summary-custom">
-                    <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
-                        @Html.DropDownList("ddlConversionTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="revenue-to-plan report-revenue">
-        <div class="geography-dropdown report-revenue-summary" style="line-height:34px;">
-            <h5>Summary</h5>
-            <div class="revenue-summary-custom dropdown-inline">
-                <span>
-                    @Html.DropDownList("ddlINQToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.lstAllocated, "Value", "Text"))
-                </span>
-                <div id="CustomFieldChildDDL" style="display:none;" class="CustomDropdown">
+        <div class="revenue-to-plan report-revenue">
+            <div class="geography-dropdown report-revenue-summary" style="line-height:34px;">
+                <h5>Summary</h5>
+                <div class="revenue-summary-custom dropdown-inline">
                     <span>
-                        @Html.DropDownList("ddlTopChildConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
+                        @Html.DropDownList("ddlINQToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.lstAllocated, "Value", "Text"))
+                    </span>
+                    <div id="CustomFieldChildDDL" style="display:none;" class="CustomDropdown">
+                        <span>
+                            @Html.DropDownList("ddlTopChildConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
+                        </span>
+                    </div>
+                </div>
+                <div id="CampaignChildDDL" class="dropdown-inline">
+                    <span>
+                        @Html.DropDownList("ddlCampaignConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"))
+                    </span>
+                    <span>
+                        @Html.DropDownList("ddlProgramConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"))
+                    </span>
+                    <span>
+                        @Html.DropDownList("ddlTacticConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"))
                     </span>
                 </div>
             </div>
-            <div id="CampaignChildDDL" class="dropdown-inline">
-                <span>
-                    @Html.DropDownList("ddlCampaignConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"))
-                </span>
-                <span>
-                    @Html.DropDownList("ddlProgramConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"))
-                </span>
-                <span>
-                    @Html.DropDownList("ddlTacticConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"))
-                </span>
-            </div>
-        </div>
-        @*<div class="revenue-to-plan-graph">
-            <div class="graph-table" id="dvConvPlan">
-                <div class="table-responsive">
-                    <table class="graph-table">
-                            <tbody id="ConversionToPlanDataTable"></tbody>
-                    </table>
+            @*<div class="revenue-to-plan-graph">
+                <div class="graph-table" id="dvConvPlan">
+                    <div class="table-responsive">
+                        <table class="graph-table">
+                                <tbody id="ConversionToPlanDataTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+                </div>*@
+            <div style="margin:20px;">
+                <div id="dvConversionToPlan">
+                    @Html.Partial("_ConversionToPlan", Model.ConversionToPlanModel)
                 </div>
             </div>
-            </div>*@
-        <div style="margin:20px;">
-            <div id="dvConversionToPlan">
-                @Html.Partial("_ConversionToPlan", Model.ConversionToPlanModel)
-            </div>
+
         </div>
 
-    </div>
 
-
-    <div id="ConversionCardID">
-        @Html.Partial("_ConversionCardSection", Conversion_cardsectionModel)
-    </div>
+        <div id="ConversionCardID">
+            @Html.Partial("_ConversionCardSection", Conversion_cardsectionModel)
+        </div>
+    }
 </section>
 
 
@@ -143,66 +153,70 @@
     var RevIsnextprev = false;
     var IsGotoPage = true;
     $(document).ready(function () {
-        var BtnBack = document.getElementById('BtnBack');
-        BtnBack.style.display = "none";
-        var _BackFwdVar = {
-            BackParentLabel: '@Common.RevenueCampaign',
-            BackChildLabel: '',
-            BackId: '',
-            HeadHireachy: 'Waterfall'
-        }
-        BackFwdConverstionList.push(_BackFwdVar);
+        ShowHideReport();
+        var _isplan = "@isPlanExistToShowReport";
+        if (_isplan.toLowerCase() == 'true') {
+            var BtnBack = document.getElementById('BtnBack');
+            BtnBack.style.display = "none";
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '',
+                BackId: '',
+                HeadHireachy: 'Waterfall'
+            }
+            BackFwdConverstionList.push(_BackFwdVar);
 
-        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
-        OptionMain = '@ViewBag.Convoption';
-        var HeadTitle = document.getElementById('head-title');
-        HeadTitle.innerHTML = _BackHeadValues.HeadHireachy;
-        $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
+            var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+            OptionMain = '@ViewBag.Convoption';
+            var HeadTitle = document.getElementById('head-title');
+            HeadTitle.innerHTML = _BackHeadValues.HeadHireachy;
+            $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
 
-        $("html, body").animate({ scrollTop: 0 }, 1000);//scroll up when page get from overview by click on detail button of convesrion section- Dashrath prajapati
-
-
-        //
-        //start combine chart of bar chart and line chart script
+            $("html, body").animate({ scrollTop: 0 }, 1000);//scroll up when page get from overview by click on detail button of convesrion section- Dashrath prajapati
 
 
-        _parentValue = $('#ddlParentConversionSummery').val();
-        loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
+            //
+            //start combine chart of bar chart and line chart script
 
-        //BindConversionToPlanDataTable();//bind Conversion DataTable function
-        //formatDataTableValues();
-        //formatPercentageValue();
 
-        $("#ddlParentConversionSummery,#ddlTopChildConversionToPlan,#ddlINQToPlan,#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan,#ddlSortby,#Itemsperpage").multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1,
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle"
-        }).multiselectfilter({
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle"
-        });
-        @*var _MqlGoal = '@revenue_Projected_Goal.Goal';
+            _parentValue = $('#ddlParentConversionSummery').val();
+            loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
+
+            //BindConversionToPlanDataTable();//bind Conversion DataTable function
+            //formatDataTableValues();
+            //formatPercentageValue();
+
+            $("#ddlParentConversionSummery,#ddlTopChildConversionToPlan,#ddlINQToPlan,#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan,#ddlSortby,#Itemsperpage").multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            }).multiselectfilter({
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            });
+            @*var _MqlGoal = '@revenue_Projected_Goal.Goal';
         var _MqlActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _MqlPercentage = '@revenue_Projected_Goal.Percentage';
         var _MqlisNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
-        @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
-        var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
-        var _revProjected = '@revenue_Projected_Goal.Projected';
-        @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
+            @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
+            var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+            var _revProjected = '@revenue_Projected_Goal.Projected';
+            @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
-        var _revGoalYTD = '@revenue_Projected_Goal.GoalYTD';
-        var _revGoalYear = '@revenue_Projected_Goal.GoalYear';
-        var _revActualPercentage = '@revenue_Projected_Goal.ActualPercentage';
-        var _revProjectedPercentage = '@revenue_Projected_Goal.ProjectedPercentage';
-        var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
-        var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
+            var _revGoalYTD = '@revenue_Projected_Goal.GoalYTD';
+            var _revGoalYear = '@revenue_Projected_Goal.GoalYear';
+            var _revActualPercentage = '@revenue_Projected_Goal.ActualPercentage';
+            var _revProjectedPercentage = '@revenue_Projected_Goal.ProjectedPercentage';
+            var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
+            var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
 
 
-        formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
+            formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
+        }
     });
 
     // Load header data
@@ -570,11 +584,11 @@
 
         var _childid = $("#ddlTopChildConversionToPlan").val();
         var tacticId = $("#ddlTacticConversionToPlan").val();
-       // var parentlabel = $("#ddlParentConversionSummery option:selected").val()
+        // var parentlabel = $("#ddlParentConversionSummery option:selected").val()
         var Type = '';
-      //  var Code = '';
+        //  var Code = '';
         Code = _Code;
-       // var id = '';
+        // var id = '';
         id = _childid;
         //
         @*if (tacticId > 0) {
@@ -980,5 +994,20 @@
             }
         }
         $("#mqlProjectedPercentages").html(_formtPercentage);
+    }
+    function ShowHideReport() {
+        var _isplan = $('#hdnIsPlanExistToShowReport').val().toLowerCase();
+        if (_isplan == 'true') {
+            $('#DivNoPlanToShowReport').css('display', 'none');
+            //$('#divRevenue').css('display', 'block');
+            //$('#divConversion').css('display', 'block');
+            //$('#divBudgeting').css('display', 'block');
+        }
+        else {
+            $('#DivNoPlanToShowReport').css('display', 'block');
+            //$('#divRevenue').css('display', 'none');
+            //$('#divConversion').css('display', 'none');
+            //$('#divBudgeting').css('display', 'none');
+        }
     }
 </script>

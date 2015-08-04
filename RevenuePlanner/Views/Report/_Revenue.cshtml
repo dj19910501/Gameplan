@@ -8,7 +8,7 @@
     var revenue_cardsectionModel = Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel();
     //var revenue_barchartModel = Model.RevenueToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanBarChartModel) : string.Empty;
     //var revenue_datatableModel = Model.RevenueToPlanDataModel != null ? JsonConvert.SerializeObject(Model.RevenueToPlanDataModel) : string.Empty;
-
+    bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport);   //
 }
 <style type="text/css">
     .redLabel {
@@ -23,99 +23,74 @@
         padding: 20px;
     }
 </style>
+@Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
 <section class="report-overview-wraper">
-
-    <div class="marketing-revenue-report">
-        <div class="dropdown-marketing">
-            <h2 id="head-title" class="ellipsis-block"></h2>
-            <div class="geography-dropdown" id="div-mareketing-drp">
-                <h5>View By:</h5>
+    <div id="DivNoPlanToShowReport" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
+    @if (isPlanExistToShowReport)
+    {
+        <div class="marketing-revenue-report">
+            <div class="dropdown-marketing">
+                <h2 id="head-title" class="ellipsis-block"></h2>
+                <div class="geography-dropdown" id="div-mareketing-drp">
+                    <h5>View By:</h5>
+                    <div class="revenue-summary-custom">
+                        @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text"))
+                    </div>
+                </div>
+                <input type="button" id="BtnBack" class="btn btn-blue text-shadow-blue source-sans-proregular" value="< Back" onclick="javascript:BtnBackClick();" /> @*Add By Nishant Sheth*@
+            </div>
+            <div class="projected disable-gray">
+                <span>Actual</span>
+                <span id="revActual_Projected">$1.58M</span>
+                <span style="display:none;">Goal (YTD):</span> <span id="revGoalYTD" style="display:none;">0</span>
+                <span id="revActualPercentage"></span>
+            </div>
+            <div class="projected disable-gray">
+                <span>Projected</span>
+                <span id="revProjected"></span>
+                <span style="display:none;">Goal:</span> <span id="revGoalYear" style="display:none;">0</span>
+                <span id="revProjectedPercentage"></span>
+            </div>
+            <div class="time-frame">
+                <div class="geography-dropdown">
+                    <div class="revenue-summary-custom ddlQuarter">
+                        <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
+                            @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="revenue-to-plan report-revenue">
+            <div class="geography-dropdown report-revenue-summary" style="line-height:34px;">
+                <h5>Summary</h5>
                 <div class="revenue-summary-custom">
-                    @Html.DropDownList("ddlParentRevenueSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentRevenueSummery, "Value", "Text"))
+                    <div id="CustomFieldChildDDL" style="display:none;">
+                        <span>
+                            @Html.DropDownList("ddlChildRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
+                        </span>
+                    </div>
+                    <div id="CampaignChildDDL">
+                        <span>
+                            @Html.DropDownList("ddlCampaignRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"))
+                        </span>
+                        <span>
+                            @Html.DropDownList("ddlProgramRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"))
+                        </span>
+                        <span>
+                            @Html.DropDownList("ddlTacticRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"))
+                        </span>
+                    </div>
                 </div>
             </div>
-            <input type="button" id="BtnBack" class="btn btn-blue text-shadow-blue source-sans-proregular" value="< Back" onclick="javascript:BtnBackClick();" /> @*Add By Nishant Sheth*@
-        </div>
-        <div class="projected disable-gray">
-            <span>Actual</span>
-            <span id="revActual_Projected">$1.58M</span>
-            <span style="display:none;">Goal (YTD):</span> <span id="revGoalYTD" style="display:none;">0</span>
-            <span id="revActualPercentage"></span>
-        </div>
-        <div class="projected disable-gray">
-            <span>Projected</span>
-            <span id="revProjected"></span>
-            <span style="display:none;">Goal:</span> <span id="revGoalYear" style="display:none;">0</span>
-            <span id="revProjectedPercentage"></span>
-        </div>
-        <div class="time-frame">
-            <div class="geography-dropdown">
-                <div class="revenue-summary-custom ddlQuarter">
-                    <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
-                        @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
-                    </span>
-                </div>
+            <div id="dvRevenueToPlan">
+                @Html.Partial("_RevenueToPlan", revenue_to_planModel)
             </div>
         </div>
-    </div>
-    <div class="revenue-to-plan report-revenue">
-        <div class="geography-dropdown report-revenue-summary" style="line-height:34px;">
-            <h5>Summary</h5>
-            <div class="revenue-summary-custom">
-                <div id="CustomFieldChildDDL" style="display:none;">
-                    <span>
-                        @Html.DropDownList("ddlChildRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
-                    </span>
-                </div>
-                <div id="CampaignChildDDL">
-                    <span>
-                        @Html.DropDownList("ddlCampaignRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"))
-                    </span>
-                    <span>
-                        @Html.DropDownList("ddlProgramRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"))
-                    </span>
-                    <span>
-                        @Html.DropDownList("ddlTacticRevenueToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"))
-                    </span>
-                </div>
-            </div>
+        <div id="dvRevenueCardSection">
+            @Html.Partial("_ReportCardSection", revenue_cardsectionModel)
         </div>
-        <div id="dvRevenueToPlan">
-            @Html.Partial("_RevenueToPlan", revenue_to_planModel)
-        </div>
-    </div>
-
-    @*<div class="revenue-filter">
-        <div class="sorting">
-            <div class="geography-dropdown">
-                <h5>Sort By</h5>
-                <div class="select-sortby">
-                    @Html.DropDownList("ddlSortby", new SelectList(ListSortBy.ToList(), "Value", "Text"))
-                </div>
-            </div>
-            <div class="geography-dropdown">
-                <h5>Items Per Page</h5>
-                <div class="select-item">
-                    @Html.DropDownList("Itemsperpage", new SelectList(ListPageSize.ToList(), "Value", "Text"))
-                </div>
-            </div>
-
-        </div>
-        <div class="paging" id="page_navigation">
-        </div>
-        <input type='hidden' id='current_page' />
-        <input type='hidden' id='show_per_page' />
-        <div class="search">
-            <input id="txtSearch" />
-
-            <button class="search-btn" onclick="SearchByTitle($('#txtSearch').val())" id="btnSearch">search</button>
-        </div>
-
-        </div>*@
-    <div id="dvRevenueCardSection">
-        @Html.Partial("_ReportCardSection", revenue_cardsectionModel)
-    </div>
-
+    }
 </section>
 
 
@@ -184,108 +159,111 @@
     //var BackHeadTitle = "";
     var OptionMain = '';
     $(document).ready(function () {
-        @*BackParentLabel = '@TempData["BackParentLabel"]';
+        ShowHideReport();
+        var _isplan = "@isPlanExistToShowReport";
+        if (_isplan.toLowerCase() == 'true') {
+            @*BackParentLabel = '@TempData["BackParentLabel"]';
         BackChildLabel = '@TempData["BackChildLabel"]';
         BackId = '@TempData["BackId"]';*@
-        var BtnBack = document.getElementById('BtnBack');
-        BtnBack.style.display = "none";
-        var _BackFwdVar = {
-            BackParentLabel: '@Common.RevenueCampaign',
-            BackChildLabel: '',
-            BackId: '',
-            HeadHireachy: 'Marketing Revenue'
-        }
-        BackFwdRevenueList.push(_BackFwdVar);
-
-        var _BackHeadValues = BackFwdRevenueList[BackFwdRevenueList.length - 1];
-        OptionMain = '@ViewBag.option';
-        var HeadTitle = document.getElementById('head-title');
-        HeadTitle.innerHTML = decodeURIComponent(_BackHeadValues.HeadHireachy);
-        $("#head-title").attr('title', '' + decodeURIComponent(HeadTitle.innerHTML) + '');
-        $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1,
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle"
-        }).multiselectfilter({
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle"
-        });
-
-        var _campaignLabel = '@Common.RevenueCampaign';
-
-        $('#ddlParentRevenueSummery').bind('change', function () {
-            var _parentValue = $(this).val();
-            marsterCustomField = _parentValue;
-            // ParentValue selected Campaign label then dispaly Campaigns,Programs,Tactics dropdownlist else single CustomfieldOption dropdownlist.
-            if (_parentValue == _campaignLabel) {
-                $("#CustomFieldChildDDL").css('display', 'none');
-                $("#CampaignChildDDL").css('display', 'block');
-
-                /*Start: Refresh Campaign, Program, Tactic dropdowns*/
-                $("#ddlCampaignRevenueToPlan").val("0");
-                $("#ddlProgramRevenueToPlan").val("0");
-                $("#ddlTacticRevenueToPlan").val("0");
-                $("#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan").multiselect({
-                    multiple: false,
-                    noneSelectedText: "Please Select",
-                    selectedList: 1,
-                    CustomCampaignName: "@Common.CampaignCustomTitle",
-                    CustomProgramName: "@Common.ProgramCustomTitle",
-                    CustomTacticName: "@Common.TacticCustomTitle"
-                }).multiselectfilter({
-                    CustomCampaignName: "@Common.CampaignCustomTitle",
-                    CustomProgramName: "@Common.ProgramCustomTitle",
-                    CustomTacticName: "@Common.TacticCustomTitle"
-                });
-                //$("#ddlCampaignRevenueToPlan").multiselect('refresh');
-                /*End: Refresh Campaign, Program, Tactic dropdowns*/
-
+            var BtnBack = document.getElementById('BtnBack');
+            BtnBack.style.display = "none";
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '',
+                BackId: '',
+                HeadHireachy: 'Marketing Revenue'
             }
-            else {
-                $("#CampaignChildDDL").css('display', 'none');
-                $("#CustomFieldChildDDL").css('display', 'block');
-                loadChildListData(_parentValue, _childRevenueToPlanDDLId);
-            }
-        });
+            BackFwdRevenueList.push(_BackFwdVar);
 
-        @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
-        var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
-        var _revProjected = '@revenue_Projected_Goal.Projected';
-        @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
+            var _BackHeadValues = BackFwdRevenueList[BackFwdRevenueList.length - 1];
+            OptionMain = '@ViewBag.option';
+            var HeadTitle = document.getElementById('head-title');
+            HeadTitle.innerHTML = decodeURIComponent(_BackHeadValues.HeadHireachy);
+            $("#head-title").attr('title', '' + decodeURIComponent(HeadTitle.innerHTML) + '');
+            $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            }).multiselectfilter({
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            });
+
+            var _campaignLabel = '@Common.RevenueCampaign';
+
+            $('#ddlParentRevenueSummery').bind('change', function () {
+                var _parentValue = $(this).val();
+                marsterCustomField = _parentValue;
+                // ParentValue selected Campaign label then dispaly Campaigns,Programs,Tactics dropdownlist else single CustomfieldOption dropdownlist.
+                if (_parentValue == _campaignLabel) {
+                    $("#CustomFieldChildDDL").css('display', 'none');
+                    $("#CampaignChildDDL").css('display', 'block');
+
+                    /*Start: Refresh Campaign, Program, Tactic dropdowns*/
+                    $("#ddlCampaignRevenueToPlan").val("0");
+                    $("#ddlProgramRevenueToPlan").val("0");
+                    $("#ddlTacticRevenueToPlan").val("0");
+                    $("#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan").multiselect({
+                        multiple: false,
+                        noneSelectedText: "Please Select",
+                        selectedList: 1,
+                        CustomCampaignName: "@Common.CampaignCustomTitle",
+                        CustomProgramName: "@Common.ProgramCustomTitle",
+                        CustomTacticName: "@Common.TacticCustomTitle"
+                    }).multiselectfilter({
+                        CustomCampaignName: "@Common.CampaignCustomTitle",
+                        CustomProgramName: "@Common.ProgramCustomTitle",
+                        CustomTacticName: "@Common.TacticCustomTitle"
+                    });
+                    //$("#ddlCampaignRevenueToPlan").multiselect('refresh');
+                    /*End: Refresh Campaign, Program, Tactic dropdowns*/
+
+                }
+                else {
+                    $("#CampaignChildDDL").css('display', 'none');
+                    $("#CustomFieldChildDDL").css('display', 'block');
+                    loadChildListData(_parentValue, _childRevenueToPlanDDLId);
+                }
+            });
+
+            @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
+            var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+            var _revProjected = '@revenue_Projected_Goal.Projected';
+            @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
-        var _revGoalYTD = '@revenue_Projected_Goal.GoalYTD';
-        var _revGoalYear = '@revenue_Projected_Goal.GoalYear';
-        var _revActualPercentage = '@revenue_Projected_Goal.ActualPercentage';
-        var _revProjectedPercentage = '@revenue_Projected_Goal.ProjectedPercentage';
-        var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
-        var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
+            var _revGoalYTD = '@revenue_Projected_Goal.GoalYTD';
+            var _revGoalYear = '@revenue_Projected_Goal.GoalYear';
+            var _revActualPercentage = '@revenue_Projected_Goal.ActualPercentage';
+            var _revProjectedPercentage = '@revenue_Projected_Goal.ProjectedPercentage';
+            var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
+            var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
 
-        formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
+            formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
 
-        //var _formtPercentage = "0";
-        //setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
-        //setBootstrapTooltip("#revGoal", _revGoal, 5, true);
-        //if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
-        //    _formtPercentage = "0";
-        //    $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
-        //}
-        //else {
-        //    if (_isNegativePercentage.toLowerCase() == 'true') {
-        //        _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-        //        $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
-        //    }
-        //    else {
-        //        _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
-        //        $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
-        //    }
-        //}
-        //$("#revPercentage").html(_formtPercentage);
+            //var _formtPercentage = "0";
+            //setBootstrapTooltip("#revActual_Projected", _revActual_Projected, 5, true);
+            //setBootstrapTooltip("#revGoal", _revGoal, 5, true);
+            //if (_revPercentage == null || _revPercentage == 'undefined' || _revPercentage == '' || _revPercentage == 'NaN' || _revPercentage == '-NaN') {
+            //    _formtPercentage = "0";
+            //    $("#revPercentage").removeClass("greenLabel").removeClass("redLabel");
+            //}
+            //else {
+            //    if (_isNegativePercentage.toLowerCase() == 'true') {
+            //        _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+            //        $("#revPercentage").removeClass("greenLabel").addClass("redLabel");
+            //    }
+            //    else {
+            //        _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revPercentage)), true);
+            //        $("#revPercentage").removeClass("redLabel").addClass("greenLabel");
+            //    }
+            //}
+            //$("#revPercentage").html(_formtPercentage);
 
-        @*// Start:- Revenue To Plan BarChart script
+            @*// Start:- Revenue To Plan BarChart script
         var _barchartdata = "@revenue_barchartModel";
         var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
         _BarChartdata = JSON.parse(_BarChartdata);
@@ -301,14 +279,15 @@
         formatROIValue();
         // End:- Revenue To Plan DataTable script  *@
 
-        // Start:- Revenue_LineChart script
-        @*var _lineardata = "@linechartdata";
+            // Start:- Revenue_LineChart script
+            @*var _lineardata = "@linechartdata";
         var chartdata = (_lineardata.toString().replace(/&quot;/g, '"'));
         chartdata = JSON.parse(chartdata);
         var linechartDivId = "#RevenueLineChart";
 
         BindLineChartRevenue(chartdata.categories, chartdata.todayValue, chartdata.isDisplay, chartdata.series, linechartDivId, 220, false);*@
-        // End:- Revenue_LineChart script
+            // End:- Revenue_LineChart script
+        }
     });
 
     $("#ddlTimeFrameSelectBox select").selectbox();
@@ -387,11 +366,11 @@
             fillCardCampaignDropDown("", "");
         }
         ReloadRevenueToPlanByCustomField(_childValue);
-        
+
     });
     $('#ddlChildRevenueToPlan').change(function () {
         var _childValue = $("#ddlChildRevenueToPlan").val();
-	masterCustomFieldOptionId = _childValue;
+        masterCustomFieldOptionId = _childValue;
         ReloadRevenueToPlanByCustomField(_childValue);
     });
     function ReloadRevenueToPlanByCustomField(_childvalue) {
@@ -449,7 +428,7 @@
         }
         var _url = "@Url.Content("~/Report/GetRevenueToPlanByFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month;
         $("#dvRevenueToPlan").load(_url);
-       // myApp.hidePleaseWait();
+        // myApp.hidePleaseWait();
     }
 
     function fillProgramDropdown() {
@@ -518,7 +497,7 @@
                 //alert('call function!');
                 LoadDataRevenueToPlanByCampaign();
                 //LoadDataRevenueRealization();
-               // myApp.hidePleaseWait();
+                // myApp.hidePleaseWait();
             },
             error: function () {
                 $("#ddlTacticRevenueToPlan").empty();
@@ -547,7 +526,7 @@
         setBootstrapTooltip("#revProjected", _revProjected, 5, true);
         setBootstrapTooltip("#revGoalYTD", _revGoalYTD, 5, true);
         setBootstrapTooltip("#revGoalYear", _revGoalYear, 5, true);
-        
+
         if (_revActualPercentage == null || _revActualPercentage == 'undefined' || _revActualPercentage == '' || _revActualPercentage == 'NaN' || _revActualPercentage == '-NaN') {
             _formtPercentage = "0";
             $("#revActualPercentage").removeClass("greenLabel").removeClass("redLabel");
@@ -580,27 +559,19 @@
         }
         $("#revProjectedPercentage").html(_formtPercentage);
     }
-
+    function ShowHideReport() {
+        var _isplan = $('#hdnIsPlanExistToShowReport').val().toLowerCase();
+        if (_isplan == 'true') {
+            $('#DivNoPlanToShowReport').css('display', 'none');
+            //$('#divRevenue').css('display', 'block');
+            //$('#divConversion').css('display', 'block');
+            //$('#divBudgeting').css('display', 'block');
+        }
+        else {
+            $('#DivNoPlanToShowReport').css('display', 'block');
+            //$('#divRevenue').css('display', 'none');
+            //$('#divConversion').css('display', 'none');
+            //$('#divBudgeting').css('display', 'none');
+        }
+    }
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

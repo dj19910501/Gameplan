@@ -16,7 +16,7 @@
     {
         ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
     }
-    // End By Nishant Sheth 
+    // End By Nishant Sheth
     var TotalRecords = Model.TotalRecords;
     var CurrentPageNum = Model.CuurentPageNum;
 }
@@ -24,10 +24,10 @@
     .carvdval-block {
         display: block;
     }
-     .arrow
-    {
-          width: 249px;
-          font-size: 40px;
+
+    .arrow {
+        width: 249px;
+        font-size: 40px;
     }
 </style>
 <div class="revenue-filter">
@@ -134,7 +134,7 @@
 
 
             //_Ads_proj = _Adsdata.Actual_Projected;
-           // _Adsgoal = _Adsdata.Goal;
+            // _Adsgoal = _Adsdata.Goal;
             //_AdsCard = _Adsdata.CardType;
             //_Adspercentange = _Adsdata.Percentage;
 
@@ -156,11 +156,11 @@
             _Cw_projId = cw + actproj + "_" + _fieldId;
             _CwgoalId = cw + goal + "_" + _fieldId;
             _CwPercntgId = cw + percntg + "_" + _fieldId;
-           // cwrestperceId = cw + retperc + "_" + _fieldId;
+            // cwrestperceId = cw + retperc + "_" + _fieldId;
 
             //_Ads_projId = ads + actproj + "_" + _fieldId;
-           // _AdsgoalId = ads + goal + "_" + _fieldId;
-           // _AdsPercntgId = ads + percntg + "_" + _fieldId;
+            // _AdsgoalId = ads + goal + "_" + _fieldId;
+            // _AdsPercntgId = ads + percntg + "_" + _fieldId;
 
             var _titleSub = '';
             if (_title.length > 41) {
@@ -180,10 +180,10 @@
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
-           // _cardhtml = _cardhtml + ' <p class="revanue-p-right">';
-          //  _cardhtml = _cardhtml + '<input type="checkbox" /><label> Add to Compare</label>';
-          //  _cardhtml = _cardhtml + '</p>';
-         //   _cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="">Compare</button>';
+            // _cardhtml = _cardhtml + ' <p class="revanue-p-right">';
+            //  _cardhtml = _cardhtml + '<input type="checkbox" /><label> Add to Compare</label>';
+            //  _cardhtml = _cardhtml + '</p>';
+            //   _cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="">Compare</button>';
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div class="region-data region-data-waterfall">';
@@ -226,11 +226,11 @@
             _cardhtml = _cardhtml + '</div>';
 
 
-           // _cardhtml = _cardhtml + '<div class="data">';
+            // _cardhtml = _cardhtml + '<div class="data">';
             //_cardhtml = _cardhtml + '<span class="title">ADS</span>';
-           // _cardhtml = _cardhtml + '<span class="title">' + _AdsCard + '</span>';
-           // _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Ads_proj + '" id="' + _Ads_projId + '">' + _Ads_proj + '</span><span class="cardsub sub-value"  orig-val="' + _Adsgoal + '" id="' + _AdsgoalId + '">' + _Adsgoal + '</span></p>';
-           // _cardhtml = _cardhtml + '</div>';
+            // _cardhtml = _cardhtml + '<span class="title">' + _AdsCard + '</span>';
+            // _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Ads_proj + '" id="' + _Ads_projId + '">' + _Ads_proj + '</span><span class="cardsub sub-value"  orig-val="' + _Adsgoal + '" id="' + _AdsgoalId + '">' + _Adsgoal + '</span></p>';
+            // _cardhtml = _cardhtml + '</div>';
 
             //_cardhtml = _cardhtml + '<div id="dvNorthAmericaGraph1" class="region-graph">';
             //_cardhtml = _cardhtml + '</div>';
@@ -750,18 +750,22 @@
         //navigation_html += '<li id="nextmore">...</li>';
         navigation_html += '<li> <a href="javascript:next();">»</a></li> </ul>';
 
-        $('#page_navigation').html(navigation_html);
+        if (number_of_items > 0) {
+            $('#page_navigation').html(navigation_html);
+        } else {
+            $('#page_navigation').html('');
+        }
 
         //add active_page class to the first page link
         //$('#page_navigation .page_link:first').addClass('active');
 
         if (typeof RevIsnextprev == 'undefined') {
-        for (var i = 0; i <= number_of_pages; i++) {
-            $('.page_link[longdesc=' + i + ']').css('display', 'none');
-        }
-        for (var j = 0; j <= 5; j++) {
-            $('.page_link[longdesc=' + j + ']').css('display', 'block');
-        }
+            for (var i = 0; i <= number_of_pages; i++) {
+                $('.page_link[longdesc=' + i + ']').css('display', 'none');
+            }
+            for (var j = 0; j <= 5; j++) {
+                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+            }
         }
         else {
             @*for (var i = 0; i <= number_of_pages; i++) {
