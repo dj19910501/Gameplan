@@ -136,9 +136,19 @@ namespace Integration
                 var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _id).FirstOrDefault();
                 if (Instance != null && Instance.IsActive)
                 {
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Instance started - Initiated by Sync Now or Scheduler");
-                SyncInstance();
-                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Instance ended - Initiated by Sync Now or Scheduler");
+                    if (Instance.LastSyncStatus != Enums.SyncStatus.InProgress.ToString())
+                    {
+                        Instance.LastSyncStatus = Enums.SyncStatus.InProgress.ToString();
+                        db.Entry(Instance).State = EntityState.Modified;
+                        int resulValue = db.SaveChanges();
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Instance started - Initiated by Sync Now or Scheduler");
+                        SyncInstance();
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Instance ended - Initiated by Sync Now or Scheduler");
+                    }
+                    else
+                    {
+                        Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Sync process for this instance is already running.");
+                    }
                 }
                 else
                 {

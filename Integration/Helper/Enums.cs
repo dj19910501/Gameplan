@@ -152,7 +152,8 @@ namespace Integration.Helper
             Success,
             Error,
             Warning,
-            Info
+            Info,
+            InProgress
         }
 
         /// <summary>

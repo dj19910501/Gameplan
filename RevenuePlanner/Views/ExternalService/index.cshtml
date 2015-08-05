@@ -271,9 +271,15 @@
         else {
             $html += '<td id="lastSyncStatus' + _integrationInstanceId + '">' + _lastSyncStatus + '</td>'
         }
-
+        var syncNow_visible='', syncing_visible='';
+        if (_lastSyncStatus.toLowerCase() == 'inprogress') {
+            syncNow_visible = 'style="display:none;"'
+        }
+        else {
+            syncing_visible = 'style="display:none;"';
+        }
         $html += '<td id="lastSyncDate' + _integrationInstanceId + '">' + _lastSyncData + '</td>' +
-            '<td><a id="syncnow_' + _integrationInstanceId + '" href="#" class="sync_service">Sync Now</a><span style="display:none;">Syncing...</span></td>' +
+            '<td><a id="syncnow_' + _integrationInstanceId + '" href="#" class="sync_service" ' + syncNow_visible + '>Sync Now</a><span ' + syncing_visible + '>Syncing...</span></td>' +
         '</tr>';
         //$baselineTable.append($html);
         //$baselineTable.eq(0).after($html);
