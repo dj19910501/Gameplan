@@ -2383,7 +2383,7 @@ namespace RevenuePlanner.Controllers
                         Actual_Projected = _Actual + _Projected;
                         //serData1.Add(Actual_Projected);
                         serData2.Add(_Goal);
-                        if ((i + 1) <= (_compareValue))
+                        if ((i + 1) < (_compareValue))
                         {
                             serData1.Add(Actual_Projected);
                             serData3.Add(0);
@@ -9157,7 +9157,7 @@ namespace RevenuePlanner.Controllers
                     Actual_Projected = _Actual + _Projected;
                     //serData1.Add(Actual_Projected);
                     serData2.Add(_Goal);
-                    if ((i + 1) <= (_compareValue))
+                    if ((i + 1) < (_compareValue))
                     {
                         serData1.Add(Actual_Projected);
                         serData3.Add(0);
@@ -10201,11 +10201,6 @@ namespace RevenuePlanner.Controllers
            
             ProjectedTrendList = CalculateProjectedTrend(tacticStageList, includeMonth, inqStageCode);
 
-            
-
-
-
-
             #region "Get Basic model"
             BasicModel objBasicModelDataTable = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, IsQuarterly);
             #endregion
@@ -10268,7 +10263,7 @@ namespace RevenuePlanner.Controllers
                 Actual_Projected = _Actual + _Projected;
                 //serData1.Add(Actual_Projected);
                 serData2.Add(_Goal);
-                if ((i + 1) <= (_compareValue))
+                if ((i + 1) < (_compareValue))
                 {
                     serData1.Add(Actual_Projected);
                     serData3.Add(0);
@@ -11328,7 +11323,7 @@ namespace RevenuePlanner.Controllers
                     _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
                     Actual_Projected = _Actual + _Projected;
                     serData2.Add(_Goal);
-                    if ((i + 1) <= (_compareValue))
+                    if ((i + 1) < (_compareValue))
                     {
                         serData1.Add(Actual_Projected);
                         serData3.Add(0);

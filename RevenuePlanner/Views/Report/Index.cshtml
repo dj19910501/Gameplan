@@ -1801,8 +1801,13 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
             }
             var serLength = _Barseries.length;
             var _arractul = [];//add actual list -dashrath
+            var _arractulbar = [];//add actual bar list -dashrath
             for (var i = 0; i < serLength ; i++) {
                 options.series.push(eval(_Barseries[i]));
+
+                if (_Barseries[i].name == "Actual") {
+                    _arractulbar.push(_Barseries[i].data);
+                }
             }
             var _linechartseriesLength = _linechartseries.length;
             for (var i = 0; i < _linechartseriesLength ; i++) {
@@ -1868,6 +1873,8 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
             }
             _Actualarray.splice(index, 1, total.toString());
 
+            var __Actualarraybar = _arractulbar.toString();
+            var _ActualValuebar = __Actualarraybar.split(',')
             options.tooltip = {
                 formatter: function () {
                     var symbol = '●';
@@ -1891,9 +1898,16 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                     }
 
                     if (this.point.series.name == "Actual") {
-                        var _point = this.point.series.data.indexOf(this.point);
-                        var _val = _Actualarray[_point];
-                        return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(_val) + '</b>';
+                        if (this.point.series.type == "line") {
+                            var _point = this.point.series.data.indexOf(this.point);
+                            var _val = _Actualarray[_point];
+                            return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(_val) + '</b>';
+                        }
+                        if (this.point.series.type == "column") {
+                            var _point = this.point.series.data.indexOf(this.point);
+                            var _val = _ActualValuebar[_point];
+                            return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(_val) + '</b>';
+                        }
                     }
                     else {
                         return this.key + '<br/><span style="color:' + this.series.color + '">' + symbol + '</span>' + this.point.series.name + ':' + '<b>' + Highcharts.numberFormat(this.y) + '</b>';
