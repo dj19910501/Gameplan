@@ -3087,7 +3087,12 @@ namespace Integration.Salesforce
                 }
                 // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
             }
-
+            //Added by Mitesh Vaishnav for PL ticket 1473
+            //All campaigns have "IsActive" flag true by default
+            if (keyvaluepair.Count > 0)
+            {
+                keyvaluepair.Add("IsActive", true);
+            }
             return keyvaluepair;
         }
 
