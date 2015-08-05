@@ -78,11 +78,7 @@
                     @* Modified by Brad Gray on 07/22/2015 for PL ticket #1453*@
                     if (Model.IntegrationType.Code != Enums.IntegrationType.WorkFront.ToString())
                     {
-                        <div class="accordion-group">
-                        <div class="accordion-heading">
-                            <div class="accordion-toggle CreateMode">Push Tactic Data</div>
-                        </div>
-                    </div>
+                       @Html.Partial("~/Views/ExternalService/_ClosedDeals.cshtml", Model.GameplanDataTypePullModelList)@* Added by Dharmraj on 06/08/2014 for PL ticket #658*@
                     }
                 }   
                 else
