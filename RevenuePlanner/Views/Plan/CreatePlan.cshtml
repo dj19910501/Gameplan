@@ -257,6 +257,7 @@
 
 
         $("#button-save").click(function () {
+            $("#button-save").attr('disabled', 'disabled');
             var isError = false;
             $('.nl-field').each(function () {
                 if ($(this).next().attr('datadefault') == "Title") {
@@ -324,6 +325,7 @@
                 $("#spanMessageError").empty();
                 $("#spanMessageError").text("@Common.objCached.ValidateForEmptyField");*@
                 ShowMessage(isError, "@Common.objCached.ValidateForEmptyField")
+                $("#button-save").removeAttr('disabled');
                 return false;
             }
             else {
@@ -356,6 +358,7 @@
                                     //$("#spanMessageError").text(data.imsg);
                                     //   $("#divErrLessBudget").css("display", "none");
                                     ShowMessage(isError, data.imsg)
+                                    $("#button-save").removeAttr('disabled');
                                     return false;
                                 }
                                 else if (data.id != 0) {
@@ -397,6 +400,8 @@
                                 }
                             }
                         }
+
+                        $("#button-save").removeAttr('disabled');
                     },
                     error: function () {
                         GoToLogin();
