@@ -695,9 +695,9 @@
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
 <div id="divgridview" class="task-tbl" style="display: none;"></div>
-@*Added by Komal Rawal for #1432*@
+@*Added by Komal Rawal for #1432
 <div id="ImprovementGrid" style="display: none;" class="improvement-grid-wrapper">
-</div>
+</div>*@
 <div class="market-activity-main">
     <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
     </div>
@@ -4502,6 +4502,13 @@ function () {
     $(".gantt_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
+    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+            var ganttwidth = $("#gridbox").width();
+            var totalWidth = ganttwidth + 230;
+            ResizeGrid(totalWidth);
+        }
+    }
 
 }, function () {
     $('#sidebar').css({
@@ -4557,8 +4564,9 @@ function () {
     });
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-
-            //BindHomeGrid();
+            var ganttwidth = $("#gridbox").width();
+            var totalWidth = ganttwidth - 230;
+            ResizeGrid(totalWidth);
         }
     }
 })

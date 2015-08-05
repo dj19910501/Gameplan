@@ -488,4 +488,26 @@ namespace RevenuePlanner.Models
         public int? CVRWeightage { get; set; }
         public int? CostWeightage { get; set; }
     }
+
+    public class Plangrid
+    {
+        public string MQLLable { get; set; }
+        public string INQLable { get; set; }
+        public string CWLable { get; set; }
+        public string MQLValue { get; set; }
+        public string INQValue { get; set; }
+        public string Revenue { get; set; }
+        public string CWValue { get; set; }
+        public PlanImprovement ImprovementObj { get; set; }
+        public string xmlstring { get; set; }
+    }
+    public class PlanImprovement
+    {
+        public string MQLLable { get; set; }
+        public bool IsTacticExists { get; set; }
+        public int Progrmas { get; set; }
+        public int ImprovementPlanProgramId { get; set; }
+        public double TotalCost { get; set; }
+        public double TotalMqls { get; set; }
+    }
 }

@@ -960,7 +960,7 @@
     <Content Include="Views\Plan\CreatePlan.cshtml" />
     <Content Include="Views\Report\_ReportCardSection.cshtml" />
     <Content Include="Views\Report\_ConversionToPlan.cshtml" />
-    <Content Include="Views\Home\_HomeGrid.cshtml" />
+    <Content Include="Views\Plan\_HomeGrid.cshtml" />
     <Content Include="Views\Plan\_GridImprovement.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <Content Include="Web.config" />
