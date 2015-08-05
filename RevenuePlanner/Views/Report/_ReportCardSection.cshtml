@@ -26,7 +26,7 @@
         display: block;
     }
 </style>
-<div class="revenue-filter">
+<div class="revenue-filter" id="div-revenue-filter">
     <div class="sorting">
         <div class="geography-dropdown">
             <h5>Sort By</h5>
@@ -194,7 +194,7 @@
             _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
             _tempCard = _tempCard + '</div>';
 
-            _tempCard = _tempCard + '<div id="tempdivchart" style="height:100%; width:44%;float:left;" >';
+            _tempCard = _tempCard + '<div id="tempdivchart" style="height:100%; min-width:35%;float:left;" >';
             _tempCard = _tempCard + '</div>';
             _tempCard = _tempCard + '</div>';
             _tempCard = _tempCard + '</div>';
@@ -231,7 +231,7 @@
 
             _cardhtml = _cardhtml + '<div class="region-data region-data-reveune">';
 
-            _cardhtml = _cardhtml + '<div class="dataR" style="width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
             //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Revenue</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span></p>';
@@ -240,7 +240,7 @@
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="dataR" style="width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
             //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">Cost</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>';
@@ -249,7 +249,7 @@
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="dataR" style="width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
             //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">ROI</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>';
@@ -259,7 +259,7 @@
             _cardhtml = _cardhtml + '</div>';
 
 
-            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:' + tempdivchartwidth + 'px;float:left;">';
+            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; min-width:' + tempdivchartwidth + 'px;float:left;">';
             //_cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:419px;float:left;">';
             _cardhtml = _cardhtml + '</div>';
 
@@ -732,8 +732,15 @@
                     break;
                 }
             }
+            
+            if (IsGotoPage == true) {
+                $('html, body').animate({
+                    scrollTop: $("#div-revenue-filter").offset().top
+                }, 1000);
+            }
         }
         RevIsnextprev = false;
+        IsGotoPage = false;
         $('.page_link[longdesc=' + '@CurrentPageNum' + ']').addClass('active').siblings('.active').removeClass('active');
         //hide all the elements inside content div
         //$('#dvCardSectionData').children().css('display', 'none');
@@ -807,11 +814,12 @@
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
 
         //myApp.hidePleaseWait();
         //LoadPagination();
+        //$(window).scrollTop($('#dvRevenueCardSection').offset().top);
     }
 
     function ItemsPerPagefunction() {
@@ -819,7 +827,7 @@
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
         //LoadPagination();
@@ -937,7 +945,7 @@
         //alert(sortBy);
         //myApp.showPleaseWait();
         var SearchString = $('#txtSearch').val();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
         //LoadPagination();
@@ -948,7 +956,7 @@
         var sortBy = $("#ddlSortby :selected").text();
         SearchString = $('#txtSearch').val();
         //myApp.showPleaseWait();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + SearchString + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
 

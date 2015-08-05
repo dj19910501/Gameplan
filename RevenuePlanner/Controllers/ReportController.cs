@@ -1948,104 +1948,6 @@ namespace RevenuePlanner.Controllers
 
         #region Revenue
 
-        #region "Old Code GetRevenueData function"
-        ///// <summary>
-        ///// Return Revenue Partial View
-        ///// </summary>
-        ///// <param name="PlanId"></param>
-        ///// <param name="timeFrameOption"></param>
-        ///// <returns></returns>
-        //[AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        //public ActionResult GetRevenueData(string timeFrameOption = "thisquarter")
-        //{
-        //    ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
-        //    ViewBag.SelectOption = timeFrameOption;
-
-        //    List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
-
-        //    // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
-        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-        //    List<int> campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
-        //    List<int> programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
-
-
-        //    //// Get Campaign list for dropdown
-        //    List<int> campaignIds = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
-        //    var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
-        //            .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
-        //            .OrderBy(pcp => pcp.Title).ToList();
-        //    campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-        //    var lstCampaignList = campaignList;
-        //    lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
-
-        //    //// Get Program list for dropdown
-        //    var programList = db.Plan_Campaign_Program.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
-        //           .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
-        //           .OrderBy(pcp => pcp.Title).ToList();
-        //    programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-        //    var lstProgramList = programList;
-        //    lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
-
-        //    //// Get tactic list for dropdown
-        //    var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
-        //        .OrderBy(pcp => pcp.Title).ToList();
-        //    tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-        //    var lstTacticList = tacticListinner;
-        //    lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
-
-        //    //// Set in viewbag
-        //    ViewBag.CampaignDropdownList = lstCampaignList;
-        //    ViewBag.ProgramDropdownList = lstProgramList;
-        //    ViewBag.TacticDropdownList = lstTacticList;
-
-        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-
-        //    //// Set Parent Revenue Summary data to list.
-        //    List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
-        //    if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 && isPublishedPlanExist)
-        //    {
-        //        lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenuePlans, Value = Common.RevenuePlans });
-        //    }
-
-        //    lstParentRevenueSummery = lstParentRevenueSummery.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
-
-
-
-        //    // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report
-        //    //Concat the Campaign and Program custom fields data with exsiting one. 
-        //    var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
-        //    lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFields).ToList();
-        //    ViewBag.parentRevenueSummery = lstParentRevenueSummery;
-        //    // Get child tab list
-        //    if (lstParentRevenueSummery.Count > 0)
-        //        ViewBag.ChildTabListRevenueSummary = GetChildLabelDataViewByModel(lstParentRevenueSummery.First().Value, timeFrameOption);
-        //    else
-        //        ViewBag.ChildTabListRevenueSummary = "";
-        //    //// Set Parent Revenue Plan data to list.
-        //    List<ViewByModel> lstParentRevenueToPlan = new List<ViewByModel>();
-        //    lstParentRevenueToPlan = lstParentRevenueToPlan.Concat(lstCustomFields).OrderBy(s => s.Text, new AlphaNumericComparer()).ToList();
-        //    ViewBag.parentRevenueToPlan = lstParentRevenueToPlan;
-        //    // Get child tab list
-        //    if (lstParentRevenueToPlan.Count > 0)
-        //        ViewBag.ChildTabListRevenueToPlan = GetChildLabelDataViewByModel(lstParentRevenueToPlan.First().Value, timeFrameOption);
-        //    else
-        //        ViewBag.ChildTabListRevenueToPlan = "";
-        //    //// Set Parent Revenue Contribution data to list.
-        //    List<ViewByModel> lstParentRevenueContribution = new List<ViewByModel>();
-
-        //    lstParentRevenueContribution.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
-
-        //    lstParentRevenueContribution = lstParentRevenueContribution.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
-        //    //Concat the Campaign and Program custom fields data with exsiting one. 
-        //    lstParentRevenueContribution = lstParentRevenueContribution.Concat(lstCustomFields).ToList();
-        //    ViewBag.parentRevenueContribution = lstParentRevenueContribution;
-
-        //    TempData["ReportData"] = tacticStageList;
-
-        //    return PartialView("Revenue");
-        //} 
-        #endregion
-
         /// <summary>
         ///  Get Header value for reveneue #1397
         ///  Created By Nishant Sheth
@@ -2068,36 +1970,6 @@ namespace RevenuePlanner.Controllers
             if (objBasicModel.IsQuarterly)
             {
 
-                //List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
-                //List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
-                //List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
-                //List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-
-                //List<string> _curntQuarterList = new List<string>();
-
-                //for (int i = 1; i <= categorieslength; i++)
-                //{
-                //    #region "Get Quarter list based on loop value"
-                //    if (i == 1)
-                //    {
-                //        _curntQuarterList = Q1.Where(q1 => Convert.ToInt32(q1.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                //    }
-                //    else if (i == 2)
-                //    {
-                //        _curntQuarterList = Q2.Where(q2 => Convert.ToInt32(q2.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                //    }
-                //    else if (i == 3)
-                //    {
-                //        _curntQuarterList = Q3.Where(q3 => Convert.ToInt32(q3.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                //    }
-                //    else if (i == 4)
-                //    {
-                //        _curntQuarterList = Q4.Where(q4 => Convert.ToInt32(q4.Replace("Y", "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                //    }
-                //    #endregion
-
-                //}
-
                 _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
                 _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
                 _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
@@ -2105,7 +1977,6 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-
                 if (timeFrameOption.ToLower() == currentyear.ToLower())
                 {
                     currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
@@ -2135,22 +2006,7 @@ namespace RevenuePlanner.Controllers
 
                 #region Calculate Actual Value
                 _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
-                //for (int i = 0; i < 12; i++)
-                //{
-                //    _actualval = objBasicModel.ActualList.ToList()[i];
-                //    if (currentEndMonth > i)
-                //    {
-                //        if (_actualval != 0.0)
-                //        {
-                //            _actualtotal = _actualtotal + _actualval;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        _actualtotal += 0;
-                //    }
-                //    //_monthTrendList.Add(_actualtotal);
-                //}
+
                 #endregion
 
                 #region Calculate Projected Value
@@ -2219,13 +2075,12 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             // Add BY Nishant Sheth
+                // Use below viewbag for details button on card section
             ViewBag.ParentLabel = Common.RevenueCampaign;
             ViewBag.childlabelType = Common.RevenueCampaign;
             ViewBag.childId = 0;
             ViewBag.option = option;
            
-           
-
                 if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
                     IsQuarterly = false;
 
@@ -2333,7 +2188,6 @@ namespace RevenuePlanner.Controllers
                     // Add By NIshant Sheth For change the logic of header value as per #1397
                     objReportModel.RevenueHeaderModel = GetRevenueHeaderValue(objBasicModel, option).RevenueHeaderModel;
 
-                    
                     #endregion
 
                     #endregion
@@ -2368,11 +2222,6 @@ namespace RevenuePlanner.Controllers
                     _plotBandFromValue = IsQuarterly && (_compareValue != _lastQuarterValue) ? (_compareValue + _constQuartPlotBandPadding) : 0;
                     objBarChartModel.plotBandFromValue = _plotBandFromValue;
                     objBarChartModel.plotBandToValue = _plotBandFromValue > 0 ? (_PlotBandToValue) : 0;
-                    #endregion
-
-                    #region "Calcuate ActualList up to Current Month"
-                    
-
                     #endregion
 
                     for (int i = 0; i < catLength; i++)
@@ -2445,7 +2294,9 @@ namespace RevenuePlanner.Controllers
                     objRevenueDataTable.timeframeOption = objBasicModel.timeframeOption;
                     objRevenueToPlanModel.RevenueToPlanDataModel = objRevenueDataTable;
                     #endregion
+
                     #endregion
+
                     objReportModel.RevenueToPlanModel = objRevenueToPlanModel;
 
                     #region "CardSection Model"
@@ -8708,6 +8559,22 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region "Revenue"
+
+        /// <summary>
+        /// Method for revenue filter 
+        /// </summary>
+        /// <param name="ParentLabel"></param>
+        /// <param name="childlabelType"></param>
+        /// <param name="childId"></param>
+        /// <param name="option"></param>
+        /// <param name="IsQuarterly"></param>
+        /// <param name="isDetails"></param>
+        /// <param name="BackHeadTitle"></param>
+        /// <param name="IsBackClick"></param>
+        /// <param name="DrpChange"></param>
+        /// <param name="marsterCustomField"></param>
+        /// <param name="masterCustomFieldOptionId"></param>
+        /// <returns></returns>
         public PartialViewResult GetRevenueToPlanByFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 )
         {
             #region "Declare Local Variables"
@@ -8724,7 +8591,6 @@ namespace RevenuePlanner.Controllers
 
             lineChartData objLineChartData = new lineChartData();
 
-
             int customfieldId = 0;
             bool IsCampaignCustomField = false, IsProgramCustomField = false, IsTacticCustomField = false;
             List<TacticStageValue> _tacticdata = new List<TacticStageValue>();
@@ -8736,15 +8602,12 @@ namespace RevenuePlanner.Controllers
 
             /// Declarion For Card Section 
             /// Nishant Sheth
-            /// 
+            /// Below viewbag for details button on card section
             ViewBag.ParentLabel = ParentLabel;
             ViewBag.childId = childId;
             ViewBag.option = option;
 
-            
-
             List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
-
 
             List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
@@ -8828,8 +8691,7 @@ namespace RevenuePlanner.Controllers
                     #region Mapping Items for Card Section
                     tacticlist = GetTacticForReporting();
                     // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-
+                    // Get the List of tacic for card section base on parent label, child label and child id and also set view bag for details button.
                     Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
 
                     if (childlabelType.Contains(Common.RevenueTactic))
@@ -8926,6 +8788,7 @@ namespace RevenuePlanner.Controllers
 
                     #region "New Code"
                     List<int> entityids = new List<int>();
+                    // Get Entity id base on Custom fields.
                     if (IsTacticCustomField)
                     {
                         entityids = TacticData.Select(t => t.TacticObj.PlanTacticId).ToList();
@@ -8939,6 +8802,7 @@ namespace RevenuePlanner.Controllers
                         entityids = TacticData.Select(t => t.TacticObj.PlanProgramId).ToList();
                     }
 
+                    // Get the Custom field type and list of tacic option with custom fields.
                     customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                     var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
                     if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
@@ -8974,6 +8838,7 @@ namespace RevenuePlanner.Controllers
                         _TacticOptionList.ForEach(rev => PlanTacticIdsList.AddRange(rev.planTacticList));
                     }
                     PlanTacticIdsList = PlanTacticIdsList != null ? PlanTacticIdsList.Distinct().ToList() : new List<int>();
+
                     #region "filter TacticData based on Customfield"
 
                     _tacticdata = TacticData.Where(t => PlanTacticIdsList.Contains(t.TacticObj.PlanTacticId)).ToList();
@@ -8985,7 +8850,6 @@ namespace RevenuePlanner.Controllers
                     if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
                     {
 
-
                         if (_customfieldOptionId > 0)
                         {
                             tacticlist = _tacticdata.Select(t => t.TacticObj).ToList();
@@ -8993,21 +8857,16 @@ namespace RevenuePlanner.Controllers
                             {
                                 _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
                                  .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
-
                             }
                             else if (ParentLabel.Contains(Common.ProgramCustomTitle))
                             {
-
                                 _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanProgramId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Title })
                                     .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
-
                             }
                             else if (ParentLabel.Contains(Common.CampaignCustomTitle))
                             {
-
                                 _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.Plan_Campaign_Program.PlanCampaignId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title })
                                     .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
-
                             }
                         }
                         else
@@ -9085,24 +8944,17 @@ namespace RevenuePlanner.Controllers
                 /// Add By Nishant Sheth : 07-July-2015 
                 /// Desc : Fill card section with filter option , Ticket no:#1397 
 
-
-
                 CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
                 //objRevenueToPlanModel.CardSectionModel = objCardSectionModel;
                 TempData["RevenueCardList"] = null;
                 TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
-                //string FilterParentLabel = ViewBag.ParentLabel;
-                //string FilterchildlabelType = ViewBag.childlabelType;
-                //string FilterchildId = ViewBag.childId;
-                //string Filteroption = ViewBag.option;
-                objRevenueToPlanModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString());
+
+                objRevenueToPlanModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString()); // Get Record with Page Size
                 objRevenueToPlanModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
-                //ViewBag.ParentLabel = FilterParentLabel;
-                //ViewBag.childlabelType = FilterchildlabelType;
-                //ViewBag.childId = FilterchildId;
-                //ViewBag.option = Filteroption;
+
                 // End By Nishant Sheth
+
                 #region "Revenue Model Values"
 
                 #region "Get Basic Model"
@@ -9863,7 +9715,17 @@ namespace RevenuePlanner.Controllers
             }
             return objSubDataTableModel;
         }
-
+        /// <summary>
+        /// Method for return card section partial view of revenue card section
+        /// </summary>
+        /// <param name="PageNo"></param>
+        /// <param name="PageSize"></param>
+        /// <param name="SearchString"></param>
+        /// <param name="SortBy"></param>
+        /// <param name="ParentLabel"></param>
+        /// <param name="childlabelType"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
         public PartialViewResult SearchSortPaginataionRevenue(int PageNo = 0, int PageSize = 5, string SearchString = "", string SortBy = "", string ParentLabel = "", string childlabelType = "", string option = "")
         {
             ViewBag.ParentLabel = ParentLabel;
@@ -9939,8 +9801,6 @@ namespace RevenuePlanner.Controllers
             if (objBasicModel.IsQuarterly)
             {
 
-                
-
                 _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
                 _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
                 _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
@@ -9948,11 +9808,11 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-
                 if (timeFrameOption.ToLower() == currentyear.ToLower())
                 {
                     currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
                 }
+
                 #region Calculate GoalYTD
                 for (int i = 0; i < 12; i++)
                 {
@@ -10009,6 +9869,12 @@ namespace RevenuePlanner.Controllers
 
         #region "Get Conversion data Main method"
         //added for new Main method of conversion partial view page-Dashrath Prajapati
+        /// <summary>
+        /// Get Water fall data when user firstime load on waterfall sections
+        /// </summary>
+        /// <param name="timeFrameOption"></param>
+        /// <param name="isQuarterly"></param>
+        /// <returns></returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]
         public ActionResult GetWaterFallData(string timeFrameOption = "thisquarter", string isQuarterly = "true")
         {
@@ -10037,14 +9903,14 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             // Add BY Nishant Sheth
+            // Below ViewBag Use for manage details button on card section.
             TempData["ConversionCard"] = null;
             ViewBag.ConvParentLabel = Common.RevenueCampaign;
             ViewBag.ConvchildlabelType = Common.RevenueCampaign;
             ViewBag.ConvchildId = 0;
             ViewBag.Convoption = timeFrameOption;
-            
-           
             // End By Nishant Sheth
+
              //// check planids selected or not
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 )
             {
@@ -10076,7 +9942,6 @@ namespace RevenuePlanner.Controllers
             #endregion
             // Get child tab list
           
-
             //// conversion performance view by dropdown
             List<ViewByModel> lstParentConversionPerformance = new List<ViewByModel>();
             lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Plan, Value = Common.Plan });
@@ -10094,7 +9959,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.ViewByAllocated = lstViewByAllocated;
             //Header section of report
 
-            
             ActualTacticTrendList = new List<ActualTrendModel>();
             ProjectedTrendList = new List<ProjectedTrendModel>();
 
@@ -10111,16 +9975,11 @@ namespace RevenuePlanner.Controllers
             List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
             ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
             
-
-         
-
             #region Set Header Value
             BasicModel objBasicConverstionHeader = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, (isQuarterly.ToLower() == "quarterly" ? true : false));
             objReportModel.RevenueHeaderModel = GetConverstionHeaderValue(objBasicConverstionHeader, timeFrameOption).RevenueHeaderModel;
             #endregion
             
-            
-
             #region "Set Child DDL data to ViewBag"
             // Get child tab list
             List<ViewByModel> lstChildRevenueToPlan = new List<ViewByModel>();
@@ -10315,12 +10174,11 @@ namespace RevenuePlanner.Controllers
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
             CardSectionListModel = GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, timeFrameOption, IsQuarterly, Common.RevenueCampaign.ToString(),false, "", 0);
-            //CardSectionListModel = GetConversionCardSectionDefaultData(tacticStageList, OverviewCardModelList, _cmpgnMappingList, timeFrameOption, IsQuarterly);
             objCardSectionModel.CardSectionListModel = CardSectionListModel;
-            //objReportModel.CardSectionModel = objCardSectionModel;
+
             TempData["ConverstionCardList"] = null;
             TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
-            objReportModel.CardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());
+                objReportModel.CardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());// Get Filter Record with page size
             objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
             #endregion
             objReportModel.ConversionToPlanModel = objConversionToPlanModel;
@@ -11438,6 +11296,19 @@ namespace RevenuePlanner.Controllers
             return cardModel;
         }
         #endregion
+
+        /// <summary>
+        /// Get Converstion card section calculation
+        /// </summary>
+        /// <param name="_TacticData"></param>
+        /// <param name="TacticMappingList"></param>
+        /// <param name="timeframeOption"></param>
+        /// <param name="IsQuarterly"></param>
+        /// <param name="ParentLabel"></param>
+        /// <param name="IsTacticCustomField"></param>
+        /// <param name="CustomFieldType"></param>
+        /// <param name="customFieldId"></param>
+        /// <returns></returns>
         public List<CardSectionListModel> GetConversionCardSectionList(List<TacticStageValue> _TacticData, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0)
         {
             #region "Declare local variables"
@@ -11831,7 +11702,20 @@ namespace RevenuePlanner.Controllers
             return objCardSectionList;
         }
 
-
+        /// <summary>
+        /// Get Revenue ROI COST value for card section calculation
+        /// </summary>
+        /// <param name="_TacticData"></param>
+        /// <param name="ActualTacticTrendList"></param>
+        /// <param name="ProjectedTrendList"></param>
+        /// <param name="TacticMappingList"></param>
+        /// <param name="timeframeOption"></param>
+        /// <param name="IsQuarterly"></param>
+        /// <param name="ParentLabel"></param>
+        /// <param name="IsTacticCustomField"></param>
+        /// <param name="CustomFieldType"></param>
+        /// <param name="customFieldId"></param>
+        /// <returns></returns>
         public List<CardSectionListModel> GetCardSectionDefaultData(List<TacticStageValue> _TacticData, List<ActualTrendModel> ActualTacticTrendList, List<ProjectedTrendModel> ProjectedTrendList, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0)
         {
             #region "Declare local variables"
@@ -11959,8 +11843,7 @@ namespace RevenuePlanner.Controllers
                     fltrTacticData = _TacticData.Where(tac => _ChildIdsList.Contains(tac.TacticObj.PlanTacticId)).ToList();
                     #region "Set Default Values"
                     strParentTitle = TacticMappingList.Where(card => card.ParentId.Equals(_ParentId)).Select(card => card.ParentTitle).FirstOrDefault();
-                    //ParentId = _ParentId;
-                    //ParentId = _ChildId;// Change By Nishant
+
                     #endregion
 
                     objCardSection = new CardSectionListModel();
@@ -12033,7 +11916,6 @@ namespace RevenuePlanner.Controllers
                         revenueActual = inneractuallist.Sum(data => data.TrendValue);
                         revenueGoal = innerGoallist.Sum(data => data.Value);
 
-
                         innerCurrentMonthCostList = CurrentMonthCostList.Where(cost => _ChildIdsList.Contains(cost.Id)).ToList();
 
                         List<TacticMonthValue> ProjectedDatatable = new List<TacticMonthValue>();
@@ -12043,10 +11925,6 @@ namespace RevenuePlanner.Controllers
                         costGoal = ProjectedDatatable.Sum(innergoalcost => innergoalcost.Value);
 
                     }
-                    //foreach (int _ChildId in _ChildIdsList) //Add By Nishant Sheth
-                    //{
-                        //objCardSection.FieldId = _ChildIdsList.FirstOrDefault();        // Set Child Id: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id. By Nishant Sheth
-                        //objCardSection.ChildId = _ChildId;
 
                         #region "Calculate Revenue"
                         objCardSectionSubModel = new CardSectionListSubModel();
@@ -12120,11 +11998,9 @@ namespace RevenuePlanner.Controllers
                         // Add Multiple fixed same values to Model
                         objCardSectionList.Add(objCardSection);
 
-
                 }
 
                 #endregion
-
             }
             catch (Exception ex)
             {
@@ -12275,6 +12151,14 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
+        /// <summary>
+        /// This Method load the data of reveue card section data after revenue filter process done.
+        /// </summary>
+        /// <param name="ParentLabel"></param>
+        /// <param name="childlabelType"></param>
+        /// <param name="childId"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
         public ActionResult LoadReportCardSectionPartial(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "")
         {
             ViewBag.ParentLabel = ParentLabel;
@@ -12286,6 +12170,14 @@ namespace RevenuePlanner.Controllers
             cardModel = (CardSectionModel)TempData["CardData"];
             return PartialView("_ReportCardSection", cardModel);
         }
+        /// <summary>
+        /// This method load data of converstion card section data after converstion filter process done.
+        /// </summary>
+        /// <param name="ParentLabel"></param>
+        /// <param name="childlabelType"></param>
+        /// <param name="childId"></param>
+        /// <param name="option"></param>
+        /// <returns></returns>
         public ActionResult LoadConverstionCardSectionPartial(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "")
         {
             ViewBag.ConvParentLabel = ParentLabel;
