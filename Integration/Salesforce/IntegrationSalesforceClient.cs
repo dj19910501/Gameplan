@@ -2447,7 +2447,8 @@ namespace Integration.Salesforce
             string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             StringBuilder sbMessage;
-            int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]); 
+            int logRecordSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["LogRecordSize"]);
+            int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
             try
             {
                 List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).Select(p => p.PlanId).ToList();
@@ -2462,8 +2463,10 @@ namespace Integration.Salesforce
                     List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
                     List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
 
-                    //int total = 0;
+                    int page = 0;
+                    int total = 0;
                     //int pageSize = 10;
+                    int maxpage = 0;
 
                     campaignList = campaignList.Where(campaign => statusList.Contains(campaign.Status) && campaign.IsDeployedToIntegration).ToList();
                     campaignIdList = campaignList.Select(c => c.PlanCampaignId).Distinct().ToList();
@@ -2513,28 +2516,38 @@ namespace Integration.Salesforce
                         try
                         {
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process start.");
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Campaign: " + campaignList.Count);
-                            
-                            sbMessage = new StringBuilder();
-
-                            for (int index = 0; index < campaignList.Count; index++)
+                            page = 0;
+                            total = campaignList.Count;
+                            maxpage = (total / pushRecordBatchSize);
+                            List<Plan_Campaign> lstPagedlistCampaign = new List<Plan_Campaign>();
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Campaign: " + total);
+                            while (page <= maxpage)
                             {
-                                campaignList[index] = SyncCampaingData(campaignList[index], ref sbMessage);
+                                lstPagedlistCampaign = new List<Plan_Campaign>();
+                                lstPagedlistCampaign = campaignList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+                                
+                                sbMessage = new StringBuilder();
 
-                                // Save 10 log records to Table.
-                                if (((index + 1) % logRecordSize) == 0)
+                                for (int index = 0; index < lstPagedlistCampaign.Count; index++)
                                 {
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                    sbMessage = new StringBuilder();
-                                }
-                            }
+                                    lstPagedlistCampaign[index] = SyncCampaingData(lstPagedlistCampaign[index], ref sbMessage);
 
-                            if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                            {
-                                // Save remaining log records to Table.
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                    // Save 10 log records to Table.
+                                    if (((index + 1) % logRecordSize) == 0)
+                                    {
+                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        sbMessage = new StringBuilder();
+                                    }
+                                }
+
+                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                                {
+                                    // Save remaining log records to Table.
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                }
+                                db.SaveChanges();
+                                page++;
                             }
-                            db.SaveChanges();
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process end.");
                         }
                         catch (Exception ex)
@@ -2553,34 +2566,43 @@ namespace Integration.Salesforce
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
 
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                    if (programList.Count() > 0)
+                    if (programList.Count > 0)
                     {
                         try
                         {
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
-
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + programList.Count);
-                            sbMessage = new StringBuilder();
-
-                            for (int index = 0; index < programList.Count; index++)
+                            page = 0;
+                            total = programList.Count;
+                            maxpage = (total / pushRecordBatchSize);
+                            List<Plan_Campaign_Program> lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Program: " + total);
+                            while (page <= maxpage)
                             {
-                                programList[index] = SyncProgramData(programList[index], ref sbMessage);
+                                lstPagedlistProgram = new List<Plan_Campaign_Program>();
+                                lstPagedlistProgram = programList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
 
-                                // Save 10 log records to Table.
-                                if (((index + 1) % logRecordSize) == 0)
+                                sbMessage = new StringBuilder();
+
+                                for (int index = 0; index < lstPagedlistProgram.Count; index++)
                                 {
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                    sbMessage = new StringBuilder();
-                                }
-                            }
+                                    lstPagedlistProgram[index] = SyncProgramData(lstPagedlistProgram[index], ref sbMessage);
 
-                            if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                            {
-                                // Save remaining log records to Table.
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                    // Save 10 log records to Table.
+                                    if (((index + 1) % logRecordSize) == 0)
+                                    {
+                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        sbMessage = new StringBuilder();
+                                    }
+                                }
+
+                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                                {
+                                    // Save remaining log records to Table.
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                }
+                                db.SaveChanges();
+                                page++;
                             }
-                            db.SaveChanges();
-                            
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process end.");
                         }
                         catch (Exception ex)
@@ -2604,28 +2626,37 @@ namespace Integration.Salesforce
                     {
                         try
                         {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process start.");
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + tacticList.Count);
-                            sbMessage = new StringBuilder();
-                            for (int index = 0; index < tacticList.Count; index++)
+                            page = 0;
+                            total = tacticList.Count;
+                            maxpage = (total / pushRecordBatchSize);
+                            List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
+                            while (page <= maxpage)
                             {
-                                tacticList[index] = SyncTacticData(tacticList[index], ref sbMessage);
-
-                                // Save 10 log records to Table.
-                                if (((index + 1) % logRecordSize) == 0)
+                                lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
+                                lstPagedlistTactic = tacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+                                
+                                sbMessage = new StringBuilder();
+                                for (int index = 0; index < lstPagedlistTactic.Count; index++)
                                 {
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                    sbMessage = new StringBuilder();
-                                }
-                            }
+                                    lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
 
-                            if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                            {
-                                // Save remaining log records to Table.
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                    // Save 10 log records to Table.
+                                    if (((index + 1) % logRecordSize) == 0)
+                                    {
+                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        sbMessage = new StringBuilder();
+                                    }
+                                }
+
+                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                                {
+                                    // Save remaining log records to Table.
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                }
+                                db.SaveChanges();
+                                page++;
                             }
-                            db.SaveChanges();
-                            
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process end.");
                         }
                         catch (Exception ex)
@@ -2640,30 +2671,38 @@ namespace Integration.Salesforce
                     {
                         try
                         {
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncImprovementData process start.");
-                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of ImprovementTactic: " + improvetacticList.Count);
-                            
-                            sbMessage = new StringBuilder();
-
-                            for (int index = 0; index < improvetacticList.Count; index++)
+                            page = 0;
+                            total = improvetacticList.Count;
+                            maxpage = (total / pushRecordBatchSize);
+                            List<Plan_Improvement_Campaign_Program_Tactic> lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of ImprovementTactic: " + total);
+                            while (page <= maxpage)
                             {
-                                improvetacticList[index] = SyncImprovementData(improvetacticList[index], ref sbMessage);
+                                lstPagedlistIMPTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                                lstPagedlistIMPTactic = improvetacticList.Skip(page * pushRecordBatchSize).Take(pushRecordBatchSize).ToList();
+                                
+                                sbMessage = new StringBuilder();
 
-                                // Save 10 log records to Table.
-                                if (((index + 1) % logRecordSize) == 0)
+                                for (int index = 0; index < lstPagedlistIMPTactic.Count; index++)
                                 {
-                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
-                                    sbMessage = new StringBuilder();
-                                }
-                            }
+                                    lstPagedlistIMPTactic[index] = SyncImprovementData(lstPagedlistIMPTactic[index], ref sbMessage);
 
-                            if (!string.IsNullOrEmpty(sbMessage.ToString()))
-                            {
-                                // Save remaining log records to Table.
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                    // Save 10 log records to Table.
+                                    if (((index + 1) % logRecordSize) == 0)
+                                    {
+                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                        sbMessage = new StringBuilder();
+                                    }
+                                }
+
+                                if (!string.IsNullOrEmpty(sbMessage.ToString()))
+                                {
+                                    // Save remaining log records to Table.
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                }
+                                db.SaveChanges();
+                                page++;
                             }
-                            db.SaveChanges();
-                            
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "SyncImprovementData process end.");
                         }
                         catch (Exception ex)
