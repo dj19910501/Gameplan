@@ -21,7 +21,7 @@ IF (not EXISTS (SELECT * FROM sys.TABLES WHERE name = 'IntegrationWorkFrontTempl
 begin
 
 exec('SET ANSI_NULLS ON')
-exec('if (@tablecreate =1)SET QUOTED_IDENTIFIER ON')
+--exec('if (@tablecreate =1)SET QUOTED_IDENTIFIER ON')
 exec('
 CREATE TABLE [dbo].[IntegrationWorkFrontTemplates](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
