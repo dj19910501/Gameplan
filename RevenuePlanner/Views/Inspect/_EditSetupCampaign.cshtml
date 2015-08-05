@@ -198,103 +198,131 @@
 
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
-        $('.dropdown_new_btn').focus();    
-        $('.dropdown_new_btn').removeAttr("id", "test1");
-        $('#test').removeAttr("id", "test");
-        $(this).parent().attr("id","test");
-        $(this).attr("id", "test1");
+        $('.dropdown_new_btn').focus();
+        $('.dropdown_new_btn').removeAttr("id", "dropdown_btn");
+        $('#dropdown_Table').removeAttr("id", "dropdown_Table");
+        $(this).parent().attr("id", "dropdown_Table");
+        $(this).attr("id", "dropdown_btn");
         $nextdata = -1;
         $_prevdata = -1;
         $prevtext = '';
+        KeyPressOnDropdown();
     });
 
-    $("#test1").keypress(function (e) {  
-        var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-        var $this = $('#test').find('.tbodycampaignprogram');
+    $(document).click(function () {
+        $(document).unbind('keypress');
+    });
 
-        var theChar = String.fromCharCode(key);
-        var cur_check = '';
-        cur_check = selectbox_keys + theChar.toLowerCase();
+    function KeyPressOnDropdown() {
+        $(document).keypress(function (e) {
+            var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+            var $this = $('#dropdown_Table').find('.tbodycampaignprogram');
 
-        $this.find(".trdropdownhover").each(function () {           
-            var p = $(this).find('p');
-            var text = jQuery(p).text().toLowerCase();
-            if ($prevtext == '' || cur_check.length > 1) {      
-                if (text.indexOf(cur_check) == 0) {                
-                    $prevtext = text;
-                    if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
-                        $($_prevdata).parent().removeClass('setfocusTr');
-                    }                  
-                    $_prevdata = jQuery(this);
-                    $nextdata = jQuery(this);
-                    $nextdata.addClass('setfocusTr');
-                    selectbox_keys = cur_check;
-                    $(p).closest('tr').focus();
-                    return false;
-                }
-            }
-            else {
-                /// find search_text from current li to downward direction in dropdown list.
-                var _nextdatas = '';
-                _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
-                var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
-                $.each(_nextdatas, function (key, value) {               
-                    var _anchor = $(value).find('p');
-                    var _atext = $(_anchor).text().toLowerCase();
+            var theChar = String.fromCharCode(key);
+            var cur_check = '';
+            cur_check = selectbox_keys + theChar.toLowerCase();
 
-                    //// Compare current "li" anchor text is with previous selected anchor text.
-                    if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {                      
-                        $prevtext = _atext; // set previous text variable with selected text.
-                        $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
+            var $select = $('#dropdown_Table');
+            var lastElement = $select.find('tbody');
+
+            $this.find(".trdropdownhover").each(function () {
+                var p = $(this).find('p');
+                var text = jQuery(p).text().toLowerCase();
+                if ($prevtext == '' || cur_check.length > 1) {
+                    if (text.indexOf(cur_check) == 0) {
+                        $prevtext = text;
+                        if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
+                            $($_prevdata).removeClass('setfocusTr');
+                        }
                         $_prevdata = jQuery(this);
                         $nextdata = jQuery(this);
-                        $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                        $nextdata.addClass('setfocusTr');
                         selectbox_keys = cur_check;
-                        $(this).closest('tr').focus();
-                        cntr = cntr + 1;
+                        $(p).closest('tr').focus();
+
+                        var x = $(this).position().top;
+                        lastElement.animate({ scrollTop: x }, 300);
                         return false;
                     }
-                });
-                /// find search_text from start of the dropdown list.
-                if (cntr == 0) {                   
-                    _nextdatas = $('#test').find('.tbodycampaignprogram').find('tr'); //$('.tbodycampaignprogram').nextAll('tr');
-                    $.each(_nextdatas, function (key, value) {                     
+                }
+                else {
+                    /// find search_text from current li to downward direction in dropdown list.
+                    var _nextdatas = '';
+                    _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
+                    var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
+                    $.each(_nextdatas, function (key, value) {
                         var _anchor = $(value).find('p');
                         var _atext = $(_anchor).text().toLowerCase();
 
                         //// Compare current "li" anchor text is with previous selected anchor text.
                         if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                            $prevtext = _atext;
-                            $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                            $prevtext = _atext; // set previous text variable with selected text.
+                            $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
                             $_prevdata = jQuery(this);
                             $nextdata = jQuery(this);
                             $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
                             selectbox_keys = cur_check;
                             $(this).closest('tr').focus();
+                            cntr = cntr + 1;
+
+                            var x = $(this).position().top;
+                            lastElement.animate({ scrollTop: x }, 300);
                             return false;
                         }
                     });
+                    /// find search_text from start of the dropdown list.
+                    if (cntr == 0) {
+                        _nextdatas = $('#dropdown_Table').find('.tbodycampaignprogram').find('tr'); //$('.tbodycampaignprogram').nextAll('tr');
+                        $.each(_nextdatas, function (key, value) {
+                            var _anchor = $(value).find('p');
+                            var _atext = $(_anchor).text().toLowerCase();
+
+                            //// Compare current "li" anchor text is with previous selected anchor text.
+                            if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
+                                $prevtext = _atext;
+                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                                $_prevdata = jQuery(this);
+                                $nextdata = jQuery(this);
+                                $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                selectbox_keys = cur_check;
+                                $(this).closest('tr').focus();
+
+                                var x = $(this).position().top;
+                                lastElement.animate({ scrollTop: x }, 300);
+                                return false;
+                            }
+                        });
+                    }
+                    if (cur_check.length <= 1) {
+                        return false;
+                    }
                 }
-                if (cur_check.length <= 1) {
-                    return false;
-                }
+            });
+            if ($nextdata != -1) {
+                $nextdata.removeClass('trdropdownhover');
+                // $("trdropdownhover", $this).removeClass('trdropdownhover');
+                $nextdata.addClass('trdropdownhover').focus();
+                $("#dropdown_btn").text($nextdata.text());
+                //$(".dropdown_new_btn").text($nextdata.text());
+
             }
+            clearTimeout(selectbox_keys_timeout);
+            var selectbox_keys_timeout = setTimeout(function () {
+                selectbox_keys = "";
+            }, 400);
+            e.stopPropagation();
+            return false;
+        }).delegate("p", "mouseover", function (e) {
+            $(this).addClass('trdropdownhover');
+            var $select = $('#dropdown_Table');
+            var lastElement = $select.find('tbody');
+            var x = $(this).position().top;
+            lastElement.animate({ scrollTop: x }, 300);
+
+        }).delegate("p", "mouseout", function (e) {
+            $(this).removeClass('trdropdownhover');
         });
-        if ($nextdata != -1) {         
-            $nextdata.removeClass('trdropdownhover');
-            // $("trdropdownhover", $this).removeClass('trdropdownhover');
-            $nextdata.addClass('trdropdownhover').focus();
-             $("#test1").text($nextdata.text());  
-            //$(".dropdown_new_btn").text($nextdata.text());
-            
-        }
-        clearTimeout(selectbox_keys_timeout);
-        var selectbox_keys_timeout = setTimeout(function () {
-            selectbox_keys = "";
-        }, 400);
-        e.stopPropagation();
-        return false;
-    });
+    }
 
     function FormatRemainingBudget() {
         if (parseInt(ReplaceCC($("#txtRemainingBudget").val())) < 0) {
@@ -543,46 +571,46 @@
               var campaignTitle = htmlEncode($('#txtTitle').val());
               var hdnYear = @ViewBag.Year
            $('#MultiSelectProcced').css("display", "none");
-            $('form').find('input[type=text], select, textarea').each(function () {
-                if ($(this).attr('require') == 'true') {
-                    if ($(this).val().toString().trim() == '') {
-                        $(this).addClass("error");
-                        iserror = true;
-                    }
-                    else {
-                        $(this).removeClass("error");
-                    }
-                }
-            });
+              $('form').find('input[type=text], select, textarea').each(function () {
+                  if ($(this).attr('require') == 'true') {
+                      if ($(this).val().toString().trim() == '') {
+                          $(this).addClass("error");
+                          iserror = true;
+                      }
+                      else {
+                          $(this).removeClass("error");
+                      }
+                  }
+              });
 
-            $('form').find('.sbSelector').each(function () {
-                if ($(this).parent().prev().attr('require') == 'true') {
-                    if ($(this).text() == 'Please Select') {
-                        $(this).addClass("error");
-                        iserror = true;
-                    }
-                    else {
-                        $(this).removeClass("error");
-                    }
-                }
-            });
-            $('.dropdown_new_btn').each(function () {
-                if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
-                    $(this).addClass("error");
-                    iserror = true;
-                }
-                else {
-                    $(this).removeClass("error");
-                }
-            });
-            if (campaignTitle == "") {
-                $('#txtTitle').addClass("error");
-                iserror = true;
-            }
+              $('form').find('.sbSelector').each(function () {
+                  if ($(this).parent().prev().attr('require') == 'true') {
+                      if ($(this).text() == 'Please Select') {
+                          $(this).addClass("error");
+                          iserror = true;
+                      }
+                      else {
+                          $(this).removeClass("error");
+                      }
+                  }
+              });
+              $('.dropdown_new_btn').each(function () {
+                  if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
+                      $(this).addClass("error");
+                      iserror = true;
+                  }
+                  else {
+                      $(this).removeClass("error");
+                  }
+              });
+              if (campaignTitle == "") {
+                  $('#txtTitle').addClass("error");
+                  iserror = true;
+              }
 
-            /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
-            //// RequireField validation for Owner Dropdown
-            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+              /* Start - Added by bhavesh on 10/03/2015 for PL ticket #711 */
+              //// RequireField validation for Owner Dropdown
+              if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                 var OwnerValue = $('#btnMultiselect_ddlOwner').find('span:first').html();
                 if (OwnerValue == "") {
                     $('#btnMultiselect_ddlOwner').addClass("error");
@@ -591,7 +619,7 @@
                     $('#btnMultiselect_ddlOwner').removeClass("error");
                 }
             }
-            /* End - Added by bhavesh on 10/03/2015 for PL ticket #711 */
+              /* End - Added by bhavesh on 10/03/2015 for PL ticket #711 */
 
             if (iserror) {
                 ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
@@ -603,11 +631,11 @@
             return false;
         }*@
 
-            var regex = /(>|<)/m;
+              var regex = /(>|<)/m;
 
-            var descriptionvalue = $("#txtDescription").val();
-            if (descriptionvalue.search(regex) >= 0) {
-                ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
+              var descriptionvalue = $("#txtDescription").val();
+              if (descriptionvalue.search(regex) >= 0) {
+                  ShowError("@RevenuePlanner.Helpers.Common.objCached.InvalidCharacterofDescription");
                 $("#txtDescription").addClass("error");
                 return false;
             }
@@ -626,23 +654,23 @@
             }
             if (!isDate(edate)) {
                 alert('@Common.objCached.ValidateEndDate');
-            return false;
-        }
-        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-            if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-            if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
                 return false;
             }
-            if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
-                return false;
-            }
-            if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
-                return false;
-            }
-            if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
-                return false;
-            }
-            if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
+            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+              if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+              if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) {
+                  return false;
+              }
+              if (!validateDateCompare(sdate, psdate, "@RevenuePlanner.Helpers.Common.objCached.ProgramStartDateCompareWithParentStartDate")) {
+                  return false;
+              }
+              if (!validateDateCompare(pedate, edate, "@RevenuePlanner.Helpers.Common.objCached.ProgramEndDateCompareWithParentEndDate")) {
+                  return false;
+              }
+              if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) {
+                  return false;
+              }
+              if (!validateDateCompare(tedate, edate, "@RevenuePlanner.Helpers.Common.objCached.TacticEndDateCompareWithParentEndDate")) {
                 return false;
             }
 
@@ -694,10 +722,10 @@
                                 inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                             }
                             loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            //RefreshCurrentTab(requestedModule, 0, 0, 0);
+                                //RefreshCurrentTab(requestedModule, 0, 0, 0);
 
-                        }
-                        if ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()') {
+                            }
+                            if ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()') {
                             var ChangedTab = "Setup";
                             if (tabtext != "") {
                                 ChangedTab = tabtext;

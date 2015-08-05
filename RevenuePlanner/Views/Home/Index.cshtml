@@ -282,13 +282,13 @@
                     if (CurrentPlanId > 0) {
                         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                             LoadPlanGrid();
-                           // LoadImprovementGrid(CurrentPlanId);
+                            // LoadImprovementGrid(CurrentPlanId);
                             return true;
                         }
                         else {
-                        GetCollaborators(CurrentPlanId);
-                        GetTacticTypelist(CurrentPlanId);
-                        GetOwnerListForFilter(CurrentPlanId);
+                            GetCollaborators(CurrentPlanId);
+                            GetTacticTypelist(CurrentPlanId);
+                            GetOwnerListForFilter(CurrentPlanId);
                         }
                     }
                 }
@@ -402,8 +402,8 @@
             <div class="sidebar-toogle">
                 <a href="#"><<&nbsp;<span>hide</span></a>
             </div>
-            </div>
-            <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
+        </div>
+        <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
 
             <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
             <div class="wraper-btns cf">
@@ -881,7 +881,7 @@
 
             //Call the function for grid view
             LoadPlanGrid();
-          //  LoadImprovementGrid(CurrentPlanId);
+            //  LoadImprovementGrid(CurrentPlanId);
 
 
         }
@@ -952,11 +952,10 @@
                 $("#divgridview").show();
                 $("#ImprovementGrid").show();
                 LoadPlanGrid();
-               // LoadImprovementGrid(CurrentPlanId);
+                // LoadImprovementGrid(CurrentPlanId);
 
             }
-            else
-            {
+            else {
                 UpdateCalenderView();
             }
         }
@@ -3017,62 +3016,62 @@ function Quarter() {
                       success: function (data) {
                           if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                          }
+                          else {
+                              if (data.result == true) {
+                                  if (task.isSubmitted) {
+                                      $('#RequestCount').html($('#RequestCount').html() - 1);
+                                  }
+
+                                  var index = $(e.parentNode.parentNode).attr("data-index");
+                                  task.isDeclined = false;
+                                  task.isSubmitted = false;
+                                  activities.data.splice(index, 1);
+
+                                  $('#table_activities tbody tr').remove();
+                                  FillTacticsTable();
+                                  gantt.refreshData();
+                                  isRequest = true;
+                                  // Added by Dharmraj to refresh current tab for PL #364
+                                  RefreshCurrentTab();
                               }
                               else {
-                                  if (data.result == true) {
-                                      if (task.isSubmitted) {
-                                          $('#RequestCount').html($('#RequestCount').html() - 1);
-                                      }
-
-                                      var index = $(e.parentNode.parentNode).attr("data-index");
-                                      task.isDeclined = false;
-                                      task.isSubmitted = false;
-                                      activities.data.splice(index, 1);
-
-                                      $('#table_activities tbody tr').remove();
-                                      FillTacticsTable();
-                                      gantt.refreshData();
-                                      isRequest = true;
-                                      // Added by Dharmraj to refresh current tab for PL #364
-                                      RefreshCurrentTab();
-                                  }
-                                  else {
-                                      alert('Not Approved');
-                                  }
+                                  alert('Not Approved');
                               }
                           }
+                      }
                   });
+              }
+
+              $(document).on("click", ".reject-icon", function () {
+                  var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
+                  DeclineTactic(this, task);
+              })
+
+              //// Modified By Maninder Singh Wadhva PL Ticket#47
+              function DeclineTactic(e, task) {
+                  var approveDeclineTacticId;
+                  var isImprovement = false;
+                  if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
+                      approveDeclineTacticId = task.ImprovementPlanTacticId;
+                      isImprovement = true;
+                  }
+                  else {
+                      approveDeclineTacticId = task.plantacticid;
                   }
 
-                  $(document).on("click", ".reject-icon", function () {
-                      var task = gantt.getTask($(this.parentNode.parentNode).attr("id"));
-                      DeclineTactic(this, task);
-                  })
-
-                  //// Modified By Maninder Singh Wadhva PL Ticket#47
-                  function DeclineTactic(e, task) {
-                      var approveDeclineTacticId;
-                      var isImprovement = false;
-                      if (typeof task.isImprovement != 'undefined' && task.isImprovement == true) {
-                          approveDeclineTacticId = task.ImprovementPlanTacticId;
-                          isImprovement = true;
-                      }
-                      else {
-                          approveDeclineTacticId = task.plantacticid;
-                      }
-
-                      $.ajax({
-                          type: 'POST',
-                          url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
-                      data: {
-                          planTacticId: approveDeclineTacticId,
-                          isApprove: false,
-                          isImprovement: isImprovement
-                      },
-                      dataType: "json",
-                      success: function (data) {
-                          if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
-                              window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                  $.ajax({
+                      type: 'POST',
+                      url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
+                          data: {
+                              planTacticId: approveDeclineTacticId,
+                              isApprove: false,
+                              isImprovement: isImprovement
+                          },
+                          dataType: "json",
+                          success: function (data) {
+                              if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                                  window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           }
                           else {
                               if (data.result == true) {
@@ -3097,7 +3096,7 @@ function Quarter() {
                               }
                           }
                       }
-                  });
+                      });
               }
 
               //tbody tr
@@ -3271,8 +3270,8 @@ function Quarter() {
             var type = $(this).attr('id');
             var name = $(this).attr('Name');
             var title = $(this).attr('aria-label');
-                  var permission = $(this).attr('Permission');
-                  DisplayPopUpMenu(type, name, title, permission, e);
+            var permission = $(this).attr('Permission');
+            DisplayPopUpMenu(type, name, title, permission, e);
 
         });
 
@@ -3605,8 +3604,8 @@ function Quarter() {
             var type = $(this).attr('id');
             var name = $(this).attr('Name');
             var title = $(this).attr('aria-label');
-                  var permission = $(this).attr('Permission');
-                  DisplayPopUpMenu(type, name, title, permission, e);
+            var permission = $(this).attr('Permission');
+            DisplayPopUpMenu(type, name, title, permission, e);
 
         });
 
@@ -4216,17 +4215,17 @@ function Quarter() {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/Clone")',
-            data: {
-                CloneType: '@Enums.DuplicationModule.Campaign',
+                data: {
+                    CloneType: '@Enums.DuplicationModule.Campaign',
                 Id: idPlanCamaign,
                 title: Title,
                 CalledFromBudget: '@CalledFromBudget',
                 RequsetedModule: '@RequestedModule',
                 planId: PlanId
             },
-            success: function (data) {
-                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
+                success: function (data) {
+                    if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
                     RefreshCurrentTab();
@@ -4239,8 +4238,8 @@ function Quarter() {
                     return false;
                 }
             }
+            });
         });
-    });
 
         //Child Program
     $('#ChildProgram').click(function () {
@@ -4344,6 +4343,7 @@ function Quarter() {
 
         //Improvments Tactic
     $('#ImpsTactic').click(function (e) {
+        var improvementTacticId = ImpTacticId;
         e.stopPropagation();
         $.ajaxSetup({ cache: false });
         var idTactic = "0";//$(this).parent().attr("index");
@@ -4352,7 +4352,7 @@ function Quarter() {
             $("a#divimpTactic").removeClass('1');
             $(this).parent().addClass('1');
         }
-        displayConfirmCommon('impTacticCommonClick(' + idTactic + ');');
+        displayConfirmCommon('impTacticCommonClick(' + idTactic + ',' + improvementTacticId + ');');
         $('.taskpopup').css('display', 'none');
     });
 
@@ -4363,87 +4363,87 @@ function Quarter() {
 
 }
 //Dharmraj Start 8July2014 Common function to handle tactic click event
-function impTacticCommonClick(id) {
+function impTacticCommonClick(id, improvementTacticId) {
     if (id == 0) {
-        var idProgram = ImpTacticId;// $("a#divimpTactic.1").attr('data-id-program');
+        var idProgram = improvementTacticId;// $("a#divimpTactic.1").attr('data-id-program');
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
-            return false;
-        }
-        else {
-            ShowModels("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
-            return false;
-        }
+        return false;
+    }
+    else {
+        ShowModels("@Enums.InspectPopupMode.ReadOnly.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", id, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
+        return false;
+    }
+}
+
+function ShowModels(mode, section, id, ParentId, RequestedModule) {
+    removeDefaultModalPopupBackgroungColor();
+    modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
+    $('.modal-backdrop').addClass('modalFull-backdrop');
+    $('.modal-backdrop').attr("style", "display:none !important;");
+    $("#successMessage").css("display", "none");
+    $("#errorMessage").css("display", "none");
+    $("#successMessageDuplicatePlan").css("display", "none");
+    $("#modal-container-186470").modal('show');
+    ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
+    RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
+
+    $("#hdnRequestedModule").val(RequestedModule);
+    var currentTab = "Setup";
+    if ((RequestedModule == "Budgeting") && (mode == "ReadOnly")) {
+        currentTab = "Budget";
     }
 
-    function ShowModels(mode, section, id, ParentId, RequestedModule) {
-        removeDefaultModalPopupBackgroungColor();
-        modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
-
-        $('.modal-backdrop').addClass('modalFull-backdrop');
-        $('.modal-backdrop').attr("style", "display:none !important;");
-        $("#successMessage").css("display", "none");
-        $("#errorMessage").css("display", "none");
-        $("#successMessageDuplicatePlan").css("display", "none");
-        $("#modal-container-186470").modal('show');
-        ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
-        RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
-
-        $("#hdnRequestedModule").val(RequestedModule);
-        var currentTab = "Setup";
-        if ((RequestedModule == "Budgeting") && (mode == "ReadOnly")) {
-            currentTab = "Budget";
+    if (section == "campaign") {
+        if (mode == "Add") {
+            loadInspectPopup("0", "campaign", currentTab, "Add", ParentId, RequestedModule);
         }
-
-        if (section == "campaign") {
-            if (mode == "Add") {
-                loadInspectPopup("0", "campaign", currentTab, "Add", ParentId, RequestedModule);
-            }
-            else {
-                loadInspectPopup(id, "campaign", currentTab, "ReadOnly", ParentId, RequestedModule);
-            }
+        else {
+            loadInspectPopup(id, "campaign", currentTab, "ReadOnly", ParentId, RequestedModule);
         }
-        else if (section == "program") {
-            if (mode == "Add") {
-                loadInspectPopup("0", "program", currentTab, "Add", ParentId, RequestedModule);
-            }
-            else {
-                loadInspectPopup(id, "program", currentTab, "ReadOnly", ParentId, RequestedModule);
-            }
+    }
+    else if (section == "program") {
+        if (mode == "Add") {
+            loadInspectPopup("0", "program", currentTab, "Add", ParentId, RequestedModule);
         }
-        else if (section == "tactic") {
-            if (mode == "Add") {
-                loadInspectPopup("0", "tactic", currentTab, "Add", ParentId, RequestedModule);
-            }
-            else {
-                loadInspectPopup(id, "tactic", currentTab, "ReadOnly", ParentId, RequestedModule);
-            }
+        else {
+            loadInspectPopup(id, "program", currentTab, "ReadOnly", ParentId, RequestedModule);
         }
-        else if (section == "improvementtactic") {
-            if (mode == "Add") {
-                loadInspectPopup(0, "improvementtactic", currentTab, "Add", ParentId, RequestedModule);
-            }
-            else {
-                loadInspectPopup(id, "improvementtactic", currentTab, "ReadOnly", ParentId, RequestedModule);
-            }
+    }
+    else if (section == "tactic") {
+        if (mode == "Add") {
+            loadInspectPopup("0", "tactic", currentTab, "Add", ParentId, RequestedModule);
         }
-        else if (section == "lineitem") {
-            if (mode == "Add") {
-                loadInspectPopup("0", "lineitem", currentTab, "Add", ParentId, RequestedModule);
-            }
-            else {
-                loadInspectPopup(id, "lineitem", currentTab, "ReadOnly", ParentId, RequestedModule);
-            }
+        else {
+            loadInspectPopup(id, "tactic", currentTab, "ReadOnly", ParentId, RequestedModule);
         }
-        else if (section == "plan") {
-            if (mode == "Add") {
-                loadInspectPopup("0", "plan", currentTab, "Add", ParentId, RequestedModule);
-            }
-            else {
-                loadInspectPopup(id, "plan", currentTab, "ReadOnly", ParentId, RequestedModule);
-            }
+    }
+    else if (section == "improvementtactic") {
+        if (mode == "Add") {
+            loadInspectPopup(0, "improvementtactic", currentTab, "Add", ParentId, RequestedModule);
         }
-        modalBackdropDisplayNone();
-    };
+        else {
+            loadInspectPopup(id, "improvementtactic", currentTab, "ReadOnly", ParentId, RequestedModule);
+        }
+    }
+    else if (section == "lineitem") {
+        if (mode == "Add") {
+            loadInspectPopup("0", "lineitem", currentTab, "Add", ParentId, RequestedModule);
+        }
+        else {
+            loadInspectPopup(id, "lineitem", currentTab, "ReadOnly", ParentId, RequestedModule);
+        }
+    }
+    else if (section == "plan") {
+        if (mode == "Add") {
+            loadInspectPopup("0", "plan", currentTab, "Add", ParentId, RequestedModule);
+        }
+        else {
+            loadInspectPopup(id, "plan", currentTab, "ReadOnly", ParentId, RequestedModule);
+        }
+    }
+    modalBackdropDisplayNone();
+};
 
 </script>
 <script>
@@ -4557,7 +4557,7 @@ function () {
     });
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-           
+
             //BindHomeGrid();
         }
     }

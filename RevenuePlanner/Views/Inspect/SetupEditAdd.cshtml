@@ -111,14 +111,14 @@
      
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
-            
+
             <div class="cf width100">
-                <div style="width: 47%;position:relative;" class="margin-right10 pull-left">
+                <div style="width: 47%; position: relative;" class="margin-right10 pull-left">
                     <label class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</label>
                     @if (IsTackticAddEdit && !isCreated)
                     {
                        
-                            @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.PlanCampaignList, "PlanCampaignId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Parent Campaign" })
+                        @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.PlanCampaignList, "PlanCampaignId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Parent Campaign" })
                        
                     }
                     else
@@ -147,7 +147,7 @@
         </div>
         <div class="span3" id="inspect-modal-left-column2">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
-            <span style="min-width: 100%; position: relative; display:block;">
+            <span style="min-width: 100%; position: relative; display: block;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
             <p class="margin-top-10">Tactic Planned Cost</p>
@@ -232,7 +232,7 @@
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>   
 
-    @*<div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
+@*<div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
         <div class="span2 btn-save" style="width: 80px;">
             <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
         </div>
@@ -252,102 +252,132 @@
     $('.dropdown_new_btn').click(function () {
         $('.trdropdownhover').removeClass('setfocusTr');
         $('.dropdown_new_btn').focus();
-        $('.dropdown_new_btn').removeAttr("id", "test1");
-        $('#test').removeAttr("id", "test");
-        $(this).parent().attr("id", "test");
-        $(this).attr("id", "test1");
+        $('.dropdown_new_btn').removeAttr("id", "dropdown_btn");
+        $('#dropdown_Table').removeAttr("id", "dropdown_Table");
+        $(this).parent().attr("id", "dropdown_Table");
+        $(this).attr("id", "dropdown_btn");
         $nextdata = -1;
         $_prevdata = -1;
         $prevtext = '';
+        KeyPressOnDropdown();
     });
 
-    $("#test1").keypress(function (e) {
-        var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
-        var $this = $('#test').find('.top_spacing_geography');
+    $(document).click(function () {
+        $(document).unbind('keypress');
+    });
 
-        var theChar = String.fromCharCode(key);
-        var cur_check = '';
-        cur_check = selectbox_keys + theChar.toLowerCase();
+    function KeyPressOnDropdown() {
+        $(document).keypress(function (e) {
+            var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+            var $this = $('#dropdown_Table').find('.top_spacing_geography');
 
-        $this.find(".trdropdownhover").each(function () {         
-            var p = $(this).find('p');
-            var text = jQuery(p).text().toLowerCase();
-            if ($prevtext == '' || cur_check.length > 1) {            
-                if (text.indexOf(cur_check) == 0) {                 
-                    $prevtext = text;
-                    if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
-                        $($_prevdata).parent().removeClass('setfocusTr');
-                    }                
-                    $_prevdata = jQuery(this);
-                    $nextdata = jQuery(this);
-                    $nextdata.addClass('setfocusTr');
-                    selectbox_keys = cur_check;
-                    $(p).closest('tr').focus();
-                    return false;
-                }
-            }
-            else {
-                /// find search_text from current li to downward direction in dropdown list.
-                var _nextdatas = '';
-                _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
-                var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
-                $.each(_nextdatas, function (key, value) {                  
-                    var _anchor = $(value).find('p');
-                    var _atext = $(_anchor).text().toLowerCase();
+            var theChar = String.fromCharCode(key);
+            var cur_check = '';
+            cur_check = selectbox_keys + theChar.toLowerCase();
 
-                    //// Compare current "li" anchor text is with previous selected anchor text.
-                    if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {                    
-                        $prevtext = _atext; // set previous text variable with selected text.
-                        $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
+            var $select = $('#dropdown_Table');
+            var lastElement = $select.find('tbody');
+
+            $this.find(".trdropdownhover").each(function () {
+                var p = $(this).find('p');
+                var text = jQuery(p).text().toLowerCase();
+
+                if ($prevtext == '' || cur_check.length > 1) {
+
+                    if (text.indexOf(cur_check) == 0) {
+                        $prevtext = text;
+                        if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
+                            $($_prevdata).removeClass('setfocusTr');
+                        }
                         $_prevdata = jQuery(this);
                         $nextdata = jQuery(this);
-                        $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                        $nextdata.addClass('setfocusTr');
                         selectbox_keys = cur_check;
-                        $(this).closest('tr').focus();
-                        cntr = cntr + 1;
+                        $(p).closest('tr').focus();
+
+                        var x = $(this).position().top;
+                        lastElement.animate({ scrollTop: x }, 300);
                         return false;
                     }
-                });
-                /// find search_text from start of the dropdown list.
-                if (cntr == 0) {                   
-                    _nextdatas = $('#test').find('.top_spacing_geography').find('tr'); //$('.tbodycampaignprogram').nextAll('tr');
-                    $.each(_nextdatas, function (key, value) {                        
+                }
+                else {
+                    /// find search_text from current li to downward direction in dropdown list.
+                    var _nextdatas = '';
+                    _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
+                    var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
+                    // $.each(_nextdatas, function (key, value) {
+                    _nextdatas.each(function (key, value) {
                         var _anchor = $(value).find('p');
                         var _atext = $(_anchor).text().toLowerCase();
 
                         //// Compare current "li" anchor text is with previous selected anchor text.
                         if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                            $prevtext = _atext;
-                            $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                            $prevtext = _atext; // set previous text variable with selected text.
+                            $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
                             $_prevdata = jQuery(this);
                             $nextdata = jQuery(this);
                             $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
                             selectbox_keys = cur_check;
                             $(this).closest('tr').focus();
+                            cntr = cntr + 1;
+
+                            var x = $(this).position().top;
+                            lastElement.animate({ scrollTop: x }, 300);
                             return false;
                         }
                     });
-                }
-                if (cur_check.length <= 1) {
-                    return false;
-                }
-            }
-        });
-        if ($nextdata != -1) {           
-            $nextdata.removeClass('trdropdownhover');
-            // $("trdropdownhover", $this).removeClass('trdropdownhover');
-            $nextdata.addClass('trdropdownhover').focus();
-            $("#test1").text($nextdata.text());
-            //$(".dropdown_new_btn").text($nextdata.text());
+                    /// find search_text from start of the dropdown list.
+                    if (cntr == 0) {
+                        _nextdatas = $('#dropdown_Table').find('.top_spacing_geography').find('tr');
+                        $.each(_nextdatas, function (key, value) {
+                            var _anchor = $(value).find('p');
+                            var _atext = $(_anchor).text().toLowerCase();
 
-        }
-        clearTimeout(selectbox_keys_timeout);
-        var selectbox_keys_timeout = setTimeout(function () {
-            selectbox_keys = "";
-        }, 400);
-        e.stopPropagation();
-        return false;
-    });
+                            //// Compare current "li" anchor text is with previous selected anchor text.
+                            if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
+                                $prevtext = _atext;
+                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                                $_prevdata = jQuery(this);
+                                $nextdata = jQuery(this);
+                                $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                selectbox_keys = cur_check;
+                                $(this).closest('tr').focus();
+
+                                var x = $(this).position().top;
+                                lastElement.animate({ scrollTop: x }, 300);
+                                return false;
+                            }
+                        });
+                    }
+                    if (cur_check.length <= 1) {
+                        return false;
+                    }
+                }
+            });
+            if ($nextdata != -1) {
+                $nextdata.removeClass('trdropdownhover');
+                // $("trdropdownhover", $this).removeClass('trdropdownhover');
+                $nextdata.addClass('trdropdownhover').focus();
+                $("#dropdown_btn").text($nextdata.text());
+                //$(".dropdown_new_btn").text($nextdata.text());
+
+            }
+            clearTimeout(selectbox_keys_timeout);
+            var selectbox_keys_timeout = setTimeout(function () {
+                selectbox_keys = "";
+            }, 400);
+            e.stopPropagation();
+            return false;
+        }).delegate("p", "mouseover", function (e) {
+            $(this).addClass('trdropdownhover');
+            var $select = $('#dropdown_Table');
+            var lastElement = $select.find('tbody');
+            var x = $(this).position().top;
+            lastElement.animate({ scrollTop: x }, 300);
+        }).delegate("p", "mouseout", function (e) {
+            $(this).removeClass('trdropdownhover');
+        });
+    }
 
     var hdnYear;
     //// Function to redirect to login page on unavailability of web service.
@@ -557,7 +587,7 @@
           });
 
           $('#ddlOwner,#ddlTacticType').multiselect({
-            
+
               multiple: false,
               noneSelectedText: "Please Select",
               selectedList: 1,
@@ -665,9 +695,9 @@
     var returnparameter = false;
     //Modified for #1213 by Komal Rawal - Function to save the data on Tab change called from inspect popup
     function SetupSavetactic() {
-          //debugger;
+        //debugger;
 
-       
+
         $('#MultiSelectProcced').css("display", "none");
         document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
         document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
@@ -724,7 +754,7 @@
                 $('#btnMultiselect_ddlOwner').removeClass("error");
             }
         }
-        
+
         var tacticTypeValue = $('#ddlTacticType').val();
         if (tacticTypeValue == "") {
             $('#btnMultiselect_ddlTacticType').addClass("error");
@@ -844,14 +874,14 @@
         if ((checkChangeValue(".resubmission", true)) && ($("#hdnIsResubmitableStatus").val().toString().toLowerCase() == "true")) {
             url = '@Url.Content("~/Inspect/LoadResubmission")';
             $("#divResubmission").load(url + '?redirectionType=' + "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic)" + '&labelValues=' + _resubmissionLabelValues);
-               // returnparameter = true;
-            }
-            else {
-              
+            // returnparameter = true;
+        }
+        else {
+
             saveTactic();
-            }
+        }
         return returnparameter;
-       
+
     }
 
     function saveTactic(resubmission) {
@@ -870,7 +900,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Inspect/SetupSaveTactic")',
-            async : false,
+            async: false,
             data: $("form").serialize() + '&lineitems=' + arLineitem + '&closedTask=' + arrClosedTaskString + '&UserId=' + uId + '&customFieldInputs=' + escape(_customFieldValues) + '&resubmission=' + resubmission,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
@@ -894,9 +924,9 @@
                                     inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                                 }
                                 loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                               // RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
+                                // RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
 
-                              }
+                            }
                             if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                                 var ChangedTab = "Setup";
                                 if (tabtext != "") {
@@ -909,21 +939,21 @@
                                 loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                                 //RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
                             }
-                            else{
-                            
-                            $('#txtTacticTitle').css('display', 'none');
-                            $('#lblTacticTitle').css('display', 'block');
-                            $("#lblTacticTitle").removeAttr("style");
-                            $('#divTacticSaveCancel').css('display', 'none');
-                            $('#EditForm').css('display', 'block');
-                            $("#successMessage").css("display", "block");
-                            $("#spanMessageSuccess").empty();
-                            $("#spanMessageSuccess").text(data.Msg);
-                            $("#errorMessage").css("display", "none");
-                            $('#hdnTacticStatus').val(data.tacticStatus);
-                            //  loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", tabtext, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
-                            $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
-                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                            else {
+
+                                $('#txtTacticTitle').css('display', 'none');
+                                $('#lblTacticTitle').css('display', 'block');
+                                $("#lblTacticTitle").removeAttr("style");
+                                $('#divTacticSaveCancel').css('display', 'none');
+                                $('#EditForm').css('display', 'block');
+                                $("#successMessage").css("display", "block");
+                                $("#spanMessageSuccess").empty();
+                                $("#spanMessageSuccess").text(data.Msg);
+                                $("#errorMessage").css("display", "none");
+                                $('#hdnTacticStatus').val(data.tacticStatus);
+                                //  loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", tabtext, "@Enums.InspectPopupMode.Edit.ToString()", 0, requestedModule);
+                                $("#liSetup,#liReview,#liBudget,#liActuals").bind("click");
+                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
                                 $("#hdnBudgetingExpandId").val("tactic" + planTacticId);
                                 $("#hdnBudgetingIsSave").val("true");
                             }
@@ -936,7 +966,7 @@
                             $('#lblTacticTitle').text(txtTacticValue);
                             $("#Description").val(txtDescriptionValue);
 
-                            //// if new record save then set Refresh flag to true.
+                                //// if new record save then set Refresh flag to true.
                             var _planTacticId = $("#hdnPlanTacticId").val(data.planTacticId);
                             if (_planTacticId == '' || _planTacticId == null || _planTacticId == '0' || _planTacticId == 'undefined') {
                                 $("#hdnIsCreate_Clone").val(true); //// Hidden value used in _plan.cshmtl page to check that page require to refresh or not.
@@ -945,102 +975,102 @@
                                 }
                             }
                             returnparameter = true;
-                            
+
                         }
                     }
-                        returnparameter = true;
-                       
-                      }
-                      else {
-                       
-                          ShowError(data.errormsg);
-                          $("#divBudgetError").slideUp(30);
-                       returnparameter = false;
+                    returnparameter = true;
 
-                    }
-                   
                 }
-               
+                else {
+
+                    ShowError(data.errormsg);
+                    $("#divBudgetError").slideUp(30);
+                    returnparameter = false;
+
+                }
+
             }
-            
+
+            }
+
         });
-    
-      }
 
-      function ShowError(value) {
-          $("#modal-container-186470").scrollTop(0);
-          $("#errorMessage").css("display", "block");
-          $("#errorMessage").slideDown(400);
-          $("#spanMessageError").empty();
-          $("#spanMessageError").html(value);
-      }
+}
 
-      function assignDefaultValue(classname) {
-          $('form').find(classname).not('a').each(function () {
-              $(this).attr("oldValue", $(this).val());
-          });
-      }
+function ShowError(value) {
+    $("#modal-container-186470").scrollTop(0);
+    $("#errorMessage").css("display", "block");
+    $("#errorMessage").slideDown(400);
+    $("#spanMessageError").empty();
+    $("#spanMessageError").html(value);
+}
 
-      function checkChangeValue(classname, withResubmissionLabel) {
-          var resubmit = false;
-          if (withResubmissionLabel) {
-              $('form').find(classname).each(function () {
-                  var oldValue = $(this).attr("oldValue");
-                  var value = "";
-                  if ($(this).prop('tagName') != 'A') {
-                      value = $(this).val();
-                  }
-                  else {
-                      value = $(this).text();
-                  }
-                  if (oldValue != value) {
-                      _resubmissionLabelValues.push({
-                          Key: htmlEncode($(this).attr("label").replace(/ /g, "_").toString()),
-                          Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
-                      });
+function assignDefaultValue(classname) {
+    $('form').find(classname).not('a').each(function () {
+        $(this).attr("oldValue", $(this).val());
+    });
+}
 
-                      resubmit = true;
-                  }
-              });
-              _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
-              return resubmit;
-          }
-          else {
-              $('form').find(classname).each(function () {
-                  var oldValue = $(this).attr("oldValue");
-                  var value = $(this).val();
-                  if (oldValue != value) {
-                      return resubmit = true;
-                  }
-              });
-          }
-      }
-      $("#TacticCost").focusout(function () {
-          var tacticBudgetValue = ReplaceCC($("#TacticCost").val());
-          if (tacticBudgetValue == '' || typeof tacticBudgetValue == 'undefined') {
-              $("#TacticCost").val('$0')
-          }
-      });
+function checkChangeValue(classname, withResubmissionLabel) {
+    var resubmit = false;
+    if (withResubmissionLabel) {
+        $('form').find(classname).each(function () {
+            var oldValue = $(this).attr("oldValue");
+            var value = "";
+            if ($(this).prop('tagName') != 'A') {
+                value = $(this).val();
+            }
+            else {
+                value = $(this).text();
+            }
+            if (oldValue != value) {
+                _resubmissionLabelValues.push({
+                    Key: htmlEncode($(this).attr("label").replace(/ /g, "_").toString()),
+                    Value: htmlEncode($(this).attr("label").replace(/ /g, "_").toString())
+                });
 
-      //Added By Komal Rawal
-      function loadtacticdata(tacticTypeId) {
-          var pmql = 0;
-          var pcost = 0;
-          var projectedStageValue = 0;
-          ddlcampaignValue = $("#ddlcampaign").val();
-          ddlProgramValue = $("#ddlProgram").val();
-          txtTacticValue = $("#txtTacticTitle").val();
-          txtDescriptionValue = $("#Description").val();
-          document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
-          document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
-          document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
-          document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
+                resubmit = true;
+            }
+        });
+        _resubmissionLabelValues = JSON.stringify(_resubmissionLabelValues);
+        return resubmit;
+    }
+    else {
+        $('form').find(classname).each(function () {
+            var oldValue = $(this).attr("oldValue");
+            var value = $(this).val();
+            if (oldValue != value) {
+                return resubmit = true;
+            }
+        });
+    }
+}
+$("#TacticCost").focusout(function () {
+    var tacticBudgetValue = ReplaceCC($("#TacticCost").val());
+    if (tacticBudgetValue == '' || typeof tacticBudgetValue == 'undefined') {
+        $("#TacticCost").val('$0')
+    }
+});
 
-          if (tacticTypeId != '') {
-              if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
-                  $.ajax({
-                      type: 'POST',
-                      url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
+//Added By Komal Rawal
+function loadtacticdata(tacticTypeId) {
+    var pmql = 0;
+    var pcost = 0;
+    var projectedStageValue = 0;
+    ddlcampaignValue = $("#ddlcampaign").val();
+    ddlProgramValue = $("#ddlProgram").val();
+    txtTacticValue = $("#txtTacticTitle").val();
+    txtDescriptionValue = $("#Description").val();
+    document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
+    document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
+    document.getElementById("hdnDescription").value = htmlEncode($('#Description').val());
+    document.getElementById("hdnPlanTacticTitle").value = htmlEncode($('#txtTacticTitle').val());
+
+    if (tacticTypeId != '') {
+        if (parseInt($('#hdnPrevTacticTypeId').val()) != parseInt($('#ddlTacticType').val())) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
                       data: { tacticTypeId: tacticTypeId },
                       success: function (data) {
                           pcost = data.revenue;
@@ -1093,7 +1123,7 @@
       }
 
 
-    $('#ddlTacticType').change(function () {
+      $('#ddlTacticType').change(function () {
           var tacticTypeId = $(this).val();
           loadtacticdata(tacticTypeId);
 
@@ -1135,123 +1165,123 @@
               $.ajax({
                   type: 'POST',
                   url: '@Url.Content("~/Inspect/CalculateMQL")',
-                data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
-                success: function (data) {
-                    if (data.mql == 'N/A') {
-                        $("#txtmql").val(data.mql);
-                        $("#txtmql").attr("title", data.mql);
-                        $("#txtmql").removeClass('priceValue');
-                    }
-                    else {
-                        mqlConversion = data.mql;
-                        var mqlValue = FormatCommas(mqlConversion.toString(), false);
-                        $("#txtmql").val(mqlValue);
-                        $("#txtmql").attr("title", mqlValue);
-                    }
+                  data: $("form").serialize() + '&projectedStageValue=' + projectedStageValue + '&RedirectType=' + isAssortment + '&isTacticTypeChange=' + isTacticTypeChange,
+                  success: function (data) {
+                      if (data.mql == 'N/A') {
+                          $("#txtmql").val(data.mql);
+                          $("#txtmql").attr("title", data.mql);
+                          $("#txtmql").removeClass('priceValue');
+                      }
+                      else {
+                          mqlConversion = data.mql;
+                          var mqlValue = FormatCommas(mqlConversion.toString(), false);
+                          $("#txtmql").val(mqlValue);
+                          $("#txtmql").attr("title", mqlValue);
+                      }
 
-                    $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
-                    $("#txtRevenue").attr("title", $("#txtRevenue").val());
+                      $("#txtRevenue").val('$' + number_format(data.revenue.toString(), 0, 0, ','));
+                      $("#txtRevenue").attr("title", $("#txtRevenue").val());
 
-                    $("#ddlcampaign").val(ddlcampaignValue);
-                    $("#ddlProgram").val(ddlProgramValue);
-                    $("#txtTacticTitle").val(txtTacticValue);
-                    $("#Description").val(txtDescriptionValue);
-                }
-            });
-        }
-    }
+                      $("#ddlcampaign").val(ddlcampaignValue);
+                      $("#ddlProgram").val(ddlProgramValue);
+                      $("#txtTacticTitle").val(txtTacticValue);
+                      $("#Description").val(txtDescriptionValue);
+                  }
+              });
+          }
+      }
 
-    /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
-    var tacticId = $('#hdnPlanTacticId').val();
+      /* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
+      var tacticId = $('#hdnPlanTacticId').val();
 
-    //$('.sbHolder').click(function () {
-    //    $('#multipleselect_ddlOwner').css('display', 'none');
-    //});
-    /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
-    function autoGeneratedmultiselectWaightage() {
-        var isError = [];
-        $(".table_drpdwn").each(function () {
-            if ($(this).find('.advance_a:first').attr('mode') == 'Multi') {
-                var arrStageCode = [];
-                $(this).find('.revenue_header,.cost_header').each(function () {
-                    arrStageCode.push({
-                        s_code: $(this).attr('code').toString()
-                    });
-                });
-                for (var i = 0; i < arrStageCode.length; i++) {
-                    var stageCode = arrStageCode[i].s_code;
-                    var waightage = 0;
-                    $(this).find('input:checked').each(function () {
-                        var optionId = $(this).val();
-                        if (typeof $('#' + optionId + '_' + stageCode).val() != 'undefined' && $('#' + optionId + '_' + stageCode).val() != '') {
-                            waightage += parseInt($('#' + optionId + '_' + stageCode).val());
-                        }
-                    });
-                    if (waightage != 100 && waightage > 0) {
-                        var labelTitle = $(this).parents(".dropdown-wrapper").parents().eq(1).find('.ellipsis-left').attr('title').toString();
-                        if (isError.indexOf(labelTitle) <= -1) {
-                            isError.push(labelTitle);
-                        }
-                    }
-                    else if (waightage == 0) {
-                        var checkedCount = $(this).find('input:checked').length;
-                        var residual = 100 % checkedCount;
-                        var inputValue = 100 / checkedCount;
-                        $(this).find('input:checked').each(function () {
-                            var optionId = $(this).val();
-                            $('#' + optionId + '_' + stageCode).val(parseInt(inputValue).toString());
-                        });
-                        if (residual != 0) {
-                            $(this).find('input:checked:last').each(function () {
-                                var optionId = $(this).val();
-                                $('#' + optionId + '_' + stageCode).val(parseInt(inputValue + residual).toString());
-                            });
-                        }
-                    }
-                }
-            }
+      //$('.sbHolder').click(function () {
+      //    $('#multipleselect_ddlOwner').css('display', 'none');
+      //});
+      /* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 */
+      function autoGeneratedmultiselectWaightage() {
+          var isError = [];
+          $(".table_drpdwn").each(function () {
+              if ($(this).find('.advance_a:first').attr('mode') == 'Multi') {
+                  var arrStageCode = [];
+                  $(this).find('.revenue_header,.cost_header').each(function () {
+                      arrStageCode.push({
+                          s_code: $(this).attr('code').toString()
+                      });
+                  });
+                  for (var i = 0; i < arrStageCode.length; i++) {
+                      var stageCode = arrStageCode[i].s_code;
+                      var waightage = 0;
+                      $(this).find('input:checked').each(function () {
+                          var optionId = $(this).val();
+                          if (typeof $('#' + optionId + '_' + stageCode).val() != 'undefined' && $('#' + optionId + '_' + stageCode).val() != '') {
+                              waightage += parseInt($('#' + optionId + '_' + stageCode).val());
+                          }
+                      });
+                      if (waightage != 100 && waightage > 0) {
+                          var labelTitle = $(this).parents(".dropdown-wrapper").parents().eq(1).find('.ellipsis-left').attr('title').toString();
+                          if (isError.indexOf(labelTitle) <= -1) {
+                              isError.push(labelTitle);
+                          }
+                      }
+                      else if (waightage == 0) {
+                          var checkedCount = $(this).find('input:checked').length;
+                          var residual = 100 % checkedCount;
+                          var inputValue = 100 / checkedCount;
+                          $(this).find('input:checked').each(function () {
+                              var optionId = $(this).val();
+                              $('#' + optionId + '_' + stageCode).val(parseInt(inputValue).toString());
+                          });
+                          if (residual != 0) {
+                              $(this).find('input:checked:last').each(function () {
+                                  var optionId = $(this).val();
+                                  $('#' + optionId + '_' + stageCode).val(parseInt(inputValue + residual).toString());
+                              });
+                          }
+                      }
+                  }
+              }
 
-        });
-        return isError;
-    };
-    $('.proceed_btn').click(function (e) {
-        var label = $('#MultiSelectProcced').attr('proccedObject').toString();
-        //alert(label);
-        $('.dropdown_new_btn').each(function () {
-            if ($(this).attr('label').toString() == label) {
-                var menu = $(this).parent().find('.dropdown-wrapper');
-                menu.toggleClass('dropdown-block,minimum-width215');
-                menu.find('.text_ellipsis').toggleClass('minmax-width200');
-                menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
-                menu.find('input[type=checkbox]').toggle();
-                menu.find('.advance_a').text("> Multi-selection");
-                menu.find('.advance_a').attr('mode', 'Single');
-                $(this).find('p:first').text("Please Select");
-                menu.find('input:checkbox').removeAttr('checked');
-                menu.find('input[type=text]').val('');
-                menu.find('input[type=text]').addClass('multiselect-input-text-color-grey');
-                menu.find('p').addClass('single-p');
-                menu.find('tr').addClass('trdropdownhover');
-                menu.find('#aclose_tag').css('display', 'none');
-            }
-        });
-        $('#MultiSelectProcced').slideUp(400);
-        e.stopPropagation();
-    });
+          });
+          return isError;
+      };
+      $('.proceed_btn').click(function (e) {
+          var label = $('#MultiSelectProcced').attr('proccedObject').toString();
+          //alert(label);
+          $('.dropdown_new_btn').each(function () {
+              if ($(this).attr('label').toString() == label) {
+                  var menu = $(this).parent().find('.dropdown-wrapper');
+                  menu.toggleClass('dropdown-block,minimum-width215');
+                  menu.find('.text_ellipsis').toggleClass('minmax-width200');
+                  menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                  menu.find('input[type=checkbox]').toggle();
+                  menu.find('.advance_a').text("> Multi-selection");
+                  menu.find('.advance_a').attr('mode', 'Single');
+                  $(this).find('p:first').text("Please Select");
+                  menu.find('input:checkbox').removeAttr('checked');
+                  menu.find('input[type=text]').val('');
+                  menu.find('input[type=text]').addClass('multiselect-input-text-color-grey');
+                  menu.find('p').addClass('single-p');
+                  menu.find('tr').addClass('trdropdownhover');
+                  menu.find('#aclose_tag').css('display', 'none');
+              }
+          });
+          $('#MultiSelectProcced').slideUp(400);
+          e.stopPropagation();
+      });
 
-    // Modified by Komal Rawal for ticket #1196
-    function isEmpty(el) {
-        return !$.trim(el.html())
-    }
+      // Modified by Komal Rawal for ticket #1196
+      function isEmpty(el) {
+          return !$.trim(el.html())
+      }
 
-    if (isEmpty($('#CustomHtmlHelperfield'))) {
-        $('#CustomHtmlHelperfield').hide();
-        $('#CustomAttributeheading').hide();
-        $('#divTacticSaveCancel').removeClass('border-top-div');//Added by Mitesh Vaishnav for PL ticket 1196
-    }
-    else {
-        $('#CustomHtmlHelperfield').show();
-        $('#CustomAttributeheading').show();
+      if (isEmpty($('#CustomHtmlHelperfield'))) {
+          $('#CustomHtmlHelperfield').hide();
+          $('#CustomAttributeheading').hide();
+          $('#divTacticSaveCancel').removeClass('border-top-div');//Added by Mitesh Vaishnav for PL ticket 1196
+      }
+      else {
+          $('#CustomHtmlHelperfield').show();
+          $('#CustomAttributeheading').show();
 
-    }
+      }
 </script>
