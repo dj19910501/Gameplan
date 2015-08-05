@@ -37,11 +37,14 @@
             </div>
         }
     </div>
+   
 </div>
-<div id="errorMsg" class="alert alert-error hide message-position-small">
+
+<div id="validationMessage" class="alert alert-error hide message-position-small">
     <a class="close">×</a>
-    <strong>Error!</strong> <span id="spanMessage"></span>
+    <strong>Error:</strong> <span id="spanMessage"></span>
 </div>
+
 
 @using (Html.BeginForm(new { @id = "frmSaveTactic" }))
 {
@@ -456,9 +459,13 @@
         /*End: Modified by Mitesh Vaishnav on 05/06/2014 for remove two buttons of save tactics */
 
         function ShowError(value) {
-            $("#errorMsg").slideDown(400);
+            $("#validationMessage").css("display", "block");
+            $("#validationMessage").removeClass("hide");
+            $("#validationMessage").slideDown(400);
             $("#spanMessage").empty();
             $("#spanMessage").text(value);
         }
     });
 </script>
+
+
