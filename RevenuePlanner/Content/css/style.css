@@ -15188,7 +15188,7 @@ font-size: 24px !important;
 /* for improvment frid 27-07-2015 by bheru*/
 .improvement-grid-wrapper .element-disable {
   border: 1px solid #cccccc;
-  margin: 0 22px !important;
+  /*margin: 0 22px !important;*/
 }
 
 .improvement-grid-wrapper {

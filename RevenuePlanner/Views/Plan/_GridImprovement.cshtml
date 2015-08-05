@@ -12,7 +12,7 @@
     var TotalMqls = Model.TotalMqls;
     var NoOfPrograms = Model.Progrmas;
 }
-<div id="divimprovement" class=" margin5  element-disable improvement-grid">
+<div id="divimprovement" class="element-disable improvement-grid">
     <div class=" gray-title-steps source-sans-probold cf">
         <span class="pull-left width55 font-black source-sans-proregular font-dark" style="font-size:25px !important">Improvement Activities</span>
         <span class="pull-right width100px text-right margin-right50">Programs</span>
@@ -80,6 +80,7 @@
     });
 
     $(document).on("click", "#divimpTactic #divPanelImp", function (e) {
+        
         if (isTacticExist == "False") {
             ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
             hdnisError = 'True';
@@ -109,10 +110,22 @@
 
     $(document).on("click", ".add-icon-old.impTactic", function (e) {
         $("#slidepanel").css("display", "none");
+      
+        if (isTacticExist == "False") {
+            ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
+            hdnisError = 'True';
+            Showmsg();
+            return false;
+        }
+        else
+            {
+       
         var idProgram = $(this).parent().parent().attr('data-id-program');
 
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
-    });
+        }
+        });
+
 
     function Showmsg() {
         if (ismsg != '') {
