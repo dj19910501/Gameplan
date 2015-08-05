@@ -262,6 +262,10 @@
         KeyPressOnDropdown();
     });
 
+    $('.trdropdownhover').click(function () {
+        $("#dropdown_btn").text($(this).find('.text_ellipsis').text());
+    });
+
     $(document).click(function () {
         $(document).unbind('keypress');
     });
@@ -296,7 +300,7 @@
                         $(p).closest('tr').focus();
 
                         var x = $(this).position().top;
-                        lastElement.animate({ scrollTop: x }, 300);
+                        lastElement.animate({ scrollTop: x }, 200);
                         return false;
                     }
                 }
@@ -322,7 +326,7 @@
                             cntr = cntr + 1;
 
                             var x = $(this).position().top;
-                            lastElement.animate({ scrollTop: x }, 300);
+                            lastElement.animate({ scrollTop: x }, 200);
                             return false;
                         }
                     });
@@ -344,7 +348,7 @@
                                 $(this).closest('tr').focus();
 
                                 var x = $(this).position().top;
-                                lastElement.animate({ scrollTop: x }, 300);
+                                lastElement.animate({ scrollTop: x }, 200);
                                 return false;
                             }
                         });
@@ -373,7 +377,7 @@
             var $select = $('#dropdown_Table');
             var lastElement = $select.find('tbody');
             var x = $(this).position().top;
-            lastElement.animate({ scrollTop: x }, 300);
+            lastElement.animate({ scrollTop: x }, 200);
         }).delegate("p", "mouseout", function (e) {
             $(this).removeClass('trdropdownhover');
         });
