@@ -12,10 +12,20 @@
     }
 
     List<RevenuePlanner.Models.ViewByModel> ListSortBy = new List<RevenuePlanner.Models.ViewByModel>();
-    foreach (var SortBy in Enums.SortByWaterFallDrp)
-    {
-        ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
-    }
+    //#PL 1482 dashrath prajapati
+    string INQStageLabel = Common.GetLabel(Common.StageModeINQ);
+    string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+    string CWStageLabel = Common.GetLabel(Common.StageModeCW);
+    
+   // foreach (var SortBy in Enums.SortByWaterFallDrp)
+    //{
+     
+    ListSortBy.Add(new ViewByModel { Text = INQStageLabel, Value = "INQ" });
+    ListSortBy.Add(new ViewByModel { Text = MQLStageLabel, Value = "MQL" });
+    ListSortBy.Add(new ViewByModel { Text = CWStageLabel, Value = "CW" });
+    //#PL 1482 dashrath prajapati
+      // ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
+    //}
     // End By Nishant Sheth
     var TotalRecords = Model.TotalRecords;
     var CurrentPageNum = Model.CuurentPageNum;
@@ -28,6 +38,19 @@
     .arrow {
         width: 249px;
         font-size: 40px;
+    }
+    .sorting
+    {
+         float: left;
+         width: 419px;
+    }
+    .select-sortby button
+    {
+        min-width: 105px;
+    }
+    .sorting .geography-dropdown
+    {
+        width:190px;
     }
 </style>
 <div class="revenue-filter" id="div-revenue-filter">
@@ -867,15 +890,16 @@
         $('#current_page').val(page_num);
 
         var ItemPerPage = $('#Itemsperpage :selected').text();
-        var sortBy = $("#ddlSortby :selected").text();
+        var sortBy = $("#ddlSortby :selected").val(); //#PL 1482 changed byDashrath Prajapati
         //myApp.showPleaseWait();
+        
         // var SearchString = $('#txtSearch').val();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
     }
     function ItemsPerPagefunction() {
         var ItemPerPage = $('#Itemsperpage :selected').text();
-        var sortBy = $("#ddlSortby :selected").text();
+        var sortBy = $("#ddlSortby :selected").val(); //#PL 1482 changed byDashrath Prajapati
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
@@ -1006,7 +1030,7 @@
     function SortByFunction() {
         //SortCardSection($("#ddlSortby :selected").val());
         var ItemPerPage = $('#Itemsperpage :selected').text();
-        var sortBy = $("#ddlSortby :selected").text();
+        var sortBy = $("#ddlSortby :selected").val();
         //alert(sortBy);
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
@@ -1022,7 +1046,7 @@
     function SearchByTitle(TitleVal) {
 
         var ItemPerPage = $('#Itemsperpage :selected').text();
-        var sortBy = $("#ddlSortby :selected").text();
+        var sortBy = $("#ddlSortby :selected").val();
         SearchString = $('#txtSearch').val();
         //myApp.showPleaseWait();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;

@@ -2203,7 +2203,7 @@ namespace RevenuePlanner.Controllers
                     List<double> serData1 = new List<double>();
                     List<double> serData2 = new List<double>();
                     List<double> serData3 = new List<double>();
-                    double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0, _plotBandFromValue = 0, _plotBandToValue = 0;
+                    double _Actual = 0, _Projected = 0, _Goal = 0, _plotBandFromValue = 0, _plotBandToValue = 0;
                     bool _IsQuarterly = objBasicModel.IsQuarterly;
                     int _compareValue = 0;
                     serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
@@ -2229,19 +2229,21 @@ namespace RevenuePlanner.Controllers
                         _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
                         _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
                         _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
-                        Actual_Projected = _Actual + _Projected;
+                       // Actual_Projected = _Actual + _Projected;
                         //serData1.Add(Actual_Projected);
                         serData2.Add(_Goal);
-                        if ((i + 1) < (_compareValue))
-                        {
-                            serData1.Add(Actual_Projected);
-                            serData3.Add(0);
-                        }
-                        else
-                        {
-                            serData1.Add(0);
-                            serData3.Add(Actual_Projected);
-                        }
+                        serData1.Add(_Actual);
+                        serData3.Add(_Projected);
+                        //if ((i + 1) < (_compareValue))
+                        //{
+                        //    serData1.Add(Actual_Projected);
+                        //    serData3.Add(0);
+                        //}
+                        //else
+                        //{
+                        //    serData1.Add(0);
+                        //    serData3.Add(Actual_Projected);
+                        //}
                     }
                     List<string> _barChartCategories = new List<string>();
                     if (!IsQuarterly)
@@ -9006,19 +9008,21 @@ namespace RevenuePlanner.Controllers
                     _Actual = objBasicModel.ActualList[i];
                     _Projected = objBasicModel.ProjectedList[i];
                     _Goal = objBasicModel.GoalList[i];
-                    Actual_Projected = _Actual + _Projected;
+                    //Actual_Projected = _Actual + _Projected;
                     //serData1.Add(Actual_Projected);
                     serData2.Add(_Goal);
-                    if ((i + 1) < (_compareValue))
-                    {
-                        serData1.Add(Actual_Projected);
-                        serData3.Add(0);
-                    }
-                    else
-                    {
-                        serData1.Add(0);
-                        serData3.Add(Actual_Projected);
-                    }
+                    serData1.Add(_Actual);
+                    serData3.Add(_Projected);
+                    //if ((i + 1) < (_compareValue))
+                    //{
+                    //    serData1.Add(Actual_Projected);
+                    //    serData3.Add(0);
+                    //}
+                    //else
+                    //{
+                    //    serData1.Add(0);
+                    //    serData3.Add(Actual_Projected);
+                    //}
                 }
 
                 BarChartSeries _chartSeries1 = new BarChartSeries();
@@ -10004,9 +10008,9 @@ namespace RevenuePlanner.Controllers
             #region "Bind TQL,MQL,CW To plan"
             List<ViewByModel> _lstAllocated = new List<ViewByModel>();
 
-            _lstAllocated.Add(new ViewByModel { Text = "INQ To Plan", Value = inqStageCode.ToString() });
-            _lstAllocated.Add(new ViewByModel { Text = "MQL To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString() });
-            _lstAllocated.Add(new ViewByModel { Text = "CW To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString() });
+            _lstAllocated.Add(new ViewByModel { Text = INQStageLabel +" "+ "To Plan", Value = inqStageCode.ToString() });
+            _lstAllocated.Add(new ViewByModel { Text = MQLStageLabel +" "+ "To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString() });
+            _lstAllocated.Add(new ViewByModel { Text = CWStageLabel +" "+ "To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString() });
             ViewBag.lstAllocated = _lstAllocated;
             #endregion
 
@@ -10119,19 +10123,21 @@ namespace RevenuePlanner.Controllers
                 _Actual = objBasicModelDataTable.ActualList[i] != null ? objBasicModelDataTable.ActualList[i] : 0;
                 _Projected = objBasicModelDataTable.ProjectedList[i] != null ? objBasicModelDataTable.ProjectedList[i] : 0;
                 _Goal = objBasicModelDataTable.GoalList[i] != null ? objBasicModelDataTable.GoalList[i] : 0;
-                Actual_Projected = _Actual + _Projected;
+                //Actual_Projected = _Actual + _Projected;
                 //serData1.Add(Actual_Projected);
                 serData2.Add(_Goal);
-                if ((i + 1) < (_compareValue))
-                {
-                    serData1.Add(Actual_Projected);
-                    serData3.Add(0);
-                }
-                else
-                {
-                    serData1.Add(0);
-                    serData3.Add(Actual_Projected);
-                }
+                serData1.Add(_Actual);
+                serData3.Add(_Projected);
+                //if ((i + 1) < (_compareValue))
+                //{
+                //    serData1.Add(Actual_Projected);
+                //    serData3.Add(0);
+                //}
+                //else
+                //{
+                //    serData1.Add(0);
+                //    serData3.Add(Actual_Projected);
+                //}
             }
             List<string> _barChartCategories = new List<string>();
             if (!IsQuarterly)
@@ -11159,7 +11165,7 @@ namespace RevenuePlanner.Controllers
                 List<double> serData1 = new List<double>();
                 List<double> serData2 = new List<double>();
                 List<double> serData3 = new List<double>();
-                double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0;
+                double _Actual = 0, _Projected = 0, _Goal = 0;//, Actual_Projected = 0;
                 bool _IsQuarterly = objBasicModel.IsQuarterly;
                 int _compareValue = 0;
                 _compareValue = _IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
@@ -11179,18 +11185,20 @@ namespace RevenuePlanner.Controllers
                     _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
                     _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
                     _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
-                    Actual_Projected = _Actual + _Projected;
+                    //Actual_Projected = _Actual + _Projected;
                     serData2.Add(_Goal);
-                    if ((i + 1) < (_compareValue))
-                    {
-                        serData1.Add(Actual_Projected);
-                        serData3.Add(0);
-                    }
-                    else
-                    {
-                        serData1.Add(0);
-                        serData3.Add(Actual_Projected);
-                    }
+                    serData1.Add(_Actual);
+                    serData3.Add(_Projected);
+                    //if ((i + 1) < (_compareValue))
+                    //{
+                    //    serData1.Add(Actual_Projected);
+                    //    serData3.Add(0);
+                    //}
+                    //else
+                    //{
+                    //    serData1.Add(0);
+                    //    serData3.Add(Actual_Projected);
+                    //}
                 }
 
                 BarChartSeries _chartSeries1 = new BarChartSeries();
@@ -11323,6 +11331,11 @@ namespace RevenuePlanner.Controllers
             List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
             List<ActualTrendModel> ActualTacticTrendListOverall = new List<ActualTrendModel>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
+            //#PL 1482 Dashrath prajapati
+            string INQStageLabel = Common.GetLabel(Common.StageModeINQ);
+            string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
+            string CWStageLabel = Common.GetLabel(Common.StageModeCW);
+            //end #PL 1482 
             #endregion
 
            
@@ -11462,7 +11475,8 @@ namespace RevenuePlanner.Controllers
                         _inqActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
+                        objCardSectionSubModel.CardType = INQStageLabel;
                         objCardSectionSubModel.Actual_Projected = _inqActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
@@ -11518,7 +11532,8 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString();
+                        objCardSectionSubModel.CardType = MQLStageLabel;
                         _mqlActual = 0;
                         _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue); ;
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
@@ -11583,7 +11598,8 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
+                        objCardSectionSubModel.CardType = CWStageLabel;
                         cwActualvalue = 0;
                         cwActualvalue = ActualTacticTrendList.Sum(actual => actual.TrendValue);
                         objCardSectionSubModel.Actual_Projected = cwActualvalue;
@@ -11614,7 +11630,8 @@ namespace RevenuePlanner.Controllers
                         _inqActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == projectedStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
+                        objCardSectionSubModel.CardType = INQStageLabel;
                         objCardSectionSubModel.Actual_Projected = _inqActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
@@ -11636,7 +11653,8 @@ namespace RevenuePlanner.Controllers
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
                         //objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString(); // Change By Nishat Sheth
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString(); // Change By Nishat Sheth
+                        objCardSectionSubModel.CardType = MQLStageLabel;
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
@@ -11666,7 +11684,8 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
+                        //objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
+                        objCardSectionSubModel.CardType = CWStageLabel;
                         objCardSectionSubModel.Actual_Projected = _cwActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
