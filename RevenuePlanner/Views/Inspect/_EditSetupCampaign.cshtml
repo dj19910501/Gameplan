@@ -589,7 +589,7 @@
                                 inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                                 }
                                 loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            RefreshCurrentTab(requestedModule, 0, 0, 0);
+                           // RefreshCurrentTab(requestedModule, 0, 0, 0);
 
                         }
                         if ($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()') {
@@ -602,7 +602,7 @@
                                     inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                                 }
                             loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            RefreshCurrentTab(requestedModule, 0, 0, 0);
+                           // RefreshCurrentTab(requestedModule, 0, 0, 0);
                         }
                         else {
                             $("#successMessage").css("display", "block");
@@ -624,7 +624,7 @@
                                 $("#hdnBudgetingIsSave").val("true");
                             }
                             else {
-                                RefreshCurrentTab(requestedModule, planCampaignId, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                               // RefreshCurrentTab(requestedModule, planCampaignId, 0, 0);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             }
 
                             returnparameter = true;

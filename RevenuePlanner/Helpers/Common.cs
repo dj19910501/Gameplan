@@ -4113,14 +4113,20 @@ namespace RevenuePlanner.Helpers
                 description = a.Description,
                 isRequired = a.IsRequired,
                 entityType = a.EntityType,
-                value = a.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? a.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList() : null,
                 option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
                 {
                     customFieldOptionId = o.CustomFieldOptionId,
                     value = o.Value
                 }).OrderBy(o => o.value).ToList()
 
-            }).OrderBy(a => a.name).ToList();
+            }).ToList();
+            List<int> customFieldIds = lstCustomFields.Select(cs => cs.customFieldId).ToList();
+            var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
+            foreach (var CustomFieldId in customFieldIds)
+            {
+                lstCustomFields.Where(c => c.customFieldId == CustomFieldId).FirstOrDefault().value = EntityValue.Where(ev => ev.CustomFieldId == CustomFieldId).Select(ev => ev.Value).ToList();
+            }
+           
             return lstCustomFields;
         }
         /// <summary>

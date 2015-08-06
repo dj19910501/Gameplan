@@ -2534,10 +2534,8 @@ function CloseIconClick() {
         $("#modal-container-186470").addClass("transition-close");
         $("#modal-container-186470").removeClass("transition_y");
         addDefaultModalPopupBackgroungColor();
-        if (isDataModified) {
-            window.location.reload();
-        }
-        else {
+        RefreshCurrentTab();
+        if (!isDataModified) {
             $('body').removeClass('bodyOverflow');
             gantt.refreshData();	//Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
         }

@@ -417,7 +417,7 @@
                                 inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                             }
                             loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                            RefreshCurrentTab(requestedModule, 0, 0, 0);
+                            //RefreshCurrentTab(requestedModule, 0, 0, 0);
                         }
                         else{
                             $("#successMessage").css("display", "block");
@@ -429,7 +429,7 @@
                             $("#spnImprovementTacticTitle").removeAttr("style");
                             $("#txtTitle").val(txtTacticValue);
                             $('#spnImprovementTacticTitle').text(txtTacticValue);
-                            RefreshCurrentTab(requestedModule, 0, 0, 0);
+                           RefreshCurrentTab(requestedModule, 0, 0, 0);
                             returnparameter=true;
                             
                             return;

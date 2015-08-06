@@ -801,7 +801,7 @@
                                     inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
                                 }
                                 loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
-                                RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
+                               // RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
                             }
                             else{
                             
@@ -822,7 +822,7 @@
                                 $("#hdnBudgetingIsSave").val("true");
                             }
                             else {
-                                RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                                //RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             }
                             $("#ddlcampaign").val(ddlcampaignValue);
                             $("#ddlProgram").val(ddlProgramValue);

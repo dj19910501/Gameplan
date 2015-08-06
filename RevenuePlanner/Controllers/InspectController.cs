@@ -654,7 +654,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                ViewBag.OwnerName = Common.GetUserName(Sessions.User.UserId.ToString());
+                ViewBag.OwnerName = Sessions.User.FirstName + " " + Sessions.User.LastName;//Common.GetUserName(Sessions.User.UserId.ToString());
             }
             catch (Exception e)
             {
@@ -1477,7 +1477,7 @@ namespace RevenuePlanner.Controllers
 
                     ViewBag.IsServiceUnavailable = false;
                     ViewBag.OwnerName = Common.GetUserName(pcp.CreatedBy.ToString());
-                  
+
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
@@ -2209,29 +2209,8 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsCreated = true;
             ViewBag.CampaignTitle = pcp.Title;
-            User userName = new User();
-            try
-            {
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                ViewBag.IsServiceUnavailable = false;
-                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
-            ViewBag.OwnerName = userName.FirstName + " " + userName.LastName;
+            ViewBag.OwnerName = Sessions.User.FirstName + " " + Sessions.User.LastName;
 
             #region "Set Plan_Campaign_ProgramModel to pass into Partialview"
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
@@ -3364,7 +3343,7 @@ namespace RevenuePlanner.Controllers
                                 bool isOwner = false;
                                 string status = string.Empty;
                                 int oldProgramId = 0;
-                                string oldProgramTitle="";
+                                string oldProgramTitle = "";
                                 int oldCampaignId = 0;
                                 #endregion
                                 //Start - Added by Mitesh Vaishnav for PL ticket #1137
@@ -3387,7 +3366,7 @@ namespace RevenuePlanner.Controllers
                                 if (pcpobj.PlanProgramId != form.PlanProgramId)
                                 {
                                     oldProgramId = pcpobj.PlanProgramId;
-                                    oldProgramTitle=pcpobj.Plan_Campaign_Program.Title;
+                                    oldProgramTitle = pcpobj.Plan_Campaign_Program.Title;
                                     oldCampaignId = pcpobj.Plan_Campaign_Program.PlanCampaignId;
                                     pcpobj.PlanProgramId = form.PlanProgramId;
                                     db.Entry(pcpobj).State = EntityState.Modified;
@@ -3610,7 +3589,7 @@ namespace RevenuePlanner.Controllers
                                         }
 
                                     }
-                                   
+
                                 }
                                 // End - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
                                 // Start Added by dharmraj for ticket #644
@@ -3714,7 +3693,7 @@ namespace RevenuePlanner.Controllers
 
                                     scope.Complete();
                                     string strMessag = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid,tacticStatus=pcpobj.Status });
+                                    return Json(new { IsDuplicate = false, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId }), Msg = strMessag, planTacticId = pcpobj.PlanTacticId, planCampaignId = cid, planProgramId = pid, tacticStatus = pcpobj.Status });
                                 }
                             }
                         }
@@ -3790,32 +3769,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
             pcptm.TacticCost = 0;
             pcptm.AllocatedBy = objPlan.AllocatedBy;
-
-            User userName = new User();
-            try
-            {
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                ViewBag.IsServiceUnavailable = false;
-
-                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
-
-            pcptm.Owner = (userName.FirstName + " " + userName.LastName).ToString();
+            pcptm.Owner = (Sessions.User.FirstName + " " + Sessions.User.LastName).ToString();
             #endregion
 
             if (tactics.ToList().Count == 1)
@@ -4339,7 +4293,7 @@ namespace RevenuePlanner.Controllers
                 if (lstClientUsers.Count() > 0)
                 {
                     string strUserList = string.Join(",", lstClientUsers);
-                 
+
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
                     if (lstUserDetails.Count > 0)
                     {
@@ -4804,28 +4758,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.IsOwner = true;
                 ViewBag.RedirectType = false;
                 ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(Sessions.PlanId)).Year;
-
-
-                User userName = new User();
-                try
-                {
-                    userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-                }
-                catch (Exception e)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-
-                    //To handle unavailability of BDSService
-                    if (e is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        //// Flag to indicate unavailability of web service.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-                    }
-                }
-
-                pitm.Owner = userName.FirstName + " " + userName.LastName;
+                pitm.Owner = Sessions.User.FirstName + " " + Sessions.User.LastName;
                 ViewBag.TacticDetail = pitm;
                 return PartialView("_SetupImprovementTactic", pitm);
             }
@@ -6422,29 +6355,8 @@ namespace RevenuePlanner.Controllers
                 item.Title = HttpUtility.HtmlDecode(item.Title);
             }
             ViewBag.lineItemTypes = lineItemTypes;
-            User userName = new User();
-            try
-            {
-                //// Flag to indicate unavailability of web service.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                ViewBag.IsServiceUnavailable = false;
-                userName = objBDSUserRepository.GetTeamMemberDetails(Sessions.User.UserId, Sessions.ApplicationId);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
-
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    ViewBag.IsServiceUnavailable = true;
-                }
-            }
-            ViewBag.Owner = userName.FirstName + " " + userName.LastName;
+           
+            ViewBag.Owner = Sessions.User.FirstName + " " + Sessions.User.LastName;
 
             #region "Set data to Plan_Campaign_Program_Tactic_LineItemModel to pass into PartialView"
             Plan_Campaign_Program_Tactic_LineItemModel pc = new Plan_Campaign_Program_Tactic_LineItemModel();
@@ -6475,7 +6387,7 @@ namespace RevenuePlanner.Controllers
                     int Tacticid = Convert.ToInt32(Id);
                     int pid = db.Plan_Campaign_Program_Tactic.Where(program => program.PlanTacticId == Tacticid).Select(program => program.PlanProgramId).FirstOrDefault();
                     int cid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == pid).Select(program => program.PlanCampaignId).FirstOrDefault();
-                   
+
                     var objpcpt = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == Tacticid).FirstOrDefault();
 
                     //// Get Tactic duplicate record.
@@ -6494,7 +6406,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        
+
                         Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(Tacticid)).FirstOrDefault();
                         pcpobj.Title = title;
                         db.Entry(pcpobj).State = EntityState.Modified;
@@ -6509,19 +6421,19 @@ namespace RevenuePlanner.Controllers
                     int tid = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanLineItemId == PlanLineItemId).FirstOrDefault().PlanTacticId;
                     int cid = 0;
                     int pid = 0;
-                 
+
 
                     var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == tid);
                     if (objTactic != null)
                     {
                         cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
                         pid = objTactic.PlanProgramId;
-                      
+
                     }
                     else
                     {
                         objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == PlanLineItemId);
-                     
+
                         cid = objTactic.Plan_Campaign_Program.PlanCampaignId;
                         pid = objTactic.PlanProgramId;
                     }
@@ -6544,19 +6456,19 @@ namespace RevenuePlanner.Controllers
                     else
                     {
                         Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(PlanLineItemId));
-                          objLineitem.Title = title;
-                          objLineitem.ModifiedBy = Sessions.User.UserId;
-                          objLineitem.ModifiedDate = DateTime.Now;
-                          db.Entry(objLineitem).State = EntityState.Modified;
-                          db.SaveChanges();
-                          string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    
-                          return Json(new { IsDuplicate = false, msg = strMessage, planLineitemID = PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
-                         
+                        objLineitem.Title = title;
+                        objLineitem.ModifiedBy = Sessions.User.UserId;
+                        objLineitem.ModifiedDate = DateTime.Now;
+                        db.Entry(objLineitem).State = EntityState.Modified;
+                        db.SaveChanges();
+                        string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);
+                        return Json(new { IsDuplicate = false, msg = strMessage, planLineitemID = PlanLineItemId, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
+
                     }
                 }
                 else if (ActivePopup == "Program")
                 {
-                  
+
                     int Planprogramid = Convert.ToInt32(Id);
                     int PlanCampaignid = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == Planprogramid).Select(program => program.PlanCampaignId).FirstOrDefault();
 
@@ -6573,7 +6485,7 @@ namespace RevenuePlanner.Controllers
                     //// if duplicate record exist then return with duplication message.
                     if (pcpvar != null)
                     {
-                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);  
+                        string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);
                         return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
                     }
                     else
@@ -6595,7 +6507,7 @@ namespace RevenuePlanner.Controllers
                 {
                     int Campaignid = Convert.ToInt32(Id);
                     //// Get PlanId by PlanCampaignId.
-                   var planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(Campaignid)).FirstOrDefault().PlanId;
+                    var planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(Campaignid)).FirstOrDefault().PlanId;
                     //// check for duplicate record.
                     var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(title.Trim().ToLower()) && !plancampaign.PlanCampaignId.Equals(Campaignid))).FirstOrDefault();
 
@@ -6678,7 +6590,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult LoadProgramList(string ParentId)
         {
-            int parentCampaignId=0;
+            int parentCampaignId = 0;
             if (!string.IsNullOrEmpty(ParentId))
             {
                 parentCampaignId = Convert.ToInt32(ParentId);
@@ -6769,7 +6681,7 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditable = false;
                 bool IsPlanCreateAll = false;
 
-            
+
                 #endregion
 
                 //// load section wise data to ViewBag.
@@ -6843,7 +6755,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
+                            if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                             {
                                 IsPlanCreateAll = true;
                             }
@@ -6886,7 +6798,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
+                            if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
                             {
                                 IsPlanCreateAll = true;
                             }
@@ -6941,7 +6853,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
+                            if (objPlan_Campaign_Program_Tactic_LineItem.CreatedBy.Equals(Sessions.User.UserId))
                             {
                                 IsPlanCreateAll = true;
                             }
