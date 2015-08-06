@@ -217,10 +217,6 @@
         KeyPressOnDropdown();
     });
 
-    $('.trdropdownhover').click(function () {
-        $("#dropdown_btn").text($(this).find('.text_ellipsis').text());
-    });
-
     $(document).click(function () {
         $(document).unbind('keypress');
     });
@@ -311,11 +307,8 @@
             });
             if ($nextdata != -1) {
                 $nextdata.removeClass('trdropdownhover');
-                // $("trdropdownhover", $this).removeClass('trdropdownhover');
-                $nextdata.addClass('trdropdownhover').focus();
-                $("#dropdown_btn").text($nextdata.text());
-                //$(".dropdown_new_btn").text($nextdata.text());
-
+                $nextdata.addClass('trdropdownhover').focus();              
+                $("#dropdown_btn p:first").text($nextdata.text());            
             }
             clearTimeout(selectbox_keys_timeout);
             var selectbox_keys_timeout = setTimeout(function () {
@@ -325,11 +318,6 @@
             return false;
         }).delegate("p", "mouseover", function (e) {
             $(this).addClass('trdropdownhover');
-            var $select = $('#dropdown_Table');
-            var lastElement = $select.find('tbody');
-            var x = $(this).position().top;
-            lastElement.animate({ scrollTop: x }, 200);
-
         }).delegate("p", "mouseout", function (e) {
             $(this).removeClass('trdropdownhover');
         });

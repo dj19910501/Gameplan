@@ -11825,6 +11825,9 @@ li.close-list {
     color: #6c6c6c;
     font-size: 14px;
     line-height: 21px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;    
 }
 
 .table_drpdwn tr { /*height: 40px;*/
