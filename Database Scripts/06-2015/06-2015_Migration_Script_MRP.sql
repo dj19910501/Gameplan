@@ -186,3 +186,21 @@ GO
 IF  EXISTS (SELECT * FROM sys.foreign_keys WHERE object_id = OBJECT_ID(N'[dbo].[FK_IntegrationInstance_UnprocessData_IntegrationInstance]') AND parent_object_id = OBJECT_ID(N'[dbo].[IntegrationInstance_UnprocessData]'))
 ALTER TABLE [dbo].[IntegrationInstance_UnprocessData] CHECK CONSTRAINT [FK_IntegrationInstance_UnprocessData_IntegrationInstance]
 GO
+
+-- Added by Viral Kadiya 08-06-2015.
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[IntegrationInstanceLogDetails]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[IntegrationInstanceLogDetails](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[EntityId] [int] NOT NULL,
+	[IntegrationInstanceLogId] [int] NULL,
+	[LogTime] [datetime] NOT NULL,
+	[LogDescription] [nvarchar](max) NULL,
+ CONSTRAINT [PK_IntegrationInstanceLogDetails] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+GO
