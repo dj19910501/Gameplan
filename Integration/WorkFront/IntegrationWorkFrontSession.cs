@@ -26,7 +26,6 @@ namespace Integration.WorkFront
     /// </summary>
     public class IntegrationWorkFrontSession
     {
-        public string __errorMessage { get; set; }
         private ClientHandling client;
         private EntityType _entityType { get; set; }
         private int _entityID { get; set; }
@@ -48,7 +47,6 @@ namespace Integration.WorkFront
         private int _integrationInstanceId { get; set; }
         private int _integrationInstanceLogId { get; set; }
         private Dictionary<Guid, string> _mappingUser { get; set; }
-        private List<string> IntegrationInstanceTacticIds { get; set; }
         private string _errorMessage;
         public string errorMessage
         {
@@ -66,8 +64,6 @@ namespace Integration.WorkFront
                 return _isAuthenticated;
             }
         }
-        private Dictionary<string, string> WorkFrontFields { get; set; }
-        private Dictionary<string, string> GameplanTacticFields { get; set; }
         private List<string> statusList { get; set; }
 
         /// <summary>
@@ -78,29 +74,6 @@ namespace Integration.WorkFront
         {
 
         }
-
-         /// <summary>
-         /// Session constructor using passed integrationInstanceId. Using this, we should be able to 
-         /// retrieve need info to create session, login, etc.
-         /// </summary>
-         /// <param name="integrationInstanceId">
-         /// IntegrationInstanceID per the database. 
-         /// </param>
-         public IntegrationWorkFrontSession(int integrationInstanceId)
-         {
-             _integrationInstanceId = integrationInstanceId;
-             try
-             {
-                 GetIntegrationInstanceDetails();
-                 doLogin_Authentication();
-             }
-             catch (Exception ex)
-             {
-                 //catch and keep the error, but let Gp decide how to handle 
-                 this._errorMessage = ex.Message;
-             }
-             
-         }
 
          /// <summary>
          /// Parameterized constructor.
@@ -918,137 +891,7 @@ namespace Integration.WorkFront
             return mappingError;
         }
 
-        /// <summary>
-        /// Searches for, gets, and displays all projects attached to the client
-        /// </summary>
-        /// <returns>
-        /// A condensed arrayList of project names.
-        /// </returns>
-        public List<string> RetrieveProjectIDs()
-        {
-            JToken projects;
-            List<string> projectIDs = new List<string>();
-            try
-            {
-                projects = client.Search(ObjCode.PROJECT, new { groupID = _userGroupID, fields = "ID" });
-                foreach (var proj in projects["data"].Children())
-                {
-                    projectIDs.Add(proj.Value<string>("ID"));
-                }
-            }
-            catch(ClientException)
-            {
-                projects = null;
-            }
-            return projectIDs;
-        }
-
-        /// <summary>
-        /// Searches for, gets, and returns a project by name. 
-        /// Information included is default information. Can be changed to include more information.
-        /// Default information is 9 fields: ID, name, objCode, percentComplete, plannedCompletionDate,
-        /// planedStartDate, priority, projectedCompletionDate, and status
-        /// </summary>
-        /// <returns>
-        /// JToken with project information
-        /// </returns>
-        public JToken SearchByName(String projectName)
-        {
-            JToken project = client.Search(ObjCode.PROJECT, new { name = projectName });
-            return project;
-        }
-
-        /// <summary>
-        /// Basic test method for creating a project given the desired project name. 
-        /// Creates a default project with the project name, and does nothing more
-        /// </summary>
-        /// <param name="projectName">
-        /// Method will create a project named from projectName
-        /// </param>
-        public void CreateNewProject(string projectName)
-        {
-            JToken project = client.Create(ObjCode.PROJECT, new { name = projectName, groupID = _userGroupID });
-            Console.WriteLine(project);
-        }
-
-        /// <summary>
-        /// For use when creating a project with a template in mind.
-        /// All in one api command not yet found, so method is completed with a few api calls.
-        /// First: create the project with projectName. Second: attach the template (currently hard coded).
-        /// Third: Edit the scheduling mode to schedule from the completion date, and edit the completion date itself.
-        /// Workfront scheduling is based off the completion date by starting the project earlier based off the template
-        /// timeline.
-        /// </summary>
-        /// <param name="projectName">
-        /// Method will create a project named from projectName
-        /// </param>
-        /// <param name="completionDate">
-        /// This needs to be the start date of the tactic per Gameplan. This will be the completion date per Workfront
-        /// Workfront scheduling is 
-        /// </param>
-        public void CreateNewProjectFromTemplate(string projectName, DateTime completionDate)
-        {
-            try
-            {
-                Console.WriteLine("** Creating project...");
-                JToken project = client.Create(ObjCode.PROJECT, new { name = projectName, groupID = _userGroupID });
-                if (project == null) { throw new ClientException("Project Not Created"); }
-                AddTemplate((string)project["data"]["ID"], "Timeline Template");
-                JToken tempToken = JToken.Parse("{scheduleMode:'C', plannedCompletionDate:'" + completionDate + "'}");
-                EditProject((string)project["data"]["ID"], tempToken);
-                Console.WriteLine("Done");
-                Console.WriteLine();
-            }
-            catch(ClientException e)
-            {
-                Console.WriteLine(e.Message);
-            }
-            
-
-        }
-
-        /// <summary>
-        /// Edits an existing project when given the project ID and the desired edits.
-        /// Per Workfront API guide, Editing must be done with project ID. 
-        /// Edits can be either by listing fields separated by '&' or by JSON ('updates=JSON')
-        /// Method currently takes edits as a JSON and uses the JSON edit method.
-        /// Currently displays the edited project for visual verification.
-        /// </summary>
-        /// <param name="projectID">
-        /// ID of the project as used by Workfront as a string. Edits must be done by project ID, so this must be passed in
-        /// </param>
-        /// <param name="edits">
-        /// Edits as a JToken
-        /// </param>
-        public void EditProject(String projectID, JToken desiredEdits)
-        {
-            Console.WriteLine("** Editing project...");
-            
-            
-            JToken project = client.Update(ObjCode.PROJECT, new { id = projectID, updates = desiredEdits });
-            Console.WriteLine(project);
-            Console.WriteLine("Done");
-            Console.WriteLine();
-            
-        }
-
-        /// <summary>
-        /// Deletes a project by project ID. Not likely to be used by Gp.
-        /// </summary>
-        /// <param name="projectID">
-        /// ID of the project as used by Workfront as a string. ProjectID is safest as Workfront allows
-        /// for duplicated names
-        /// </param>
-        public void DeleteProject(string projectID)
-        {
-            Console.WriteLine("Deleting project...");
-            JToken deleted = client.Delete(ObjCode.PROJECT, new { id = projectID });
-            Console.WriteLine(deleted);
-            Console.WriteLine("Done");
-            Console.WriteLine();
-        }
-
-        /// <summary>
+            /// <summary>
         /// Adds an issue to a project by project ID. Not likely to be used by Gp. 
         /// Displays the issue after creation with default info for visual verification.
         /// </summary>
@@ -1066,8 +909,6 @@ namespace Integration.WorkFront
                 Console.WriteLine(client.Search(ObjCode.ISSUE, new { projectID = projectID, fields = "projectID" }));
                 Console.WriteLine("Done");
                 Console.WriteLine();
-			
-             
         }
 
         /// <summary>
@@ -1104,36 +945,6 @@ namespace Integration.WorkFront
                  Console.WriteLine(" ");
              }
         }
-
-        /// <summary>
-        /// Attaches a template to a project. Must still determine action to take if template doesn't exist.
-        /// Exception handling to be added, but information currently planned to be passed to method via
-        /// GUI drop down box.
-        /// </summary>
-        /// <param name="projectID">
-        /// ID of the project as used by Workfront as a string. ProjectID is safest as Workfront allows
-        /// for duplicated names
-        /// </param>
-        /// <param name="templateName">
-        /// name of the template to attach to project. Must match exactly to template name in Workfront.
-        /// </param>
-        public void AddTemplate(string projectID, string templateName)
-        {
-            Console.WriteLine("** Adding template to project...");
-            try
-            {
-                JToken templateInfo = client.Search(ObjCode.TEMPLATE, new { name = templateName });
-                string templateID = (string)templateInfo["data"][0]["ID"];
-                client.Update(ObjCode.PROJECT, new { ID = projectID, action = "attachTemplate", templateID = templateID });
-            }
-            catch (System.ArgumentOutOfRangeException)
-            {
-                throw new ClientException("Template Information not found. Template not attached to project.");
-            }
-           
-            
-        }
-
 
         /// <summary>Returns a list of all workfront fields as an API as stored in Fields.cs  </summary>
         /// <returns>
