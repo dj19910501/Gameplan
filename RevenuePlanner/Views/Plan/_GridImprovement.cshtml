@@ -7,7 +7,7 @@
         ImprovementPlanProgramId = Model.ImprovementPlanProgramId;
     }
 
-    var isTacticExist = Model.IsTacticExists;
+    //var isTacticExist = Model.IsTacticExists;
     var TotalCost = Model.TotalCost;
     var TotalMqls = Model.TotalMqls;
     var NoOfPrograms = Model.Progrmas;
@@ -67,7 +67,6 @@
     var mqlTotal = '@TotalMqls';
     var costTotal = 0;
     var programTotal = '@NoOfPrograms';
-    var isTacticExist = '@isTacticExist';
     var ImpTacticId;
     var hdnisError = false;
     $(document).ready(function () {
@@ -78,7 +77,31 @@
 
      
     });
+    function ImprovementClick() {
+        //$("#DivAccordionImprovementActivities").find
+        $("a[id^='divimpTactic']").find("span[id^='divPanelImp']").click(function (e) {
+            if (isTacticExist == "False") {
+                ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
+                hdnisError = 'True';
+                Showmsg();
+                return false;
+            }
+            e.stopPropagation();
+            $.ajaxSetup({ cache: false });
+            var idTactic = $(this).parent().attr("index");
 
+            if (idTactic == 0) {
+                $("a#divimpTactic").removeClass('1');
+                $(this).parent().addClass('1');
+                var improvementTacticId = $("a#divimpTactic.1").attr('data-id-program');
+            }
+
+            displayConfirmCommonImprovement('impTacticCommonClick(' + idTactic + ',' + improvementTacticId + ');');
+        });
+    }
+
+    @*function sds() {
+        alert('click');
     $(document).on("click", "#divimpTactic #divPanelImp", function (e) {
         
         if (isTacticExist == "False") {
@@ -94,11 +117,12 @@
         if (idTactic == 0) {
             $("a#divimpTactic").removeClass('1');
             $(this).parent().addClass('1');
-            ImpTacticId = $("a#divimpTactic.1").attr('data-id-program');
+                var improvementTacticId = $("a#divimpTactic.1").attr('data-id-program');
         }
 
-        displayConfirmCommonImprovement('impTacticCommonClick(' + idTactic + ');');
+            displayConfirmCommonImprovement('impTacticCommonClick(' + idTactic + ',' + improvementTacticId + ');');
     });
+    }*@
 
     $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
 
@@ -108,7 +132,9 @@
         e.stopPropagation();
     });
 
-    $(document).on("click", ".add-icon-old.impTactic", function (e) {
+    function AddIconClick() {
+        //  $(document).on("click", ".add-icon-old.impTactic", function (e) {
+        $("div[class^='add-icon-old impTactic']").click(function (e) {
         $("#slidepanel").css("display", "none");
       
         if (isTacticExist == "False") {
@@ -117,14 +143,13 @@
             Showmsg();
             return false;
         }
-        else
-            {
        
         var idProgram = $(this).parent().parent().attr('data-id-program');
 
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", 0, idProgram, '@Enums.InspectPopupRequestedModules.Index.ToString()');
-        }
+
         });
+    }
 
 
     function Showmsg() {
@@ -164,6 +189,8 @@
                 }
 
                 loadscript(ImprovementTactic.length);
+                ImprovementClick();
+                AddIconClick();
             }
         });
     }

@@ -1,4 +1,8 @@
 ﻿@model RevenuePlanner.Models.Plangrid
+
+@{
+    var isTacticExist = Model.ImprovementObj.IsTacticExists;
+}
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxTreeGrid.js")">
 </script>
@@ -48,7 +52,7 @@
 </div>
 <script type="text/javascript">
     var HomeGrid;
-
+      var isTacticExist = '@isTacticExist';
     var revenue = "Revenue : $" + number_format('@Model.Revenue', 0, '.', ',');
     $("#spnrevenue").html(revenue);
     var mql = '@Model.MQLLable' + " : " + number_format('@Model.MQLValue', 0, '.', ',');
