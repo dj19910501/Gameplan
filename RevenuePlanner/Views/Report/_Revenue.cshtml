@@ -100,7 +100,8 @@
     var tempRevenueHeader = [];
     var BackFwdRevenueList = [];
     var RevIsnextprev = false;
-    var IsGotoPage = true;
+    var IsGotoPage = false;
+    
     $(function () {
         var options = {
 
@@ -180,7 +181,7 @@
             var HeadTitle = document.getElementById('head-title');
             HeadTitle.innerHTML = decodeURIComponent(_BackHeadValues.HeadHireachy);
             $("#head-title").attr('title', '' + decodeURIComponent(HeadTitle.innerHTML) + '');
-            $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect({
+            $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan").multiselect({
                 multiple: false,
                 noneSelectedText: "Please Select",
                 selectedList: 1,

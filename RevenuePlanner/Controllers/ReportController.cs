@@ -1971,7 +1971,7 @@ namespace RevenuePlanner.Controllers
             {
 
                 _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
-                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected) + _actualtotal; // Change By Nishant #1420
                 _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
                 _goalYTD = objBasicModel.GoalYTD.Sum(goalYTD => goalYTD);
             }
@@ -2010,7 +2010,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region Calculate Projected Value
-                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected) + _actualtotal;// Change by Nishant #1420;
                 #endregion
             }
             _ActualPercentage = _goalYTD != 0 ? (((_actualtotal - _goalYTD) / _goalYTD) * 100) : 0;
@@ -2042,6 +2042,9 @@ namespace RevenuePlanner.Controllers
                 ReportModel objReportModel = new ReportModel();
 
                 #endregion
+            //// check planids selected or not
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
+            {
                 //Update logic by Bhavesh : Report Review code
                 // Start - Added by Arpita Soni for Ticket #1148 on 01/30/2015
                 // To avoid summary display when no published plan selected (It displays no data found message.)
@@ -2050,9 +2053,6 @@ namespace RevenuePlanner.Controllers
                 var plan = db.Plans.Where(p => Sessions.ReportPlanIds.Contains(p.PlanId) && p.Status.ToLower() == PublishedPlan).FirstOrDefault();
                 // End - Added by Arpita Soni for Ticket #1148 on 01/30/2015
 
-                //// check planids selected or not
-                if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 && plan != null)
-                {
                 //// set viewbag to display plan or msg
                 ViewBag.IsPlanExistToShowReport = true;
 
@@ -9806,7 +9806,7 @@ namespace RevenuePlanner.Controllers
             {
 
                 _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
-                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected) + _actualtotal;// Change by Nishant #1420
                 _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
                 _goalYTD = objBasicModel.GoalYTD.Sum(goalYTD => goalYTD);
             }
@@ -9846,7 +9846,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region Calculate Projected Value
-                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected);
+                _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected) + _actualtotal;// Change by Nishant #1420
                 #endregion
             }
             _ActualPercentage = _goalYTD != 0 ? (((_actualtotal - _goalYTD) / _goalYTD) * 100) : 0;

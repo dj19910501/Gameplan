@@ -27,7 +27,7 @@
     }
 </style>
 <div class="revenue-filter" id="div-revenue-filter">
-    <div class="sorting">
+    <div class="sorting" style="width:auto;">
         <div class="geography-dropdown">
             <h5>Sort By</h5>
             <div class="select-sortby">
@@ -52,7 +52,7 @@
     </div>
 </div>
 <div id="dvCardSectionData"></div>
-<div class="card-pagination">
+<div class="card-pagination" id="div-card-pagination">
     <div class="paging" id="page_navigation" style="width:100%">
     </div>
 
@@ -222,10 +222,7 @@
             }
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '<div>';
-            //  _cardhtml = _cardhtml + ' <p class="revanue-p-right">';
-            //  _cardhtml = _cardhtml + '<input "' + _chkCompareId + '" type="checkbox" /><label> Add to Compare</label>';
-            //  _cardhtml = _cardhtml + '</p>';
-            //  _cardhtml = _cardhtml + '<button id="' + _btnCompareId + '" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="' + _btnCompareId + '">Compare</button>';
+
             _cardhtml = _cardhtml + '</div>';
             _cardhtml = _cardhtml + '</div>';
 
@@ -278,7 +275,8 @@
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1,
-        });
+        }).multiselectfilter({});
+
         LoadPagination();
 
     });
@@ -291,10 +289,7 @@
             var linechartDivId = "#" + chartId[i].toString();
             BindLineChart(_chartdata[i].categories, _chartdata[i].todayValue, _chartdata[i].isDisplay, _chartdata[i].series, linechartDivId, 150, true);
             // $(linechartDivId).css('width', '200px');
-
         }
-
-
 
     }
     function formatSetsubValues() {
@@ -682,18 +677,77 @@
         //set the value of our hidden input fields
         $('#current_page').val('@CurrentPageNum');
         $('#show_per_page').val(show_per_page);
+        var defaultPrev = 0;
+        if ('@CurrentPageNum' != '0') {
+            defaultPrev = parseInt('@CurrentPageNum') - 1;
+        }
+        var navigation_html = "";
+        if ('@CurrentPageNum' == '0') {
+            navigation_html = '<ul> <li disabled=true class="disabled"><a>«</a> </li>';
+            navigation_html += '<li id="firstnum" class="page_link" onclick="javascript:go_to_page(0);" style="cursor: pointer;display:none;"><span>1</span></li>';
+            navigation_html += '<li id="prevmore" class="page_link"  onclick="javascript:PrevNextDotButtons(' + defaultPrev + ',\'prev\')" style="cursor: pointer; display:none;"><span>...</span></li>';
+            //PrevNextDotButtons(6, 'next');
+        } else {
 
-        var navigation_html = '<ul> <li><a href="javascript:previous();">«</a> </li>';
+            navigation_html = '<ul> <li onclick="javascript:previous();" style="cursor: pointer;"><a href="javascript:previous();">«</a> </li>';
+            for (var i = 0; i < NumberOfArray; i++) {
+                var PageSeries = SeriresofNum[i].split(',');
+                if (PageSeries.indexOf("@CurrentPageNum") > -1) {
+                    var minimum = Array.min(PageSeries);
+                    var maximum = Array.max(PageSeries);
+                    if (minimum >= 6) {
+                        //navigation_html += '<li id="prevmore" class="page_link" onclcick="javascript:go_to_page(' + parseInt(parseInt(minimum) - 6) + ');" style="cursor:pointer;"><a href="javascript:go_to_page(' + parseInt(parseInt(minimum) - 6) + ');"><span>...</span></a></li>';
+                        navigation_html += '<li id="firstnum" class="page_link" onclick="javascript:go_to_page(0);" style="cursor: pointer;"><span>1</span></li>';
+                        navigation_html += '<li id="prevmore" class="page_link"  onclick="javascript:PrevNextDotButtons(' + defaultPrev + ',\'prev\')" style="cursor: pointer;"><span>...</span></li>';
+
+                    }
+                    else {
+                        navigation_html += '<li id="firstnum" class="page_link" onclick="javascript:go_to_page(0);" style="cursor: pointer;display:none;"><span>1</span></li>';
+                        navigation_html += '<li id="prevmore" class="page_link"  onclick="javascript:PrevNextDotButtons(' + defaultPrev + ',\'prev\')" style="cursor: pointer; display:none;"><span>...</span></li>';
+                        //PrevNextDotButtons(parseInt(maximum + 1), 'next');
+                    }
+                }
+            }
+        }
         //navigation_html += '<li id="prevmore">...</li>';
         var current_link = 0;
         while (number_of_pages > current_link) {
-            navigation_html += '<li class="page_link" longdesc="' + current_link + '"><a href="javascript:go_to_page(' + current_link + ')" longdesc="' + current_link + '">' + (current_link + 1) + '</a> </li>';
+            navigation_html += '<li class="page_link" longdesc="' + current_link + '" style="cursor: pointer;" onclick="javascript:go_to_page(' + current_link + ')"><a href="javascript:go_to_page(' + current_link + ')" longdesc="' + current_link + '">' + (current_link + 1) + '</a> </li>';
             current_link++;
         }
         //navigation_html += '<li id="nextmore">...</li>';
-        navigation_html += '<li> <a href="javascript:next();">»</a></li> </ul>';
+
+        if (parseInt(number_of_pages - 1) == parseInt('@CurrentPageNum')) {
+            navigation_html += '<li id="nextmore" class="page_link" onclick="javascript:PrevNextDotButtons(' + parseInt(parseInt(maximum) + 1) + ',\'next\');" style="cursor: pointer; display:none;"><span>...</span></li>';
+            navigation_html += '<li id="lastnum" class="page_link" onclick="javascript:go_to_page(' + parseInt(parseInt(number_of_pages) - 1) + ');" style="cursor: pointer;display:none;"><span>' + number_of_pages + '</span></li>';
+            navigation_html += '<li disabled=true class="disabled"> <a>»</a></li> </ul>';
+            //PrevNextDotButtons(pageNumber, 'prev');
+        } else {
+
+            for (var i = 0; i < NumberOfArray; i++) {
+                var PageSeries = SeriresofNum[i].split(',');
+                if (PageSeries.indexOf("@CurrentPageNum") > -1) {
+                    var minimum = Array.min(PageSeries);
+                    var maximum = Array.max(PageSeries);
+                    if ((i + 1) != NumberOfArray) {
+                        //navigation_html += '<li id="nextmore" class="page_link" onclick="javascript:go_to_page(' + parseInt(parseInt(maximum) + 1) + ');" style="cursor: pointer;"><a href="javascript:go_to_page(' + parseInt(parseInt(maximum) + 1) + ');"><span>...</span></a></li>';
+                        // For just Show next how many pages
+                        navigation_html += '<li id="nextmore" class="page_link" onclick="javascript:PrevNextDotButtons(' + parseInt(parseInt(maximum) + 1) + ',\'next\');" style="cursor: pointer;"><span>...</span></li>';
+                        navigation_html += '<li id="lastnum" class="page_link" onclick="javascript:go_to_page(' + parseInt(parseInt(number_of_pages) - 1) + ');" style="cursor: pointer;"><span>' + number_of_pages + '</span></li>';
+                        //PrevNextMorePage(parseInt(pageNumber), 'next');
+                    }
+                    else {
+                        navigation_html += '<li id="nextmore" class="page_link" onclick="javascript:PrevNextDotButtons(' + parseInt(parseInt(maximum) + 1) + ',\'next\');" style="cursor: pointer; display:none;"><span>...</span></li>';
+                        navigation_html += '<li id="lastnum" class="page_link" onclick="javascript:go_to_page(' + parseInt(parseInt(number_of_pages) - 1) + ');" style="cursor: pointer;display:none;"><span>' + number_of_pages + '</span></li>';
+                        //PrevNextDotButtons(pageNumber, 'prev');
+                    }
+                }
+            }
+            //navigation_html += '<li onclick="javascript:go_to_page(' + parseInt(number_of_pages) - 1 + ');" style="cursor: pointer;"> <a href="javascript:go_to_page(' + parseInt(number_of_pages) - 1 + ');" >»</a></li> </ul>';
+            navigation_html += '<li onclick="javascript:next();" style="cursor: pointer;"><a href="javascript:next();"</a>»</li></u>';
+        }
         if (number_of_items > 0) {
-        $('#page_navigation').html(navigation_html);
+            $('#page_navigation').html(navigation_html);
         } else {
             $('#page_navigation').html('');
         }
@@ -724,18 +778,45 @@
                 if (PageSeries.indexOf("@CurrentPageNum") > -1) {
                     var minimum = Array.min(PageSeries);
                     var maximum = Array.max(PageSeries);
-                    for (var j = minimum; j <= maximum; j++) {
-                        if (j <= number_of_pages) {
-                            $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                    if ((i + 1) != NumberOfArray) {
+                        for (var j = minimum; j <= maximum; j++) {
+                            if (j <= number_of_pages) {
+                                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                            }
                         }
                     }
+                    else {
+                        for (var j = (number_of_pages - 6) ; j <= number_of_pages; j++) {
+                            if (j <= number_of_pages) {
+                                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                            }
+                        }
+                    }
+                    //if (i == 0) {
+                    //    if (IsGotoPage == true) {
+                    //        PrevNextDotButtons(0, 'prev');
+                    //        PrevNextDotButtons(parseInt(maximum + 1), 'next');
+                    //    }
+                    //}
+                    //else if (i == NumberOfArray) {
+                    //    if (IsGotoPage == true) {
+                    //        PrevNextDotButtons(parseInt(minimum - 1), 'prev');
+                    //        PrevNextDotButtons(parseInt(number_of_pages), 'next');
+                    //    }
+                    //}
+                    //else {
+                    //    //PrevNextDotButtons(parseInt(minimum - 1), 'prev');
+                    //    //PrevNextDotButtons(parseInt(maximum + 1), 'next');
+                    //}
+
+
                     break;
                 }
             }
-            
+
             if (IsGotoPage == true) {
                 $('html, body').animate({
-                    scrollTop: $("#div-revenue-filter").offset().top
+                    scrollTop: $("#div-card-pagination").offset().top
                 }, 1000);
             }
         }
@@ -747,7 +828,6 @@
 
         ////and show the first n (show_per_page) elements
         //$('#dvCardSectionData').children().slice(0, show_per_page).css('display', 'block');
-
 
     }
 
@@ -787,10 +867,17 @@
 
     }
     function go_to_page(page_num) {
-
-        if (RevIsnextprev == false) {
-            IsGotoPage = true;
+        debugger;
+        var tempPage = page_num;
+        if (parseInt(tempPage + 1) == number_of_pages) {
+            PrevNextDotButtons(page_num, 'prev');
         }
+
+        if (parseInt(tempPage) == 0) {
+            PrevNextDotButtons(parseInt(tempPage + 6), 'next');
+        }
+        IsGotoPage = true;
+
         //get the number of items shown per page
         var show_per_page = parseInt($('#show_per_page').val());
 
@@ -847,7 +934,10 @@
 
                 count++;
             }
+
             $('.page_link[longdesc=' + (parseInt(pageNumber)) + ']').css('display', 'none');
+            PrevNextDotButtons(pageNumber, 'next');
+
         }
         if (button == 'prev') {
 
@@ -860,11 +950,172 @@
                 count++;
             }
             $('.page_link[longdesc=' + (pageNumber - 1) + ']').css('display', 'block');
+            PrevNextDotButtons(pageNumber, 'prev');
+            //if (parseInt(pageNumber) <= 6) {
+            //    $("#prevmore").css("display", "none");
+            //    $("#firstnum").css("display", "none");
+            //}
+            //document.getElementById("prevmore").removeAttribute("onclick");
+            //$("#prevmore").attr("onclick", "javascript:PrevNextMorePage(" + parseInt(parseInt(pageNumber) - 6) + ",'prev');");
         }
+
 
     }
 
+    function PrevNextDotButtons(pageNumber, button) {
 
+        debugger;
+        var show_per_page = $('#Itemsperpage :selected').text();
+        // var show_per_page = 1;
+        //getting the amount of elements inside content div
+        //var number_of_items = $('#dvCardSectionData').children().size();
+        var number_of_items = '@TotalRecords';
+        //calculate the number of pages we are going to have
+        number_of_pages = Math.ceil(number_of_items / show_per_page);
+        var NumberOfArray = Math.ceil(number_of_pages / 6);
+        var SeriresofNum = new Array();
+        var x = 0;
+        for (var i = 0; i < NumberOfArray; i++) {
+            var ser = "";
+            var count = 0;
+            for (var j = x; j < (x + 5) ; j++) {
+                ser += i + j + ",";
+                count++;
+            }
+            ser += i + j;
+            x += count;
+            SeriresofNum.push(ser);
+        }
+        //var abc = SeriresofNum;
+
+
+        Array.min = function (array) {
+            return Math.min.apply(Math, array);
+        };
+        Array.max = function (array) {
+            return Math.max.apply(Math, array);
+        };
+
+        for (var i = 0; i <= number_of_pages; i++) {
+            $('.page_link[longdesc=' + i + ']').css('display', 'none');
+        }
+
+        if (button == 'next') {
+
+            for (var i = 0; i < NumberOfArray; i++) {
+
+                var PageSeries = SeriresofNum[i].split(',');
+                if (PageSeries.indexOf("" + pageNumber + "") > -1) {
+                    var minimum = Array.min(PageSeries);
+                    var maximum = Array.max(PageSeries);
+                    if ((i + 1) != NumberOfArray) {
+                        for (var j = minimum; j <= maximum; j++) {
+                            if (j <= number_of_pages) {
+                                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                            }
+                        }
+                        $("#nextmore").css("display", "block");
+                        $("#lastnum").css("display", "block");
+
+                        document.getElementById("nextmore").removeAttribute("onclick");
+                        $("#nextmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(maximum) + 6) + ",'next');");
+
+                        $("#prevmore").css("display", "block");
+                        $("#firstnum").css("display", "block");
+
+                        document.getElementById("prevmore").removeAttribute("onclick");
+                        $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum) - 1) + ",'prev');");
+                    }
+                    else {
+                        for (var j = (number_of_pages - 6) ; j <= number_of_pages; j++) {
+                            if (j <= number_of_pages) {
+                                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                            }
+                        }
+                        $("#nextmore").css("display", "none");
+                        $("#lastnum").css("display", "none");
+
+                        $("#prevmore").css("display", "block");
+                        $("#firstnum").css("display", "block");
+
+                        document.getElementById("prevmore").removeAttribute("onclick");
+                        $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum) - 1) + ",'prev');");
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        if (button == 'prev') {
+
+            for (var i = 0; i < NumberOfArray; i++) {
+
+                var PageSeries = SeriresofNum[i].split(',');
+                if (PageSeries.indexOf("" + pageNumber + "") > -1) {
+                    var minimum = Array.min(PageSeries);
+                    var maximum = Array.max(PageSeries);
+                    if (i == 0) {
+                        debugger;
+                        for (var j = minimum; j <= maximum; j++) {
+                            if (j <= number_of_pages) {
+                                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                            }
+                        }
+                        $("#nextmore").css("display", "block");
+                        $("#lastnum").css("display", "block");
+
+                        document.getElementById("nextmore").removeAttribute("onclick");
+                        $("#nextmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(maximum) + 6) + ",'next');");
+
+                        $("#prevmore").css("display", "none");
+                        $("#firstnum").css("display", "none");
+
+                        document.getElementById("prevmore").removeAttribute("onclick");
+                        $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum)) + ",'prev');");
+                    }
+                    else if ((i + 1) != NumberOfArray) {
+                        for (var j = minimum; j <= maximum; j++) {
+                            if (j <= number_of_pages) {
+                                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                            }
+                        }
+                        debugger;
+                        $("#nextmore").css("display", "block");
+                        $("#lastnum").css("display", "block");
+
+                        document.getElementById("nextmore").removeAttribute("onclick");
+                        $("#nextmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(maximum) + 6) + ",'next');");
+
+                        $("#prevmore").css("display", "block");
+                        $("#firstnum").css("display", "block");
+
+                        document.getElementById("prevmore").removeAttribute("onclick");
+                        $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum) - 1) + ",'prev');");
+                    }
+                    else {
+                        debugger;
+                        for (var j = (number_of_pages - 6) ; j <= number_of_pages; j++) {
+                            if (j <= number_of_pages) {
+                                $('.page_link[longdesc=' + j + ']').css('display', 'block');
+                            }
+                        }
+                        $("#nextmore").css("display", "none");
+                        $("#lastnum").css("display", "none");
+
+                        $("#prevmore").css("display", "block");
+                        $("#firstnum").css("display", "block");
+
+                        document.getElementById("prevmore").removeAttribute("onclick");
+                        $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum) - 1) + ",'prev');");
+                    }
+
+                    break;
+                }
+            }
+        }
+
+    }
     function SortByROI(a, b) {
         var aName = a.roival;
         var bName = b.roival;

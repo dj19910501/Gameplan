@@ -68,13 +68,14 @@
                 <span id="mqlActuals"></span>
                 <span id="mqlActualPercentages"></span>
             </div>
-            <div class="projected disable-gray" style="height: 88px">
+            <div class="projected disable-gray">
                 @*#1420 added by dashrath Prajalapti*@
                 <span>Projected</span> @*#1378 Added by dashrath Prajapati*@
-                <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
+                <span id="mqlProjecteds">$1.58M</span>
                 <span id="mqlProjectedPercentages"></span>
                 @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
                 @* <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: block;padding: 0 5px;">@_mqllabel</p> #1378 Added by dashrath Prajapati*@
+                <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: none;padding: 0 5px;">@_mqllabel</p>
             </div>
             <div class="time-frame">
                 <div class="geography-dropdown">
@@ -151,7 +152,7 @@
     var tempMqlHeader = [];
     var BackFwdConverstionList = [];
     var RevIsnextprev = false;
-    var IsGotoPage = true;
+    var IsGotoPage = false;
     $(document).ready(function () {
         ShowHideReport();
         var _isplan = "@isPlanExistToShowReport";
@@ -960,12 +961,13 @@
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
         //<p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
         //    <span id="mqlProjectedPercentages"></span>
+        
         var _formtPercentage = "0";
         $("#mqlActuals").popover('destroy');
         $("#mqlProjecteds").popover('destroy');
 
-        setBootstrapTooltip("#mqlActuals", _revActual_Projected, 5, true);
-        setBootstrapTooltip("#mqlProjecteds", _revProjected, 5, true);
+        setBootstrapTooltip("#mqlActuals", _revActual_Projected, 5, false);
+        setBootstrapTooltip("#mqlProjecteds", _revProjected, 5, false);
 
 
         if (_revActualPercentage == null || _revActualPercentage == 'undefined' || _revActualPercentage == '' || _revActualPercentage == 'NaN' || _revActualPercentage == '-NaN') {
