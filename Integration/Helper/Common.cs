@@ -35,6 +35,7 @@ namespace Integration.Helper
 
         public static string OpportunityObjectError = "Opportunity : ";
         public static string CampaignMemberObjectError = "Campaign Member : ";
+        public static string SalesForceCampaignObject = "Campaign";
 
         ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
 
@@ -51,6 +52,13 @@ namespace Integration.Helper
         public static readonly int CustomNameLimitSet = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CustomNameLimitSet"]); ////Added by :- Pratik Chauhan on 04/02/2015 for PL ticket #1147
         public static readonly string DateFormatForSalesforce = "yyyy-MM-ddTHH:mm:ss.000+0000";
         public static bool IsAutoSync = false;
+        /// <summary>
+        /// Added by Bhavesh
+        /// Date: 28/7/2015
+        /// Ticket : #1385	Enable TLS 1.1 or higher Encryption for Salesforce
+        /// </summary>
+        //public static readonly string EnableTLS1AndHigher = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["EnableTLS1AndHigher"]);
+
         /// <summary>
         /// Decrypt string
         /// </summary>
@@ -92,33 +100,17 @@ namespace Integration.Helper
             return tacticStatus;
         }
 
-        internal static Enums.Mode GetMode(bool isDeleted, bool isDeployedToIntegration, string integrationInstanceTacticId, string status)
+        internal static Enums.Mode GetMode(string integrationInstanceTacticId)
         {
-            // delete reject status from list function
-            List<string> statusList = Common.GetStatusListAfterApproved();
             // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = null - isDeleted = false
-            if (statusList.Contains(status) && isDeployedToIntegration && string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
+            if (string.IsNullOrWhiteSpace(integrationInstanceTacticId))
             {
                 return Enums.Mode.Create;
             }
             // Status = After Approve - Is Deploy = true -  integrationInstanceTacticId = yes - isDeleted = false
-            else if (statusList.Contains(status) && isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
-            {
-                return Enums.Mode.Update;
-            }
-            else if (isDeployedToIntegration && !string.IsNullOrWhiteSpace(integrationInstanceTacticId) && !isDeleted)
-            {
-                return Enums.Mode.None;
-            }
-            else if (!string.IsNullOrWhiteSpace(integrationInstanceTacticId))
-            {
-                return Enums.Mode.None;
-                /*Commenting out for issue #1322*/
-//                return Enums.Mode.Delete;
-            }
             else
             {
-                return Enums.Mode.None;
+                return Enums.Mode.Update;
             }
         }
 
@@ -266,7 +258,9 @@ namespace Integration.Helper
                 using (MRPEntities db = new MRPEntities())
                 {
                     List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lia => tblLineItems.Select(line => line.PlanLineItemId).Contains(lia.PlanLineItemId)).ToList();
+                    /// Added By Bhavesh Date: 21/07/2015 - remove tolist from actual table
+                    List<int> lineItemIds = tblLineItems.Select(lineitem => lineitem.PlanLineItemId).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lineItemIds.Contains(lia.PlanLineItemId)).ToList();
                     List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => PlanTacticIds.Contains(pta.PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
                     foreach (int keyTactic in PlanTacticIds)
                     {
@@ -603,6 +597,53 @@ namespace Integration.Helper
             }
             return ClosedWonTitle;
         }
+
+        #region "Save IntegrationInstance Log Details Function"
+        public static void SaveIntegrationInstanceLogDetails(int _entityId, int? IntegrationInstanceLogId, Enums.MessageOperation MsgOprtn, string functionName, Enums.MessageLabel MsgLabel, string logMsg)
+        {
+            string logDescription = string.Empty, preMessage = string.Empty;
+            try
+            {
+                if (MsgOprtn.Equals(Enums.MessageOperation.None))
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + "---";   // if message operation "None" than Message prefix should be "---" ex: . 
+                else
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : (MsgOprtn.Equals(Enums.MessageOperation.Start)) ? string.Empty : (MsgLabel.ToString() + " : ")) + MsgOprtn.ToString() + " :";
+
+                logDescription = preMessage + " " + functionName + " : " + logMsg;
+                using (MRPEntities db = new MRPEntities())
+                {
+                    IntegrationInstanceLogDetail objLogDetails = new IntegrationInstanceLogDetail();
+                    objLogDetails.EntityId = _entityId;
+                    objLogDetails.IntegrationInstanceLogId = IntegrationInstanceLogId;
+                    objLogDetails.LogTime = System.DateTime.Now;
+                    objLogDetails.LogDescription = logDescription;
+                    db.Entry(objLogDetails).State = System.Data.EntityState.Added;
+                    db.SaveChanges();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
+
+        #region "Get Most inner level Exception"
+        public static string GetInnermostException(Exception e)
+        {
+            if (e == null)
+            {
+                return new ArgumentNullException("e").Message;
+            }
+
+            while (e.InnerException != null)
+            {
+                e = e.InnerException;
+            }
+
+            return e.Message;
+        }
+        #endregion
     }
 
     public class CRM_EloquaMapping

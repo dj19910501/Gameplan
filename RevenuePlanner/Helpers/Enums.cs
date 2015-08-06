@@ -991,6 +991,32 @@ namespace RevenuePlanner.Helpers
             Cost,
             ROI
         }
+
+        /// <summary>
+        /// IntegrationInstance Message Operation
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>21/07/2015</CreatedDate>
+        public enum MessageOperation
+        {
+            Start,
+            End,
+            //Create,
+            None
+        }
+
+        /// <summary>
+        /// IntegrationInstance Message Label
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>21/07/2015</CreatedDate>
+        public enum MessageLabel
+        {
+            Error,
+            Success,
+            Info,
+            None
+        }
     }
 
     #region Authorization

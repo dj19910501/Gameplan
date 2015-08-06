@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Integration.Helper
 {
@@ -72,7 +73,8 @@ namespace Integration.Helper
             Tactic,
             ImprovementCampaign,
             ImprovementProgram,
-            ImprovementTactic
+            ImprovementTactic,
+            IntegrationInstance //Added by Brad Gray 07/28/2015 for logging sync errors at Instance level
         }
 
         /// <summary>
@@ -151,5 +153,83 @@ namespace Integration.Helper
             Warning,
             Info
         }
+
+        /// <summary>
+        /// IntegrationInstance Message Operation
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>21/07/2015</CreatedDate>
+        public enum MessageOperation
+        {
+            Start,
+            End,
+            //Create,
+            None
+        }
+
+        /// <summary>
+        /// IntegrationInstance Message Label
+        /// </summary>
+        /// <CreatedBy>Viral Kadiya</CreatedBy>
+        /// <CreatedDate>21/07/2015</CreatedDate>
+        public enum MessageLabel
+        {
+            Error,
+            Success,
+            Info,
+            None
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Date: 07/22/2015
+        /// Enum for plan status.
+        /// </summary>
+        public enum PlanStatus
+        {
+            Draft = 0,
+            Published = 1,
+        }
+
+        /// <summary>
+        /// Added By: Viral Kadiya.
+        /// Date: 07/22/2015
+        /// Enum for plan status.
+        /// </summary>
+        public static Dictionary<string, string> PlanStatusValues = new Dictionary<string, string>()
+        {
+            {PlanStatus.Draft.ToString(), "Draft"},
+            {PlanStatus.Published.ToString(), "Published"}
+        };	
+      public enum ActualFields
+        {
+            ActivityType,
+            Cost,
+            CostActual,
+            CreatedBy,
+            Description,
+            EffectiveDate,
+            EndDate,
+            StartDate,
+            Status,
+            TacticType,
+            Title,
+            Other
+        }
+        public static Dictionary<string, string> ActualFieldDatatype = new Dictionary<string, string>()
+        {
+            {Enums.ActualFields.ActivityType.ToString(),"string,text"},
+            {Enums.ActualFields.Cost.ToString(),"int,double,float,numeric"},
+            {Enums.ActualFields.CostActual.ToString(),"int,double,float,numeric"},
+            {Enums.ActualFields.CreatedBy.ToString(),"string,text"},
+            {Enums.ActualFields.Description.ToString(),"string,text"},
+            {Enums.ActualFields.EffectiveDate.ToString(),"date,datetime"},
+            {Enums.ActualFields.EndDate.ToString(),"date,datetime"},
+            {Enums.ActualFields.StartDate.ToString(),"date,datetime"},
+            {Enums.ActualFields.Status.ToString(),"string,text"},
+            {Enums.ActualFields.TacticType.ToString(),"string,text"},
+            {Enums.ActualFields.Title.ToString(),"string,text"},
+            {Enums.ActualFields.Other.ToString(),"string,text"}
+};
     }
 }

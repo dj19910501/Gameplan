@@ -914,10 +914,16 @@ namespace RevenuePlanner.Controllers
                     return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             try
             {
+                Message.SaveIntegrationInstanceLogDetails(id,null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "create external integration");
                 ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, Sessions.User.UserId);
+
+                Message.SaveIntegrationInstanceLogDetails(id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Start");
                 externalIntegration.Sync();
+                Message.SaveIntegrationInstanceLogDetails(id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync End");
+
                 IntegrationInstance integrationInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(id));
 
                 //// Return Status and lastSync value in json format.
@@ -931,8 +937,10 @@ namespace RevenuePlanner.Controllers
                     return Json(new { }, JsonRequestBehavior.AllowGet);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                string exMessage = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message;
+                Message.SaveIntegrationInstanceLogDetails(id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Error occurred while syncing data to external service: " + exMessage);
                 return Json(new { status = "Error", lastSync = DateTime.Now.ToString(DateFormat) }, JsonRequestBehavior.AllowGet);
                 throw;
             }

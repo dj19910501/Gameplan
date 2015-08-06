@@ -134,6 +134,7 @@
         <EntityTypeShape EntityType="MRPModel.EntityTypeColor" Width="1.5" PointX="6.1199587779678222" PointY="19.462151357653621" />
         <EntityTypeShape EntityType="MRPModel.IntegrationInstance_UnprocessData" Width="1.5" PointX="4.4768853115275906" PointY="30.899651050055237" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLogDetail" Width="1.5" PointX="2.6396831286324574" PointY="20.244565168509524" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

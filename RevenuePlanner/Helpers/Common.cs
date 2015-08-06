@@ -4230,9 +4230,10 @@ namespace RevenuePlanner.Helpers
                 && customfield.IsDisplayForFilter == true //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
                 && customfield.CustomFieldType.Name == DropDownList).ToList(); //Modified by Arpita Soni for PL ticket 1148 (added filter of CustomFieldTypeId)
 
-            var customfieldentity = (from customfield in customfieldlist
-                                     join cfe in db.CustomField_Entity on customfield.CustomFieldId equals cfe.CustomFieldId
-                                     select cfe).ToList();
+            List<int> customfieldids = customfieldlist.Select(cfl => cfl.CustomFieldId).ToList();
+            // Check tacticid exists or not then use concat
+            List<int> allentityids = tacticids.Concat(programids).Concat(campaignids).ToList();
+            var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId) && allentityids.Contains(cfe.EntityId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
 
             var campaigncustomids = customfieldentity.Where(cfe => campaignids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
             List<ViewByModel> lstCustomFieldsViewByTabCampaign = customfieldlist.Where(cf => cf.EntityType == CampaignCustomText && campaigncustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = CampaignCustomTitle + cf.CustomFieldId.ToString() }).ToList();

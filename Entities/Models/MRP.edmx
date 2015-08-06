@@ -29,6 +29,7 @@
           <EntitySet Name="IntegrationInstanceDataTypeMappingPull" EntityType="MRPModel.Store.IntegrationInstanceDataTypeMappingPull" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceExternalServer" EntityType="MRPModel.Store.IntegrationInstanceExternalServer" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceLog" EntityType="MRPModel.Store.IntegrationInstanceLog" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="IntegrationInstanceLogDetails" EntityType="MRPModel.Store.IntegrationInstanceLogDetails" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstancePlanEntityLog" EntityType="MRPModel.Store.IntegrationInstancePlanEntityLog" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationInstanceSection" EntityType="MRPModel.Store.IntegrationInstanceSection" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="IntegrationType" EntityType="MRPModel.Store.IntegrationType" store:Type="Tables" Schema="dbo" />
@@ -444,6 +445,7 @@
           <Property Name="IsDisplayForFilter" Type="bit" Nullable="false" />
           <Property Name="AbbreviationForMulti" Type="nvarchar" Nullable="false" MaxLength="255" />
           <Property Name="IsDefault" Type="bit" Nullable="false" />
+          <!--<Property Name="IsGet" Type="bit" Nullable="false" />-->
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -654,6 +656,16 @@
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
         </EntityType>
+        <EntityType Name="IntegrationInstanceLogDetails">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="EntityId" Type="int" Nullable="false" />
+          <Property Name="IntegrationInstanceLogId" Type="int" />
+          <Property Name="LogTime" Type="datetime" Nullable="false" />
+          <Property Name="LogDescription" Type="nvarchar(max)" />
+        </EntityType>
         <EntityType Name="IntegrationInstancePlanEntityLog">
           <Key>
             <PropertyRef Name="IntegrationInstancePlanLogEntityId" />
@@ -756,6 +768,7 @@
           <Property Name="IntegrationInstanceIdCW" Type="int" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="AverageDealSize" Type="float" Nullable="false" />
+          <!--<Property Name="IntegrationInstanceIdProjMgmt" Type="int" />-->
         </EntityType>
         <EntityType Name="Model_Stage">
           <Key>
@@ -914,6 +927,7 @@
           <Property Name="ProjectedStageValue" Type="float" />
           <Property Name="StageId" Type="int" Nullable="false" />
           <Property Name="TacticCustomName" Type="nvarchar" />
+          <!--<Property Name="IntegrationWorkFrontProjectID" Type="nvarchar" MaxLength="50" />-->
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -1161,6 +1175,7 @@
           <Property Name="ProjectedStageValue" Type="float" />
           <Property Name="IsDeployedToModel" Type="bit" Nullable="false" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
+          <!--<Property Name="WorkFront Template" Type="nvarchar" MaxLength="255" />-->
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -2355,6 +2370,7 @@
             <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
             <End Role="IntegrationInstance_UnprocessData" EntitySet="IntegrationInstance_UnprocessData" />
           </AssociationSet>
+          <EntitySet Name="IntegrationInstanceLogDetails" EntityType="MRPModel.IntegrationInstanceLogDetail" />
         </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -2467,6 +2483,7 @@
           <NavigationProperty Name="CustomFieldOptions" Relationship="MRPModel.FK_CustomFieldOption_CustomField" FromRole="CustomField" ToRole="CustomFieldOption" />
           <NavigationProperty Name="CustomRestrictions" Relationship="MRPModel.FK_CustomRestriction_CustomField" FromRole="CustomField" ToRole="CustomRestriction" />
           <NavigationProperty Name="IntegrationInstanceDataTypeMappings" Relationship="MRPModel.FK_IntegrationInstanceDataTypeMapping_CustomField_CustomFieldId" FromRole="CustomField" ToRole="IntegrationInstanceDataTypeMapping" />
+          <!--<Property Type="Boolean" Name="IsGet" Nullable="false" />-->
         </EntityType>
         <EntityType Name="CustomField_Entity">
           <Key>
@@ -2820,6 +2837,7 @@
           <NavigationProperty Name="Model_Stage" Relationship="MRPModel.FK_Model_Stage_Model" FromRole="Model" ToRole="Model_Stage" />
           <NavigationProperty Name="Plans" Relationship="MRPModel.FK_Plan_Plan" FromRole="Model" ToRole="Plan" />
           <NavigationProperty Name="TacticTypes" Relationship="MRPModel.fk_TacticType_Model" FromRole="Model" ToRole="TacticType" />
+          <!--<Property Type="Int32" Name="IntegrationInstanceIdProjMgmt" />-->
         </EntityType>
         <EntityType Name="Model_Stage">
           <Key>
@@ -3010,6 +3028,7 @@
           <NavigationProperty Name="Stage" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_Stage" FromRole="Plan_Campaign_Program_Tactic" ToRole="Stage" />
           <NavigationProperty Name="TacticType" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="Plan_Campaign_Program_Tactic" ToRole="TacticType" />
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" FromRole="Plan_Campaign_Program_Tactic" ToRole="Tactic_Share" />
+          <!--<Property Type="String" Name="IntegrationWorkFrontProjectID" MaxLength="50" FixedLength="false" Unicode="true" />-->
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -3292,6 +3311,7 @@
           <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
+          <!--<Property Type="String" Name="WorkFront_Template" MaxLength="255" FixedLength="false" Unicode="true" />-->
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -4177,6 +4197,16 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="IntegrationInstanceLogDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="EntityId" Nullable="false" />
+          <Property Type="Int32" Name="IntegrationInstanceLogId" />
+          <Property Type="DateTime" Name="LogTime" Nullable="false" Precision="3" />
+          <Property Type="String" Name="LogDescription" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4275,6 +4305,7 @@
           <EntitySetMapping Name="CustomFields">
             <EntityTypeMapping TypeName="MRPModel.CustomField">
               <MappingFragment StoreEntitySet="CustomField">
+                <!--<ScalarProperty Name="IsGet" ColumnName="IsGet" />-->
                 <ScalarProperty Name="IsDefault" ColumnName="IsDefault" />
                 <ScalarProperty Name="AbbreviationForMulti" ColumnName="AbbreviationForMulti" />
                 <ScalarProperty Name="IsDisplayForFilter" ColumnName="IsDisplayForFilter" />
@@ -4579,6 +4610,7 @@
           <EntitySetMapping Name="Models">
             <EntityTypeMapping TypeName="MRPModel.Model">
               <MappingFragment StoreEntitySet="Model">
+                <!--<ScalarProperty Name="IntegrationInstanceIdProjMgmt" ColumnName="IntegrationInstanceIdProjMgmt" />-->
                 <ScalarProperty Name="AverageDealSize" ColumnName="AverageDealSize" />
                 <ScalarProperty Name="ClientId" ColumnName="ClientId" />
                 <ScalarProperty Name="IntegrationInstanceIdCW" ColumnName="IntegrationInstanceIdCW" />
@@ -4745,6 +4777,7 @@
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic">
+                <!--<ScalarProperty Name="IntegrationWorkFrontProjectID" ColumnName="IntegrationWorkFrontProjectID" />-->
                 <ScalarProperty Name="TacticCustomName" ColumnName="TacticCustomName" />
                 <ScalarProperty Name="StageId" ColumnName="StageId" />
                 <ScalarProperty Name="ProjectedStageValue" ColumnName="ProjectedStageValue" />
@@ -5010,6 +5043,7 @@
           <EntitySetMapping Name="TacticTypes">
             <EntityTypeMapping TypeName="MRPModel.TacticType">
               <MappingFragment StoreEntitySet="TacticType">
+                <!--<ScalarProperty Name="WorkFront_Template" ColumnName="WorkFront Template" />-->
                 <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="IsDeployedToModel" ColumnName="IsDeployedToModel" />
                 <ScalarProperty Name="ProjectedStageValue" ColumnName="ProjectedStageValue" />
@@ -5071,6 +5105,17 @@
                 <ScalarProperty Name="ExternalCampaignID" ColumnName="ExternalCampaignID" />
                 <ScalarProperty Name="EloquaCampaignID" ColumnName="EloquaCampaignID" />
                 <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationInstanceLogDetails">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationInstanceLogDetail">
+              <MappingFragment StoreEntitySet="IntegrationInstanceLogDetails">
+                <ScalarProperty Name="LogDescription" ColumnName="LogDescription" />
+                <ScalarProperty Name="LogTime" ColumnName="LogTime" />
+                <ScalarProperty Name="IntegrationInstanceLogId" ColumnName="IntegrationInstanceLogId" />
+                <ScalarProperty Name="EntityId" ColumnName="EntityId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

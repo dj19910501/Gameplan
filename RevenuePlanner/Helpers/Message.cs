@@ -1,5 +1,7 @@
 ﻿using System.Xml;
 using System.Xml.XPath;
+using RevenuePlanner.Models;
+using System.Text;
 
 namespace RevenuePlanner.Helpers
 {
@@ -3148,5 +3150,37 @@ private string _CannotAllocateMorethanRemainingBudgeted;
             return strOutput;
         }
         #endregion
+
+        #region "Save IntegrationInstance Log Details Function"
+        public static void SaveIntegrationInstanceLogDetails(int _entityId, int? IntegrationInstanceLogId, Enums.MessageOperation MsgOprtn, string functionName, Enums.MessageLabel MsgLabel, string logMsg)
+        {
+            string logDescription = string.Empty, preMessage = string.Empty;
+            try
+            {
+                if (MsgOprtn.Equals(Enums.MessageOperation.None))
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : MsgLabel.ToString() + " : ") + "---";   // if message operation "None" than Message prefix should be "---" ex: . 
+                else
+                    preMessage = (MsgLabel.Equals(Enums.MessageLabel.None) ? string.Empty : (MsgOprtn.Equals(Enums.MessageOperation.Start)) ? string.Empty : (MsgLabel.ToString() + " : ")) + MsgOprtn.ToString() + " :";
+
+                logDescription = preMessage + " " + functionName + " : " + logMsg;
+                using (MRPEntities db = new MRPEntities())
+                {
+                    IntegrationInstanceLogDetail objLogDetails = new IntegrationInstanceLogDetail();
+                    objLogDetails.EntityId = _entityId;
+                    objLogDetails.IntegrationInstanceLogId = IntegrationInstanceLogId;
+                    objLogDetails.LogTime = System.DateTime.Now;
+                    objLogDetails.LogDescription = logDescription;
+                    db.Entry(objLogDetails).State = System.Data.EntityState.Added;
+                    db.SaveChanges();
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }
+
+
