@@ -72,8 +72,8 @@
     $(document).ready(function () {
         LoadImprovementTactic(CurrentPlanId);
         $("#lblCost").html(FormatNumber($("#lblCost").html(), false));
-        $("#lblMqls").html(FormatNumber($("#lblMqls").html(), false));
-        $("#lblprogram").html(FormatNumber($("#lblprogram").html(), false));
+        $("#lblMqls").html(FormatCommas($("#lblMqls").html(), false));
+        $("#lblprogram").html(FormatCommas($("#lblprogram").html(), false));
 
      
     });
