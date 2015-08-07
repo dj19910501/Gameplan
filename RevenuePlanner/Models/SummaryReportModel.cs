@@ -68,6 +68,13 @@ namespace RevenuePlanner.Models
         public string Goal { get; set; }
         public string Percentage { get; set; }
         public bool IsnegativePercentage { get; set; }
+        public string Projected { get; set; }
+        public string GoalYTD { get; set; }// Add BY Nishant Sheth #1397
+        public string GoalYear { get; set; }// Add BY Nishant Sheth #1397
+        public string ActualPercentage { get; set; }// Add BY Nishant Sheth #1397
+        public bool ActualPercentageIsnegative { get; set; }// Add BY Nishant Sheth #1397
+        public string ProjectedPercentage { get; set; }// Add BY Nishant Sheth #1397
+        public bool ProjectedPercentageIsnegative { get; set; }// Add BY Nishant Sheth #1397
     }
     public class lineChartData
     {
@@ -83,7 +90,18 @@ namespace RevenuePlanner.Models
         public string name { get; set; }
         public List<double?> data { get; set; }
         public marker marker { get; set; }
-        public bool showInLegend { get; set; }
+        private bool ShowInLegend = true;
+        public bool showInLegend 
+        {
+            get 
+            {
+                return ShowInLegend;
+            }
+            set
+            {
+                ShowInLegend = value;
+            }
+        }
         public bool shadow { get; set; }
     }
     public class marker
@@ -170,6 +188,7 @@ namespace RevenuePlanner.Models
         public ConversionDataTable ConversionToPlanDataTableModel { get; set; }
         public BarChartModel ConversionToPlanBarChartModel { get; set; }
         public lineChartData LineChartModel { get; set; }//dashrath
+        public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
     }
     public class ConversionDataTable
     {
@@ -224,12 +243,15 @@ namespace RevenuePlanner.Models
         public Projected_Goal ConversionHeaderModel { get; set; } //dashrath
         public ConversionOverviewModel conversionOverviewModel { get; set; }//dashrath
         public ConversionToPlanModel ConversionToPlanModel { get; set; }//dashrath
+        public CardSectionModel CardSectionModel { get; set; }
     }
     public class RevenueToPlanModel
     {
         public BarChartModel RevenueToPlanBarChartModel { get; set; }
         public RevenueDataTable RevenueToPlanDataModel { get; set; }
         public lineChartData LineChartModel { get; set; }
+        public CardSectionModel CardSectionModel { get; set; }
+        public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
     }
     public class RevenueDataTable
     {
@@ -345,8 +367,55 @@ namespace RevenuePlanner.Models
         public List<double> ActualList { get; set; }
         public List<double> ProjectedList { get; set; }
         public List<double> GoalList { get; set; }
+        public List<double> CostList { get; set; }//cost list added by dashrath
         public bool IsQuarterly { get; set; }
         public string timeframeOption { get; set; }
+        public List<double> GoalYTD { get; set; }// Add By Nishant Sheth
+    }
+
+    public class CardSectionModel
+    {
+        public List<CardSectionListModel> CardSectionListModel { get; set; }
+        public int TotalRecords { get; set; } // Add By Nishant Sheth
+        public int CuurentPageNum { get; set; }// Add By Nishant Sheth
+        //public List<Projected_Goal> RevenueHeaderModel { get; set; } // Add By Nishant SHeth
+    }
+    public class RevenueCardList
+    {
+        public static List<CardSectionListModel> CardSectionListModel { get; set; }
+    }
+    public class CardSectionListModel
+    {
+        public string title { get; set; }
+        public CardSectionListSubModel INQCardValues { get; set; }//dashrath
+        public CardSectionListSubModel TQLCardValues { get; set; }//dashrath
+        public CardSectionListSubModel CWCardValues { get; set; }//dashrath
+        public CardSectionListSubModel ADSCardValues { get; set; }//dashrath
+
+        public CardSectionListSubModel RevenueCardValues { get; set; }
+        public CardSectionListSubModel CostCardValues { get; set; }
+        public CardSectionListSubModel ROICardValues { get; set; }
+        public lineChartData LineChartData { get; set; }
+        public string MasterParentlabel { get; set; }
+        public double FieldId { get; set; }
+        public string FieldType { get; set; }
+        public Projected_Goal RevenueHeaderModel { get; set; } // Add By Nishant SHeth
+    }
+    public class CardSectionListSubModel
+    {
+        public string CardType { get; set; }
+        public double Actual_Projected { get; set; }
+        public double Goal { get; set; }
+        public double Percentage { get; set; }
+        //public double RestPercentage { get; set; }
+        public double ConversePercentage { get; set; }//dashrath
+        public bool? IsNegative { get; set; }
+    }
+    public class TacticMappingItem
+    {
+        public int ParentId { get; set; }
+        public string ParentTitle { get; set; }
+        public int ChildId { get; set; }
     }
     #endregion
 

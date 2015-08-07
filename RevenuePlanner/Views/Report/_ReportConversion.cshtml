@@ -2,1132 +2,1019 @@
 @using RevenuePlanner.Models;
 @using RevenuePlanner.Helpers
 @using Newtonsoft.Json;
-
 @{
-   
-    
-    var revenue_Projected_Goal = Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal();
+    bool isPlanExistToShowReport = Convert.ToBoolean(ViewBag.IsPlanExistToShowReport);
+    if (string.IsNullOrEmpty(Convert.ToString(ViewBag.IsPlanExistToShowReport)))
+    {
+        isPlanExistToShowReport = false;
+    }
 
-    var conversion_datatableModel = Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty;
-    var conversion_barchartModel = Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty;
-    var Conversion_linechartModel = Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty;
-     var _mqllabel= Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()];                
-   
+    var revenue_Projected_Goal = isPlanExistToShowReport == true ? Model.RevenueHeaderModel != null ? Model.RevenueHeaderModel : new RevenuePlanner.Models.Projected_Goal() : new RevenuePlanner.Models.Projected_Goal();
+
+    var conversion_datatableModel = isPlanExistToShowReport == true ? Model.ConversionToPlanModel.ConversionToPlanDataTableModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanDataTableModel) : string.Empty : string.Empty;
+    var conversion_barchartModel = isPlanExistToShowReport == true ? Model.ConversionToPlanModel.ConversionToPlanBarChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.ConversionToPlanBarChartModel) : string.Empty : string.Empty;
+    var Conversion_linechartModel = isPlanExistToShowReport == true ? Model.ConversionToPlanModel.LineChartModel != null ? JsonConvert.SerializeObject(Model.ConversionToPlanModel.LineChartModel) : string.Empty : string.Empty;
+    var _mqllabel = Common.GetLabel(Common.StageModeMQL);
+
+    var Conversion_cardsectionModel = isPlanExistToShowReport == true ? Model.CardSectionModel != null ? Model.CardSectionModel : new RevenuePlanner.Models.CardSectionModel() : new RevenuePlanner.Models.CardSectionModel(); //card section
+
+
+    // Add By Nishant Sheth For pagination dropdwon with Enums
+    List<RevenuePlanner.Models.ViewByModel> ListPageSize = new List<RevenuePlanner.Models.ViewByModel>();
+    foreach (var PerPage in Enums.PerPageSize)
+    {
+        ListPageSize.Add(new RevenuePlanner.Models.ViewByModel { Text = PerPage.Value, Value = PerPage.Value });
+    }
+
+    List<RevenuePlanner.Models.ViewByModel> ListSortBy = new List<RevenuePlanner.Models.ViewByModel>();
+    foreach (var SortBy in Enums.SortByWaterFallDrp)
+    {
+        ListSortBy.Add(new RevenuePlanner.Models.ViewByModel { Text = SortBy.Key, Value = SortBy.Value });
+    }
+    // End By Nishant Sheth
 }
 
 <style type="text/css">
-    .redLabel
-    {
+    .redLabel {
         color: #ff0000 !important;
     }
 
-    .greenLabel
-    {
+    .greenLabel {
         color: #009E26 !important;
     }
 
-    .margintop_5
-    {
+    .margintop_5 {
         margin-top: 5px !important;
     }
-
 </style>
+@Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
 <section class="report-overview-wraper conversion-wrapper">
-    <div class="marketing-revenue-report">
-        <div class="dropdown-marketing" style="width: 323px;">
-            <h2>Waterfall</h2>
-            <div class="geography-dropdown">
-                <h5>View By:</h5>
-                <div class="revenue-summary-custom">
-                    @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text"))
+    <div id="DivNoPlanToShowReport" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
+    @if (isPlanExistToShowReport)
+    {
+        <div class="marketing-revenue-report">
+            <div class="dropdown-marketing" style="width: 323px;">
+                <h2 id="head-title" class="ellipsis-block"></h2>
+                <div class="geography-dropdown" id="div-mareketing-drp">
+                    <h5>View By:</h5>
+                    <div class="revenue-summary-custom">
+                        @Html.DropDownList("ddlParentConversionSummery", new SelectList((System.Collections.IEnumerable)ViewBag.parentConvertionSummery, "Value", "Text"))
+                    </div>
+                </div>
+                <input type="button" id="BtnBack" class="btn btn-blue text-shadow-blue source-sans-proregular" value="< Back" onclick="javascript:BtnBackClick();" /> @*Add By Nishant Sheth*@
+            </div>
+            <div class="projected disable-gray" style="margin-left: 9px;">
+                <span>Actual</span>
+                <span id="mqlActuals"></span>
+                <span id="mqlActualPercentages"></span>
+            </div>
+            <div class="projected disable-gray">
+                @*#1420 added by dashrath Prajalapti*@
+                <span>Projected</span> @*#1378 Added by dashrath Prajapati*@
+                <span id="mqlProjecteds">$1.58M</span>
+                <span id="mqlProjectedPercentages"></span>
+                @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
+                @* <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: block;padding: 0 5px;">@_mqllabel</p> #1378 Added by dashrath Prajapati*@
+                <p class="FormatingBlock" style="text-overflow: ellipsis;white-space: nowrap;display: none;padding: 0 5px;">@_mqllabel</p>
+            </div>
+            <div class="time-frame">
+                <div class="geography-dropdown">
+                    @*<h5>Time frame:</h5>*@
+                    <div class="revenue-summary-custom">
+                        <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
+                            @Html.DropDownList("ddlConversionTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="projected disable-gray" style="margin-left: 9px;">
-            <span>Actual</span>
-            <span id="mqlActuals"></span>
-            <span id="mqlActualPercentages"></span>
-        </div>
-        <div class="projected disable-gray" style="height: 88px"> @*#1420 added by dashrath Prajalapti*@
-            <span>Goal</span> @*#1378 Added by dashrath Prajapati*@
-            <p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
-            @*<p class="ellipsis-block FormatingBlock">@Html.LabelForMQL("TQL")</p>*@
-             <p class="ellipsis-block FormatingBlock">@_mqllabel</p>
-        </div>
-        <div class="time-frame">
-            <div class="geography-dropdown">
-@*<h5>Time frame:</h5>*@
-                <div class="revenue-summary-custom">
-                    <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
-                        @Html.DropDownList("ddlConversionTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="revenue-to-plan report-revenue">
-        <div class="geography-dropdown report-revenue-summary" style="line-height:34px;">
-            <h5>Summary</h5>
-            <div class="revenue-summary-custom dropdown-inline">
-                <span>
-                    @Html.DropDownList("ddlINQToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.lstAllocated, "Value", "Text"))
-                </span>
-                <div id="CustomFieldChildDDL" style="display:none;" class="CustomDropdown" >
+        <div class="revenue-to-plan report-revenue">
+            <div class="geography-dropdown report-revenue-summary" style="line-height:34px;">
+                <h5>Summary</h5>
+                <div class="revenue-summary-custom dropdown-inline">
                     <span>
-                        @Html.DropDownList("ddlTopChildConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
+                        @Html.DropDownList("ddlINQToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.lstAllocated, "Value", "Text"))
+                    </span>
+                    <div id="CustomFieldChildDDL" style="display:none;" class="CustomDropdown">
+                        <span>
+                            @Html.DropDownList("ddlTopChildConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ChildTabListRevenueToPlan, "Value", "Text"))
+                        </span>
+                    </div>
+                </div>
+                <div id="CampaignChildDDL" class="dropdown-inline">
+                    <span>
+                        @Html.DropDownList("ddlCampaignConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"))
+                    </span>
+                    <span>
+                        @Html.DropDownList("ddlProgramConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"))
+                    </span>
+                    <span>
+                        @Html.DropDownList("ddlTacticConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"))
                     </span>
                 </div>
             </div>
-            <div id="CampaignChildDDL" class="dropdown-inline">
-                <span>
-                    @Html.DropDownList("ddlCampaignConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.CampaignDropdownList, "PlanCampaignId", "Title"))
-                </span>
-                <span>
-                    @Html.DropDownList("ddlProgramConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.ProgramDropdownList, "PlanProgramId", "Title"))
-                </span>
-                <span>
-                    @Html.DropDownList("ddlTacticConversionToPlan", new SelectList((System.Collections.IEnumerable)ViewBag.TacticDropdownList, "PlanTacticId", "Title"))
-                </span>
-            </div>
-        </div>
-        <div style="padding:20px;">
-        <div id="dvConversionCombineChart" class="graph" style="height: 100%; padding-left: 0%; width: 99%;"></div>
-        <div class="revenue-to-plan-graph">
-            <div class="graph-table" id="dvConvPlan">
-                <div class="table-responsive">
-                    <table class="graph-table">
-                        <tbody id="ConversionToPlanDataTable">
-                        </tbody>
-                    </table>
+            @*<div class="revenue-to-plan-graph">
+                <div class="graph-table" id="dvConvPlan">
+                    <div class="table-responsive">
+                        <table class="graph-table">
+                                <tbody id="ConversionToPlanDataTable"></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        </div>
-            </div>
-
-    </div>
-    <div class="revenue-to-plan">
-    </div>
-@*<div class="revenue-filter">
-        <div class="sorting">
-            <div class="geography-dropdown">
-                <h5>Sort By</h5>
-                <div class="select-sortby">
-                    <select style="display: none;" chartdivid="dvtable-sparkline_Revenue" class="revCustomFieldDDL" id="custmDDL_Revenue" name="custmDDL_Revenue">
-                        <option value="TacticCustom71">CW</option>
-                    </select>
-                    <button title="Audience" aria-haspopup="true" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" id="btnMultiselect_custmDDL_Revenue"><span>CW</span><span class="ui-icon ui-icon-triangle-1-s"></span></button>
-                </div>
-            </div>
-            <div class="geography-dropdown">
-                <h5>Items Per Page</h5>
-                <div class="select-item">
-                    <select style="display: none;" chartdivid="dvtable-sparkline_Revenue" class="revCustomFieldDDL" id="custmDDL_Revenue" name="custmDDL_Revenue">
-                        <option value="TacticCustom71">5</option>
-                    </select>
-                    <button title="Audience" aria-haspopup="true" class="ui-multiselect ui-widget ui-state-default ui-corner-all" type="button" id="btnMultiselect_custmDDL_Revenue"><span>1</span><span class="ui-icon ui-icon-triangle-1-s"></span></button>
+                </div>*@
+            <div style="margin:20px;">
+                <div id="dvConversionToPlan">
+                    @Html.Partial("_ConversionToPlan", Model.ConversionToPlanModel)
                 </div>
             </div>
 
         </div>
-        <div class="paging">
-            <ul>
-                <li><a href="#">«</a></li>
-                <li class="active"><a>1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#">6</a></li>
-                <li><a href="#">...</a></li>
-                <li>»</li>
-            </ul>
+
+
+        <div id="ConversionCardID">
+            @Html.Partial("_ConversionCardSection", Conversion_cardsectionModel)
         </div>
-        <div class="search">
-            <input>
-
-            <button class="search-btn">search</button>
-        </div>
-
-    </div>
-    <div class="region-content">
-        <div id="conversionPartial">
-            <div class="report-btn-group">
-
-                <div>
-                    <p class="revanue-p">Economic Buyer</p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-                    <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
-                        <img src="/Content/images/export.png"></span>Export</a>
-                </div>
-                <div>
-                    <p class="revanue-p-right">
-                        <input type="checkbox"><label> Add to Compare</label>
-                    </p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">Compare</button>
-                </div>
-            </div>
-            <div class="region-data">
-                <!--inq-data class for align inq-text to center-->
-                <div class="data inq-data">
-                    <span class="title">INQ</span>
-                    <p class="value">6500<span class="sub-value">/ 5000</span></p>
-
-                </div>
-                <div class="data inq-data">
-                    <span class="title">TQL</span>
-                    <p class="value">48%<span class="sub-value value-tql">+2%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">2500</span><span class="sub-value"> / 3000</span></span>
-                </div>
-                <div class="data inq-data">
-                    <span class="title">CW</span>
-                    <p class="value">25%<span class="sub-value  value-tql">+5%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">500</span> / 2000 </span>
-                </div>
-
-                <div class="data inq-data">
-                    <span class="title">ADS</span>
-                    <p class="value">$350k</p>
-                    <span class="data-green">/ 500k </span>
-                </div>
-
-            </div>
-        </div>
-
-
-
-    </div>
-    <div class="region-content">
-        <div id="conversionPartial">
-
-
-
-            <div class="report-btn-group">
-
-                <div>
-                    <p class="revanue-p">Executive Buyer</p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-                    <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
-                        <img src="/Content/images/export.png"></span>Export</a>
-                </div>
-                <div>
-                    <p class="revanue-p-right">
-                        <input type="checkbox"><label> Add to Compare</label>
-                    </p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">Compare</button>
-                </div>
-            </div>
-            <div class="region-data">
-                <!--inq-data class for align inq-text to center-->
-                <div class="data inq-data">
-                    <span class="title">INQ</span>
-                    <p class="value">6500<span class="sub-value">/ 5000</span></p>
-
-                </div>
-                <div class="data inq-data">
-                    <span class="title">TQL</span>
-                    <p class="value">48%<span class="sub-value value-tql">+2%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">2500</span><span class="sub-value"> / 3000</span></span>
-                </div>
-                <div class="data inq-data">
-                    <span class="title">CW</span>
-                    <p class="value">25%<span class="sub-value  value-tql">+5%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">500</span> / 2000 </span>
-                </div>
-
-                <div class="data inq-data">
-                    <span class="title">ADS</span>
-                    <p class="value">$350k</p>
-                    <span class="data-green">/ 500k </span>
-                </div>
-
-            </div>
-        </div>
-
-
-    </div>
-    <div class="region-content">
-        <div id="conversionPartial">
-
-
-
-            <div class="report-btn-group">
-
-                <div>
-                    <p class="revanue-p">Technical Buyer</p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-                    <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
-                        <img src="/Content/images/export.png"></span>Export</a>
-                </div>
-                <div>
-                    <p class="revanue-p-right">
-                        <input type="checkbox"><label> Add to Compare</label>
-                    </p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">Compare</button>
-                </div>
-            </div>
-            <div class="region-data">
-                <!--inq-data class for align inq-text to center-->
-                <div class="data inq-data">
-                    <span class="title">INQ</span>
-                    <p class="value">6500<span class="sub-value">/ 5000</span></p>
-
-                </div>
-                <div class="data inq-data">
-                    <span class="title">TQL</span>
-                    <p class="value">48%<span class="sub-value value-tql">+2%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">2500</span><span class="sub-value"> / 3000</span></span>
-                </div>
-                <div class="data inq-data">
-                    <span class="title">CW</span>
-                    <p class="value">25%<span class="sub-value  value-tql">+5%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">500</span> / 2000 </span>
-                </div>
-
-                <div class="data inq-data">
-                    <span class="title">ADS</span>
-                    <p class="value">$350k</p>
-                    <span class="data-green">/ 500k </span>
-                </div>
-
-            </div>
-        </div>
-
-
-
-
-    </div>
-    <div class="region-content">
-        <div id="conversionPartial">
-            <div class="report-btn-group">
-                <div>
-                    <p class="revanue-p">Marketing Ops</p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-                    <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
-                        <img src="/Content/images/export.png"></span>Export</a>
-                </div>
-                <div>
-                    <p class="revanue-p-right">
-                        <input type="checkbox"><label> Add to Compare</label>
-                    </p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">Compare</button>
-                </div>
-            </div>
-            <div class="region-data">
-                <!--inq-data class for align inq-text to center-->
-                <div class="data inq-data">
-                    <span class="title">INQ</span>
-                    <p class="value">6500<span class="sub-value">/ 5000</span></p>
-
-                </div>
-                <div class="data inq-data">
-                    <span class="title">TQL</span>
-                    <p class="value">48%<span class="sub-value value-tql">+2%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">2500</span><span class="sub-value"> / 3000</span></span>
-                </div>
-                <div class="data inq-data">
-                    <span class="title">CW</span>
-                    <p class="value">25%<span class="sub-value  value-tql">+5%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">500</span> / 2000 </span>
-                </div>
-
-                <div class="data inq-data">
-                    <span class="title">ADS</span>
-                    <p class="value">$350k</p>
-                    <span class="data-green">/ 500k </span>
-                </div>
-
-            </div>
-        </div>
-
-
-
-
-    </div>
-    <div class="region-content">
-        <div id="conversionPartial">
-            <div class="report-btn-group">
-
-                <div>
-                    <p class="revanue-p">Healthcare Professionals   </p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular" id="">Details</button>
-                    <a name="" class="btn  source-sans-proregular report-grey-btn hideReport" id=""><span>
-                        <img src="/Content/images/export.png"></span>Export</a>
-                </div>
-                <div>
-                    <p class="revanue-p-right">
-                        <input type="checkbox"><label> Add to Compare</label>
-                    </p>
-                    <button name="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">Compare</button>
-                </div>
-            </div>
-            <div class="region-data">
-                <!--inq-data class for align inq-text to center-->
-                <div class="data inq-data">
-                    <span class="title">INQ</span>
-                    <p class="value">6500<span class="sub-value">/ 5000</span></p>
-
-                </div>
-                <div class="data inq-data">
-                    <span class="title">TQL</span>
-                    <p class="value">48%<span class="sub-value value-tql">+2%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">2500</span><span class="sub-value"> / 3000</span></span>
-                </div>
-                <div class="data inq-data">
-                    <span class="title">CW</span>
-                    <p class="value">25%<span class="sub-value  value-tql">+5%</span></p>
-                    <span class="data-green"><span class="tql-subvalue-first">500</span> / 2000 </span>
-                </div>
-
-                <div class="data inq-data">
-                    <span class="title">ADS</span>
-                    <p class="value">$350k</p>
-                    <span class="data-green">/ 500k </span>
-                </div>
-
-            </div>
-        </div>
-
-
-
-
-    </div>
-    <div class="paging bottom-paging">
-        <ul>
-            <li><a href="#">«</a></li>
-            <li class="active"><a>1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">5</a></li>
-            <li><a href="#">6</a></li>
-            <li><a href="#">...</a></li>
-            <li>»</li>
-        </ul>
-    </div>*@
+    }
 </section>
 
 
-    <script type="text/javascript">
-        var parentSummaryTab;
-        var _childtopConversiontoPlanDDLId = "ddlTopChildConversionToPlan";
-        var _parentValue;
-        var _conversionlinechartHeight = 250;
-        var programId = $('#ddlProgramConversionToPlan').val();
-        var campaignId = $('#ddlCampaignConversionToPlan').val();
-        $(document).ready(function () {
+<script type="text/javascript">
+    var marsterCustomField = '@Common.RevenueCampaign';
+    var masterCustomFieldOptionId = 0;
+
+    var parentSummaryTab;
+    var _childtopConversiontoPlanDDLId = "ddlTopChildConversionToPlan";
+    var _parentValue;
+    var _conversionlinechartHeight = 250;
+    var programId = $('#ddlProgramConversionToPlan').val();
+    var campaignId = $('#ddlCampaignConversionToPlan').val();
+    var OptionMain = '';
+    var tempMqlHeader = [];
+    var BackFwdConverstionList = [];
+    var RevIsnextprev = false;
+    var IsGotoPage = false;
+    $(document).ready(function () {
+        ShowHideReport();
+        var _isplan = "@isPlanExistToShowReport";
+        if (_isplan.toLowerCase() == 'true') {
+            var BtnBack = document.getElementById('BtnBack');
+            BtnBack.style.display = "none";
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '',
+                BackId: '',
+                HeadHireachy: 'Waterfall'
+            }
+            BackFwdConverstionList.push(_BackFwdVar);
+
+            var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+            OptionMain = '@ViewBag.Convoption';
+            var HeadTitle = document.getElementById('head-title');
+            HeadTitle.innerHTML = _BackHeadValues.HeadHireachy;
+            $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
+
             $("html, body").animate({ scrollTop: 0 }, 1000);//scroll up when page get from overview by click on detail button of convesrion section- Dashrath prajapati
 
+
+            //
             //start combine chart of bar chart and line chart script
-            //start bar chart
-            var _barchartdata = "@conversion_barchartModel";
-            var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
-            _BarChartdata = JSON.parse(_BarChartdata);
-            //End bar chart
 
-            //Start: Get LineChart Model
-            var _linechartdata = "@Conversion_linechartModel";
-            var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
-            _LineChartdata = JSON.parse(_LineChartdata);
-            //End: Get LineChart Model
-
-            var barCombinechartDivId = "#dvConversionCombineChart";
-            BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
-            //end combine chart script
 
             _parentValue = $('#ddlParentConversionSummery').val();
             loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
 
-            BindConversionToPlanDataTable();//bind Conversion DataTable function
-            formatDataTableValues();
-            formatPercentageValue();
+            //BindConversionToPlanDataTable();//bind Conversion DataTable function
+            //formatDataTableValues();
+            //formatPercentageValue();
 
-            function formatDataTableValues() {
-                var _TypeCol = $(".currencyval");
-                var _formatednumber = '';
-                $.each(_TypeCol, function (key, _cntrl) {
-                    var _cntrlId = $(_cntrl).attr('id');
-                    var _Id = "#" + _cntrlId;
-                    var text = $(_Id).attr('orig-val');
-                    if (text != null && text != 'undefined' && text != 'NaN') {
-                        _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
-                        $(_Id).html(_formatednumber);
-                    }
-                });
-            }
-
-            function formatPercentageValue() {
-                var _TypeCol = $(".performanceval");
-
-                $.each(_TypeCol, function (key, _cntrl) {
-                    var _cntrlId = $(_cntrl).attr('id');
-                    var _lblPercentage = "#" + _cntrlId;
-                    var _text = $(_lblPercentage).attr('orig-val');
-                    var _percentage = parseFloat(_text);
-                    if (_percentage == null || _percentage == 'undefined' || _percentage == '' || _percentage == 'NaN') {
-                        _formtPercentage = "--";
-                        $(_lblPercentage).removeClass("above").removeClass("below");
-                    }
-                    else {
-                        if (_percentage < 0) {
-                            _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_percentage)), true);
-                            $(_lblPercentage).removeClass("above").addClass("below")
-                        }
-                        else {
-                            _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_percentage)), true);
-                            $(_lblPercentage).removeClass("below").addClass("above");
-                        }
-                    }
-                    $(_lblPercentage).html(_formtPercentage);
-                });
-            }
-
-
-            $("#ddlParentConversionSummery,#ddlTopChildConversionToPlan,#ddlINQToPlan,#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan").multiselect({
+            $("#ddlParentConversionSummery,#ddlTopChildConversionToPlan,#ddlINQToPlan,#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan,#ddlSortby,#Itemsperpage").multiselect({
                 multiple: false,
                 noneSelectedText: "Please Select",
                 selectedList: 1,
                 CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle"
-        }).multiselectfilter({
-            CustomCampaignName: "@Common.CampaignCustomTitle",
-            CustomProgramName: "@Common.ProgramCustomTitle",
-            CustomTacticName: "@Common.TacticCustomTitle"
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            }).multiselectfilter({
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            });
+            @*var _MqlGoal = '@revenue_Projected_Goal.Goal';
+        var _MqlActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _MqlPercentage = '@revenue_Projected_Goal.Percentage';
+        var _MqlisNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+            @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
+            var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+            var _revProjected = '@revenue_Projected_Goal.Projected';
+            @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
+        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+            var _revGoalYTD = '@revenue_Projected_Goal.GoalYTD';
+            var _revGoalYear = '@revenue_Projected_Goal.GoalYear';
+            var _revActualPercentage = '@revenue_Projected_Goal.ActualPercentage';
+            var _revProjectedPercentage = '@revenue_Projected_Goal.ProjectedPercentage';
+            var _revActualPercentageIsnegative = '@revenue_Projected_Goal.ActualPercentageIsnegative';
+            var _revProjectedPercentageIsnegative = '@revenue_Projected_Goal.ProjectedPercentageIsnegative';
+
+
+            formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative);
+        }
+    });
+
+    // Load header data
+    //LoadHeaderData();
+    function LoadHeaderData() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/GetReportHeader/")',
+            data: {
+                option: OptionMain,////This variable globally declare in parent view "Index"
+                isRevenue: false
+            },
+            success: function (data) {
+                if (data != undefined) {
+                    setLabel(data);
+                }
+            }
+        });
+    }
+    var _campaignLabel = '@Common.RevenueCampaign';
+
+    $('#ddlParentConversionSummery').bind('change', function () {
+        var _parentValue = $(this).val();
+        marsterCustomField = _parentValue;
+        if (_parentValue == _campaignLabel) {
+            $("#CustomFieldChildDDL").css('display', 'none');
+            $("#CampaignChildDDL").css('display', 'inline-block');
+
+            /*Start: Refresh Campaign, Program, Tactic dropdowns*/
+            $("#ddlCampaignConversionToPlan").val("0");
+            $("#ddlProgramConversionToPlan").val("0");
+            $("#ddlTacticConversionToPlan").val("0");
+            $("#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan").multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1,
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            }).multiselectfilter({
+                CustomCampaignName: "@Common.CampaignCustomTitle",
+                CustomProgramName: "@Common.ProgramCustomTitle",
+                CustomTacticName: "@Common.TacticCustomTitle"
+            });
+            //$("#ddlCampaignConversionToPlan").multiselect('refresh');
+            /*End: Refresh Campaign, Program, Tactic dropdowns*/
+
+        }
+        else {
+            $("#CustomFieldChildDDL").css('display', 'inline-block');
+            $("#CampaignChildDDL").css('display', 'none');
+        }
+
+        loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
+        var _childValue = '0';
+        LoadDataConversionToPlanByCampaign();
+        //ReloadConversionCardByCustomField();
+    });
+
+
+    // ddlParentConversionSummery
+    //$('#ddlParentConversionSummery').change(function () {
+
+    //});
+
+    $('#ddlCampaignConversionToPlan').change(function () {
+        $("#ddlProgramConversionToPlan").empty();
+        $('#ddlTacticConversionToPlan').empty();
+        fillProgramDropdown();
+    });
+
+    $('#ddlProgramConversionToPlan').change(function () {
+        $('#ddlTacticConversionToPlan').empty();
+        fillTacticDropdown();
+    });
+
+    $('#ddlTacticConversionToPlan').change(function () {
+        //LoadDataRevenueToPlanByCampaign();
+        LoadDataConversionToPlanByCampaign();
+    });
+
+    function fillProgramDropdown() {
+        myApp.showPleaseWait(); // New
+        var id = '';
+        campaignId = $('#ddlCampaignConversionToPlan').val();
+        if (campaignId > 0) {
+            id = campaignId.toString();
+        }
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadProgramDropDown/")',
+            data: {
+                id: id,
+                selectOption: OptionMain
+            },
+            success: function (data) {
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlProgramConversionToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
+                });
+                fillTacticDropdown();
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+            },
+            error: function () {
+                $("#ddlProgramConversionToPlan").empty();
+                $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
+                fillTacticDropdown();
+                $('#ddlProgramConversionToPlan').multiselect("refresh");
+                GoToLogin();
+            }
+        });
+    }
+
+    function fillTacticDropdown() {
+        myApp.showPleaseWait();//New
+        var id = '';
+        var Type = '';
+        programId = $('#ddlProgramConversionToPlan').val();
+        if (programId > 0) {
+            Type = '';
+            id = programId.toString();
+        }
+        else if (campaignId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+            id = campaignId.toString();
+        }
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/LoadTacticDropDown/")',
+            data: {
+                id: id,
+                type: Type,
+                selectOption: OptionMain
+            },
+            success: function (data) {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $.each(data, function (index, optionData) {
+                    $("#ddlTacticConversionToPlan").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
+                });
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                LoadDataConversionToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                myApp.hidePleaseWait();
+            },
+            error: function () {
+                $("#ddlTacticConversionToPlan").empty();
+                $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
+                $('#ddlTacticConversionToPlan').multiselect("refresh");
+                //alert('call function!');
+                LoadDataConversionToPlanByCampaign();
+                //LoadDataRevenueRealization();
+                GoToLogin();
+            }
         });
 
-            // Load header data
-            LoadHeaderData();
-            function LoadHeaderData() {
+    }
+    var ParentDrpVal = $("#ddlParentConversionSummery option:selected").val();
+    var currentOption;// = $("#ddlTopChildConversionToPlan option:selected").val();
+    var isParentChng = false;
+    function LoadDataConversionToPlanByCampaign() {
+        var _childValue = '0';
 
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/GetReportHeader/")',
-                    data: {
-                        option: OptionMain,////This variable globally declare in parent view "Index"
-                        isRevenue: false
-                    },
-                    success: function (data) {
-                        if (data != undefined) {
-                            setLabel(data);
-                        }
-                    }
-                });
+        var id = '';
+        var Type = '';
+        var tacticId = $("#ddlTacticConversionToPlan").val();
+        var parentlabel = $("#ddlParentConversionSummery option:selected").val();
+
+        var Code = $("#ddlINQToPlan").val();
+        if (tacticId > 0) {
+            id = tacticId;
+            Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
+        }
+        else if (programId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
+            id = programId.toString();
+        }
+        else if (campaignId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+            id = campaignId.toString();
+        }
+        else {
+            id = _childValue;
+        }
+        if (parentlabel != ParentDrpVal) {
+            ParentDrpVal = parentlabel;
+            isParentChng = true;
+        }
+        var DrpChange = 'CampaignDrp';
+        if (isParentChng) {
+            DrpChange = 'true';
+            Type = '';
+            id = _childValue;
+
+            BackFwdConverstionList.length = 0;
+            var _BackFwdVar = {
+                BackParentLabel: parentlabel,
+                BackChildLabel: '',
+                BackId: id,
+                HeadHireachy: 'Waterfall'
             }
-            var _campaignLabel = '@Common.RevenueCampaign';
+            BackFwdConverstionList.push(_BackFwdVar);
+        }
+        // + "&DrpChange=" + (isParentChng == true) ? 'true' : 'CampaignDrp'
+        var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
+        var Qurt_MonthConv = AllocatedByConv;
 
-            $('#ddlParentConversionSummery').bind('change', function () {
-                var _parentValue = $(this).val();
+        myApp.showPleaseWait();// New
 
-                if (_parentValue == _campaignLabel) {
-                    $("#CustomFieldChildDDL").css('display', 'none');
-                    $("#CampaignChildDDL").css('display', 'inline-block');
-
-                    /*Start: Refresh Campaign, Program, Tactic dropdowns*/
-                    $("#ddlCampaignConversionToPlan").val("0");
-                    $("#ddlProgramConversionToPlan").val("0");
-                    $("#ddlTacticConversionToPlan").val("0");
-                    $("#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan").multiselect({
-                        multiple: false,
-                        noneSelectedText: "Please Select",
-                        selectedList: 1,
-                        CustomCampaignName: "@Common.CampaignCustomTitle",
-                        CustomProgramName: "@Common.ProgramCustomTitle",
-                        CustomTacticName: "@Common.TacticCustomTitle"
-                    }).multiselectfilter({
-                        CustomCampaignName: "@Common.CampaignCustomTitle",
-                    CustomProgramName: "@Common.ProgramCustomTitle",
-                    CustomTacticName: "@Common.TacticCustomTitle"
-                });
-                    //$("#ddlCampaignRevenueToPlan").multiselect('refresh');
-                    /*End: Refresh Campaign, Program, Tactic dropdowns*/
-
-                }
-                else {
-                    $("#CustomFieldChildDDL").css('display', 'inline-block');
-                    $("#CampaignChildDDL").css('display', 'none');
-                }
-
-                loadChildListData(_parentValue, _childtopConversiontoPlanDDLId);
-            });
-
-
-            // ddlParentConversionSummery
-            $('#ddlParentConversionSummery').change(function () {
-                var _childValue = '0';
-                LoadDataConversionToPlanByCampaign();
-            });
-
-            $('#ddlCampaignConversionToPlan').change(function () {
-                $("#ddlProgramConversionToPlan").empty();
-                $('#ddlTacticConversionToPlan').empty();
-                fillProgramDropdown();
-            });
-
-            $('#ddlProgramConversionToPlan').change(function () {
-                $('#ddlTacticConversionToPlan').empty();
-                fillTacticDropdown();
-            });
-
-            $('#ddlTacticConversionToPlan').change(function () {
-                //LoadDataRevenueToPlanByCampaign();
-                LoadDataConversionToPlanByCampaign();
-            });
-
-            function fillProgramDropdown() {
-                var id = '';
-                campaignId = $('#ddlCampaignConversionToPlan').val();
-                if (campaignId > 0) {
-                    id = campaignId.toString();
-                }
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/LoadProgramDropDown/")',
-                    data: {
-                        id: id,
-                        selectOption: OptionMain
-                    },
-                    success: function (data) {
-                        $("#ddlProgramConversionToPlan").empty();
-                        $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
-                        $.each(data, function (index, optionData) {
-                            $("#ddlProgramConversionToPlan").append("<option value='" + optionData.PlanProgramId + "'>" + optionData.Title + "</option>");
-                        });
-                        fillTacticDropdown();
-                        $('#ddlProgramConversionToPlan').multiselect("refresh");
-                    },
-                    error: function () {
-                        $("#ddlProgramConversionToPlan").empty();
-                        $("#ddlProgramConversionToPlan").append("<option value='0'>All Programs</option>");
-                        fillTacticDropdown();
-                        $('#ddlProgramConversionToPlan').multiselect("refresh");
-                        GoToLogin();
-                    }
-                });
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&DrpChange=" + DrpChange;
+        $("#dvConversionToPlan").load(_url);
+        @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
+            _LineChartCombine = JSON.stringify('@Model.ConversionToPlanModel.LineChartModel');
+            formatDataTableValues();
+            formatPercentageValue();
+            //loadBarChart();
+            loadCombineChart();*@
+        @*$.ajax({
+        dataType: 'json',
+        type: 'POST',
+        url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
+            traditional: true,
+            data: {
+                ParentLabel: parentlabel,
+                childlabelType: Type.toString(),
+                childId: id.toString(),
+                option: OptionMain,
+                IsQuarterly: Qurt_Month,
+                code: Code
+            },
+            success: function (data) {
+                FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
+                barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel);
+                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel);
+                _Isfilter = true;
+                    //BindConversionToPlanDataTable()
+                formatDataTableValues();
+                formatPercentageValue();
+                //loadBarChart();
+                loadCombineChart();
+                //loadcardsection();
             }
+            });*@
+        @* // $("#ConversionCardID").load(@Url.Action("LoadConversionCardSectionPartial", new { cardModel = _cardDat }));*@
+        // PopulateRevenueToPlanChildDDL(r, id);
 
-            function fillTacticDropdown() {
-                var id = '';
-                var Type = '';
-                programId = $('#ddlProgramConversionToPlan').val();
-                if (programId > 0) {
-                    Type = '';
-                    id = programId.toString();
-                }
-                else if (campaignId > 0) {
-                    Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                        id = campaignId.toString();
-                    }
+    }
+    function loadChildListData(parentOption, id) {
 
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/LoadTacticDropDown/")',
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Report/GetChildLabelData/")',
+            data: {
+                ParentLabel: parentOption,
+                selectOption: OptionMain,////This variable globally declare in parent view "Index"
+                IsAllInclude: true
+            },
+            success: function (r) {
+                PopulateRevenueToPlanChildDDL(r, id);
+            }
+        });
+    }
+
+    function PopulateRevenueToPlanChildDDL(items, id) {
+
+        var $dropdown = $("#" + id);
+        $dropdown.empty();
+        var $html = '';
+        if (items.length > 0) {
+
+            $.each(items, function (index, planobj) {
+
+                $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
+
+            });
+            $('#btnMultiselect_' + id).attr('style', 'display:block;');
+            if ($('#btnMultiselect_' + id).parent().parent().hasClass('margin-rigthminus20px')) {
+                $('#btnMultiselect_' + id).parent().parent().removeClass('margin-rigthminus20px');
+            }
+        }
+        else {
+            $('#btnMultiselect_' + id).attr('style', 'display:none;');
+            $('#btnMultiselect_' + id).parent().parent().addClass('margin-rigthminus20px');
+        }
+        $dropdown.append($html);
+        $("#multipleselect_" + id).find("input[type='search']").val('');
+        $('#' + id).multiselect("refresh");
+    }
+
+    // bind header data
+    function setLabel(data) {
+
+        var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
+        setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, false);
+        setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
+        var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
+        if (parseFloat(data.ProjectedMQLValue) > 0) {
+            mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
+        }
+        if (parseFloat(data.ProjectedRevenueValue) > 0) {
+        }
+        //setPercentage("#mqlActualPercentages", mqlActualPercentage);
+        setPercentage("#mqlActualPercentages", _ConversionPercentage);
+    }
+
+    function setPercentage(id, value) {
+
+        var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
+        var isNegative = value < 0;
+        if (isNegative) {
+            $(id).addClass("redLabel");
+            $(id).removeClass("greenLabel");
+            $(id).text("-" + absValue);
+        }
+        else {
+            $(id).addClass("greenLabel");
+            $(id).html("+" + absValue);
+        }
+    }
+
+    $("#ddlTimeFrameSelectBox select").selectbox();
+
+    $("#ddlConversionTimeFrame").change(function () {
+        AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
+        Qurt_Month = AllocatedBy;
+        AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
+        Qurt_Month = AllocatedBy;
+        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+        var parentlabel = _BackHeadValues.BackParentLabel;
+        var Type = _BackHeadValues.BackChildLabel;
+        var id = _BackHeadValues.BackId;
+        var Code = $("#ddlINQToPlan").val();
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
+        $("#dvConversionToPlan").load(_url);
+        //LoadConversionData();
+    });
+
+
+    var istrigger = false;
+    $('#ddlTopChildConversionToPlan').change(function () {
+        istrigger = true;
+        var _childValue = $("#ddlTopChildConversionToPlan").val();
+        masterCustomFieldOptionId = _childValue;
+        //ReloadConversionToPlanByCustomField(_childValue);
+        GetConversionToPlanByCustomFilter(_childValue);
+
+    });
+    //
+
+    $("#ddlINQToPlan").change(function () {
+        istrigger = true;
+        var _childValue = $("#ddlINQToPlan").val();
+        GetConversionToPlanByCode(_childValue);
+        //ReloadConversionToPlanByCustomFieldTop(_childValue);
+    });
+
+
+    //for test method
+    var FilterData;
+    var barchartData;
+    var _BarchartCombine;
+    var _LineChartCombine;
+    var _cardData;
+    var _Isfilter = false;
+    function GetConversionToPlanByCode(_Code) {
+
+        var _childid = $("#ddlTopChildConversionToPlan").val();
+        var tacticId = $("#ddlTacticConversionToPlan").val();
+        // var parentlabel = $("#ddlParentConversionSummery option:selected").val()
+        var Type = '';
+        //  var Code = '';
+        Code = _Code;
+        // var id = '';
+        id = _childid;
+        //
+        @*if (tacticId > 0) {
+            id = tacticId;
+            Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
+
+        }
+        else if (programId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
+            id = programId.toString();
+
+        }
+        else if (campaignId > 0) {
+            Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
+            id = campaignId.toString();
+
+        }*@
+        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+        var parentlabel = _BackHeadValues.BackParentLabel;
+        var Type = _BackHeadValues.BackChildLabel;
+        var id = _BackHeadValues.BackId;
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
+        $("#dvConversionToPlan").load(_url);
+        @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
+            _LineChartCombine = JSON.stringify('@Model.ConversionToPlanModel.LineChartModel');
+            formatDataTableValues();
+            formatPercentageValue();
+            //loadBarChart();
+            loadCombineChart();*@
+        @*$.ajax({
+
+            dataType: 'json',
+            type: 'POST',
+            url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
+            traditional: true,
+            data: {
+                ParentLabel: parentlabel,
+                childlabelType: Type.toString(),
+                childId: id.toString(),
+                option: OptionMain,
+                IsQuarterly: Qurt_Month,
+                code: Code
+            },
+            success: function (data) {
+                FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
+                barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel);
+                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel)
+                _Isfilter = true;
+                    //BindConversionToPlanDataTable()
+                formatDataTableValues();
+                formatPercentageValue();
+                //loadBarChart();
+                loadCombineChart();
+            }
+            });*@
+
+    }
+    //up to here
+
+
+    function GetConversionToPlanByCustomFilter(_childValue) {
+
+        currentOption = $("#ddlTopChildConversionToPlan option:selected").val();
+        var DrpChange = 'CampaignDrp';
+        if (previousOption != currentOption) {
+            DrpChange = 'true';
+        }
+
+        var code = $("#ddlINQToPlan").val();
+        var parentlabel = $("#ddlParentConversionSummery option:selected").val()
+        var Type = '';
+        var id = '';
+        id = _childValue;
+        var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
+        var Qurt_MonthConv = AllocatedByConv;
+
+        BackFwdConverstionList.length = 0;
+        var _BackFwdVar = {
+            BackParentLabel: parentlabel,
+            BackChildLabel: '',
+            BackId: id,
+            HeadHireachy: 'Waterfall'
+        }
+        BackFwdConverstionList.push(_BackFwdVar);
+        var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&DrpChange=" + DrpChange;
+        $("#dvConversionToPlan").load(_url);
+        @*$.ajax({
+                dataType: 'json',
+                type: 'POST',
+                url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
+                traditional: true,
                 data: {
-                    id: id,
-                    type: Type,
-                    selectOption: OptionMain
+                    ParentLabel: parentlabel,
+                    childlabelType: Type.toString(),
+                    childId: id.toString(),
+                    option: OptionMain,
+                    IsQuarterly: Qurt_Month,
+                    code: code
                 },
                 success: function (data) {
-                    $("#ddlTacticConversionToPlan").empty();
-                    $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
-                    $.each(data, function (index, optionData) {
-                        $("#ddlTacticConversionToPlan").append("<option value='" + optionData.PlanTacticId + "'>" + optionData.Title + "</option>");
-                    });
-                    $('#ddlTacticConversionToPlan').multiselect("refresh");
-                    //alert('call function!');
-                    LoadDataConversionToPlanByCampaign();
-                    //LoadDataRevenueRealization();
-                    myApp.hidePleaseWait();
-                },
-                error: function () {
-                    $("#ddlTacticConversionToPlan").empty();
-                    $("#ddlTacticConversionToPlan").append("<option value='0'>All Tactics</option>");
-                    $('#ddlTacticConversionToPlan').multiselect("refresh");
-                    //alert('call function!');
-                    LoadDataConversionToPlanByCampaign();
-                    //LoadDataRevenueRealization();
-                    GoToLogin();
+                    FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
+                    barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel)
+                    _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel)
+                    _Isfilter = true;
+                    //BindConversionToPlanDataTable()
+                    formatDataTableValues();
+                    formatPercentageValue();
+                    loadCombineChart();
                 }
-            });
+            });*@
+    }
 
-        }
 
-            function LoadDataConversionToPlanByCampaign() {
+    function loadCombineChart() {
+        var _barchartdata = barchartData;
+        var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
+        _BarChartdata = JSON.parse(_BarChartdata);
 
-                var _childValue = '0';
-                var id = '';
-                var Type = '';
-                var tacticId = $("#ddlTacticConversionToPlan").val();
-                var parentlabel = $("#ddlParentConversionSummery option:selected").val()
-                var Code = $("#ddlINQToPlan").val();
-                if (tacticId > 0) {
-                    id = tacticId;
-                    Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
-                }
-                else if (programId > 0) {
-                    Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
-                id = programId.toString();
-            }
-            else if (campaignId > 0) {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                    id = campaignId.toString();
-                }
-                else {
-                    id = _childValue;
-                }
-        $.ajax({
-            dataType: 'json',
-            type: 'POST',
-            url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
-            traditional: true,
-            data: {
-                ParentLabel: parentlabel,
-                childlabelType: Type.toString(),
-                childId: id.toString(),
-                option: OptionMain,
-                IsQuarterly: Qurt_Month,
-                code: Code
-            },
-            success: function (data) {
-                FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
-                barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel);
-                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel)
-                _Isfilter = true;
-                BindConversionToPlanDataTable()
-                formatDataTableValues();
-                formatPercentageValue();
-                //loadBarChart();
-                loadCombineChart();
-            }
-        });
+
+        var _linechartdata = _LineChartCombine;
+        var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
+        _LineChartdata = JSON.parse(_LineChartdata);
+
+        //BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
 
     }
 
-            function loadChildListData(parentOption, id) {
-
-                $.ajax({
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/GetChildLabelData/")',
-                    data: {
-                        ParentLabel: parentOption,
-                        selectOption: OptionMain,////This variable globally declare in parent view "Index"
-                        IsAllInclude: true
-                    },
-                    success: function (r) {
-                        PopulateRevenueToPlanChildDDL(r, id);
-                    }
-                });
+    //Start:- Method for bind ConversionDataTabel Script
+    @*function BindConversionToPlanDataTable() {
+            if (_Isfilter) {
+                var _dataTableModel = FilterData;
+            }
+            else {
+                var _dataTableModel = '@conversion_datatableModel';
             }
 
-            function PopulateRevenueToPlanChildDDL(items, id) {
-
-                var $dropdown = $("#" + id);
-                $dropdown.empty();
-                var $html = '';
-                if (items.length > 0) {
-
-                    $.each(items, function (index, planobj) {
-
-                        $html += '<option value="' + planobj.Value + '">' + planobj.Text + '</option>';
-
-                    });
-                    $('#btnMultiselect_' + id).attr('style', 'display:block;');
-                    if ($('#btnMultiselect_' + id).parent().parent().hasClass('margin-rigthminus20px')) {
-                        $('#btnMultiselect_' + id).parent().parent().removeClass('margin-rigthminus20px');
-                    }
-                }
-                else {
-                    $('#btnMultiselect_' + id).attr('style', 'display:none;');
-                    $('#btnMultiselect_' + id).parent().parent().addClass('margin-rigthminus20px');
-                }
-                $dropdown.append($html);
-                $("#multipleselect_" + id).find("input[type='search']").val('');
-                $('#' + id).multiselect("refresh");
-            }
-
-            // bind header data
-            function setLabel(data) {
-
-                var _ConversionActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
-                var _ConversionPercentage = '@revenue_Projected_Goal.Percentage';
-                setBootstrapTooltip("#mqlProjecteds", data.ProjectedMQLValue, 5, false);
-                setBootstrapTooltip("#mqlActuals", _ConversionActual_Projected, 5, false);
-                var mqlActualPercentage = 0, revenueTrendPercentage = 0, mqlTrendPercentage = 0;
-                if (parseFloat(data.ProjectedMQLValue) > 0) {
-                    mqlActualPercentage = (((parseFloat(data.ActualMQLValue) - parseFloat(data.ProjectedMQLValue)) / parseFloat(data.ProjectedMQLValue)) * 100);
-                }
-                if (parseFloat(data.ProjectedRevenueValue) > 0) {
-                }
-                //setPercentage("#mqlActualPercentages", mqlActualPercentage);
-                setPercentage("#mqlActualPercentages", _ConversionPercentage);
-            }
-
-            function setPercentage(id, value) {
-
-                var absValue = FormatNumber(Math.abs(parseFloat(value)), true);
-                var isNegative = value < 0;
-                if (isNegative) {
-                    $(id).addClass("redLabel");
-                    $(id).removeClass("greenLabel");
-                    $(id).text("-" + absValue);
-                }
-                else {
-                    $(id).addClass("greenLabel");
-                    $(id).html("+" + absValue);
-                }
-            }
-
-            $("#ddlTimeFrameSelectBox select").selectbox();
-
-            $("#ddlConversionTimeFrame").change(function () {
-                AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
-                Qurt_Month = AllocatedBy;
-                LoadConversionData();
-            });
+        _dataTableModel = (_dataTableModel.toString().replace(/&quot;/g, '"'));
+        _dataTableModel = JSON.parse(_dataTableModel);
 
 
-            var istrigger = false;
-            $('#ddlTopChildConversionToPlan').change(function () {
-                istrigger = true;
-                var _childValue = $("#ddlTopChildConversionToPlan").val();
-                //ReloadConversionToPlanByCustomField(_childValue);
-                GetConversionToPlanByCustomFilter(_childValue);
 
-            });
-            //
-
-            $("#ddlINQToPlan").change(function () {
-                istrigger = true;
-                var _childValue = $("#ddlINQToPlan").val();
-                GetConversionToPlanByCode(_childValue);
-                //ReloadConversionToPlanByCustomFieldTop(_childValue);
-            });
-
-
-            //for test method
-            var FilterData;
-            var barchartData;
-            var _BarchartCombine;
-            var _LineChartCombine;
-            var _Isfilter = false;
-            function GetConversionToPlanByCode(_Code) {
-                var _childid = $("#ddlTopChildConversionToPlan").val();
-                var tacticId = $("#ddlTacticConversionToPlan").val();
-                var parentlabel = $("#ddlParentConversionSummery option:selected").val()
-                var Type = '';
-                var Code = '';
-                Code = _Code;
-                var id = '';
-                id = _childid;
-                //
-                if (tacticId > 0) {
-                    id = tacticId;
-                    Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
-
-                }
-                else if (programId > 0) {
-                    Type = "@RevenuePlanner.Helpers.Common.RevenueProgram"
-                id = programId.toString();
-
-            }
-            else if (campaignId > 0) {
-                Type = "@RevenuePlanner.Helpers.Common.RevenueCampaign"
-                    id = campaignId.toString();
-
-                }
-
-        $.ajax({
-            dataType: 'json',
-            type: 'POST',
-            url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
-            traditional: true,
-            data: {
-                ParentLabel: parentlabel,
-                childlabelType: Type.toString(),
-                childId: id.toString(),
-                option: OptionMain,
-                IsQuarterly: Qurt_Month,
-                code: Code
-            },
-            success: function (data) {
-                FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
-                barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel);
-                _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel)
-                _Isfilter = true;
-                BindConversionToPlanDataTable()
-                formatDataTableValues();
-                formatPercentageValue();
-                //loadBarChart();
-                loadCombineChart();
-            }
-        });
-    }
-            //up to here
-
-
-            function GetConversionToPlanByCustomFilter(_childValue) {
-
-                var code = $("#ddlINQToPlan").val();
-                var parentlabel = $("#ddlParentConversionSummery option:selected").val()
-                var Type = '';
-                var id = '';
-                id = _childValue;
-                $.ajax({
-                    dataType: 'json',
-                    type: 'POST',
-                    url: '@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")',
-                    traditional: true,
-                    data: {
-                        ParentLabel: parentlabel,
-                        childlabelType: Type.toString(),
-                        childId: id.toString(),
-                        option: OptionMain,
-                        IsQuarterly: Qurt_Month,
-                        code: code
-                    },
-                    success: function (data) {
-                        FilterData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanDataTableModel);
-                        barchartData = JSON.stringify(data.ConversionToPlanModel.ConversionToPlanBarChartModel)
-                        _LineChartCombine = JSON.stringify(data.ConversionToPlanModel.LineChartModel)
-                        _Isfilter = true;
-                        BindConversionToPlanDataTable()
-                        formatDataTableValues();
-                        formatPercentageValue();
-                        loadCombineChart();
-                    }
-                });
-            }
-
-
-            function loadCombineChart() {
-                var _barchartdata = barchartData;
-                var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
-                _BarChartdata = JSON.parse(_BarChartdata);
-
-
-                var _linechartdata = _LineChartCombine;
-                var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
-                _LineChartdata = JSON.parse(_LineChartdata);
-
-                BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barCombinechartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth);
-
-            }
-
-            //Start:- Method for bind ConversionDataTabel Script
-            function BindConversionToPlanDataTable() {
-                if (_Isfilter) {
-                    var _dataTableModel = FilterData;
-                }
-                else {
-                    var _dataTableModel = '@conversion_datatableModel';
-            }
-            _dataTableModel = (_dataTableModel.toString().replace(/&quot;/g, '"'));
-            _dataTableModel = JSON.parse(_dataTableModel);
-
-            var isQuarterly = _dataTableModel.IsQuarterly;
-            var _rowcount = 8;
-            var _tbody = '<tr>';
-            var _categories = _dataTableModel.Categories;
-            var _catCount = _dataTableModel.Categories.length;
-            var _lblTimeFrame = _dataTableModel.timeframeOption;
-            var _subDataModel = _dataTableModel.SubDataModel;
-            var _performanceList = _subDataModel.PerformanceList;
-            var _totalRevenueList = _subDataModel.RevenueList;
-            var _curnttimeframe = '';
-            _tbody = _tbody + ' <th>&nbsp;</th> '
-            for (var _cat = 0; _cat < _catCount; _cat++) {
-                _curnttimeframe = _categories[_cat] + ' ' + _lblTimeFrame;
-                _tbody = _tbody + ' <th class="nobold">' + _curnttimeframe + '</th>';
-            }
-            _tbody = _tbody + ' </tr>';
-
-            var _actualList = _dataTableModel.ActualList;
-            var _projectedList = _dataTableModel.ProjectedList;
-            var _goalList = _dataTableModel.GoalList;
-            var _rowLabel = '', _actual = '0', _projected = '0', _goal = '0', _Performance = '0', _Cost = '0', _ROI = '0', _TotalRevenue = '0', _cntrlId = '';
-
-            _tbody = _tbody + ' <tr> ';
-            _rowLabel = 'Actual';
-            _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
-
-            for (var _cat = 0; _cat < _catCount; _cat++) {
-                _cntrlId = _rowLabel + '_' + _cat.toString();
-                _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _actualList[_cat] + '" id="' + _cntrlId + '">' + _actualList[_cat] + '</span> </td> ';
-            }
-            _tbody = _tbody + ' </tr>';
-
-            _tbody = _tbody + ' <tr> ';
-            _rowLabel = 'Projected';
-            _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
-            for (var _cat = 0; _cat < _catCount; _cat++) {
-                _cntrlId = _rowLabel + '_' + _cat.toString();
-                _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _projectedList[_cat] + '" id="' + _cntrlId + '">' + _projectedList[_cat] + '</span> </td> ';
-            }
-            _tbody = _tbody + ' </tr>';
-
-            _tbody = _tbody + ' <tr> ';
-            _rowLabel = 'Goal';
-            _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
-            for (var _cat = 0; _cat < _catCount; _cat++) {
-                _cntrlId = _rowLabel + '_' + _cat.toString();
-                _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _goalList[_cat] + '" id="' + _cntrlId + '">' + _goalList[_cat] + '</span> </td> ';
-            }
-            _tbody = _tbody + ' </tr>';
-
-            _tbody = _tbody + ' <tr > ';
-            _rowLabel = 'Performance';
-            _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
-            for (var _cat = 0; _cat < _catCount; _cat++) {
-                _cntrlId = _rowLabel + '_' + _cat.toString();
-                _tbody = _tbody + ' <td> <span class="performanceval" orig-val="' + _performanceList[_cat] + '" id="' + _cntrlId + '">' + _performanceList[_cat] + '</span> </td> ';
-            }
-            _tbody = _tbody + ' </tr>';
-
-            _tbody = _tbody + ' <tr> ';
-            _rowLabel = 'Total';
-            var _label = 'Total_Revenue';
-            _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
-            for (var _cat = 0; _cat < _catCount; _cat++) {
-                //_tbody = _tbody + ' <td>' +_actualList[_cat]+ '</td> ';
-                _cntrlId = _label + '_' + _cat.toString();
-                _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _totalRevenueList[_cat] + '" id="' + _cntrlId + '">' + _totalRevenueList[_cat] + '</span> </td> ';
-            }
-            _tbody = _tbody + ' </tr>';
-
-            $("#ConversionToPlanDataTable").html(_tbody);
+        var isQuarterly = _dataTableModel.IsQuarterly;
+        var _rowcount = 8;
+        var _tbody = '<tr>';
+        var _categories = _dataTableModel.Categories;
+        var _catCount = _dataTableModel.Categories.length;
+        var _lblTimeFrame = _dataTableModel.timeframeOption;
+        var _subDataModel = _dataTableModel.SubDataModel;
+        var _performanceList = _subDataModel.PerformanceList;
+        var _totalRevenueList = _subDataModel.RevenueList;
+        var _curnttimeframe = '';
+        _tbody = _tbody + ' <th>&nbsp;</th> '
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _curnttimeframe = _categories[_cat] + ' ' + _lblTimeFrame;
+            _tbody = _tbody + ' <th class="nobold">' + _curnttimeframe + '</th>';
         }
-            //End Script
+        _tbody = _tbody + ' </tr>';
 
-            ////Start:- Combination Chart Script
-            //function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal, _pointLabelWidth) {
-            //    Highcharts.setOptions({
-            //        lang: {
-            //            numericSymbols: ["k", "M", "B", "T", "P", "E"]
-            //        }
-            //    });
-            //    var options = {
-            //        chart: {
-            //            //type: 'column'
-            //            height: 280,
-            //            spacingTop: 30
-            //            //width: 400
-            //        },
-            //        colors: ['#B04499', '#999999', '#006837'],
-            //        title: {
-            //            text: ''
-            //        },
-            //        legend: {
-            //            layout: 'vertical',
-            //            align: 'left',
-            //            verticalAlign: 'top',
-            //            floating: true,
-            //            x: 60,
-            //            y: 45
-            //        },
-            //        xAxis: {
-            //            categories: _categories,
-            //            tickWidth: 0,
-            //            labels: {
-            //                enabled: false
-            //            },
-            //            plotLines: [{
-            //                color: 'black', // Color value
-            //                dashStyle: 'longdash', // Style of the plot line. Default to solid
-            //                value: _plotlineVal, // Value of where the line will appear
-            //                width: 2, // Width of the line    
-            //                label: {
-            //                    text: 'Today',
-            //                    align: 'middle',
-            //                    verticalAlign: 'top',
-            //                    rotation: 0,
-            //                    x: -15,
-            //                    y: -2
-            //                }
-            //            }]
-            //            //plotBands: [{
-            //            //    color: '#ebebeb',
-            //            //    from: _plotBandFrom,
-            //            //    to: _plotBandTo
-            //            //}]
-            //        },
-            //        yAxis: {
-            //            gridLineWidth: 0,
-            //            labels: {
-            //                enabled: true,
-            //                align: 'left',
-            //                x: 7,
-            //                y: 2
-            //            },
-            //            title: {
-            //                enabled: false,
-            //                text: 'Values'
-            //            },
-            //            lineWidth: 1,
-            //            tickPosition: 'inside',
-            //            tickLength: 5,
-            //            tickWidth: 2
-            //        },
-            //        credits: {
-            //            enabled: false
-            //        },
-            //        tooltip: {
-            //            valueDecimals: 2,
-            //        },
-            //        plotOptions: {
-            //            series: {
-            //                //pointWidth: 20,
+        var _actualList = _dataTableModel.ActualList;
+        var _projectedList = _dataTableModel.ProjectedList;
+        var _goalList = _dataTableModel.GoalList;
+        var _rowLabel = '', _actual = '0', _projected = '0', _goal = '0', _Performance = '0', _Cost = '0', _ROI = '0', _TotalRevenue = '0', _cntrlId = '';
 
-            //                //groupPadding: 0,
-            //                //borderWidth: 0,
-            //                //shadow: false
-            //            },
-            //            column: {
-            //                //grouping: false,
-            //                shadow: false,
-            //                borderWidth: 0,
-            //                //pointPadding: 5,
-            //                pointWidth: _pointLabelWidth
-            //                //groupPadding: 0
-            //            }
-            //        },
-            //        series: []
-            //    }
-            //    var serLength = _Barseries.length;
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Actual';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
 
-            //    for (var i = 0; i < serLength ; i++) {
-            //        options.series.push(eval(_Barseries[i]));
-            //    }
-            //    var _linechartseriesLength = _linechartseries.length;
-            //    for (var i = 0; i < _linechartseriesLength ; i++) {
-            //        options.series.push(eval(_linechartseries[i]));
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _actualList[_cat] + '" id="' + _cntrlId + '">' + _actualList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
 
-            //        //if (_series[i].type != null && _series[i].type != 'undefined') {
-            //        //    var datum = options.series[i];
-            //        //    datum.tooltip = {
-            //        //        shared: true,
-            //        //        useHTML: true,
-            //        //        headerFormat: '<table>',
-            //        //        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
-            //        //            '<td style="text-align: right"><b>{point.y}</b></td></tr> <tr><td style="color: {series.color}">{series.name}: </td>' +
-            //        //    '<td style="text-align: right"><b>{point.y}</b></td></tr>',
-            //        //        footerFormat: '</table>'
-            //        //    };
-            //        //    //if (_catLength == 4) {
-            //        //    //    datum.marker = {
-            //        //    //        symbol: 'line',
-            //        //    //        lineWidth: 2,
-            //        //    //        radius: 26,
-            //        //    //        lineColor: '#F0BE29'
-            //        //    //    };
-            //        //    //}
-            //        //}
-            //    }
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Projected';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _projectedList[_cat] + '" id="' + _cntrlId + '">' + _projectedList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
 
-            //    //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
-            //    //    return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
-            //    //};
-            //    $(_ChartDivId).highcharts(options);
-            //}
-            ////End:- Combination Chart Script
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Goal';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _goalList[_cat] + '" id="' + _cntrlId + '">' + _goalList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
 
+        _tbody = _tbody + ' <tr > ';
+        _rowLabel = 'Performance';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            _cntrlId = _rowLabel + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="performanceval" orig-val="' + _performanceList[_cat] + '" id="' + _cntrlId + '">' + _performanceList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        _tbody = _tbody + ' <tr> ';
+        _rowLabel = 'Total';
+        var _label = 'Total_Revenue';
+        _tbody = _tbody + ' <td>' + _rowLabel + '</td> ';
+        for (var _cat = 0; _cat < _catCount; _cat++) {
+            //_tbody = _tbody + ' <td>' +_actualList[_cat]+ '</td> ';
+            _cntrlId = _label + '_' + _cat.toString();
+            _tbody = _tbody + ' <td> <span class="currencyval" orig-val="' + _totalRevenueList[_cat] + '" id="' + _cntrlId + '">' + _totalRevenueList[_cat] + '</span> </td> ';
+        }
+        _tbody = _tbody + ' </tr>';
+
+        $("#ConversionToPlanDataTable").html(_tbody);
+        }*@
+    //End Script
+
+    ////Start:- Combination Chart Script
+    //function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal, _pointLabelWidth) {
+    //    Highcharts.setOptions({
+    //        lang: {
+    //            numericSymbols: ["k", "M", "B", "T", "P", "E"]
+    //        }
+    //    });
+    //    var options = {
+    //        chart: {
+    //            //type: 'column'
+    //            height: 280,
+    //            spacingTop: 30
+    //            //width: 400
+    //        },
+    //        colors: ['#B04499', '#999999', '#006837'],
+    //        title: {
+    //            text: ''
+    //        },
+    //        legend: {
+    //            layout: 'vertical',
+    //            align: 'left',
+    //            verticalAlign: 'top',
+    //            floating: true,
+    //            x: 60,
+    //            y: 45
+    //        },
+    //        xAxis: {
+    //            categories: _categories,
+    //            tickWidth: 0,
+    //            labels: {
+    //                enabled: false
+    //            },
+    //            plotLines: [{
+    //                color: 'black', // Color value
+    //                dashStyle: 'longdash', // Style of the plot line. Default to solid
+    //                value: _plotlineVal, // Value of where the line will appear
+    //                width: 2, // Width of the line
+    //                label: {
+    //                    text: 'Today',
+    //                    align: 'middle',
+    //                    verticalAlign: 'top',
+    //                    rotation: 0,
+    //                    x: -15,
+    //                    y: -2
+    //                }
+    //            }]
+    //            //plotBands: [{
+    //            //    color: '#ebebeb',
+    //            //    from: _plotBandFrom,
+    //            //    to: _plotBandTo
+    //            //}]
+    //        },
+    //        yAxis: {
+    //            gridLineWidth: 0,
+    //            labels: {
+    //                enabled: true,
+    //                align: 'left',
+    //                x: 7,
+    //                y: 2
+    //            },
+    //            title: {
+    //                enabled: false,
+    //                text: 'Values'
+    //            },
+    //            lineWidth: 1,
+    //            tickPosition: 'inside',
+    //            tickLength: 5,
+    //            tickWidth: 2
+    //        },
+    //        credits: {
+    //            enabled: false
+    //        },
+    //        tooltip: {
+    //            valueDecimals: 2,
+    //        },
+    //        plotOptions: {
+    //            series: {
+    //                //pointWidth: 20,
+
+    //                //groupPadding: 0,
+    //                //borderWidth: 0,
+    //                //shadow: false
+    //            },
+    //            column: {
+    //                //grouping: false,
+    //                shadow: false,
+    //                borderWidth: 0,
+    //                //pointPadding: 5,
+    //                pointWidth: _pointLabelWidth
+    //                //groupPadding: 0
+    //            }
+    //        },
+    //        series: []
+    //    }
+    //    var serLength = _Barseries.length;
+
+    //    for (var i = 0; i < serLength ; i++) {
+    //        options.series.push(eval(_Barseries[i]));
+    //    }
+    //    var _linechartseriesLength = _linechartseries.length;
+    //    for (var i = 0; i < _linechartseriesLength ; i++) {
+    //        options.series.push(eval(_linechartseries[i]));
+
+    //        //if (_series[i].type != null && _series[i].type != 'undefined') {
+    //        //    var datum = options.series[i];
+    //        //    datum.tooltip = {
+    //        //        shared: true,
+    //        //        useHTML: true,
+    //        //        headerFormat: '<table>',
+    //        //        pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+    //        //            '<td style="text-align: right"><b>{point.y}</b></td></tr> <tr><td style="color: {series.color}">{series.name}: </td>' +
+    //        //    '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+    //        //        footerFormat: '</table>'
+    //        //    };
+    //        //    //if (_catLength == 4) {
+    //        //    //    datum.marker = {
+    //        //    //        symbol: 'line',
+    //        //    //        lineWidth: 2,
+    //        //    //        radius: 26,
+    //        //    //        lineColor: '#F0BE29'
+    //        //    //    };
+    //        //    //}
+    //        //}
+    //    }
+
+    //    //Highcharts.Renderer.prototype.symbols.line = function (x, y, width, height) {
+    //    //    return ['M', x, y + height / 2, 'L', x + width, y + width / 2];
+    //    //};
+    //    $(_ChartDivId).highcharts(options);
+    //}
+    ////End:- Combination Chart Script
+
+    //});
+    var previousOption;
+
+    (function () {
+
+        $("#ddlTopChildConversionToPlan").focus(function () {
+            // Store the current value on focus, before it changes
+            previousOption = this.value;
+        }).change(function () {
+            previousOption = this.value;
         });
-    </script>
+    });
+    function formatHeaderValues(_revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative) {
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';
+        var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
+        var _revPercentage = '@revenue_Projected_Goal.Percentage';
+        var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
+        //<p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
+        //    <span id="mqlProjectedPercentages"></span>
+        
+        var _formtPercentage = "0";
+        $("#mqlActuals").popover('destroy');
+        $("#mqlProjecteds").popover('destroy');
+
+        setBootstrapTooltip("#mqlActuals", _revActual_Projected, 5, false);
+        setBootstrapTooltip("#mqlProjecteds", _revProjected, 5, false);
+
+
+        if (_revActualPercentage == null || _revActualPercentage == 'undefined' || _revActualPercentage == '' || _revActualPercentage == 'NaN' || _revActualPercentage == '-NaN') {
+            _formtPercentage = "0";
+            $("#mqlActualPercentages").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (_revActualPercentageIsnegative.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revActualPercentage)), true);
+                $("#mqlActualPercentages").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revActualPercentage)), true);
+                $("#mqlActualPercentages").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $("#mqlActualPercentages").html(_formtPercentage);
+
+        if (_revProjectedPercentage == null || _revProjectedPercentage == 'undefined' || _revProjectedPercentage == '' || _revProjectedPercentage == 'NaN' || _revProjectedPercentage == '-NaN') {
+            _formtPercentage = "0";
+            $("#mqlProjectedPercentages").removeClass("greenLabel").removeClass("redLabel");
+        }
+        else {
+            if (_revProjectedPercentageIsnegative.toLowerCase() == 'true') {
+                _formtPercentage = '-' + FormatNumber(Math.abs(parseFloat(_revProjectedPercentage)), true);
+                $("#mqlProjectedPercentages").removeClass("greenLabel").addClass("redLabel");
+            }
+            else {
+                _formtPercentage = '+' + FormatNumber(Math.abs(parseFloat(_revProjectedPercentage)), true);
+                $("#mqlProjectedPercentages").removeClass("redLabel").addClass("greenLabel");
+            }
+        }
+        $("#mqlProjectedPercentages").html(_formtPercentage);
+    }
+    function ShowHideReport() {
+        var _isplan = $('#hdnIsPlanExistToShowReport').val().toLowerCase();
+        if (_isplan == 'true') {
+            $('#DivNoPlanToShowReport').css('display', 'none');
+            //$('#divRevenue').css('display', 'block');
+            //$('#divConversion').css('display', 'block');
+            //$('#divBudgeting').css('display', 'block');
+        }
+        else {
+            $('#DivNoPlanToShowReport').css('display', 'block');
+            //$('#divRevenue').css('display', 'none');
+            //$('#divConversion').css('display', 'none');
+            //$('#divBudgeting').css('display', 'none');
+        }
+    }
+</script>

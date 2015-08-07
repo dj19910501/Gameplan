@@ -90,7 +90,9 @@ namespace RevenuePlanner.Helpers
             CW = 2,
             Revenue = 3,
             ProjectedStageValue = 4,
-            Cost=5
+            Cost = 5,
+            TQL = 6,
+            ADS = 7
         }
 
         /// <summary>
@@ -177,6 +179,58 @@ namespace RevenuePlanner.Helpers
           
         };
 
+        // Add By Nishant Sheth : 06-July-2015
+
+        public enum PerPage
+        {
+            Five = 5,
+            Ten = 10,
+            Twenty = 20,
+            TwentyFive = 25,
+            Fifty = 50,
+            Hundered = 100
+        }
+        public static Dictionary<string, string> PerPageSize = new Dictionary<string, string>()
+        {
+            {PerPage.Five.ToString(), "5"},
+            {PerPage.Ten.ToString(), "10"},
+            {PerPage.Twenty.ToString(), "20"},
+            {PerPage.TwentyFive.ToString(), "25"},
+            {PerPage.Fifty.ToString(), "50"},
+            {PerPage.Hundered.ToString(), "100"}
+          
+        };
+
+        public enum SortByRevenue
+        {
+            Revenue,
+            Cost,
+            ROI
+        }
+        public static Dictionary<string, string> SortByRevenueDrp = new Dictionary<string, string>()
+        {
+            {SortByRevenue.Revenue.ToString(), "revenueval"},
+            {SortByRevenue.Cost.ToString(), "costval"},
+            {SortByRevenue.ROI.ToString(), "roival"}
+            
+        };
+
+        public enum SortByWaterFall
+        {
+            INQ,
+            MQL,
+            CW
+
+        }
+        public static Dictionary<string, string> SortByWaterFallDrp = new Dictionary<string, string>()
+        {
+            {SortByWaterFall.INQ.ToString(), "inqval"},
+            {SortByWaterFall.MQL.ToString(), "mqlval"},
+            {SortByWaterFall.CW.ToString(), "cwval"}
+            //{SortByWaterFall.ADS.ToString(), "adsval"}
+            
+        };
+        // End By Nishant Sheth
         #endregion
 
         //#region User

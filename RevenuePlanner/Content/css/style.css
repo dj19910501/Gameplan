@@ -79,6 +79,12 @@ body {
 .row-fluid.calc-height {
     min-width: 1280px;
 }
+/*PL#1441 Added by Dashrath Prajapati*/
+.row-fluid.calc-height-login {
+    min-width: 1280px;
+     background-color: #fff;/*PL#1441 Added by Dashrath Prajapati*/
+}
+/* end PL#1441*
 /* */
 
 #sidebar {
@@ -5579,6 +5585,37 @@ a.link-gray {
     width: 700px !important;
 }
 
+@media (max-width: 1920px) {
+     /*by bheru 21-07-2015*/
+.full-width-header {
+        width: 97.49%;
+    }
+}
+
+@media (max-width: 1600px) {
+
+    /*by bheru 21-07-2015*/
+    .full-width-header {
+        width: 97.44%;
+    }
+}
+
+@media (max-width: 1440px) {
+
+    /*by bheru 21-07-2015*/
+    .full-width-header {
+        width: 97.15%;
+    }
+}
+
+@media (max-width: 1366px) {
+
+    /*by bheru 21-07-2015*/
+    .full-width-header {
+        width: 97.05%;
+    }
+}
+
 @media (max-width: 1306px) {
 
     .nav-tabs .title-header h2 {
@@ -7703,7 +7740,7 @@ h2.title-header {
     font-weight: normal;
     padding: 5px 8px;
     padding-left: 15px;
-    border-bottom: 1px solid #c7c7c7;
+    border-bottom: 2px solid #c7c7c7;
     border-right: 2px solid #c7c7c7;
     line-height: 20px;
     font-size: 14px;
@@ -7711,9 +7748,10 @@ h2.title-header {
 }
 
 .grayContent-tacticTable th {
-    vertical-align: bottom;
-    font-family: 'source_sans_probold', Arial;
+   font-family: source_sans_probold;
+    font-size: 15px;
     font-weight: normal;
+    vertical-align: middle;
 }
 
     .grayContent-tacticTable th.noRightBorder, .grayContent-tacticTable td.noRightBorder {
@@ -7770,6 +7808,12 @@ span.circle-check-icon-gray {
 
 /* Added by KAPIL 140414 - UI Change in Improvement Tactics */
 .improvement-activities {
+       /*height: 40px;*/
+    height:auto;
+}
+
+.impdiv
+{
     height: 40px;
 }
 
@@ -12310,6 +12354,24 @@ li.close-list {
     padding: 5px 0 5px 1px;
 }
 
+.top_spacing_geography .trdropdownhover:focus,
+.tbodycampaignprogram .trdropdownhover:focus {
+    background: none repeat scroll 0 0 #009ad5;
+    color: #fff;
+    padding: 5px 0 5px 1px;
+}
+
+.setfocusTr {
+     background: none repeat scroll 0 0 #009ad5;
+    color: #fff;
+    padding: 5px 0 5px 1px;
+}
+
+.setfocusTr:focus {
+     background: none repeat scroll 0 0 #009ad5;
+    color: #fff;
+    padding: 5px 0 5px 1px;
+}
 .top_spacing_geography .trdropdownhover,
 .tbodycampaignprogram .trdropdownhover,
 .top_spacing_geography .trdropdownhover p,
@@ -12775,7 +12837,7 @@ div.clue-bottom-default .cluetip-arrows {
     display: inline-block;
     line-height: 38px;
     margin-right: -3.3px;
-    padding: 0.5% 5.99%;
+    padding: 0.5% 6%; /*set line alignment:- added by dashrath*/
     width: 12.96%;
     background-color: #f2f2f2;
 }
@@ -13720,6 +13782,22 @@ div.clue-bottom-default .cluetip-arrows {
     .budgeting-linechart {
         padding: 10px 25px;
     }
+
+    .improvement-grid-wrapper .element-disable .gray-title-steps .pull-right {
+  margin-right: 31px !important;
+}
+
+    .improvement-grid-wrapper .element-disable .add-improvement .gray-title-steps .pull-right {
+  margin-right: 27px !important;
+}
+
+    .add-tatic-td {
+  margin-right: 0;
+}
+
+    .close-icon .accordion-campaign a.accordion-toggle {
+   padding: 0 0 0 10px !important;
+}
 }
 
 /*for ticket # 1221 added by tirthak*/
@@ -14131,6 +14209,10 @@ div.clue-bottom-default .cluetip-arrows {
     .volumechart {
         margin-left: 87px;
     }
+ /*by bheru 21-07-2015*/
+       .full-width-header {
+  width: 96.85%;
+}
 }
 
 .clue-tip-message-orange {
@@ -14179,6 +14261,10 @@ div.clue-bottom-default .cluetip-arrows {
     .pop-body-wraper {
         width: 100%;
     }
+    .improvement-area .gray-add-container {
+        right: -1px;
+        top: 0;
+    }
 }
 
 /*Added for #1318*/
@@ -14223,7 +14309,8 @@ div.clue-bottom-default .cluetip-arrows {
     }
     @media (max-width:1024px){ 
         .headerfix{ 
-        left:0; width:100%; 
+        left: 0;
+        width: 100%;
         } 
     }
 
@@ -14581,7 +14668,7 @@ div.clue-bottom-default .cluetip-arrows {
     line-height: 34px;
     margin-right: 20px;
     padding-right: 20px;
-    width: 116px;
+    width: 117px; /* by bheru 16-07-2015*/
 }
 
 .revanue-p-right input {
@@ -14629,10 +14716,26 @@ div.clue-bottom-default .cluetip-arrows {
     font-size: 18px;
 }
 
+ /* by bheru on 16-07-2015 */
  .region-data .data {
+  /*border-right: 1px solid #e8e7e7; by dashrath*/ 
+  margin: 22px 0;
+    padding: 0 3.4%;
+}
+ /*Added by for set alignment in card section of revenue dashrath prajapati*/
+.region-data .dataR {
     border-right: 1px solid #e8e7e7;
     margin: 22px 0;
     padding: 0 3.4%;
+     float: left;
+}
+/*End */
+   /* by bheru 16-07-2015*/
+#ConversionCardID .region-data .data {
+   width: 18.9%;/*changed by dashrath*/
+    padding: 0;
+  text-align: center;
+  word-wrap: break-word;
 }
 
  .bottom-paging {
@@ -14651,12 +14754,663 @@ div.clue-bottom-default .cluetip-arrows {
 
 /*End :  Revenue - new Design by neel on 2/06/2015 */
 /*start :  conversion - dashrath prajapati 07/02/2015 */
-.dropdown-inline
-    {
+.dropdown-inline {
     display:inline-block;
     }
-    .CustomDropdown button
-    {
+
+.CustomDropdown button {
         display:inline-block!important;
     }
-/*End :  conversion - dashrath prajapati 07/02/2015*/
+/*End :  conversion - dashrath prajapati 07/02/2015*/  
+
+/*start :  conversion - Ravindra Singh 07/02/2015 */
+.Attribute-content-text {
+   width: 100%;
+    height: 22px;
+    border: 1px solid #ccc;
+    word-wrap: break-word;
+    overflow-y: auto;
+    float: left;
+    padding-top: 5px;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    border-radius: 4px;
+    color: #555555;
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 6px;
+    padding: 4px 6px;
+    vertical-align: middle;
+    background: none repeat scroll 0 0 #f2f2f2;
+}
+/*End*/
+
+  .gantt_grid_data.gantt_row:hover.AddIcon,
+.gantt_grid_data.gantt_row.odd:hover.AddIcon {
+        -moz - opacity: 1;
+        opacity: 1;
+    }
+
+.AddIcon, .gantt_grid_head_add {
+    width: 100%;
+    height: 100%;
+   background-image: url("../../Content/images/add-small.png");
+    background-position: center center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    position: relative;
+    -moz-opacity: .3;
+    opacity: .3;
+}
+
+.gantt_grid_data .gantt_row:hover .AddIcon, .gantt_grid_data .gantt_row.odd:hover .AddIcon {
+        -moz-opacity: 1;
+        opacity: 1;
+    }
+
+  .AddIcon,
+.gantt_grid_head_add {
+    width: 100px;
+    height: 100px;
+    /*background-image: url("../../Content/images/add-small.png");*/
+    /*base64, iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8 / 9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyJpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw / eHBhY2tldCBiZWdpbj0i77u / IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8 + IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMy1jMDExIDY2LjE0NTY2MSwgMjAxMi8wMi8wNi0xNDo1NjoyNyAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NTQ3MjMyMENDNkI0MTFFMjk4MTI5QTg3MDhFNDVDQTkiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NTQ3MjMyMERDNkI0MTFFMjk4MTI5QTg3MDhFNDVDQTkiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo1NDcyMzIwQUM2QjQxMUUyOTgxMjlBODcwOEU0NUNBOSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo1NDcyMzIwQkM2QjQxMUUyOTgxMjlBODcwOEU0NUNBOSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI / PshZT8UAAABbSURBVHjaYrTdeZmBEsCER + 4wEP + H4sPkGGCDg020ARR7gb4GIAcYDKMDdPnDyAbYkGG5DVW9cIQMvUdBBAuUY4vDz8iAcZinA2zgCHqAYQMseAywJcYFAAEGAM + UFGuohFczAAAAAElFTkSuQmCC);*/
+    background - position: center center;
+    background - repeat: no - repeat;
+    cursor: pointer;
+    position: relative;
+    - moz - opacity: .3;
+    opacity: .3;
+}
+
+
+  /* popup div changes 09-07-2015 */
+/*.market-activity-main .gantt_grid_data,.market-activity-main .gantt_task
+{
+  overflow: auto;
+}*/
+
+.market-activity-main .taskpopup {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  color: #111111;
+  height: auto;
+  position: absolute;
+  /*right: -110px;
+    top: 6px;*/
+    min-height: 99px;
+  width: 150px;
+    white-space: normal;
+  z-index: 9999;
+}
+ 
+    .market-activity-main .taskpopup ul li {
+  font-size: 14px;
+  font-weight: 600;
+        padding: 5px 15px 4px 25px;
+  /*white-space: normal;*/
+}
+
+.market-activity-main .gantt_task .gantt_task_scale .gantt_scale_cell, .market-activity-main .gantt_grid_scale .gantt_grid_head_cell {
+    padding-left: 25px;
+    text-align: left;
+    color: #888888;
+     font-size: 14px;
+    font-weight: bolder;
+}
+
+.market-activity-main .gantt_tree_content {
+ font-family: "source_sans_prolight",Arial,"sans-serif" !important;
+    font-size: 15px;
+    color: #000;
+    font-weight: 600;
+}
+
+.market-activity-main .gantt_task .gantt_task_scale .market-activity-main .gantt_grid_head_add {
+    display: none;
+}
+
+.market-activity-main .gantt_grid_data .gantt_cell {
+    padding-left: 12px;
+border-right: 1px solid #d4d4d4;
+    padding-right: 12px;
+    overflow: hidden;
+}
+
+.market-activity-main .gantt_task_row, .market-activity-main .gantt_row {
+  border-bottom: 1px solid #d4d4d4;
+}
+
+.market-activity-main .gantt_grid_head_add {
+    display: none;
+}
+
+.market-activity-main .gantt_grid {
+  border-right: 2px solid #808080;
+}
+
+.market-activity-main .gantt_container {
+    border: 2px solid #d4d4d4;
+}
+
+.market-activity-main .gantt_grid_scale, .market-activity-main .gantt_task_scale {
+    border-bottom: 2px solid #d4d4d4;
+}
+
+.market-activity-main .gantt_task_cell, .market-activity-main .gantt_task .gantt_task_scale .gantt_scale_cell {
+    border-right: 1px solid #d4d4d4;
+}
+
+.market-activity-main .gantt_add, .market-activity-main .gantt_grid_head_add {
+  background-position: center center;
+  background-repeat: no-repeat;
+   cursor: pointer;
+  height: 22px;
+  opacity: 1;
+  position: relative;
+  width: 22px;
+    margin: 6px auto 0;
+}
+
+.market-activity-main .gantt_grid_scale {
+    border-bottom: 2px solid #d4d4d4;
+}
+
+.market-activity-main .gantt_add {
+background-image: url("../../Content/images/icon-plus_in_circle.png");
+}
+
+.market-activity-main .btn-dropdwn ul li.new-prog {
+            background-image: url(../../Content/images/icon-plus_black.png);
+            background-position: 7px 7px;
+            background-repeat: no-repeat;
+               color: #000000; 
+                font-size: 15px;
+    font-family: source_sans_prolight;
+    font-weight: 600;
+ }
+
+    .market-activity-main .btn-dropdwn ul li.new-prog:hover {
+                background-image: url(../../Content/images/icon-plus_white.png);
+                background-position: 7px 7px;
+                background-repeat: no-repeat;
+        color: #fff;
+ }
+
+.marketing-activitity-wrapper {
+    overflow: hidden;
+}
+
+     .marketing-activitity-wrapper .gantt_grid {
+        overflow: visible;
+        width: 236px !important;
+    }
+   /*.marketing-activitity-wrapper  .gantt_grid_data {
+    overflow:visible;
+    }*/
+    .marketing-activitity-wrapper .gantt_grid_scale, .marketing-activitity-wrapper .market-activity-main .gantt_row {
+        border-right: 1px solid #808080;
+    }
+
+    .marketing-activitity-wrapper .gantt_grid_scale, .marketing-activitity-wrapper .market-activity-main .gantt_last_cell {
+        border-right: 1px solid #888 !important;
+    }
+
+    .marketing-activitity-wrapper .gantt_last_cell {
+        border-right: 1px solid #888 !important;
+    }
+   
+  /* popup div changes 09-07-2015 */
+.ui-multiselect-menu {
+    max-width: none;
+}
+  
+		 
+/*Added By Komal Rawal for new UI of home page*/
+#PlanTab li {
+    background: none repeat scroll 0 0 #f2f2f2;
+    width: 49.9%;
+    border-left: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+    margin-top: -5px;
+}
+
+  #PlanTab li a {
+        font-size: 15px;
+        text-align: center;
+        text-decoration: none;
+        font-family: "source_sans_probold",Arial,"sans-serif";
+        border-width: 0;
+        border-radius: 0;
+        margin-right: 0;
+    }
+
+  #liCalender.active > a {
+    color: #fff !important;
+}
+
+#liGrid.active > a {
+    color: #fff !important;
+}
+
+#PlanTab > .active > a, #PlanTab > .active > a:hover, #PlanTab > .active > a:focus {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #c6ebf3;
+    border-color: #ddd #ddd transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 0;
+    color: #fff;
+    cursor: default;
+}
+
+/*End*/
+
+/* sidebar toggle*/
+.sidebar-toogle {
+    border-bottom: 1px solid #b3b3b3;
+    color: #005580;
+    font-weight: 700;
+    padding: 8px 20px;
+    text-align: right;
+}
+
+.sidebar-toogle a {
+        color: #005580;
+    } 
+
+.sidebar-toogle-wrapper {
+    padding: 0;
+}
+
+    .sidebar-toogle-wrapper h4 {
+     margin: 20px 0;
+    padding: 0 20px;
+}
+
+    .sidebar-toogle-wrapper .wraper-btns {
+    margin: 0 17px;
+    width: auto;
+}
+/* sidebar toggle*/
+
+/* Remove box-shadow from top*/
+
+#content_wraper {
+      -webkit-box-shadow: -2px 0 3px 0 #999999;
+    box-shadow: -2px 0 3px 0 #999999;
+}
+/* Remove box-shadow from top*/
+
+
+/* Create Plan Page*/
+.plan-defination {
+     color: #000000;
+  font-family: source_sans_prosemibold;
+  font-weight: 500 !important;
+  text-transform: capitalize;
+font-size: 24px !important;
+}
+
+
+.n1-form-main.padding-assortment {
+    padding: 20px 0 0 20px;
+   white-space: normal;
+    width: 98%;
+}
+/*.n1-form-main .nl-field-toggle, .n1-form-main .nl-field-toggle:hover
+ {
+  color: #5693b3;
+      font-family: source_sans_proregular;
+    font-weight: 700;/   text-decoration: underline;
+}*/
+.n1-form-main .nl-ti-text .nl-field-toggle {
+     text-decoration: none;
+}
+
+.letter-space {
+   letter-spacing: 7px;
+}
+
+.btn-blue.publish-plan-btn {
+  background: #2f6d30 none repeat scroll 0 0 !important;
+  color: #ffffff;
+  margin-bottom: 18px;
+}
+
+.calender-view-nav .nav-tabs > li > a {
+     padding-bottom: 13px;
+    padding-top: 13px;
+        font-size: 17px;
+}
+
+.calender-view-nav .nav-tabs > li > a {
+  color: #3f3f3f !important;  
+    }
+
+.calender-view-nav #liCalender.active a {
+    color: #908D88 !important;
+    }
+
+#sidebar h4 {
+  font-weight: 600;
+}
+
+.full-width-header h2 {
+   color: #000;
+    font-family: source_sans_prosemibold;
+    font-size: 29px !important;
+    font-weight: 500;
+}
+
+.create-plan-form {
+    min-height: 590px;
+}
+
+.n1-form-main .nl-field ul {
+  left: -25px;
+   top: 79%;
+}
+
+.full-width-header .white-chart #chart2 {
+    margin-left: 31px !important;
+}
+  
+.create-plan-btn {
+    min-width: 16.5% !important;
+}
+
+.full-width-header .plantitle .nl-field-toggle {
+  display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 319px;
+}
+  
+.n1-form-main .nl-field ul {
+    display: none;
+}
+
+.n1-form-main .nl-field.nl-field-open ul {
+    display: block;
+}
+
+.improvement-grid {
+    /*min-height: 358px;*/
+    /*display: inline-block;*/
+    margin-top: 80px !important;
+}
+/*End*/
+
+
+.GoToPlan-icon::after {
+    background-position: 0 3px;
+    background-repeat: no-repeat;
+    content: "Go to Plan";
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: lighter;
+    height: 14px;
+    line-height: 34px;
+    margin-left: 10px;
+    margin-top: 12px;
+    vertical-align: top;
+}
+
+.GoToPlan-icon {
+    float: right;
+    padding-left: 2px;
+    width: 80px;
+}
+
+.btn-Green {
+   background: #2f6d30 none repeat scroll 0 0 !important;
+    border: medium none !important;
+    color: #fff;
+    display: block;
+    height: 35px !important;
+    margin-bottom: 18px;
+    max-width: 220px !important;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+/* for improvment frid 27-07-2015 by bheru*/
+.improvement-grid-wrapper .element-disable {
+  border: 1px solid #cccccc;
+  /*margin: 0 22px !important;*/
+}
+
+.improvement-grid-wrapper {
+    margin-top: 70px;
+    margin-bottom:5px;
+}
+    
+    .improvement-grid-wrapper .element-disable .gray-title-steps {
+      padding-bottom: 5px;
+}
+
+.improvement-grid-wrapper .element-disable .gray-title-steps .pull-right {
+   
+    margin-right: 34px !important;
+    padding: 15px 0 0;
+   }
+
+.improvement-grid-wrapper .element-disable .font-dark {
+      font-weight: 600;
+       padding-top: 22px;
+         padding-left: 20px;
+}
+
+    .improvement-grid-wrapper .activity-value span {
+        color: #000;
+    font-family: source_sans_prosemibold;
+    font-size: 26px;
+}
+
+    .improvement-grid-wrapper .element-disable .gray-title-steps.activity-value {
+  padding-bottom: 20px;
+}
+/*.add-improvement .light-blue-background{
+    padding:7px !important
+}*/
+.improvement-grid-wrapper .element-disable .add-improvement .gray-title-steps .pull-right {
+        padding: 0;
+        margin-right: 34px !important;
+}
+
+.add-improvement .underline {
+  color: #3f3f3f !important;
+  font-family: source_sans_prosemibold;
+  text-decoration: underline !important;
+}
+
+.add-improvement .total {
+  color: #d4d4d4;
+  font-family: source_sans_probold;
+}
+
+.add-tatic-td {
+margin-right: 12px;
+}
+
+.task-tbl {
+     margin: 0 20px;
+
+}
+
+.add-improvement .accordion-campaign .cf-arrow {
+     font-family: source_sans_probold;
+}
+
+/*added byPL #1441 dashrath Prajapati*/
+.login-header {
+    color: rgb(0, 0, 0);
+   font-family: source_sans_prolight;
+    font-size: 17px;
+    font-weight: 600;
+    padding-top: 18px;
+    background-color: rgb(230, 230, 230);
+    padding-bottom: 15px;
+    text-align: center;
+}
+/*added by dashrath Prajapati*/
+
+/* added by devanshi for plan grid goal*/
+.goals-wrapper {
+    background: #e6e6e6 none repeat scroll 0 0;
+    font-family: source_sans_prosemibold;
+    font-size: 20px;
+    margin: 20px 0px;
+}
+
+    .goals-wrapper span {
+        line-height: 43px;
+        padding: 10px 0 10px 30px;
+    }
+
+    .goals-wrapper .goal-text {
+        background: #cccccc none repeat scroll 0 0;
+        color: #000000;
+        padding: 0 12px;
+        display: inline-block;
+        font-family: source_sans_probold;
+    }
+
+    /* bheru 28-07-2015 */
+.login-header a {
+  color: rgb(80, 181, 234);
+  text-decoration: underline;
+}
+
+.login-header p
+{
+ margin: 18px 0 0;
+}
+.region-data-reveune.region-data .dataR  
+{
+width: 141px !important;
+}
+.region-data-reveune.region-data .dataR .title {
+  color: #4d4d4d;
+  font-family: source_sans_prolight;
+ font-size: 15px;
+}
+.region-data-reveune.region-data .dataR .value {
+  color: #1e2b33;
+  display: block;
+  font-family: source_sans_proregular;
+  font-size: 42px;
+  padding-top: 26px;
+}
+.region-data-reveune.region-data .dataR  .below {
+  /*color: #006837;*/
+  font-family: source_sans_prosemibold;
+}
+.region-data-reveune.region-data .dataR .sub-value
+{
+ color: #4d4d4d;
+  font-size: 15px;
+    font-family: source_sans_prolight;
+}
+.region-data-waterfall.region-data .data .sub-value
+{
+    color: #4d4d4d;
+    font-family: source_sans_prolight;
+    font-size: 15px;
+}
+.region-data.region-data-waterfall .data.data-arrow
+{
+    margin-top: 64px;
+}
+/*end */
+/*end */
+
+/* Add BY Nishant Sheth */
+.card-pagination {
+    display: block;
+    float: left;
+    margin: 0px 2% 2%;
+    width: 95%;
+    text-align: center;
+}
+
+/* End*/
+	 
+	   .add-improvement .accordion-campaign .cf-arrow {
+     font-family: source_sans_probold;
+}
+       /* bheru 29-7-2015*/
+.improvement-activities.border-cf {
+  border-left: 2px solid #c7c7c7;
+  border-right: 2px solid #c7c7c7;
+  border-top: 2px solid #c7c7c7;
+  margin: 12px 0 0 20px;
+  padding-left: 1px;
+  width: 98%;
+}
+.suggest-tbl.grayContent-tacticTable th, .grayContent-tacticTable.suggest-tbl td {
+      border-bottom: 2px solid #c7c7c7;
+        border-right: 2px solid #c7c7c7;
+}
+.grey-container-full .grey-container-content h2{
+   border-bottom: 2px solid #c7c7c7;
+   border-top: 2px solid #c7c7c7
+}
+.grayContent-tacticTable td[data-column="2"] {
+
+    border-right: none;
+}
+.grayContent-tacticTable td[data-column="5"],.grayContent-tacticTable  th[data-column="5"] {
+
+   background-color: #dff0f8;
+    color: #5693b3;
+}
+.grey-container-full {
+  border-left:none;
+  border-right:none;
+  border-bottom:none;
+}
+.grayContent-tacticTable tr:last-child td {
+border-bottom:none;
+}
+.improvement-activities .border-cf-right {
+  border-right: 2px solid #c7c7c7;
+}
+.grayContent-tacticTable th, .grayContent-tacticTable td {
+ font-family: source_sans_prosemibold;
+    font-size: 15px;
+}
+
+.improve-act {
+margin-left:20px;
+border-top: 1px solid #a8a8a8;
+}
+.arrow-bottom.cost-arrow {
+background-position: right 0 bottom 9px !important;
+}
+.grayContent-tacticTable th {
+  font-family: source_sans_probold;
+}
+.improvement-area .gray-add-container p:first-child {
+  border-top: none;
+
+}
+
+.noborderbottom{
+     border-bottom: medium none !important;
+}
+
+/* bheru 29-7-2015*/
+
+.grey-container-full .imp-tatic-content {
+  float: left;
+  margin-top: -1px;
+  width: 100%;
+  border-top: 1px solid #a8a8a8;
+}
