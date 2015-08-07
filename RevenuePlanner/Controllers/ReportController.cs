@@ -5554,7 +5554,7 @@ namespace RevenuePlanner.Controllers
             List<Stage_Benchmark> StageBenchmarkList = new List<Stage_Benchmark>();
             string strMQLStageCode = Enums.InspectStage.MQL.ToString();
             string strCWStageCode = Enums.InspectStage.CW.ToString();
-            double _Benchmark = 0, _inqActual = 0, _mqlActual = 0, _cwActual = 0, stageVolumePercntg = 0;
+            double _Benchmark = 0, _inqActual = 0, _mqlActual = 0, _cwActual = 0, stageVolumePercntg = 0, _stageVomepercentage = 0;
             bool IsQuarterly = true;
             string revStageCode = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
             string inqStageCode = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
@@ -5726,12 +5726,13 @@ namespace RevenuePlanner.Controllers
                     {
                         _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
                         stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
+                        _stageVomepercentage = stageVolumePercntg * 100; //PL #1483 Reports overview - MQL and CW conversion % -Dashrath Prajapati
                     }
 
                     _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strMQLStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
                     Conversion_Benchmark_Model mqlStageBenchmarkmodel = new Conversion_Benchmark_Model();
                     mqlStageBenchmarkmodel.stagename = MQLStageLabel.ToString();
-                    mqlStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
+                    mqlStageBenchmarkmodel.stageVolume = _stageVomepercentage.ToString();
                     mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark) : 0;
                     Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
@@ -5778,17 +5779,18 @@ namespace RevenuePlanner.Controllers
                     objProjected_Goal_LineChart.StageCode = cwStageCode;
 
                     #region "CW: Set Benchmark Model data"
-                    stageVolumePercntg = 0;
+                    stageVolumePercntg =_stageVomepercentage= 0;
                     if (ActualTacticTrendList != null)
                     {
                         _cwActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
                         stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
+                        _stageVomepercentage = stageVolumePercntg * 100; //PL #1483 Reports overview - MQL and CW conversion % -Dashrath Prajapati
                     }
                     _Benchmark = 0;
                     _Benchmark = StageBenchmarkList.Where(stage => stage.StageCode.Equals(strCWStageCode)).Select(stage => stage.Benchmark).FirstOrDefault();
                     Conversion_Benchmark_Model cwStageBenchmarkmodel = new Conversion_Benchmark_Model();
                     cwStageBenchmarkmodel.stagename = CWStageLabel;
-                    cwStageBenchmarkmodel.stageVolume = stageVolumePercntg.ToString();
+                    cwStageBenchmarkmodel.stageVolume = _stageVomepercentage.ToString();
                     cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark) : 0;
                     Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
