@@ -72,7 +72,7 @@
     $(document).ready(function () {
         LoadImprovementTactic(CurrentPlanId);
         $("#lblCost").html(FormatNumber($("#lblCost").html(), false));
-        $("#lblMqls").html(FormatCommas($("#lblMqls").html(), false));
+        $("#lblMqls").html(GetAbberiviatedValue($("#lblMqls").html()));
         $("#lblprogram").html(FormatCommas($("#lblprogram").html(), false));
 
      

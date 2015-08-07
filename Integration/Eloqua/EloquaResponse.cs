@@ -707,7 +707,7 @@ namespace Integration.Eloqua
                                     db.Entry(instanceTactic).State = EntityState.Added;
                                 }
                             }
-
+                            db.SaveChanges();
                             // Process Unprocess Data
                             DateTime pastdate = DateTime.Now.AddMonths(-6);
                             var unproceessdatalist = db.IntegrationInstance_UnprocessData.Where(data => data.IntegrationInstanceId == IntegrationInstanceId && data.CreatedDate >= pastdate).ToList();
@@ -732,6 +732,7 @@ namespace Integration.Eloqua
                                     DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
                                     var lstTacticResponse = unproceessdatalist.Where(r => (r.EloquaCampaignID == objTactic.IntegrationInstanceTacticId || r.ExternalCampaignID == objTactic.IntegrationInstanceTacticId) &&
                                                                                     r.ResponseDateTime >= tacticStartDate && r.ResponseDateTime <= tacticEndDate);
+                                    string unprocessdatalog =string.Empty;
                                     foreach (var item in lstTacticResponse)
                                     {
                                         string tmpPeriod = "Y" + item.ResponseDateTime.Month.ToString();
@@ -754,7 +755,7 @@ namespace Integration.Eloqua
                                             actualTactic.CreatedBy = _userId;
                                             db.Entry(actualTactic).State = EntityState.Added;
                                         }
-
+                                        unprocessdatalog += "(" + item.IntegrationInstanceId + "," + item.ResponseCount + "," + item.CreatedDate + ")";  
                                         db.Entry(item).State = EntityState.Deleted;
                                     }
 
@@ -770,6 +771,7 @@ namespace Integration.Eloqua
                                     instanceTactic.Status = StatusResult.Success.ToString();
                                     instanceTactic.Operation = Operation.Import_Actuals.ToString();
                                     instanceTactic.SyncTimeStamp = DateTime.Now;
+                                    instanceTactic.ErrorDescription = "Process from IntegrationInstance_UnprocessData tabel (IntegrationInstanceId,ResponseCount,CreatedDate)" + unprocessdatalog;
                                     instanceTactic.CreatedDate = DateTime.Now;
                                     instanceTactic.CreatedBy = _userId;
                                     instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;

@@ -47,14 +47,14 @@
 
             <select id="dropdown-plan-title" data-default="0%" class="" maxlength="40" >
                 <script>
-                    var plan = @Html.Raw(Json.Encode(Model.plans))
-                    populateNF(plan, "dropdown-plan-title");
+                    var plan = @Html.Raw(Json.Encode(Model.plans));
+                    //populateNF(plan, "dropdown-plan-title");
                 </script>
             </select>
             <div class="nl-overlay"></div>
-            <script>
+            @*<script>
                 var nlform = new NLForm(document.getElementById('nl-form2'));
-            </script>
+    </script>*@
 
         </form>
        }

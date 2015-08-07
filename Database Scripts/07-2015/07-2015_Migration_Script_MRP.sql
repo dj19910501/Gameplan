@@ -158,7 +158,7 @@ GO
 IF (not EXISTS (SELECT * FROM sys.TABLES WHERE name = 'IntegrationWorkFrontPortfolio_Mapping'))
 begin
 CREATE TABLE [dbo].[IntegrationWorkFrontPortfolio_Mapping](
-	[ID] [int] NOT NULL,
+	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[PortfolioTableId] [int] NOT NULL,
 	[ProjectId] [nvarchar](50) NOT NULL,
 	[IsDeleted] [bit] NOT NULL,

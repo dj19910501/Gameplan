@@ -1050,7 +1050,7 @@
 
     function PrevNextDotButtons(pageNumber, button) {
 
-        debugger;
+        
         var show_per_page = $('#Itemsperpage :selected').text();
         // var show_per_page = 1;
         //getting the amount of elements inside content div
@@ -1142,7 +1142,7 @@
                     var minimum = Array.min(PageSeries);
                     var maximum = Array.max(PageSeries);
                     if (i == 0) {
-                        debugger;
+                        
                         for (var j = minimum; j <= maximum; j++) {
                             if (j <= number_of_pages) {
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
@@ -1166,7 +1166,7 @@
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
                             }
                         }
-                        debugger;
+                        
                         $("#nextmore").css("display", "block");
                         $("#lastnum").css("display", "block");
 
@@ -1180,7 +1180,7 @@
                         $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum) - 1) + ",'prev');");
                     }
                     else {
-                        debugger;
+                        
                         for (var j = (number_of_pages - 6) ; j <= number_of_pages; j++) {
                             if (j <= number_of_pages) {
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');

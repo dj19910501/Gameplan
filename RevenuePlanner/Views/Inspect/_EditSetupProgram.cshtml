@@ -218,11 +218,11 @@
     });
 
     $(document).click(function () {
-        $(document).unbind('keypress');
+       $(document).unbind('keypress');
     });
 
     function KeyPressOnDropdown() {
-        $(Document).keypress(function (e) {
+        $(document).keypress(function (e) {
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.tbodycampaignprogram');
 
@@ -449,20 +449,18 @@
                 }
             });
         });
-
-
-
-        function ShowError(value) {
-            $("#modal-container-186470").scrollTop(0);
-            $("#successMessageViewProgram").slideUp(50);
-            $("#errorMessageEditProgram").slideDown(400);
-            $("#spanMessageEditProgram").empty();
-            $("#spanMessageEditProgram").html(value);
-        }
-
         NumberFormatterTipsyTitle(".displaytitle", 31);
 
     });
+
+    function ShowError(value) {
+        $("#modal-container-186470").scrollTop(0);
+        $("#successMessageViewProgram").slideUp(50);
+        $("#errorMessageEditProgram").slideDown(400);
+        $("#spanMessageEditProgram").empty();
+        $("#spanMessageEditProgram").html(value);
+    }
+
 
     function SetupSaveProgram() {
         var returnparameter = false;
@@ -621,8 +619,8 @@
                         var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
                         if (ChangedTab == "Setup") {
                             inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                             }
-                             loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
+                        }
+                        loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                         //RefreshCurrentTab(requestedModule, campaignId, 0, 0);
 
                     }
@@ -653,7 +651,6 @@
                         }
                         returnparameter = true;
                     }
-
                 }
                 else {
                     ShowError(data.errormsg);
