@@ -102,7 +102,7 @@ namespace Integration.WorkFront
 		/// </param>
 		public void Login(string username, string password) {
 			if(IsSignedIn) {
-				throw new ClientException("Cannot sign in: already signed in.");
+				return;
 			}
 			JToken json = client.DoPost("/login", "login",  "username="+username, "password="+password); //sessionID not important at login, hence "login" for sessionID
             if (json == null)

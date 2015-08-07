@@ -80,9 +80,13 @@ namespace Integration.WorkFront
             {
                 throw new ClientException("Invalid URL. Please ensure the company name matches the name in the WorkFront URL.");
             }
-            catch (Exception)
+            catch(WebException webex)
             {
-                return null;
+                throw new ClientException("Server returned message: " + webex.Message + ";");
+            }
+            catch (Exception ex)
+            {
+                throw new ClientException(ex.Message);
             }
         }
 

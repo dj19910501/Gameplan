@@ -46,7 +46,6 @@ namespace Integration.WorkFront
         private int _integrationInstanceSectionId { get; set; }
         private int _integrationInstanceId { get; set; }
         private int _integrationInstanceLogId { get; set; }
-        private Dictionary<Guid, string> _mappingUser { get; set; }
         private string _errorMessage;
         public string errorMessage
         {
@@ -369,6 +368,7 @@ namespace Integration.WorkFront
                    }
                }
                else { currentMode = Enums.Mode.Create; }
+
                //logging begin
                instanceLogProgram.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                instanceLogProgram.IntegrationInstanceId = _integrationInstanceId;
@@ -378,7 +378,7 @@ namespace Integration.WorkFront
                instanceLogProgram.Status = StatusResult.Success.ToString();
                instanceLogProgram.CreatedBy = this._userId;
                instanceLogProgram.CreatedDate = DateTime.Now;
-               db.Entry(instanceLogProgram).State = EntityState.Added;
+               
                //logging end
 
                program.LastSyncDate = DateTime.Now;
@@ -396,7 +396,7 @@ namespace Integration.WorkFront
                    JToken createdPortfolio = client.Create(ObjCode.PORTFOLIO, new { name = defaultPortfolioName});
                    if (createdPortfolio == null || !createdPortfolio["data"].HasValues)
                    {
-                       throw new ClientException("WorkFront Portfolio Not Created for Tactic " + program.Title + ".");
+                       throw new ClientException("WorkFront Portfolio Not Created for Program " + program.Title + ".");
                    }
                    portfolio = new IntegrationWorkFrontPortfolio();
                    portfolio.IntegrationInstanceId = (int) program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
@@ -434,9 +434,9 @@ namespace Integration.WorkFront
                    db.Entry(objProgramComment).State = EntityState.Added;
                    db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment);
                    //add success message to IntegrationInstanceLogDetails
+
+                   
                 }
-               
-               
                
                if (syncError){
                    throw new ClientException("Sycn Error for Program " + program.Title);
@@ -455,6 +455,10 @@ namespace Integration.WorkFront
                 error.TimeStamp = DateTime.Now;
                 SyncErrors.Add(error);
             }
+           finally
+           {
+               db.Entry(instanceLogProgram).State = EntityState.Added;
+           }
             return syncError;
       }
 
@@ -472,8 +476,10 @@ namespace Integration.WorkFront
             try
             {
                 JToken templateInfoFromWorkFront = client.Search(ObjCode.TEMPLATE, new { fields = "ID" }); 
+                //Get the list of templates in the database
                 List<IntegrationWorkFrontTemplate> templatesFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == _integrationInstanceId && template.IsDeleted==0).ToList();
                 List<string> templateIdsFromDB = templatesFromDB.Select(tmpl => tmpl.TemplateId).ToList();
+                //For comparison purposes, create a list of templates from WorkFront
                 List<string> templateIdsFromWorkFront = new List<string>();
               
                 foreach (var template in templateInfoFromWorkFront["data"])
@@ -564,7 +570,7 @@ namespace Integration.WorkFront
                 instanceLogTactic.Status = StatusResult.Success.ToString();
                 instanceLogTactic.CreatedBy = this._userId;
                 instanceLogTactic.CreatedDate = DateTime.Now;
-                db.Entry(instanceLogTactic).State = EntityState.Added;
+                
                 //logging end
 
                 tactic.LastSyncDate = DateTime.Now;
@@ -654,6 +660,10 @@ namespace Integration.WorkFront
                 error.SyncStatus = Enums.SyncStatus.Error;
                 error.TimeStamp = DateTime.Now;
                 SyncErrors.Add(error);
+            }
+            finally
+            {
+                db.Entry(instanceLogTactic).State = EntityState.Added;
             }
             return tacticError;
         }
@@ -862,7 +872,6 @@ namespace Integration.WorkFront
                 dataTypeMapping = dataTypeMapping.Where(gp => gp.GameplanDataType != null).Select(gp => gp).ToList();
                 _clientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
-                _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
                 var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
                 var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
                 var clientApplicationActivityList = (from c in clientActivityList
@@ -899,7 +908,7 @@ namespace Integration.WorkFront
         /// ID of the project as used by Workfront as a string. ProjectID is safest as Workfront allows
         /// for duplicated names
         /// </param>
-        public void AddIssue(string projectID)
+        private void AddIssue(string projectID)
         {
                 Console.WriteLine("** Adding issues to project...");
                 for(int i = 1; i <= 3; i++) {
@@ -922,7 +931,7 @@ namespace Integration.WorkFront
         /// ID of the project as used by Workfront as a string. ProjectID is safest as Workfront allows
         /// for duplicated names
         /// </param>
-        public void SearchProjectIssues(string projectID)
+        private void SearchProjectIssues(string projectID)
         {
             Console.WriteLine("*Searching for Project Issues\n");
             string desiredFields = "updates:enteredByName,updates:replies:ownerID, updates:replies:noteText, updates:replies:isPrivate";
@@ -972,7 +981,7 @@ namespace Integration.WorkFront
                 {
                     _customFieldIds = new List<string>();
                     string idList = string.Join(",", EntityIdList);
-
+                    //create query to return all custom field and custom field entity info for the entity (currently always instance)
                     String Query = "select cast(cf.CustomFieldId as nvarchar) from [dbo].[CustomField] cf inner join [dbo].[CustomField_Entity]" +
                             "cfe on cfe.CustomFieldId = cf.CustomFieldId where cf.EntityType = 'Tactic' and cf.IsDeleted = 0 and cfe.EntityId in (" + idList + ")";
 
