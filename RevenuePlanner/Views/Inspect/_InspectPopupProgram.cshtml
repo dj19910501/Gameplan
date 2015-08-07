@@ -321,13 +321,7 @@
               return returnparameter;
           }
 
-          function ShowError(value) {
-              $("#modal-container-186470").scrollTop(0);
-              $("#successMessageViewProgram").slideUp(50);
-              $("#errorMessageEditProgram").slideDown(400);
-              $("#spanMessageEditProgram").empty();
-              $("#spanMessageEditProgram").html(value);
-          }
+        
           //End
           if ($("#hdnPlanProgramId").val() != '0') {
               if ($('#EditProgram').hasClass('edit-icon-white') && $("#hdnProgramOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
@@ -348,6 +342,7 @@
           }
           $("#EditProgram").on("click", function () {
               var activeTab = $("#InspectTab li.active a").text();
+              var planProgramId = $("#hdnPlanProgramId").val();
               if ($('#EditProgram').hasClass('edit-icon-white')) {
                   $('#EditProgram').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
                   $('#EditProgram').addClass('Save-icon-white');
@@ -432,7 +427,8 @@
                       }
                       else {
 
-                      $("#hdnProgramOpt").val("View");
+                          $("#hdnProgramOpt").val("View");
+                        
                       loadReview(planProgramId, activeTab);
                       $('#EditProgram').removeClass('Save-icon-white');
                       $('#EditProgram').addClass('edit-icon-white');
@@ -471,6 +467,14 @@
           });
           
       });
+
+    function ShowError(value) {
+        $("#modal-container-186470").scrollTop(0);
+        $("#successMessageViewProgram").slideUp(50);
+        $("#errorMessageEditProgram").slideDown(400);
+        $("#spanMessageEditProgram").empty();
+        $("#spanMessageEditProgram").html(value);
+    }
 
       function RemoveTabClass() {
           $('#InspectTab').children().each(function () {
