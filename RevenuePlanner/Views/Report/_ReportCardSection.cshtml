@@ -165,46 +165,6 @@
             _ROIgoalId = roi + goal + "_" + _fieldId;
             _ROIPercntgId = roi + percntg + "_" + _fieldId;
 
-            //alert("key: " + key + ", Value: " + value.title);
-
-            // Add BY Nishant Sheth
-            //Calculate Dynamic Width in pixel For Chart Div
-            var _tempCard = '';
-            _tempCard = _tempCard + '<div class="region-content">';
-            _tempCard = _tempCard + '<div>';
-            _tempCard = _tempCard + '<div class="report-btn-group">';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '<div class="region-data region-data-reveune">';
-
-            _tempCard = _tempCard + '<div class="dataR" id="tempdivdata" style="width:10%;">';
-            _tempCard = _tempCard + '<span class="title">Revenue</span>';
-            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span></p>';
-            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
-            _tempCard = _tempCard + '</div>';
-
-            _tempCard = _tempCard + '<div class="dataR">';
-            _tempCard = _tempCard + '<span class="title">Cost</span>';
-            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span></p>';
-            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
-            _tempCard = _tempCard + '</div>';
-
-            _tempCard = _tempCard + '<div class="dataR">';
-            _tempCard = _tempCard + '<span class="title">ROI</span>';
-            _tempCard = _tempCard + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span> <span class="cardsub sub-value"  orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">/' + _ROIgoal + '</span></p>';
-            _tempCard = _tempCard + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
-            _tempCard = _tempCard + '</div>';
-
-            _tempCard = _tempCard + '<div id="tempdivchart" style="height:100%; min-width:35%;float:left;" >';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '</div>';
-            _tempCard = _tempCard + '</div>';
-            $("#dvCardSectionData").html(_tempCard);
-            var tempdivchartwidth = $("#tempdivchart").width();
-            var tempdivdatawidth = $("#tempdivdata").width();
-            $("#dvCardSectionData").html('');
-            //alert(tempdivwidth);
-            //End By Nishant Sheth
             var _titleSub = '';
             if (_title.length > 41) {
                 _titleSub = '...';
@@ -228,8 +188,8 @@
 
             _cardhtml = _cardhtml + '<div class="region-data region-data-reveune">';
 
-            _cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            //_cardhtml = _cardhtml + '<div class="data">';
+            //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="width:10%">';
             _cardhtml = _cardhtml + '<span class="title">Revenue</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span></p>';
             _cardhtml = _cardhtml + '<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span>';
@@ -237,8 +197,8 @@
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            //_cardhtml = _cardhtml + '<div class="data">';
+            //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="width:10%">';
             _cardhtml = _cardhtml + '<span class="title">Cost</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>';
             _cardhtml = _cardhtml + '<span class="title">Projected : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span>';
@@ -246,7 +206,8 @@
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
             _cardhtml = _cardhtml + '</div>';
 
-            _cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
+            //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
+            _cardhtml = _cardhtml + '<div class="dataR" style="width:10%">';
             //_cardhtml = _cardhtml + '<div class="data">';
             _cardhtml = _cardhtml + '<span class="title">ROI</span>';
             _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>';
@@ -256,7 +217,7 @@
             _cardhtml = _cardhtml + '</div>';
 
 
-            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; min-width:' + tempdivchartwidth + 'px;float:left;">';
+            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:35%;float:left;">';
             //_cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:419px;float:left;">';
             _cardhtml = _cardhtml + '</div>';
 
@@ -867,7 +828,7 @@
 
     }
     function go_to_page(page_num) {
-        debugger;
+
         var tempPage = page_num;
         if (parseInt(tempPage + 1) == number_of_pages) {
             PrevNextDotButtons(page_num, 'prev');
@@ -964,7 +925,7 @@
 
     function PrevNextDotButtons(pageNumber, button) {
 
-        debugger;
+
         var show_per_page = $('#Itemsperpage :selected').text();
         // var show_per_page = 1;
         //getting the amount of elements inside content div
@@ -1056,7 +1017,7 @@
                     var minimum = Array.min(PageSeries);
                     var maximum = Array.max(PageSeries);
                     if (i == 0) {
-                        debugger;
+
                         for (var j = minimum; j <= maximum; j++) {
                             if (j <= number_of_pages) {
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
@@ -1080,7 +1041,7 @@
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
                             }
                         }
-                        debugger;
+
                         $("#nextmore").css("display", "block");
                         $("#lastnum").css("display", "block");
 
@@ -1094,7 +1055,7 @@
                         $("#prevmore").attr("onclick", "javascript:PrevNextDotButtons(" + parseInt(parseInt(minimum) - 1) + ",'prev');");
                     }
                     else {
-                        debugger;
+
                         for (var j = (number_of_pages - 6) ; j <= number_of_pages; j++) {
                             if (j <= number_of_pages) {
                                 $('.page_link[longdesc=' + j + ']').css('display', 'block');
