@@ -27,14 +27,14 @@
     }
 </style>
 <div class="revenue-filter" id="div-revenue-filter">
-    <div class="sorting" style="width:auto;">
+    <div class="sorting" style="width:55%;">
         <div class="geography-dropdown">
             <h5>Sort By</h5>
             <div class="select-sortby">
                 @Html.DropDownList("ddlSortby", new SelectList(ListSortBy.ToList(), "Value", "Text"), new { onchange = "javascript:SortByFunction();" })
             </div>
         </div>
-        <div class="geography-dropdown">
+        <div class="geography-dropdown" style="width:30%;">
             <h5>Items Per Page</h5>
             <div class="select-item">
                 @Html.DropDownList("Itemsperpage", new SelectList(ListPageSize.ToList(), "Value", "Text"), new { onchange = "javascript:ItemsPerPagefunction();" })
