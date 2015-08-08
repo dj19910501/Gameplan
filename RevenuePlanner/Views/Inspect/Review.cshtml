@@ -16,7 +16,7 @@
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
 }
 
-    <div class="span5 width360 MainReviewCol" id="inspect-modal-right-div" style="width: 42% !important">
+    <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
         <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
             <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
                 <div class="source-sans-prosemibold">Parent Campaign</div>
@@ -110,16 +110,18 @@
                     </div>
                 </div>
                 <div class="span9">
-                    <div class="pull-left margin-left20">
-                        <div class="eloqua-img "></div>
+                    <div class="pull-left margin-left20 integration-review-imglink">
+                        <div class="link_popup pull-right margin-bottom10"></div>
+                        <div class="eloqua-img margin-top20"></div>
                     </div>
-                    <div class="pull-left  margin-left20">
-                        <div class="salesforce-img "></div>
+                    <div class="pull-left margin-left20 integration-review-imglink">
+                        <div class="link_popup pull-right margin-bottom10"></div>
+                        <div class="workfront-img  margin-top23"></div>
                     </div>
-                    <div class="pull-left margin-left20">
-                        <div class="workfront-img margin-top20"></div>
+                    <div class="pull-left  margin-left20 integration-review-imglink">
+                        <div class="link_popup pull-right margin-bottom10"></div>
+                        <div class="salesforce-img margin-top20"></div>
                     </div>
-                
                 </div>
           </div>
         </div>
@@ -153,12 +155,12 @@
             </div>
         </div>
 
-    <div class="MainReviewCol span2 right-col-tab" id="inspect-modal-left-column2">
+    <div class="span2 right-col-tab" id="inspect-modal-left-column2">
 
         <div class="inspect-bolder-label">Notes</div>
      
-        <div id="divComment" class="chat-div" style="overflow: auto;height: 290px !important;">
-            <div id="divInnerComment" class="comment-scroll-section all-height" >
+        <div id="divComment" class="chat-div" style="overflow: auto;height: 350px !important;">
+            <div id="divInnerComment" class="comment-scroll-section all-height90" >
                 @foreach (var item in ViewBag.ReviewModel)
                 {
                     <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">

@@ -1188,6 +1188,10 @@ body {
     height: 80% !important;
 }
 
+.all-height90{
+    height: 90% !important;
+}
+
 .calc-height {
     height: calc(100% - 82px) !important;
 }
@@ -1294,6 +1298,10 @@ body {
 
 .margin-right20 {
     margin-right: 20px !important;
+}
+
+.margin-right30 {
+    margin-right: 30px !important;
 }
 
 .margin-right100 {
@@ -1478,6 +1486,10 @@ span.requests-logo-icon {
 
 .margin-top10 {
     margin-top: 10px !important;
+}
+
+.margin-top5 {
+    margin-top: 5px !important;
 }
 
 .padding-left3 {
@@ -2793,14 +2805,6 @@ ul.welcome-sprite {
 
 .height374 {
     height: 374px;
-}
-/*Added Brad Gray 08-07-15*/
-.MainReviewRow{
-    display: flex; /* equal height of the children */
-}
-
-.MainReviewCol{
-    flex: 1; /* additionally, equal width */
 }
 
 /*---------------------------
@@ -8186,7 +8190,7 @@ input.icon-check-blue {
     background: url("../images/dl_eloqua.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     cursor: pointer;
     display: block;
-    height: 40px;
+    height: 60px;
     width: 107px;
 }
 
@@ -8194,16 +8198,30 @@ input.icon-check-blue {
     background: url("../images/dl_salesforce.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     cursor: pointer;
     display: block;
-    height: 55px;
-    width: 133px;
+    height: 60px;
+    width: 90px;
 }
 
 .workfront-img {
     background: url("../images/dl_workfront.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
     cursor: pointer;
     display: block;
-    height: 28px;
+    height: 60px;
     width: 137px;
+}
+
+.integration-review-imglink{
+    height: 80px !important;
+    width: 137px !important;
+    display: block;
+}
+
+.link_popup {
+    background: url("../images/dl_link.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: pointer;
+    display: block;
+    height: 18px;
+    width: 18px;
 }
 
 .sync-icon-dropdown {
