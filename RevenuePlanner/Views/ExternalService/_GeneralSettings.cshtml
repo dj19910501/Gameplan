@@ -50,7 +50,7 @@
                 {
                     @Html.DropDownListFor(model => model.IntegrationTypeAttributes[i].Value, new SelectList((System.Collections.IEnumerable)Model.IntegrationTypeAttributes[i].Value, "Value", "Text"), new { tabindex = "4", @class = "hide" })
                 }
-            </div>
+                </div>
                                                                 }
             
             <div class="cf inputs-aligned-horizontal content dark inline-ellipsis">
@@ -151,6 +151,8 @@
 </div>
 
 <script type="text/javascript">
+
+    if(Model.IntegrationAttributes.Contains)
 
     function testIntegration() {
         var testIntegrationValidation = true;

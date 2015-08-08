@@ -2794,6 +2794,14 @@ ul.welcome-sprite {
 .height374 {
     height: 374px;
 }
+/*Added Brad Gray 08-07-15*/
+.MainReviewRow{
+    display: flex; /* equal height of the children */
+}
+
+.MainReviewCol{
+    flex: 1; /* additionally, equal width */
+}
 
 /*---------------------------
           Inspect results modal
@@ -8171,6 +8179,31 @@ input.icon-check-blue {
     display: block;
     height: 31px;
     width: 37px;
+}
+
+/* Added by Brad Gray 08/07/2015 for PL#1462 */
+.eloqua-img {
+    background: url("../images/dl_eloqua.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: pointer;
+    display: block;
+    height: 40px;
+    width: 107px;
+}
+
+.salesforce-img {
+    background: url("../images/dl_salesforce.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: pointer;
+    display: block;
+    height: 55px;
+    width: 133px;
+}
+
+.workfront-img {
+    background: url("../images/dl_workfront.png") no-repeat scroll 0 0 rgba(0, 0, 0, 0);
+    cursor: pointer;
+    display: block;
+    height: 28px;
+    width: 137px;
 }
 
 .sync-icon-dropdown {
