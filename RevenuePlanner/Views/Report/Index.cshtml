@@ -417,7 +417,6 @@ function GetOwnerListForFilter(Planids, ifexists) {
             myApp.hidePleaseWait();
         },
         type: "GET",
-        async: false,
         cache: false,
         url: '@Url.Action("GetOwnerListForFilter", "Report")',
             data: {
@@ -513,7 +512,6 @@ function GetOwnerListForFilter(Planids, ifexists) {
                     myApp.hidePleaseWait();
                 },
                 type: "GET",
-                async: false,
                 cache: false,
                 url: '@Url.Action("GetTacticTypeListForFilter", "Report")',
             data: {

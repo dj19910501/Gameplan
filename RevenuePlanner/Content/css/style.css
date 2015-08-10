@@ -15056,11 +15056,11 @@ background-image: url("../../Content/images/icon-plus_in_circle.png");
     }
 
   #liCalender.active > a {
-    color: #fff !important;
+    color:  #908d88 !important;
 }
 
 #liGrid.active > a {
-    color: #fff !important;
+    color: #908d88 !important;
 }
 
 #PlanTab > .active > a, #PlanTab > .active > a:hover, #PlanTab > .active > a:focus {
