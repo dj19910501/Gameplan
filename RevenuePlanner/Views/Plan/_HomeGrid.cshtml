@@ -22,7 +22,7 @@
     <span id="spncw"></span>
 </div>
 
-<div id="gridbox" style="background-color:white;"></div>
+<div id="gridbox" style="background-color:white;width:100%;"></div>
 
 <textarea id="mytextarea1" style="width:0px;height:0px;display:none;">@Model.xmlstring</textarea>
 @*Added by Komal Rawal for #1432*@
@@ -102,12 +102,7 @@
         HomeGrid.setColumnHidden(2, true);
 
     }
-    function custom_1(a, b, ord, a_id, b_id) {
-        alert(ord);
-        a = mygrid2.cells(a_id, 6).getText();
-        b = mygrid2.cells(b_id, 6).getText();
-        return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
-    };
+   
     function ResizeGrid(wid) {
         $("#gridbox").attr("width", wid);
         HomeGrid.setSizes();

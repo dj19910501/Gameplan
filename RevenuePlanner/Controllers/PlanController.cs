@@ -40,7 +40,8 @@ namespace RevenuePlanner.Controllers
         #endregion
         #region variable for load plan grid
         List<Plan_Tactic_Values> ListTacticMQLValue = new List<Plan_Tactic_Values>();
-        List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
+       
+        List<Plan_Tactic_LineItem_Values> LineItemList = new List<Plan_Tactic_LineItem_Values>();
         List<Stage> stageList = new List<Stage>();
            List<User> lstUserDetails = new List<User>();
         #endregion
@@ -9012,7 +9013,7 @@ namespace RevenuePlanner.Controllers
             bool IsPlanCreateAll = false;
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
 
-            List<Stage> stageList = new List<Stage>();
+            //List<Stage> stageList = new List<Stage>();
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
 
@@ -9071,7 +9072,6 @@ namespace RevenuePlanner.Controllers
                 List<Plan_Campaign_Program> programdetail = db.Plan_Campaign_Program.Where(prog => lstCampaignId.Contains(prog.PlanCampaignId) && prog.IsDeleted == false).ToList();
 
                 List<int> lstprogramId = programdetail.Select(program => program.PlanProgramId).ToList();
-                //  var campaigntactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => lstCampaignId.Contains(_tactic.Plan_Campaign_Program.PlanCampaignId) && _tactic.IsDeleted.Equals(false)).ToList();
                 var programtactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => lstprogramId.Contains(_tactic.PlanProgramId) && _tactic.IsDeleted.Equals(false)).ToList();
 
                 List<int> lsttacticId = programtactic.Select(tactic => tactic.PlanTacticId).ToList();
@@ -9137,14 +9137,14 @@ namespace RevenuePlanner.Controllers
                 string type = string.Empty;
                 string Startdate = string.Empty;
                 string Enddate = string.Empty;
-                double totalcost;
-                double totalmql;
-                double totalrevenue;
+                double totalcost = 0;
+                double totalmql = 0;
+                double totalrevenue = 0;
                 List<Plan_Campaign> Campaignfilterlst = new List<Plan_Campaign>();
                 List<Plan_Campaign_Program> Programfilterlst = new List<Plan_Campaign_Program>();
                 List<Plan_Campaign_Program_Tactic> finalTacticfilterList = new List<Plan_Campaign_Program_Tactic>();
-                type = "Plan";
-               // var watch = Stopwatch.StartNew();
+              
+              //  type = "Plan";
                 foreach (var planitem in lstplandetail)
                 {
                     planid = planitem.PlanId;
@@ -9159,9 +9159,6 @@ namespace RevenuePlanner.Controllers
                         Enddate = new DateTime(DateTime.Now.Year, 12, 31).ToString("MM/dd/yyyy");
                     }
 
-                    //totalcost = LineItemList.Count > 0 ? LineItemList.Where(l => (programtactic.Where(pcpt => (programdetail.Where(pcp => (lstcampaigndetail.Where(pc => pc.PlanId == planid).Select(pc => pc.PlanCampaignId).ToList()).Contains(pcp.PlanCampaignId)).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost) : 0;
-                    //totalmql = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => (programtactic.Where(pcpt => (programdetail.Where(pcp => (lstcampaigndetail.Where(pc => pc.PlanId == planid).Select(pc => pc.PlanCampaignId).ToList()).Contains(pcp.PlanCampaignId)).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
-                    //totalrevenue = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => (programtactic.Where(pcpt => (programdetail.Where(pcp => (lstcampaigndetail.Where(pc => pc.PlanId == planid).Select(pc => pc.PlanCampaignId).ToList()).Contains(pcp.PlanCampaignId)).Select(pcp => pcp.PlanProgramId).ToList()).Contains(pcpt.PlanProgramId)).Select(pcpt => pcpt.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Revenue) : 0;
 
                     totalcost = LineItemList.Count > 0 ? LineItemList.Where(l => lsttacticId.Contains(l.PlanTacticId)).Sum(l => l.Cost) : 0;
                     totalmql = ListTacticMQLValue.Count > 0 ? ListTacticMQLValue.Where(l => lsttacticId.Contains(l.PlanTacticId)).Sum(l => l.MQL) : 0;
@@ -9176,21 +9173,25 @@ namespace RevenuePlanner.Controllers
                             IsPlanCreateAll = false;
                     }
                     GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>" + planitem.Title + "</cell> ");
-                    GridString.Append("<cell><![CDATA[ <img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;' id='PlanPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
+                    GridString.Append("<cell><![CDATA[ <img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='PlanPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
                     GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell>" + Startdate + "</cell> <cell>" + Enddate + "</cell>  <cell>" + totalcost + "</cell> ");
                     GridString.Append(" <cell type='ro'>--</cell> <cell>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro'>--</cell> <cell >" + totalmql + "</cell> <cell >" + totalrevenue + "</cell> ");
                     Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
-                    type = "Campaign";
+                   // type = "Campaign";
                     if (Campaignfilterlst.Count > 0)
                     {
                         var lstcampaignTaskData = Campaignfilterlst.Select((taskdata, index) => new
                         {
-                           totalcost = LineItemList.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == taskdata.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost),
-                            totalmql = ListTacticMQLValue.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == taskdata.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.MQL),
 
+
+                            totalcost = LineItemList.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Cost),
+                            totalmql =  ListTacticMQLValue.Where(l => l.CampaignId==taskdata.PlanCampaignId).Sum(l => l.MQL) ,
+                            // totalcost = 0,
+                            // totalmql = 0,
+                            // totalrevenue=0,
                             PlanCampaignId = taskdata.PlanCampaignId,
-                            totalrevenue = ListTacticMQLValue.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == taskdata.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Revenue),
+                           totalrevenue = ListTacticMQLValue.Where(l => l.CampaignId==taskdata.PlanCampaignId).Sum(l => l.Revenue),
                             Title = taskdata.Title,
                             StartDate = taskdata.StartDate,
                             EndDate = taskdata.EndDate,
@@ -9200,27 +9201,19 @@ namespace RevenuePlanner.Controllers
                         });
                         foreach (var Campaignitem in lstcampaignTaskData)
                         {
-                            //if (IsPlanCreateAll == false)
-                            //{
-                            //    if (Campaignitem.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(Campaignitem.CreatedBy))
-                            //        IsPlanCreateAll = true;
-                            //    else
-                            //        IsPlanCreateAll = false;
-                            //}
-                           
-                            //totalcost = LineItemList.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == Campaignitem.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Cost);
-                            //totalmql = ListTacticMQLValue.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == Campaignitem.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.MQL);
-
-                            //totalrevenue = ListTacticMQLValue.Where(l => (programtactic.Where(prot => (programdetail.Where(pcp => pcp.PlanCampaignId == Campaignitem.PlanCampaignId).Select(pcp => pcp.PlanProgramId).ToList()).Contains(prot.PlanProgramId)).Select(prot => prot.PlanTacticId)).Contains(l.PlanTacticId)).Sum(l => l.Revenue);
+                          
 
                             GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3'>" + Campaignitem.Title + "</cell> ");
-                            GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;' id='CampaignPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
+                            GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='CampaignPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
                             GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                            GridString.Append(" <cell bgColor='#C6EBF3' >" + Campaignitem.totalcost + "</cell> <cell bgColor='#C6EBF3' type='ro'>--</cell> <cell bgColor='#C6EBF3'>" + (Campaignitem.CreatedBy.ToString()) + "</cell>  <cell  bgColor='#C6EBF3'>--</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.totalmql + "</cell>  <cell  bgColor='#C6EBF3'>" + Campaignitem.totalrevenue + "</cell> ");
+                            GridString.Append(" <cell bgColor='#C6EBF3' >" + Campaignitem.totalcost.ToString()  + "</cell>");
+                            GridString.Append("<cell bgColor='#C6EBF3' type='ro'>--</cell> <cell bgColor='#C6EBF3'>" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
+                            GridString.Append("<cell  bgColor='#C6EBF3'>--</cell> <cell bgColor='#C6EBF3'>" +Campaignitem.totalmql.ToString() + "</cell>");
+                            GridString.Append("<cell  bgColor='#C6EBF3'>" +Campaignitem.totalrevenue.ToString() + "</cell> ");
 
 
                             Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
-                            type = "Program";
+                          //  type = "Program";
                             if (Programfilterlst != null && Programfilterlst.Count > 0)
                             {
                                 Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
@@ -9238,36 +9231,27 @@ namespace RevenuePlanner.Controllers
 
                                 var lstprogramTaskData = Programfilterlst.Select((taskdata, index) => new
                                 {
-                                    totalcost =LineItemList.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == taskdata.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.Cost),
-                                    totalmql = ListTacticMQLValue.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == taskdata.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.MQL),
+                                    totalcost = LineItemList.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Cost),
+                                    totalmql = ListTacticMQLValue.Where(l =>l.Programid==taskdata.PlanProgramId).Sum(l => l.MQL),
+                                    totalrevenue = ListTacticMQLValue.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Revenue),
+                                   // totalcost = 0,
+                                    //totalmql = 0,
+                                    //totalrevenue = 0,
                                     PlanProgramId = taskdata.PlanProgramId,
-                                    totalrevenue = ListTacticMQLValue.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == taskdata.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.Revenue),
                                     Title = taskdata.Title,
                                     StartDate = taskdata.StartDate,
                                     EndDate = taskdata.EndDate,
                                      CreatedBy = GetUserName(taskdata.CreatedBy),
-                                   //  CreatedBy = lstUserDetails.Where(user => user.UserId == taskdata.CreatedBy).FirstOrDefault().FirstName.ToString() + " " + lstUserDetails.Where(user => user.UserId == taskdata.CreatedBy).FirstOrDefault().LastName.ToString(),
                                     IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true
 
                                 });
                                 
                                 foreach (var Programitem in lstprogramTaskData)
                                 {
-                                    //if (IsPlanCreateAll == false)
-                                    //{
-                                    //    if (Programitem.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(Programitem.CreatedBy))
-                                    //        IsPlanCreateAll = true;
-                                    //    else
-                                    //        IsPlanCreateAll = false;
-                                    //}
-
-                                    //totalcost = LineItemList.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == Programitem.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.Cost);
-                                    //totalmql = ListTacticMQLValue.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == Programitem.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.MQL);
-                                    //totalrevenue = ListTacticMQLValue.Where(l => (programtactic.Where(tactic => tactic.PlanProgramId == Programitem.PlanProgramId).Select(tactic => tactic.PlanTacticId).ToList()).Contains(l.PlanTacticId)).Sum(l => l.Revenue);
 
                                     GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>");
 
-                                    GridString.Append("<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;' id='ProgramPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
+                                    GridString.Append("<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='ProgramPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\">]]></cell>");
                                     GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8'>" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8'>" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
                                     GridString.Append(" <cell bgColor='#DFF0F8'>" + Programitem.totalcost + "</cell> <cell bgColor='#DFF0F8' type='ro'>--</cell>  <cell bgColor='#DFF0F8'>" + (Programitem.CreatedBy.ToString()) + "</cell> ");
                                     GridString.Append(" <cell bgColor='#DFF0F8'>--</cell>  <cell bgColor='#DFF0F8'>" + Programitem.totalmql + "</cell>  <cell bgColor='#DFF0F8'>" + Programitem.totalrevenue + "</cell> ");
@@ -9283,22 +9267,23 @@ namespace RevenuePlanner.Controllers
                                         GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
                                         GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
                                      
-                                        type = "Tactic";
-                                        //  foreach (var Tacticitem in pcpt)
+                                    //    type = "Tactic";
                                       
                                         var lsttacticTaskData = finalTacticfilterList.Select((taskdata, index) => new
                                         {
                                             index = index,
                                             totalcost = LineItemList.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Cost),
                                             totalmql = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.MQL),
-                                            PlanTacticId = taskdata.PlanTacticId,
                                             totalrevenue = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Revenue),
+                                            // totalcost =0,
+                                            //totalmql = 0,
+                                            //totalrevenue =0,
+                                            PlanTacticId = taskdata.PlanTacticId,
                                             title = taskdata.Title,
                                             startdate = taskdata.StartDate,
                                             enddate = taskdata.EndDate,
                                             tactictypetitle = taskdata.TacticType.Title,
                                             CreatedBy = GetUserName(taskdata.CreatedBy),
-                                            // CreatedBy = lstUserDetails.Where(user => user.UserId == taskdata.CreatedBy).FirstOrDefault().FirstName.ToString() + " " + lstUserDetails.Where(user => user.UserId == taskdata.CreatedBy).FirstOrDefault().FirstName.ToString(),
                                             tactictypeid = taskdata.TacticTypeId,
                                             projectedstagevalue = taskdata.ProjectedStageValue,
                                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true
@@ -9306,28 +9291,21 @@ namespace RevenuePlanner.Controllers
                                         });
 
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
-                                                                               select new XElement("row", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.title),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XCData("<img src='../Content/images/magnifying_glass.png' style='cursor:pointer; float: left;' class='grid_Search' id='TacticPopup' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + "_Y" + tactic.tactictypeid + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">")),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.PlanTacticId),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.enddate.ToString("MM/dd/yyyy")),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("type", "edn"), tactic.totalcost),
-
+                                                                               select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
+                                                                                   new XElement("cell", tactic.title),
+                                                                                   new XElement("cell", new XCData("<img src='../Content/images/magnifying_glass.png' style='cursor:pointer; float: left;margin-top:4px;' class='grid_Search' id='TacticPopup' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + "_Y" + tactic.tactictypeid + "\"> <img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">")),
+                                                                                   new XElement("cell", tactic.PlanTacticId),
+                                                                                   new XElement("cell", tactic.startdate.ToString("MM/dd/yyyy")),
+                                                                                   new XElement("cell", tactic.enddate.ToString("MM/dd/yyyy")),
+                                                                                   new XElement("cell", new XAttribute("type", "edn"), tactic.totalcost),
                                                                                   new XElement("cell",  tactic.tactictypetitle),
-                                                                                    
-                                                                                   //new XElement("cell",new XAttribute("xmlcontent", "true"), new XAttribute("type", "co"), tactic.tactictypetitle,
-                                                                                   //     tblTacticTypes.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title))),
                                                                                     new XElement("cell", tactic.CreatedBy),
-                                                                                   new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
-                                                                                    new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.totalmql),
-                                                                                     new XElement("cell", new XAttribute("bgColor", "#E4F1E1"), tactic.totalrevenue)));
+                                                                                   new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
+                                                                                    new XElement("cell", tactic.totalmql),
+                                                                                     new XElement("cell", tactic.totalrevenue)));
 
                                         string finltactic = xmlElements.ToString().Remove(0, 6);
                                         GridString.Append(HttpUtility.HtmlDecode(finltactic.Remove(finltactic.ToString().Length - 7, 7)));
-                                        //watch.Stop();
-                                       // Debug.WriteLine("Total Time taken by functions is {0}", watch.ElapsedMilliseconds);//using Elapsed Milliseconds
-
                                        
                                     }
                                     GridString.Append("</row>");
@@ -9345,8 +9323,7 @@ namespace RevenuePlanner.Controllers
 
                 }
                 GridString.Append("</rows>");
-                // watch.Stop();
-                //  Debug.WriteLine("Total Time taken by functions is {0}", watch.ElapsedMilliseconds);//using Elapsed Milliseconds
+              
             }
             catch (Exception objException)
             {
@@ -9990,17 +9967,16 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Projected Stage Value," + MQLTitle + ",Revenue</param>");
                 strHeader.Append(" </call></beforeInit>");
 
-                strHeader.Append("<column width='25' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
+                strHeader.Append("<column width='325' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
 
-                strHeader.Append("<column type='ro' align='center' id='add' width='7' ></column>");
+                strHeader.Append("<column type='ro' align='center' id='add' width='50' ></column>");
                 strHeader.Append("<column type='ro' align='center' id='id' >id</column>");
-                strHeader.Append("<column width='7' type='dhxCalendar' sort='date' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>");
-                strHeader.Append("<column width='7' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
-                strHeader.Append("<column width='11' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
-               // strHeader.Append("<column width='10' type='ro' align='center' sort='str' id='tactictype'>#cspan</column>");
+                strHeader.Append("<column width='90' type='dhxCalendar' sort='date' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>");
+                strHeader.Append("<column width='90' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
+                strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
                 if (tblTacticTypes != null)
                 {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "10"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "str"), "#cspan",
+                    XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "str"), "#cspan",
                         tblTacticTypes.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title)));
 
                     xmltactictype = xmlElements.ToString();
@@ -10009,18 +9985,15 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append(xmltactictype);
                 if (lstUserDetails != null)
                 {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "10"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "str"), "#cspan",
+                    XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "str"), "#cspan",
                         lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlEncode(i.FirstName), HttpUtility.HtmlEncode(i.LastName)))));
-
                     xmlUserlist = xmlElements.ToString();
-                  
                 }
 
                 strHeader.Append(xmlUserlist);
-                strHeader.Append("<column width='10' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
-                strHeader.Append("<column width='10' type='ron' sort='int' align='center' id='mql'>#cspan</column>");
-                strHeader.Append("<column width='7' type='ron' sort='int' align='center' id='revenue'>#cspan</column>");
-                strHeader.Append("<settings><colwidth>%</colwidth> </settings> ");
+                strHeader.Append("<column width='125' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
+                strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='mql'>#cspan</column>");
+                strHeader.Append("<column width='90' type='ron' sort='int' align='center' id='revenue'>#cspan</column>");
                 strHeader.Append("</head>");
             }
             catch (Exception objException)
@@ -10047,6 +10020,7 @@ namespace RevenuePlanner.Controllers
         {
 
             List<ModelDateList> modelDateList = new List<ModelDateList>();
+            List<Plan_Campaign_Program_Tactic_LineItem> DBLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
             var ModelList = db.Models.Where(mdl => mdl.IsDeleted == false);
             int MainModelId = (int)modelId;
             double TotalMqls = 0;
@@ -10062,7 +10036,7 @@ namespace RevenuePlanner.Controllers
                 }
                 List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
                 List<StageList> stageListType = Common.GetStageList();
-                LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => lsttacticId.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
+                DBLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => lsttacticId.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
                 List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && _imprvTactic.IsDeleted == false).Select(_imprvTactic => _imprvTactic).ToList();
                 List<ModelStageRelationList> modleStageRelationList = Common.GetModelStageRelation(modelDateList.Select(mdl => mdl.ModelId).ToList());
                 var improvementTacticTypeIds = improvementActivities.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
@@ -10076,10 +10050,20 @@ namespace RevenuePlanner.Controllers
                                       {
                                           PlanTacticId = tactic.TacticObj.PlanTacticId,
                                           MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
-                                          Revenue = tactic.RevenueValue
+                                          Revenue = tactic.RevenueValue,
+                                          CampaignId = tactic.TacticObj.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId,
+                                          Programid =tactic.TacticObj.Plan_Campaign_Program.PlanProgramId
+                                      }).ToList();
+                LineItemList = (from LineItem in DBLineItemList
+                                select new Plan_Tactic_LineItem_Values
+                                      {
+                                          PlanTacticId = LineItem.Plan_Campaign_Program_Tactic.PlanTacticId,
+                                          Cost = LineItem.Cost,
+                                          CampaignId = LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId,
+                                          Programid = LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId
                                       }).ToList();
                 TotalMqls = ListTacticMQLValue.Sum(tactic => tactic.MQL);
-                TotalCost = LineItemList.Sum(l => l.Cost);
+                TotalCost = DBLineItemList.Sum(l => l.Cost);
                 //ViewBag.TotalCost = TotalCost;
                 //ViewBag.TotalMqls = TotalMqls;
                 objimprovement.TotalCost = TotalCost;

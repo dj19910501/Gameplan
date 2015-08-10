@@ -220,8 +220,16 @@ namespace RevenuePlanner.Models
         public int PlanTacticId { get; set; }
         public double MQL { get; set; }
         public double Revenue { get; set; }
+        public int CampaignId { get; set; }
+        public int Programid { get; set; }
     }
-
+    public class Plan_Tactic_LineItem_Values
+    {
+        public int PlanTacticId { get; set; }
+        public double Cost { get; set; }
+        public int CampaignId { get; set; }
+        public int Programid { get; set; }
+    }
     /// <summary>
     /// Class of TacticId & Model Id Relation.
     /// </summary>

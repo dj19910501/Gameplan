@@ -2126,8 +2126,8 @@ div.gridbox_dhx_skyblue.gridbox table.hdr td {
 
 div.gridbox_dhx_skyblue.gridbox {
     border-left: 1px solid #D4D4D4;
-     border-top: 1px solid #D4D4D4;
-      border-bottom: 1px solid #D4D4D4;
+     /*border-top: 1px solid #D4D4D4;
+      border-bottom: 1px solid #D4D4D4;*/
 }
 
     div.gridbox_dhx_skyblue.gridbox table.obj {

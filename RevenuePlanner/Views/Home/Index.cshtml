@@ -282,6 +282,8 @@
                     if (CurrentPlanId > 0) {
                         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                             LoadPlanGrid();
+                            GetTacticTypelist(CurrentPlanId);
+                            GetOwnerListForFilter(CurrentPlanId);
                             // LoadImprovementGrid(CurrentPlanId);
                             return true;
                         }
