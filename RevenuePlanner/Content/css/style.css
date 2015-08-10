@@ -10550,10 +10550,11 @@ li.close-list {
     font-size: 17px;
 }
 
-.NoDataFound {
+.NoDataFound { 
     border-top: 1px solid #808080;
     padding-top: 10px;
-    font-size: 15px;
+    padding-left: 30px; /*Added by dashrath*/
+    font-size: 20px;  /*Added by dashrath*/
 }
 
 /* Start - Added by Sohel Pathan on 26/09/2014 for PL ticket #797 */
@@ -14602,6 +14603,10 @@ div.clue-bottom-default .cluetip-arrows {
 
 .select-sortby button {
     min-width: 77px;
+}
+.select-item /*PL #1398 Observation2 Dashrath Prajapati*/
+{
+    width:170px;
 }
 
 .select-item button {

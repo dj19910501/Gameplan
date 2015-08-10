@@ -84,7 +84,11 @@
 <div class="card-pagination" id="div-card-pagination">
     <div class="paging" id="page_navigation" style="width:100%">
     </div>
-
+    <div id="NorecordfoundMsg" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
+     @*<div id="errorMessage" class="alert alert-error hide message-position-small">
+           <a class="close" id="iclose">×</a>
+        <span id="NoRecFound"></span>
+    </div>*@
 </div>
 <script type="text/javascript">
     var SearchVal = [];
@@ -278,6 +282,8 @@
         }).multiselectfilter({});
 
         LoadPagination();
+        CheckData();
+      
     });
     function formatSetsubValues() {
         var _TypeCol = $(".cardsub");
@@ -1320,4 +1326,15 @@
     //    }
     //});
     /// End By Nishant Sheth
+    //PL #1399 added by dashrath prajapati 
+    function CheckData() {
+        var totRec = '@Model.TotalRecords';
+           if (totRec == '0') {
+               $("#NorecordfoundMsg").css("display", "block");
+        }
+        else {
+               $("#NorecordfoundMsg").css("display", "none");
+        }
+    }
+    //END PL #1399 added by dashrath prajapati 
 </script>
