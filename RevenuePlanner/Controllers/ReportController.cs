@@ -10066,7 +10066,7 @@ namespace RevenuePlanner.Controllers
                 ProjectedTrendList = new List<ProjectedTrendModel>();
                 ActualTacticStageList = new List<ActualTacticListByStage>();
                 ActualTacticTrendList = new List<ActualTrendModel>();
-
+            ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList(); //#1488
                 ProjectedTrendList = CalculateProjectedTrend(tacticStageList, includeMonth, inqStageCode);
 
                 #region "Get Basic model"
