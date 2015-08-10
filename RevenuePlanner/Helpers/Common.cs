@@ -4119,7 +4119,7 @@ namespace RevenuePlanner.Helpers
                     value = o.Value
                 }).OrderBy(o => o.value).ToList()
 
-            }).ToList();
+            }).OrderBy(a => a.name, new AlphaNumericComparer()).ToList();
             List<int> customFieldIds = lstCustomFields.Select(cs => cs.customFieldId).ToList();
             var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
             foreach (var CustomFieldId in customFieldIds)
