@@ -70,6 +70,19 @@ namespace Integration
         bool _isTacticMoved { get; set; }
         private List<SyncError> _lstAllSyncError = new List<SyncError>();
         MRPEntities db = new MRPEntities();
+        private bool IsInActiveInstance = false;
+        private bool _isInActiveInstance
+        {
+            get
+            {
+                return IsInActiveInstance;
+            }
+            set
+            {
+                IsInActiveInstance = value;
+            }
+        }
+
         /// <summary>
         /// Data Dictionary to hold tactic status values.
         /// Added By: Maninder Singh Wadhva.
@@ -132,15 +145,17 @@ namespace Integration
             }
             else
             {
+                _integrationInstanceId = _id;
                 var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _id).FirstOrDefault();
                 if (Instance != null && Instance.IsActive)
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Instance started - Initiated by Sync Now or Scheduler");
-                SyncInstance();
+                    SyncInstance();
                     Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Instance ended - Initiated by Sync Now or Scheduler");
                 }
                 else
                 {
+                    _isInActiveInstance = true; // Manage this flag at SendSyncErrorEmail and PrepareSyncErroMailHeader function.
                     IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
                     instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_id);
                     instanceLogStart.SyncStart = DateTime.Now;
@@ -153,6 +168,13 @@ namespace Integration
                     db.Entry(Instance).State = EntityState.Modified;
                     int resulValue = db.SaveChanges();
                     Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                    //_lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, EntityType.IntegrationInstance.ToString(), "Instance have inactive status.", Enums.SyncStatus.Error, DateTime.Now));
+                    if (_id > 0)
+                    {
+                        string InstanceName = Common.GetInstanceName(_id);
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Instance Name used for syncing", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
+                    }
                 }
             }
 
@@ -487,6 +509,9 @@ namespace Integration
                 //// Service related exception
                 return;
             }
+
+            if (_isInActiveInstance) // Integration Instance Inactive then do not need to show Number of Activities and Pull information in Summary email.
+                return;
 
             //// Set info row data for no of tactic processed with count
             Int32 SuccessTacticCount = 0;

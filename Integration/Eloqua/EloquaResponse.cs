@@ -801,8 +801,8 @@ namespace Integration.Eloqua
                                     unprocessobj.CreatedBy = _userId;
                                     db.Entry(unprocessobj).State = EntityState.Added;
                                 }
-                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Of total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.");
-                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Of total records (" + uploadedrecord + ") uploaded, "  + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
+                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Responses: Total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.");
+                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
                             }
 
 

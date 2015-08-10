@@ -458,7 +458,7 @@ namespace Integration.Eloqua
                             objfeildDetails = new EloquaObjectFieldDetails();
                             objfeildDetails.SourceField = entry.Key;
                             objfeildDetails.TargetField = entry.Value;
-                            objfeildDetails.Section = Enums.EntityType.Tactic.ToString();
+                            objfeildDetails.Section = Enums.EntityType.ImprovementTactic.ToString();
                             objfeildDetails.TargetDatatype = lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
                             objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
                             lstMappingMisMatch.Add(objfeildDetails);
@@ -472,7 +472,7 @@ namespace Integration.Eloqua
                             objfeildDetails = new EloquaObjectFieldDetails();
                             objfeildDetails.SourceField = entry.Key;
                             objfeildDetails.TargetField = entry.Value;
-                            objfeildDetails.Section = Enums.EntityType.Tactic.ToString();
+                            objfeildDetails.Section = Enums.EntityType.ImprovementTactic.ToString();
                             objfeildDetails.TargetDatatype = lstEloquaforceFieldDetail.Where(Sfd => Sfd.TargetField == entry.Value).FirstOrDefault().TargetDatatype;
                             objfeildDetails.SourceDatatype = Enums.ActualFieldDatatype[entry.Key].ToString();
                             lstMappingMisMatch.Add(objfeildDetails);
@@ -608,6 +608,7 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
+                        _isResultError = true;
                         string exMessage = Common.GetInnermostException(ex);
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Eloqua: " + exMessage);
                     }
@@ -651,6 +652,7 @@ namespace Integration.Eloqua
                     }
                     catch (Exception ex)
                     {
+                        _isResultError = true;
                        string exMessage = Common.GetInnermostException(ex);
                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing ImprovementTactic data to Eloqua: " + exMessage);
                     }
@@ -723,16 +725,16 @@ namespace Integration.Eloqua
             }
             else
             {
-                //// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
-                if (tactic.ContainsKey("Title"))
-                {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while creating campaign at Eloqua for tactic : \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
-                }
-                else
-                {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while creating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
-                }
-                //// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
+                ////// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
+                //if (tactic.ContainsKey("Title"))
+                //{
+                //    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while creating campaign at Eloqua for tactic : \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
+                //}
+                //else
+                //{
+                //    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while creating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
+                //}
+                ////// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 throw new Exception(response.StatusCode.ToString(), response.ErrorException);
             }
 
@@ -792,16 +794,16 @@ namespace Integration.Eloqua
             }
             else
             {
-                //// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
-                if (tactic.ContainsKey("Title"))
-                {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while updating campaign at Eloqua for tactic: \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
-                }
-                else
-                {
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(int.Parse(tactic["id"].ToString()), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while updating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
-                }
-                //// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
+                ////// Start - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
+                //if (tactic.ContainsKey("Title"))
+                //{
+                //    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while updating campaign at Eloqua for tactic: \"" + tactic["Title"] + "\"", Enums.SyncStatus.Error, DateTime.Now));
+                //}
+                //else
+                //{
+                //    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua exception occurred while updating campaign at Eloqua for a tactic.", Enums.SyncStatus.Error, DateTime.Now));
+                //}
+                ////// End - Added by Sohel Pathan on 05/01/2015 for PL ticket #1068
                 throw new Exception(string.Format("[{0}] [{1}]", response.StatusCode.ToString(), response.StatusDescription), response.ErrorException);
             }
         }
@@ -859,13 +861,14 @@ namespace Integration.Eloqua
                     //End : Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                     sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + ")");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
+                    string message = "System error occurred while creating improvement tactic \"" + planIMPTactic.Title + "\" at Eloqua.";
                     sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + ")");
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), message, Enums.SyncStatus.Error, DateTime.Now));
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);//GetErrorMessage(e);
+                    instanceLogTactic.ErrorDescription = message;//Common.GetInnermostException(e);//GetErrorMessage(e);
                 }
 
                 instanceLogTactic.CreatedBy = this._userId;
@@ -901,6 +904,7 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))// || e.Message.Contains(InternalServerError))
                     {
@@ -911,10 +915,11 @@ namespace Integration.Eloqua
                     }
                     else
                     {
+                        string message = "System error occurred while updating improvement Tactic \"" + planIMPTactic.Title + "\" at Eloqua.";
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + ")");
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "Eloqua Exception occurred while syncing improvement tactic \"" + planIMPTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), message, Enums.SyncStatus.Error, DateTime.Now));
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.GetInnermostException(e); 
+                        instanceLogTactic.ErrorDescription = message; 
                     }
                 }
 
@@ -1084,12 +1089,14 @@ namespace Integration.Eloqua
                 }
                 catch (Exception e)
                 {
+                    _isResultError = true;
+                    string message = "System error occurred while creating tactic \"" + planTactic.Title + "\" at Eloqua.";
                     //// Start - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), message, Enums.SyncStatus.Error, DateTime.Now));
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     //// End - Added by Sohel Pathan on 03/01/2015 for PL ticket #1068
                     instanceLogTactic.Status = StatusResult.Error.ToString();
-                    instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);
+                    instanceLogTactic.ErrorDescription = message;//Common.GetInnermostException(e);
                     sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                 }
 
@@ -1138,9 +1145,11 @@ namespace Integration.Eloqua
                     }
                     else
                     {
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing tactic \"" + planTactic.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
+                        _isResultError = true;
+                        string message = "System error occurred while updating tactic \"" + planTactic.Title + "\" at Eloqua.";
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), message, Enums.SyncStatus.Error, DateTime.Now));
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = Common.GetInnermostException(e);
+                        instanceLogTactic.ErrorDescription = message; //Common.GetInnermostException(e);
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                     }
 
