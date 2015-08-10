@@ -30,6 +30,7 @@ namespace RevenuePlanner.Models
         public string APIVersion { get; set; }
         public string APIURL { get; set; }
         public string Code { get; set; }
+        public string FrontEndUrl { get; set; }
     
         public virtual ICollection<Client_Integration_Permission> Client_Integration_Permission { get; set; }
         public virtual ICollection<GameplanDataType> GameplanDataTypes { get; set; }

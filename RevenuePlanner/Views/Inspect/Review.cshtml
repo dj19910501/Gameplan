@@ -97,7 +97,10 @@
             }
 
         </div>
+
+
         <!--Begin PL#1462 07 Brad Gray, Aug 2015--> 
+        
         <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
             <div class="cf textalign-mozcenter" style="padding-bottom: 5px;">
                 <div class="span3">
@@ -110,6 +113,11 @@
                     </div>
                 </div>
                 <div class="span9">
+                    @foreach (var item in ViewBag.IntegrationTypeLinks)
+                    {
+                        var idk = item.Title;
+
+                    }
                     <div class="pull-left margin-left20 integration-review-imglink">
                         <div class="link_popup pull-right margin-bottom10"></div>
                         <div class="eloqua-img margin-top20"></div>
@@ -123,8 +131,11 @@
                         <div class="salesforce-img margin-top20"></div>
                     </div>
                 </div>
-          </div>
+                }
+            </div>
         </div>
+        
+        <!--End PL#1462 07 Brad Gray, Aug 2015--> 
 
             @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
             <div style="margin-bottom: 0px; width: 93%;margin-top:33px;">
@@ -288,6 +299,7 @@
                         <div id=""
 
                 /* --Remove Sync Button Brad Gray 07 Aug 2015 PL#1462
+                * Left commented to be added back in after completion of PL#1468
                 if (IsDeployToIntegrationVisible)
                 {
                     if ((bool)ViewBag.IsModelDeploy)

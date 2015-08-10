@@ -12,6 +12,7 @@ using RevenuePlanner.BDSService;
 using System.Web;
 using Integration;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace RevenuePlanner.Controllers
 {
@@ -2237,7 +2238,6 @@ namespace RevenuePlanner.Controllers
         public ActionResult LoadSetup(int id)
         {
             InspectModel _inspetmodel;
-
             //// Load InspectModel data.
             if (TempData["TacticModel"] != null)
             {
@@ -2300,15 +2300,15 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Review Tab.</returns>
         public ActionResult LoadReview(int id)
         {
-            InspectModel _inspetmodel;
+            InspectModel _inspectmodel;
             //// Load InspectModel data.
             if (TempData["TacticModel"] != null)
             {
-                _inspetmodel = (InspectModel)TempData["TacticModel"];
+                _inspectmodel = (InspectModel)TempData["TacticModel"];
             }
             else
             {
-                _inspetmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
+                _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
             }
 
             //// Get Tactic comment by PlanCampaignId from Plan_Campaign_Program_Tactic_Comment table.
@@ -2319,7 +2319,7 @@ namespace RevenuePlanner.Controllers
             //// Get Users list.
             List<Guid> userListId = new List<Guid>();
             userListId = (from ta in tacticComment select ta.CreatedBy).ToList<Guid>();
-            userListId.Add(_inspetmodel.OwnerId);
+            userListId.Add(_inspectmodel.OwnerId);
             string userList = string.Join(",", userListId.Select(userid => userid.ToString()).ToArray());
             List<User> userName = new List<User>();
 
@@ -2355,18 +2355,18 @@ namespace RevenuePlanner.Controllers
 
             //// Get Owner name by OwnerId from Username list.
             var ownername = (from user in userName
-                             where user.UserId == _inspetmodel.OwnerId
+                             where user.UserId == _inspectmodel.OwnerId
                              select user.FirstName + " " + user.LastName).FirstOrDefault();
             if (ownername != null)
             {
-                _inspetmodel.Owner = ownername.ToString();
+                _inspectmodel.Owner = ownername.ToString();
             }
 
             //// Calculate MQL at runtime 
             string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             int MQLStageLevel = Convert.ToInt32(db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == TitleMQL && stage.IsDeleted == false).Level);
             //Compareing MQL stage level with tactic stage level
-            if (_inspetmodel.StageLevel < MQLStageLevel)
+            if (_inspectmodel.StageLevel < MQLStageLevel)
             {
                 ViewBag.ShowMQL = true;
             }
@@ -2375,11 +2375,11 @@ namespace RevenuePlanner.Controllers
                 ViewBag.ShowMQL = false;
             }
 
-            ViewBag.TacticDetail = _inspetmodel;
-            ViewBag.IsModelDeploy = _inspetmodel.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
+            ViewBag.TacticDetail = _inspectmodel;
+            ViewBag.IsModelDeploy = _inspectmodel.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
 
             bool isValidOwner = false;
-            if (_inspetmodel.OwnerId == Sessions.User.UserId)
+            if (_inspectmodel.OwnerId == Sessions.User.UserId)
             {
                 isValidOwner = true;
             }
@@ -2418,7 +2418,7 @@ namespace RevenuePlanner.Controllers
             }
 
             bool isValidManagerUser = false;
-            if (lstSubOrdinatesPeers.Contains(_inspetmodel.OwnerId))
+            if (lstSubOrdinatesPeers.Contains(_inspectmodel.OwnerId))
             {
                 isValidManagerUser = true;
             }
@@ -2467,7 +2467,7 @@ namespace RevenuePlanner.Controllers
             }
 
             bool IsDeployToIntegrationVisible = false;
-            if (_inspetmodel.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
+            if (_inspectmodel.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
             {
                 IsDeployToIntegrationVisible = true;
             }
@@ -2477,20 +2477,48 @@ namespace RevenuePlanner.Controllers
             }
             else if (IsPlanEditSubordinatesAuthorized)
             {
-                if (lstSubOrdinates.Contains(_inspetmodel.OwnerId))
+                if (lstSubOrdinates.Contains(_inspectmodel.OwnerId))
                 {
                     IsDeployToIntegrationVisible = true;
                 }
             }
 
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
+            ///Begin Added by Brad Gray 08-10-2015 for PL#1462
+            Dictionary<string, string> IntegrationLinkDictionary = new Dictionary<string, string>();
+            
+            //provide a list of tactic integration Id and workfront project 
+            List<IntegrationInstance> modelIntegrationList = new List<IntegrationInstance>();
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null &&  pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
+            ViewBag.IntegrationInstances = modelIntegrationList;
+
+            //create a dictionary of each instance type name ("Salesforce", "WorkFront", etc) and the front end urls)
+            foreach (IntegrationInstance instance in modelIntegrationList)
+            {
+                string url = instance.IntegrationType.FrontEndUrl;
+                if (instance.IntegrationType.Title == Enums.IntegrationInstanceType.WorkFront.ToString())
+               {
+                   int workFrontCompanyNameAttributeId = db.IntegrationTypeAttributes.Where(att => att.IntegrationTypeId == instance.IntegrationTypeId && att.Attribute=="Company Name").FirstOrDefault().IntegrationTypeAttributeId;
+                    string prepend = db.IntegrationInstance_Attribute.Where(inst => inst.IntegrationInstanceId == instance.IntegrationInstanceId &&
+                       inst.IntegrationTypeAttributeId == workFrontCompanyNameAttributeId).FirstOrDefault().Value;
+                    url = string.Concat(prepend,url);
+                }
+                IntegrationLinkDictionary.Add(instance.IntegrationType.Title, url);
+            }
+            ViewBag.IntegrationTypeLinks = IntegrationLinkDictionary;
+            ///End Added by Brad Gray 08-10-2015 for PL#1462
+            
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
-            ViewBag.TacticIntegrationInstance = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == _inspetmodel.PlanTacticId).FirstOrDefault().IntegrationInstanceTacticId;
+            ViewBag.TacticIntegrationInstance = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == _inspectmodel.PlanTacticId).FirstOrDefault().IntegrationInstanceTacticId;
             string pullResponses = Operation.Pull_Responses.ToString();
             string pullClosedWon = Operation.Pull_ClosedWon.ToString();
             string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();
             string planEntityType = Enums.Section.Tactic.ToString();
-            var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == _inspetmodel.PlanTacticId && ipt.EntityType == planEntityType).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).ToList();
+            var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == _inspectmodel.PlanTacticId && ipt.EntityType == planEntityType).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).ToList();
             if (planEntityLogList.Where(planLog => planLog.Operation == pullResponses).FirstOrDefault() != null)
             {
                 // viewbag which display last synced datetime of tactic for pull responses
