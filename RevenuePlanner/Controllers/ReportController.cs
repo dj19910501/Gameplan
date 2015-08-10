@@ -672,7 +672,7 @@ namespace RevenuePlanner.Controllers
                         includeMonth.Add(year + PeriodPrefix + i);
                     }
                 }
-                else
+                else if (Convert.ToInt32(year) < Convert.ToInt32(currentYear))
                 {
                     //// Add all months values to list.
                     for (int i = 1; i <= 12; i++)
@@ -5676,7 +5676,7 @@ namespace RevenuePlanner.Controllers
                     Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
                     objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
                     if (ActualTacticTrendList != null)
-                        _inqActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        _inqActual = ActualTacticTrendList.Sum(actual => actual.Value);
                     #endregion
                     #endregion
 
@@ -5724,7 +5724,7 @@ namespace RevenuePlanner.Controllers
                     _Benchmark = stageVolumePercntg = 0;
                     if (ActualTacticTrendList != null)
                     {
-                        _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        _mqlActual = ActualTacticTrendList.Sum(actual => actual.Value);
                         stageVolumePercntg = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
                         _stageVolumepercentage = stageVolumePercntg * 100; //PL #1483 Reports overview - MQL and CW conversion % -Dashrath Prajapati
                     }
@@ -5783,7 +5783,7 @@ namespace RevenuePlanner.Controllers
                     stageVolumePercntg = _stageVolumepercentage = 0;
                     if (ActualTacticTrendList != null)
                     {
-                        _cwActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        _cwActual = ActualTacticTrendList.Sum(actual => actual.Value);
                         stageVolumePercntg = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
                         _stageVolumepercentage = stageVolumePercntg * 100; //PL #1483 Reports overview - MQL and CW conversion % -Dashrath Prajapati
                     }
@@ -6227,71 +6227,6 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="TacticList"> List of Tactic</param>
         /// <returns>Return List of Sparklinechart data</returns>
-        public List<ActualTrendModel> GetActualTrendModel(List<TacticStageValue> TacticData, List<int> TacticIdList, List<ActualDataTable> curntActualTacticList)
-        {
-            #region "Declare local Variables"
-            List<ActualTrendModel> ActualTrendModelList = new List<ActualTrendModel>();
-            ActualTrendModel objActualTrendModel = new ActualTrendModel();
-            List<ActualDataTable> fltrActualTacticList = new List<ActualDataTable>();
-            List<ActualDataTable> ActualTacticListbyTactic = new List<ActualDataTable>();
-            double TotalActualUpToCurrentMonth = 0;
-            int involveMonthTillCurrentMonth = 0;
-            int _currentYear = Convert.ToInt32(currentYear);
-            #endregion
-
-            try
-            {
-                List<Plan_Campaign_Program_Tactic> TacticList = TacticData.Where(tac => TacticIdList.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.TacticObj).ToList();
-                int _TacEndMonth = 0, _planTacticId = 0;
-                foreach (var tactic in TacticList)
-                {
-                    _TacEndMonth = tactic.EndDate.Month;
-                    _planTacticId = tactic.PlanTacticId;
-
-                    //if (_TacEndMonth > currentMonth)
-                    {
-                        if (curntActualTacticList != null && curntActualTacticList.Count > 0)
-                        {
-                            //// Filter CurrentMonthActualTacticList by current PlanTacticId.
-                            ActualTacticListbyTactic = curntActualTacticList.Where(actual => actual.PlanTacticId.Equals(_planTacticId)).ToList();
-
-                            //// Get ActualValue sum.
-                            TotalActualUpToCurrentMonth = ActualTacticListbyTactic.Sum(actual => actual.ActualValue);
-
-                            //// Get No. of involved month till current month.
-                            involveMonthTillCurrentMonth = ActualTacticListbyTactic.Where(actual => actual.ActualValue > 0).Count();
-                        }
-                        for (int _trendMonth = 1; _trendMonth <= _TacEndMonth; _trendMonth++)
-                        {
-                            objActualTrendModel = new ActualTrendModel();
-                            objActualTrendModel.PlanTacticId = tactic.PlanTacticId;
-                            objActualTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
-
-                            //// Calculate Trend calculation for month that is greater than current ruuning month.
-                            if (_trendMonth > currentMonth && involveMonthTillCurrentMonth > 0 && _currentYear >= tactic.StartDate.Year)
-                            {
-                                objActualTrendModel.TrendValue = (TotalActualUpToCurrentMonth / involveMonthTillCurrentMonth) * _trendMonth;
-                            }
-                            else
-                                objActualTrendModel.TrendValue = 0;
-                            ActualTrendModelList.Add(objActualTrendModel);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return ActualTrendModelList;
-        }
-
-        /// <summary>
-        /// This function will return list of ProjectedRevenueTren Model.
-        /// This function calculate Monthwise Trend.
-        /// </summary>
-        /// <param name="TacticList"> List of Tactic</param>
-        /// <returns>Return List of Sparklinechart data</returns>
         public List<ActualTrendModel> GetActualTrendModelForRevenueOverview(List<TacticStageValue> TacticData, List<ActualTacticListByStage> ActualTacticStageList)
         {
             #region "Declare local Variables"
@@ -6325,11 +6260,11 @@ namespace RevenuePlanner.Controllers
 
                     foreach (var tactic in TacticList)
                     {
-                        if (_currentYear <= tactic.StartDate.Year)
-                        {
-                            _TacEndMonth = tactic.EndDate.Month;
-                        }
-                        else
+                        //if (_currentYear <= tactic.StartDate.Year)
+                        //{
+                        //    _TacEndMonth = tactic.EndDate.Month;
+                        //}
+                        //else
                         {
                             _TacEndMonth = 12;
                         }
@@ -6354,19 +6289,19 @@ namespace RevenuePlanner.Controllers
                             objActualTrendModel.PlanTacticId = tactic.PlanTacticId;
                             objActualTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
                             objActualTrendModel.StageCode = stagecode;
-
+                            objActualTrendModel.Trend = 0;
+                            objActualTrendModel.Value = 0;
                             //// Calculate Trend calculation for month that is greater than current ruuning month.
                             if (involveMonthTillCurrentMonth > 0 && (_currentYear < tactic.StartDate.Year || (_trendMonth > currentMonth && _currentYear == tactic.StartDate.Year)))
                             {
-                                objActualTrendModel.TrendValue = (TotalActualUpToCurrentMonth / involveMonthTillCurrentMonth);
+                                objActualTrendModel.Trend = (TotalActualUpToCurrentMonth / involveMonthTillCurrentMonth);
                             }
                             else if (_currentYear > tactic.StartDate.Year || (_currentYear == tactic.StartDate.Year && _trendMonth <= currentMonth)) // Set Same ActualValue as Trend value till current month from Tactic StartMonth.
                             {
                                 CurrentPeriod = PeriodPrefix + _trendMonth.ToString();
-                                objActualTrendModel.TrendValue = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.Actualvalue).FirstOrDefault();
+                                objActualTrendModel.Value = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.Actualvalue).FirstOrDefault();
                             }
-                            else
-                                objActualTrendModel.TrendValue = 0;
+                            
                             ActualTrendModelList.Add(objActualTrendModel);
                         }
                         #endregion
@@ -6411,11 +6346,11 @@ namespace RevenuePlanner.Controllers
 
                 foreach (var tactic in TacticList)
                 {
-                    if (_currentYear <= tactic.StartDate.Year)
-                    {
-                        _TacEndMonth = tactic.EndDate.Month;
-                    }
-                    else
+                    //if (_currentYear <= tactic.StartDate.Year)
+                    //{
+                    //    _TacEndMonth = tactic.EndDate.Month;
+                    //}
+                    //else
                     {
                         _TacEndMonth = 12;
                     }
@@ -6442,19 +6377,19 @@ namespace RevenuePlanner.Controllers
                         objActualTrendModel.PlanTacticId = tactic.PlanTacticId;
                         objActualTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
                         objActualTrendModel.StageCode = strStageCode;
+                        objActualTrendModel.Value = 0;
+                        objActualTrendModel.Trend = 0;
 
                         //// Calculate Trend calculation for month that is greater than current ruuning month.
                         if (involveMonthTillCurrentMonth > 0 && (_currentYear < tactic.StartDate.Year || (_trendMonth > currentMonth && _currentYear == tactic.StartDate.Year)))
                         {
-                            objActualTrendModel.TrendValue = (TotalActualUpToCurrentMonth / involveMonthTillCurrentMonth);
+                            objActualTrendModel.Trend = (TotalActualUpToCurrentMonth / involveMonthTillCurrentMonth);
                         }
                         else if (_currentYear > tactic.StartDate.Year || (_currentYear == tactic.StartDate.Year && _trendMonth <= currentMonth)) // Set Same ActualValue as Trend value till current month from Tactic StartMonth.
                         {
                             CurrentPeriod = PeriodPrefix + _trendMonth.ToString();
-                            objActualTrendModel.TrendValue = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.ActualValue).FirstOrDefault();
+                            objActualTrendModel.Value = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.ActualValue).FirstOrDefault();
                         }
-                        else
-                            objActualTrendModel.TrendValue = 0;
                         ActualTrendModelList.Add(objActualTrendModel);
                     }
                     #endregion
@@ -6465,70 +6400,6 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             return ActualTrendModelList;
-        }
-
-        /// <summary>
-        /// This function will return list of ProjectedRevenueTren Model.
-        /// This function calculate Monthwise Trend.
-        /// </summary>
-        /// <param name="TacticList"> List of Tactic</param>
-        /// <returns>Return List of Sparklinechart data</returns>
-        public List<ActualTrendModel> GetActualCostTrendModel(List<TacticStageValue> TacticData, List<int> TacticIdList, List<TacticMonthValue> curntCostList)
-        {
-            #region "Declare local Variables"
-            List<ActualTrendModel> CostTrendModelList = new List<ActualTrendModel>();
-            ActualTrendModel objActualTrendModel = new ActualTrendModel();
-            List<TacticMonthValue> CostListbyTactic = new List<TacticMonthValue>();
-            double TotalCostUpToCurrentMonth = 0;
-            int involveMonthTillCurrentMonth = 0;
-            int _currentYear = Convert.ToInt32(currentYear);
-            #endregion
-
-            try
-            {
-                List<Plan_Campaign_Program_Tactic> TacticList = TacticData.Where(tac => TacticIdList.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.TacticObj).ToList();
-                int _TacEndMonth = 0, _planTacticId = 0;
-                foreach (var tactic in TacticList)
-                {
-                    _TacEndMonth = tactic.EndDate.Month;
-                    _planTacticId = tactic.PlanTacticId;
-
-                    //if (_TacEndMonth > currentMonth)
-                    {
-                        if (curntCostList != null && curntCostList.Count > 0)
-                        {
-                            //// Filter CurrentMonthActualTacticList by current PlanTacticId.
-                            CostListbyTactic = curntCostList.Where(tac => tac.Id.Equals(_planTacticId)).ToList();
-
-                            //// Get ActualValue sum.
-                            TotalCostUpToCurrentMonth = CostListbyTactic.Sum(_cost => _cost.Value);
-
-                            //// Get No. of involved month till current month.
-                            involveMonthTillCurrentMonth = CostListbyTactic.Where(actual => actual.Value > 0).Count();
-                        }
-                        for (int _trendMonth = 1; _trendMonth <= _TacEndMonth; _trendMonth++)
-                        {
-                            objActualTrendModel = new ActualTrendModel();
-                            objActualTrendModel.PlanTacticId = tactic.PlanTacticId;
-                            objActualTrendModel.Month = PeriodPrefix + _trendMonth.ToString(); // Set Month like 'Y1','Y2','Y3'..
-
-                            //// Calculate Trend calculation for month that is greater than current ruuning month.
-                            if (_trendMonth > currentMonth && involveMonthTillCurrentMonth > 0 && _currentYear >= tactic.StartDate.Year)
-                            {
-                                objActualTrendModel.TrendValue = (TotalCostUpToCurrentMonth / involveMonthTillCurrentMonth) * _trendMonth;
-                            }
-                            else
-                                objActualTrendModel.TrendValue = 0;
-                            CostTrendModelList.Add(objActualTrendModel);
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return CostTrendModelList;
         }
 
         /// <summary>
@@ -6906,7 +6777,7 @@ namespace RevenuePlanner.Controllers
                         TotalActualValueCurrentMonth = CurrentMonthActualTacticList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
                         TotalRevenueTypeCol = TotalRevenueTypeCol + TotalActualValueCurrentMonth;
 
-                        //List<ActualTrendModel> ActualTrendModelList = GetActualTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthActualTacticList);
+                        
                         #endregion
 
                         #region "Set Sparkline chart Data"
@@ -7287,7 +7158,6 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region "Get Actuals Trend Model List"
-                        //List<ActualTrendModel> ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthCostList);
                         #endregion
                         #endregion
 
@@ -7407,7 +7277,7 @@ namespace RevenuePlanner.Controllers
                         TotalRevenueValueCurrentMonth = revCurrentMonthList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
                         //TotalRevenueTypeCol = TotalRevenueTypeCol + TotalRevenueValueCurrentMonth;
 
-                        //ActualTrendModelList = GetActualTrendModel(Tacticdata, _obj.planTacticList, revCurrentMonthList);
+                        
                         #endregion
 
                         #region " Get Cost Actuals List "
@@ -7422,7 +7292,6 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region "Get Actuals Cost Trend Model List"
-                        //ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, _obj.planTacticList, CurrentMonthCostList);
                         #endregion
 
                         #endregion
@@ -7536,7 +7405,7 @@ namespace RevenuePlanner.Controllers
                     TotalRevenueValueCurrentMonth = ActualDataTable.Sum(actual => actual.ActualValue);
                     TacticIds = new List<int>();
                     TacticIds = Tacticdata.Select(tac => tac.TacticObj.PlanTacticId).ToList();
-                    //ActualTrendModelList = GetActualTrendModel(Tacticdata, TacticIds, ActualDataTable);
+                    
                     #endregion
 
                     #region " Get Cost Actuals List "
@@ -7547,7 +7416,6 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region "Get Actuals Cost Trend Model List"
-                    //ActualCostTrendModelList = GetActualCostTrendModel(Tacticdata, TacticIds, TacticCostData);
                     #endregion
 
                     #region "Calculate ROI"
@@ -7885,8 +7753,8 @@ namespace RevenuePlanner.Controllers
                 {
                     objOverviewModel = new TacticwiseOverviewModel();
                     objOverviewModel.PlanTacticId = _tacticId;
-                    ActualTotal = ActualTrendList.Where(actual => actual.PlanTacticId == _tacticId).Sum(actual => actual.TrendValue);
-                    ProjectedTrendTotal = ProjectedTrendModelList.Where(_projTactic => _projTactic.PlanTacticId ==_tacticId).Sum(_projTactic => _projTactic.TrendValue);
+                    ActualTotal = ActualTrendList.Where(actual => actual.PlanTacticId == _tacticId).Sum(actual => actual.Value);
+                    ProjectedTrendTotal = ProjectedTrendModelList.Where(_projTactic => _projTactic.PlanTacticId == _tacticId).Sum(_projTactic => _projTactic.TrendValue);
                     Actual_Projected = ActualTotal + ProjectedTrendTotal;
                     Goal = ProjectedTrendModelList.Where(_projTactic => _projTactic.PlanTacticId == _tacticId).Sum(_projTactic => _projTactic.Value);
                     objOverviewModel.Actual_ProjectedValue = Actual_Projected;
@@ -8496,7 +8364,7 @@ namespace RevenuePlanner.Controllers
                         }
                         #endregion
 
-                        _Actual = ActualTrendList.Where(actual => _curntQuarterListActual.Contains(actual.Month)).Sum(actual => actual.TrendValue);
+                        _Actual = ActualTrendList.Where(actual => _curntQuarterListActual.Contains(actual.Month)).Sum(actual => actual.Value);
                         _actuallist.Add(_Actual);
 
 
@@ -8519,7 +8387,7 @@ namespace RevenuePlanner.Controllers
                     {
                         curntPeriod = PeriodPrefix + i;
                         //_Actual = ActualTrendList.Where(actual => actual.Month.Equals(curntPeriod)).Sum(actual => actual.TrendValue);
-                        _Actual = ActualTrendList.Where(actual => Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= currentEndMonth ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.TrendValue);
+                        _Actual = ActualTrendList.Where(actual => Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= currentEndMonth ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.Value);
                         _Projected = ProjectedTrendModelList.Where(_projected => Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) > currentEndMonth ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue);
                         _Goal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
 
@@ -8814,14 +8682,14 @@ namespace RevenuePlanner.Controllers
                     if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                     {
                         var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
-                         var customfieldoption = db.CustomFieldOptions.Where(cfo => cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false).Select(cfo => new { CustomFieldOptionId = cfo.CustomFieldOptionId, title = cfo.Value }).ToList();
-                        _TacticOptionList = cusomfieldEntity.GroupBy(pc => new { id = Convert.ToInt32(pc.Value) }).Select(pc =>
-                                    new RevenueContrinutionData
-                                    {
-                                        Title = customfieldoption.Where(cfo => cfo.CustomFieldOptionId == pc.Key.id).FirstOrDefault().title,
-                                        CustomFieldOptionid = pc.Key.id,
-                                        planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                                              (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
+                        var customfieldoption = db.CustomFieldOptions.Where(cfo => cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false).Select(cfo => new { CustomFieldOptionId = cfo.CustomFieldOptionId, title = cfo.Value }).ToList();
+                        _TacticOptionList = cusomfieldEntity.Where(cfe => customfieldoption.Select(cfo => cfo.CustomFieldOptionId).ToList().Contains(Convert.ToInt32(cfe.Value))).GroupBy(pc => new { id = Convert.ToInt32(pc.Value) }).Select(pc =>
+                                     new RevenueContrinutionData
+                                     {
+                                         Title = customfieldoption.Where(cfo => cfo.CustomFieldOptionId == pc.Key.id).FirstOrDefault().title,
+                                         CustomFieldOptionid = pc.Key.id,
+                                         planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
+                                               (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
 
                                     }).ToList();
                     }
@@ -10061,12 +9929,12 @@ namespace RevenuePlanner.Controllers
                 ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
             //up to here
 
-            //for using card
-            ProjectedTrendList = new List<ProjectedTrendModel>();
-            ActualTacticStageList = new List<ActualTacticListByStage>();
-            ActualTacticTrendList = new List<ActualTrendModel>();
-           
-            ProjectedTrendList = CalculateProjectedTrend(tacticStageList, includeMonth, inqStageCode);
+                //for using card
+                ProjectedTrendList = new List<ProjectedTrendModel>();
+                ActualTacticStageList = new List<ActualTacticListByStage>();
+                ActualTacticTrendList = new List<ActualTrendModel>();
+            ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList(); //#1488
+                ProjectedTrendList = CalculateProjectedTrend(tacticStageList, includeMonth, inqStageCode);
 
             #region "Get Basic model"
             BasicModel objBasicModelDataTable = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, IsQuarterly);
@@ -11476,7 +11344,7 @@ namespace RevenuePlanner.Controllers
                                               }).Distinct().ToList();
 
                         _inqActual = 0;
-                        _inqActual = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        _inqActual = ActualTacticTrendList.Sum(actual => actual.Value);
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
                         //objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
@@ -11539,7 +11407,7 @@ namespace RevenuePlanner.Controllers
                         //objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString();
                         objCardSectionSubModel.CardType = MQLStageLabel;
                         _mqlActual = 0;
-                        _mqlActual = ActualTacticTrendList.Sum(actual => actual.TrendValue); ;
+                        _mqlActual = ActualTacticTrendList.Sum(actual => actual.Value); ;
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
@@ -11605,7 +11473,7 @@ namespace RevenuePlanner.Controllers
                         //objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
                         objCardSectionSubModel.CardType = CWStageLabel;
                         cwActualvalue = 0;
-                        cwActualvalue = ActualTacticTrendList.Sum(actual => actual.TrendValue);
+                        cwActualvalue = ActualTacticTrendList.Sum(actual => actual.Value);
                         objCardSectionSubModel.Actual_Projected = cwActualvalue;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
                         ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
@@ -11631,7 +11499,7 @@ namespace RevenuePlanner.Controllers
                     {
                         ProjectedTrendList = new List<ProjectedTrendModel>();
                         ProjectedTrendList = CalculateProjectedTrend(fltrTacticData, includeMonth, Enums.InspectStage.ProjectedStageValue.ToString());
-                        _inqActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == projectedStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
+                        _inqActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == projectedStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.Value);
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
                         //objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
@@ -11651,8 +11519,8 @@ namespace RevenuePlanner.Controllers
                         ProjectedTrendList = new List<ProjectedTrendModel>();
                         ProjectedTrendList = CalculateProjectedTrend(fltrTacticData, includeMonth, Enums.InspectStage.MQL.ToString());
                         _mqlActual = 0;
-                        _mqlActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == mqlStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
-                       
+                        _mqlActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == mqlStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.Value);
+
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
@@ -11680,7 +11548,7 @@ namespace RevenuePlanner.Controllers
                         // End convertion CardSection SubModel Data
                         ProjectedTrendList = new List<ProjectedTrendModel>();
                         _cwActual = 0;
-                        _cwActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == cwStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.TrendValue);
+                        _cwActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == cwStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.Value);
 
                         ProjectedTrendList = CalculateProjectedTrend(fltrTacticData, includeMonth, Enums.InspectStage.CW.ToString());
                        
@@ -11917,7 +11785,7 @@ namespace RevenuePlanner.Controllers
                                                   TrendValue = tac.Key.TrendValue
                                               }).Distinct().ToList();
                         #endregion
-                        inneractuallist = CurrentMonthActualTacticList.Select(actual => new ActualTrendModel { PlanTacticId = actual.PlanTacticId, Month = actual.Period, TrendValue = actual.ActualValue }).ToList();
+                        inneractuallist = CurrentMonthActualTacticList.Select(actual => new ActualTrendModel { PlanTacticId = actual.PlanTacticId, Month = actual.Period, Value = actual.ActualValue }).ToList();
                         revenueActual = CurrentMonthActualTacticList.Sum(data => data.ActualValue);
                         revenueGoal = ProjectedTrendList.Sum(data => data.Value);
 
@@ -11936,7 +11804,7 @@ namespace RevenuePlanner.Controllers
                         List<ProjectedTrendModel> innerGoallist = new List<ProjectedTrendModel>();
                         innerGoallist = ProjectedTrendList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
 
-                        revenueActual = inneractuallist.Sum(data => data.TrendValue);
+                        revenueActual = inneractuallist.Sum(data => data.Value);
                         revenueGoal = innerGoallist.Sum(data => data.Value);
 
                         innerCurrentMonthCostList = CurrentMonthCostList.Where(cost => _ChildIdsList.Contains(cost.Id)).ToList();
@@ -12081,7 +11949,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                _Actual = ActualTrendList.Where(actual => _curntQuarterList.Contains(actual.Month)).Sum(actual => actual.TrendValue);
+                _Actual = ActualTrendList.Where(actual => _curntQuarterList.Contains(actual.Month)).Sum(actual => actual.Value);
                 _actuallist.Add(_Actual);
 
                 _cost = CurrentMonthCostList.Where(costactual => _curntQuarterList.Contains(costactual.Month)).Sum(costactual => costactual.Value);
