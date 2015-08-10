@@ -1603,7 +1603,7 @@ namespace Integration.Salesforce
                 if (!dataTypeMapping.Any()) // check if there is no field mapping configure then log error to IntegrationInstanceLogDetails table.
                 {
                     Enums.EntityType _entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Convert.ToString(_entityType), true);
-                    _ErrorMessage = "You have not configure any single field with Eloqua field.";
+                    _ErrorMessage = "You have not configure any single field with Salesforce field.";
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, _entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), _ErrorMessage, Enums.SyncStatus.Error, DateTime.Now));
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "You have not configure any single field with Salesforce field.");
                     return true;    // return true value that means error exist and do not proceed for the further mapping list.

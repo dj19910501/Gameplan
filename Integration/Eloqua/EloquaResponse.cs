@@ -557,8 +557,8 @@ namespace Integration.Eloqua
                     }
                     else
                     {
-                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Eloqua response folder path does not exists.");
-                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Eloqua response folder path does not exists.", Enums.SyncStatus.Error, DateTime.Now));
+                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Eloqua response folder path does not exists.");
+                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Eloqua response folder path does not exists.", Enums.SyncStatus.Info, DateTime.Now));
                         // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                         Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, string.Format(Common.msgDirectoryNotFound, localDestpath));
                         return true;
@@ -643,6 +643,14 @@ namespace Integration.Eloqua
                                         }
                                     }
                                 }
+                            }
+                            else //File location (directory) is exist, but empty – Success
+                            {
+                                // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
+                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, Common.msgFileNotFound);
+                                Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgFileNotFound);
+                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgFileNotFound, Enums.SyncStatus.Error, DateTime.Now));
+                                return true;
                             }
 
                             if (lstResponse.Count > 0)
@@ -793,8 +801,8 @@ namespace Integration.Eloqua
                                     unprocessobj.CreatedBy = _userId;
                                     db.Entry(unprocessobj).State = EntityState.Added;
                                 }
-                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Of total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.");
-                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Of total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
+                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Responses: Total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.");
+                                lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
                             }
 
 
@@ -850,8 +858,9 @@ namespace Integration.Eloqua
                         else //File location (directory) is exist, but empty – Success
                         {
                             // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
-                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, Common.msgFileNotFound);
-                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, Common.msgFileNotFound);
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, Common.msgFileNotFound);
+                            Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgFileNotFound);
+                            lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), Common.msgFileNotFound, Enums.SyncStatus.Error, DateTime.Now));
                         }
                     }
                     catch (Exception ex)

@@ -71,6 +71,18 @@ namespace Integration
         bool _isTacticMoved { get; set; }
         private List<SyncError> _lstAllSyncError = new List<SyncError>();
         MRPEntities db = new MRPEntities();
+        private bool IsInActiveInstance = false;
+        private bool _isInActiveInstance
+        {
+            get
+            {
+                return IsInActiveInstance;
+            }
+            set
+            {
+                IsInActiveInstance = value;
+            }
+        }
         /// <summary>
         /// Data Dictionary to hold tactic status values.
         /// Added By: Maninder Singh Wadhva.
@@ -133,6 +145,7 @@ namespace Integration
             }
             else
             {
+                _integrationInstanceId = _id;
                 var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _id).FirstOrDefault();
                 if (Instance != null && Instance.IsActive)
                 {
@@ -152,6 +165,7 @@ namespace Integration
                 }
                 else
                 {
+                    _isInActiveInstance = true; // Manage this flag at SendSyncErrorEmail and PrepareSyncErroMailHeader function.
                     IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
                     instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_id);
                     instanceLogStart.SyncStart = DateTime.Now;
@@ -164,6 +178,13 @@ namespace Integration
                     db.Entry(Instance).State = EntityState.Modified;
                     int resulValue = db.SaveChanges();
                     Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                    //_lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, EntityType.IntegrationInstance.ToString(), "Instance have inactive status.", Enums.SyncStatus.Error, DateTime.Now));
+                    if (_id > 0)
+                    {
+                        string InstanceName = Common.GetInstanceName(_id);
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Instance Name used for syncing", InstanceName), Enums.SyncStatus.Header, DateTime.Now));
+                    }
                 }
             }
 
@@ -530,6 +551,9 @@ namespace Integration
                 return;
             }
 
+            if (_isInActiveInstance) // Integration Instance Inactive then do not need to show Number of Activities and Pull information in Summary email.
+                return;
+
             //// Set info row data for no of tactic processed with count
             Int32 SuccessTacticCount = 0;
             SuccessTacticCount = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Success && syncError.EntityId > 0)
@@ -548,52 +572,61 @@ namespace Integration
             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities successfully synced - Push Tactic Data", SuccessTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
             _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Number of Activities failed due to some reason - Push Tactic Data", FailedTacticCount.ToString()), Enums.SyncStatus.Header, DateTime.Now));
 
-            if (integrationInstanceType.Equals(Enums.IntegrationType.Eloqua.ToString()))
+            bool isImport = false;
+            if (_integrationInstanceId.HasValue)
             {
-            bool PullMQLError = false;
-            PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
-            if (PullMQLError)
-            {
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                isImport = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId.Equals(_integrationInstanceId.Value)).IsImportActuals;
             }
-            else
+            if (isImport)
             {
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
-            }
 
-            bool PullResponsesError = false;
-            PullResponsesError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullResponses.ToString()).Any();
-            if (PullResponsesError)
-            {
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
-            }
-            else
-            {
-                _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
-            }
-            }
-            else if (integrationInstanceType.Equals(Enums.IntegrationType.Salesforce.ToString()))
-            {
-                bool PullClosedDealsError = false;
-                PullClosedDealsError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString()).Any();
-                if (PullClosedDealsError)
+                if (integrationInstanceType.Equals(Enums.IntegrationType.Eloqua.ToString()))
                 {
-                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Closed Deals Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
-                }
-                else
-                {
-                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Closed Deals Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
-                }
+                    bool PullMQLError = false;
+                    PullMQLError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullMQL.ToString()).Any();
+                    if (PullMQLError)
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
+                    else
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull MQL Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
 
-                bool PullResponsesError = false;
-                PullResponsesError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullResponses.ToString()).Any();
-                if (PullResponsesError)
-                {
-                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                    bool PullResponsesError = false;
+                    PullResponsesError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullResponses.ToString()).Any();
+                    if (PullResponsesError)
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
+                    else
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
                 }
-                else
+                else if (integrationInstanceType.Equals(Enums.IntegrationType.Salesforce.ToString()))
                 {
-                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                    bool PullClosedDealsError = false;
+                    PullClosedDealsError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString()).Any();
+                    if (PullClosedDealsError)
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Closed Deals Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
+                    else
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Closed Deals Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
+
+                    bool PullResponsesError = false;
+                    PullResponsesError = _lstAllSyncError.Where(syncError => syncError.SyncStatus == Enums.SyncStatus.Error && syncError.SectionName == Enums.IntegrationInstanceSectionName.PullResponses.ToString()).Any();
+                    if (PullResponsesError)
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Failed"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
+                    else
+                    {
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, Common.PrepareInfoRow("Pull Responses Sync Status - ", "Success"), Enums.SyncStatus.Header, DateTime.Now));
+                    }
                 }
             }
             /////
@@ -604,6 +637,7 @@ namespace Integration
         /// </summary>
         private void SendSyncErrorEmail(string integrationInstanceType)
         {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             try
             {
                 if (_lstAllSyncError.Count > 0)
@@ -652,8 +686,10 @@ namespace Integration
                     //}
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while sending Summary Email : " + exMessage);
                 //// Mail sending exception
                 return;
             }
