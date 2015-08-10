@@ -300,7 +300,9 @@ namespace RevenuePlanner.Models
     public class ActualTrendModel
     {
         public int PlanTacticId { get; set; }
-        public double TrendValue { get; set; }
+     
+        public double Trend { get; set; }
+        public double Value { get; set; }
         public string Month { get; set; }
         public string StageCode { get; set; }
     }
