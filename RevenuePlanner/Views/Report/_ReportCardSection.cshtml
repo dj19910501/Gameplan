@@ -55,6 +55,7 @@
 <div class="card-pagination" id="div-card-pagination">
     <div class="paging" id="page_navigation" style="width:100%">
     </div>
+     <div id="NorecordfoundMsg" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
 
 </div>
 <script type="text/javascript">
@@ -240,7 +241,7 @@
         }).multiselectfilter({});
 
         LoadPagination();
-
+        CheckData();
     });
 
     function loadlineChart(_chartdata, chartId) {
@@ -1184,5 +1185,16 @@
     //    }
     //});
     /// End By Nishant Sheth
-
+    //PL #1399 added by dashrath prajapati 
+    function CheckData() {
+        var totRec = '@Model.TotalRecords';
+        if (totRec == '0') {
+            NorecordfoundMsg
+            $("#NorecordfoundMsg").css("display", "block");
+        }
+        else {
+            $("#errorMessage").css("display", "none");
+        }
+    }
+    //END PL #1399 added by dashrath prajapati 
 </script>

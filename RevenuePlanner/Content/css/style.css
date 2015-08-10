@@ -10500,7 +10500,8 @@ li.close-list {
 .NoDataFound {
     border-top: 1px solid #808080;
     padding-top: 10px;
-    font-size: 15px;
+    padding-left: 30px; /*Added by dashrath*/
+    font-size: 20px;  /*Added by dashrath*/
 }
 
 /* Start - Added by Sohel Pathan on 26/09/2014 for PL ticket #797 */
@@ -14544,6 +14545,11 @@ div.clue-bottom-default .cluetip-arrows {
 
 .select-item button {
     min-width: 35px;
+}
+
+.select-item /*PL #1398 Observation2 Dashrath Prajapati*/
+{
+    width:170px;
 }
 
 .paging {
