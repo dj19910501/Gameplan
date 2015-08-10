@@ -27,6 +27,11 @@
     }
    var ListBudgetingPlan = Model.objplanhomemodelheader.plans; //Modified for new homepage UI
    var IsQuarter = ViewBag.IsQuarter;
+   bool BudgetingIsSave = false;
+   var RequestedModule = "";
+   var BudgetingBussinessUnitId = 0;
+   var BudgetingCurrentTab = "aAllocated";
+   var BudgetingCurrentPlanId = 0;
 }
 
 @section PlanHeader{
@@ -74,7 +79,12 @@
     }
 </style>
 
+@Html.Hidden("hdnBudgetingBussinessUnitId", BudgetingBussinessUnitId)
+@Html.Hidden("hdnBudgetingCurrentTab", BudgetingCurrentTab)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
+@Html.Hidden("hdnBudgetingIsSave", BudgetingIsSave)
+@Html.Hidden("hdnRequestedModule", RequestedModule)
+@Html.Hidden("hdnBudgetingCurrentPlanId", BudgetingCurrentPlanId)
 
 <div id="listingsuccessMessage" class="alert alert-success message-position" style="display: none;">
     <a class="close">×</a>
@@ -171,6 +181,133 @@
             }
         });
     }
+
+    function ShowModel(mode, section, id, ParentId, RequestedModule) {
+        removeDefaultModalPopupBackgroungColor();
+        modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+
+        $('.modal-backdrop').addClass('modalFull-backdrop');
+        $('.modal-backdrop').attr("style", "display:none !important;");
+        $("#successMessage").css("display", "none");
+        $("#errorMessage").css("display", "none");
+        $("#successMessageDuplicatePlan").css("display", "none");
+        $("#modal-container-186470").modal('show');
+        ParentId = typeof ParentId != 'undefined' ? ParentId : '0';
+        RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
+
+        $("#hdnRequestedModule").val(RequestedModule);
+
+        var currentTab = "Setup";
+        if ((RequestedModule == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") && (mode == "@Enums.InspectPopupMode.ReadOnly.ToString()")) {
+            currentTab = "Budget";
+        }
+
+        if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()") {
+            if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+                loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", '@CurrentPlanId', RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequestedModule);
+            }
+        }
+        else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()") {
+            if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+                loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, RequestedModule);
+            }
+        }
+        else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()") {
+            if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+                loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()") {
+            if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+                loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()") {
+            if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+                loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
+            }
+        }
+        else if (section == "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()") {
+            if (mode == "@Enums.InspectPopupMode.Add.ToString()") {
+                loadInspectPopup("0", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.Add.ToString()", ParentId, RequestedModule);
+            }
+            else {
+                loadInspectPopup(id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", ParentId, RequestedModule);
+            }
+        }
+        modalBackdropDisplayNone();
+    };
+
+    function loadInspectPopup(id, section, tabValue, mode, parentId, RequestedModule) {
+        parentId = typeof parentId != 'undefined' ? parentId : '0';
+        RequestedModule = typeof RequestedModule != 'undefined' ? RequestedModule : '';
+        var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
+        $("#divPartial").empty();
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + RequestedModule, function (response, status, xhr) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
+    };
+
+    function modalBackdropDisplayNone() {
+        setTimeout(function () {
+            $('.modal-backdrop').each(function () {
+                if (typeof ($(this).attr('id')) == 'undefined') {
+                    $(this).attr("style", "display:none !important;");
+                }
+            });
+        }, 500);
+    };
+
+    function CloseIconClick() {
+        $('.close-x-big-icon').click(function () {
+            addDefaultModalPopupBackgroungColor();
+            $('body').removeClass('bodyOverflow');
+
+            if ((($("#hdnBudgetingIsSave").val().toLowerCase().toString()) == "true") && ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == $("#hdnRequestedModule").val())) {
+                $('#DivloadPlan').load('@Url.Action("BudgetPlanList", "Plan")' + '?Bid=' + $("#hdnBudgetingBussinessUnitId").val(), function () { TabLoad($("#hdnBudgetingCurrentTab").val()); ShowChangeLog($("#hdnBudgetingCurrentPlanId").val()); hideAllMessages = true; });
+                $("#hdnBudgetingIsSave").val("false");
+            }
+
+            @*//window.location = '@Url.Content("~/Plan/Assortment")';*@
+            //Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
+            var hdnRefresh = $("#hdnRefresh").val();    // This hidden value set from ApplyToCalendar page, to check flag, whether this page called from ApplyTocalender or not.
+            if (hdnRefresh != null && gantt != null) {
+                gantt.refreshData();
+            }
+            $(".datepicker.dropdown-menu").each(function () {
+                $(this).remove();
+            });
+
+            ////
+            @*if (("@Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString()" == $("#hdnRequestedModule").val())) {
+                var isRefresh = $("#hdnIsCreate_Clone").val();
+                $("#hdnIsCreate_Clone").val(false);
+                if (isRefresh.toString().toLowerCase() == 'true')
+                    window.location.reload();//loadEditableIdsToHidden();  //// This method exist in ApplyToCalendar page.
+            }*@
+        });
+    };
+
     function HideMessages() {
         $("#listingsuccessMessage").slideUp(1);
         $('#listingspanMessageSuccess').html('');
