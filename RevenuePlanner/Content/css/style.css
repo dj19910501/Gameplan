@@ -8207,13 +8207,22 @@ input.icon-check-blue {
     cursor: pointer;
     display: block;
     height: 60px;
-    width: 137px;
+    width: 136px;
 }
 
 .integration-review-imglink{
-    height: 80px !important;
-    width: 137px !important;
+    height: 79px !important;
+    width: 136px !important;
     display: block;
+    border: 1px solid;
+    border-color: transparent;
+    border-radius:4px 4px;
+    
+}
+
+.integration-review-imglink:hover{
+   border: 1px solid #3FA9F5;
+    border-radius:4px 4px;
 }
 
 .link_popup {
