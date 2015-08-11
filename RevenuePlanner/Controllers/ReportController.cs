@@ -11667,6 +11667,8 @@ namespace RevenuePlanner.Controllers
                 lstTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(line => TacticIds.Contains(line.PlanTacticId) && line.IsDeleted == false).ToList();
                 var lineitemsids = lstTacticLineItem.Select(ln => ln.PlanLineItemId).ToList();
                 tblLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineActual => lineitemsids.Contains(lineActual.PlanLineItemId)).ToList();
+                tblLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(line => lineitemsids.Contains(line.PlanLineItemId)).ToList();
+                tblTacticCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(line => TacticIds.Contains(line.PlanTacticId)).ToList();
                 if (!IsTacticCustomField)
                 {
                     TacticCostData = GetActualCostData(_TacticData, lstTacticLineItem, tblLineItemActualList);
@@ -11687,9 +11689,6 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    tblLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(line => lineitemsids.Contains(line.PlanLineItemId)).ToList();
-                    tblTacticCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(line => TacticIds.Contains(line.PlanTacticId)).ToList();
-
                     List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
                     ActualTacticStageList = GetActualListUpToCurrentMonthByStageCode(_TacticData, timeframeOption, revStageCodeList, false);
                     if (ActualTacticStageList != null)

@@ -299,7 +299,14 @@
             //_type = $(_Id).attr('add-sep');
             if (text != null && text != 'undefined' && text != 'NaN') {
                 if (_Id.indexOf("ROI") > 0) {
-                    _formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                    
+                    //_formatednumber = setBootstrapTooltip(_Id, text, 5, false);
+                    if (text < 0) {
+                        _formatednumber = '-' + FormatNumber(Math.abs(parseFloat(text)), true);
+                    }
+                    else {
+                        _formatednumber = '+' + FormatNumber(Math.abs(parseFloat(text)), true);
+                    }
                 }
                 else {
                     _formatednumber = setBootstrapTooltip(_Id, text, 5, true);
