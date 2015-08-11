@@ -84,7 +84,7 @@
 <div class="card-pagination" id="div-card-pagination">
     <div class="paging" id="page_navigation" style="width:100%">
     </div>
-    <div id="NorecordfoundMsg" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
+    <div id="NorecordfoundMsg" style="border-top:none; display:none;" class="NoDataFound">No results found.</div> @*PL #1399 dashrath prajapati*@
      @*<div id="errorMessage" class="alert alert-error hide message-position-small">
            <a class="close" id="iclose">×</a>
         <span id="NoRecFound"></span>
@@ -1314,7 +1314,7 @@
         var sortBy = $("#ddlSortby :selected").val();
         SearchString = $('#txtSearch').val();
         //myApp.showPleaseWait();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
 
