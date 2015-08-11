@@ -102,7 +102,7 @@
     var TimeFrameRevenueList = [];
     var RevIsnextprev = false;
     var IsGotoPage = false;
-    
+
     $(function () {
         var options = {
 
@@ -358,7 +358,7 @@
         $('#ddlTacticRevenueToPlan').empty();
         fillProgramDropdown();
         //#1489
-        
+
         //var parentlabel = $("#ddlParentRevenueSummery").val();
         // var id = $("#ddlParentRevenueSummery").val();
         if (parseInt($('#ddlCampaignRevenueToPlan').val()) > 0) {
@@ -385,9 +385,11 @@
         //#1489
         //if (IsCardDetailsClick == false) {
         //  BackFwdRevenueList.length = 0;
-        
+
         //var parentlabel = $("#ddlParentRevenueSummery").val();
         // var id = $("#ddlParentRevenueSummery").val();
+        var programId = $('#ddlProgramRevenueToPlan').val();
+        var campId = $('#ddlCampaignRevenueToPlan').val();
         if (parseInt($('#ddlProgramRevenueToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
@@ -398,8 +400,8 @@
         } else {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
-                BackChildLabel: '@Common.RevenueCampaign',
-                BackId: $('#ddlCampaignRevenueToPlan').val(),
+                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : '',
+                BackId: campId > 0 ? campId : 0,
                 HeadHireachy: ''
             }
         }
@@ -411,21 +413,24 @@
         //#1489
         //if (IsCardDetailsClick == false) {
         //   BackFwdRevenueList.length = 0;
-        
+
         //var parentlabel = $("#ddlParentRevenueSummery").val();
         // var id = $("#ddlParentRevenueSummery").val();
+        var TacticId = $('#ddlTacticRevenueToPlan').val();
+        var campId = $('#ddlCampaignRevenueToPlan').val();
+        var ProgramId = $('#ddlProgramRevenueToPlan').val();
         if (parseInt($('#ddlTacticRevenueToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
                 BackChildLabel: '@Common.RevenueTactic',
-                BackId: $('#ddlTacticRevenueToPlan').val(),
+                BackId: TacticId,
                 HeadHireachy: ''
             }
         } else {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
-                BackChildLabel: '@Common.RevenueProgram',
-                BackId: $('#ddlProgramRevenueToPlan').val(),
+                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (programId > 0 ? '@Common.RevenueProgram' : ''),
+                BackId: programId > 0 ? programId : campId,
                 HeadHireachy: ''
             }
         }

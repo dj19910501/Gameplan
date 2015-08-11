@@ -309,6 +309,9 @@
     $('#ddlProgramConversionToPlan').change(function () {
         $('#ddlTacticConversionToPlan').empty();
         fillTacticDropdown();
+        var programId = $('#ddlProgramConversionToPlan').val();
+        var campId = $('#ddlCampaignConversionToPlan').val();
+
         if (parseInt($('#ddlProgramConversionToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
@@ -319,8 +322,8 @@
         } else {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
-                BackChildLabel: '@Common.RevenueCampaign',
-                BackId: $('#ddlCampaignConversionToPlan').val(),
+                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : '',
+                BackId: campId > 0 ? campId : 0,
                 HeadHireachy: ''
             }
         }
@@ -330,6 +333,10 @@
     $('#ddlTacticConversionToPlan').change(function () {
         //LoadDataRevenueToPlanByCampaign();
         LoadDataConversionToPlanByCampaign();
+        var TacticId = $('#ddlTacticConversionToPlan').val();
+        var campId = $('#ddlCampaignConversionToPlan').val();
+        var ProgramId = $('#ddlProgramConversionToPlan').val();
+
         if (parseInt($('#ddlTacticConversionToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
@@ -340,8 +347,8 @@
         } else {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
-                BackChildLabel: '@Common.RevenueProgram',
-                BackId: $('#ddlProgramConversionToPlan').val(),
+                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (programId > 0 ? '@Common.RevenueProgram' : ''),
+                BackId: programId > 0 ? programId : campId,
                 HeadHireachy: ''
             }
         }
@@ -607,7 +614,7 @@
         Qurt_Month = AllocatedBy;
         var _BackHeadValues, parentlabel, Type, id;
         var Code = $("#ddlINQToPlan").val();
-        
+
         _BackHeadValues = TimeFrameConversionList[TimeFrameConversionList.length - 1];
         parentlabel = _BackHeadValues.BackParentLabel;
         Type = _BackHeadValues.BackChildLabel;
@@ -1022,7 +1029,7 @@
         var _isNegativePercentage = '@revenue_Projected_Goal.IsnegativePercentage';*@
         //<p class="value source-sans-prolight" id="mqlProjecteds" style="font-size:26px;color: #908d88;  font-weight: bold;">$1.58M</p>
         //    <span id="mqlProjectedPercentages"></span>
-        
+
         var _formtPercentage = "0";
         $("#mqlActuals").popover('destroy');
         $("#mqlProjecteds").popover('destroy');
