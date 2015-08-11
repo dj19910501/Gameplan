@@ -151,6 +151,7 @@
     var OptionMain = '';
     var tempMqlHeader = [];
     var BackFwdConverstionList = [];
+    var TimeFrameConversionList = []; //#1489
     var RevIsnextprev = false;
     var IsGotoPage = false;
     $(document).ready(function () {
@@ -166,7 +167,7 @@
                 HeadHireachy: 'Waterfall'
             }
             BackFwdConverstionList.push(_BackFwdVar);
-
+            TimeFrameConversionList.push(_BackFwdVar); //#1489
             var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
             OptionMain = '@ViewBag.Convoption';
             var HeadTitle = document.getElementById('head-title');
@@ -287,16 +288,64 @@
         $("#ddlProgramConversionToPlan").empty();
         $('#ddlTacticConversionToPlan').empty();
         fillProgramDropdown();
+        if (parseInt($('#ddlCampaignConversionToPlan').val()) > 0) {
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '@Common.RevenueCampaign',
+                BackId: $('#ddlCampaignConversionToPlan').val(),
+                HeadHireachy: ''
+            }
+        } else {
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '',
+                BackId: '0',
+                HeadHireachy: ''
+            }
+        }
+        TimeFrameConversionList.push(_BackFwdVar);
     });
 
     $('#ddlProgramConversionToPlan').change(function () {
         $('#ddlTacticConversionToPlan').empty();
         fillTacticDropdown();
+        if (parseInt($('#ddlProgramConversionToPlan').val()) > 0) {
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '@Common.RevenueProgram',
+                BackId: $('#ddlProgramConversionToPlan').val(),
+                HeadHireachy: ''
+            }
+        } else {
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '@Common.RevenueCampaign',
+                BackId: $('#ddlCampaignConversionToPlan').val(),
+                HeadHireachy: ''
+            }
+        }
+        TimeFrameConversionList.push(_BackFwdVar);
     });
 
     $('#ddlTacticConversionToPlan').change(function () {
         //LoadDataRevenueToPlanByCampaign();
         LoadDataConversionToPlanByCampaign();
+        if (parseInt($('#ddlTacticConversionToPlan').val()) > 0) {
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '@Common.RevenueTactic',
+                BackId: $('#ddlTacticConversionToPlan').val(),
+                HeadHireachy: ''
+            }
+        } else {
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '@Common.RevenueProgram',
+                BackId: $('#ddlProgramConversionToPlan').val(),
+                HeadHireachy: ''
+            }
+        }
+        TimeFrameConversionList.push(_BackFwdVar);
     });
 
     function fillProgramDropdown() {
@@ -403,7 +452,11 @@
             id = campaignId.toString();
         }
         else {
-            id = _childValue;
+            //id = _childValue;
+            var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+            // parentlabel = _BackHeadValues.BackParentLabel;
+            Type = _BackHeadValues.BackChildLabel;
+            id = _BackHeadValues.BackId;
         }
         if (parentlabel != ParentDrpVal) {
             ParentDrpVal = parentlabel;
@@ -423,6 +476,8 @@
                 HeadHireachy: 'Waterfall'
             }
             BackFwdConverstionList.push(_BackFwdVar);
+            TimeFrameConversionList.length = 0; //#1489
+            TimeFrameConversionList.push(_BackFwdVar);//#1489
         }
         // + "&DrpChange=" + (isParentChng == true) ? 'true' : 'CampaignDrp'
         var AllocatedByConv = $('#ddlTimeFrameSelectBox option:selected').text();
@@ -545,15 +600,19 @@
     $("#ddlTimeFrameSelectBox select").selectbox();
 
     $("#ddlConversionTimeFrame").change(function () {
+        myApp.showPleaseWait();
         AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
         Qurt_Month = AllocatedBy;
         AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
         Qurt_Month = AllocatedBy;
-        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
-        var parentlabel = _BackHeadValues.BackParentLabel;
-        var Type = _BackHeadValues.BackChildLabel;
-        var id = _BackHeadValues.BackId;
+        var _BackHeadValues, parentlabel, Type, id;
         var Code = $("#ddlINQToPlan").val();
+        
+        _BackHeadValues = TimeFrameConversionList[TimeFrameConversionList.length - 1];
+        parentlabel = _BackHeadValues.BackParentLabel;
+        Type = _BackHeadValues.BackChildLabel;
+        id = _BackHeadValues.BackId;
+
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
         $("#dvConversionToPlan").load(_url);
         //LoadConversionData();
@@ -679,6 +738,8 @@
             HeadHireachy: 'Waterfall'
         }
         BackFwdConverstionList.push(_BackFwdVar);
+        TimeFrameConversionList.length = 0; //#1489
+        TimeFrameConversionList.push(_BackFwdVar);//#1489
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + code + "&DrpChange=" + DrpChange;
         $("#dvConversionToPlan").load(_url);
         @*$.ajax({

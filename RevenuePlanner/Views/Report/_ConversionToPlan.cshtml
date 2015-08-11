@@ -271,6 +271,9 @@
         BackFwdConverstionList.splice(BackFwdConverstionList.length - 1, 1);
         var _BackFwdVar = BackFwdConverstionList[BackFwdConverstionList.length - 1];
 
+        TimeFrameConversionList.length = 0; //#1489
+        TimeFrameConversionList.push(_BackFwdVar); //#1489
+
         BackParentLabel = _BackFwdVar.BackParentLabel;
         BackChildLabel = _BackFwdVar.BackChildLabel;
         BackId = _BackFwdVar.BackId;

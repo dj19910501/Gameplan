@@ -123,6 +123,7 @@
             $("#head-title").attr('title', '' + decodeURIComponent(HeadTitle.innerHTML) + '');
 
             if (BackHeadTitle == 'Marketing Revenue') {
+                IsCardDetailsClick = false;//#1489
                 var marketingDiv = document.getElementById('div-mareketing-drp');
                 marketingDiv.style.display = "block";
 
@@ -321,6 +322,9 @@
         
         BackFwdRevenueList.splice(BackFwdRevenueList.length - 1, 1);
         var _BackFwdVar = BackFwdRevenueList[BackFwdRevenueList.length - 1];
+
+        TimeFrameRevenueList.length = 0; //#1489
+        TimeFrameRevenueList.push(_BackFwdVar); //#1489
 
         BackParentLabel = _BackFwdVar.BackParentLabel;
         BackChildLabel = _BackFwdVar.BackChildLabel;
