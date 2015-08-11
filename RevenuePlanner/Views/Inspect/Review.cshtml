@@ -116,35 +116,27 @@
                     @{
                         foreach (var item in ViewBag.IntegrationTypeLinks)
                         {
-                            if (item.Key == Enums.IntegrationType.Eloqua.ToString())
-                            {
-                                <div class="pull-left margin-left20 integration-review-imglink">
-                                    <a href=@item.Value onclick="window.open(this.href); return false;">
-                                        <div class="link_popup pull-right margin-bottom10"></div>
-                                        <div class="eloqua-img margin-top18"></div>
-                                    </a>
-                                </div>
-                            }
-                            else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
-                            {
-                                <div class="pull-left margin-left20 integration-review-imglink">
-                                    <a href=@item.Value onclick="window.open(this.href); return false;">
-                                        <div class="link_popup pull-right margin-bottom10"></div>
-                                        <div class="salesforce-img margin-top10"></div>
-                                    </a>
-                                </div>
-                            }
-                            else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
-                            {
-                                <div class="pull-left margin-left20 integration-review-imglink">
-                                    <a href=@item.Value onclick="window.open(this.href); return false;">
-                                        <div class="link_popup pull-right margin-bottom10"></div>
-                                        <div class="workfront-img margin-top23"></div>
-                                    </a>
-                                </div>
-                            }
-                        }
-                }
+                            <div class="pull-left margin-right10 integration-review-imglink">
+                                <a href=@item.Value onclick="window.open(this.href); return false;">
+                                    <div class="link_popup pull-right margin-bottom10"></div>
+                                    @{
+                                        if (item.Key == Enums.IntegrationType.Eloqua.ToString())
+                                        {
+                                                <div class="eloqua-img margin-top18"></div>
+                                        }
+                                        else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
+                                        {
+                                            <div class="salesforce-img margin-top10"></div>
+                                        }
+                                        else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
+                                        {
+                                            <div class="workfront-img margin-top23"></div>
+                                        }
+                                        }
+                                 </a>
+                              </div>
+                           }
+                     }
                 </div>
             </div>
         </div>

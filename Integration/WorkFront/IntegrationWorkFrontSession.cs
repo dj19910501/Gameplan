@@ -558,9 +558,12 @@ namespace Integration.WorkFront
             {
                 Enums.Mode currentMode = Common.GetMode(tactic.IntegrationWorkFrontProjectID);
                 //if IntegrationWorkFrontProjectID doesn't exist in WorkFront, create a new one
-                JToken checkExists = client.Search(ObjCode.PROJECT, new { ID = tactic.IntegrationWorkFrontProjectID, map = true});
-                if (checkExists == null || checkExists["data"].HasValues == false)
-                { currentMode = Enums.Mode.Create;   }
+                if (currentMode == Enums.Mode.Update)
+                {
+                    JToken checkExists = client.Search(ObjCode.PROJECT, new { ID = tactic.IntegrationWorkFrontProjectID, map = true });
+                    if (checkExists == null || checkExists["data"].HasValues == false)
+                    { currentMode = Enums.Mode.Create; }
+                }
                 //logging begin
                 instanceLogTactic.IntegrationInstanceSectionId = _integrationInstanceSectionId;
                 instanceLogTactic.IntegrationInstanceId = _integrationInstanceId;
@@ -614,7 +617,7 @@ namespace Integration.WorkFront
                     db.Entry(createdPortfolioProject).State = EntityState.Added;
 
                     tactic.IntegrationWorkFrontProjectID = (string)project["data"]["ID"];
-                    tactic.IntegrationInstanceTacticId = (string)project["data"]["ID"]; //needed only as place filler for Common.GetMode. Not used elsewhere.
+                    //tactic.IntegrationInstanceTacticId = (string)project["data"]["ID"]; //needed only as place filler for Common.GetMode. Not used elsewhere.
                     tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors);
                 }
                 else if (currentMode.Equals(Enums.Mode.Update))

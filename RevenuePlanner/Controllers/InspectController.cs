@@ -2490,9 +2490,10 @@ namespace RevenuePlanner.Controllers
             //provide a list of tactic integration Id and workfront project 
             List<IntegrationInstance> modelIntegrationList = new List<IntegrationInstance>();
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance); }
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1); }
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2); }
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3); }
+            //Add in when we separate tactic integration information
+            //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1); }
+            //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2); }
+            //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3); }
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null &&  pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
             ViewBag.IntegrationInstances = modelIntegrationList;
 
@@ -2507,6 +2508,11 @@ namespace RevenuePlanner.Controllers
                        inst.IntegrationTypeAttributeId == workFrontCompanyNameAttributeId).FirstOrDefault().Value;
                     string append = "/project/view?ID=" + pcpt.IntegrationWorkFrontProjectID;
                     url = string.Concat("https://",prepend,url,append);
+                }
+                else 
+                {
+                    string append = "/" + pcpt.IntegrationInstanceTacticId;
+                    url = string.Concat(url, append);
                 }
                 if(!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code) )
                 {
