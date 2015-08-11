@@ -2505,9 +2505,13 @@ namespace RevenuePlanner.Controllers
                    int workFrontCompanyNameAttributeId = db.IntegrationTypeAttributes.Where(att => att.IntegrationTypeId == instance.IntegrationTypeId && att.Attribute=="Company Name").FirstOrDefault().IntegrationTypeAttributeId;
                     string prepend = db.IntegrationInstance_Attribute.Where(inst => inst.IntegrationInstanceId == instance.IntegrationInstanceId &&
                        inst.IntegrationTypeAttributeId == workFrontCompanyNameAttributeId).FirstOrDefault().Value;
-                    url = string.Concat(prepend,url);
+                    string append = "/project/view?ID=" + pcpt.IntegrationWorkFrontProjectID;
+                    url = string.Concat("https://",prepend,url,append);
                 }
-                IntegrationLinkDictionary.Add(instance.IntegrationType.Title, url);
+                if(!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code) )
+                {
+                    IntegrationLinkDictionary.Add(instance.IntegrationType.Code, url);
+                }
             }
             ViewBag.IntegrationTypeLinks = IntegrationLinkDictionary;
             ///End Added by Brad Gray 08-10-2015 for PL#1462
