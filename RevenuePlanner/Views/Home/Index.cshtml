@@ -897,7 +897,7 @@
         var uId = $(window).attr('name');
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Plan/ApplyToCalendar/")',
+            url: '@Url.Content("~/Plan/PublishPlan/")',
             data: 'UserId=' + uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {

@@ -1185,5 +1185,88 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #endregion
+
+        #region HeaderSection
+
+        #region Get Header Data
+        [TestMethod]
+        public void Get_HeaderData_With_PlanId()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call index method
+            PlanController objPlanController = new PlanController();
+            int planId = DataHelper.GetPlanId();
+            var result = objPlanController.GetPlanByPlanID(planId) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+
+        [TestMethod]
+        public void Get_HeaderData_With_MultiplePlanIds()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call index method
+            PlanController objPlanController = new PlanController();
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            string Year = DataHelper.GetYear();
+             var result = objPlanController.GetPlanByMultiplePlanIDs(CommaSeparatedPlanId, Enums.ActiveMenu.Home.ToString(), Year) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #region Get ActivityDistribution Data
+        [TestMethod]
+        public void Get_ActivityDistributionData()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call index method
+            HomeController objHomeController = new HomeController();
+            int planId = DataHelper.GetPlanId();
+            string Year = DataHelper.GetYear();
+            var result = objHomeController.GetNumberOfActivityPerMonth(planId.ToString(),Year, false) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+
+        [TestMethod]
+        public void Get_ActivityDistributionData_WithMultiplePlans()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call index method
+            HomeController objHomeController = new HomeController();
+            string CommaSeparatedPlanId = DataHelper.GetPlanIdList();
+            string Year = DataHelper.GetYear();
+            var result = objHomeController.GetNumberOfActivityPerMonth(CommaSeparatedPlanId, Year, true) as JsonResult;
+
+            if (result != null)
+            {
+                //// Json result data should not be null
+                Assert.IsNotNull(result.Data);
+            }
+        }
+        #endregion
+
+        #endregion
     }
 }

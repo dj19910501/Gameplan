@@ -869,7 +869,12 @@ namespace RevenuePlanner.Controllers
                         Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                     }
 
-
+                    if (result > 0)
+                    {
+                        Sessions.PlanId = plan.PlanId;
+                        //Create default Plan Improvement Campaign, Program
+                        int returnValue = CreatePlanImprovementCampaignAndProgram();
+                    }
                     return Json(new { id = Sessions.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully." }) });
                  
                 }
@@ -1802,8 +1807,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">used id of logged in user</param>  Added by Sohel Pathan on 31/12/2014 for PL ticket #1059
         /// <returns>Returns ApplyToCalendar action result.</returns>
         [HttpPost]
-        [ActionName("ApplyToCalendar")]
-        public ActionResult ApplyToCalendarPost(string UserId = "")
+     //   [ActionName("ApplyToCalendar")] 
+         //Modified By Komal Rawal for new UI
+        public ActionResult PublishPlan(string UserId = "")
         {
             try
             {
