@@ -4142,18 +4142,19 @@ function Quarter() {
                 ImpTacticId = name_Id[1].replace("M", "");
             }
         }
-
-        $('#popupType').css('display', 'none');
+        if (permission == "true") {
+            $('#popupType').css('display', 'block');
+        }
         $('#popupType').html(ul);
         var left = e.pageX;
         var target = $(e.target);
         var targetOffset = target.offset().top;
         var scrollPosition = $(window).scrollTop();
 
-        if ($('#popupType').css('display') == 'none') {
+        if ($('#popupType').css('display') != 'none') {
             if (scrollPosition <= targetOffset) {
                 $('#popupType').css({
-                    'display': 'block',
+                    //'display': 'block',
                     'top': targetOffset,
                     'left': left,
                 });
@@ -4163,15 +4164,15 @@ function Quarter() {
                 var contentHeight = $('#popupType').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
                 $('#popupType').css({
-                    'display': 'block',
+                   // 'display': 'block',
                     'top': targetBottomOffset,
                     'left': left,
                 });
             }
         }
-        else {
-            $('#popupType').css('display', 'none');
-        }
+        //else {
+        //    $('#popupType').css('display', 'none');
+        //}
         e.stopPropagation();
 
         ////new Plan.

@@ -77,7 +77,7 @@ body {
 
 /* added by kapil - #139 - to resolve popup issue */
 .row-fluid.calc-height {
-    min-width: 1280px;
+    /*min-width: 1280px;*/
 }
 /*PL#1441 Added by Dashrath Prajapati*/
 .row-fluid.calc-height-login {
