@@ -1175,7 +1175,7 @@ function fillCardProgramDropDown(campaignId, type) {
         //myApp.showPleaseWait();
         var SearchString = $('#txtSearch').val();
        
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain; //PL #1399 Dashrath Prajapati
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
         //LoadPagination();
@@ -1188,7 +1188,7 @@ function fillCardProgramDropDown(campaignId, type) {
         SearchString = $('#txtSearch').val();
         //myApp.showPleaseWait();
         @*var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;*@
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain; //PL #1399 Dashrath Prajapati
         $("#dvCardSectionData").load(_url);
 
         //myApp.hidePleaseWait();

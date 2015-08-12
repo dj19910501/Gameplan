@@ -102,8 +102,8 @@ gantt._render_grid_item = function (t) {
 
         var a, s, r = i == e.length - 1, o = e[i];
         if ("add" == o.name && i == e.length - 1) {
-              if (t.type == "Plan" && t.Permission == true) {
-                  s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text  + "' Permission='" + t.Permission + "'></div>  ";
+            if (t.type == "Plan" && t.Permission == true) {
+                s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' Permission='" + t.Permission + "'></div>  ";
             }
 
             else if (t.type == "Campaign" && t.Permission == true) {
@@ -120,21 +120,15 @@ gantt._render_grid_item = function (t) {
 
             else if (t.type == "Imp Tactic" && t.Permission == true) {
                 s = " <div id='" + t.type + "' class='gantt_add' Name='" + t.id + "' aria-label='" + t.text + "' Permission='" + t.Permission + "' ></div>  ";
-            }           
+            }
+            else {
+                s = "";
+            }
         }
         else {
             debugger;
             (s = o.template ? o.template(t) : t[o.name],
             s instanceof Date && (s = this.templates.date_grid(s)), s = "<div class='gantt_tree_content'>" + s + "</div>");
-            //debugger;
-            //if (s = o.template) {
-            //    debugger;
-            //    o.template(t);
-            //}
-            //else {
-            //    debugger;
-            //    t[o.name], s instanceof Date && (s = this.templates.date_grid(s)), s = "<div class='gantt_tree_content'>" + s + "</div>";
-            //}
         }
         var d = "gantt_cell" + (r ? " gantt_last_cell" : ""), l = ""; if (o.tree) {
             for (var h = 0; h < t.$level; h++) l += this.templates.grid_indent(t);
@@ -941,13 +935,13 @@ gantt._render_grid_item = function (t) {
     }
     return e.join("")
 },
-gantt._render_tasks_scales = function (val) {   
+gantt._render_tasks_scales = function (val) {
     var width_Offset;
     if (val != null) {
         width_Offset = val;
     }
     else {
-        width_Offset = this.$task.offsetWidth;         
+        width_Offset = this.$task.offsetWidth;
     }
     this._init_tasks_range(), this._scroll_resize(), this._set_sizes();
     var t = this._scale_helpers,
@@ -964,11 +958,11 @@ gantt._render_tasks_scales = function (val) {
     this.$task_scale.style.height = this.config.scale_height - 1 + "px", this.$task_data.style.width = this.$task_scale.style.width = i.full_width + this.$scroll_ver.offsetWidth + "px", this.$task_links.style.width = this.$task_bars.style.width = i.full_width + "px", e = a.join(""), this.$task_scale.innerHTML = e
 },
 
-gantt._render_bg_line = function (t) {  
+gantt._render_bg_line = function (t) {
     for (var e = gantt._tasks, n = e.count, i = [], a = 0; n > a; a++) {
         var s = e.width[a]
-            r = "width:" + s + "px;",
-            o = "gantt_task_cell" + (a == n - 1 ? " gantt_last_cell" : "");
+        r = "width:" + s + "px;",
+        o = "gantt_task_cell" + (a == n - 1 ? " gantt_last_cell" : "");
         h = this.templates.task_cell_class(t, e.trace_x[a]), h && (o += " " + h);
         var d = "<div class='" + o + "' style='" + r + "'></div>";
         i.push(d)

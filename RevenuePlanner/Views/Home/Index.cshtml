@@ -816,7 +816,7 @@
         TacticTypeids: [],
         StatusIds: []
     };
-
+    var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
 
     var isFirstCall = true;
@@ -1071,6 +1071,7 @@
 
                 $(".grid_Search").click(function (e) {              
                     var id = $(this).attr('alt');
+                    gridSearchFlag = 1;
                     DisplayEditablePopup(id);
                 });
             }
@@ -2847,6 +2848,22 @@ function Quarter() {
                       $("#modal-container-186470").addClass("transition-close");
                       $("#modal-container-186470").removeClass("transition_y");
                       addDefaultModalPopupBackgroungColor();
+            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                    $('body').removeClass('bodyOverflow');
+                    if (gridSearchFlag == 1) {
+                        LoadPlanGrid();
+                        gridSearchFlag = 0;
+                        return true;
+                    }
+                    else {
+                        var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
+                        $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
+                        return true;
+                    }
+                }
+            }
+
                       RefreshCurrentTab();
                       if (!isDataModified) {
                           $('body').removeClass('bodyOverflow');
@@ -2882,8 +2899,8 @@ function Quarter() {
                       $(".gantt_ver_scroll").scroll(function () {
                           $('#popupType').css('display', 'none');
                       });
-                  });
 
+        });
               }
 
               //Scrip Addded By Bhavesh for Inspect Popup
@@ -4125,18 +4142,19 @@ function Quarter() {
                 ImpTacticId = name_Id[1].replace("M", "");
             }
         }
-
-        $('#popupType').css('display', 'none');
+        if (permission == "true") {
+            $('#popupType').css('display', 'block');
+        }
         $('#popupType').html(ul);
         var left = e.pageX;
         var target = $(e.target);
         var targetOffset = target.offset().top;
         var scrollPosition = $(window).scrollTop();
 
-        if ($('#popupType').css('display') == 'none') {
+        if ($('#popupType').css('display') != 'none') {
             if (scrollPosition <= targetOffset) {
                 $('#popupType').css({
-                    'display': 'block',
+                    //'display': 'block',
                     'top': targetOffset,
                     'left': left,
                 });
@@ -4146,15 +4164,15 @@ function Quarter() {
                 var contentHeight = $('#popupType').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
                 $('#popupType').css({
-                    'display': 'block',
+                   // 'display': 'block',
                     'top': targetBottomOffset,
                     'left': left,
                 });
             }
         }
-        else {
-            $('#popupType').css('display', 'none');
-        }
+        //else {
+        //    $('#popupType').css('display', 'none');
+        //}
         e.stopPropagation();
 
         ////new Plan.
