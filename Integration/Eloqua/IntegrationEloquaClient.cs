@@ -47,7 +47,8 @@ namespace Integration.Eloqua
         private Dictionary<string, string> _mappingTactic { get; set; }
         private Dictionary<string, string> _mappingImprovementTactic { get; set; }
         private Dictionary<Guid, string> _mappingUser { get; set; }
-        private Dictionary<string, string> _mappingCustomFields { get; set; }  // Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+        private List<CustomFiledMapping> _mappingCustomFields { get; set; }  // Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+        private List<CampaignNameConvention> SequencialOrderedTableList { get; set; }
         private List<string> IntegrationInstanceTacticIds { get; set; }
         private List<string> campaignMetadata { get; set; }
         private Dictionary<string, string> customFields { get; set; }
@@ -499,18 +500,25 @@ namespace Integration.Eloqua
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
                 _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
 
-                var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
-                var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
-                var clientApplicationActivityList = (from c in clientActivityList
-                                                     join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
-                                                     select new
-                                                     {
-                                                         Code = ca.Code,
-                                                         ActivityTitle = ca.ActivityTitle,
-                                                         clientId = c.ClientId
-                                                     }).Select(c => c).ToList();
-                IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
+                if (_CustomNamingPermissionForInstance)
+                {
+                    // Get Sequence of custom name for tactic
+                    SequencialOrderedTableList = db.CampaignNameConventions.Where(c => c.ClientId == _clientId && c.IsDeleted == false).OrderBy(c => c.Sequence).ToList();
 
+                    var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
+                    var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
+                    var clientApplicationActivityList = (from c in clientActivityList
+                                                         join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
+                                                         select new
+                                                         {
+                                                             Code = ca.Code,
+                                                             ActivityTitle = ca.ActivityTitle,
+                                                             clientId = c.ClientId
+                                                         }).Select(c => c).ToList();
+                    IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
+
+                }
+               
                 IntegrationInstanceTacticIds = new List<string>();
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for Integration Instance");
                 return false;
@@ -1176,7 +1184,7 @@ namespace Integration.Eloqua
                 titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId)) : (planTactic.TacticCustomName);
+                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic,SequencialOrderedTableList,_mappingCustomFields)) : (planTactic.TacticCustomName);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                 }
             }
@@ -1506,10 +1514,11 @@ namespace Integration.Eloqua
 
             foreach (KeyValuePair<string, string> mapping in mappingDataType)
             {
+                string value = string.Empty;
                 PropertyInfo propInfo = sourceProps.FirstOrDefault(property => property.Name.Equals(mapping.Key));
                 if (propInfo != null)
                 {
-                    string value = Convert.ToString(propInfo.GetValue(((T)obj), null));
+                    value = Convert.ToString(propInfo.GetValue(((T)obj), null));
                     if (mapping.Key == createdBy)
                     {
                         value = _mappingUser[Guid.Parse(value)];
@@ -1518,39 +1527,36 @@ namespace Integration.Eloqua
                     {
                         value = ConvertToUnixEpoch(Convert.ToDateTime(value)).ToString(); ////Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
                     }
-                    // Start - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
-                    else if (mapping.Key == costActual)
-                    {
-                        value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
-                    }
-                    // End - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
                     //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
                     else if (mapping.Key == tacticType)
                     {
                         value = ((Plan_Campaign_Program_Tactic)obj).TacticType.Title;
                     }
                     //// End - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
-
-                    if (campaignMetadata.Contains(mapping.Value))
-                    {
-                        keyvaluepair.Add(mapping.Value, value);
-                    }
-                    else
-                    {
-                        var customFieldId = customFields.Where(customField => customField.Value.Equals(mapping.Value)).Select(customField => customField).FirstOrDefault();
-                        if (customFieldId.Key != null && customFieldId.Value != null)
-                        {
-                            fieldValues.Add(new FieldValue { id = customFieldId.Key, type = "FieldValue", value = value });
-                        }
-                    }
                 }
                 // Start - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
                 else
                 {
-                    var mappedData = MapCustomField<T>(obj, sourceProps, mapping);
-                    if (mappedData != null)
+                    if (mapping.Key == costActual)
                     {
-                        fieldValues.Add(mappedData);
+                        value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
+                    }
+                    else
+                    {
+                        value = MapCustomField<T>(obj, sourceProps, mapping.Key);
+                    }
+                }
+                // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+                if (campaignMetadata.Contains(mapping.Value))
+                {
+                    keyvaluepair.Add(mapping.Value, value);
+                }
+                else
+                {
+                    var customFieldId = customFields.Where(customField => customField.Value.Equals(mapping.Value)).Select(customField => customField).FirstOrDefault();
+                    if (customFieldId.Key != null)
+                    {
+                        fieldValues.Add(new FieldValue { id = customFieldId.Key, type = "FieldValue", value = value });
                     }
                 }
                 // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
@@ -1574,7 +1580,7 @@ namespace Integration.Eloqua
         /// <param name="sourceProps">Array of properties for given obj</param>
         /// <param name="mapping">Mapping field item</param>
         /// <returns>returns object of FieldValue</returns>
-        private FieldValue MapCustomField<T>(object obj, PropertyInfo[] sourceProps, KeyValuePair<string, string> mapping)
+        private string MapCustomField<T>(object obj, PropertyInfo[] sourceProps, string key)
         {
             if (_mappingCustomFields != null)
             {
@@ -1594,19 +1600,14 @@ namespace Integration.Eloqua
                     {
                         EntityTypeId = Convert.ToString(propInfoCustom.GetValue(((T)obj), null));
                     }
-                    mappingKey = mapping.Key + "-" + EntityTypeId;
-
-                    if (_mappingCustomFields.ContainsKey(mappingKey))
+                    var mapobj = _mappingCustomFields.Where(map => map.EntityId == Convert.ToInt32(EntityTypeId) && map.CustomFieldId == Convert.ToInt32(key)).FirstOrDefault();
+                    if (mapobj != null)
                     {
-                        var customFieldId = customFields.Where(customField => customField.Value.Equals(mapping.Value)).Select(customField => customField).FirstOrDefault();
-                        if (customFieldId.Key != null && customFieldId.Value != null)
-                        {
-                            return new FieldValue { id = customFieldId.Key, type = "FieldValue", value = _mappingCustomFields[mappingKey] };
-                        }
+                        return mapobj.Value;
                     }
                 }
             }
-            return null;
+            return string.Empty;
         }
 
         //// Modified By: Maninder Singh Wadhva
@@ -1694,16 +1695,23 @@ namespace Integration.Eloqua
             {
                 if (EntityIdList.Count > 0)
                 {
-                    _mappingCustomFields = new Dictionary<string, string>();
+                    _mappingCustomFields = new List<CustomFiledMapping>();
                     string idList = string.Join(",", EntityIdList);
 
                     // In Eloqua, It uses MappingKey format like 'CustomfieldId-EntityId' (ex.: '56-39073') to retrieve customfield value from list in "MapCustomField" method.
                     String Query = "select distinct cast(Extent1.CustomFieldID as nvarchar) + '-' + cast(EntityId as nvarchar) as keyv, " +
+                        "cast([Extent1].[CustomFieldId] as nvarchar) as CustomFieldId," +
+                        "cast(EntityId as nvarchar) as EntityId," +
                         "case  " +
                            "    when A.keyi is not null then Extent2.AbbreviationForMulti " +
                            "    when Extent3.[Name]='TextBox' then Extent1.Value " +
                            "    when Extent3.[Name]='DropDownList' then Extent4.Value " +
-                        "End as ValueV " +
+                        "End as ValueV, " +
+                        "case  " +
+                           "    when A.keyi is not null then Extent2.AbbreviationForMulti" +
+                           "   when Extent3.[Name]='TextBox' then Extent1.Value " +
+                           "    when Extent3.[Name]='DropDownList' then CASE WHEN Extent4.Abbreviation IS nOT NULL THEN Extent4.Abbreviation ELSE Extent4.Value END" +
+                            "   END as CustomName " +
 
                         " from CustomField_Entity Extent1 " +
                         "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] AND [Extent2].[IsDeleted] = 0 " +
@@ -1732,7 +1740,7 @@ namespace Integration.Eloqua
 
                     while (ddr.Read())
                     {
-                        _mappingCustomFields.Add(!ddr.IsDBNull(0) ? ddr.GetString(0) : string.Empty, !ddr.IsDBNull(1) ? ddr.GetString(1) : string.Empty);
+                        _mappingCustomFields.Add(new CustomFiledMapping { CustomFieldId = !ddr.IsDBNull(1) ? Convert.ToInt32(ddr.GetString(1)) : 0, EntityId = !ddr.IsDBNull(2) ? Convert.ToInt32(ddr.GetString(2)) : 0, Value = !ddr.IsDBNull(3) ? Convert.ToString(ddr.GetString(3)) : string.Empty, CustomNameValue = !ddr.IsDBNull(4) ? Convert.ToString(ddr.GetString(4)) : string.Empty });
                     }
                     conn.Close();
                     mp.Dispose();
@@ -1839,7 +1847,7 @@ namespace Integration.Eloqua
             string customName = "";
             if (planTactic != null)
             {
-                customName = Common.GenerateCustomName(planTactic, planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId);
+                customName = Common.GenerateCustomName(planTactic, SequencialOrderedTableList, _mappingCustomFields);
             }
             return customName;
         }

@@ -50,7 +50,8 @@ namespace Integration.Salesforce
         private Dictionary<string, string> _mappingImprovementProgram { get; set; }
         private Dictionary<string, string> _mappingImprovementTactic { get; set; }
         private Dictionary<Guid, string> _mappingUser { get; set; }
-        private Dictionary<string, string> _mappingCustomFields { get; set; }      // Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+        private List<CustomFiledMapping> _mappingCustomFields { get; set; }  // Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
+        private List<CampaignNameConvention> SequencialOrderedTableList { get; set; }
         private int _integrationInstanceId { get; set; }
         private int _id { get; set; }
         private Guid _userId { get; set; }
@@ -251,11 +252,11 @@ namespace Integration.Salesforce
 
                             if (lstCustomFieldsprogram.Count > 0)
                             {
-                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToDictionary(c => c.Key, c => c.Value);
+                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
                             }
                             if (lstCustomFieldsCampaign.Count > 0)
                             {
-                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
                             }
                             // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                             planTactic = SyncTacticData(planTactic, ref sbMessage);
@@ -292,7 +293,7 @@ namespace Integration.Salesforce
                             _mappingCustomFields = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
                             if (lstCustomFieldsCampaign.Count > 0)
                             {
-                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                                _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
                             }
                             // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                             planProgram = SyncProgramData(planProgram, ref sbMessage);
@@ -817,16 +818,12 @@ namespace Integration.Salesforce
                                 {
                                     if (_mappingCustomFields != null)
                                     {
-                                        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToDictionary(c => c.Key, c => c.Value);
+                                        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
                                     }
                                     else
                                     {
                                         //lstCustomFieldsCampaign.ToList().ForEach(c=>_mappingCustomFields.Add(c.Key,c.Value));
-                                        _mappingCustomFields = new Dictionary<string, string>();
-                                        foreach (var item in lstCustomFieldsCampaign)
-                                        {
-                                            _mappingCustomFields.Add(item.Key.ToString(), item.Value.ToString());
-                                        }
+                                        _mappingCustomFields = lstCustomFieldsCampaign;
                                     }
                                 }
                                 _parentId = CreateCampaign(planCampaign);
@@ -870,16 +867,12 @@ namespace Integration.Salesforce
                                 {
                                     if (_mappingCustomFields != null)
                                     {
-                                        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsProgram).ToDictionary(c => c.Key, c => c.Value);
+                                        _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsProgram).ToList();
                                     }
                                     else
                                     {
                                         //lstCustomFieldsProgram.ToList().ForEach(c=>_mappingCustomFields.Add(c.Key,c.Value));
-                                        _mappingCustomFields = new Dictionary<string, string>();
-                                        foreach (var item in lstCustomFieldsProgram)
-                                        {
-                                            _mappingCustomFields.Add(item.Key.ToString(), item.Value.ToString());
-                                        }
+                                        _mappingCustomFields = lstCustomFieldsProgram;
                                     }
                                 }
 
@@ -1712,17 +1705,24 @@ namespace Integration.Salesforce
                 {
                     BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
                     _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
-                    var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
-                    var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
-                    var clientApplicationActivityList = (from c in clientActivityList
-                                                         join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
-                                                         select new
-                                                         {
-                                                             Code = ca.Code,
-                                                             ActivityTitle = ca.ActivityTitle,
-                                                             clientId = c.ClientId
-                                                         }).Select(c => c).ToList();
-                    IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
+
+                    if (_CustomNamingPermissionForInstance)
+                    {
+                        // Get sequence for custom name of tactic
+                        SequencialOrderedTableList = db.CampaignNameConventions.Where(c => c.ClientId == _clientId && c.IsDeleted == false).OrderBy(c => c.Sequence).ToList();
+                        var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == _clientId).ToList();
+                        var ApplicationActivityList = objBDSservice.GetClientApplicationactivitylist(_applicationId);
+                        var clientApplicationActivityList = (from c in clientActivityList
+                                                             join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
+                                                             select new
+                                                             {
+                                                                 Code = ca.Code,
+                                                                 ActivityTitle = ca.ActivityTitle,
+                                                                 clientId = c.ClientId
+                                                             }).Select(c => c).ToList();
+                        IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(clientActivity => clientActivity.Code == Enums.clientAcivity.CustomCampaignNameConvention.ToString()).Any();
+                    }
+
                     return false;
                 }
                 catch (Exception ex)
@@ -2708,7 +2708,7 @@ namespace Integration.Salesforce
 
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
                     var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToDictionary(c => c.Key, c => c.Value);
+                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
 
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
@@ -2765,7 +2765,7 @@ namespace Integration.Salesforce
 
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
                     var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToDictionary(c => c.Key, c => c.Value);
+                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
@@ -2943,7 +2943,7 @@ namespace Integration.Salesforce
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic, _clientId)) : (planTactic.TacticCustomName);
+                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic,SequencialOrderedTableList,_mappingCustomFields)) : (planTactic.TacticCustomName);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                     int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == titleMappedValue).FirstOrDefault().Length;
                     string customvalue = planTactic.TacticCustomName;
@@ -3169,10 +3169,11 @@ namespace Integration.Salesforce
 
             foreach (KeyValuePair<string, string> mapping in mappingDataType)
             {
+                string value = string.Empty;
                 PropertyInfo propInfo = sourceProps.FirstOrDefault(property => property.Name.Equals(mapping.Key));
                 if (propInfo != null)
                 {
-                    string value = Convert.ToString(propInfo.GetValue(((T)obj), null));
+                    value = Convert.ToString(propInfo.GetValue(((T)obj), null));
                     if (mapping.Key == status)
                     {
                         value = GetSalesForceStatus(value);
@@ -3187,12 +3188,6 @@ namespace Integration.Salesforce
                     {
                         value = Convert.ToDateTime(value).ToString("yyyy-MM-ddThh:mm:ss+hh:mm");
                     }
-                    // Start - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
-                    else if (mapping.Key == costActual)
-                    {
-                        value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
-                    }
-                    // End - Added by Sohel Pathan on 11/09/2014 for PL ticket #773
                     //// Start - Added by Sohel Pathan on 29/01/2015 for PL ticket #1113
                     else if (mapping.Key == tacticType)
                     {
@@ -3215,22 +3210,30 @@ namespace Integration.Salesforce
                 // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 else
                 {
-                    string customvalue = string.Empty;
-                    string customkey = string.Empty;
-                    int valuelength = 0;
-                    var mappedData = MapCustomField<T>(obj, sourceProps, mapping);
-                    if (mappedData != null)
+                    if (mapping.Key == costActual)
                     {
-                        if (mappedData.Length > 0)
+                        value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
+                        keyvaluepair.Add(mapping.Value, value);
+                    }
+                    else
+                    {
+                        int customid;
+                        if (Int32.TryParse(mapping.Key,out customid))
                         {
-                            customkey = Convert.ToString(mappedData[0]);
-                            valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
-                            customvalue = Convert.ToString(mappedData[1]);
-                            if (valuelength != 0)
+                            int valuelength = 0;
+                            value = MapCustomField<T>(obj, sourceProps, mapping.Key);
+                            if (value != string.Empty)
                             {
-                                customvalue = customvalue.Length > valuelength ? customvalue.Substring(0, valuelength - 1) : customvalue;
+                                if (value.Length > 0)
+                                {
+                                    valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
+                                    if (valuelength != 0)
+                                    {
+                                        value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
+                                    }
+                                    keyvaluepair.Add(mapping.Value, value);
+                                }
                             }
-                            keyvaluepair.Add(customkey, customvalue);
                         }
                     }
                 }
@@ -3255,13 +3258,12 @@ namespace Integration.Salesforce
         /// <param name="sourceProps">Array of properties for given obj.</param>
         /// <param name="mapping">Mapping field item</param>
         /// <returns>String array with two elements: one Key and one value, to be added in custom field maaping dictionary</returns>
-        private string[] MapCustomField<T>(object obj, PropertyInfo[] sourceProps, KeyValuePair<string, string> mapping)
+        private string MapCustomField<T>(object obj, PropertyInfo[] sourceProps, string Key)
         {
             if (_mappingCustomFields != null)
             {
                 if (_mappingCustomFields.Count > 0)
                 {
-                    string mappingKey = string.Empty;
                     string EntityType = ((T)obj).GetType().BaseType.Name;
                     string EntityTypeId = string.Empty;
                     PropertyInfo propInfoCustom = null;
@@ -3287,15 +3289,18 @@ namespace Integration.Salesforce
                     {
                         EntityTypeId = Convert.ToString(propInfoCustom.GetValue(((T)obj), null));
                     }
-                    mappingKey = EntityTypeInitial + "-" + EntityTypeId + "-" + mapping.Key;
-
-                    if (_mappingCustomFields.ContainsKey(mappingKey))
-                    {
-                        return new string[] { mapping.Value, _mappingCustomFields[mappingKey] };
-                    }
+                     var mapobj = _mappingCustomFields.Where(map => map.EntityId == Convert.ToInt32(EntityTypeId) && map.CustomFieldId == Convert.ToInt32(Key)).FirstOrDefault();
+                     if (mapobj != null)
+                     {
+                         return mapobj.Value;
+                     }
+                    //if (_mappingCustomFields.ContainsKey(mappingKey))
+                    //{
+                    //    return new string[] { mapping.Value, _mappingCustomFields[mappingKey] };
+                    //}
                 }
             }
-            return null;
+            return string.Empty;
         }
 
         private string GetSalesForceStatus(string status)
@@ -3333,10 +3338,10 @@ namespace Integration.Salesforce
         /// <param name="EntityIdList">List of Entity Ids with which Custom Fields are associated like PlanCampaignIds for Campaign Entity Type</param>
         /// <param name="EntityType">Type of Entity with which Custom Fields are associated like Campaign, Program or Tactic</param>
         /// <returns>returns dictionary of custom field mapping</returns>
-        private Dictionary<string, string> CreateMappingCustomFieldDictionary(List<int> EntityIdList, string EntityType)
+        private List<CustomFiledMapping> CreateMappingCustomFieldDictionary(List<int> EntityIdList, string EntityType)
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            Dictionary<string, string> CustomFieldsList = new Dictionary<string, string>();
+            List<CustomFiledMapping> CustomFieldsList = new List<CustomFiledMapping>();
             try
             {
                 if (EntityIdList.Count > 0)
@@ -3344,11 +3349,18 @@ namespace Integration.Salesforce
                     string idList = string.Join(",", EntityIdList);
 
                 String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
+                    "cast([Extent1].[CustomFieldId] as nvarchar) as CustomFieldId," +
+                    "cast(EntityId as nvarchar) as EntityId," +
                     "case  " +
                        "    when A.keyi is not null then Extent2.AbbreviationForMulti " +
                        "    when Extent3.[Name]='TextBox' then Extent1.Value " +
                        "    when Extent3.[Name]='DropDownList' then Extent4.Value " +
-                    "End as ValueV " +
+                    "End as ValueV , " +
+                        "case  " +
+                           "    when A.keyi is not null then Extent2.AbbreviationForMulti" +
+                           "   when Extent3.[Name]='TextBox' then Extent1.Value " +
+                           "    when Extent3.[Name]='DropDownList' then CASE WHEN Extent4.Abbreviation IS nOT NULL THEN Extent4.Abbreviation ELSE Extent4.Value END" +
+                            "   END as CustomName" +
 
                     " from CustomField_Entity Extent1 " +
                         "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] AND [Extent2].[IsDeleted] = 0 " +
@@ -3378,7 +3390,8 @@ namespace Integration.Salesforce
 
                 while (ddr.Read())
                 {
-                        CustomFieldsList.Add(!ddr.IsDBNull(0) ? ddr.GetString(0) : string.Empty, !ddr.IsDBNull(1) ? ddr.GetString(1) : string.Empty);
+                    CustomFieldsList.Add(new CustomFiledMapping { CustomFieldId = !ddr.IsDBNull(1) ? Convert.ToInt32(ddr.GetString(1)) : 0, EntityId = !ddr.IsDBNull(2) ? Convert.ToInt32(ddr.GetString(2)) : 0, Value = !ddr.IsDBNull(3) ? Convert.ToString(ddr.GetString(3)) : string.Empty, CustomNameValue = !ddr.IsDBNull(4) ? Convert.ToString(ddr.GetString(4)) : string.Empty });    
+                    
                 }
                 conn.Close();
                 mp.Dispose();

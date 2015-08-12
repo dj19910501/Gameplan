@@ -308,37 +308,23 @@ namespace Integration.Helper
         /// <param name="objTactic">Contains details of tactic</param>
         /// <param name="CustomFields">Contains details of custom fields of particular tactic</param>
         /// <returns></returns>
-        public static string GenerateCustomName(Plan_Campaign_Program_Tactic objTactic, Guid clientId)
+        public static string GenerateCustomName(Plan_Campaign_Program_Tactic objTactic, List<CampaignNameConvention> SequencialOrderedTableList, List<CustomFiledMapping> mappingCustomFields)
         {
             StringBuilder customTacticName = new StringBuilder();
             if (objTactic != null)
             {
-                MRPEntities db = new MRPEntities();
-
                 //Fetch custom name convention sequence
-                List<CampaignNameConvention> SequencialOrderedTableList = db.CampaignNameConventions.Where(c => c.ClientId == clientId && c.IsDeleted == false).OrderBy(c => c.Sequence).ToList();
+
                 if (SequencialOrderedTableList.Count > 0)
                 {
-                    var customFieldsForSequencialOrderedList = db.CustomField_Entity.ToList().Where(cf => SequencialOrderedTableList.Select(a => a.CustomFieldId).ToList().Contains(cf.CustomFieldId) && cf.EntityId == objTactic.PlanTacticId).ToList().Select(cf => new
-                    {
-                        CustomFieldId = cf.CustomFieldId,
-                        Type = cf.CustomField.CustomFieldType.Name,
-                        Abbreviation = string.Compare(cf.CustomField.CustomFieldType.Name, Enums.CustomFieldType.TextBox.ToString(), true) == 0 ? cf.Value : !string.IsNullOrEmpty(cf.CustomField.CustomFieldOptions.Where(cfo => cfo.IsDeleted == false && cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault()) ? cf.CustomField.CustomFieldOptions.Where(cfo => cfo.IsDeleted == false && cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Abbreviation).FirstOrDefault() : cf.CustomField.CustomFieldOptions.Where(cfo => cfo.IsDeleted == false && cfo.CustomFieldOptionId.ToString() == cf.Value).Select(v => v.Value).FirstOrDefault(),
-                        AbbreviationForMulti = cf.CustomField.AbbreviationForMulti
-                    });
-
                     foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
                     {
                         if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.CustomField.ToString())
                         {
-                            var objCustomField = customFieldsForSequencialOrderedList.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId).ToList();
-                            if (objCustomField.Count > 1)
+                            var customobj = mappingCustomFields.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId && a.EntityId == objTactic.PlanTacticId).FirstOrDefault();
+                            if (customobj != null)
                             {
-                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.FirstOrDefault().AbbreviationForMulti) + "_");
-                            }
-                            else if (objCustomField.FirstOrDefault() != null && !string.IsNullOrEmpty(objCustomField.FirstOrDefault().Abbreviation))
-                            {
-                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(objCustomField.FirstOrDefault().Abbreviation) + "_");
+                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(customobj.CustomNameValue) + "_");
                             }
                         }
                         else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
@@ -673,5 +659,11 @@ namespace Integration.Helper
         public DateTime TimeStamp { get; set; }
     }
 
-
+    public class CustomFiledMapping
+    {
+        public int CustomFieldId { get; set; }
+        public int EntityId { get; set; }
+        public string Value { get; set; }
+        public string CustomNameValue { get; set; }
+    }
 }
