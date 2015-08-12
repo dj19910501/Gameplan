@@ -3885,11 +3885,13 @@ namespace RevenuePlanner.Controllers
                 picpt.CreatedBy = Sessions.User.UserId;
                 picpt.CreatedDate = DateTime.Now;
                 db.Entry(picpt).State = EntityState.Added;
+                var Title = picpt.Title;
                 int result = db.SaveChanges();
                 //// Insert change log entry.
                 result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 if (result >= 1)
                 {
+                    TempData["SuccessMessageDeletedPlan"] = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", Title +" "+ "added");
                    // return Json(new { redirect = Url.Action("Assortment") }); 
                     //Modified By Komal rawal for #1432
                     return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId, isGridView = true }) });
