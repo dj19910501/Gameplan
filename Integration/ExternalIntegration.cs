@@ -149,9 +149,9 @@ namespace Integration
                 var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _id).FirstOrDefault();
                 if (Instance != null && Instance.IsActive)
                 {
-                    if (Instance.LastSyncStatus != Enums.SyncStatus.InProgress.ToString())
+                    if (Instance.LastSyncStatus != Enums.SyncStatusValues[Enums.SyncStatus.InProgress.ToString()].ToString())
                     {
-                        Instance.LastSyncStatus = Enums.SyncStatus.InProgress.ToString();
+                        Instance.LastSyncStatus = Enums.SyncStatusValues[Enums.SyncStatus.InProgress.ToString()].ToString();
                         db.Entry(Instance).State = EntityState.Modified;
                         int resulValue = db.SaveChanges();
                         Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Instance started - Initiated by Sync Now or Scheduler");

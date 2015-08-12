@@ -156,6 +156,11 @@ namespace Integration.Helper
             InProgress
         }
 
+        public static Dictionary<string, string> SyncStatusValues = new Dictionary<string, string>()
+        {
+             {SyncStatus.InProgress.ToString(), "In-Progress"}
+        };
+
         /// <summary>
         /// IntegrationInstance Message Operation
         /// </summary>
