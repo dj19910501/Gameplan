@@ -46,8 +46,8 @@ namespace Integration.Helper
         public static string msgNotConnectToExternalServer = "Error: Could not connect to Integration Instance External Server";
         public static string msgRequiredColumnNotExistEloquaPullResponse = "Error: Response doesn't contains EloquaCampaignID or ExternalCampaignID or ResponseDateTime columns";
         public static string msgFileNotFound = "File not found";
-        public static string msgMappingNotFoundForSalesforcePullResponse = "Error: Mapping not found for CampaignId or FirstRespondedDate or Status";
-        public static string msgMappingNotFoundForSalesforcePullCW = "Error: Mapping not found for CampaignId or CloseDate or Amount or StageName or Response Date or Last Modified Date";
+        public static string msgMappingNotFoundForSalesforcePullResponse = "Mapping not found for CampaignId or FirstRespondedDate or Status";
+        public static string msgMappingNotFoundForSalesforcePullCW = "Mapping not found for CampaignId or CloseDate or Amount or StageName or Response Date or Last Modified Date";
         public static string msgMappingNotFoundForEloquaPullMQL = "Error: Mapping not found for CampaignId or MQLDateId or ViewId or ListId";
         public static string msgChildLevelError = "Error: Error occurred while processing Tactic/Improvement Tactic.";
         public static readonly int CustomNameLimitSet = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CustomNameLimitSet"]); ////Added by :- Pratik Chauhan on 04/02/2015 for PL ticket #1147

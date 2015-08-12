@@ -175,6 +175,7 @@ namespace Integration
                     instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
                     db.Entry(instanceLogStart).State = EntityState.Added;
                     Instance.LastSyncStatus = StatusResult.Error.ToString();
+                    instanceLogStart.SyncEnd = DateTime.Now;
                     db.Entry(Instance).State = EntityState.Modified;
                     int resulValue = db.SaveChanges();
                     Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
