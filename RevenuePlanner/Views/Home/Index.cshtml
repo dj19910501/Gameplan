@@ -403,16 +403,17 @@
                 <a href="#"><<&nbsp;<span>hide</span></a>
             </div>
         </div>
+@if (IsPlanCreateAuthorized)
+{
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
 
             <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
             <div class="wraper-btns cf">
-                @* @if (IsTacticActualsAddEditAuthorized)
-                {*@
+               
                 <div id="divAddPlan">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("CreatePlan", "Plan")'" style="min-width:90%">Create New Plan</button>
                 </div>
-                @* }*@
+               
                 @* <div class="span6" id="divPlanEditButtonHome">
                     <!-- change by kunal for edit plan  -->
                     <!-- start -->
@@ -439,6 +440,7 @@
                 </div>*@
             </div>
         </div>
+}
 
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsPlanSummary">
 
@@ -510,7 +512,11 @@
 
     <!-- Sidebar Block Starts -->
     <div id="sidebar" class="span2 sidebar">
+@if (IsPlanCreateAuthorized || activeMenu.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower())
+{
         <div class="WelcomeMessageBorder"></div>
+}
+
         <div class="sidebar-section scroll-section">
             <div style="width: 100%;">
                 <div class="width50 float-left ">
@@ -684,7 +690,7 @@
     <div class="calender-view-nav">
         <ul class="nav nav-tabs new-margin no-position" id="PlanTab">
             <li class="active pull-left" id="liCalender">
-                <a>CALENDER VIEW</a>
+                <a>CALENDAR VIEW</a>
             </li>
             <li class="pull-left" id="liGrid">
                 <a>GRID VIEW</a>
