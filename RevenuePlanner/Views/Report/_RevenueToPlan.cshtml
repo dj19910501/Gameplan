@@ -65,7 +65,7 @@
         BackChildLabel = '@TempData["BackChildLabel"]';
         BackId = '@TempData["BackId"]';*@
         
-        if (typeof BackFwdRevenueList !== 'undefined') {
+        if (typeof BackFwdRevenueList !== 'undefined' && BackFwdRevenueList.length > 0) {
             var _backfwdvar = BackFwdRevenueList[BackFwdRevenueList.length - 1];
             BackParentLabel = _backfwdvar.BackParentLabel;
             BackChildLabel = _backfwdvar.BackChildLabel;
