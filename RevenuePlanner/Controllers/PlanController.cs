@@ -9973,8 +9973,7 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Projected Stage Value," + MQLTitle + ",Revenue</param>");
                 strHeader.Append(" </call></beforeInit>");
 
-                strHeader.Append("<column width='325' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
-
+                strHeader.Append("<column width='330' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
                 strHeader.Append("<column type='ro' align='center' id='add' width='50' ></column>");
                 strHeader.Append("<column type='ro' align='center' id='id' >id</column>");
                 strHeader.Append("<column width='90' type='dhxCalendar' sort='date' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>");
@@ -9999,7 +9998,7 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append(xmlUserlist);
                 strHeader.Append("<column width='125' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
                 strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='mql'>#cspan</column>");
-                strHeader.Append("<column width='90' type='ron' sort='int' align='center' id='revenue'>#cspan</column>");
+                strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='revenue'>#cspan</column>");
                 strHeader.Append("</head>");
             }
             catch (Exception objException)

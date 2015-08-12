@@ -816,7 +816,7 @@
         TacticTypeids: [],
         StatusIds: []
     };
-
+    var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
 
     var isFirstCall = true;
@@ -1071,6 +1071,7 @@
 
                 $(".grid_Search").click(function (e) {              
                     var id = $(this).attr('alt');
+                    gridSearchFlag = 1;
                     DisplayEditablePopup(id);
                 });
             }
@@ -2847,6 +2848,22 @@ function Quarter() {
                       $("#modal-container-186470").addClass("transition-close");
                       $("#modal-container-186470").removeClass("transition_y");
                       addDefaultModalPopupBackgroungColor();
+            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                    $('body').removeClass('bodyOverflow');
+                    if (gridSearchFlag == 1) {
+                        LoadPlanGrid();
+                        gridSearchFlag = 0;
+                        return true;
+                    }
+                    else {
+                        var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
+                        $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
+                        return true;
+                    }
+                }
+            }
+
                       RefreshCurrentTab();
                       if (!isDataModified) {
                           $('body').removeClass('bodyOverflow');
@@ -2882,8 +2899,8 @@ function Quarter() {
                       $(".gantt_ver_scroll").scroll(function () {
                           $('#popupType').css('display', 'none');
                       });
-                  });
 
+        });
               }
 
               //Scrip Addded By Bhavesh for Inspect Popup

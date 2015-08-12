@@ -100,9 +100,33 @@
         //   HomeGrid.splitAt(1);
         HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
         HomeGrid.setColumnHidden(2, true);
+        //HomeGrid.forEachRow(function (id) {
+        //    var cost = HomeGrid.cells(id, 5).getValue();
 
+        //    HomeGrid.cells(id, 5).setValue(FormatNumber(cost, false));
+        //    var MQL = HomeGrid.cells(id, 9).getValue();
+
+        //    HomeGrid.cells(id, 9).setValue(GetAbberiviatedValue(MQL));
+        //    var Revenue = HomeGrid.cells(id, 10).getValue();
+
+        //    HomeGrid.cells(id, 10).setValue(FormatNumber(Revenue, false));
+        //});
     }
-   
+    function convertNumber(num) {
+        var finlval = 0;
+        var base = parseFloat(num.replace('$', ''));
+        if (num.toLowerCase().match(/k/)) {
+            return finlval = Math.round(base * 1000);
+        }
+        else if (num.toLowerCase().match(/m/)) {
+            return finlval = Math.round(base * 1000000);
+        }
+        else if (num.toLowerCase().match(/b/)) {
+            return finlval = Math.round(base * 1000000000);
+        }
+        else
+            return finlval = numb.replace('$', '');
+    }
     function ResizeGrid(wid) {
         $("#gridbox").attr("width", wid);
         HomeGrid.setSizes();
@@ -161,8 +185,15 @@
         var UpdateColumn;
         var UpdateVal;
 
+        if (stage == 1) {
 
+            //if (UpdateColumn == "Tactic Planned Cost") {
+            //    var numb = HomeGrid.cells(rowId, costindex).getValue();
+            //   // this.editor.obj.style.textAlign = "center";
+            //    this.editor.obj.value = convertNumber(numb);
+            //}
 
+        }
         if (stage == 2) // start edit Shipping column
         {
             // var combo = HomeGrid.getCombo(4);
@@ -268,6 +299,9 @@
                     dataType: 'json',
                     success: function (states) {
                         //  LoadPlanGrid();
+                        //if (UpdateColumn == "Tactic Planned Cost") {
+                        //    HomeGrid.cells(rowId, 5).setValue(FormatNumber(nValue, false));
+                        //}
                     }
                 });
             }
@@ -334,7 +368,7 @@
             $('#divMovetacticPopup').modal("hide");
         });
         $(".grid_add").click(function (e) {
-
+            gridSearchFlag = 1;
             var type = $(this).attr('id');
             var name = $(this).attr('alt');
             var title = $(this).attr('title');
@@ -346,12 +380,5 @@
     });
        // LoadImprovementGrid(CurrentPlanId);
     });
-    //Added By Komal Rawal for #1432
-    function LoadImprovementGrid(PlanID) {
       
-        @*var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
-        // $("#ImprovementGrid").empty();
-        $("#ImprovementGrid").load(url + '?id=' + PlanID);*@
-    }
-    //End
 </script>
