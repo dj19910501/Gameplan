@@ -34,7 +34,7 @@
     var BackHeadTitle = "";
     var SearchString = '';
     $(document).ready(function () {
-         @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
+        @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
         var _revProjected = '@revenue_Projected_Goal.Projected';
         @*var _revPercentage = '@revenue_Projected_Goal.Percentage';
@@ -64,8 +64,8 @@
         @*BackParentLabel = '@TempData["BackParentLabel"]';
         BackChildLabel = '@TempData["BackChildLabel"]';
         BackId = '@TempData["BackId"]';*@
-        
-        if (typeof BackFwdRevenueList !== 'undefined') {
+
+        if (typeof BackFwdRevenueList !== 'undefined' && BackFwdRevenueList.length > 0) {
             var _backfwdvar = BackFwdRevenueList[BackFwdRevenueList.length - 1];
             BackParentLabel = _backfwdvar.BackParentLabel;
             BackChildLabel = _backfwdvar.BackChildLabel;
@@ -147,7 +147,7 @@
 
             var _cardUrl = "@Url.Content("~/Report/LoadReportCardSectionPartial")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + childlabeltype + "&childId=" + childid + "&option=" + optionmain;
             $("#dvRevenueCardSection").load(_cardUrl);
-            
+
         }
 
     });
@@ -319,7 +319,7 @@
     // Add By Nishant Sheth
     function BtnBackClick() {
         myApp.showPleaseWait();
-        
+
         BackFwdRevenueList.splice(BackFwdRevenueList.length - 1, 1);
         var _BackFwdVar = BackFwdRevenueList[BackFwdRevenueList.length - 1];
 
@@ -495,7 +495,7 @@
         setBootstrapTooltip("#revProjected", _revProjected, 5, true);
         setBootstrapTooltip("#revGoalYTD", _revGoalYTD, 5, true);
         setBootstrapTooltip("#revGoalYear", _revGoalYear, 5, true);
-        
+
         if (_revActualPercentage == null || _revActualPercentage == 'undefined' || _revActualPercentage == '' || _revActualPercentage == 'NaN' || _revActualPercentage == '-NaN') {
             _formtPercentage = "0";
             $("#revActualPercentage").removeClass("greenLabel").removeClass("redLabel");

@@ -68,7 +68,7 @@
         @*BackParentLabel = '@TempData["ConvBackParentLabel"]';
         BackChildLabel = '@TempData["ConvBackChildLabel"]';
         BackId = '@TempData["ConvBackId"]';*@
-        if (typeof BackFwdConverstionList !== 'undefined') {
+        if (typeof BackFwdConverstionList !== 'undefined' && BackFwdConverstionList.length > 0) {
             var _backfwdvar = BackFwdConverstionList[BackFwdConverstionList.length - 1];
             BackParentLabel = _backfwdvar.BackParentLabel;
             BackChildLabel = _backfwdvar.BackChildLabel;
