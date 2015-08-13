@@ -403,19 +403,16 @@
                 <a href="#"><<&nbsp;<span>hide</span></a>
             </div>
         </div>
-@if (IsPlanCreateAuthorized)
-{
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
 
             <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
             <div class="wraper-btns cf">
                
-                <div id="divAddPlan">
+                @*<div id="divAddPlan">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("CreatePlan", "Plan")'" style="min-width:90%">Create New Plan</button>
-                </div>
+                    </div>*@
                
-                @* <div class="span6" id="divPlanEditButtonHome">
-                    <!-- change by kunal for edit plan  -->
+                <div id="divPlanEditButtonHome">
                     <!-- start -->
                     @{
                         if (Model.PlanId != null)
@@ -425,7 +422,7 @@
                             {
                                 CurrentPlanId = 0;
                             }
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
                         }
                         else
                         {
@@ -433,14 +430,13 @@
                             {
                                 CurrentPlanId = 0;
                             }
-                        <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">Edit Plan</button>
                         }
                     }
                     <!-- end -->
-                </div>*@
             </div>
         </div>
-}
+        </div>
 
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsPlanSummary">
 
@@ -512,11 +508,7 @@
 
     <!-- Sidebar Block Starts -->
     <div id="sidebar" class="span2 sidebar">
-@if (IsPlanCreateAuthorized || activeMenu.ToLower() == Enums.ActiveMenu.Plan.ToString().ToLower())
-{
         <div class="WelcomeMessageBorder"></div>
-}
-
         <div class="sidebar-section scroll-section">
             <div style="width: 100%;">
                 <div class="width50 float-left ">
@@ -537,8 +529,7 @@
                             <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                         </div>
                         <div id="accordion-element-Plan" class="accordion-body collapse">
-                            <ul class="scroll-list" id="ulSelectedPlans">
-                            </ul>
+                            <ul class="scroll-list" id="ulSelectedPlans"></ul>
                             <div class="list-tab">
                                 <ul id="PlanAllModule">
                                     <li><a onclick="BulkPlanOperation(true)">select all</a></li>
@@ -558,8 +549,7 @@
                         <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-Owner" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulSelectedOwner">
-                        </ul>
+                        <ul class="scroll-list" id="ulSelectedOwner"></ul>
                         <div class="list-tab">
                             <ul id="ulOwnerAllModule">
                                 <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
@@ -578,8 +568,7 @@
                         <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-TacticType" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulTacticType">
-                        </ul>
+                        <ul class="scroll-list" id="ulTacticType"></ul>
                         <div class="list-tab">
                             <ul id="TacticTypeAllModule">
                                 <li><a onclick="BulkTTOperation(true)">select all</a></li>
@@ -779,7 +768,8 @@
             <div class="row-fluid ">
                 <div class="span12">
                     <div id="modal-container-186470" class="modal-inspect-review hide fade modal-full-view" role="dialog" aria-labelledby="myModalLabel" aria- hidden="true" style="display: none; position: fixed; overflow: hidden;">
-                        <div style="margin: 30px auto !important">@* Modified for #1318*@
+                        <div style="margin: 30px auto !important">
+                            @* Modified for #1318*@
                             <div id="successMessage" class="alert alert-success messagewidth">
                                 <a class="close">×</a>
                                 <strong>Success.</strong> <span id="spanMessageSuccess"></span>
@@ -874,6 +864,7 @@
             $("#ImprovementGrid").hide();
             $("#divupcomingact").show();
             $("#liplanrequest").show();
+            $('.nav').removeClass('no-bottom-border');
             RefreshCurrentTab();
 
         }
@@ -883,6 +874,7 @@
             $("#divupcomingact").hide();
             $("#liplanrequest").hide();
             $("#divgridview").show();
+            $('.nav').addClass('no-bottom-border');
             $("#ImprovementGrid").show();
 
             //Call the function for grid view
@@ -2002,12 +1994,14 @@ function AjaxRequest() {
                     }
 
                     // To hide/show current plan edit button based on user plan edit permission
-                    if (CurrentPlanId > 0 && GetSelectedPlanNo == 1) {
-                        $("#divPlanEditButtonHome").show();
+                        if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                            $("#DivButtonsHome").show();
+                            $('.WelcomeMessageBorder').show();
                         GetCurrentPlanPermissionDetail();
                     }
                     else {
-                        $("#divPlanEditButtonHome").hide();
+                            $("#DivButtonsHome").hide();
+                            $('.WelcomeMessageBorder').hide();
                         //  $("#divAddActuals").hide();
                     }
 
@@ -2146,9 +2140,13 @@ function GetCurrentPlanPermissionDetail() {
             }
             else {
                 if (data.IsPlanEditable) {
+                        $("#DivButtonsHome").show();
+                        $('.WelcomeMessageBorder').show();
                     $("#isViewOnly").val(true);
                 }
                 else {
+                        $("#DivButtonsHome").hide();
+                        $('.WelcomeMessageBorder').hide();
                     $("#isViewOnly").val(false);
                 }
             }

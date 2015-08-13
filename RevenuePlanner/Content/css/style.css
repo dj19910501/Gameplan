@@ -15432,7 +15432,7 @@ width: 141px !important;
   border-top: 2px solid #c7c7c7;
   margin: 12px 0 0 20px;
   padding-left: 1px;
-  width: 98%;
+  /*width: 98%;*/
 }
 .suggest-tbl.grayContent-tacticTable th, .grayContent-tacticTable.suggest-tbl td {
       border-bottom: 2px solid #c7c7c7;

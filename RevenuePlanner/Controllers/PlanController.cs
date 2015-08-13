@@ -9116,7 +9116,7 @@ namespace RevenuePlanner.Controllers
                     });
 
                 }
-                if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0)
+                if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
                     TacticfilterList = programtactic.Where(pcptobj => pcptobj.IsDeleted == false &&
                                             (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
