@@ -9294,8 +9294,8 @@ namespace RevenuePlanner.Controllers
                                             CreatedBy = GetUserName(taskdata.CreatedBy),
                                             tactictypeid = taskdata.TacticTypeId,
                                             projectedstagevalue = taskdata.ProjectedStageValue,
-                                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true
-
+                                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                                            ProjectStage = taskdata.Stage.Title
                                         });
 
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
@@ -9309,6 +9309,7 @@ namespace RevenuePlanner.Controllers
                                                                                   new XElement("cell",  tactic.tactictypetitle),
                                                                                     new XElement("cell", tactic.CreatedBy),
                                                                                    new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
+                                                                       //new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.ProjectStage + " " + tactic.projectedstagevalue),
                                                                                     new XElement("cell", tactic.totalmql),
                                                                                      new XElement("cell", tactic.totalrevenue)));
 

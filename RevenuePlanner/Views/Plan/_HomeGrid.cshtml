@@ -6,11 +6,19 @@
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxTreeGrid.js")">
 </script>
-@*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid_split.js")">
-    </script>*@
+
+
 <style>
     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
         text-align: center;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+        width: 100% !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+        width: 100% !important;
     }
 </style>
 
@@ -36,7 +44,7 @@
                 <form>
 
                     <h2 class="primary-title source-sans-prosemibold resubmission_header">Moving a Tactic</h2>
-                    <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to move a tactic to a diffrent program called </label>
+                    <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to move a tactic to </label>
 
 
                     <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
@@ -93,13 +101,20 @@
         HomeGrid.setNumberFormat("$0,000.00", 5, ".", ",");
         HomeGrid.setNumberFormat("0,000.00", 9, ".", ",");
         HomeGrid.setNumberFormat("$0,000.00", 10, ".", ",");
+        HomeGrid.setImageSize(1, 1);
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
         HomeGrid.attachEvent("onDrag", doOnDrag);
         HomeGrid.attachEvent("onMouseOver", function () { return false });
+        HomeGrid.attachEvent("onBeforeDrag", function (id) {
+            if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
+            return true;                                          //allows dragging in any other case
+        });
+       // HomeGrid.setDragText("rows");
         //   HomeGrid.splitAt(1);
         HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
         HomeGrid.setColumnHidden(2, true);
+
         //HomeGrid.forEachRow(function (id) {
         //    var cost = HomeGrid.cells(id, 5).getValue();
 
@@ -140,25 +155,65 @@
             if (dragSourcePtype == dragTargettype) {
                 var splanid = HomeGrid.cells("plan." + sid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
                 var dplanid = HomeGrid.cells("plan." + tid.split(".")[1], HomeGrid.getColIndexById('id')).getValue();
+
+                var parentid = HomeGrid.getParentId(sid);
                 if (dplanid == splanid) {
+                    if (parentid != tid) {
+                        var DestinationMember = new Array();
+                        DestinationMember = HomeGrid.getAllSubItems(tid).split(',');
+
                     var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
                     var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
                     var tacticname = HomeGrid.cells(sid, 0).getValue();
+                        var dtactictitle = "";
+
+                        for (a in DestinationMember) {
+                            dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), 0).getValue();
+                            if (dtactictitle == tacticname) {
+                                alert("Tactic with same title already exist in Targeted Progarm.");
+                                return false;
+                            }
+
+                        }
+
                     ProgarmName = HomeGrid.cells(tid, 0).getValue();
                     $("#lipname").html(ProgarmName);
                     $("#hdnsourceid").val(sourseid);
                     $("#hdndestid").val(destinatinId);
                     $("#divMovetacticPopup").modal('show');
-
+                    }
+                    else {
+                        ProgarmName = HomeGrid.cells(tid, 0).getValue();
+                        alert("Tactic is already in " + ProgarmName+".");
+                    }
                 }
                 else
                     alert("Tactic can move only to same plan program."); return false;
             }
-            else
-                alert(sid.split(".")[0].toString() + " can not move to " + dragTargettype.toString()); return false;
+        else {
+                var stype = "";
+                var dtype = "";
+                if (sid.split(".")[0].toString() == "tact")
+                    stype = "Tactic";
+                else if (sid.split(".")[0].toString() == "prog")
+                    stype = "Program";
+                else if (sid.split(".")[0].toString() == "camp")
+                    stype = "Campaign";
+                else if (sid.split(".")[0].toString() == "plan")
+                    stype = "Plan";
+                if (dragTargettype.toString() == "tact")
+                    dtype = "Tactic";
+                else if (dragTargettype.toString() == "prog")
+                    dtype = "Program";
+                else if (dragTargettype.toString() == "camp")
+                    dtype = "Campaign";
+                else if (dragTargettype.toString() == "plan")
+                    dtype = "Plan";
+                alert(stype + " can not move to " + dtype); return false;
+            }
         }
         else {
-            alert("only tactic can move");
+            alert("Only tactic can Move.");
             return false;
         }
 
@@ -184,7 +239,8 @@
         var Id;
         var UpdateColumn;
         var UpdateVal;
-
+          var Colind = this.cell.cellIndex;
+            UpdateColumn = HomeGrid.getColLabel(Colind, 1);
         if (stage == 1) {
 
             //if (UpdateColumn == "Tactic Planned Cost") {
@@ -192,7 +248,10 @@
             //   // this.editor.obj.style.textAlign = "center";
             //    this.editor.obj.value = convertNumber(numb);
             //}
-
+            //if (UpdateColumn == "Projected Stage Value") {
+            //    var psv = HomeGrid.cells(rowId, 8).getValue().split(" ");
+            //    this.editor.obj.value = psv[psv.length-1];
+            //}
         }
         if (stage == 2) // start edit Shipping column
         {
@@ -205,8 +264,7 @@
             var stageindex = HomeGrid.getColIndexById('inq');
             // var value = HomeGrid.cells(rowId, index).getValue();
             // end
-            var Colind = this.cell.cellIndex;
-            UpdateColumn = HomeGrid.getColLabel(Colind, 1);
+          
             if (UpdateColumn == "" || UpdateColumn == null)
                 UpdateColumn = HomeGrid.getColLabel(Colind, 0);
             Id = HomeGrid.cells(rowId, idindex).getValue();
