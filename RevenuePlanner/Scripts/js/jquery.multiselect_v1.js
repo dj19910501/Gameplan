@@ -305,6 +305,13 @@
             function clickHandler() {
                 $('.dropdown-wrapper').css('display', 'none');
                 self[self._isOpen ? 'close' : 'open']();
+                var searchInput = self.menu.find('.ui-multiselect-filter input[type="search"]');
+                
+                if (typeof searchInput != 'undefined') {
+                    searchInput.val('');
+                    self.menu.find('ul li').css('display', 'list-item');
+
+                }
                 return false;
             }
 
