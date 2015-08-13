@@ -242,5 +242,73 @@ namespace RevenuePlanner.Test.MockHelpers
             return sbCustomRestrictions.ToString();
         }
         #endregion
+
+        #region "Get tactic list"
+        /// <summary>
+        /// Function to retrieve comma separated list of custom restrictions for Search filter
+        /// </summary>
+        /// <param name="userId">user id</param>
+        /// <returns></returns>
+        //Get tactic list for report
+        public static List<Plan_Campaign_Program_Tactic> GetTacticForReporting(bool isBugdet = false)
+        {
+            MRPEntities db = new MRPEntities();
+            //// Getting current year's all published plan for all custom fields of clientid of director.
+            List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
+            List<int> planIds = new List<int>();
+            List<Guid> ownerIds = new List<Guid>();
+            List<int> TactictypeIds = new List<int>();
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
+            {
+                planIds = Sessions.ReportPlanIds;
+            }
+
+            //// Get Tactic list.
+
+
+            if (isBugdet)
+            {
+                tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false &&
+                                                              planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                                                              ).ToList();
+            }
+            else
+            {
+                List<string> tacticStatus = Common.GetStatusListAfterApproved();
+                tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false &&
+                                                                  tacticStatus.Contains(tactic.Status) &&
+                                                                  planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                                                                  ).ToList();
+            }
+
+            //Added by Komal Rawal
+            if (Sessions.ReportOwnerIds != null && Sessions.ReportOwnerIds.Count > 0)
+            {
+                ownerIds = Sessions.ReportOwnerIds.Select(owner => new Guid(owner)).ToList();
+                tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
+                                                              ).ToList();
+            }
+
+
+            if (Sessions.ReportTacticTypeIds != null && Sessions.ReportTacticTypeIds.Count > 0)
+            {
+                TactictypeIds = Sessions.ReportTacticTypeIds;
+                tacticList = tacticList.Where(tactic => TactictypeIds.Contains(tactic.TacticTypeId)
+                                                              ).ToList();
+
+            }
+            //End
+
+            if (Sessions.ReportCustomFieldIds != null && Sessions.ReportCustomFieldIds.Count() > 0)
+            {
+                List<int> tacticids = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                List<CustomFieldFilter> lstCustomFieldFilter = Sessions.ReportCustomFieldIds.ToList();
+                tacticids = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, tacticids);
+                tacticList = tacticList.Where(tactic => tacticids.Contains(tactic.PlanTacticId)).ToList();
+            }
+
+            return tacticList;
+        }
+        #endregion
     }
 }

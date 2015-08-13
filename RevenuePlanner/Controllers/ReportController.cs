@@ -10278,10 +10278,13 @@ namespace RevenuePlanner.Controllers
             {
                 Enums.InspectStage resultCode = new Enums.InspectStage();
                 string strINQtageCode = Enums.InspectStage.ProjectedStageValue.ToString();
-                if (Code.Equals(strINQtageCode))
-                    resultCode = Enums.InspectStage.INQ;
-                else
-                    resultCode = (Enums.InspectStage)Enum.Parse(typeof(Enums.InspectStage), Code);
+                if (!string.IsNullOrEmpty(Code))
+                {
+                    if (Code.Equals(strINQtageCode))
+                        resultCode = Enums.InspectStage.INQ;
+                    else
+                        resultCode = (Enums.InspectStage)Enum.Parse(typeof(Enums.InspectStage), Code);
+                }
 
                 #region "Code for TOPRevenue"
                 #region "Declare Local Variables"
@@ -10497,7 +10500,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
             List<int> campaignlist = new List<int>();
             List<int> programlist = new List<int>();
-            List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
+            //List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -10505,7 +10508,7 @@ namespace RevenuePlanner.Controllers
 
 
             tacticlist = GetTacticForReporting();
-            Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+           // Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             // End By Nishant Sheth
             #endregion
             /// Declarion For Card Section 
@@ -10563,17 +10566,17 @@ namespace RevenuePlanner.Controllers
                 {
                     if (childlabelType == Common.RevenueCampaign)
                     {
-                        int campaignid = Convert.ToInt32(childId);
+                        int campaignid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                         _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(t => t).ToList();
                     }
                     else if (childlabelType == Common.RevenueProgram)
                     {
-                        int programid = Convert.ToInt32(childId);
+                        int programid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                         _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanProgramId == programid).Select(t => t).ToList();
                     }
                     else if (childlabelType == Common.RevenueTactic)
                     {
-                        int tacticid = Convert.ToInt32(childId);
+                        int tacticid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                         _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanTacticId == tacticid).Select(t => t).ToList();
                     }
                     else
