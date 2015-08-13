@@ -15209,6 +15209,7 @@ font-size: 24px !important;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 319px;
+    height:25px;
 }
   
 .n1-form-main .nl-field ul {
