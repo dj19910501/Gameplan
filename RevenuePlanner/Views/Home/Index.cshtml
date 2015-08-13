@@ -4525,6 +4525,9 @@ function () {
     $(".gantt_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
+
+    $('.gantt_hor_scroll').hide();
+
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
             var ganttwidth = $("#gridbox").width();
@@ -4585,6 +4588,8 @@ function () {
     $(".gantt_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
+
+    $('.gantt_hor_scroll').hide();
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
             var ganttwidth = $("#gridbox").width();
