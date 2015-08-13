@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
+using RevenuePlanner.Models;
 
 namespace RevenuePlanner.Test.Controllers
 {
