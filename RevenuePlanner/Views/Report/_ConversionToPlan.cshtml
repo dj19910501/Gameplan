@@ -118,12 +118,14 @@
             var HeadTitle = document.getElementById('head-title');
             if (BackHeadTitle == '') {
                 HeadTitle.innerHTML = 'Waterfall';
+                IsCardDetailsClick = false;//#1489
             }
             else {
                  HeadTitle.innerHTML = decodeURIComponent(BackHeadTitle);
             }
             $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
             if (BackHeadTitle == 'Waterfall') {
+                IsCardDetailsClick = false;//#1489
                 var marketingDiv = document.getElementById('div-mareketing-drp');
                 marketingDiv.style.display = "block";
 

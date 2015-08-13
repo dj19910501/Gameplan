@@ -358,9 +358,19 @@
         $('#ddlTacticRevenueToPlan').empty();
         fillProgramDropdown();
         //#1489
-
+        var id = '0';
+        var parentlabel = $("#ddlParentRevenueSummery").val();
         //var parentlabel = $("#ddlParentRevenueSummery").val();
         // var id = $("#ddlParentRevenueSummery").val();
+        var campId = $('#ddlCampaignRevenueToPlan').val();
+        var BackCampaignId = 0; //ForGet Back CampaignID
+
+        $(BackFwdRevenueList).each(function () {
+            if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueCampaign') {
+                BackCampaignId = this.BackId;
+            }
+
+        });
         if (parseInt($('#ddlCampaignRevenueToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
@@ -368,15 +378,39 @@
                 BackId: $('#ddlCampaignRevenueToPlan').val(),
                 HeadHireachy: ''
             }
-        } else {
+        }
+
+        else {
+
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (IsCardDetailsClick == true ? '@Common.RevenueCampaign' : ''),
+                BackId: campId > 0 ? campId : (IsCardDetailsClick == true ? (BackCampaignId > 0 ? BackCampaignId : 0) : 0),
+                HeadHireachy: ''
+            }
+
+        }
+        id = _BackFwdVar.BackId;
+        if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
+
+            if (parseInt(id) <= 0) {
+                var _BackFwdVar = {
+                    BackParentLabel: parentlabel,
+                    BackChildLabel: "",
+                    BackId: masterCustomFieldOptionId,
+                    HeadHireachy: ''
+                }
+            }
+        }
+        TimeFrameRevenueList.push(_BackFwdVar);
+        @*else {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
                 BackChildLabel: '',
                 BackId: '0',
                 HeadHireachy: ''
             }
-        }
-        TimeFrameRevenueList.push(_BackFwdVar);
+    }*@
         //}
     });
     $('#ddlProgramRevenueToPlan').change(function () {
@@ -385,11 +419,20 @@
         //#1489
         //if (IsCardDetailsClick == false) {
         //  BackFwdRevenueList.length = 0;
-
-        //var parentlabel = $("#ddlParentRevenueSummery").val();
+        var id = '0';
+        var parentlabel = $("#ddlParentRevenueSummery").val();
         // var id = $("#ddlParentRevenueSummery").val();
         var programId = $('#ddlProgramRevenueToPlan').val();
         var campId = $('#ddlCampaignRevenueToPlan').val();
+        var BackCampaignId = 0; //ForGet Back CampaignID
+
+        $(BackFwdRevenueList).each(function () {
+            if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueCampaign') {
+                BackCampaignId = this.BackId;
+            }
+
+        });
+
         if (parseInt($('#ddlProgramRevenueToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
@@ -398,12 +441,27 @@
                 HeadHireachy: ''
             }
         } else {
+
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
-                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : '',
-                BackId: campId > 0 ? campId : 0,
+                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (IsCardDetailsClick == true ? '@Common.RevenueCampaign' : ''),
+                BackId: campId > 0 ? campId : (IsCardDetailsClick == true ? (BackCampaignId > 0 ? BackCampaignId : 0) : 0),
                 HeadHireachy: ''
             }
+
+        }
+        id = _BackFwdVar.BackId;
+        if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
+
+            if (parseInt(id) <= 0) {
+                var _BackFwdVar = {
+                    BackParentLabel: parentlabel,
+                    BackChildLabel: "",
+                    BackId: masterCustomFieldOptionId,
+                    HeadHireachy: ''
+                }
+            }
+
         }
         TimeFrameRevenueList.push(_BackFwdVar);
         //}
@@ -413,12 +471,24 @@
         //#1489
         //if (IsCardDetailsClick == false) {
         //   BackFwdRevenueList.length = 0;
-
-        //var parentlabel = $("#ddlParentRevenueSummery").val();
+        var id = '0';
+        var parentlabel = $("#ddlParentRevenueSummery").val();
         // var id = $("#ddlParentRevenueSummery").val();
         var TacticId = $('#ddlTacticRevenueToPlan').val();
         var campId = $('#ddlCampaignRevenueToPlan').val();
         var ProgramId = $('#ddlProgramRevenueToPlan').val();
+
+        var BackCampaignId = 0; //ForGet Back CampaignID
+        var BackProgramId = 0; //ForGet Back ProgramID
+        $(BackFwdRevenueList).each(function () {
+            if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueCampaign') {
+                BackCampaignId = this.BackId;
+            }
+            if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueProgram') {
+                BackProgramId = this.BackId;
+            }
+        });
+
         if (parseInt($('#ddlTacticRevenueToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
@@ -429,24 +499,40 @@
         } else {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
-                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (programId > 0 ? '@Common.RevenueProgram' : ''),
-                BackId: programId > 0 ? programId : campId,
+                @*BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (programId > 0 ? '@Common.RevenueProgram' : ''),*@
+                BackChildLabel: programId > 0 ? '@Common.RevenueProgram' : (IsCardDetailsClick == true ? '@Common.RevenueProgram' : (campId > 0 ? '@Common.RevenueCampaign' : '')),
+                BackId: programId > 0 ? programId : (IsCardDetailsClick == true ? BackProgramId : (campId > 0 ? campId : BackCampaignId)),
                 HeadHireachy: ''
             }
+
+        }
+        id = _BackFwdVar.BackId;
+        if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
+
+            if (parseInt(id) <= 0) {
+                var _BackFwdVar = {
+                    BackParentLabel: parentlabel,
+                    BackChildLabel: "",
+                    BackId: masterCustomFieldOptionId,
+                    HeadHireachy: ''
+                }
+            }
+
         }
         TimeFrameRevenueList.push(_BackFwdVar);
         //}
     });
     $('#ddlParentRevenueSummery').change(function () {
         var _childValue = '0';
+        IsCardDetailsClick = false;
         if ($('#ddlParentRevenueSummery :selected').val() == '@Common.RevenueCampaign') {
             fillCardCampaignDropDown("", "");
         }
         ReloadRevenueToPlanByCustomField(_childValue);
 
-
     });
     $('#ddlChildRevenueToPlan').change(function () {
+
         var _childValue = $("#ddlChildRevenueToPlan").val();
         masterCustomFieldOptionId = _childValue;
         ReloadRevenueToPlanByCustomField(_childValue);
@@ -485,10 +571,13 @@
     }
     function LoadDataRevenueToPlanByCampaign() {
         myApp.showPleaseWait();
+
         var id = '0';
         var Type = '';
         var tacticId = $("#ddlTacticRevenueToPlan").val();
         var parentlabel = $("#ddlParentRevenueSummery").val();
+
+        if (IsCardDetailsClick == false) {
         if (tacticId > 0) {
             id = tacticId;
             Type = "@RevenuePlanner.Helpers.Common.RevenueTactic"
@@ -507,12 +596,33 @@
             Type = _BackHeadValues.BackChildLabel;
             id = _BackHeadValues.BackId;
         }
+        } else {
+
+            var BackCampaignId = 0;
+            var BackProgramId = 0;
+            var BackTacticId = 0;
+            $(BackFwdRevenueList).each(function () {
+                if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueCampaign') {
+                    BackCampaignId = this.BackId;
+                }
+                if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueProgram') {
+                    BackProgramId = this.BackId;
+                }
+                if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueTactic') {
+                    BackTacticId = this.BackId;
+                }
+            });
+            id = tacticId > 0 ? tacticId : (BackTacticId > 0 ? BackTacticId : (programId > 0 ? programId : (BackProgramId > 0 ? BackProgramId : (campaignId > 0 ? campaignId : BackCampaignId))));
+            Type = tacticId > 0 ? '@Common.RevenueTactic' : (BackTacticId > 0 ? '@Common.RevenueTactic' : (programId > 0 ? '@Common.RevenueProgram' : (BackProgramId > 0 ? '@Common.RevenueProgram' : (campaignId > 0 ? '@Common.RevenueCampaign' : '@Common.RevenueCampaign'))));
+        }
         if ((parentlabel.indexOf('@Common.TacticCustomTitle') > -1 || parentlabel.indexOf('@Common.CampaignCustomTitle') > -1 || parentlabel.indexOf('@Common.ProgramCustomTitle') > -1)) {
+
             if (id > 0) {
                 parentlabel = '@Common.RevenueCampaign';
             }
             if (parseInt(id) <= 0) {
                 id = masterCustomFieldOptionId;
+                Type = "";
             }
 
         }

@@ -339,6 +339,7 @@
     /// Add By Nishant Sheth
     /// Desc: For card details section
     function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _revActual_Projected, _revProjected, _revGoalYTD, _revGoalYear, _revActualPercentage, _revActualPercentageIsnegative, _revProjectedPercentage, _revProjectedPercentageIsnegative) {
+        IsCardDetailsClick = true;
         var _BackFwdVar = {
             BackParentLabel: parentlabel,
             BackChildLabel: Type,
@@ -404,6 +405,7 @@
             }
         }
         else if (masterlabel == '@Common.CampaignCustomTitle') {
+            //masterCustomFieldOptionId = id;
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
@@ -440,6 +442,7 @@
             }
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
+           // masterCustomFieldOptionId = id;
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
@@ -473,6 +476,7 @@
             //  $("#ddlTacticRevenueToPlan").css('display', '');
             $("#btnMultiselect_ddlTacticRevenueToPlan").css('display', '');
             fillCardTacticDropDown(id, "");
+            masterCustomFieldOptionId = id;
         }
         //myApp.hidePleaseWait();
     }
