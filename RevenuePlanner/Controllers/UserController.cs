@@ -285,115 +285,116 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        #region Security Question
-
-        /// <summary>
-        /// Security Question
-        /// </summary>
-        /// <returns> return SecurityQuestion View</returns>
-        public ActionResult SecurityQuestion()
-        {
-            // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
-            SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
-            try
-            {
-                BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-                var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
-                if (!string.IsNullOrEmpty(Sessions.User.Answer)) //PL #1457 Security question error during reset password :- added by dasharth prajapati 
-                {
-                    objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
-                }
+        //Commented By Komal Rawal for #1457
+        //#region Security Question
+       
+        ///// <summary>
+        ///// Security Question
+        ///// </summary>
+        ///// <returns> return SecurityQuestion View</returns>
+        //public ActionResult SecurityQuestion()
+        //{
+        //    // Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
+        //    ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+        //    SecurityQuestionListModel objSecurityQuestionListModel = new SecurityQuestionListModel();
+        //    try
+        //    {
+        //        BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        //        var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+        //        if (!string.IsNullOrEmpty(Sessions.User.Answer)) //PL #1457 Security question error during reset password :- added by dasharth prajapati 
+        //        {
+        //            objSecurityQuestionListModel.Answer = Common.Decrypt(Sessions.User.Answer);
+        //        }
               
-                objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
-                objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+        //        objSecurityQuestionListModel.SecurityQuestionId = Convert.ToInt32(Sessions.User.SecurityQuestionId);
+        //        objSecurityQuestionListModel.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-            }
+        //        //To handle unavailability of BDSService
+        //        if (e is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
+        //    }
 
-            return View(objSecurityQuestionListModel);
-        }
+        //    return View(objSecurityQuestionListModel);
+        //}
 
-        /// <summary>
-        /// Post : security question view
-        /// <param name="form">Security Question Data</param>
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost]
-        public ActionResult SecurityQuestion(SecurityQuestionListModel form)
-        {
-            // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
-            ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
+        ///// <summary>
+        ///// Post : security question view
+        ///// <param name="form">Security Question Data</param>
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpPost]
+        //public ActionResult SecurityQuestion(SecurityQuestionListModel form)
+        //{
+        //    // Added by Sohel Pathan on 25/06/2014 for PL ticket #537 to implement user permission Logic
+        //    ViewBag.IsIntegrationCredentialCreateEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.IntegrationCredentialCreateEdit);
 
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            try
-            {
-                BDSService.User objUser = new BDSService.User();
-                objUser.UserId = Sessions.User.UserId;
-                objUser.SecurityQuestionId = form.SecurityQuestionId;
-                objUser.Answer = Common.Encrypt(form.Answer);
+        //    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        //    try
+        //    {
+        //        BDSService.User objUser = new BDSService.User();
+        //        objUser.UserId = Sessions.User.UserId;
+        //        objUser.SecurityQuestionId = form.SecurityQuestionId;
+        //        objUser.Answer = Common.Encrypt(form.Answer);
 
-                //// Update User Security Question.
-                int retVal = objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
+        //        //// Update User Security Question.
+        //        int retVal = objBDSServiceClient.UpdateUserSecurityQuestion(objUser);
 
-                if (retVal == -1)
-                {
-                    TempData["ErrorMessage"] = Common.objCached.SecurityQuestionChangesNotApplied;
-                }
-                else if (retVal == 1)
-                {
+        //        if (retVal == -1)
+        //        {
+        //            TempData["ErrorMessage"] = Common.objCached.SecurityQuestionChangesNotApplied;
+        //        }
+        //        else if (retVal == 1)
+        //        {
 
-                    Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
-                    Sessions.User.Answer = Common.Encrypt(form.Answer);
-                    TempData["SuccessMessage"] = Common.objCached.SecurityQuestionChangesApplied;
-                }
-                //// return Security Question list to View.
-            var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
-            form.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
-            }
-            catch (Exception e)
-            {
-                ErrorSignal.FromCurrentContext().Raise(e);
+        //            Sessions.User.SecurityQuestionId = form.SecurityQuestionId;
+        //            Sessions.User.Answer = Common.Encrypt(form.Answer);
+        //            TempData["SuccessMessage"] = Common.objCached.SecurityQuestionChangesApplied;
+        //        }
+        //        //// return Security Question list to View.
+        //    var lstSecurityQuestion = objBDSServiceClient.GetSecurityQuestion();
+        //    form.SecurityQuestionList = GetQuestionList(lstSecurityQuestion);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        ErrorSignal.FromCurrentContext().Raise(e);
 
-                //To handle unavailability of BDSService
-                if (e is System.ServiceModel.EndpointNotFoundException)
-                {
-                    return RedirectToAction("ServiceUnavailable", "Login");
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
-                }
-            }
+        //        //To handle unavailability of BDSService
+        //        if (e is System.ServiceModel.EndpointNotFoundException)
+        //        {
+        //            return RedirectToAction("ServiceUnavailable", "Login");
+        //        }
+        //        else
+        //        {
+        //            TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
+        //        }
+        //    }
 
-            return View(form);
-        }
+        //    return View(form);
+        //}
 
-        /// <summary>
-        /// Method to get the Select list item
-        /// </summary>
-        /// <param name="QuestionList"> list of Questions</param>
-        /// <returns> Returns list of Questions</returns>
-        public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
-        {
-            List<SelectListItem> optionslist = new List<SelectListItem>();
-            optionslist = QuestionList.AsEnumerable().Select(questn => new SelectListItem
-            {
-                Value = Convert.ToString(questn.SecurityQuestionId),
-                Text = questn.SecurityQuestion1
-            }).ToList();
-            return optionslist;
-        }
+        ///// <summary>
+        ///// Method to get the Select list item
+        ///// </summary>
+        ///// <param name="QuestionList"> list of Questions</param>
+        ///// <returns> Returns list of Questions</returns>
+        //public List<SelectListItem> GetQuestionList(List<BDSService.SecurityQuestion> QuestionList)
+        //{
+        //    List<SelectListItem> optionslist = new List<SelectListItem>();
+        //    optionslist = QuestionList.AsEnumerable().Select(questn => new SelectListItem
+        //    {
+        //        Value = Convert.ToString(questn.SecurityQuestionId),
+        //        Text = questn.SecurityQuestion1
+        //    }).ToList();
+        //    return optionslist;
+        //}
 
-        #endregion
+        //#endregion
 
         #region Delete User
 

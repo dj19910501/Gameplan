@@ -34,7 +34,7 @@
                     }
                     <li id="Tmember"><a href="@Url.Action("Index", "User")">Team Members</a></li>
                     <li id="notification"><a href="@Url.Action("Notifications", "User")">Notifications</a></li>
-                    <li id="Squestion"><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li>
+                    @*<li id="Squestion"><a href="@Url.Action("SecurityQuestion", "User")">Security Question</a></li> Commented By Komal Rawal for #1457*@
                     <li id="Cpassword"><a href="@Url.Action("ChangePassword", "User")">Change Password</a></li>
                     </ul>
                 </div>
@@ -70,12 +70,12 @@
                             
                         }
                     }
-                    else if ('@ViewBag.PageTitle' == 'SecurityQuestion') {
+                    @*else if ('@ViewBag.PageTitle' == 'SecurityQuestion') {
                         if (!$('#Squestion').hasClass('active')) {
                             $('#Squestion').addClass('active');
                             
                         }
-                    }
+                    }*@
                     else if ('@ViewBag.PageTitle' == 'ChangePassword') {
                         if (!$('#Cpassword').hasClass('active')) {
                             $('#Cpassword').addClass('active');
