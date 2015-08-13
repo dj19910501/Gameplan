@@ -883,7 +883,7 @@ function fillCardProgramDropDown(campaignId, type) {
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
 
         //myApp.hidePleaseWait();
@@ -896,7 +896,7 @@ function fillCardProgramDropDown(campaignId, type) {
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
-        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
+        var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
         //myApp.hidePleaseWait();
         //LoadPagination();
