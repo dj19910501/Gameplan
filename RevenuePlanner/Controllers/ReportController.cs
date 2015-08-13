@@ -8492,6 +8492,7 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             int customFieldIdCardSection = 0;
+            int customFieldOptionIdCardSection = 0;
             bool isTacticCustomFieldCardSection = false;
             string customFieldTypeCardSection = string.Empty;
             if (masterCustomFieldOptionId > 0)
@@ -8629,8 +8630,12 @@ namespace RevenuePlanner.Controllers
                     {
                         customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
                         IsTacticCustomField = true;
+                        isTacticCustomFieldCardSection = true;
+                        customFieldIdCardSection = customfieldId;
+                        customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                         if (Convert.ToInt32(childId) > 0)
                         {
+                            customFieldOptionIdCardSection = Convert.ToInt32(childId);
                             ViewBag.ParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
                             ViewBag.childlabelType = Common.RevenueTactic;
                         }
@@ -8818,7 +8823,7 @@ namespace RevenuePlanner.Controllers
                 /// Add By Nishant Sheth : 07-July-2015 
                 /// Desc : Fill card section with filter option , Ticket no:#1397 
 
-                CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection);
+                CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
                 //objRevenueToPlanModel.CardSectionModel = objCardSectionModel;
                 TempData["RevenueCardList"] = null;
@@ -10504,9 +10509,9 @@ namespace RevenuePlanner.Controllers
             List<ActualTrendModel> MqlActual = new List<ActualTrendModel>();
 
 
-            string customFieldOptionIdCardSection = string.Empty;
             int customFieldIdCardSection = 0;
             bool isTacticCustomFieldCardSection = false;
+            int customFieldOptionIdCardSection = 0;
             string customFieldTypeCardSection = string.Empty;
             if (masterCustomFieldOptionId > 0)
             {
@@ -10537,7 +10542,6 @@ namespace RevenuePlanner.Controllers
                     List<int> tacticIds = new List<int>();
                     tacticIds = TacticData.Select(p => p.TacticObj.PlanTacticId).Distinct().ToList();
                     string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    customFieldOptionIdCardSection = customfiledvalue;
                     tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
                     TacticData = TacticData.Where(t => tacticIds.Contains(t.TacticObj.PlanTacticId)).ToList();
                 }
@@ -10669,8 +10673,12 @@ namespace RevenuePlanner.Controllers
                     {
                         customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
                         IsTacticCustomField = true;
+                        isTacticCustomFieldCardSection = true;
+                        customFieldIdCardSection = customfieldId;
+                        customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                         if (Convert.ToInt32(childId) > 0)
                         {
+                            customFieldOptionIdCardSection = Convert.ToInt32(childId);
                             ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
                             ViewBag.ConvchildlabelType = Common.RevenueTactic;
                         }
@@ -10950,10 +10958,7 @@ namespace RevenuePlanner.Controllers
                 objCardSectionModel = new CardSectionModel();
                 CardSectionListModel = new List<CardSectionListModel>();
 
-              
-
-
-                CardSectionListModel = GetConversionCardSectionList(_tacticdata,_cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, false, "", 0);
+                CardSectionListModel = GetConversionCardSectionList(_tacticdata, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection);
                 //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
                 TempData["ConverstionCardList"] = null;
@@ -11189,14 +11194,13 @@ namespace RevenuePlanner.Controllers
         /// <param name="CustomFieldType"></param>
         /// <param name="customFieldId"></param>
         /// <returns></returns>
-        public List<CardSectionListModel> GetConversionCardSectionList(List<TacticStageValue> _TacticData, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0)
+        public List<CardSectionListModel> GetConversionCardSectionList(List<TacticStageValue> _TacticData, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0, int customFieldOptionId = 0)
         {
             #region "Declare local variables"
             List<CardSectionListModel> objCardSectionList = new List<CardSectionListModel>();
             CardSectionListModel objCardSection = new CardSectionListModel();
             CardSectionListSubModel objCardSectionSubModel = new CardSectionListSubModel();
 
-            int ParentId = 0;
             List<int> ParentIdsList = new List<int>();
             List<int> _ChildIdsList = new List<int>();  // TacticIds List.
             string strParentTitle = string.Empty;
@@ -11287,9 +11291,8 @@ namespace RevenuePlanner.Controllers
                     fltrTacticData = _TacticData.Where(tac => _ChildIdsList.Contains(tac.TacticObj.PlanTacticId)).ToList();
                     #region "Set Default Values"
                     strParentTitle = TacticMappingList.Where(card => card.ParentId.Equals(_ParentId)).Select(card => card.ParentTitle).FirstOrDefault();
-                    ParentId = _ParentId;
                     #endregion
-
+                    string innercustomfieldOptionid = string.Empty;
                     objCardSection = new CardSectionListModel();
 
                     #region "Add Static Values to Model"
@@ -11304,19 +11307,27 @@ namespace RevenuePlanner.Controllers
                     #region "Insert Cardsection Sub model data"
                     if (IsTacticCustomField)
                     {
+                        if (customFieldOptionId != 0)
+                        {
+                            innercustomfieldOptionid = customFieldOptionId.ToString();
+                        }
+                        else
+                        {
+                            innercustomfieldOptionid = _ParentId.ToString();
+                        }
                         ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
                         ActualRevenueDataTable = new List<ActualDataTable>();
                         ActualTacticTrendList = new List<ActualTrendModel>();
                         ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(projectedStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                         ActualTacticList = ActualTacticList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
-                        ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, ParentId.ToString(), CustomFieldType, Enums.InspectStage.INQ, ActualTacticList, _TacticData, IsTacticCustomField);
-                        ActualTacticTrendList = GetActualTrendModelForRevenue(_TacticData, ActualRevenueDataTable, Enums.InspectStage.INQ.ToString());
+                        ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.INQ, ActualTacticList, fltrTacticData, IsTacticCustomField);
+                        ActualTacticTrendList = GetActualTrendModelForRevenue(fltrTacticData, ActualRevenueDataTable, Enums.InspectStage.INQ.ToString());
 
                         ProjectedTrendList = new List<ProjectedTrendModel>();
                         _TacticDataTable = new List<TacticDataTable>();
                         _TacticListMonth = new List<TacticMonthValue>();
                         _TacticList = new List<ProjectedTacticModel>();
-                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, _ParentId.ToString(), CustomFieldType, Enums.InspectStage.INQ, fltrTacticData, IsTacticCustomField, true);
+                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.INQ, fltrTacticData, IsTacticCustomField, true);
                         _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
                         _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
                         {
@@ -11366,14 +11377,14 @@ namespace RevenuePlanner.Controllers
                         ActualTacticTrendList = new List<ActualTrendModel>();
                         ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(mqlStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                         ActualTacticList = ActualTacticList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
-                        ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, ParentId.ToString(), CustomFieldType, Enums.InspectStage.MQL, ActualTacticList, _TacticData, IsTacticCustomField);
-                        ActualTacticTrendList = GetActualTrendModelForRevenue(_TacticData, ActualRevenueDataTable, Enums.InspectStage.MQL.ToString());
+                        ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.MQL, ActualTacticList, fltrTacticData, IsTacticCustomField);
+                        ActualTacticTrendList = GetActualTrendModelForRevenue(fltrTacticData, ActualRevenueDataTable, Enums.InspectStage.MQL.ToString());
 
                         ProjectedTrendList = new List<ProjectedTrendModel>();
                         _TacticDataTable = new List<TacticDataTable>();
                         _TacticListMonth = new List<TacticMonthValue>();
                         _TacticList = new List<ProjectedTacticModel>();
-                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, _ParentId.ToString(), CustomFieldType, Enums.InspectStage.MQL, fltrTacticData, IsTacticCustomField, true);
+                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.MQL, fltrTacticData, IsTacticCustomField, true);
                         _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
                         _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
                         {
@@ -11432,14 +11443,14 @@ namespace RevenuePlanner.Controllers
                         ActualTacticTrendList = new List<ActualTrendModel>();
                         ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(cwStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                         ActualTacticList = ActualTacticList.Where(actual => _ChildIdsList.Contains(actual.PlanTacticId)).ToList();
-                        ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, ParentId.ToString(), CustomFieldType, Enums.InspectStage.CW, ActualTacticList, _TacticData, IsTacticCustomField);
-                        ActualTacticTrendList = GetActualTrendModelForRevenue(_TacticData, ActualRevenueDataTable, Enums.InspectStage.CW.ToString());
+                        ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.CW, ActualTacticList, fltrTacticData, IsTacticCustomField);
+                        ActualTacticTrendList = GetActualTrendModelForRevenue(fltrTacticData, ActualRevenueDataTable, Enums.InspectStage.CW.ToString());
 
                         ProjectedTrendList = new List<ProjectedTrendModel>();
                         _TacticDataTable = new List<TacticDataTable>();
                         _TacticListMonth = new List<TacticMonthValue>();
                         _TacticList = new List<ProjectedTacticModel>();
-                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, _ParentId.ToString(), CustomFieldType, Enums.InspectStage.CW, fltrTacticData, IsTacticCustomField, true);
+                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.CW, fltrTacticData, IsTacticCustomField, true);
                         _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
                         _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
                         {
@@ -11607,7 +11618,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="CustomFieldType"></param>
         /// <param name="customFieldId"></param>
         /// <returns></returns>
-        public List<CardSectionListModel> GetCardSectionDefaultData(List<TacticStageValue> _TacticData, List<ActualTrendModel> ActualTacticTrendList, List<ProjectedTrendModel> ProjectedTrendList, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0)
+        public List<CardSectionListModel> GetCardSectionDefaultData(List<TacticStageValue> _TacticData, List<ActualTrendModel> ActualTacticTrendList, List<ProjectedTrendModel> ProjectedTrendList, List<TacticMappingItem> TacticMappingList, string timeframeOption, bool IsQuarterly, string ParentLabel = "", bool IsTacticCustomField = false, string CustomFieldType = "", int customFieldId = 0, int customFieldOptionId = 0)
         {
             #region "Declare local variables"
             List<CardSectionListModel> objCardSectionList = new List<CardSectionListModel>();
@@ -11724,6 +11735,7 @@ namespace RevenuePlanner.Controllers
                     double revenueActual = 0;
                     double costGoal = 0;
                     double revenueGoal = 0;
+                    string innercustomfieldOptionid = string.Empty;
                     fltrTacticData = new List<TacticStageValue>();
                     innerCurrentMonthCostList = new List<TacticMonthValue>();
                     inneractuallist = new List<ActualTrendModel>();
@@ -11744,10 +11756,17 @@ namespace RevenuePlanner.Controllers
 
                     if (IsTacticCustomField)
                     {
-
+                        if (customFieldOptionId != 0)
+                        {
+                            innercustomfieldOptionid = customFieldOptionId.ToString();
+                        }
+                        else
+                        {
+                            innercustomfieldOptionid = _ParentId.ToString();
+                        }
                         lstActuals = _revActualTacticList.Where(ta => _ChildIdsList.Contains(ta.PlanTacticId)).ToList();
                         //// Get Actuals Tactic list by weightage for Revenue.
-                        _revActualDataTable = GetActualTacticDataTablebyStageCode(customFieldId, _ParentId.ToString(), CustomFieldType, Enums.InspectStage.Revenue, lstActuals, _TacticData, IsTacticCustomField);
+                        _revActualDataTable = GetActualTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.Revenue, lstActuals, fltrTacticData, IsTacticCustomField);
 
                         //// Get ActualList upto CurrentMonth.
                         CurrentMonthActualTacticList = _revActualDataTable.Where(actual => IncludeCurrentMonth.Contains(_TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
@@ -11757,7 +11776,7 @@ namespace RevenuePlanner.Controllers
                         List<TacticMonthValue> _TacticListMonth = new List<TacticMonthValue>();
                         List<ProjectedTacticModel> _TacticList = new List<ProjectedTacticModel>();
 
-                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, _ParentId.ToString(), CustomFieldType, Enums.InspectStage.Revenue, _TacticData, IsTacticCustomField, true);
+                        _TacticDataTable = GetTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.Revenue, fltrTacticData, IsTacticCustomField, true);
                         _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
                         _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
                         {
@@ -11788,10 +11807,10 @@ namespace RevenuePlanner.Controllers
                         revenueActual = CurrentMonthActualTacticList.Sum(data => data.ActualValue);
                         revenueGoal = ProjectedTrendList.Sum(data => data.Value);
 
-                        TacticCostData = GetActualCostDataByWeightage(customFieldId, _ParentId.ToString(), CustomFieldType, fltrTacticData, lstTacticLineItem, tblLineItemActualList, IsTacticCustomField);
+                        TacticCostData = GetActualCostDataByWeightage(customFieldId, innercustomfieldOptionid, CustomFieldType, fltrTacticData, lstTacticLineItem, tblLineItemActualList, IsTacticCustomField);
                         innerCurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
                         List<TacticMonthValue> ProjectedDatatable = new List<TacticMonthValue>();
-                        ProjectedDatatable = GetProjectedCostData(customFieldId, _ParentId.ToString(), CustomFieldType, fltrTacticData, IsTacticCustomField,lstTacticLineItem,tblLineItemCost,tblTacticCostList);
+                        ProjectedDatatable = GetProjectedCostData(customFieldId, innercustomfieldOptionid, CustomFieldType, fltrTacticData, IsTacticCustomField, lstTacticLineItem, tblLineItemCost, tblTacticCostList);
                         costActual = innerCurrentMonthCostList.Sum(innercost => innercost.Value);
                         costGoal = ProjectedDatatable.Sum(innergoalcost => innergoalcost.Value);
 
