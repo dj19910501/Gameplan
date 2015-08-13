@@ -608,7 +608,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
     var Qurt_Month = '@Enums.ViewByAllocated.Quarterly.ToString()';
 
     $(document).ready(function () {
-
+        myApp.showPleaseWait();// add by nishant sheth
         $("#ddlYearSpan select").selectbox();
         $('.sbHolder').click(function () {
             $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
@@ -950,6 +950,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
 
         //// Get Plan Ids from multiselect list
         function GetFilterIdForPlan(ulPlanId) {
+        myApp.showPleaseWait();// add by nishant sheth
             var finalValue = "";
             var isShowAddActual = 0;
             $('#' + ulPlanId).find("input[type='checkbox']").each(function () {

@@ -69,7 +69,9 @@ namespace RevenuePlanner.Controllers
                 // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
                 string published = Convert.ToString(Enums.PlanStatus.Published);
                 string year = Convert.ToString(DateTime.Now.Year);
-                int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).FirstOrDefault().PlanId;
+                //int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).FirstOrDefault().PlanId;
+                int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
+                Sessions.PlanId = planid;// Add By Nishant Seth #1489
                 Sessions.ReportPlanIds.Add(planid);
             }
             //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
@@ -5540,6 +5542,13 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetOverviewData(string timeframeOption, string isQuarterly = "Quarterly")
         {
+            // Add BY Nishant Sheth 
+            // Desc : Handle timeframeOption is undefined for #1409
+            if (timeframeOption.ToLower() == "undefined")
+            {
+                timeframeOption = Convert.ToString(DateTime.Now.Year);
+            }
+
             #region "Declare Local Variables"
             ReportOverviewModel objReportOverviewModel = new ReportOverviewModel();
             RevenueOverviewModel objRevenueOverviewModel = new RevenueOverviewModel();
