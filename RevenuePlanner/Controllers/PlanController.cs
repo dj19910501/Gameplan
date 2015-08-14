@@ -40,12 +40,12 @@ namespace RevenuePlanner.Controllers
         #endregion
         #region variable for load plan grid
         List<Plan_Tactic_Values> ListTacticMQLValue = new List<Plan_Tactic_Values>();
-       
+
         List<Plan_Tactic_LineItem_Values> LineItemList = new List<Plan_Tactic_LineItem_Values>();
         List<Stage> stageList = new List<Stage>();
-           List<User> lstUserDetails = new List<User>();
+        List<User> lstUserDetails = new List<User>();
         #endregion
-      
+
         //public ActionResult Create(int id = 0, bool isBackFromAssortment = false)
         //{
         //    /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
@@ -265,7 +265,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
 
             bool IsPlanCreateAll = false;
-           
+
 
             try
             {
@@ -334,7 +334,7 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.IsPlanCreateAll = true;
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -424,7 +424,7 @@ namespace RevenuePlanner.Controllers
                         ViewBag.modelcreateedit = true;
 
                     }
-                   //End
+                    //End
                     #endregion
                 }
                 else
@@ -757,7 +757,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                
+
                 if (!string.IsNullOrEmpty(UserId))
                 {
                     if (!Sessions.User.UserId.Equals(Guid.Parse(UserId)))
@@ -766,7 +766,7 @@ namespace RevenuePlanner.Controllers
                         return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
                     }
                 }
-             
+
                 if (ModelState.IsValid)
                 {
                     Plan plan = new Plan();
@@ -843,18 +843,18 @@ namespace RevenuePlanner.Controllers
                             plan.GoalValue = 0;
                         }
                         plan.AllocatedBy = objPlanModel.AllocatedBy;
-                        plan.Description = objPlanModel.Description;  
+                        plan.Description = objPlanModel.Description;
                         plan.Budget = Convert.ToDouble(objPlanModel.Budget.ToString().Trim().Replace(",", "").Replace("$", ""));
                         plan.ModelId = objPlanModel.ModelId;
                         if (plan.Year != objPlanModel.Year)
                         {
                             plan.Year = objPlanModel.Year;
-                            Common.UpdatePlanYearOfActivities(objPlanModel.PlanId, Convert.ToInt32(objPlanModel.Year)); 
+                            Common.UpdatePlanYearOfActivities(objPlanModel.PlanId, Convert.ToInt32(objPlanModel.Year));
                         }
                         plan.ModifiedBy = Sessions.User.UserId;
                         plan.ModifiedDate = System.DateTime.Now;
                         db.Entry(plan).State = EntityState.Modified;
-                     
+
                     }
 
                     int result = db.SaveChanges();
@@ -876,7 +876,7 @@ namespace RevenuePlanner.Controllers
                         int returnValue = CreatePlanImprovementCampaignAndProgram();
                     }
                     return Json(new { id = Sessions.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully." }) });
-                 
+
                 }
             }
             catch (Exception e)
@@ -1807,8 +1807,8 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">used id of logged in user</param>  Added by Sohel Pathan on 31/12/2014 for PL ticket #1059
         /// <returns>Returns ApplyToCalendar action result.</returns>
         [HttpPost]
-     //   [ActionName("ApplyToCalendar")] 
-         //Modified By Komal Rawal for new UI
+        //   [ActionName("ApplyToCalendar")] 
+        //Modified By Komal Rawal for new UI
         public ActionResult PublishPlan(string UserId = "")
         {
             try
@@ -1985,9 +1985,9 @@ namespace RevenuePlanner.Controllers
 
                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                 //-- Update Camapign and Program according to tactic status
-                Common.ChangeProgramStatus(planTactic.PlanProgramId,false);
+                Common.ChangeProgramStatus(planTactic.PlanProgramId, false);
                 var PlanCampaignId = db.Plan_Campaign_Program.Where(prgrm => prgrm.IsDeleted.Equals(false) && prgrm.PlanProgramId == planTactic.PlanProgramId).Select(prgrm => prgrm.PlanCampaignId).FirstOrDefault();
-                Common.ChangeCampaignStatus(PlanCampaignId,false);
+                Common.ChangeCampaignStatus(PlanCampaignId, false);
                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                 if (isApproved)
@@ -2084,11 +2084,11 @@ namespace RevenuePlanner.Controllers
                     if (lstSubOrdinates.Contains(plan.CreatedBy))
                     {
                         IsPlanEditable = true;
-                       IsPlanCreateAll = true;
+                        IsPlanCreateAll = true;
                     }
                 }
 
-              ViewBag.IsPlanCreateAll = IsPlanCreateAll;
+                ViewBag.IsPlanCreateAll = IsPlanCreateAll;
 
             }
 
@@ -2302,9 +2302,9 @@ namespace RevenuePlanner.Controllers
             try
             {
                 List<string> lstMonthly = Common.lstMonthly;
-                
+
                 var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(campgn => campgn.PlanCampaignId == id && campgn.IsDeleted == false);    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
-                int planId =objPlanCampaign==null? 0:objPlanCampaign.PlanId;
+                int planId = objPlanCampaign == null ? 0 : objPlanCampaign.PlanId;
                 var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == planId && _plan.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
 
                 var lstAllCampaign = db.Plan_Campaign.Where(_campgn => _campgn.PlanId == planId && _campgn.IsDeleted == false).ToList();
@@ -2514,7 +2514,7 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.InsertChangeLog(Sessions.PlanId, null, pc.PlanProgramId, pc.Title, Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                             if (returnValue >= 1)
                             {
-                                Common.ChangeCampaignStatus(pc.PlanCampaignId,false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+                                Common.ChangeCampaignStatus(pc.PlanCampaignId, false);     //// Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
                                 /*Changed for TFS Bug  255:Plan Campaign screen - Add delete icon for tactic and campaign in the grid     changed by : Nirav Shah on 13 feb 2014*/
 
@@ -2600,9 +2600,9 @@ namespace RevenuePlanner.Controllers
                             if (returnValue >= 1)
                             {
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-                                Common.ChangeProgramStatus(pcpt.PlanProgramId,false);
+                                Common.ChangeProgramStatus(pcpt.PlanProgramId, false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.IsDeleted.Equals(false) && _prgrm.PlanProgramId == pcpt.PlanProgramId).Select(_prgrm => _prgrm.PlanCampaignId).FirstOrDefault();
-                                Common.ChangeCampaignStatus(PlanCampaignId,false);
+                                Common.ChangeCampaignStatus(PlanCampaignId, false);
                                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 scope.Complete();
 
@@ -2858,9 +2858,9 @@ namespace RevenuePlanner.Controllers
                             {
                                 //// Start - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
                                 var planProgramId = pcptl.Plan_Campaign_Program_Tactic.PlanProgramId;
-                                Common.ChangeProgramStatus(planProgramId,false);
+                                Common.ChangeProgramStatus(planProgramId, false);
                                 var PlanCampaignId = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.IsDeleted.Equals(false) && _prgrm.PlanProgramId == pcptl.Plan_Campaign_Program_Tactic.PlanProgramId).Select(_prgrm => _prgrm.PlanCampaignId).FirstOrDefault();
-                                Common.ChangeCampaignStatus(PlanCampaignId,false);
+                                Common.ChangeCampaignStatus(PlanCampaignId, false);
                                 //// End - Added by :- Sohel Pathan on 27/05/2014 for PL ticket #425
 
                                 scope.Complete();
@@ -3383,7 +3383,7 @@ namespace RevenuePlanner.Controllers
                             TempData["SuccessMessageDeletedPlan"] = string.Format(Common.objCached.ImprovementTacticDeleteSuccess, Title);
 
                             return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId, isGridView = true }) });
-                           
+
                         }
                     }
                 }
@@ -3891,8 +3891,8 @@ namespace RevenuePlanner.Controllers
                 result = Common.InsertChangeLog(Sessions.PlanId, null, picpt.ImprovementPlanTacticId, picpt.Title, Enums.ChangeLog_ComponentType.improvetactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
                 if (result >= 1)
                 {
-                    TempData["SuccessMessageDeletedPlan"] = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", Title +" "+ "added");
-                   // return Json(new { redirect = Url.Action("Assortment") }); 
+                    TempData["SuccessMessageDeletedPlan"] = Common.objCached.ImprovementTacticStatusSuccessfully.Replace("{0}", Title + " " + "added");
+                    // return Json(new { redirect = Url.Action("Assortment") }); 
                     //Modified By Komal rawal for #1432
                     return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId, isGridView = true }) });
                 }
@@ -5363,12 +5363,12 @@ namespace RevenuePlanner.Controllers
                                                 if (DiffMonthCost > 0)
                                                 {
                                                     if (DiffMonthCost > diffcost)
-                                                {
-                                                    objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                                    diffcost = 0;
-                                                }
-                                                else
-                                                {
+                                                    {
+                                                        objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                                        diffcost = 0;
+                                                    }
+                                                    else
+                                                    {
                                                         objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
                                                         diffcost = diffcost - DiffMonthCost;
                                                     }
@@ -5593,12 +5593,12 @@ namespace RevenuePlanner.Controllers
                                                 if (DiffMonthCost > 0)
                                                 {
                                                     if (DiffMonthCost > diffcost)
-                                                {
-                                                    objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                                    diffcost = 0;
-                                                }
-                                                else
-                                                {
+                                                    {
+                                                        objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                                        diffcost = 0;
+                                                    }
+                                                    else
+                                                    {
                                                         objTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
                                                         diffcost = diffcost - DiffMonthCost;
                                                     }
@@ -5849,7 +5849,7 @@ namespace RevenuePlanner.Controllers
                                 if (tacticostslist.Where(pcptc => pcptc.Period == period).Any())
                                 {
                                     var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value;
-                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem =>  lineitem.Period == period).Sum(lineitem => lineitem.Value) ; //modified by komal Rawal
+                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == period).Sum(lineitem => lineitem.Value); //modified by komal Rawal
                                     if (tacticlineitemcostmonth > tacticmonthcost)
                                     {
                                         tacticostslist.Where(pcptc => pcptc.Period == period).FirstOrDefault().Value = tacticlineitemcostmonth;
@@ -6447,24 +6447,24 @@ namespace RevenuePlanner.Controllers
                             {
                                 if (pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
                                 {
-                                        //Modified by komal Rawal
-                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
+                                    //Modified by komal Rawal
+                                    double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
                                     double objtacticcost = pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
-                                        var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
-                                        if (DiffMonthCost > 0)
+                                    var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                                    if (DiffMonthCost > 0)
+                                    {
+                                        if (DiffMonthCost > diffcost)
                                         {
-                                            if (DiffMonthCost > diffcost)
-                                    {
-                                        pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
-                                        diffcost = 0;
-                                    }
-                                    else
-                                    {
-                                                pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
-                                                diffcost = diffcost - DiffMonthCost;
-                                            }
+                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffcost;
+                                            diffcost = 0;
                                         }
-                                        //END
+                                        else
+                                        {
+                                            pcpobj.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                            diffcost = diffcost - DiffMonthCost;
+                                        }
+                                    }
+                                    //END
                                 }
                                 if (endmonth > 0)
                                 {
@@ -6512,7 +6512,7 @@ namespace RevenuePlanner.Controllers
                                 objOtherActualCost.ForEach(oal => db.Entry(oal).State = EntityState.Deleted);
                             }
                         }
-                         db.Entry(pcpobj).State = EntityState.Modified;
+                        db.Entry(pcpobj).State = EntityState.Modified;
 
                         //End
                     }
@@ -6552,7 +6552,7 @@ namespace RevenuePlanner.Controllers
                             if (tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
                             {
                                 var tacticmonthcost = tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value;
-                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem =>  lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value);//modified by komal Rawal
+                                double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + startmonth).Sum(lineitem => lineitem.Value);//modified by komal Rawal
                                 if (tacticlineitemcostmonth > tacticmonthcost)
                                 {
                                     tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
@@ -6683,10 +6683,10 @@ namespace RevenuePlanner.Controllers
             HomePlanModel planmodel = new Models.HomePlanModel();
             try
             {
-               bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-               ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
-               var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId);
-               var IsQuarter = objPlan.Year;
+                bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
+                ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
+                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId);
+                var IsQuarter = objPlan.Year;
                 ViewBag.PlanId = Sessions.PlanId;
 
                 bool IsPlanCreateAll = false;
@@ -6743,7 +6743,7 @@ namespace RevenuePlanner.Controllers
                 //    }
                 //}
                 //objHomePlan.plans = planList;
-                
+
                 planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(Sessions.PlanId);
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
                 ViewBag.IsQuarter = IsQuarter;
@@ -7538,7 +7538,7 @@ namespace RevenuePlanner.Controllers
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists,Entities,lstAllTacticCustomFieldEntities,userCustomRestrictionList, false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isEditable = true;
@@ -7556,7 +7556,7 @@ namespace RevenuePlanner.Controllers
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         planTacticIds.Add(Convert.ToInt32(item.ParentActivityId.Replace("cpt_", "")));
-                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList,false);
+                        lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
                             item.isEditable = true;
@@ -8665,7 +8665,7 @@ namespace RevenuePlanner.Controllers
 
             return View("AddActual", planmodel);
         }
-   
+
 
         /// <summary>
         /// Function to get list of users based on selected plan id(s), tab and active menu
@@ -8936,7 +8936,7 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult LoadImprovementGrid(int id)
         {
             PlanImprovement objimprovement = new PlanImprovement();
-             bool IsTacticExist = false;
+            bool IsTacticExist = false;
             double TotalMqls = 0;
             double TotalCost = 0;
             //Added By komal rawal for #1432
@@ -8946,7 +8946,7 @@ namespace RevenuePlanner.Controllers
             List<int> TacticIds = TacticList.Select(pcpt => pcpt.PlanTacticId).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => TacticIds.Contains(pcptl.PlanTacticId) && pcptl.IsDeleted.Equals(false)).Select(pcptl => pcptl).ToList();
             List<int> LineItemIds = LineItemList.Select(pcptl => pcptl.PlanLineItemId).ToList();
-           
+
             if (TacticList != null && TacticList.Count > 0)
                 IsTacticExist = true;
             objimprovement.IsTacticExists = IsTacticExist;
@@ -8982,7 +8982,7 @@ namespace RevenuePlanner.Controllers
                                                                MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
                                                                Revenue = tactic.RevenueValue
                                                            }).ToList();
-        
+
             TotalMqls = ListTacticMQLValue.Sum(tactic => tactic.MQL);
             TotalCost = LineItemList.Sum(l => l.Cost);
             objimprovement.TotalCost = TotalCost;
@@ -8990,8 +8990,8 @@ namespace RevenuePlanner.Controllers
             objimprovement.Progrmas = NoOfPrograms;
 
             //End
-            
-            
+
+
             int improvementProgramId = db.Plan_Improvement_Campaign_Program.Where(prgrm => prgrm.Plan_Improvement_Campaign.ImprovePlanId == id).Select(prgrm => prgrm.ImprovementPlanProgramId).FirstOrDefault();
             if (improvementProgramId != 0)
             {
@@ -9000,7 +9000,7 @@ namespace RevenuePlanner.Controllers
             else
             {
                 objimprovement.ImprovementPlanProgramId = CreatePlanImprovementCampaignAndProgram();
-               // ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == id).Select(p => p.ImprovementPlanProgramId).FirstOrDefault();
+                // ViewBag.ImprovementPlanProgramId = db.Plan_Improvement_Campaign_Program.Where(p => p.Plan_Improvement_Campaign.ImprovePlanId == id).Select(p => p.ImprovementPlanProgramId).FirstOrDefault();
             }
             return PartialView("_GridImprovement", objimprovement);
             //End
@@ -9071,7 +9071,7 @@ namespace RevenuePlanner.Controllers
                 List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
 
                 GetGoalValue(lstplandetail, modelId.ToString(), stageList, objplangrid, objimprovement); // for plan grid header to bind goal detail
-               
+
 
                 var lstcampaigndetail = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && campaign.IsDeleted == false).ToList();
 
@@ -9093,12 +9093,12 @@ namespace RevenuePlanner.Controllers
                 int improvementProgramId = db.Plan_Improvement_Campaign_Program.Where(prgrm => prgrm.Plan_Improvement_Campaign.ImprovePlanId == id).Select(prgrm => prgrm.ImprovementPlanProgramId).FirstOrDefault();
                 if (improvementProgramId != 0)
                     objimprovement.ImprovementPlanProgramId = improvementProgramId;
-                
+
                 else
                     objimprovement.ImprovementPlanProgramId = CreatePlanImprovementCampaignAndProgram();
-                
+
                 CalculateTacticCostRevenue(modelId, lsttacticId, programtactic, objimprovement);
-             
+
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
                 List<Plan_Campaign_Program_Tactic> TacticfilterList = new List<Plan_Campaign_Program_Tactic>();
@@ -9151,8 +9151,8 @@ namespace RevenuePlanner.Controllers
                 List<Plan_Campaign> Campaignfilterlst = new List<Plan_Campaign>();
                 List<Plan_Campaign_Program> Programfilterlst = new List<Plan_Campaign_Program>();
                 List<Plan_Campaign_Program_Tactic> finalTacticfilterList = new List<Plan_Campaign_Program_Tactic>();
-              
-              //  type = "Plan";
+
+                //  type = "Plan";
                 foreach (var planitem in lstplandetail)
                 {
                     planid = planitem.PlanId;
@@ -9181,7 +9181,7 @@ namespace RevenuePlanner.Controllers
                             IsPlanCreateAll = false;
                     }
                     GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>" + planitem.Title + "</cell> ");
-                    GridString.Append("<cell><![CDATA[ <img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='PlanPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "\">");
+                    GridString.Append("<cell><![CDATA[ <img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='PlanPopup' class='grid_Search' alt=\"" + planitem.PlanId + "\">");
                     if (IsPlanCreateAll)
                     {
                         GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">");
@@ -9191,7 +9191,7 @@ namespace RevenuePlanner.Controllers
                     GridString.Append(" <cell type='ro'>--</cell> <cell>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro'>--</cell> <cell >" + totalmql + "</cell> <cell >" + totalrevenue + "</cell> ");
                     Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
-                   // type = "Campaign";
+                    // type = "Campaign";
                     if (Campaignfilterlst.Count > 0)
                     {
                         var lstcampaignTaskData = Campaignfilterlst.Select((taskdata, index) => new
@@ -9199,39 +9199,39 @@ namespace RevenuePlanner.Controllers
 
 
                             totalcost = LineItemList.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Cost),
-                            totalmql =  ListTacticMQLValue.Where(l => l.CampaignId==taskdata.PlanCampaignId).Sum(l => l.MQL) ,
+                            totalmql = ListTacticMQLValue.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.MQL),
                             // totalcost = 0,
                             // totalmql = 0,
                             // totalrevenue=0,
                             PlanCampaignId = taskdata.PlanCampaignId,
-                           totalrevenue = ListTacticMQLValue.Where(l => l.CampaignId==taskdata.PlanCampaignId).Sum(l => l.Revenue),
+                            totalrevenue = ListTacticMQLValue.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Revenue),
                             Title = taskdata.Title,
                             StartDate = taskdata.StartDate,
                             EndDate = taskdata.EndDate,
-                           CreatedBy = GetUserName(taskdata.CreatedBy),
+                            CreatedBy = GetUserName(taskdata.CreatedBy),
                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true
 
                         });
                         foreach (var Campaignitem in lstcampaignTaskData)
                         {
-                          
+
 
                             GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3'>" + Campaignitem.Title + "</cell> ");
-                            GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='CampaignPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "\">");
+                            GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='CampaignPopup' class='grid_Search' alt=\"" + Campaignitem.PlanCampaignId + "\">");
                             if (Campaignitem.IsPlanCreateAll)
                             {
                                 GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" data-title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\">");
                             }
                             GridString.Append("]]></cell>");
                             GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                            GridString.Append(" <cell bgColor='#C6EBF3' >" + Campaignitem.totalcost.ToString()  + "</cell>");
+                            GridString.Append(" <cell bgColor='#C6EBF3' >" + Campaignitem.totalcost.ToString() + "</cell>");
                             GridString.Append("<cell bgColor='#C6EBF3' type='ro'>--</cell> <cell bgColor='#C6EBF3'>" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
-                            GridString.Append("<cell  bgColor='#C6EBF3'>--</cell> <cell bgColor='#C6EBF3'>" +Campaignitem.totalmql.ToString() + "</cell>");
-                            GridString.Append("<cell  bgColor='#C6EBF3'>" +Campaignitem.totalrevenue.ToString() + "</cell> ");
+                            GridString.Append("<cell  bgColor='#C6EBF3'>--</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.totalmql.ToString() + "</cell>");
+                            GridString.Append("<cell  bgColor='#C6EBF3'>" + Campaignitem.totalrevenue.ToString() + "</cell> ");
 
 
                             Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
-                          //  type = "Program";
+                            //  type = "Program";
                             if (Programfilterlst != null && Programfilterlst.Count > 0)
                             {
                                 Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
@@ -9250,26 +9250,26 @@ namespace RevenuePlanner.Controllers
                                 var lstprogramTaskData = Programfilterlst.Select((taskdata, index) => new
                                 {
                                     totalcost = LineItemList.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Cost),
-                                    totalmql = ListTacticMQLValue.Where(l =>l.Programid==taskdata.PlanProgramId).Sum(l => l.MQL),
+                                    totalmql = ListTacticMQLValue.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.MQL),
                                     totalrevenue = ListTacticMQLValue.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Revenue),
-                                   // totalcost = 0,
+                                    // totalcost = 0,
                                     //totalmql = 0,
                                     //totalrevenue = 0,
                                     PlanProgramId = taskdata.PlanProgramId,
                                     Title = taskdata.Title,
                                     StartDate = taskdata.StartDate,
                                     EndDate = taskdata.EndDate,
-                                     CreatedBy = GetUserName(taskdata.CreatedBy),
+                                    CreatedBy = GetUserName(taskdata.CreatedBy),
                                     IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true
 
                                 });
-                                
+
                                 foreach (var Programitem in lstprogramTaskData)
                                 {
 
                                     GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>");
 
-                                    GridString.Append("<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='ProgramPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "\">");
+                                    GridString.Append("<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='ProgramPopup' class='grid_Search' alt=\"" + Programitem.PlanProgramId + "\">");
                                     if (Programitem.IsPlanCreateAll)
                                     {
                                         GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\">");
@@ -9280,7 +9280,7 @@ namespace RevenuePlanner.Controllers
                                     GridString.Append(" <cell bgColor='#DFF0F8'>--</cell>  <cell bgColor='#DFF0F8'>" + Programitem.totalmql + "</cell>  <cell bgColor='#DFF0F8'>" + Programitem.totalrevenue + "</cell> ");
 
 
-                                  
+
                                     finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).ToList();
                                     if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                     {
@@ -9289,9 +9289,9 @@ namespace RevenuePlanner.Controllers
                                         Enddate = finalTacticfilterList.Max(r => r.EndDate).ToString("MM/dd/yyyy");
                                         GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
                                         GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
-                                     
-                                    //    type = "Tactic";
-                                      
+
+                                        //    type = "Tactic";
+
                                         var lsttacticTaskData = finalTacticfilterList.Select((taskdata, index) => new
                                         {
                                             index = index,
@@ -9316,21 +9316,21 @@ namespace RevenuePlanner.Controllers
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
                                                                                    new XElement("cell", tactic.title),
-                                                                                   new XElement("cell", new XCData("<img src='../Content/images/magnifying_glass.png' style='cursor:pointer; float: left;margin-top:4px;' class='grid_Search' id='TacticPopup' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + "_Y" + tactic.tactictypeid + "\"> "  + (tactic.IsPlanCreateAll == true ? "<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">" : ""))),
+                                                                                   new XElement("cell", new XCData("<img src='../Content/images/magnifying_glass.png' style='cursor:pointer; float: left;margin-top:4px;' class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"> " + (tactic.IsPlanCreateAll == true ? "<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">" : ""))),
                                                                                    new XElement("cell", tactic.PlanTacticId),
                                                                                    new XElement("cell", tactic.startdate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", tactic.enddate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", new XAttribute("type", "edn"), tactic.totalcost),
-                                                                                  new XElement("cell",  tactic.tactictypetitle),
+                                                                                  new XElement("cell", tactic.tactictypetitle),
                                                                                     new XElement("cell", tactic.CreatedBy),
                                                                                    new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
-                                                                       //new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.ProjectStage + " " + tactic.projectedstagevalue),
+                                                                                   //new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.ProjectStage + " " + tactic.projectedstagevalue),
                                                                                     new XElement("cell", tactic.totalmql),
                                                                                      new XElement("cell", tactic.totalrevenue)));
 
                                         string finltactic = xmlElements.ToString().Remove(0, 6);
                                         GridString.Append(HttpUtility.HtmlDecode(finltactic.Remove(finltactic.ToString().Length - 7, 7)));
-                                       
+
                                     }
                                     GridString.Append("</row>");
                                     ProgCnt = ProgCnt + 1;
@@ -9347,7 +9347,7 @@ namespace RevenuePlanner.Controllers
 
                 }
                 GridString.Append("</rows>");
-              
+
             }
             catch (Exception objException)
             {
@@ -9954,7 +9954,7 @@ namespace RevenuePlanner.Controllers
                 //ViewBag.Revenue = Revenue;
                 //ViewBag.CWLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(CWLable);
                 //ViewBag.CWValue = CWValue;
-                
+
             }
             catch (Exception e)
             {
@@ -9966,15 +9966,15 @@ namespace RevenuePlanner.Controllers
         #region method to generate grid header
         protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int? modelId)
         {
-         
+
             string xmlUserlist = string.Empty;
             string xmltactictype = string.Empty;
             try
             {
 
-                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false 
-                    && tactype.ModelId == modelId && tactype.IsDeployedToModel == true ).ToList();
-              
+                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false
+                    && tactype.ModelId == modelId && tactype.IsDeployedToModel == true).ToList();
+
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
@@ -10028,12 +10028,12 @@ namespace RevenuePlanner.Controllers
             return strHeader;
         }
         #endregion
-        public  string GetUserName(Guid UserGuid)
+        public string GetUserName(Guid UserGuid)
         {
 
-           var userName = lstUserDetails.Where(user=>user.UserId==UserGuid).ToList();
+            var userName = lstUserDetails.Where(user => user.UserId == UserGuid).ToList();
 
-           if (userName.Count > 0)
+            if (userName.Count > 0)
             {
                 return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
             }
@@ -10076,7 +10076,7 @@ namespace RevenuePlanner.Controllers
                                           MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
                                           Revenue = tactic.RevenueValue,
                                           CampaignId = tactic.TacticObj.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId,
-                                          Programid =tactic.TacticObj.Plan_Campaign_Program.PlanProgramId
+                                          Programid = tactic.TacticObj.Plan_Campaign_Program.PlanProgramId
                                       }).ToList();
                 LineItemList = (from LineItem in DBLineItemList
                                 select new Plan_Tactic_LineItem_Values

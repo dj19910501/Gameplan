@@ -1061,10 +1061,11 @@
                 $("#divgridview").html('');
                 $("#divgridview").html(result);
 
-                $(".grid_Search").click(function (e) {              
+                $(".grid_Search").click(function (e) {               
                     var id = $(this).attr('alt');
+                    var type = $(this).attr('id');
                     gridSearchFlag = 1;
-                    DisplayEditablePopup(id);
+                    DisplayEditablePopup(id, type);
                 });
             }
         });
@@ -4597,8 +4598,18 @@ function () {
     }
 })
 
-function DisplayEditablePopup(id) {
-    ShowModel(id, null);
+ function DisplayEditablePopup(id, type) {  
+    if (type == "PlanPopup") {
+        ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, 0, '@RequestedModule');
+    }
+    else if (type == "CampaignPopup") {
+        ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, 0, '@RequestedModule');
+       }
+       else if (type == "ProgramPopup") {
+           ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, 0, '@RequestedModule');
+   }
+   else if (type == "TacticPopup") {
+       ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
+  }
 }
-
 </script>
