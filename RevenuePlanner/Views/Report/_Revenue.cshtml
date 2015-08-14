@@ -294,6 +294,7 @@
 
     $("#ddlTimeFrameSelectBox select").selectbox();
     $("#ddlRevenueTimeFrame").change(function () {
+        $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect("close");
         AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         Qurt_Month = AllocatedBy;
         var _BackHeadValues, parentlabel, Type, id;

@@ -720,6 +720,8 @@
     $("#ddlTimeFrameSelectBox select").selectbox();
 
     $("#ddlConversionTimeFrame").change(function () {
+        //$('#ddlINQToPlan').close();
+        $("#ddlParentConversionSummery,#ddlTopChildConversionToPlan,#ddlINQToPlan,#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan,#ddlSortby,#Itemsperpage").multiselect("close");
         myApp.showPleaseWait();
         AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
         Qurt_Month = AllocatedBy;
@@ -791,10 +793,17 @@
             id = campaignId.toString();
 
         }*@
-        var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
-        var parentlabel = _BackHeadValues.BackParentLabel;
-        var Type = _BackHeadValues.BackChildLabel;
-        var id = _BackHeadValues.BackId;
+        //var _BackHeadValues = BackFwdConverstionList[BackFwdConverstionList.length - 1];
+        //var parentlabel = _BackHeadValues.BackParentLabel;
+        //var Type = _BackHeadValues.BackChildLabel;
+        //var id = _BackHeadValues.BackId;
+        var _BackHeadValues, parentlabel, Type, id;
+        //var Code = $("#ddlINQToPlan").val();
+        _BackHeadValues = TimeFrameConversionList[TimeFrameConversionList.length - 1];
+        parentlabel = _BackHeadValues.BackParentLabel;
+        Type = _BackHeadValues.BackChildLabel;
+        id = _BackHeadValues.BackId;
+
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code;
         $("#dvConversionToPlan").load(_url);
         @*barchartData = JSON.stringify('@Model.ConversionToPlanModel.ConversionToPlanBarChartModel');
