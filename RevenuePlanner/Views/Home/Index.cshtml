@@ -4252,6 +4252,15 @@ function Quarter() {
                 else if (data.IsSuccess) {
                     RefreshCurrentTab();
                     ShowMessage(isError, data.msg);
+
+                    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                        if (CurrentPlanId > 0) {
+                            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                LoadPlanGrid();
+                            }
+                        }
+                    }
+
                     return;
                 }
                 else {
@@ -4296,6 +4305,13 @@ function Quarter() {
                 else if (data.IsSuccess) {
                     RefreshCurrentTab();
                     ShowMessage(isError, data.msg);
+                    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                        if (CurrentPlanId > 0) {
+                            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                LoadPlanGrid();
+                            }
+                        }
+                    }
                     return;
                 }
                 else {
@@ -4346,6 +4362,13 @@ function Quarter() {
                 else if (data.IsSuccess) {
                     RefreshCurrentTab();
                     ShowMessage(isError, data.msg);
+                    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                        if (CurrentPlanId > 0) {
+                            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                LoadPlanGrid();
+                            }
+                        }
+                    }
                     return;
                 }
                 else {
