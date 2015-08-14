@@ -567,6 +567,7 @@ namespace Integration.Salesforce
 
                             if (CampaignId != string.Empty && FirstRespondedDate != string.Empty && Status != string.Empty)
                             {
+                                int TotalPullResonsesCount = 0, ProcessedResponsesCount = 0; 
                                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Getting CampaignList from CampaignMember Table within Salesforce start.");
 
                                 List<CampaignMember> CampaignMemberList = new List<CampaignMember>();
@@ -680,6 +681,9 @@ namespace Integration.Salesforce
                                             Count = cl.Count()
                                         }).Where(cm => cm.IsYear).ToList();
 
+                                    //Set count of total pulled responses from Salesforce.
+                                    TotalPullResonsesCount = CampaignMemberListGroup != null ? CampaignMemberListGroup.Sum(cnt => cnt.Count) : 0;
+
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Create PlanTacticActual list and insert Tactic log.");
                                     foreach (var tactic in lstMergedTactics)
                                     {
@@ -695,6 +699,7 @@ namespace Integration.Salesforce
                                             objPlanTacticActual.CreatedBy = _userId;
                                             objPlanTacticActual.CreatedDate = DateTime.Now;
                                             db.Entry(objPlanTacticActual).State = EntityState.Added;
+                                            ProcessedResponsesCount = ProcessedResponsesCount + objCampaignMember.Count;
                                         }
 
                                         tactic.LastSyncDate = DateTime.Now;
@@ -728,6 +733,8 @@ namespace Integration.Salesforce
                                 {
                                     // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
                                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull Responses: Total Contact(s) - " + TotalPullResonsesCount.ToString() + ", " + ProcessedResponsesCount.ToString() + " contact(s) were processed and pulled in database.");
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Total Contact(s) - " + TotalPullResonsesCount.ToString() + ", " + ProcessedResponsesCount.ToString() + " contact(s) were processed and pulled in database.", Enums.SyncStatus.Info, DateTime.Now));
                                 }
                                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Getting CampaignList from CampaignMember Table within Salesforce end.");
                             }
@@ -1133,7 +1140,7 @@ namespace Integration.Salesforce
                                 isDoneFirstPullCW = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).Select(instance => instance.IsFirstPullCW).FirstOrDefault();
                                 string opportunityGetQueryWhere = string.Empty;
                                 string opportunityGetQuery = string.Empty;
-
+                                int TotalPullCWCount = 0, ProcessedCWCount = 0; 
                                 string currentDate = DateTime.UtcNow.ToString(Common.DateFormatForSalesforce);
                                 string cwsection = Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString();
                                 string statusSuccess = StatusResult.Success.ToString();
@@ -1387,6 +1394,9 @@ namespace Integration.Salesforce
 
                                             var tacticidactual = OpportunityMemberListGroup.Select(opptactic => opptactic.TacticId).Distinct().ToList();
 
+                                            //Set count of total pulled responses from Salesforce.
+                                            TotalPullCWCount = OpportunityMemberListGroup != null ? OpportunityMemberListGroup.Sum(cnt => cnt.Count) : 0;
+
                                             List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => tacticidactual.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();
                                             if (!isDoneFirstPullCW)
                                             {
@@ -1419,6 +1429,7 @@ namespace Integration.Salesforce
                                                         objPlanTacticActual.CreatedBy = _userId;
                                                         objPlanTacticActual.CreatedDate = DateTime.Now;
                                                         db.Entry(objPlanTacticActual).State = EntityState.Added;
+                                                        ProcessedCWCount = ProcessedCWCount + objOpportunityMember.Count;
                                                     }
 
                                                     var innertacticactualrevenue = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageRevenue);
@@ -1474,6 +1485,8 @@ namespace Integration.Salesforce
                                 {
                                     // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
                                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull Closed Deals: Total CW - " + TotalPullCWCount.ToString() + ", " + ProcessedCWCount.ToString() + " CW(s) were processed and pulled in database.");
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Closed Deals: Total CW - " + TotalPullCWCount.ToString() + ", " + ProcessedCWCount.ToString() + " CW(s) were processed and pulled in database.", Enums.SyncStatus.Info, DateTime.Now));
                                     if (!isDoneFirstPullCW)
                                     {
                                         using (MRPEntities dbinner = new MRPEntities())
@@ -2800,6 +2813,7 @@ namespace Integration.Salesforce
                                 {
                                     // Save remaining log records to Table.
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
+                                    sbMessage = new StringBuilder();
                                 }
                                 db.SaveChanges();
                                 page++;

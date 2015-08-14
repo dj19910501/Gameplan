@@ -181,6 +181,7 @@ namespace Integration.Eloqua
                             List<elements> element = new List<elements>();
                             bool isError = false;
                             string errormsg = string.Empty;
+                            int TotalContactCount = 0, ProcessedContactCount = 0;
                             //// allowed to enter only authenticated user.
                             if (integrationEloquaClient.IsAuthenticated)
                             {
@@ -458,7 +459,13 @@ namespace Integration.Eloqua
                             integrationEloquaClient.PutEloquaContactListDetails(contactListDetails, ListIdValue.ToString());
 
                             #endregion
-
+                            if (contactListDetails != null)
+                            {
+                                TotalContactCount = !string.IsNullOrEmpty(contactListDetails.count) ? Convert.ToInt32(contactListDetails.count) : 0;
+                                ProcessedContactCount = contactListDetails.membershipDeletions != null ? contactListDetails.membershipDeletions.Count : 0;
+                            }
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull MQL: Total contact(s) - " + TotalContactCount + ", " + ProcessedContactCount + " contact(s) were processed and pulled in database.");
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull MQL: Total contact(s) - " + TotalContactCount + ", " + ProcessedContactCount + " contact(s) were processed and pulled in database.", Enums.SyncStatus.Info, DateTime.Now));
                             // Update IntegrationInstanceSection log with Success status,
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                         }
@@ -801,7 +808,7 @@ namespace Integration.Eloqua
                                     unprocessobj.CreatedBy = _userId;
                                     db.Entry(unprocessobj).State = EntityState.Added;
                                 }
-                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Responses: Total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.");
+                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull Responses: Total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.");
                                 lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Total records (" + uploadedrecord + ") uploaded, " + lstResponse.Sum(l => l.responseCount).ToString() + " record(s) were not processed and stored in database; these will be processed automatically later by the system.", Enums.SyncStatus.Info, DateTime.Now));
                             }
 
