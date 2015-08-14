@@ -9187,8 +9187,8 @@ namespace RevenuePlanner.Controllers
                         GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">");
                     }
                     GridString.Append("]]></cell>");
-                    GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell>" + Startdate + "</cell> <cell>" + Enddate + "</cell>  <cell>" + totalcost + "</cell> ");
-                    GridString.Append(" <cell type='ro'>--</cell> <cell>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro'>--</cell> <cell >" + totalmql + "</cell> <cell >" + totalrevenue + "</cell> ");
+                    GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1'>" + Startdate + "</cell> <cell locked='1'>" + Enddate + "</cell>  <cell>" + totalcost + "</cell> ");
+                    GridString.Append(" <cell type='ro'>--</cell> <cell type='ro'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro'>--</cell> <cell >" + totalmql + "</cell> <cell >" + totalrevenue + "</cell> ");
                     Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
                     // type = "Campaign";
@@ -9323,8 +9323,8 @@ namespace RevenuePlanner.Controllers
                                                                                    new XElement("cell", new XAttribute("type", "edn"), tactic.totalcost),
                                                                                   new XElement("cell", tactic.tactictypetitle),
                                                                                     new XElement("cell", tactic.CreatedBy),
-                                                                                   new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
-                                                                                   //new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.ProjectStage + " " + tactic.projectedstagevalue),
+                                                                                 //  new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
+                                                                                   new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.ProjectStage + " " + tactic.projectedstagevalue),
                                                                                     new XElement("cell", tactic.totalmql),
                                                                                      new XElement("cell", tactic.totalrevenue)));
 
@@ -9380,8 +9380,24 @@ namespace RevenuePlanner.Controllers
             int oldProgramId = 0;
             string oldProgramTitle = "";
             int oldCampaignId = 0;
+            UpdateColumn = UpdateColumn.Trim();
             try
             {
+                #region update Plan Detail
+                if (UpdateType == "plan")
+                {
+                    Plan plan = db.Plans.Where(_plan => _plan.PlanId == id).ToList().FirstOrDefault();
+                    if (UpdateColumn == "Task Name")
+                    {
+                        plan.Title = UpdateVal.Trim();
+                    }
+
+                    db.Entry(plan).State = EntityState.Modified;
+                    db.SaveChanges();
+                    Common.InsertChangeLog(plan.PlanId, 0, plan.PlanId, plan.Title, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
+                }
+                #endregion
+
                 #region update tactic detail
                 if (UpdateType == "tact")
                 {
@@ -9399,7 +9415,7 @@ namespace RevenuePlanner.Controllers
                         if (pcpvar != null)
                         {
                             string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                            return Json(new { IsDuplicate = true, redirect = Url.Action("LoadSetup", new { id = id }), errormsg = strDuplicateMessage });
+                            return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
                         }
                         else
                             pcpobj.Title = UpdateVal;
@@ -9631,7 +9647,7 @@ namespace RevenuePlanner.Controllers
                         if (pcpvar != null)
                         {
                             string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                            return Json(new { IsSaved = false, errormsg = strDuplicateMessage }, JsonRequestBehavior.AllowGet);
+                            return Json(new { IsSaved = false, errormsg = strDuplicateMessage });
                         }
                         else
                             pcpobj.Title = UpdateVal;
@@ -9693,7 +9709,7 @@ namespace RevenuePlanner.Controllers
                         if (pc != null)
                         {
                             string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                            return Json(new { isSaved = false, msg = strDuplicateMessage });
+                            return Json(new { isSaved = false, errormsg = strDuplicateMessage });
                         }
                         else
                             pcobj.Title = UpdateVal;
@@ -9739,11 +9755,11 @@ namespace RevenuePlanner.Controllers
                     //// Flag to indicate unavailability of web service.
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
                     //// Ticket: 942 Exception handeling in Gameplan.
-                    return Json(new { returnURL = '#' }, JsonRequestBehavior.AllowGet);
+                    return Json(new { errormsg = '#' }, JsonRequestBehavior.AllowGet);
                 }
             }
 
-            return Json(new { });
+            return Json(new { errormsg="" });
         }
         #endregion
 

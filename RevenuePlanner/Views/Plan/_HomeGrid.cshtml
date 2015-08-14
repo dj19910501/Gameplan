@@ -98,9 +98,10 @@
         //HomeGrid.setDragBehavior("sibling-next");
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
-        HomeGrid.setNumberFormat("$0,000.00", 5, ".", ",");
-        HomeGrid.setNumberFormat("0,000.00", 9, ".", ",");
-        HomeGrid.setNumberFormat("$0,000.00", 10, ".", ",");
+     
+        HomeGrid.setNumberFormat("$0,000", 5, ".", ",");
+        HomeGrid.setNumberFormat("0,000", 9, ".", ",");
+        HomeGrid.setNumberFormat("$0,000", 10, ".", ",");
         HomeGrid.setImageSize(1, 1);
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
@@ -241,6 +242,11 @@
         var UpdateVal;
           var Colind = this.cell.cellIndex;
             UpdateColumn = HomeGrid.getColLabel(Colind, 1);
+        if (stage == 0) {
+            var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1")
+                return false;
+        }
         if (stage == 1) {
 
             //if (UpdateColumn == "Tactic Planned Cost") {
@@ -248,10 +254,11 @@
             //   // this.editor.obj.style.textAlign = "center";
             //    this.editor.obj.value = convertNumber(numb);
             //}
-            //if (UpdateColumn == "Projected Stage Value") {
-            //    var psv = HomeGrid.cells(rowId, 8).getValue().split(" ");
-            //    this.editor.obj.value = psv[psv.length-1];
-            //}
+            if (UpdateColumn == "Projected Stage Value") {
+               // this.editor.obj.class = "priceValue";
+                var psv = HomeGrid.cells(rowId, 8).getValue().split(" ");
+                this.editor.obj.value = psv[psv.length - 1];
+            }
         }
         if (stage == 2) // start edit Shipping column
         {
@@ -353,10 +360,16 @@
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                    data: { UpdateType: updatetype, UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(Id) },
+                    data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                     dataType: 'json',
                     success: function (states) {
-                        //  LoadPlanGrid();
+                        if (states.errormsg != null && states.errormsg.trim() != "") {
+                            alert(states.errormsg.trim());
+                            HomeGrid.cells(rowId, cellInd).setValue(oValue);
+                            return false;
+                        }
+                        if (UpdateColumn == "Start date" || UpdateColumn == "End date")
+                          LoadPlanGrid();
                         //if (UpdateColumn == "Tactic Planned Cost") {
                         //    HomeGrid.cells(rowId, 5).setValue(FormatNumber(nValue, false));
                         //}
@@ -380,9 +393,11 @@
             },
             success: function (data) {
                 if (data.mql == 'N/A') {
+                    HomeGrid.setCellExcellType(rowid, 9, "ro");
                     HomeGrid.cells(rowid, 9).setValue(data.mql);
                 }
                 else {
+                    HomeGrid.setCellExcellType(rowid, 9, "ron");
                     var mqlConversion = 0;
                     if (data.mql != null)
                         mqlConversion = data.mql;
@@ -397,18 +412,26 @@
                     type: 'POST',
 
                     url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                    data: { UpdateType: "tact", UpdateColumn: UpdateColumn, UpdateVal: UpdateVal, Id: parseInt(TacticID) },
+                    data: { UpdateType: "tact", UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(TacticID) },
                     dataType: 'json',
 
                     success: function (states) {
-                        // LoadPlanGrid();
+                        if (UpdateColumn == "Projected Stage Value") {
+                            var psv = HomeGrid.cells(rowid, 8).getAttribute("stage");
+                            HomeGrid.cells(rowid, 8).setValue(psv + " " + UpdateVal);
+                        }
+
+                         LoadPlanGrid();
                     }
                 });
 
             }
 
         });
+
     }
+
+
     $(document).ready(function () {
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");
