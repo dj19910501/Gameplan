@@ -9428,14 +9428,14 @@ namespace RevenuePlanner.Controllers
                         {
                             pcpobj.StartDate = Convert.ToDateTime(UpdateVal);
                             var PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
-                            if (PStartDate > Convert.ToDateTime(UpdateVal))
+                            if (PStartDate < Convert.ToDateTime(UpdateVal))
                             {
                                 pcpobj.Plan_Campaign_Program.StartDate = Convert.ToDateTime(UpdateVal);
                             }
 
                             var CStartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
 
-                            if (CStartDate > Convert.ToDateTime(UpdateVal))
+                            if (CStartDate < Convert.ToDateTime(UpdateVal))
                             {
                                 pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = Convert.ToDateTime(UpdateVal);
                             }
@@ -9449,15 +9449,15 @@ namespace RevenuePlanner.Controllers
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
                             pcpobj.EndDate = Convert.ToDateTime(UpdateVal);
-                            var PEndDate = pcpobj.Plan_Campaign_Program.EndDate;
-                            if (PEndDate > Convert.ToDateTime(UpdateVal))
+                            var PEndDate = pcpobj.Plan_Campaign_Program.EndDate.ToString("MM/dd/yyyy");
+                            if (Convert.ToDateTime(PEndDate) < Convert.ToDateTime(UpdateVal))
                             {
                                 pcpobj.Plan_Campaign_Program.EndDate = Convert.ToDateTime(UpdateVal);
                             }
 
-                            var CEndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate;
+                            var CEndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate.ToString("MM/dd/yyyy");
 
-                            if (CEndDate > Convert.ToDateTime(UpdateVal))
+                            if (Convert.ToDateTime(CEndDate) < Convert.ToDateTime(UpdateVal))
                             {
                                 pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = Convert.ToDateTime(UpdateVal);
                             }
