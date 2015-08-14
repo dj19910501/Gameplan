@@ -105,7 +105,7 @@
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
         HomeGrid.attachEvent("onDrag", doOnDrag);
-        HomeGrid.attachEvent("onMouseOver", function () { return false });
+     //   HomeGrid.attachEvent("onMouseOver", function () { return false });
         HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
             return true;                                          //allows dragging in any other case
@@ -113,7 +113,7 @@
        // HomeGrid.setDragText("rows");
         //   HomeGrid.splitAt(1);
         HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
-        HomeGrid.setColumnHidden(2, true);
+        //HomeGrid.setColumnHidden(2, true);
 
         //HomeGrid.forEachRow(function (id) {
         //    var cost = HomeGrid.cells(id, 5).getValue();
@@ -426,10 +426,11 @@
             $('#divMovetacticPopup').modal("hide");
         });
         $(".grid_add").click(function (e) {
+            $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
             gridSearchFlag = 1;
             var type = $(this).attr('id');
             var name = $(this).attr('alt');
-            var title = $(this).attr('title');
+            var title = $(this).attr('data-title');
             var chk_permission = title.split("/");
             title = chk_permission[0];
             var permission = chk_permission[1];

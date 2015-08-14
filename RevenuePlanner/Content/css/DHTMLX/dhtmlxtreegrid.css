@@ -2491,13 +2491,14 @@ div.dhx_page_active_skyblue {
 .dhxgrid_sort_desc, .dhxgrid_sort_asc {
     width: 9px;
     height: 8px;
-    background-image: url("imgs/dhxgrid_skyblue/sort_desc.gif");
+    background-image: url("../../../../codebase/imgs/dhxgrid_skyblue/sort_desc.gif");
     background-repeat: no-repeat;
     z-index: 10;
+    top:40px!important;
 }
 
 .dhxgrid_sort_asc {
-    background-image: url("imgs/dhxgrid_skyblue/sort_asc.gif");
+    background-image: url("../../../../codebase/imgs/dhxgrid_skyblue/sort_asc.gif");
     background-repeat: no-repeat;
 }
 

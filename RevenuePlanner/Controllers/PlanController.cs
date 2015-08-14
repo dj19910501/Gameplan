@@ -9972,7 +9972,8 @@ namespace RevenuePlanner.Controllers
             try
             {
 
-                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false && tactype.ModelId == modelId).ToList();
+                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false 
+                    && tactype.ModelId == modelId && tactype.IsDeployedToModel == true ).ToList();
               
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
@@ -9992,14 +9993,14 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append(" </call></beforeInit>");
 
                 strHeader.Append("<column width='330' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
-                strHeader.Append("<column type='ro' align='center' id='add' width='50' ></column>");
-                strHeader.Append("<column type='ro' align='center' id='id' >id</column>");
-                strHeader.Append("<column width='90' type='dhxCalendar' sort='date' align='center' id='startdate' >" + DateTime.Now.Year.ToString() + "</column>");
-                strHeader.Append("<column width='90' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
+                strHeader.Append("<column type='ro' align='center' id='add' width='50' sort='na' ></column>");
+                strHeader.Append("<column type='ro' align='center' id='id' sort='na' width='0' >" + DateTime.Now.Year.ToString() + "</column>");
+                strHeader.Append("<column width='110' type='dhxCalendar' sort='date' align='center' id='startdate' >#cspan</column>");
+                strHeader.Append("<column width='100' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
                 strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
                 if (tblTacticTypes != null)
                 {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "str"), "#cspan",
+                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "str"), "#cspan",
                         tblTacticTypes.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title)));
 
                     xmltactictype = xmlElements.ToString();
@@ -10008,14 +10009,14 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append(xmltactictype);
                 if (lstUserDetails != null)
                 {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "co"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "str"), "#cspan",
+                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "str"), "#cspan",
                         lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlEncode(i.FirstName), HttpUtility.HtmlEncode(i.LastName)))));
                     xmlUserlist = xmlElements.ToString();
                 }
 
                 strHeader.Append(xmlUserlist);
-                strHeader.Append("<column width='125' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
-                strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='mql'>#cspan</column>");
+                strHeader.Append("<column width='140' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
+                strHeader.Append("<column width='135' type='ron' sort='int' align='center' id='mql'>#cspan</column>");
                 strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='revenue'>#cspan</column>");
                 strHeader.Append("</head>");
             }
