@@ -9184,7 +9184,7 @@ namespace RevenuePlanner.Controllers
                     GridString.Append("<cell><![CDATA[ <img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='PlanPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "\">");
                     if (IsPlanCreateAll)
                     {
-                        GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">");
+                        GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">");
                     }
                     GridString.Append("]]></cell>");
                     GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell>" + Startdate + "</cell> <cell>" + Enddate + "</cell>  <cell>" + totalcost + "</cell> ");
@@ -9220,7 +9220,7 @@ namespace RevenuePlanner.Controllers
                             GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='CampaignPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "\">");
                             if (Campaignitem.IsPlanCreateAll)
                             {
-                                GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\">");
+                                GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" data-title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\">");
                             }
                             GridString.Append("]]></cell>");
                             GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
@@ -9272,7 +9272,7 @@ namespace RevenuePlanner.Controllers
                                     GridString.Append("<cell bgColor='#DFF0F8'>" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='ProgramPopup' class='grid_Search' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "\">");
                                     if (Programitem.IsPlanCreateAll)
                                     {
-                                        GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\">");
+                                        GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\">");
                                     }
                                     GridString.Append("]]></cell>");
                                     GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8'>" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8'>" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
@@ -9316,7 +9316,7 @@ namespace RevenuePlanner.Controllers
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
                                                                                    new XElement("cell", tactic.title),
-                                                                                   new XElement("cell", new XCData("<img src='../Content/images/magnifying_glass.png' style='cursor:pointer; float: left;margin-top:4px;' class='grid_Search' id='TacticPopup' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + "_Y" + tactic.tactictypeid + "\"> "  + (tactic.IsPlanCreateAll == true ? "<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">" : ""))),
+                                                                                   new XElement("cell", new XCData("<img src='../Content/images/magnifying_glass.png' style='cursor:pointer; float: left;margin-top:4px;' class='grid_Search' id='TacticPopup' alt=\"L" + planitem.PlanId + "_C" + Campaignitem.PlanCampaignId + "_P" + Programitem.PlanProgramId + "_T" + tactic.PlanTacticId + "_Y" + tactic.tactictypeid + "\"> "  + (tactic.IsPlanCreateAll == true ? "<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">" : ""))),
                                                                                    new XElement("cell", tactic.PlanTacticId),
                                                                                    new XElement("cell", tactic.startdate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", tactic.enddate.ToString("MM/dd/yyyy")),
