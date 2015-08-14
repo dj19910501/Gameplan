@@ -403,8 +403,8 @@ namespace RevenuePlanner.Controllers
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
           
             var lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => new { plan.PlanId, plan.Model.ClientId, plan.Year }).ToList();
-              
-           
+         
+
             bool IsRequest = false;
             string planYear = string.Empty;
             int year;
@@ -451,7 +451,7 @@ namespace RevenuePlanner.Controllers
             List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
             //TacticType filter criteria
             List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
-
+            
             //// Applying filters to tactic (IsDelete, Individuals)
             List<Plan_Tactic> lstTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
@@ -469,7 +469,7 @@ namespace RevenuePlanner.Controllers
                                                                            objPlanTacticCampaignPlan = tactic.Plan_Campaign_Program.Plan_Campaign.Plan,
                                                                            TacticType = tactic.TacticType
                                                                        }).ToList();
-
+            
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
             List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
             //// Apply Custom restriction for None type
@@ -479,32 +479,34 @@ namespace RevenuePlanner.Controllers
 
                 //// Start - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
                 //// Custom Field Filter Criteria.
-                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
-                if (filteredCustomFields.Count > 0)
+              //  List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                string[] filteredCustomFields =string.IsNullOrWhiteSpace(customFieldIds) ? null : customFieldIds.Split(',');
+                if (filteredCustomFields!=null)
                 {
-                    filteredCustomFields.ForEach(customField =>
+                  //  filteredCustomFields.ForEach(customField =>
+                    foreach(string customField in filteredCustomFields)
                     {
                         string[] splittedCustomField = customField.Split('_');
                         lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
                         lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
-                    });
+                    };
                     lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
                     //// get Allowed Entity Ids
                     lstTactic = lstTactic.Where(tactic => lstTacticIds.Contains(tactic.objPlanTactic.PlanTacticId)).ToList();
                 }
                 //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
-
+            
                 List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                 lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId)).Select(tactic => tactic).ToList();
             }
-
+         
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             //// Get list of Improvement tactics based on selected plan ids
             List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => filteredPlanIds.Contains(improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) &&
                                                                                       improvementTactic.IsDeleted.Equals(false) &&
                                                                                       (improvementTactic.EffectiveDate > CalendarEndDate).Equals(false))
                                                                                .Select(improvementTactic => improvementTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
-
+            
             var lstSubordinatesWithPeers = new List<Guid>();
             try
             {
@@ -543,7 +545,7 @@ namespace RevenuePlanner.Controllers
                 lstTactic = subordinatesTactic;
                 lstImprovementTactic = subordinatesImprovementTactic;
             }
-
+           
             object improvementTacticForAccordion = new object();
             object improvementTacticTypeForAccordion = new object();
 
@@ -599,7 +601,7 @@ namespace RevenuePlanner.Controllers
                 improvementTacticForAccordion = GetImprovementTacticForAccordion(lstImprovementTactic);
                 improvementTacticTypeForAccordion = GetImprovementTacticTypeForAccordion(lstImprovementTactic);
             }
-
+          
             //// Start - Added by Sohel Pathan on 28/10/2014 for PL ticket #885
             //// Prepare viewBy option list based on obtained tactic list
             List<ViewByModel> viewByListResult = prepareViewByList(getViewByList, tacticForAllTabs);
