@@ -89,6 +89,24 @@ $(document).ready(function () {
         color: '#fff',
     });
 });
+/*Added by Devanshi for #1430 do not allow text when user edit grid column value */
+/*function used at textbox which contains only numeric value*/
+function GridPriceFormatKeydown(e) {
+    // Allow: backspace, delete, tab, escape, enter and .
+    if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110]) !== -1 ||
+        // Allow: Ctrl+A
+        (e.keyCode == 65 && e.ctrlKey === true) ||
+        // Allow: home, end, left, right
+        (e.keyCode >= 35 && e.keyCode <= 39)) {
+        // let it happen, don't do anything
+        return;
+    }
+    // Ensure that it is a number and stop the keypress
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+        e.preventDefault();
+    }
+
+};
 
 /*Added by Mitesh Vaishnav on 30 May 2014 for #492 Difficulty entering weight values when creating an improvement tactic */
 /*function used at textbox which contains only numeric value*/

@@ -9036,7 +9036,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-
+                List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
                 //// Owner filter criteria.
                 List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
 
@@ -9060,14 +9060,14 @@ namespace RevenuePlanner.Controllers
                 string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
 
 
-                int? modelId = db.Plans.Where(p => p.PlanId == Sessions.PlanId).Select(p => p.ModelId).FirstOrDefault();
+              
 
 
-                GridString = GenerateXMHeader(GridString, MQLTitle, modelId);
+                int MainPlanID = 0;
 
-
-                List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
-
+                MainPlanID = Convert.ToInt32(planIds[0].ToString());
+                int? modelId = db.Plans.Where(p => p.PlanId == MainPlanID).Select(p => p.ModelId).FirstOrDefault();
+                GridString = GenerateXMHeader(GridString, MQLTitle, MainPlanID);
                 List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
 
                 GetGoalValue(lstplandetail, modelId.ToString(), stageList, objplangrid, objimprovement); // for plan grid header to bind goal detail
@@ -9550,7 +9550,7 @@ namespace RevenuePlanner.Controllers
                     {
                         pcpobj.TacticTypeId = Convert.ToInt32(UpdateVal);
                     }
-                    else if (UpdateColumn == "Projected Stage Value")
+                    else if (UpdateColumn == "Target Stage Goal")
                     {
                         pcpobj.ProjectedStageValue = Convert.ToDouble(UpdateVal);
                     }
@@ -9980,16 +9980,23 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region method to generate grid header
-        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int? modelId)
+        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int planid)
         {
 
             string xmlUserlist = string.Empty;
             string xmltactictype = string.Empty;
             try
             {
+                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false).ToList();
+                //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
+                var lstTactic = from tacType in tblTacticTypes
+                                join _plan in db.Plans on tacType.ModelId equals _plan.ModelId
+                                where _plan.PlanId == planid && tacType.IsDeployedToModel == true
+                                orderby tacType.Title
+                                select tacType;
 
-                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false
-                    && tactype.ModelId == modelId && tactype.IsDeployedToModel == true).ToList();
+                //List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false)
+                //    && tactype.ModelId == modelId && tactype.IsDeployedToModel == true ).ToList();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
@@ -10005,7 +10012,7 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append("<?xml version='1.0' encoding='iso-8859-1'?>");
                 strHeader.Append("<rows>");
 
-                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Projected Stage Value," + MQLTitle + ",Revenue</param>");
+                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Target Stage Goal," + MQLTitle + ",Revenue</param>");
                 strHeader.Append(" </call></beforeInit>");
 
                 strHeader.Append("<column width='330' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
@@ -10017,7 +10024,7 @@ namespace RevenuePlanner.Controllers
                 if (tblTacticTypes != null)
                 {
                     XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "str"), "#cspan",
-                        tblTacticTypes.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title)));
+                        lstTactic.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title)));
 
                     xmltactictype = xmlElements.ToString();
 

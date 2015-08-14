@@ -76,10 +76,12 @@
     var $doc = $(document);
     $doc.click(function () {
         $('#popupType').css('display', 'none');
+        $('#dhx_combo_select').css('display', 'none');
     });
 
     $(document).mouseup(function (e) {
         $('#popupType').css("display", "none");
+        $('#dhx_combo_select').css('display', 'none');
     });
     $(".grid_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
@@ -100,8 +102,8 @@
         HomeGrid.enableAutoWidth(false);
      
         HomeGrid.setNumberFormat("$0,000", 5, ".", ",");
-        HomeGrid.setNumberFormat("0,000", 9, ".", ",");
-        HomeGrid.setNumberFormat("$0,000", 10, ".", ",");
+        //HomeGrid.setNumberFormat("0,000", 9, ".", ",");
+        //HomeGrid.setNumberFormat("$0,000", 10, ".", ",");
         HomeGrid.setImageSize(1, 1);
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
@@ -116,17 +118,17 @@
         HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
         //HomeGrid.setColumnHidden(2, true);
 
-        //HomeGrid.forEachRow(function (id) {
+        HomeGrid.forEachRow(function (id) {
         //    var cost = HomeGrid.cells(id, 5).getValue();
 
         //    HomeGrid.cells(id, 5).setValue(FormatNumber(cost, false));
-        //    var MQL = HomeGrid.cells(id, 9).getValue();
+            var MQL = HomeGrid.cells(id, 9).getValue();
 
-        //    HomeGrid.cells(id, 9).setValue(GetAbberiviatedValue(MQL));
-        //    var Revenue = HomeGrid.cells(id, 10).getValue();
+            HomeGrid.cells(id, 9).setValue(GetAbberiviatedValue(MQL));
+            var Revenue = HomeGrid.cells(id, 10).getValue();
 
-        //    HomeGrid.cells(id, 10).setValue(FormatNumber(Revenue, false));
-        //});
+            HomeGrid.cells(id, 10).setValue(FormatNumber(Revenue, false));
+        });
     }
     function convertNumber(num) {
         var finlval = 0;
@@ -254,7 +256,22 @@
             //   // this.editor.obj.style.textAlign = "center";
             //    this.editor.obj.value = convertNumber(numb);
             //}
-            if (UpdateColumn == "Projected Stage Value") {
+            $(".dhx_combo_edit").off("keydown");
+            if (UpdateColumn == "Tactic Planned Cost" || UpdateColumn == "Target Stage Goal") {
+
+                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+                HomeGrid.editor.obj.onkeypress = function (e) {
+                    e = e || window.event;
+                    if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                        var text = this.value;
+                        if (text.length > 10) { //max length of the text
+                            return false;
+                        }
+                    }
+                }
+            }
+           
+            if (UpdateColumn == "Target Stage Goal") {
                // this.editor.obj.class = "priceValue";
                 var psv = HomeGrid.cells(rowId, 8).getValue().split(" ");
                 this.editor.obj.value = psv[psv.length - 1];
@@ -321,7 +338,7 @@
                     }
                 }
             }
-            if (UpdateColumn.toString().trim() == "Projected Stage Value") {
+            if (UpdateColumn.toString().trim() == "Target Stage Goal") {
                 var splitoval = oValue.split(" ");
                 if (nValue != splitoval[splitoval.length - 1]) {
                 var tactictypeindex = HomeGrid.getColIndexById('tactictype');
@@ -417,7 +434,7 @@
                     dataType: 'json',
 
                     success: function (states) {
-                        if (UpdateColumn == "Projected Stage Value") {
+                        if (UpdateColumn == "Target Stage Goal") {
                             var psv = HomeGrid.cells(rowid, 8).getAttribute("stage");
                             HomeGrid.cells(rowid, 8).setValue(psv + " " + UpdateVal);
                         }
