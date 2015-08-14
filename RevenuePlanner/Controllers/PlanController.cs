@@ -10004,6 +10004,7 @@ namespace RevenuePlanner.Controllers
                 {
                     string strUserList = string.Join(",", lstClientUsers);
                     lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();

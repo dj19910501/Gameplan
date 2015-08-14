@@ -801,7 +801,9 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+              
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+               
                 if (lstClientUsers.Count() > 0)
                 {
 
@@ -809,6 +811,7 @@ namespace RevenuePlanner.Controllers
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
@@ -1458,7 +1461,10 @@ namespace RevenuePlanner.Controllers
             try
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+              
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
@@ -1469,6 +1475,7 @@ namespace RevenuePlanner.Controllers
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
@@ -3119,6 +3126,7 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                 //Modified By Komal Rawal for #1360
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+               
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
 
                 if (lstClientUsers.Count() > 0)
@@ -3131,6 +3139,7 @@ namespace RevenuePlanner.Controllers
 
                     string strUserList = string.Join(",", lstClientUsers);
                     List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
