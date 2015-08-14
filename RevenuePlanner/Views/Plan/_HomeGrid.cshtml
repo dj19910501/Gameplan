@@ -322,7 +322,8 @@
                 }
             }
             if (UpdateColumn.toString().trim() == "Projected Stage Value") {
-                if (nValue != oValue) {
+                var splitoval = oValue.split(" ");
+                if (nValue != splitoval[splitoval.length - 1]) {
                 var tactictypeindex = HomeGrid.getColIndexById('tactictype');
                 var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
                 GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue);
