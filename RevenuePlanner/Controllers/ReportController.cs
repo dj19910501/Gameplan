@@ -13,7 +13,7 @@ using System.Web;
 using System.IO;
 using System.Web.Script.Serialization;
 using System.Data.Objects.SqlClient;
-using RevenuePlanner.BDSService; 
+using RevenuePlanner.BDSService;
 using RevenuePlanner.Helpers;
 namespace RevenuePlanner.Controllers
 {
@@ -64,16 +64,16 @@ namespace RevenuePlanner.Controllers
             {
                 Sessions.ReportPlanIds.Add(Sessions.PlanId);
             }
- 				else
-                {
-                    // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
-                    string published = Convert.ToString(Enums.PlanStatus.Published);
-                    string year = Convert.ToString(DateTime.Now.Year);
+            else
+            {
+                // Get Plan Id if Session Plan id not exist : Added By Bhavesh : Report Code ereview
+                string published = Convert.ToString(Enums.PlanStatus.Published);
+                string year = Convert.ToString(DateTime.Now.Year);
                 //int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).FirstOrDefault().PlanId;
                 int planid = db.Plans.Where(plan => plan.Status == published && !plan.IsDeleted && plan.Year == year).OrderBy(p => p.Title).FirstOrDefault().PlanId; // Change By Nishant Sheth for select first plan
                 Sessions.PlanId = planid;// Add By Nishant Seth #1489
-                    Sessions.ReportPlanIds.Add(planid);
-                }
+                Sessions.ReportPlanIds.Add(planid);
+            }
             //// Modified by Arpita Soni for Ticket #1148 on 01/23/2015
             //// List of Tab - Parent
             List<ViewByModel> lstViewByTab = new List<ViewByModel>();
@@ -93,9 +93,9 @@ namespace RevenuePlanner.Controllers
             List<CustomField> lstCustomFields = new List<CustomField>();
             string tactic = Enums.EntityType.Tactic.ToString();
 
-                // Get Custom Field Type Id
-                string customFieldType = Convert.ToString(Enums.CustomFieldType.DropDownList);
-                int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).FirstOrDefault().CustomFieldTypeId;
+            // Get Custom Field Type Id
+            string customFieldType = Convert.ToString(Enums.CustomFieldType.DropDownList);
+            int customFieldTypeId = db.CustomFieldTypes.Where(type => type.Name == customFieldType).FirstOrDefault().CustomFieldTypeId;
 
             lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
                 customfield.EntityType == tactic &&
@@ -147,8 +147,8 @@ namespace RevenuePlanner.Controllers
                 objYear.Selected = year == selectedYear ? true : false;
                 lstYear.Add(objYear);
             }
-           // SelectListItem thisQuarter = new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString() };
-           // lstYear.Add(thisQuarter);
+            // SelectListItem thisQuarter = new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString() };
+            // lstYear.Add(thisQuarter);
 
 
             ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
@@ -1161,18 +1161,27 @@ namespace RevenuePlanner.Controllers
                 //// From which custom field called
                 if (ParentLabel.Contains(Common.TacticCustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
-                    IsTactic = true;
+                    if (int.TryParse(ParentLabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
+                    {
+                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                        IsTactic = true;
+                    }
                 }
                 else if (ParentLabel.Contains(Common.CampaignCustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
-                    IsCampaign = true;
+                    if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                    {
+                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                        IsCampaign = true;
+                    }
                 }
                 else if (ParentLabel.Contains(Common.ProgramCustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
-                    IsProgram = true;
+                    if (int.TryParse(ParentLabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
+                    {
+                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                        IsProgram = true;
+                    }
                 }
 
                 if (customfieldId > 0)
@@ -2039,11 +2048,11 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]
         public ActionResult GetRevenueData(string option = "thisquarter", string isQuarterly = "Quarterly")
         {
-			#region "Declare Main Variable for Model"
+            #region "Declare Main Variable for Model"
 
-                ReportModel objReportModel = new ReportModel();
+            ReportModel objReportModel = new ReportModel();
 
-                #endregion
+            #endregion
             //// check planids selected or not
             if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
@@ -2058,31 +2067,31 @@ namespace RevenuePlanner.Controllers
                 //// set viewbag to display plan or msg
                 ViewBag.IsPlanExistToShowReport = true;
 
-            #region "Declare Local Variables"
-            List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
-            List<int> campaignlist = new List<int>();
-            List<int> programlist = new List<int>();
-            List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
+                #region "Declare Local Variables"
+                List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
+                List<int> campaignlist = new List<int>();
+                List<int> programlist = new List<int>();
+                List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
 
 
-            bool IsTillCurrentMonth = true, IsQuarterly = true;
-            string revStageCode = Convert.ToString(Enums.InspectStageValues[Convert.ToString(Enums.InspectStage.Revenue)]);
-            List<string> ActualStageCodeList = new List<string>();
-            ActualStageCodeList.Add(revStageCode);
-            List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
-            List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
-            List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
-            Projected_Goal objProjectedGoal = new Projected_Goal();
-            lineChartData objLineChartData = new lineChartData();
-            #endregion
+                bool IsTillCurrentMonth = true, IsQuarterly = true;
+                string revStageCode = Convert.ToString(Enums.InspectStageValues[Convert.ToString(Enums.InspectStage.Revenue)]);
+                List<string> ActualStageCodeList = new List<string>();
+                ActualStageCodeList.Add(revStageCode);
+                List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
+                List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
+                List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
+                Projected_Goal objProjectedGoal = new Projected_Goal();
+                lineChartData objLineChartData = new lineChartData();
+                #endregion
 
-            // Add BY Nishant Sheth
+                // Add BY Nishant Sheth
                 // Use below viewbag for details button on card section
-            ViewBag.ParentLabel = Common.RevenueCampaign;
-            ViewBag.childlabelType = Common.RevenueCampaign;
-            ViewBag.childId = 0;
-            ViewBag.option = option;
-           
+                ViewBag.ParentLabel = Common.RevenueCampaign;
+                ViewBag.childlabelType = Common.RevenueCampaign;
+                ViewBag.childId = 0;
+                ViewBag.option = option;
+
                 if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
                     IsQuarterly = false;
 
@@ -2098,236 +2107,236 @@ namespace RevenuePlanner.Controllers
                 else
                     ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
 
-               
-                    tacticlist = GetTacticForReporting();
-                    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-                    campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
-                    programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
-                    Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-                    TempData["ReportData"] = Tacticdata;
 
-                    //// get month list
-                    List<string> includeMonth = GetMonthListForReport(option, true);
+                tacticlist = GetTacticForReporting();
+                // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+                campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
+                Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+                TempData["ReportData"] = Tacticdata;
 
-                    #region "Get CustomField List"
+                //// get month list
+                List<string> includeMonth = GetMonthListForReport(option, true);
 
-                    #region "Set Parent DDL data to ViewBag"
-                    //// Set Parent Revenue Summary data to list.
-                    List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
-                    lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
-                    lstParentRevenueSummery = lstParentRevenueSummery.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
-                    //Concat the Campaign and Program custom fields data with exsiting one. 
-                    var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
-                    lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFields).ToList();
-                    ViewBag.parentRevenueSummery = lstParentRevenueSummery;
-                    #endregion
+                #region "Get CustomField List"
 
-                    #region "Set Child DDL data to ViewBag"
-                    // Get child tab list
-                    List<ViewByModel> lstChildRevenueToPlan = new List<ViewByModel>();
-                    lstChildRevenueToPlan.Add(new ViewByModel { Text = "All", Value = "0" });
-                    List<ViewByModel> childCustomFieldOptionList = new List<ViewByModel>();
-                    if (lstParentRevenueSummery.Count > 0)
-                        childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentRevenueSummery.First().Value, option);
+                #region "Set Parent DDL data to ViewBag"
+                //// Set Parent Revenue Summary data to list.
+                List<ViewByModel> lstParentRevenueSummery = new List<ViewByModel>();
+                lstParentRevenueSummery.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
+                lstParentRevenueSummery = lstParentRevenueSummery.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
+                //Concat the Campaign and Program custom fields data with exsiting one. 
+                var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
+                lstParentRevenueSummery = lstParentRevenueSummery.Concat(lstCustomFields).ToList();
+                ViewBag.parentRevenueSummery = lstParentRevenueSummery;
+                #endregion
 
-                    ViewBag.ChildTabListRevenueToPlan = lstChildRevenueToPlan.Concat(childCustomFieldOptionList).ToList();
-                    #endregion
+                #region "Set Child DDL data to ViewBag"
+                // Get child tab list
+                List<ViewByModel> lstChildRevenueToPlan = new List<ViewByModel>();
+                lstChildRevenueToPlan.Add(new ViewByModel { Text = "All", Value = "0" });
+                List<ViewByModel> childCustomFieldOptionList = new List<ViewByModel>();
+                if (lstParentRevenueSummery.Count > 0)
+                    childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentRevenueSummery.First().Value, option);
 
-                    #region "Set Campaign,Program,Tactic list to ViewBag"
+                ViewBag.ChildTabListRevenueToPlan = lstChildRevenueToPlan.Concat(childCustomFieldOptionList).ToList();
+                #endregion
 
-                    //// Get Campaign list for dropdown
-                    List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
-                    List<int> campaignIds = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
-                    var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
-                            .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
-                            .OrderBy(pcp => pcp.Title).ToList();
-                    campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-                    var lstCampaignList = campaignList;
-                    lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
+                #region "Set Campaign,Program,Tactic list to ViewBag"
 
-                    List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
-                    _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
-                    //// Get Program list for dropdown
-                    var programList = db.Plan_Campaign_Program.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
-                           .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
-                           .OrderBy(pcp => pcp.Title).ToList();
-                    programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-                    var lstProgramList = programList;
-                    lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
-
-                    //// Get tactic list for dropdown
-                    var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
+                //// Get Campaign list for dropdown
+                List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
+                List<int> campaignIds = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
+                var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
+                        .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
                         .OrderBy(pcp => pcp.Title).ToList();
-                    tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-                    var lstTacticList = tacticListinner;
-                    lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
+                campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+                var lstCampaignList = campaignList;
+                lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
 
-                    //// Set DDL List in ViewBag.
-                    ViewBag.CampaignDropdownList = lstCampaignList;
-                    ViewBag.ProgramDropdownList = lstProgramList;
-                    ViewBag.TacticDropdownList = lstTacticList;
-                    #endregion
+                List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
+                _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+                //// Get Program list for dropdown
+                var programList = db.Plan_Campaign_Program.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
+                       .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
+                       .OrderBy(pcp => pcp.Title).ToList();
+                programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+                var lstProgramList = programList;
+                lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
 
-                    #endregion
+                //// Get tactic list for dropdown
+                var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
+                    .OrderBy(pcp => pcp.Title).ToList();
+                tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+                var lstTacticList = tacticListinner;
+                lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
 
-                    #region "Revenue Model Values"
+                //// Set DDL List in ViewBag.
+                ViewBag.CampaignDropdownList = lstCampaignList;
+                ViewBag.ProgramDropdownList = lstProgramList;
+                ViewBag.TacticDropdownList = lstTacticList;
+                #endregion
 
-                    ActualTacticStageList = GetActualListInTacticInterval(Tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
-                    ActualTacticTrendList = GetActualTrendModelForRevenueOverview(Tacticdata, ActualTacticStageList);
+                #endregion
 
-                    #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
-                    
-                    #endregion
+                #region "Revenue Model Values"
 
-                    #region "Get Basic Model"
-                    BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, option, IsQuarterly);
-                    #endregion
+                ActualTacticStageList = GetActualListInTacticInterval(Tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
+                ActualTacticTrendList = GetActualTrendModelForRevenueOverview(Tacticdata, ActualTacticStageList);
 
-                    #region "Set Linechart & Revenue Overview data to model"
-                    objLineChartData = GetCombinationLineChartData(objBasicModel);
-                    
-                    // Add By NIshant Sheth For change the logic of header value as per #1397
-                    objReportModel.RevenueHeaderModel = GetRevenueHeaderValue(objBasicModel, option).RevenueHeaderModel;
+                #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
+                ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
 
-                    #endregion
+                #endregion
 
-                    #endregion
+                #region "Get Basic Model"
+                BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, option, IsQuarterly);
+                #endregion
 
-                    #region "Revenue To Plan"
-                    RevenueToPlanModel objRevenueToPlanModel = new RevenueToPlanModel();
-                    #region "Calculate Barchart data by TimeFrame"
-                    BarChartModel objBarChartModel = new BarChartModel();
-                    List<BarChartSeries> lstSeries = new List<BarChartSeries>();
-                    List<string> _Categories = new List<string>();
-                    _Categories = objBasicModel.Categories;
-                    double catLength = _Categories != null ? _Categories.Count : 0;
-                    List<double> serData1 = new List<double>();
-                    List<double> serData2 = new List<double>();
-                    List<double> serData3 = new List<double>();
-                    double _Actual = 0, _Projected = 0, _Goal = 0, _plotBandFromValue = 0, _plotBandToValue = 0;
-                    bool _IsQuarterly = objBasicModel.IsQuarterly;
-                    int _compareValue = 0;
+                #region "Set Linechart & Revenue Overview data to model"
+                objLineChartData = GetCombinationLineChartData(objBasicModel);
+
+                // Add By NIshant Sheth For change the logic of header value as per #1397
+                objReportModel.RevenueHeaderModel = GetRevenueHeaderValue(objBasicModel, option).RevenueHeaderModel;
+
+                #endregion
+
+                #endregion
+
+                #region "Revenue To Plan"
+                RevenueToPlanModel objRevenueToPlanModel = new RevenueToPlanModel();
+                #region "Calculate Barchart data by TimeFrame"
+                BarChartModel objBarChartModel = new BarChartModel();
+                List<BarChartSeries> lstSeries = new List<BarChartSeries>();
+                List<string> _Categories = new List<string>();
+                _Categories = objBasicModel.Categories;
+                double catLength = _Categories != null ? _Categories.Count : 0;
+                List<double> serData1 = new List<double>();
+                List<double> serData2 = new List<double>();
+                List<double> serData3 = new List<double>();
+                double _Actual = 0, _Projected = 0, _Goal = 0, _plotBandFromValue = 0, _plotBandToValue = 0;
+                bool _IsQuarterly = objBasicModel.IsQuarterly;
+                int _compareValue = 0;
+                serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
+                serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+
+                if (!_IsQuarterly)
+                {
                     serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
                     serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
                     serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                }
+                _compareValue = IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
 
-                    if (!_IsQuarterly)
-                    {
-                        serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
-                        serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
-                        serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
-                    }
-                    _compareValue = IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
+                #region "Set PlotBand From & To values"
+                _plotBandFromValue = IsQuarterly && (_compareValue != _lastQuarterValue) ? (_compareValue + _constQuartPlotBandPadding) : 0;
+                objBarChartModel.plotBandFromValue = _plotBandFromValue;
+                objBarChartModel.plotBandToValue = _plotBandFromValue > 0 ? (_PlotBandToValue) : 0;
+                #endregion
 
-                    #region "Set PlotBand From & To values"
-                    _plotBandFromValue = IsQuarterly && (_compareValue != _lastQuarterValue) ? (_compareValue + _constQuartPlotBandPadding) : 0;
-                    objBarChartModel.plotBandFromValue = _plotBandFromValue;
-                    objBarChartModel.plotBandToValue = _plotBandFromValue > 0 ? (_PlotBandToValue) : 0;
-                    #endregion
-
-                    for (int i = 0; i < catLength; i++)
-                    {
-                        _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
-                        _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
-                        _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
-                       // Actual_Projected = _Actual + _Projected;
-                        //serData1.Add(Actual_Projected);
-                        serData2.Add(_Goal);
-                        serData1.Add(_Actual);
-                        serData3.Add(_Projected);
-                        //if ((i + 1) < (_compareValue))
-                        //{
-                        //    serData1.Add(Actual_Projected);
-                        //    serData3.Add(0);
-                        //}
-                        //else
-                        //{
-                        //    serData1.Add(0);
-                        //    serData3.Add(Actual_Projected);
-                        //}
-                    }
-                    List<string> _barChartCategories = new List<string>();
-                    if (!IsQuarterly)
-                    {
-                        _barChartCategories.Add(string.Empty);
-                        _barChartCategories.Add(string.Empty);
-                        _barChartCategories.AddRange(_Categories);
-                    }
-                    else
-                    {
-                        _barChartCategories.Add(string.Empty);
-                        _barChartCategories.AddRange(_Categories);
-                    }
-
-                    BarChartSeries _chartSeries1 = new BarChartSeries();
-                    _chartSeries1.name = "Actual";
-                    _chartSeries1.data = serData1;
-                    _chartSeries1.type = "column";
-                    lstSeries.Add(_chartSeries1);
-
-                    BarChartSeries _chartSeries2 = new BarChartSeries();
-                    _chartSeries2.name = "Goal";
-                    _chartSeries2.data = serData2;
-                    _chartSeries2.type = "column";
-                    lstSeries.Add(_chartSeries2);
-
-                    BarChartSeries _chartSeries3 = new BarChartSeries();
-                    _chartSeries3.name = "Projected";
-                    _chartSeries3.data = serData3;
-                    _chartSeries3.type = "column";
-                    lstSeries.Add(_chartSeries3);
-
-                    objBarChartModel.series = lstSeries;
-                    objBarChartModel.categories = _barChartCategories;
-
-                    objRevenueToPlanModel.RevenueToPlanBarChartModel = objBarChartModel;
-                    objRevenueToPlanModel.LineChartModel = objLineChartData;
-                    #endregion
-
-                    #region "Calculate DataTable"
-                    RevenueDataTable objRevenueDataTable = new RevenueDataTable();
-                    RevenueSubDataTableModel objSubDataModel = new RevenueSubDataTableModel();
-                    objRevenueDataTable.Categories = _Categories;
-                    objRevenueDataTable.ActualList = objBasicModel.ActualList;
-                    objRevenueDataTable.ProjectedList = objBasicModel.ProjectedList;
-                    objRevenueDataTable.GoalList = objBasicModel.GoalList;
-                    objSubDataModel = GetRevenueToPlanDataByCampaign(Tacticdata, option, objBasicModel.IsQuarterly, objBasicModel);
-                    objRevenueDataTable.SubDataModel = objSubDataModel;
-                    objRevenueDataTable.IsQuarterly = objBasicModel.IsQuarterly;
-                    objRevenueDataTable.timeframeOption = objBasicModel.timeframeOption;
-                    objRevenueToPlanModel.RevenueToPlanDataModel = objRevenueDataTable;
-                    #endregion
-
-                    #endregion
-
-                    objReportModel.RevenueToPlanModel = objRevenueToPlanModel;
-
-                    #region "CardSection Model"
-                    CardSectionModel objCardSectionModel = new CardSectionModel();
-                    List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-                    CardSectionListModel = GetCardSectionDefaultData(Tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, option, IsQuarterly, Common.RevenueCampaign.ToString(), false, "", 0);
-
-                    objCardSectionModel.CardSectionListModel = CardSectionListModel;
-                    
-                    #endregion
-
-                    
-                    TempData["RevenueCardList"] = null;
-                    TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
-                    
-                    objReportModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString());
-                    objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
+                for (int i = 0; i < catLength; i++)
+                {
+                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
+                    _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
+                    _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
+                    // Actual_Projected = _Actual + _Projected;
+                    //serData1.Add(Actual_Projected);
+                    serData2.Add(_Goal);
+                    serData1.Add(_Actual);
+                    serData3.Add(_Projected);
+                    //if ((i + 1) < (_compareValue))
+                    //{
+                    //    serData1.Add(Actual_Projected);
+                    //    serData3.Add(0);
+                    //}
+                    //else
+                    //{
+                    //    serData1.Add(0);
+                    //    serData3.Add(Actual_Projected);
+                    //}
+                }
+                List<string> _barChartCategories = new List<string>();
+                if (!IsQuarterly)
+                {
+                    _barChartCategories.Add(string.Empty);
+                    _barChartCategories.Add(string.Empty);
+                    _barChartCategories.AddRange(_Categories);
                 }
                 else
                 {
-                    objReportModel.RevenueLineChartModel = new lineChartData();
-                    objReportModel.RevenueHeaderModel = new Projected_Goal();
-                    
-                    objReportModel.RevenueToPlanModel = new RevenueToPlanModel();
-                    objReportModel.CardSectionModel = new CardSectionModel();
+                    _barChartCategories.Add(string.Empty);
+                    _barChartCategories.AddRange(_Categories);
                 }
-           
+
+                BarChartSeries _chartSeries1 = new BarChartSeries();
+                _chartSeries1.name = "Actual";
+                _chartSeries1.data = serData1;
+                _chartSeries1.type = "column";
+                lstSeries.Add(_chartSeries1);
+
+                BarChartSeries _chartSeries2 = new BarChartSeries();
+                _chartSeries2.name = "Goal";
+                _chartSeries2.data = serData2;
+                _chartSeries2.type = "column";
+                lstSeries.Add(_chartSeries2);
+
+                BarChartSeries _chartSeries3 = new BarChartSeries();
+                _chartSeries3.name = "Projected";
+                _chartSeries3.data = serData3;
+                _chartSeries3.type = "column";
+                lstSeries.Add(_chartSeries3);
+
+                objBarChartModel.series = lstSeries;
+                objBarChartModel.categories = _barChartCategories;
+
+                objRevenueToPlanModel.RevenueToPlanBarChartModel = objBarChartModel;
+                objRevenueToPlanModel.LineChartModel = objLineChartData;
+                #endregion
+
+                #region "Calculate DataTable"
+                RevenueDataTable objRevenueDataTable = new RevenueDataTable();
+                RevenueSubDataTableModel objSubDataModel = new RevenueSubDataTableModel();
+                objRevenueDataTable.Categories = _Categories;
+                objRevenueDataTable.ActualList = objBasicModel.ActualList;
+                objRevenueDataTable.ProjectedList = objBasicModel.ProjectedList;
+                objRevenueDataTable.GoalList = objBasicModel.GoalList;
+                objSubDataModel = GetRevenueToPlanDataByCampaign(Tacticdata, option, objBasicModel.IsQuarterly, objBasicModel);
+                objRevenueDataTable.SubDataModel = objSubDataModel;
+                objRevenueDataTable.IsQuarterly = objBasicModel.IsQuarterly;
+                objRevenueDataTable.timeframeOption = objBasicModel.timeframeOption;
+                objRevenueToPlanModel.RevenueToPlanDataModel = objRevenueDataTable;
+                #endregion
+
+                #endregion
+
+                objReportModel.RevenueToPlanModel = objRevenueToPlanModel;
+
+                #region "CardSection Model"
+                CardSectionModel objCardSectionModel = new CardSectionModel();
+                List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
+                CardSectionListModel = GetCardSectionDefaultData(Tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList, option, IsQuarterly, Common.RevenueCampaign.ToString(), false, "", 0);
+
+                objCardSectionModel.CardSectionListModel = CardSectionListModel;
+
+                #endregion
+
+
+                TempData["RevenueCardList"] = null;
+                TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+
+                objReportModel.CardSectionModel = RevenueCardSectionModelWithFilter(0, 5, "", Enums.SortByRevenue.Revenue.ToString());
+                objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
+            }
+            else
+            {
+                objReportModel.RevenueLineChartModel = new lineChartData();
+                objReportModel.RevenueHeaderModel = new Projected_Goal();
+
+                objReportModel.RevenueToPlanModel = new RevenueToPlanModel();
+                objReportModel.CardSectionModel = new CardSectionModel();
+            }
+
             return PartialView("_Revenue", objReportModel);
         }
 
@@ -2367,16 +2376,25 @@ namespace RevenuePlanner.Controllers
             {
                 if (ParentLabel.Contains(Common.TacticCustomTitle))
                 {
-                    IsTacticCustomField = true;
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                    if (int.TryParse(ParentLabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
+                    {
+                        IsTacticCustomField = true;
+                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                    }
                 }
                 else if (ParentLabel.Contains(Common.CampaignCustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                    if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                    {
+                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                    }
                 }
                 else if (ParentLabel.Contains(Common.ProgramCustomTitle))
                 {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                    if (int.TryParse(ParentLabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
+                    {
+                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                    }
                 }
 
                 customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
@@ -2621,126 +2639,138 @@ namespace RevenuePlanner.Controllers
             bool IsTacticCustomField = false;
             int customfieldId = 0;
             string customFieldType = string.Empty;
-            //Modified By : Kalpesh Sharma #960 Filter changes for Revenue report - Revenue Report
-            // Check the custom field type and remove extra string for get Custom Field Id
-            if (parentlabel.Contains(Common.TacticCustomTitle))
+            if (!string.IsNullOrEmpty(parentlabel))
             {
-                customfieldId = Convert.ToInt32(parentlabel.Replace(Common.TacticCustomTitle, ""));
-                IsTacticCustomField = true;
-            }
-            else if (parentlabel.Contains(Common.CampaignCustomTitle))
-            {
-                customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CampaignCustomTitle, ""));
-                IsCampaignCustomField = true;
-            }
-            else if (parentlabel.Contains(Common.ProgramCustomTitle))
-            {
-                customfieldId = Convert.ToInt32(parentlabel.Replace(Common.ProgramCustomTitle, ""));
-                IsProgramCustomField = true;
-            }
-            else
-            {
-                Tacticdata = Tacticdata.ToList();
-            }
-            var campaignList = new List<RevenueContrinutionData>();
-
-            if (parentlabel == Common.RevenueCampaign)
-            {
-                campaignList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
-                     new RevenueContrinutionData
-                     {
-                         Title = pc.Key.title,
-                         planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
-                     }).ToList();
-            }
-
-            //Check the custom field type and filter tactic based on Custom field Id
-            else if (parentlabel.Contains(Common.TacticCustomTitle) || parentlabel.Contains(Common.CampaignCustomTitle) || parentlabel.Contains(Common.ProgramCustomTitle))
-            {
-
-                List<int> entityids = new List<int>();
-                if (IsTacticCustomField)
+                //Modified By : Kalpesh Sharma #960 Filter changes for Revenue report - Revenue Report
+                // Check the custom field type and remove extra string for get Custom Field Id
+                if (parentlabel.Contains(Common.TacticCustomTitle))
                 {
-                    entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
+                    if (int.TryParse(parentlabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
+                    {
+                        customfieldId = Convert.ToInt32(parentlabel.Replace(Common.TacticCustomTitle, ""));
+                        IsTacticCustomField = true;
+                    }
                 }
-                else if (IsCampaignCustomField)
+                else if (parentlabel.Contains(Common.CampaignCustomTitle))
+                    if (int.TryParse(parentlabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                    {
+                        {
+                            customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CampaignCustomTitle, ""));
+                            IsCampaignCustomField = true;
+                        }
+                    }
+                    else if (parentlabel.Contains(Common.ProgramCustomTitle))
+                    {
+                        if (int.TryParse(parentlabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
+                        {
+                            customfieldId = Convert.ToInt32(parentlabel.Replace(Common.ProgramCustomTitle, ""));
+                            IsProgramCustomField = true;
+                        }
+                    }
+                    else
+                    {
+                        Tacticdata = Tacticdata.ToList();
+                    }
+                var campaignList = new List<RevenueContrinutionData>();
+
+                if (parentlabel == Common.RevenueCampaign)
                 {
-                    entityids = Tacticdata.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
-                }
-                else
-                {
-                    entityids = Tacticdata.Select(t => t.TacticObj.PlanProgramId).ToList();
+                    campaignList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
+                         new RevenueContrinutionData
+                         {
+                             Title = pc.Key.title,
+                             planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
+                         }).ToList();
                 }
 
-                customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                //Check the custom field type and filter tactic based on Custom field Id
+                else if (parentlabel.Contains(Common.TacticCustomTitle) || parentlabel.Contains(Common.CampaignCustomTitle) || parentlabel.Contains(Common.ProgramCustomTitle))
                 {
-                    var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
-                    campaignList = (from cfo in db.CustomFieldOptions
-                                    where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
-                                    select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
-                                  new RevenueContrinutionData
-                                  {
-                                      Title = pc.Key.title,
-                                      CustomFieldOptionid = pc.Key.id,
-                                      // Modified By : Kalpesh Sharma Filter changes for Revenue report - Revenue Report
-                                      // Fetch the filtered list based upon custom fields type
-                                      planTacticList = Tacticdata.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                                          (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                  }).ToList();
 
+                    List<int> entityids = new List<int>();
+                    if (IsTacticCustomField)
+                    {
+                        entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
+                    }
+                    else if (IsCampaignCustomField)
+                    {
+                        entityids = Tacticdata.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
+                    }
+                    else
+                    {
+                        entityids = Tacticdata.Select(t => t.TacticObj.PlanProgramId).ToList();
+                    }
+
+                    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                    var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                    {
+                        var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
+                        campaignList = (from cfo in db.CustomFieldOptions
+                                        where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
+                                        select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
+                                      new RevenueContrinutionData
+                                      {
+                                          Title = pc.Key.title,
+                                          CustomFieldOptionid = pc.Key.id,
+                                          // Modified By : Kalpesh Sharma Filter changes for Revenue report - Revenue Report
+                                          // Fetch the filtered list based upon custom fields type
+                                          planTacticList = Tacticdata.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
+                                              (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
+                                      }).ToList();
+
+                    }
+                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                    {
+                        campaignList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
+                                    new RevenueContrinutionData
+                                    {
+                                        Title = pc.Key.title,
+                                        planTacticList = pc.Select(c => c.EntityId).ToList()
+                                    }).ToList();
+                    }
                 }
-                else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+
+                if (campaignList.Count() > 0)
                 {
-                    campaignList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
-                                new RevenueContrinutionData
-                                {
-                                    Title = pc.Key.title,
-                                    planTacticList = pc.Select(c => c.EntityId).ToList()
-                                }).ToList();
-                }
-            }
+                    string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
 
-            if (campaignList.Count() > 0)
-            {
-                string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-
-                //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                string cost = Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString();
-
-                int lastMonth = GetLastMonthForTrend(selectOption);
-                List<string> includeMonth = GetMonthListForReport(selectOption, true);
-                List<string> monthList = GetUpToCurrentMonth();
-
-                List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
-
-                List<string> monthWithYearList = GetUpToCurrentMonthWithYearForReport(selectOption, true);
-
-                List<int> ObjTactic = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
-                List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => ObjTactic.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
-                List<int> ObjTacticLineItemList = LineItemList.Select(t => t.PlanLineItemId).ToList();
-                List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(l => ObjTacticLineItemList.Contains(l.PlanLineItemId)).ToList();
-
-                var campaignListFinal = campaignList.Select(p => new
-                {
-                    Title = p.Title,
-                    PlanRevenue = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Revenue, IsTacticCustomField),
-                    ActualRevenue = GetActualRevenueContribution(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata, p.planTacticList, customFieldType, includeMonth, IsTacticCustomField),
-                    TrendRevenue = 0,
-                    PlanCost = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Cost, IsTacticCustomField),
                     //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                    ActualCost = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
-                    TrendCost = 0,
-                    RunRate = GetTrendRevenueDataContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, lastMonth, monthList, Tacticdata, IsTacticCustomField).Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),
-                    PipelineCoverage = 0,
-                    RevSpend = GetRevenueVSSpendContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField),
-                    RevenueTotal = GetActualRevenueTotal(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthList, revenue, Tacticdata, IsTacticCustomField),
-                    CostTotal = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && monthWithYearList.Contains(mr.Month)).Sum(r => r.Value)
-                }).Select(p => p).Distinct().OrderBy(p => p.Title);
+                    string cost = Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString();
 
-                return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
+                    int lastMonth = GetLastMonthForTrend(selectOption);
+                    List<string> includeMonth = GetMonthListForReport(selectOption, true);
+                    List<string> monthList = GetUpToCurrentMonth();
+
+                    List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                    Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
+
+                    List<string> monthWithYearList = GetUpToCurrentMonthWithYearForReport(selectOption, true);
+
+                    List<int> ObjTactic = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => ObjTactic.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
+                    List<int> ObjTacticLineItemList = LineItemList.Select(t => t.PlanLineItemId).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(l => ObjTacticLineItemList.Contains(l.PlanLineItemId)).ToList();
+
+                    var campaignListFinal = campaignList.Select(p => new
+                    {
+                        Title = p.Title,
+                        PlanRevenue = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Revenue, IsTacticCustomField),
+                        ActualRevenue = GetActualRevenueContribution(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata, p.planTacticList, customFieldType, includeMonth, IsTacticCustomField),
+                        TrendRevenue = 0,
+                        PlanCost = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Cost, IsTacticCustomField),
+                        //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
+                        ActualCost = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
+                        TrendCost = 0,
+                        RunRate = GetTrendRevenueDataContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, lastMonth, monthList, Tacticdata, IsTacticCustomField).Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),
+                        PipelineCoverage = 0,
+                        RevSpend = GetRevenueVSSpendContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField),
+                        RevenueTotal = GetActualRevenueTotal(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthList, revenue, Tacticdata, IsTacticCustomField),
+                        CostTotal = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && monthWithYearList.Contains(mr.Month)).Sum(r => r.Value)
+                    }).Select(p => p).Distinct().OrderBy(p => p.Title);
+
+                    return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
+                }
             }
             return Json(new { });
         }
@@ -2825,7 +2855,7 @@ namespace RevenuePlanner.Controllers
             CostStageCode.Add(Enums.InspectStage.Cost);
             #endregion
 
-     
+
             //// Get TacticMonth value for each Tactic.
             foreach (TacticStageValue tactic in Tacticdata)
             {
@@ -2956,16 +2986,25 @@ namespace RevenuePlanner.Controllers
             List<int> entityids = new List<int>();
             if (ParentLabel.Contains(Common.TacticCustomTitle))
             {
-                IsTacticCustomField = true;
-                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                if (int.TryParse(ParentLabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
+                {
+                    IsTacticCustomField = true;
+                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                }
             }
             else if (ParentLabel.Contains(Common.CampaignCustomTitle))
             {
-                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                {
+                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                }
             }
             else if (ParentLabel.Contains(Common.ProgramCustomTitle))
             {
-                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                if (int.TryParse(ParentLabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
+                {
+                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                }
             }
 
             if (Tacticdata.Count > 0)
@@ -4993,7 +5032,7 @@ namespace RevenuePlanner.Controllers
                 else if (stageCode.Equals(Enums.InspectStage.Revenue))
                     ProjectedDatatable = GetProjectedDatabyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, stageCode, lstTacticData, IsTacticCustomField);
                 else if (stageCode.Equals(Enums.InspectStage.Cost))
-                    ProjectedDatatable = GetProjectedCostData(CustomFieldId, CustomFieldOptionId, CustomFieldType, lstTacticData, IsTacticCustomField,null,null,null);
+                    ProjectedDatatable = GetProjectedCostData(CustomFieldId, CustomFieldOptionId, CustomFieldType, lstTacticData, IsTacticCustomField, null, null, null);
 
                 PlanValue = ProjectedDatatable.Where(mr => includeMonth.Contains(mr.Month)).Sum(r => r.Value);
             }
@@ -5744,8 +5783,8 @@ namespace RevenuePlanner.Controllers
                     mqlStageBenchmarkmodel.stageVolume = _stageVolumepercentage.ToString();
                     mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? ((_stageVolumepercentage - _Benchmark) / _Benchmark) * 100 : 0; //PL #1483 formula changed ((Actual % number – Goal % number)/Goal % number * 100) -Dashrath Prajapati
-                   // Actual_Benchmark_Percentage = _Benchmark > 0 ? (_stageVomepercentage / _Benchmark) : 0;
-                   // Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
+                    // Actual_Benchmark_Percentage = _Benchmark > 0 ? (_stageVomepercentage / _Benchmark) : 0;
+                    // Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
                     mqlStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
                     mqlStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString();
                     #endregion
@@ -5804,7 +5843,7 @@ namespace RevenuePlanner.Controllers
                     cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? ((_stageVolumepercentage - _Benchmark) / _Benchmark) * 100 : 0; //PL #1483 formula changed ((Actual % number – Goal % number)/Goal % number * 100) -Dashrath Prajapati
                     //Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark) : 0;
-                   // Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
+                    // Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
                     cwStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
                     cwStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString();
                     #endregion
@@ -6310,7 +6349,7 @@ namespace RevenuePlanner.Controllers
                                 CurrentPeriod = PeriodPrefix + _trendMonth.ToString();
                                 objActualTrendModel.Value = ActualTacticListbyTactic.Where(actual => actual.Period.Equals(CurrentPeriod)).Select(actual => actual.Actualvalue).FirstOrDefault();
                             }
-                            
+
                             ActualTrendModelList.Add(objActualTrendModel);
                         }
                         #endregion
@@ -6418,54 +6457,54 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return List of TacticMonthInterval data</returns>
         public List<TacticMonthInterval> GetTacticMonthInterval(List<TacticStageValue> TacticData)
         {
-           
-                #region "Decalre Local Variables"
-                List<TacticMonthInterval> listTacticMonthValue = new List<TacticMonthInterval>();
-                Plan_Campaign_Program_Tactic objTactic = null;
-                int _startyear = 0, _endyear = 0, _startmonth = 0, _endmonth = 0;
+
+            #region "Decalre Local Variables"
+            List<TacticMonthInterval> listTacticMonthValue = new List<TacticMonthInterval>();
+            Plan_Campaign_Program_Tactic objTactic = null;
+            int _startyear = 0, _endyear = 0, _startmonth = 0, _endmonth = 0;
+            #endregion
+
+            foreach (TacticStageValue tactic in TacticData)
+            {
+                objTactic = new Plan_Campaign_Program_Tactic();
+                objTactic = tactic.TacticObj;
+
+                #region "Get StartMonth,EndMonth, StartYear,EndYear Of Current Tactic"
+                _startyear = objTactic.StartDate.Year;
+                _endyear = objTactic.EndDate.Year;
+                _startmonth = objTactic.StartDate.Month;
+                _endmonth = objTactic.EndDate.Month;
                 #endregion
 
-                foreach (TacticStageValue tactic in TacticData)
+                if (_startyear == _endyear) // If Tactic's StartYear is equal to EndYear
                 {
-                    objTactic = new Plan_Campaign_Program_Tactic();
-                    objTactic = tactic.TacticObj;
-
-                    #region "Get StartMonth,EndMonth, StartYear,EndYear Of Current Tactic"
-                    _startyear = objTactic.StartDate.Year;
-                    _endyear = objTactic.EndDate.Year;
-                    _startmonth = objTactic.StartDate.Month;
-                    _endmonth = objTactic.EndDate.Month;
-                    #endregion
-
-                    if (_startyear == _endyear) // If Tactic's StartYear is equal to EndYear
+                    if (_startmonth == _endmonth) // If Tactic's StartMonth is equal to EndMonth
                     {
-                        if (_startmonth == _endmonth) // If Tactic's StartMonth is equal to EndMonth
-                        {
-                            // Add Single record to List of TacticMonthValue.
-                            listTacticMonthValue.Add(new TacticMonthInterval { PlanTacticId = objTactic.PlanTacticId, Month = _startyear + PeriodPrefix + _startmonth });
-                        }
-                        else
-                        {
-                            // Add record into TacticMonthInterval list from StartMonth to EndMonth.
-                            for (var i = _startmonth; i <= _endmonth; i++)
-                            {
-                                listTacticMonthValue.Add(new TacticMonthInterval { PlanTacticId = objTactic.PlanTacticId, Month = _startyear + PeriodPrefix + i });
-                            }
-                        }
+                        // Add Single record to List of TacticMonthValue.
+                        listTacticMonthValue.Add(new TacticMonthInterval { PlanTacticId = objTactic.PlanTacticId, Month = _startyear + PeriodPrefix + _startmonth });
                     }
                     else
                     {
-                        for (var i = _startmonth; i <= 12; i++)
+                        // Add record into TacticMonthInterval list from StartMonth to EndMonth.
+                        for (var i = _startmonth; i <= _endmonth; i++)
                         {
                             listTacticMonthValue.Add(new TacticMonthInterval { PlanTacticId = objTactic.PlanTacticId, Month = _startyear + PeriodPrefix + i });
                         }
-                        for (var i = 1; i <= _endmonth + 1; i++)
-                        {
-                            listTacticMonthValue.Add(new TacticMonthInterval { PlanTacticId = objTactic.PlanTacticId, Month = _endyear + PeriodPrefix + i });
-                        }
                     }
                 }
-                return listTacticMonthValue;
+                else
+                {
+                    for (var i = _startmonth; i <= 12; i++)
+                    {
+                        listTacticMonthValue.Add(new TacticMonthInterval { PlanTacticId = objTactic.PlanTacticId, Month = _startyear + PeriodPrefix + i });
+                    }
+                    for (var i = 1; i <= _endmonth + 1; i++)
+                    {
+                        listTacticMonthValue.Add(new TacticMonthInterval { PlanTacticId = objTactic.PlanTacticId, Month = _endyear + PeriodPrefix + i });
+                    }
+                }
+            }
+            return listTacticMonthValue;
         }
 
         /// <summary>
@@ -6786,7 +6825,7 @@ namespace RevenuePlanner.Controllers
                         TotalActualValueCurrentMonth = CurrentMonthActualTacticList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
                         TotalRevenueTypeCol = TotalRevenueTypeCol + TotalActualValueCurrentMonth;
 
-                        
+
                         #endregion
 
                         #region "Set Sparkline chart Data"
@@ -7286,7 +7325,7 @@ namespace RevenuePlanner.Controllers
                         TotalRevenueValueCurrentMonth = revCurrentMonthList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
                         //TotalRevenueTypeCol = TotalRevenueTypeCol + TotalRevenueValueCurrentMonth;
 
-                        
+
                         #endregion
 
                         #region " Get Cost Actuals List "
@@ -7414,7 +7453,7 @@ namespace RevenuePlanner.Controllers
                     TotalRevenueValueCurrentMonth = ActualDataTable.Sum(actual => actual.ActualValue);
                     TacticIds = new List<int>();
                     TacticIds = Tacticdata.Select(tac => tac.TacticObj.PlanTacticId).ToList();
-                    
+
                     #endregion
 
                     #region " Get Cost Actuals List "
@@ -7942,10 +7981,10 @@ namespace RevenuePlanner.Controllers
             bool IsDisplay = false, IsQuarterly = objBasicModel.IsQuarterly;
             List<double?> serData1 = new List<double?>();
             List<double?> serData2 = new List<double?>();
-            
+
             double TodayValue = 0, catLength = 0;
             string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
-           
+
             #endregion
 
             try
@@ -8002,7 +8041,7 @@ namespace RevenuePlanner.Controllers
 
                 #region "Set Series, Categories & Marker data to Model"
 
-               
+
                 categories = objBasicModel.Categories != null ? objBasicModel.Categories : new List<string>();
                 LineChartData.categories = categories;
                 LineChartData.series = lstseries;
@@ -8082,7 +8121,7 @@ namespace RevenuePlanner.Controllers
                     _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
                     Actual_Projected = _prevActual_Projected = _prevActual_Projected + (_Actual + _Projected);
                     _Goal = _prevGoal = _prevGoal + _Goal;
-                    
+
                     serData2.Add(_Goal);
                     if ((i) <= (_comparevalue))
                     {
@@ -8137,7 +8176,7 @@ namespace RevenuePlanner.Controllers
 
                 #region "Set Series, Categories & Marker data to Model"
 
-               
+
                 categories = objBasicModel.Categories != null ? objBasicModel.Categories : new List<string>();
                 LineChartData.categories = categories;
                 LineChartData.series = lstseries;
@@ -8153,7 +8192,7 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             return LineChartData;
-            
+
         }
 
         /// <summary>
@@ -8458,7 +8497,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="marsterCustomField"></param>
         /// <param name="masterCustomFieldOptionId"></param>
         /// <returns></returns>
-        public PartialViewResult GetRevenueToPlanByFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0 )
+        public PartialViewResult GetRevenueToPlanByFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
         {
             #region "Declare Local Variables"
             List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
@@ -8547,17 +8586,17 @@ namespace RevenuePlanner.Controllers
                 {
                     if (childlabelType == Common.RevenueCampaign)
                     {
-                        int campaignid = Convert.ToInt32(childId);
+                        int campaignid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                         _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(t => t).ToList();
                     }
                     else if (childlabelType == Common.RevenueProgram)
                     {
-                        int programid = Convert.ToInt32(childId);
+                        int programid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                         _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanProgramId == programid).Select(t => t).ToList();
                     }
                     else if (childlabelType == Common.RevenueTactic)
                     {
-                        int tacticid = Convert.ToInt32(childId);
+                        int tacticid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                         _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanTacticId == tacticid).Select(t => t).ToList();
                     }
                     else
@@ -8637,7 +8676,10 @@ namespace RevenuePlanner.Controllers
                     _customfieldOptionId = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                     if (ParentLabel.Contains(Common.TacticCustomTitle))
                     {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                        if (int.TryParse(ParentLabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
+                        {
+                            customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                        }
                         IsTacticCustomField = true;
                         isTacticCustomFieldCardSection = true;
                         customFieldIdCardSection = customfieldId;
@@ -8651,7 +8693,10 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (ParentLabel.Contains(Common.CampaignCustomTitle))
                     {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                        if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                        {
+                            customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                        }
                         IsCampaignCustomField = true;
                         if (Convert.ToInt32(childId) > 0)
                         {
@@ -8661,7 +8706,10 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (ParentLabel.Contains(Common.ProgramCustomTitle))
                     {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                        if (int.TryParse(ParentLabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
+                        {
+                            customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                        }
                         IsProgramCustomField = true;
                         if (Convert.ToInt32(childId) > 0)
                         {
@@ -8705,7 +8753,7 @@ namespace RevenuePlanner.Controllers
                                          planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
                                                (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
 
-                                    }).ToList();
+                                     }).ToList();
                     }
                     else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
@@ -8851,7 +8899,7 @@ namespace RevenuePlanner.Controllers
                     _isquarterly = true;
                 BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, option, _isquarterly);
                 #endregion
-                
+
                 #region Header values
                 objRevenueToPlanModel.RevenueHeaderModel = GetRevenueHeaderValue(objBasicModel, option).RevenueHeaderModel;
                 #endregion
@@ -9026,7 +9074,7 @@ namespace RevenuePlanner.Controllers
                 ActualList = _BasicModel.ActualList;
                 if (IsQuarterly)
                 {
-                    
+
 
                     TotalTrendQ1 = TotalTrendQ1 + (ActualList.ToList()[0]);
                     TotalTrendQ2 = TotalTrendQ1 + (ActualList.ToList()[1]);
@@ -9106,22 +9154,22 @@ namespace RevenuePlanner.Controllers
 
                 #region "Calculate Total for Proj.Vs Goal & Trend"
 
-              
+
                 GoalList = _BasicModel.GoalList;
                 if (IsQuarterly)
                 {
                     #region "if timeframe Quarterly"
 
-                     GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                    GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
 
                     #region "Calculate Trend Quarterly"
 
                     #region "Newly added Code"
 
-                     GoalQ1 = GoalList.ToList()[0];
-                     GoalQ2 = GoalList.ToList()[1];
-                     GoalQ3 = GoalList.ToList()[2];
-                     GoalQ4 = GoalList.ToList()[3];
+                    GoalQ1 = GoalList.ToList()[0];
+                    GoalQ2 = GoalList.ToList()[1];
+                    GoalQ3 = GoalList.ToList()[2];
+                    GoalQ4 = GoalList.ToList()[3];
 
                     TotalTrendQ1 = GoalQ1 > 0 ? (((ActualList.ToList()[0] - GoalQ1) / GoalQ1) * 100) : 0;// Change By Nishant #1424
                     TotalTrendQ2 = GoalQ2 > 0 ? (((ActualList.ToList()[1] - GoalQ2) / GoalQ2) * 100) : 0;// Change By Nishant #1424
@@ -9338,10 +9386,10 @@ namespace RevenuePlanner.Controllers
                 #region "Code for TOPRevenue"
                 #region "Declare Local Variables"
                 List<string> RevenueList = new List<string>();
-      
+
                 #endregion
 
-           
+
                 TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                 #region "Calcualte Actual & Projected value Quarterly"
@@ -9349,7 +9397,7 @@ namespace RevenuePlanner.Controllers
                 ActualList = _BasicModel.ActualList;
                 if (IsQuarterly)
                 {
-                   
+
 
                     TotalTrendQ1 = TotalTrendQ1 + (ActualList.ToList()[0]);
                     TotalTrendQ2 = TotalTrendQ1 + (ActualList.ToList()[1]);
@@ -9412,27 +9460,27 @@ namespace RevenuePlanner.Controllers
 
                 #region "Code for Top Performance"
                 #region "Declare Local Variables"
-                
+
                 double GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0;
                 #endregion
 
                 #region "Calculate Total for Proj.Vs Goal & Trend"
-                
-				GoalList = _BasicModel.GoalList;
+
+                GoalList = _BasicModel.GoalList;
                 if (IsQuarterly)
                 {
                     #region "if timeframe Quarterly"
-                     GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
+                    GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = 0;
 
                     #region "Calculate Trend Quarterly"
                     #region "Newly added Code"
 
 
 
-                     GoalQ1 = GoalList.ToList()[0];
-                     GoalQ2 = GoalList.ToList()[1];
-                     GoalQ3 = GoalList.ToList()[2];
-                     GoalQ4 = GoalList.ToList()[3];
+                    GoalQ1 = GoalList.ToList()[0];
+                    GoalQ2 = GoalList.ToList()[1];
+                    GoalQ3 = GoalList.ToList()[2];
+                    GoalQ4 = GoalList.ToList()[3];
 
                     TotalTrendQ1 = GoalQ1 > 0 ? (((ActualList.ToList()[0] - GoalQ1) / GoalQ1) * 100) : 0;// Change By Nishant #1424
                     TotalTrendQ2 = GoalQ2 > 0 ? (((ActualList.ToList()[1] - GoalQ2) / GoalQ2) * 100) : 0;// Change By Nishant #1424
@@ -9642,7 +9690,7 @@ namespace RevenuePlanner.Controllers
             List<CardSectionListModel> objCardSectionList = (List<CardSectionListModel>)TempData["RevenueCardList"];
             TempData["RevenueCardList"] = objCardSectionList;
             CardSectionModel cardModel = new CardSectionModel();
-        #endregion
+            #endregion
             cardModel.TotalRecords = objCardSectionList.Count();
             if (!string.IsNullOrEmpty(SearchString))
             {
@@ -9662,7 +9710,7 @@ namespace RevenuePlanner.Controllers
                 //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
             cardModel.CardSectionListModel = objCardSectionList;
-            
+
             cardModel.CuurentPageNum = PageNo;
             return cardModel;
         }
@@ -9728,7 +9776,7 @@ namespace RevenuePlanner.Controllers
 
                 #region Calculate Actual Value
                 _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
-               
+
                 #endregion
 
                 #region Calculate Projected Value
@@ -9771,7 +9819,7 @@ namespace RevenuePlanner.Controllers
             #region "Declare Variables"
             ReportModel objReportModel = new ReportModel();
             Projected_Goal objProjectedGoal = new Projected_Goal();
-            
+
             List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
             List<ProjectedTrendModel> ProjectedTrendList = new List<ProjectedTrendModel>();
             conversion_Projected_Goal_LineChart objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
@@ -9801,279 +9849,279 @@ namespace RevenuePlanner.Controllers
             ViewBag.Convoption = timeFrameOption;
             // End By Nishant Sheth
 
-             //// check planids selected or not
-            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 )
+            //// check planids selected or not
+            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0)
             {
                 //// set viewbag to display plan or msg
                 ViewBag.IsPlanExistToShowReport = true;
-            //// Get list of month display in view
-            ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
-            //// get tactic list
-            List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
+                //// Get list of month display in view
+                ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
+                //// get tactic list
+                List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
 
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-            List<int> campaignlist = tacticlist.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
-            List<int> programlist = tacticlist.Select(tactic => tactic.PlanProgramId).ToList();
+                // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+                List<int> campaignlist = tacticlist.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
+                List<int> programlist = tacticlist.Select(tactic => tactic.PlanProgramId).ToList();
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            TempData["ReportData"] = tacticStageList;
+                //// Calculate Value for ecah tactic
+                List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+                //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+                TempData["ReportData"] = tacticStageList;
 
-            #region "Set Parent DDL data to ViewBag"
-            //// conversion summary view by dropdown
-            List<ViewByModel> lstParentConversionSummery = new List<ViewByModel>();
-            lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
-            lstParentConversionSummery = lstParentConversionSummery.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
-            //Concat the Campaign and Program custom fields data with exsiting one. 
-            var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
-            lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFields).ToList();
-            ViewBag.parentConvertionSummery = lstParentConversionSummery;
-            #endregion
-            // Get child tab list
-          
-            //// conversion performance view by dropdown
-            List<ViewByModel> lstParentConversionPerformance = new List<ViewByModel>();
-            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Plan, Value = Common.Plan });
-            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Trend, Value = Common.Trend });
-            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Actuals, Value = Common.Actuals });
-            lstParentConversionPerformance = lstParentConversionPerformance.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-            ViewBag.parentConvertionPerformance = lstParentConversionPerformance;
-            //added by dashrath prajapati
+                #region "Set Parent DDL data to ViewBag"
+                //// conversion summary view by dropdown
+                List<ViewByModel> lstParentConversionSummery = new List<ViewByModel>();
+                lstParentConversionSummery.Add(new ViewByModel { Text = Common.RevenueCampaign, Value = Common.RevenueCampaign });
+                lstParentConversionSummery = lstParentConversionSummery.Where(s => !string.IsNullOrEmpty(s.Text)).ToList();
+                //Concat the Campaign and Program custom fields data with exsiting one. 
+                var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
+                lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFields).ToList();
+                ViewBag.parentConvertionSummery = lstParentConversionSummery;
+                #endregion
+                // Get child tab list
 
-            //// Set View By Allocated values.
-            List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
-            lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
-            lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
-            lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
-            ViewBag.ViewByAllocated = lstViewByAllocated;
-            //Header section of report
+                //// conversion performance view by dropdown
+                List<ViewByModel> lstParentConversionPerformance = new List<ViewByModel>();
+                lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Plan, Value = Common.Plan });
+                lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Trend, Value = Common.Trend });
+                lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Actuals, Value = Common.Actuals });
+                lstParentConversionPerformance = lstParentConversionPerformance.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+                ViewBag.parentConvertionPerformance = lstParentConversionPerformance;
+                //added by dashrath prajapati
 
-            ActualTacticTrendList = new List<ActualTrendModel>();
-            ProjectedTrendList = new List<ProjectedTrendModel>();
+                //// Set View By Allocated values.
+                List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
+                lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
+                lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+                lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
+                ViewBag.ViewByAllocated = lstViewByAllocated;
+                //Header section of report
 
-            List<string> includeMonth = GetMonthListForReport(timeFrameOption);
-            ProjectedTrendList = CalculateProjectedTrend(tacticStageList, includeMonth, mqlStageCode);
-            List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
-            List<string> ActualStageCodeList = new List<string>();
-            ActualStageCodeList.Add(revStageCode);
-            ActualStageCodeList.Add(inqStageCode);
-            ActualStageCodeList.Add(mqlStageCode);
-            ActualStageCodeList.Add(cwStageCode);
-            ActualTacticStageList = GetActualListInTacticInterval(tacticStageList, timeFrameOption, ActualStageCodeList, IsTillCurrentMonth);
+                ActualTacticTrendList = new List<ActualTrendModel>();
+                ProjectedTrendList = new List<ProjectedTrendModel>();
 
-            List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
-            ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
-            
-            #region Set Header Value
-            BasicModel objBasicConverstionHeader = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, (isQuarterly.ToLower() == "quarterly" ? true : false));
-            objReportModel.RevenueHeaderModel = GetConverstionHeaderValue(objBasicConverstionHeader, timeFrameOption).RevenueHeaderModel;
-            #endregion
-            
-            #region "Set Child DDL data to ViewBag"
-            // Get child tab list
-            List<ViewByModel> lstChildRevenueToPlan = new List<ViewByModel>();
-            lstChildRevenueToPlan.Add(new ViewByModel { Text = "All", Value = "0" });
-            List<ViewByModel> childCustomFieldOptionList = new List<ViewByModel>();
-            if (lstParentConversionSummery.Count > 0)
-                childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentConversionSummery.First().Value, timeFrameOption);
+                List<string> includeMonth = GetMonthListForReport(timeFrameOption);
+                ProjectedTrendList = CalculateProjectedTrend(tacticStageList, includeMonth, mqlStageCode);
+                List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
+                List<string> ActualStageCodeList = new List<string>();
+                ActualStageCodeList.Add(revStageCode);
+                ActualStageCodeList.Add(inqStageCode);
+                ActualStageCodeList.Add(mqlStageCode);
+                ActualStageCodeList.Add(cwStageCode);
+                ActualTacticStageList = GetActualListInTacticInterval(tacticStageList, timeFrameOption, ActualStageCodeList, IsTillCurrentMonth);
 
-            ViewBag.ChildTabListRevenueToPlan = lstChildRevenueToPlan.Concat(childCustomFieldOptionList).ToList();
-            #endregion
+                List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(tacticStageList, ActualTacticStageList);
+                ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
 
-            #region "Bind Total Total TQL"
+                #region Set Header Value
+                BasicModel objBasicConverstionHeader = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, (isQuarterly.ToLower() == "quarterly" ? true : false));
+                objReportModel.RevenueHeaderModel = GetConverstionHeaderValue(objBasicConverstionHeader, timeFrameOption).RevenueHeaderModel;
+                #endregion
 
-            List<ViewByModel> lstTotalTQL = new List<ViewByModel>();
-            lstTotalTQL.Add(new ViewByModel { Text = "Total" + " " + INQStageLabel, Value = "0" });
-            lstTotalTQL.Add(new ViewByModel { Text = "Total" + " " + MQLStageLabel, Value = "1" });
-            lstTotalTQL.Add(new ViewByModel { Text = "Total" + " " + CWStageLabel, Value = "2" });
+                #region "Set Child DDL data to ViewBag"
+                // Get child tab list
+                List<ViewByModel> lstChildRevenueToPlan = new List<ViewByModel>();
+                lstChildRevenueToPlan.Add(new ViewByModel { Text = "All", Value = "0" });
+                List<ViewByModel> childCustomFieldOptionList = new List<ViewByModel>();
+                if (lstParentConversionSummery.Count > 0)
+                    childCustomFieldOptionList = GetChildLabelDataViewByModel(lstParentConversionSummery.First().Value, timeFrameOption);
 
-            ViewBag.TotalTQLConversion = lstTotalTQL.ToList();
-            #endregion
+                ViewBag.ChildTabListRevenueToPlan = lstChildRevenueToPlan.Concat(childCustomFieldOptionList).ToList();
+                #endregion
 
-            #region "Bind TQL,MQL,CW To plan"
-            List<ViewByModel> _lstAllocated = new List<ViewByModel>();
+                #region "Bind Total Total TQL"
 
-            _lstAllocated.Add(new ViewByModel { Text = INQStageLabel +" "+ "To Plan", Value = inqStageCode.ToString() });
-            _lstAllocated.Add(new ViewByModel { Text = MQLStageLabel +" "+ "To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString() });
-            _lstAllocated.Add(new ViewByModel { Text = CWStageLabel +" "+ "To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString() });
-            ViewBag.lstAllocated = _lstAllocated;
-            #endregion
+                List<ViewByModel> lstTotalTQL = new List<ViewByModel>();
+                lstTotalTQL.Add(new ViewByModel { Text = "Total" + " " + INQStageLabel, Value = "0" });
+                lstTotalTQL.Add(new ViewByModel { Text = "Total" + " " + MQLStageLabel, Value = "1" });
+                lstTotalTQL.Add(new ViewByModel { Text = "Total" + " " + CWStageLabel, Value = "2" });
 
-            #region "Set Campaign,Program,Tactic list to ViewBag"
-            List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.ToList();
-            List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
-            _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+                ViewBag.TotalTQLConversion = lstTotalTQL.ToList();
+                #endregion
 
-            var campaignList = tacticlist.Select(t => new { PlanCampaignId = t.Plan_Campaign_Program.PlanCampaignId, Title = t.Plan_Campaign_Program.Plan_Campaign.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
-            campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-            var lstCampaignList = campaignList;
-            lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
+                #region "Bind TQL,MQL,CW To plan"
+                List<ViewByModel> _lstAllocated = new List<ViewByModel>();
 
-            _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+                _lstAllocated.Add(new ViewByModel { Text = INQStageLabel + " " + "To Plan", Value = inqStageCode.ToString() });
+                _lstAllocated.Add(new ViewByModel { Text = MQLStageLabel + " " + "To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString() });
+                _lstAllocated.Add(new ViewByModel { Text = CWStageLabel + " " + "To Plan", Value = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString() });
+                ViewBag.lstAllocated = _lstAllocated;
+                #endregion
 
-            //// Get Program list for dropdown
-            var programList = tacticlist.Select(t => new { PlanProgramId = t.PlanProgramId, Title = t.Plan_Campaign_Program.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
-            programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-            var lstProgramList = programList;
-            lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
+                #region "Set Campaign,Program,Tactic list to ViewBag"
+                List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.ToList();
+                List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
+                _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
 
-            //// Get tactic list for dropdown
-            var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
-                .OrderBy(pcp => pcp.Title).ToList();
-            tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
-            var lstTacticList = tacticListinner;
-            lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
+                var campaignList = tacticlist.Select(t => new { PlanCampaignId = t.Plan_Campaign_Program.PlanCampaignId, Title = t.Plan_Campaign_Program.Plan_Campaign.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
+                campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+                var lstCampaignList = campaignList;
+                lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
 
-            //// Set DDL List in ViewBag.
-            ViewBag.CampaignDropdownList = lstCampaignList;
-            ViewBag.ProgramDropdownList = lstProgramList;
-            ViewBag.TacticDropdownList = lstTacticList;
-            #endregion
+                _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
 
-            bool IsQuarterly = false;
+                //// Get Program list for dropdown
+                var programList = tacticlist.Select(t => new { PlanProgramId = t.PlanProgramId, Title = t.Plan_Campaign_Program.Title }).Distinct().OrderBy(pcp => pcp.Title).ToList();
+                programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+                var lstProgramList = programList;
+                lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
 
-            if (!string.IsNullOrEmpty(isQuarterly) && !isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
-            {
-                IsQuarterly = true;
-            }
-            if (IsQuarterly)
-                ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
-            else
-                ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
-            //up to here
+                //// Get tactic list for dropdown
+                var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
+                    .OrderBy(pcp => pcp.Title).ToList();
+                tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
+                var lstTacticList = tacticListinner;
+                lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
+
+                //// Set DDL List in ViewBag.
+                ViewBag.CampaignDropdownList = lstCampaignList;
+                ViewBag.ProgramDropdownList = lstProgramList;
+                ViewBag.TacticDropdownList = lstTacticList;
+                #endregion
+
+                bool IsQuarterly = false;
+
+                if (!string.IsNullOrEmpty(isQuarterly) && !isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
+                {
+                    IsQuarterly = true;
+                }
+                if (IsQuarterly)
+                    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.quarters.ToString();
+                else
+                    ViewBag.SelectedTimeFrame = Enums.PlanAllocatedBy.months.ToString();
+                //up to here
 
                 //for using card
                 ProjectedTrendList = new List<ProjectedTrendModel>();
                 ActualTacticStageList = new List<ActualTacticListByStage>();
                 ActualTacticTrendList = new List<ActualTrendModel>();
-            ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList(); //#1488
+                ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList(); //#1488
                 ProjectedTrendList = CalculateProjectedTrend(tacticStageList, includeMonth, inqStageCode);
 
-            #region "Get Basic model"
-            BasicModel objBasicModelDataTable = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, IsQuarterly);
-            #endregion
+                #region "Get Basic model"
+                BasicModel objBasicModelDataTable = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, timeFrameOption, IsQuarterly);
+                #endregion
 
-            #region "Calculate DataTable"
-            List<string> _Categories = new List<string>();
-            _Categories = objBasicModelDataTable.Categories;
-            double catLength = _Categories != null ? _Categories.Count : 0;
-            objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode, objBasicModelDataTable); //method change for first time getting  
-            objconversionDataTable.SubDataModel = objSubDataModel;
-            objconversionDataTable.Categories = _Categories;
-            objconversionDataTable.ActualList = objBasicModelDataTable.ActualList;
-            objconversionDataTable.ProjectedList = objBasicModelDataTable.ProjectedList;
-            objconversionDataTable.GoalList = objBasicModelDataTable.GoalList;
-            objconversionDataTable.IsQuarterly = objBasicModelDataTable.IsQuarterly;
-            objconversionDataTable.timeframeOption = objBasicModelDataTable.timeframeOption;
-            objConversionToPlanModel.ConversionToPlanDataTableModel = objconversionDataTable;
-            #endregion
+                #region "Calculate DataTable"
+                List<string> _Categories = new List<string>();
+                _Categories = objBasicModelDataTable.Categories;
+                double catLength = _Categories != null ? _Categories.Count : 0;
+                objSubDataModel = GetConversionToPlanDataByCampaign(tacticStageList, timeFrameOption, objBasicModelDataTable.IsQuarterly, inqStageCode, objBasicModelDataTable); //method change for first time getting  
+                objconversionDataTable.SubDataModel = objSubDataModel;
+                objconversionDataTable.Categories = _Categories;
+                objconversionDataTable.ActualList = objBasicModelDataTable.ActualList;
+                objconversionDataTable.ProjectedList = objBasicModelDataTable.ProjectedList;
+                objconversionDataTable.GoalList = objBasicModelDataTable.GoalList;
+                objconversionDataTable.IsQuarterly = objBasicModelDataTable.IsQuarterly;
+                objconversionDataTable.timeframeOption = objBasicModelDataTable.timeframeOption;
+                objConversionToPlanModel.ConversionToPlanDataTableModel = objconversionDataTable;
+                #endregion
 
-            #region "Set Linechart & Revenue Overview data to model for combine"
-            objLineChartData = GetCombinationLineChartData(objBasicModelDataTable);
-            objConversionToPlanModel.LineChartModel = objLineChartData;
-            #endregion
+                #region "Set Linechart & Revenue Overview data to model for combine"
+                objLineChartData = GetCombinationLineChartData(objBasicModelDataTable);
+                objConversionToPlanModel.LineChartModel = objLineChartData;
+                #endregion
 
-            #region "Barchart"
-            #region "Calculate Barchart data by TimeFrame"
-            BarChartModel objBarChartModel = new BarChartModel();
-            List<BarChartSeries> lstSeries = new List<BarChartSeries>();
-            _Categories = objBasicModelDataTable.Categories;
-            catLength = _Categories != null ? _Categories.Count : 0;
-            List<double> serData1 = new List<double>();
-            List<double> serData2 = new List<double>();
-            List<double> serData3 = new List<double>();
-            double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0, _plotBandFromValue = 0;//, _plotBandToValue = 0, _PlotBandFromValue = 0;
-            bool _IsQuarterly = objBasicModelDataTable.IsQuarterly;
-            int _compareValue = 0;
-            serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
-            serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
-            serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
-
-            if (!_IsQuarterly)
-            {
+                #region "Barchart"
+                #region "Calculate Barchart data by TimeFrame"
+                BarChartModel objBarChartModel = new BarChartModel();
+                List<BarChartSeries> lstSeries = new List<BarChartSeries>();
+                _Categories = objBasicModelDataTable.Categories;
+                catLength = _Categories != null ? _Categories.Count : 0;
+                List<double> serData1 = new List<double>();
+                List<double> serData2 = new List<double>();
+                List<double> serData3 = new List<double>();
+                double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0, _plotBandFromValue = 0;//, _plotBandToValue = 0, _PlotBandFromValue = 0;
+                bool _IsQuarterly = objBasicModelDataTable.IsQuarterly;
+                int _compareValue = 0;
                 serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
                 serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
                 serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
-            }
-            _compareValue = IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
 
-            #region "Set PlotBand From & To values"
-            _plotBandFromValue = IsQuarterly && (_compareValue != _lastQuarterValue) ? (_compareValue + _constQuartPlotBandPadding) : 0;
-            objBarChartModel.plotBandFromValue = _plotBandFromValue;
-            objBarChartModel.plotBandToValue = _plotBandFromValue > 0 ? (_PlotBandToValue) : 0;
-            #endregion
+                if (!_IsQuarterly)
+                {
+                    serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
+                    serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                    serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                }
+                _compareValue = IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
 
-            for (int i = 0; i < catLength; i++)
-            {
-                _Actual = objBasicModelDataTable.ActualList[i] != null ? objBasicModelDataTable.ActualList[i] : 0;
-                _Projected = objBasicModelDataTable.ProjectedList[i] != null ? objBasicModelDataTable.ProjectedList[i] : 0;
-                _Goal = objBasicModelDataTable.GoalList[i] != null ? objBasicModelDataTable.GoalList[i] : 0;
-                //Actual_Projected = _Actual + _Projected;
-                //serData1.Add(Actual_Projected);
-                serData2.Add(_Goal);
-                serData1.Add(_Actual);
-                serData3.Add(_Projected);
-                //if ((i + 1) < (_compareValue))
-                //{
-                //    serData1.Add(Actual_Projected);
-                //    serData3.Add(0);
-                //}
-                //else
-                //{
-                //    serData1.Add(0);
-                //    serData3.Add(Actual_Projected);
-                //}
-            }
-            List<string> _barChartCategories = new List<string>();
-            if (!IsQuarterly)
-            {
-                _barChartCategories.Add(string.Empty);
-                _barChartCategories.Add(string.Empty);
-                _barChartCategories.AddRange(_Categories);
-            }
-            else
-            {
-                _barChartCategories.Add(string.Empty);
-                _barChartCategories.AddRange(_Categories);
-            }
+                #region "Set PlotBand From & To values"
+                _plotBandFromValue = IsQuarterly && (_compareValue != _lastQuarterValue) ? (_compareValue + _constQuartPlotBandPadding) : 0;
+                objBarChartModel.plotBandFromValue = _plotBandFromValue;
+                objBarChartModel.plotBandToValue = _plotBandFromValue > 0 ? (_PlotBandToValue) : 0;
+                #endregion
 
-            BarChartSeries _chartSeries1 = new BarChartSeries();
-            _chartSeries1.name = "Actual";
-            _chartSeries1.data = serData1;
-            _chartSeries1.type = "column";
-            lstSeries.Add(_chartSeries1);
+                for (int i = 0; i < catLength; i++)
+                {
+                    _Actual = objBasicModelDataTable.ActualList[i] != null ? objBasicModelDataTable.ActualList[i] : 0;
+                    _Projected = objBasicModelDataTable.ProjectedList[i] != null ? objBasicModelDataTable.ProjectedList[i] : 0;
+                    _Goal = objBasicModelDataTable.GoalList[i] != null ? objBasicModelDataTable.GoalList[i] : 0;
+                    //Actual_Projected = _Actual + _Projected;
+                    //serData1.Add(Actual_Projected);
+                    serData2.Add(_Goal);
+                    serData1.Add(_Actual);
+                    serData3.Add(_Projected);
+                    //if ((i + 1) < (_compareValue))
+                    //{
+                    //    serData1.Add(Actual_Projected);
+                    //    serData3.Add(0);
+                    //}
+                    //else
+                    //{
+                    //    serData1.Add(0);
+                    //    serData3.Add(Actual_Projected);
+                    //}
+                }
+                List<string> _barChartCategories = new List<string>();
+                if (!IsQuarterly)
+                {
+                    _barChartCategories.Add(string.Empty);
+                    _barChartCategories.Add(string.Empty);
+                    _barChartCategories.AddRange(_Categories);
+                }
+                else
+                {
+                    _barChartCategories.Add(string.Empty);
+                    _barChartCategories.AddRange(_Categories);
+                }
 
-            BarChartSeries _chartSeries2 = new BarChartSeries();
-            _chartSeries2.name = "Goal";
-            _chartSeries2.data = serData2;
-            _chartSeries2.type = "column";
-            lstSeries.Add(_chartSeries2);
+                BarChartSeries _chartSeries1 = new BarChartSeries();
+                _chartSeries1.name = "Actual";
+                _chartSeries1.data = serData1;
+                _chartSeries1.type = "column";
+                lstSeries.Add(_chartSeries1);
 
-            BarChartSeries _chartSeries3 = new BarChartSeries();
-            _chartSeries3.name = "Projected";
-            _chartSeries3.data = serData3;
-            _chartSeries3.type = "column";
-            lstSeries.Add(_chartSeries3);
+                BarChartSeries _chartSeries2 = new BarChartSeries();
+                _chartSeries2.name = "Goal";
+                _chartSeries2.data = serData2;
+                _chartSeries2.type = "column";
+                lstSeries.Add(_chartSeries2);
 
-            objBarChartModel.series = lstSeries;
-            objBarChartModel.categories = _barChartCategories;
-            objConversionToPlanModel.ConversionToPlanBarChartModel = objBarChartModel;
-            #endregion
-            #endregion
+                BarChartSeries _chartSeries3 = new BarChartSeries();
+                _chartSeries3.name = "Projected";
+                _chartSeries3.data = serData3;
+                _chartSeries3.type = "column";
+                lstSeries.Add(_chartSeries3);
 
-            #region "CardSection Model"
-            CardSectionModel objCardSectionModel = new CardSectionModel();
-            List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-            CardSectionListModel = GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, timeFrameOption, IsQuarterly, Common.RevenueCampaign.ToString(),false, "", 0);
-            objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                objBarChartModel.series = lstSeries;
+                objBarChartModel.categories = _barChartCategories;
+                objConversionToPlanModel.ConversionToPlanBarChartModel = objBarChartModel;
+                #endregion
+                #endregion
 
-            TempData["ConverstionCardList"] = null;
-            TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+                #region "CardSection Model"
+                CardSectionModel objCardSectionModel = new CardSectionModel();
+                List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
+                CardSectionListModel = GetConversionCardSectionList(tacticStageList, _cmpgnMappingList, timeFrameOption, IsQuarterly, Common.RevenueCampaign.ToString(), false, "", 0);
+                objCardSectionModel.CardSectionListModel = CardSectionListModel;
+
+                TempData["ConverstionCardList"] = null;
+                TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
                 objReportModel.CardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());// Get Filter Record with page size
-            objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
-            #endregion
-            objReportModel.ConversionToPlanModel = objConversionToPlanModel;
+                objReportModel.CardSectionModel.TotalRecords = CardSectionListModel.Count();
+                #endregion
+                objReportModel.ConversionToPlanModel = objConversionToPlanModel;
             }
             return PartialView("_ReportConversion", objReportModel);
         }
@@ -10114,7 +10162,7 @@ namespace RevenuePlanner.Controllers
                 ActualList = BasicModelData.ActualList; //added by  Dashrath Prajapati- PL #1422
                 if (IsQuarterly)
                 {
-                    
+
 
                     TotalTrendQ1 = TotalTrendQ1 + (ActualList.ToList()[0]);
                     TotalTrendQ2 = TotalTrendQ1 + (ActualList.ToList()[1]);
@@ -10194,7 +10242,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region "Calculate Total for Proj.Vs Goal & Trend"
-                
+
                 GoalList = BasicModelData.GoalList;
                 if (IsQuarterly)
                 {
@@ -10399,7 +10447,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region "Calculate Total for Proj.Vs Goal & Trend"
-                
+
                 GoalList = _BasicModel.GoalList;
                 if (IsQuarterly)
                 {
@@ -10437,12 +10485,12 @@ namespace RevenuePlanner.Controllers
                 {
                     #region "Get Total Trend value on Monthly basis"
                     double _totalActual = 0, _TotalTrendValue = 0, _totalGoal = 0;
-                   
+
                     for (int i = 1; i <= 12; i++)
                     {
-                        
+
                         _totalActual = ActualList.ToList()[i - 1];
-                        _totalGoal = GoalList.ToList()[i - 1]; 
+                        _totalGoal = GoalList.ToList()[i - 1];
                         _TotalTrendValue = _totalGoal > 0 ? (((_totalActual - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant Sheth : #1424
                         PerformanceList.Add(_TotalTrendValue.ToString());
                     }
@@ -10487,462 +10535,116 @@ namespace RevenuePlanner.Controllers
             string strCampaign = Common.RevenueCampaign;//
             int customfieldId = 0;
             ReportModel objReportModel = new ReportModel();
-            bool IsCampaignCustomField = false, IsProgramCustomField = false, IsTacticCustomField = false;
-            List<TacticStageValue> _tacticdata = new List<TacticStageValue>();
-            List<int> PlanTacticIdsList = new List<int>();
-            // RevenueToPlanModel objRevenueToPlanModel = new RevenueToPlanModel();
-            ConversionToPlanModel objConversionToPlanModel = new ConversionToPlanModel();
-            int _customfieldOptionId = 0;
-            List<RevenueContrinutionData> _TacticOptionList = new List<RevenueContrinutionData>();
+            if (!string.IsNullOrEmpty(option))
+            {
+                bool IsCampaignCustomField = false, IsProgramCustomField = false, IsTacticCustomField = false;
+                List<TacticStageValue> _tacticdata = new List<TacticStageValue>();
+                List<int> PlanTacticIdsList = new List<int>();
+                // RevenueToPlanModel objRevenueToPlanModel = new RevenueToPlanModel();
+                ConversionToPlanModel objConversionToPlanModel = new ConversionToPlanModel();
+                int _customfieldOptionId = 0;
+                List<RevenueContrinutionData> _TacticOptionList = new List<RevenueContrinutionData>();
 
-            string customFieldType = string.Empty;
-            // Add By Nishant Sheth
-            List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
-            List<int> campaignlist = new List<int>();
-            List<int> programlist = new List<int>();
-            //List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
-            List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
-            List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
-            CardSectionModel objCardSectionModel = new CardSectionModel();
-            List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
+                string customFieldType = string.Empty;
+                // Add By Nishant Sheth
+                List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
+                List<int> campaignlist = new List<int>();
+                List<int> programlist = new List<int>();
+                //List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
+                List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
+                List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
+                CardSectionModel objCardSectionModel = new CardSectionModel();
+                List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
 
 
-            tacticlist = GetTacticForReporting();
-           // Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            // End By Nishant Sheth
+                tacticlist = GetTacticForReporting();
+                // Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+                // End By Nishant Sheth
             #endregion
-            /// Declarion For Card Section 
-            /// Nishant Sheth
-            /// 
-            ViewBag.ConvParentLabel = ParentLabel;
-            ViewBag.ConvchildId = childId;
-            ViewBag.Convoption = option;
-            List<ProjectedTrendModel> MqlProjected = new List<ProjectedTrendModel>();// Header projected
-            List<ActualTrendModel> MqlActual = new List<ActualTrendModel>();
+                /// Declarion For Card Section 
+                /// Nishant Sheth
+                /// 
+                ViewBag.ConvParentLabel = ParentLabel;
+                ViewBag.ConvchildId = childId;
+                ViewBag.Convoption = option;
+                List<ProjectedTrendModel> MqlProjected = new List<ProjectedTrendModel>();// Header projected
+                List<ActualTrendModel> MqlActual = new List<ActualTrendModel>();
 
 
-            int customFieldIdCardSection = 0;
-            bool isTacticCustomFieldCardSection = false;
-            int customFieldOptionIdCardSection = 0;
-            string customFieldTypeCardSection = string.Empty;
-            if (masterCustomFieldOptionId > 0)
-            {
-                if (marsterCustomField.Contains(Common.CampaignCustomTitle))
+                int customFieldIdCardSection = 0;
+                bool isTacticCustomFieldCardSection = false;
+                int customFieldOptionIdCardSection = 0;
+                string customFieldTypeCardSection = string.Empty;
+                if (masterCustomFieldOptionId > 0)
                 {
-                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                    List<int> campaignIds = new List<int>();
-                    campaignIds = TacticData.Select(p => p.TacticObj.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
-                }
-                else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
-                {
-                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                    List<int> programIds = new List<int>();
-                    programIds = TacticData.Select(p => p.TacticObj.PlanProgramId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticData = TacticData.Where(t => programIds.Contains(t.TacticObj.PlanProgramId)).ToList();
-                }
-                else if (marsterCustomField.Contains(Common.TacticCustomTitle))
-                {
-                    int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
-                    customFieldIdCardSection = mastercustomfieldIdInner;
-                    isTacticCustomFieldCardSection = true;
-                    customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == mastercustomfieldIdInner).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                    List<int> tacticIds = new List<int>();
-                    tacticIds = TacticData.Select(p => p.TacticObj.PlanTacticId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticData = TacticData.Where(t => tacticIds.Contains(t.TacticObj.PlanTacticId)).ToList();
-                }
-            }
-
-            try
-            {
-                //PlanTacticIdsList
-                if (ParentLabel.Equals(strCampaign))
-                {
-                    if (childlabelType == Common.RevenueCampaign)
+                    if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                     {
-                        int campaignid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
-                        _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(t => t).ToList();
+                        int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                        List<int> campaignIds = new List<int>();
+                        campaignIds = TacticData.Select(p => p.TacticObj.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        TacticData = TacticData.Where(t => campaignIds.Contains(t.TacticObj.Plan_Campaign_Program.PlanCampaignId)).ToList();
                     }
-                    else if (childlabelType == Common.RevenueProgram)
+                    else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
                     {
-                        int programid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
-                        _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanProgramId == programid).Select(t => t).ToList();
+                        int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                        List<int> programIds = new List<int>();
+                        programIds = TacticData.Select(p => p.TacticObj.PlanProgramId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        TacticData = TacticData.Where(t => programIds.Contains(t.TacticObj.PlanProgramId)).ToList();
                     }
-                    else if (childlabelType == Common.RevenueTactic)
+                    else if (marsterCustomField.Contains(Common.TacticCustomTitle))
                     {
-                        int tacticid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
-                        _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanTacticId == tacticid).Select(t => t).ToList();
-                    }
-                    else
-                    {
-                        _tacticdata = TacticData.ToList();
-                    }
-
-                    ActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
-                    ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
-
-                    List<string> MqlStageList = new List<string>();
-                    MqlStageList.Add(Enums.Stage.MQL.ToString());
-
-                    List<ActualTacticListByStage> MqlTacticStageLsit = GetActualListInTacticInterval(_tacticdata, option, MqlStageList, IsTillCurrentMonth);
-
-                    MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit);
-
-                    #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
-                    ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
-                    if (StageCode != Enums.Stage.MQL.ToString())
-                    {
-                        MqlProjected = CalculateProjectedTrend(_tacticdata, includeMonth, Enums.Stage.MQL.ToString());
-                    }
-                    else
-                    {
-                        MqlProjected = ProjectedTrendList;
-                    }
-                    #endregion
-
-                    #region Mapping Items for Card Section
-                    /// Add By Nishant Sheth
-                   
-                    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-                    campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
-                    programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
-                   
-
-                    if (childlabelType.Contains(Common.RevenueTactic))
-                    {
-                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
-                        {
-                            ViewBag.ConvchildlabelType = Common.RevenueTactic;
-                        }
-
-                        _lstTactic = tacticlist.ToList();
-
-                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
-                        {
-                            _lstTactic = _lstTactic.Where(t => t.PlanTacticId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanTacticId))
-                                .ToList();
-                        }
-
-                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
-                            .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
-                    }
-                    else if (childlabelType.Contains(Common.RevenueProgram))
-                    {
-                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
-                        {
-                            ViewBag.ConvchildlabelType = Common.RevenueTactic;
-                        }
-
-                        _lstTactic = tacticlist.ToList();
-                        //if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
-                        {
-                            _lstTactic = _lstTactic.Where(t => t.PlanProgramId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanProgramId))
-                                .ToList();
-                        }
-                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanTacticId, _childId = pc.PlanTacticId, _parentTitle = pc.Title })
-                            .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
-                    }
-                    else if (childlabelType.Contains(Common.RevenueCampaign))
-                    {
-                        // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
-                        {
-                            ViewBag.ConvchildlabelType = Common.RevenueProgram;
-                        }
-                        _lstTactic = tacticlist.ToList();
-
-                        if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
-                        {
-                            _lstTactic = _lstTactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.Plan_Campaign_Program.PlanCampaignId))
-                                .ToList();
-                        }
-
-                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanProgramId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Title })
-                            .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
-                    }
-                    else
-                    {
-                        //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
-                        {
-                            ViewBag.ConvchildlabelType = Common.RevenueCampaign;
-                        }
-                        _lstTactic = tacticlist.ToList();
-                        _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
-                    }
-                    // End By Nishant Sheth
-                    #endregion
-                }
-                else if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
-                {
-
-                    _customfieldOptionId = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
-                    if (ParentLabel.Contains(Common.TacticCustomTitle))
-                    {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
-                        IsTacticCustomField = true;
+                        int mastercustomfieldIdInner = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
+                        customFieldIdCardSection = mastercustomfieldIdInner;
                         isTacticCustomFieldCardSection = true;
-                        customFieldIdCardSection = customfieldId;
-                        customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                        if (Convert.ToInt32(childId) > 0)
+                        customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == mastercustomfieldIdInner).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                        List<int> tacticIds = new List<int>();
+                        tacticIds = TacticData.Select(p => p.TacticObj.PlanTacticId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        TacticData = TacticData.Where(t => tacticIds.Contains(t.TacticObj.PlanTacticId)).ToList();
+                    }
+                }
+
+                try
+                {
+                    //PlanTacticIdsList
+                    if (ParentLabel.Equals(strCampaign))
+                    {
+                        if (childlabelType == Common.RevenueCampaign)
                         {
-                            customFieldOptionIdCardSection = Convert.ToInt32(childId);
-                            ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
-                            ViewBag.ConvchildlabelType = Common.RevenueTactic;
+                            int campaignid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
+                            _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(t => t).ToList();
                         }
-                    }
-                    else if (ParentLabel.Contains(Common.CampaignCustomTitle))
-                    {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
-                        IsCampaignCustomField = true;
-                        if (Convert.ToInt32(childId) > 0)
+                        else if (childlabelType == Common.RevenueProgram)
                         {
-                            ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
-                            ViewBag.ConvchildlabelType = Common.RevenueCampaign;
+                            int programid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
+                            _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanProgramId == programid).Select(t => t).ToList();
                         }
-                    }
-                    else if (ParentLabel.Contains(Common.ProgramCustomTitle))
-                    {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
-                        IsProgramCustomField = true;
-                        if (Convert.ToInt32(childId) > 0)
+                        else if (childlabelType == Common.RevenueTactic)
                         {
-                            ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
-                            ViewBag.ConvchildlabelType = Common.RevenueProgram;
-                        }
-                    }
-                    else
-                    {
-                        TacticData = TacticData.ToList();
-                    }
-
-                    #region "New Code"
-                    List<int> entityids = new List<int>();
-                    if (IsTacticCustomField)
-                    {
-                        entityids = TacticData.Select(t => t.TacticObj.PlanTacticId).ToList();
-                    }
-                    else if (IsCampaignCustomField)
-                    {
-                        entityids = TacticData.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
-                    }
-                    else
-                    {
-                        entityids = TacticData.Select(t => t.TacticObj.PlanProgramId).ToList();
-                    }
-
-                    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                    var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                    {
-                        var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
-                        _TacticOptionList = (from cfo in db.CustomFieldOptions
-                                             where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
-                                             select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
-                                      new RevenueContrinutionData
-                                      {
-                                          Title = pc.Key.title,
-                                          CustomFieldOptionid = pc.Key.id,
-                                          // Fetch the filtered list based upon custom fields type
-                                          planTacticList = TacticData.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                                              (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                      }).ToList();
-                    }
-                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                    {
-                        _TacticOptionList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
-                                    new RevenueContrinutionData
-                                    {
-                                        Title = pc.Key.title,
-                                        planTacticList = pc.Select(c => c.EntityId).ToList()
-                                    }).ToList();
-                    }
-                    #endregion
-                    if (_customfieldOptionId > 0)
-                    {
-                        PlanTacticIdsList = _TacticOptionList.Where(rev => rev.CustomFieldOptionid.Equals(_customfieldOptionId)).Select(rev => rev.planTacticList).FirstOrDefault();
-                    }
-                    else
-                    {
-                        _TacticOptionList.ForEach(rev => PlanTacticIdsList.AddRange(rev.planTacticList));
-                    }
-                    PlanTacticIdsList = PlanTacticIdsList != null ? PlanTacticIdsList.Distinct().ToList() : new List<int>();
-                    #region "filter TacticData based on Customfield"
-
-                    _tacticdata = TacticData.Where(t => PlanTacticIdsList.Contains(t.TacticObj.PlanTacticId)).ToList();
-
-                    #endregion
-
-                    #region Add CampaginList For CardSection Base on CustomFieldOption
-                    // Add BY Nishant Sheth
-                    if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
-                    {
-                        if (_customfieldOptionId > 0)
-                        {
-                            tacticlist = _tacticdata.Select(t => t.TacticObj).ToList();
-                            if (ParentLabel.Contains(Common.TacticCustomTitle))
-                            {
-                                _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
-                                 .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
-
-                            }
-                            else if (ParentLabel.Contains(Common.ProgramCustomTitle))
-                            {
-
-                                _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanProgramId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Title })
-                                    .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
-
-                            }
-                            else if (ParentLabel.Contains(Common.CampaignCustomTitle))
-                            {
-
-                                _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.Plan_Campaign_Program.PlanCampaignId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title })
-                                    .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
-
-                            }
+                            int tacticid = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
+                            _tacticdata = TacticData.Where(pcpt => pcpt.TacticObj.PlanTacticId == tacticid).Select(t => t).ToList();
                         }
                         else
                         {
-                            foreach (var data in _TacticOptionList)
-                            {
-                                if (data.planTacticList.Count > 0)
-                                {
-                                    data.planTacticList.ForEach(innerdata => _cmpgnMappingList.Add(new TacticMappingItem { ParentTitle = data.Title, ParentId = data.CustomFieldOptionid, ChildId = innerdata }));
-                                }
-                                else
-                                {
-                                    _cmpgnMappingList.Add(new TacticMappingItem { ParentTitle = data.Title, ParentId = data.CustomFieldOptionid, ChildId = 0 });
-                                }
-                            }
+                            _tacticdata = TacticData.ToList();
                         }
 
-                    }
-                    #endregion
-
-                    #region "Get ActualTrend Model list"
-                    List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                    ActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);//
-                    ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(StageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
-                    //set code as per selection of dropdown
-                    if (_customfieldOptionId > 0)
-                    {
-                        List<ActualDataTable> ActualRevenueDataTable = new List<ActualDataTable>();
-                        if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))
-                        {
-                            ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, ActualTacticList, _tacticdata, IsTacticCustomField);
-                        }
-                        if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))
-                        {
-                            ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.CW, ActualTacticList, _tacticdata, IsTacticCustomField);
-                        }
-                        if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()))
-                        {
-                            ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.INQ, ActualTacticList, _tacticdata, IsTacticCustomField);
-                        }
-                        //ProjectedStageValue
-                        ActualTacticTrendList = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, StageCode);
-                        if (StageCode != Enums.Stage.MQL.ToString())
-                        {
-                            MqlActual = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, Enums.Stage.MQL.ToString());
-                        }
-                        else
-                        {
-                            MqlActual = ActualTacticTrendList;
-                        }
-                    }
-                    else
-                    {
+                        ActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
                         ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
-                        //MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList).Where(act => act.StageCode.Equals(Enums.Stage.MQL.ToString())).ToList();
+
                         List<string> MqlStageList = new List<string>();
                         MqlStageList.Add(Enums.Stage.MQL.ToString());
 
                         List<ActualTacticListByStage> MqlTacticStageLsit = GetActualListInTacticInterval(_tacticdata, option, MqlStageList, IsTillCurrentMonth);
 
                         MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit);
-                    }
-                    #endregion
-                    //cmplete
-                    if (_customfieldOptionId > 0)
-                    {
-                        #region "Get Tactic data by Weightage for Projected by StageCode(Revenue)"
-                        List<TacticDataTable> _TacticDataTable = new List<TacticDataTable>();
-                        List<TacticMonthValue> _TacticListMonth = new List<TacticMonthValue>();
-                        List<ProjectedTacticModel> _TacticList = new List<ProjectedTacticModel>();
-                        if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))
-                        {
-                            _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, _tacticdata, IsTacticCustomField, true);
-                        }
-                        if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))
-                        {
-                            _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.CW, _tacticdata, IsTacticCustomField, true);
-                        }
-                        if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()))
-                        {
-                            _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.INQ, _tacticdata, IsTacticCustomField, true);
-                        }
-                        _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
-                        _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
-                        {
-                            TacticId = tac.Id,
-                            StartMonth = tac.StartMonth,
-                            EndMonth = tac.EndMonth,
-                            Value = tac.Value,
-                            Year = tac.StartYear
-                        }).Distinct().ToList();
-                        ProjectedTrendList = GetProjectedTrendModel(_TacticList);
-                        ProjectedTrendList = (from _prjTac in ProjectedTrendList
-                                              group _prjTac by new
-                                              {
-                                                  _prjTac.PlanTacticId,
-                                                  _prjTac.Month,
-                                                  _prjTac.Value,
-                                                  _prjTac.TrendValue
-                                              } into tac
-                                              select new ProjectedTrendModel
-                                              {
-                                                  PlanTacticId = tac.Key.PlanTacticId,
-                                                  Month = tac.Key.Month,
-                                                  Value = tac.Key.Value,
-                                                  TrendValue = tac.Key.TrendValue
-                                              }).Distinct().ToList();
-                        #endregion
 
-                        // Mql Projected for header value 
-                        _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, _tacticdata, IsTacticCustomField, true);
-                        _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
-                        _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
-                        {
-                            TacticId = tac.Id,
-                            StartMonth = tac.StartMonth,
-                            EndMonth = tac.EndMonth,
-                            Value = tac.Value,
-                            Year = tac.StartYear
-                        }).Distinct().ToList();
-                        MqlProjected = GetProjectedTrendModel(_TacticList);
-                        MqlProjected = (from _prjTac in ProjectedTrendList
-                                        group _prjTac by new
-                                        {
-                                            _prjTac.PlanTacticId,
-                                            _prjTac.Month,
-                                            _prjTac.Value,
-                                            _prjTac.TrendValue
-                                        } into tac
-                                        select new ProjectedTrendModel
-                                        {
-                                            PlanTacticId = tac.Key.PlanTacticId,
-                                            Month = tac.Key.Month,
-                                            Value = tac.Key.Value,
-                                            TrendValue = tac.Key.TrendValue
-                                        }).Distinct().ToList();
-
-                    }
-                    else
-                    {
+                        #region "Conversion : Get Tacticwise Actual_Projected Vs Goal Model data "
                         ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
                         if (StageCode != Enums.Stage.MQL.ToString())
                         {
@@ -10952,184 +10654,542 @@ namespace RevenuePlanner.Controllers
                         {
                             MqlProjected = ProjectedTrendList;
                         }
+                        #endregion
+
+                        #region Mapping Items for Card Section
+                        /// Add By Nishant Sheth
+
+                        // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+                        campaignlist = tacticlist.Select(t => t.Plan_Campaign_Program.PlanCampaignId).ToList();
+                        programlist = tacticlist.Select(t => t.PlanProgramId).ToList();
+
+
+                        if (childlabelType.Contains(Common.RevenueTactic))
+                        {
+                            // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                            {
+                                ViewBag.ConvchildlabelType = Common.RevenueTactic;
+                            }
+
+                            _lstTactic = tacticlist.ToList();
+
+                            if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                            {
+                                _lstTactic = _lstTactic.Where(t => t.PlanTacticId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanTacticId))
+                                    .ToList();
+                            }
+
+                            _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
+                                .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+                        }
+                        else if (childlabelType.Contains(Common.RevenueProgram))
+                        {
+                            //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                            {
+                                ViewBag.ConvchildlabelType = Common.RevenueTactic;
+                            }
+
+                            _lstTactic = tacticlist.ToList();
+                            //if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                            {
+                                _lstTactic = _lstTactic.Where(t => t.PlanProgramId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.PlanProgramId))
+                                    .ToList();
+                            }
+                            _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanTacticId, _childId = pc.PlanTacticId, _parentTitle = pc.Title })
+                                .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
+                        }
+                        else if (childlabelType.Contains(Common.RevenueCampaign))
+                        {
+                            // if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                            {
+                                ViewBag.ConvchildlabelType = Common.RevenueProgram;
+                            }
+                            _lstTactic = tacticlist.ToList();
+
+                            if (!string.IsNullOrEmpty(childId) ? Convert.ToInt32(childId) > 0 : false)
+                            {
+                                _lstTactic = _lstTactic.Where(t => t.Plan_Campaign_Program.PlanCampaignId == (Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.Plan_Campaign_Program.PlanCampaignId))
+                                    .ToList();
+                            }
+
+                            _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _parentId = pc.PlanProgramId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Title })
+                                .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
+                        }
+                        else
+                        {
+                            //if (DrpChange != "CampaignDrp" || isDetails || IsBackClick)
+                            {
+                                ViewBag.ConvchildlabelType = Common.RevenueCampaign;
+                            }
+                            _lstTactic = tacticlist.ToList();
+                            _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
+                        }
+                        // End By Nishant Sheth
+                        #endregion
                     }
-                }
+                    else if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+                    {
 
-                #region Set Header Value
-                BasicModel objBasicConverstionHeader = new BasicModel();
-                //List<ActualTrendModel> MqlActual = ActualTacticTrendList.Where(act => act.StageCode.Equals(Enums.Stage.MQL)).ToList();
+                        _customfieldOptionId = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
+                        if (ParentLabel.Contains(Common.TacticCustomTitle))
+                        {
+                            if (int.TryParse(ParentLabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
+                            {
+                                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
+                            }
+                            IsTacticCustomField = true;
+                            isTacticCustomFieldCardSection = true;
+                            customFieldIdCardSection = customfieldId;
+                            customFieldTypeCardSection = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                            if (Convert.ToInt32(childId) > 0)
+                            {
+                                customFieldOptionIdCardSection = Convert.ToInt32(childId);
+                                ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
+                                ViewBag.ConvchildlabelType = Common.RevenueTactic;
+                            }
+                        }
+                        else if (ParentLabel.Contains(Common.CampaignCustomTitle))
+                        {
+                            if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                            {
+                                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
+                            }
+                            IsCampaignCustomField = true;
+                            if (Convert.ToInt32(childId) > 0)
+                            {
+                                ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
+                                ViewBag.ConvchildlabelType = Common.RevenueCampaign;
+                            }
+                        }
+                        else if (ParentLabel.Contains(Common.ProgramCustomTitle))
+                        {
+                            if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                            {
+                                customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
+                            }
+                            IsProgramCustomField = true;
+                            if (Convert.ToInt32(childId) > 0)
+                            {
+                                ViewBag.ConvParentLabel = Common.RevenueCampaign;// Add By Nishant Sheth
+                                ViewBag.ConvchildlabelType = Common.RevenueProgram;
+                            }
+                        }
+                        else
+                        {
+                            TacticData = TacticData.ToList();
+                        }
 
-                objBasicConverstionHeader = GetValuesListByTimeFrame(MqlActual, MqlProjected, option, (IsQuarterly.ToLower() == "quarterly" ? true : false));
-                Projected_Goal objHeaderProjected = new Projected_Goal();
-                objHeaderProjected = GetConverstionHeaderValue(objBasicConverstionHeader, option).RevenueHeaderModel;
-                objConversionToPlanModel.RevenueHeaderModel = objHeaderProjected;
-                #endregion
+                        #region "New Code"
+                        List<int> entityids = new List<int>();
+                        if (IsTacticCustomField)
+                        {
+                            entityids = TacticData.Select(t => t.TacticObj.PlanTacticId).ToList();
+                        }
+                        else if (IsCampaignCustomField)
+                        {
+                            entityids = TacticData.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
+                        }
+                        else
+                        {
+                            entityids = TacticData.Select(t => t.TacticObj.PlanProgramId).ToList();
+                        }
 
-                /// Add By Nishant Sheth : 07-July-2015 
-                /// Desc : Fill card section with filter option , Ticket no:#1397 
-                objCardSectionModel = new CardSectionModel();
-                CardSectionListModel = new List<CardSectionListModel>();
+                        customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                        var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
+                        if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
+                        {
+                            var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
+                            _TacticOptionList = (from cfo in db.CustomFieldOptions
+                                                 where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
+                                                 select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
+                                          new RevenueContrinutionData
+                                          {
+                                              Title = pc.Key.title,
+                                              CustomFieldOptionid = pc.Key.id,
+                                              // Fetch the filtered list based upon custom fields type
+                                              planTacticList = TacticData.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
+                                                  (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
+                                          }).ToList();
+                        }
+                        else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
+                        {
+                            _TacticOptionList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
+                                        new RevenueContrinutionData
+                                        {
+                                            Title = pc.Key.title,
+                                            planTacticList = pc.Select(c => c.EntityId).ToList()
+                                        }).ToList();
+                        }
+                        #endregion
+                        if (_customfieldOptionId > 0)
+                        {
+                            PlanTacticIdsList = _TacticOptionList.Where(rev => rev.CustomFieldOptionid.Equals(_customfieldOptionId)).Select(rev => rev.planTacticList).FirstOrDefault();
+                        }
+                        else
+                        {
+                            _TacticOptionList.ForEach(rev => PlanTacticIdsList.AddRange(rev.planTacticList));
+                        }
+                        PlanTacticIdsList = PlanTacticIdsList != null ? PlanTacticIdsList.Distinct().ToList() : new List<int>();
+                        #region "filter TacticData based on Customfield"
 
-                CardSectionListModel = GetConversionCardSectionList(_tacticdata, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection);
-                //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
-                objCardSectionModel.CardSectionListModel = CardSectionListModel;
-                TempData["ConverstionCardList"] = null;
-                TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
-                objCardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());
-                objCardSectionModel.TotalRecords = CardSectionListModel.Count();
-                TempData["ConversionCard"] = null;
-                TempData["ConversionCard"] = objCardSectionModel;
+                        _tacticdata = TacticData.Where(t => PlanTacticIdsList.Contains(t.TacticObj.PlanTacticId)).ToList();
 
-                // End By Nishant Sheth
+                        #endregion
 
-                #region "Revenue Model Values"
+                        #region Add CampaginList For CardSection Base on CustomFieldOption
+                        // Add BY Nishant Sheth
+                        if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
+                        {
+                            if (_customfieldOptionId > 0)
+                            {
+                                tacticlist = _tacticdata.Select(t => t.TacticObj).ToList();
+                                if (ParentLabel.Contains(Common.TacticCustomTitle))
+                                {
+                                    _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanTacticId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Title })
+                                     .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
 
-                #region "Get Basic Model"
-                bool _isquarterly = false;
-                if (!string.IsNullOrEmpty(IsQuarterly) && IsQuarterly.Equals(Enums.ViewByAllocated.Quarterly.ToString()))
-                    _isquarterly = true;
-                BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, option, _isquarterly);
-                #endregion
+                                }
+                                else if (ParentLabel.Contains(Common.ProgramCustomTitle))
+                                {
 
-                #region "Set Linechart & Revenue Overview data to model for combinechart"
-                objLineChartData = GetCombinationLineChartData(objBasicModel);
-                objConversionToPlanModel.LineChartModel = objLineChartData != null ? objLineChartData : new lineChartData();
-                #endregion
+                                    _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.PlanProgramId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Title })
+                                        .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
 
-                #region "Set line chart data"
+                                }
+                                else if (ParentLabel.Contains(Common.CampaignCustomTitle))
+                                {
 
-                List<conversion_Projected_Goal_LineChart> Projected_Goal_LineChartList = new List<conversion_Projected_Goal_LineChart>();
-                conversion_Projected_Goal_LineChart objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
+                                    _cmpgnMappingList = tacticlist.GroupBy(pc => new { _parentId = pc.Plan_Campaign_Program.PlanCampaignId, _childId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title })
+                                        .Select(pct => new TacticMappingItem { ParentId = pct.Key._parentId, ChildId = pct.Key._childId, ParentTitle = pct.Key._parentTitle }).ToList();
 
-                objLineChartData = new lineChartData();
-                ConversionOverviewModel objConversionOverviewModel = new ConversionOverviewModel();
-                objLineChartData = GetLineChartData(objBasicModel);
-                string strINQtageCode = Enums.InspectStage.ProjectedStageValue.ToString();
-                objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
-                objProjected_Goal_LineChart.StageCode = strINQtageCode;
-                objProjected_Goal_LineChart.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
-                Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
-                objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
-                objConversionToPlanModel.conversionOverviewModel = objConversionOverviewModel;
-                objReportModel.conversionOverviewModel = objConversionOverviewModel;
-                #endregion
-                #endregion
+                                }
+                            }
+                            else
+                            {
+                                foreach (var data in _TacticOptionList)
+                                {
+                                    if (data.planTacticList.Count > 0)
+                                    {
+                                        data.planTacticList.ForEach(innerdata => _cmpgnMappingList.Add(new TacticMappingItem { ParentTitle = data.Title, ParentId = data.CustomFieldOptionid, ChildId = innerdata }));
+                                    }
+                                    else
+                                    {
+                                        _cmpgnMappingList.Add(new TacticMappingItem { ParentTitle = data.Title, ParentId = data.CustomFieldOptionid, ChildId = 0 });
+                                    }
+                                }
+                            }
 
-                #region "Calculate DataTable"
-                List<string> _Categories = new List<string>();
-                _Categories = objBasicModel.Categories;
+                        }
+                        #endregion
 
-                ConversionDataTable objConversionDataTable = new ConversionDataTable();
-                ConversionSubDataTableModel objSubDataModel = new ConversionSubDataTableModel();
-                objConversionDataTable.Categories = _Categories;
-                objConversionDataTable.ActualList = objBasicModel.ActualList;
-                objConversionDataTable.ProjectedList = objBasicModel.ProjectedList;
-                objConversionDataTable.GoalList = objBasicModel.GoalList;
+                        #region "Get ActualTrend Model list"
+                        List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                        ActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);//
+                        ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(StageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
+                        //set code as per selection of dropdown
+                        if (_customfieldOptionId > 0)
+                        {
+                            List<ActualDataTable> ActualRevenueDataTable = new List<ActualDataTable>();
+                            if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))
+                            {
+                                ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, ActualTacticList, _tacticdata, IsTacticCustomField);
+                            }
+                            if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))
+                            {
+                                ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.CW, ActualTacticList, _tacticdata, IsTacticCustomField);
+                            }
+                            if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()))
+                            {
+                                ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.INQ, ActualTacticList, _tacticdata, IsTacticCustomField);
+                            }
+                            //ProjectedStageValue
+                            ActualTacticTrendList = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, StageCode);
+                            if (StageCode != Enums.Stage.MQL.ToString())
+                            {
+                                MqlActual = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, Enums.Stage.MQL.ToString());
+                            }
+                            else
+                            {
+                                MqlActual = ActualTacticTrendList;
+                            }
+                        }
+                        else
+                        {
+                            ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
+                            //MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList).Where(act => act.StageCode.Equals(Enums.Stage.MQL.ToString())).ToList();
+                            List<string> MqlStageList = new List<string>();
+                            MqlStageList.Add(Enums.Stage.MQL.ToString());
 
-                //if ParentLabel is "Campaign" or ParentLabel is "customfield" and CustomfieldOptionId selected "All" then do all calculation without weightage apply.
-                if (ParentLabel.Equals(strCampaign) || ((ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle)) && _customfieldOptionId.Equals(0)))
-                {
-                    objSubDataModel = GetConversionToPlanDataByCampaign(_tacticdata, objBasicModel.timeframeOption, objBasicModel.IsQuarterly, StageCode, objBasicModel);
-                }
-                else
-                {
-                    RevenueContrinutionData _TacticOptionModel = new RevenueContrinutionData();
-                    _TacticOptionModel = _TacticOptionList.Where(tac => tac.CustomFieldOptionid.Equals(_customfieldOptionId)).FirstOrDefault();
-                    _TacticOptionModel = _TacticOptionModel != null ? _TacticOptionModel : new RevenueContrinutionData();
-                    objSubDataModel = GetConversionToPlanDataByCustomField(customfieldId, customFieldType, _tacticdata, _TacticOptionModel, objBasicModel.timeframeOption, IsTacticCustomField, objBasicModel.IsQuarterly, StageCode, objBasicModel);
-                }
-                objConversionDataTable.SubDataModel = objSubDataModel;
-                objConversionDataTable.IsQuarterly = objBasicModel.IsQuarterly;
-                objConversionDataTable.timeframeOption = objBasicModel.timeframeOption;
-                objConversionToPlanModel.ConversionToPlanDataTableModel = objConversionDataTable;
-                objReportModel.ConversionToPlanModel = objConversionToPlanModel;
-                #endregion
+                            List<ActualTacticListByStage> MqlTacticStageLsit = GetActualListInTacticInterval(_tacticdata, option, MqlStageList, IsTillCurrentMonth);
 
-                #region "Calculate Barchart data by TimeFrame"
-                BarChartModel objBarChartModel = new BarChartModel();
-                List<BarChartSeries> lstSeries = new List<BarChartSeries>();
-                _Categories = new List<string>();
-                _Categories = objBasicModel.Categories;
-                double catLength = _Categories != null ? _Categories.Count : 0;
-                List<double> serData1 = new List<double>();
-                List<double> serData2 = new List<double>();
-                List<double> serData3 = new List<double>();
-                double _Actual = 0, _Projected = 0, _Goal = 0;//, Actual_Projected = 0;
-                bool _IsQuarterly = objBasicModel.IsQuarterly;
-                int _compareValue = 0;
-                _compareValue = _IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
-                serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
-                serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
-                serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                            MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, MqlTacticStageLsit);
+                        }
+                        #endregion
+                        //cmplete
+                        if (_customfieldOptionId > 0)
+                        {
+                            #region "Get Tactic data by Weightage for Projected by StageCode(Revenue)"
+                            List<TacticDataTable> _TacticDataTable = new List<TacticDataTable>();
+                            List<TacticMonthValue> _TacticListMonth = new List<TacticMonthValue>();
+                            List<ProjectedTacticModel> _TacticList = new List<ProjectedTacticModel>();
+                            if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString()))
+                            {
+                                _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, _tacticdata, IsTacticCustomField, true);
+                            }
+                            if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString()))
+                            {
+                                _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.CW, _tacticdata, IsTacticCustomField, true);
+                            }
+                            if (code.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString()))
+                            {
+                                _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.INQ, _tacticdata, IsTacticCustomField, true);
+                            }
+                            _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
+                            _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
+                            {
+                                TacticId = tac.Id,
+                                StartMonth = tac.StartMonth,
+                                EndMonth = tac.EndMonth,
+                                Value = tac.Value,
+                                Year = tac.StartYear
+                            }).Distinct().ToList();
+                            ProjectedTrendList = GetProjectedTrendModel(_TacticList);
+                            ProjectedTrendList = (from _prjTac in ProjectedTrendList
+                                                  group _prjTac by new
+                                                  {
+                                                      _prjTac.PlanTacticId,
+                                                      _prjTac.Month,
+                                                      _prjTac.Value,
+                                                      _prjTac.TrendValue
+                                                  } into tac
+                                                  select new ProjectedTrendModel
+                                                  {
+                                                      PlanTacticId = tac.Key.PlanTacticId,
+                                                      Month = tac.Key.Month,
+                                                      Value = tac.Key.Value,
+                                                      TrendValue = tac.Key.TrendValue
+                                                  }).Distinct().ToList();
+                            #endregion
 
-                if (!_IsQuarterly)
-                {
+                            // Mql Projected for header value 
+                            _TacticDataTable = GetTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, _tacticdata, IsTacticCustomField, true);
+                            _TacticListMonth = GetMonthWiseValueList(_TacticDataTable);
+                            _TacticList = _TacticListMonth.Select(tac => new ProjectedTacticModel
+                            {
+                                TacticId = tac.Id,
+                                StartMonth = tac.StartMonth,
+                                EndMonth = tac.EndMonth,
+                                Value = tac.Value,
+                                Year = tac.StartYear
+                            }).Distinct().ToList();
+                            MqlProjected = GetProjectedTrendModel(_TacticList);
+                            MqlProjected = (from _prjTac in ProjectedTrendList
+                                            group _prjTac by new
+                                            {
+                                                _prjTac.PlanTacticId,
+                                                _prjTac.Month,
+                                                _prjTac.Value,
+                                                _prjTac.TrendValue
+                                            } into tac
+                                            select new ProjectedTrendModel
+                                            {
+                                                PlanTacticId = tac.Key.PlanTacticId,
+                                                Month = tac.Key.Month,
+                                                Value = tac.Key.Value,
+                                                TrendValue = tac.Key.TrendValue
+                                            }).Distinct().ToList();
+
+                        }
+                        else
+                        {
+                            ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, StageCode);
+                            if (StageCode != Enums.Stage.MQL.ToString())
+                            {
+                                MqlProjected = CalculateProjectedTrend(_tacticdata, includeMonth, Enums.Stage.MQL.ToString());
+                            }
+                            else
+                            {
+                                MqlProjected = ProjectedTrendList;
+                            }
+                        }
+                    }
+
+                    #region Set Header Value
+                    BasicModel objBasicConverstionHeader = new BasicModel();
+                    //List<ActualTrendModel> MqlActual = ActualTacticTrendList.Where(act => act.StageCode.Equals(Enums.Stage.MQL)).ToList();
+
+                    objBasicConverstionHeader = GetValuesListByTimeFrame(MqlActual, MqlProjected, option, (IsQuarterly.ToLower() == "quarterly" ? true : false));
+                    Projected_Goal objHeaderProjected = new Projected_Goal();
+                    objHeaderProjected = GetConverstionHeaderValue(objBasicConverstionHeader, option).RevenueHeaderModel;
+                    objConversionToPlanModel.RevenueHeaderModel = objHeaderProjected;
+                    #endregion
+
+                    /// Add By Nishant Sheth : 07-July-2015 
+                    /// Desc : Fill card section with filter option , Ticket no:#1397 
+                    objCardSectionModel = new CardSectionModel();
+                    CardSectionListModel = new List<CardSectionListModel>();
+
+                    CardSectionListModel = GetConversionCardSectionList(_tacticdata, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection);
+                    //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
+                    objCardSectionModel.CardSectionListModel = CardSectionListModel;
+                    TempData["ConverstionCardList"] = null;
+                    TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
+                    objCardSectionModel = ConverstionCardSectionModelWithFilter(0, 5, "", Enums.SortByWaterFall.INQ.ToString());
+                    objCardSectionModel.TotalRecords = CardSectionListModel.Count();
+                    TempData["ConversionCard"] = null;
+                    TempData["ConversionCard"] = objCardSectionModel;
+
+                    // End By Nishant Sheth
+
+                    #region "Revenue Model Values"
+
+                    #region "Get Basic Model"
+                    bool _isquarterly = false;
+                    if (!string.IsNullOrEmpty(IsQuarterly) && IsQuarterly.Equals(Enums.ViewByAllocated.Quarterly.ToString()))
+                        _isquarterly = true;
+                    BasicModel objBasicModel = GetValuesListByTimeFrame(ActualTacticTrendList, ProjectedTrendList, option, _isquarterly);
+                    #endregion
+
+                    #region "Set Linechart & Revenue Overview data to model for combinechart"
+                    objLineChartData = GetCombinationLineChartData(objBasicModel);
+                    objConversionToPlanModel.LineChartModel = objLineChartData != null ? objLineChartData : new lineChartData();
+                    #endregion
+
+                    #region "Set line chart data"
+
+                    List<conversion_Projected_Goal_LineChart> Projected_Goal_LineChartList = new List<conversion_Projected_Goal_LineChart>();
+                    conversion_Projected_Goal_LineChart objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
+
+                    objLineChartData = new lineChartData();
+                    ConversionOverviewModel objConversionOverviewModel = new ConversionOverviewModel();
+                    objLineChartData = GetLineChartData(objBasicModel);
+                    string strINQtageCode = Enums.InspectStage.ProjectedStageValue.ToString();
+                    objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
+                    objProjected_Goal_LineChart.StageCode = strINQtageCode;
+                    objProjected_Goal_LineChart.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
+                    Projected_Goal_LineChartList.Add(objProjected_Goal_LineChart);
+                    objConversionOverviewModel.Projected_LineChartList = Projected_Goal_LineChartList != null ? Projected_Goal_LineChartList : (new List<conversion_Projected_Goal_LineChart>());
+                    objConversionToPlanModel.conversionOverviewModel = objConversionOverviewModel;
+                    objReportModel.conversionOverviewModel = objConversionOverviewModel;
+                    #endregion
+                    #endregion
+
+                    #region "Calculate DataTable"
+                    List<string> _Categories = new List<string>();
+                    _Categories = objBasicModel.Categories;
+
+                    ConversionDataTable objConversionDataTable = new ConversionDataTable();
+                    ConversionSubDataTableModel objSubDataModel = new ConversionSubDataTableModel();
+                    objConversionDataTable.Categories = _Categories;
+                    objConversionDataTable.ActualList = objBasicModel.ActualList;
+                    objConversionDataTable.ProjectedList = objBasicModel.ProjectedList;
+                    objConversionDataTable.GoalList = objBasicModel.GoalList;
+
+                    //if ParentLabel is "Campaign" or ParentLabel is "customfield" and CustomfieldOptionId selected "All" then do all calculation without weightage apply.
+                    if (ParentLabel.Equals(strCampaign) || ((ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle)) && _customfieldOptionId.Equals(0)))
+                    {
+                        objSubDataModel = GetConversionToPlanDataByCampaign(_tacticdata, objBasicModel.timeframeOption, objBasicModel.IsQuarterly, StageCode, objBasicModel);
+                    }
+                    else
+                    {
+                        RevenueContrinutionData _TacticOptionModel = new RevenueContrinutionData();
+                        _TacticOptionModel = _TacticOptionList.Where(tac => tac.CustomFieldOptionid.Equals(_customfieldOptionId)).FirstOrDefault();
+                        _TacticOptionModel = _TacticOptionModel != null ? _TacticOptionModel : new RevenueContrinutionData();
+                        objSubDataModel = GetConversionToPlanDataByCustomField(customfieldId, customFieldType, _tacticdata, _TacticOptionModel, objBasicModel.timeframeOption, IsTacticCustomField, objBasicModel.IsQuarterly, StageCode, objBasicModel);
+                    }
+                    objConversionDataTable.SubDataModel = objSubDataModel;
+                    objConversionDataTable.IsQuarterly = objBasicModel.IsQuarterly;
+                    objConversionDataTable.timeframeOption = objBasicModel.timeframeOption;
+                    objConversionToPlanModel.ConversionToPlanDataTableModel = objConversionDataTable;
+                    objReportModel.ConversionToPlanModel = objConversionToPlanModel;
+                    #endregion
+
+                    #region "Calculate Barchart data by TimeFrame"
+                    BarChartModel objBarChartModel = new BarChartModel();
+                    List<BarChartSeries> lstSeries = new List<BarChartSeries>();
+                    _Categories = new List<string>();
+                    _Categories = objBasicModel.Categories;
+                    double catLength = _Categories != null ? _Categories.Count : 0;
+                    List<double> serData1 = new List<double>();
+                    List<double> serData2 = new List<double>();
+                    List<double> serData3 = new List<double>();
+                    double _Actual = 0, _Projected = 0, _Goal = 0;//, Actual_Projected = 0;
+                    bool _IsQuarterly = objBasicModel.IsQuarterly;
+                    int _compareValue = 0;
+                    _compareValue = _IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
                     serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
                     serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
                     serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
-                }
 
-                for (int i = 0; i < catLength; i++)
+                    if (!_IsQuarterly)
+                    {
+                        serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
+                        serData2.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                        serData3.Add(0);// Insert blank data at 1st index of list to Add padding to Graph.
+                    }
+
+                    for (int i = 0; i < catLength; i++)
+                    {
+                        _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
+                        _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
+                        _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
+                        //Actual_Projected = _Actual + _Projected;
+                        serData2.Add(_Goal);
+                        serData1.Add(_Actual);
+                        serData3.Add(_Projected);
+                        //if ((i + 1) < (_compareValue))
+                        //{
+                        //    serData1.Add(Actual_Projected);
+                        //    serData3.Add(0);
+                        //}
+                        //else
+                        //{
+                        //    serData1.Add(0);
+                        //    serData3.Add(Actual_Projected);
+                        //}
+                    }
+
+                    BarChartSeries _chartSeries1 = new BarChartSeries();
+                    _chartSeries1.name = "Actual";
+                    _chartSeries1.data = serData1;
+                    _chartSeries1.type = "column";
+                    lstSeries.Add(_chartSeries1);
+
+                    BarChartSeries _chartSeries2 = new BarChartSeries();
+                    _chartSeries2.name = "Goal";
+                    _chartSeries2.data = serData2;
+                    _chartSeries2.type = "column";
+                    lstSeries.Add(_chartSeries2);
+
+                    BarChartSeries _chartSeries3 = new BarChartSeries();
+                    _chartSeries3.name = "Projected";
+                    _chartSeries3.data = serData3;
+                    _chartSeries3.type = "column";
+                    lstSeries.Add(_chartSeries3);
+
+                    List<string> _barChartCategories = new List<string>();
+                    if (!_IsQuarterly)
+                    {
+                        _barChartCategories.Add(string.Empty);
+                        _barChartCategories.Add(string.Empty);
+                        _barChartCategories.AddRange(_Categories);
+                    }
+                    else
+                    {
+                        _barChartCategories.Add(string.Empty);
+                        _barChartCategories.AddRange(_Categories);
+                    }
+
+                    objBarChartModel.series = lstSeries;
+                    objBarChartModel.categories = _barChartCategories;
+                    objConversionToPlanModel.ConversionToPlanBarChartModel = objBarChartModel;
+                    objReportModel.ConversionToPlanModel = objConversionToPlanModel;
+                    #endregion
+                }
+                catch (Exception ex)
                 {
-                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
-                    _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
-                    _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
-                    //Actual_Projected = _Actual + _Projected;
-                    serData2.Add(_Goal);
-                    serData1.Add(_Actual);
-                    serData3.Add(_Projected);
-                    //if ((i + 1) < (_compareValue))
-                    //{
-                    //    serData1.Add(Actual_Projected);
-                    //    serData3.Add(0);
-                    //}
-                    //else
-                    //{
-                    //    serData1.Add(0);
-                    //    serData3.Add(Actual_Projected);
-                    //}
+                    throw ex;
                 }
-
-                BarChartSeries _chartSeries1 = new BarChartSeries();
-                _chartSeries1.name = "Actual";
-                _chartSeries1.data = serData1;
-                _chartSeries1.type = "column";
-                lstSeries.Add(_chartSeries1);
-
-                BarChartSeries _chartSeries2 = new BarChartSeries();
-                _chartSeries2.name = "Goal";
-                _chartSeries2.data = serData2;
-                _chartSeries2.type = "column";
-                lstSeries.Add(_chartSeries2);
-
-                BarChartSeries _chartSeries3 = new BarChartSeries();
-                _chartSeries3.name = "Projected";
-                _chartSeries3.data = serData3;
-                _chartSeries3.type = "column";
-                lstSeries.Add(_chartSeries3);
-
-                List<string> _barChartCategories = new List<string>();
-                if (!_IsQuarterly)
-                {
-                    _barChartCategories.Add(string.Empty);
-                    _barChartCategories.Add(string.Empty);
-                    _barChartCategories.AddRange(_Categories);
-                }
-                else
-                {
-                    _barChartCategories.Add(string.Empty);
-                    _barChartCategories.AddRange(_Categories);
-                }
-
-                objBarChartModel.series = lstSeries;
-                objBarChartModel.categories = _barChartCategories;
-                objConversionToPlanModel.ConversionToPlanBarChartModel = objBarChartModel;
-                objReportModel.ConversionToPlanModel = objConversionToPlanModel;
-                #endregion
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             //return Json(objReportModel, JsonRequestBehavior.AllowGet);
             return PartialView("_ConversionToPlan", objReportModel.ConversionToPlanModel);
@@ -11163,7 +11223,7 @@ namespace RevenuePlanner.Controllers
             List<CardSectionListModel> objCardSectionList = (List<CardSectionListModel>)TempData["ConverstionCardList"];
             TempData["ConverstionCardList"] = objCardSectionList;
             CardSectionModel cardModel = new CardSectionModel();
-        #endregion
+            #endregion
             cardModel.TotalRecords = objCardSectionList.Count();
             if (!string.IsNullOrEmpty(SearchString))
             {
@@ -11188,7 +11248,7 @@ namespace RevenuePlanner.Controllers
                 //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
             cardModel.CardSectionListModel = objCardSectionList;
-            
+
             cardModel.CuurentPageNum = PageNo;
             return cardModel;
         }
@@ -11226,13 +11286,13 @@ namespace RevenuePlanner.Controllers
             //end #PL 1482 
             #endregion
 
-           
+
             #region "Projected goal value"
             bool IsTillCurrentMonth = true;
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<conversion_Projected_Goal_LineChart> Projected_Goal_LineChartList = new List<conversion_Projected_Goal_LineChart>();
             conversion_Projected_Goal_LineChart objProjected_Goal_LineChart = new conversion_Projected_Goal_LineChart();
-            
+
 
             ConversionOverviewModel objConversionOverviewModel = new ConversionOverviewModel();
             Projected_Goal objProjectedGoal = new Projected_Goal();
@@ -11244,8 +11304,8 @@ namespace RevenuePlanner.Controllers
 
 
 
-           // string strMQLStageCode = Enums.InspectStage.MQL.ToString();
-           // string strCWStageCode = Enums.InspectStage.CW.ToString();
+            // string strMQLStageCode = Enums.InspectStage.MQL.ToString();
+            // string strCWStageCode = Enums.InspectStage.CW.ToString();
             double _inqActual = 0, _mqlActual = 0, _cwActual = 0;// stageVolumePercntg = 0;
             string revStageCode = Enums.InspectStage.Revenue.ToString();
             //string inqStageCode = Enums.InspectStage.INQ.ToString();
@@ -11309,7 +11369,7 @@ namespace RevenuePlanner.Controllers
 
                     #region "Add Static Values to Model"
                     objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
-                  
+
                     objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
 
@@ -11423,7 +11483,7 @@ namespace RevenuePlanner.Controllers
                                                   TrendValue = tac.Key.TrendValue
                                               }).Distinct().ToList();
 
-                        
+
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
@@ -11489,7 +11549,7 @@ namespace RevenuePlanner.Controllers
                                                   TrendValue = tac.Key.TrendValue
                                               }).Distinct().ToList();
 
-                        
+
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
@@ -11515,7 +11575,7 @@ namespace RevenuePlanner.Controllers
                         #endregion
                         objCardSection.CWCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
-                        
+
 
                     }
                     else
@@ -11574,8 +11634,8 @@ namespace RevenuePlanner.Controllers
                         _cwActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == cwStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.Value);
 
                         ProjectedTrendList = CalculateProjectedTrend(fltrTacticData, includeMonth, Enums.InspectStage.CW.ToString());
-                       
-                       
+
+
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
@@ -11600,7 +11660,7 @@ namespace RevenuePlanner.Controllers
                         objCardSection.CWCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
 
-                       
+
 
                     }
 
@@ -11847,77 +11907,77 @@ namespace RevenuePlanner.Controllers
 
                     }
 
-                        #region "Calculate Revenue"
-                        objCardSectionSubModel = new CardSectionListSubModel();
+                    #region "Calculate Revenue"
+                    objCardSectionSubModel = new CardSectionListSubModel();
 
-                        // Start Revenue CardSection SubModel Data
+                    // Start Revenue CardSection SubModel Data
 
-                        objCardSectionSubModel.CardType = Enums.TOPRevenueType.Revenue.ToString();
+                    objCardSectionSubModel.CardType = Enums.TOPRevenueType.Revenue.ToString();
 
-                        objCardSectionSubModel.Actual_Projected = revenueActual;
-                        objCardSectionSubModel.Goal = revenueGoal;
+                    objCardSectionSubModel.Actual_Projected = revenueActual;
+                    objCardSectionSubModel.Goal = revenueGoal;
 
-                        ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
-                        Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
-                        if (Percentage > 0)
-                            objCardSectionSubModel.IsNegative = false;
-                        else
-                            objCardSectionSubModel.IsNegative = true;
-                        objCardSectionSubModel.Percentage = Percentage;
+                    ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                    Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                    if (Percentage > 0)
+                        objCardSectionSubModel.IsNegative = false;
+                    else
+                        objCardSectionSubModel.IsNegative = true;
+                    objCardSectionSubModel.Percentage = Percentage;
 
-                        // End Revenue CardSection SubModel Data
+                    // End Revenue CardSection SubModel Data
 
-                        objCardSection.RevenueCardValues = objCardSectionSubModel;
-                        #endregion
+                    objCardSection.RevenueCardValues = objCardSectionSubModel;
+                    #endregion
 
-                        #region "Calculate Cost"
-                        // Start Cost CardSection SubModel Data
-                        objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.TOPRevenueType.Cost.ToString();
-                        objCardSectionSubModel.Actual_Projected = costActual;
+                    #region "Calculate Cost"
+                    // Start Cost CardSection SubModel Data
+                    objCardSectionSubModel = new CardSectionListSubModel();
+                    objCardSectionSubModel.CardType = Enums.TOPRevenueType.Cost.ToString();
+                    objCardSectionSubModel.Actual_Projected = costActual;
 
-                        objCardSectionSubModel.Goal = costGoal;
-                        ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
-                        Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
-                        if (Percentage > 0)
-                            objCardSectionSubModel.IsNegative = false;
-                        else
-                            objCardSectionSubModel.IsNegative = true;
-                        objCardSectionSubModel.Percentage = Percentage;
-                        objCardSection.CostCardValues = objCardSectionSubModel;
-                        // End Cost CardSection SubModel Data
+                    objCardSectionSubModel.Goal = costGoal;
+                    ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                    Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                    if (Percentage > 0)
+                        objCardSectionSubModel.IsNegative = false;
+                    else
+                        objCardSectionSubModel.IsNegative = true;
+                    objCardSectionSubModel.Percentage = Percentage;
+                    objCardSection.CostCardValues = objCardSectionSubModel;
+                    // End Cost CardSection SubModel Data
 
-                        #endregion
+                    #endregion
 
-                        #region "Calculate ROI"
-                        // Start ROI CardSection SubModel Data
-                        objCardSectionSubModel = new CardSectionListSubModel();
-                        objCardSectionSubModel.CardType = Enums.TOPRevenueType.ROI.ToString();
-                        objCardSectionSubModel.Actual_Projected = (costActual) != 0 ? ((((revenueActual) - (costActual)) / (costActual)) * 100) : 0;
+                    #region "Calculate ROI"
+                    // Start ROI CardSection SubModel Data
+                    objCardSectionSubModel = new CardSectionListSubModel();
+                    objCardSectionSubModel.CardType = Enums.TOPRevenueType.ROI.ToString();
+                    objCardSectionSubModel.Actual_Projected = (costActual) != 0 ? ((((revenueActual) - (costActual)) / (costActual)) * 100) : 0;
 
-                        objCardSectionSubModel.Goal = (costGoal) != 0 ? ((((revenueGoal) - (costGoal)) / (costGoal)) * 100) : 0; ;
-                        ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
-                        Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
-                        if (Percentage > 0)
-                            objCardSectionSubModel.IsNegative = false;
-                        else
-                            objCardSectionSubModel.IsNegative = true;
-                        objCardSectionSubModel.Percentage = Percentage;
+                    objCardSectionSubModel.Goal = (costGoal) != 0 ? ((((revenueGoal) - (costGoal)) / (costGoal)) * 100) : 0; ;
+                    ProjvsGoal = objCardSectionSubModel.Goal != 0 ? ((objCardSectionSubModel.Actual_Projected - objCardSectionSubModel.Goal) / objCardSectionSubModel.Goal) : 0;
+                    Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
+                    if (Percentage > 0)
+                        objCardSectionSubModel.IsNegative = false;
+                    else
+                        objCardSectionSubModel.IsNegative = true;
+                    objCardSectionSubModel.Percentage = Percentage;
 
-                        objCardSection.ROICardValues = objCardSectionSubModel;
-                        // End ROI CardSection SubModel Data
+                    objCardSection.ROICardValues = objCardSectionSubModel;
+                    // End ROI CardSection SubModel Data
 
-                        #endregion
+                    #endregion
 
-                        #region "line chart"
-                        BasicModel _basicmodel = GetCardValuesListByTimeFrame(inneractuallist, innerCurrentMonthCostList, timeframeOption);
-                        objLineChartData = new lineChartData();
-                        objLineChartData = GetCardLineChartData(_basicmodel, timeframeOption);
-                        objCardSection.LineChartData = objLineChartData;
+                    #region "line chart"
+                    BasicModel _basicmodel = GetCardValuesListByTimeFrame(inneractuallist, innerCurrentMonthCostList, timeframeOption);
+                    objLineChartData = new lineChartData();
+                    objLineChartData = GetCardLineChartData(_basicmodel, timeframeOption);
+                    objCardSection.LineChartData = objLineChartData;
 
-                        #endregion
-                        // Add Multiple fixed same values to Model
-                        objCardSectionList.Add(objCardSection);
+                    #endregion
+                    // Add Multiple fixed same values to Model
+                    objCardSectionList.Add(objCardSection);
 
                 }
 
@@ -12166,21 +12226,21 @@ namespace RevenuePlanner.Controllers
             {
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                        List<int> campaignIds = new List<int>();
-                        campaignIds = ProgramList.Select(p => p.PlanCampaignId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        ProgramList = ProgramList.Where(p => campaignIds.Contains(p.PlanCampaignId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                    List<int> campaignIds = new List<int>();
+                    campaignIds = ProgramList.Select(p => p.PlanCampaignId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    ProgramList = ProgramList.Where(p => campaignIds.Contains(p.PlanCampaignId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                        List<int> programIds = new List<int>();
-                        programIds = ProgramList.Select(p => p.PlanProgramId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        ProgramList = ProgramList.Where(p => programIds.Contains(p.PlanProgramId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                    List<int> programIds = new List<int>();
+                    programIds = ProgramList.Select(p => p.PlanProgramId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    ProgramList = ProgramList.Where(p => programIds.Contains(p.PlanProgramId)).ToList();
                 }
             }
 
@@ -12221,30 +12281,30 @@ namespace RevenuePlanner.Controllers
             {
                 if (marsterCustomField.Contains(Common.CampaignCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
-                        List<int> campaignIds = new List<int>();
-                        campaignIds = TacticList.Select(p => p.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        TacticList = TacticList.Where(t => campaignIds.Contains(t.Plan_Campaign_Program.PlanCampaignId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.CampaignCustomTitle, ""));
+                    List<int> campaignIds = new List<int>();
+                    campaignIds = TacticList.Select(p => p.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    campaignIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && campaignIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticList = TacticList.Where(t => campaignIds.Contains(t.Plan_Campaign_Program.PlanCampaignId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.ProgramCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
-                        List<int> programIds = new List<int>();
-                        programIds = TacticList.Select(p => p.PlanProgramId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        TacticList = TacticList.Where(t => programIds.Contains(t.PlanProgramId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.ProgramCustomTitle, ""));
+                    List<int> programIds = new List<int>();
+                    programIds = TacticList.Select(p => p.PlanProgramId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    programIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && programIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticList = TacticList.Where(t => programIds.Contains(t.PlanProgramId)).ToList();
                 }
                 else if (marsterCustomField.Contains(Common.TacticCustomTitle))
                 {
-                        int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
-                        List<int> tacticIds = new List<int>();
-                        tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
-                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                        tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                        TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
+                    int customfieldId = Convert.ToInt32(marsterCustomField.Replace(Common.TacticCustomTitle, ""));
+                    List<int> tacticIds = new List<int>();
+                    tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
+                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                    TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
                 }
             }
 
