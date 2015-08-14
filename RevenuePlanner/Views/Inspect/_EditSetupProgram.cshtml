@@ -218,7 +218,7 @@
     });
 
     $(document).click(function () {
-       $(document).unbind('keypress');
+        $(document).unbind('keypress');
     });
 
     function KeyPressOnDropdown() {
@@ -226,100 +226,108 @@
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.tbodycampaignprogram');
 
-            var theChar = String.fromCharCode(key);
-            var cur_check = '';
-            cur_check = selectbox_keys + theChar.toLowerCase();
+            if ($('#dropdown_Table').find('.advance_a').attr('mode').toString() != "Multi") {
+                var theChar = String.fromCharCode(key);
+                var cur_check = '';
+                cur_check = selectbox_keys + theChar.toLowerCase();
 
-            var $select = $('#dropdown_Table');
-            var lastElement = $select.find('tbody');
+                var $select = $('#dropdown_Table');
+                var lastElement = $select.find('tbody');
 
-            $this.find(".trdropdownhover").each(function () {
-                var p = $(this).find('p');
-                var text = jQuery(p).text().toLowerCase();
-                if ($prevtext == '' || cur_check.length > 1) {
-                    if (text.indexOf(cur_check) == 0) {
-                        $prevtext = text;
-                        if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
-                            $($_prevdata).removeClass('setfocusTr');
-                        }
-                        $_prevdata = jQuery(this);
-                        $nextdata = jQuery(this);
-                        $nextdata.addClass('setfocusTr');
-                        selectbox_keys = cur_check;
-                        $(p).closest('tr').focus();
-
-                        var x = $(this).position().top;
-                        lastElement.animate({ scrollTop: x }, 200);
-                        return false;
-                    }
-                }
-                else {
-                    /// find search_text from current li to downward direction in dropdown list.
-                    var _nextdatas = '';
-                    _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
-                    var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
-                    $.each(_nextdatas, function (key, value) {
-                        var _anchor = $(value).find('p');
-                        var _atext = $(_anchor).text().toLowerCase();
-
-                        //// Compare current "li" anchor text is with previous selected anchor text.
-                        if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                            $prevtext = _atext; // set previous text variable with selected text.
-                            $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
+                $this.find(".trdropdownhover").each(function () {
+                    var p = $(this).find('p');
+                    var text = jQuery(p).text().toLowerCase();
+                    if ($prevtext == '' || cur_check.length > 1) {
+                        if (text.indexOf(cur_check) == 0) {
+                            $prevtext = text;
+                            if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
+                                $($_prevdata).removeClass('setfocusTr');
+                            }
                             $_prevdata = jQuery(this);
                             $nextdata = jQuery(this);
-                            $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                            $nextdata.addClass('setfocusTr');
                             selectbox_keys = cur_check;
-                            $(this).closest('tr').focus();
-                            cntr = cntr + 1;
+                            $(p).closest('tr').focus();
 
                             var x = $(this).position().top;
                             lastElement.animate({ scrollTop: x }, 200);
                             return false;
                         }
-                    });
-                    /// find search_text from start of the dropdown list.
-                    if (cntr == 0) {
-                        _nextdatas = $('#dropdown_Table').find('.tbodycampaignprogram').find('tr'); //$('.tbodycampaignprogram').nextAll('tr');
+                    }
+                    else {
+                        /// find search_text from current li to downward direction in dropdown list.
+                        var _nextdatas = '';
+                        _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
+                        var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
                         $.each(_nextdatas, function (key, value) {
                             var _anchor = $(value).find('p');
                             var _atext = $(_anchor).text().toLowerCase();
 
                             //// Compare current "li" anchor text is with previous selected anchor text.
                             if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                                $prevtext = _atext;
-                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                                $prevtext = _atext; // set previous text variable with selected text.
+                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
                                 $_prevdata = jQuery(this);
                                 $nextdata = jQuery(this);
                                 $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
                                 selectbox_keys = cur_check;
                                 $(this).closest('tr').focus();
+                                cntr = cntr + 1;
+
                                 var x = $(this).position().top;
                                 lastElement.animate({ scrollTop: x }, 200);
                                 return false;
                             }
                         });
+                        /// find search_text from start of the dropdown list.
+                        if (cntr == 0) {
+                            _nextdatas = $('#dropdown_Table').find('.tbodycampaignprogram').find('tr'); //$('.tbodycampaignprogram').nextAll('tr');
+                            $.each(_nextdatas, function (key, value) {
+                                var _anchor = $(value).find('p');
+                                var _atext = $(_anchor).text().toLowerCase();
+
+                                //// Compare current "li" anchor text is with previous selected anchor text.
+                                if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
+                                    $prevtext = _atext;
+                                    $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                                    $_prevdata = jQuery(this);
+                                    $nextdata = jQuery(this);
+                                    $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                    selectbox_keys = cur_check;
+                                    $(this).closest('tr').focus();
+                                    var x = $(this).position().top;
+                                    lastElement.animate({ scrollTop: x }, 200);
+                                    return false;
+                                }
+                            });
+                        }
+                        if (cur_check.length <= 1) {
+                            return false;
+                        }
                     }
-                    if (cur_check.length <= 1) {
-                        return false;
-                    }
+                });
+                if ($nextdata != -1) {
+                    $nextdata.removeClass('trdropdownhover');
+                    $nextdata.addClass('trdropdownhover').focus();
+                    $("#dropdown_btn p:first").text($nextdata.text());
                 }
-            });
-            if ($nextdata != -1) {
-                $nextdata.removeClass('trdropdownhover');
-                $nextdata.addClass('trdropdownhover').focus();              
-                $("#dropdown_btn p:first").text($nextdata.text());            
+                clearTimeout(selectbox_keys_timeout);
+                var selectbox_keys_timeout = setTimeout(function () {
+                    selectbox_keys = "";
+                }, 400);
+                e.stopPropagation();
+                return false;
             }
-            clearTimeout(selectbox_keys_timeout);
-            var selectbox_keys_timeout = setTimeout(function () {
-                selectbox_keys = "";
-            }, 400);
-            e.stopPropagation();
-            return false;
         }).delegate("p", "mouseover", function (e) {
-            $(this).addClass('trdropdownhover');
+            var menu = $(this).parents('.dropdown-wrapper');
+            if (!menu.hasClass('dropdown-block')) {
+                $(this).addClass('trdropdownhover');
+            }
         }).delegate("p", "mouseout", function (e) {
-            $(this).removeClass('trdropdownhover');
+            var menu = $(this).parents('.dropdown-wrapper');
+            if (!menu.hasClass('dropdown-block')) {
+                $(this).removeClass('trdropdownhover');
+            }
         });
     }
 
@@ -557,10 +565,10 @@
         }
         if (!isDate(edate)) {
             alert('@Common.objCached.ValidateEndDate');
-                return false;
-            }
+            return false;
+        }
 
-            if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+        if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
         if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
         if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
         if (!validateDateCompare(sdate, tsdate, "@RevenuePlanner.Helpers.Common.objCached.TacticStartDateCompareWithParentStartDate")) return false;
@@ -713,109 +721,109 @@
 
     $('.dp').datepicker({
         format: "@RevenuePlanner.Helpers.Common.DateFormatDatePicker",
-             autoclose: false,
-         }).on('changeDate', function (ev) {
-             $(this).datepicker('hide');
-         });;
+        autoclose: false,
+    }).on('changeDate', function (ev) {
+        $(this).datepicker('hide');
+    });;
 
-             $('#dp_start .add-on').click(function () {
-                 $('#dp_start').datepicker('show');
-                 $('#dp_end').datepicker('hide');
-                 $(".dropdown-menu").css("z-index", "25001");
-                 var pos = $("#t_startdate").position();
-                 var height = $("#t_startdate").height();
-                 var scrollTop = $("#modal-container-186470").scrollTop();
-                 var pos_top = pos.top + height + scrollTop + 10;
-                 setTimeout(function () {
-                     if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                         $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
-                         $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
-                             top: pos_top.toString() + 'px',
-                             display: 'block'
-                         });
-                     }
-                     else {
-                         $('#dp_start').find('.datepicker.dropdown-menu').css({
-                             top: pos_top.toString() + 'px',
-                             display: 'block'
-                         });
-                     }
-                 }, 1);
+        $('#dp_start .add-on').click(function () {
+            $('#dp_start').datepicker('show');
+            $('#dp_end').datepicker('hide');
+            $(".dropdown-menu").css("z-index", "25001");
+            var pos = $("#t_startdate").position();
+            var height = $("#t_startdate").height();
+            var scrollTop = $("#modal-container-186470").scrollTop();
+            var pos_top = pos.top + height + scrollTop + 10;
+            setTimeout(function () {
+                if (!$('#dp_start').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                    $("#t_startdate").after($(".datepicker.dropdown-menu").eq(0));
+                    $("#t_startdate").parent().find(".datepicker.dropdown-menu").css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
+                    });
+                }
+                else {
+                    $('#dp_start').find('.datepicker.dropdown-menu').css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
+                    });
+                }
+            }, 1);
 
-                 //// To resolve issue of Ticket #1025, Pratik 
-                 $(".datepicker.dropdown-menu").last().css("display", "none");
-             })
+            //// To resolve issue of Ticket #1025, Pratik 
+            $(".datepicker.dropdown-menu").last().css("display", "none");
+        })
 
-             $('#dp_end .add-on').click(function () {
-                 $('#dp_start').datepicker('hide');
-                 $('#dp_end').datepicker('show');
-                 $(".dropdown-menu").css("z-index", "25001");
-                 var pos = $("#t_enddate").position();
-                 var height = $("#t_enddate").height();
-                 var scrollTop = $("#modal-container-186470").scrollTop();
-                 var pos_top = pos.top + height + scrollTop + 10;
-                 setTimeout(function () {
-                     if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                         $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
-                         $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-                             top: pos_top.toString() + 'px',
-                             display: 'block'
-                         });
-                     }
-                     else {
-                         $('#dp_end').find('.datepicker.dropdown-menu').css({
-                             top: pos_top.toString() + 'px',
-                             display: 'block'
-                         });
-                     }
-                 }, 1);
+        $('#dp_end .add-on').click(function () {
+            $('#dp_start').datepicker('hide');
+            $('#dp_end').datepicker('show');
+            $(".dropdown-menu").css("z-index", "25001");
+            var pos = $("#t_enddate").position();
+            var height = $("#t_enddate").height();
+            var scrollTop = $("#modal-container-186470").scrollTop();
+            var pos_top = pos.top + height + scrollTop + 10;
+            setTimeout(function () {
+                if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                    $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
+                    $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
+                    });
+                }
+                else {
+                    $('#dp_end').find('.datepicker.dropdown-menu').css({
+                        top: pos_top.toString() + 'px',
+                        display: 'block'
+                    });
+                }
+            }, 1);
 
-                 //// To resolve issue of Ticket #1025, Pratik 
-                 $(".datepicker.dropdown-menu").first().css("display", "none");
-             })
+            //// To resolve issue of Ticket #1025, Pratik 
+            $(".datepicker.dropdown-menu").first().css("display", "none");
+        })
 
-             $('#t_startdate').click(function () {
-                 $('#dp_end').datepicker('hide');
-             })
+        $('#t_startdate').click(function () {
+            $('#dp_end').datepicker('hide');
+        })
 
-             $('#t_enddate').click(function () {
-                 $('#dp_start').datepicker('hide');
-             })
-             $('.proceed_btn').click(function (e) {
-                 var label = $('#MultiSelectProcced').attr('proccedObject').toString();
-                 $('.dropdown_new_btn').each(function () {
-                     if ($(this).attr('label').toString() == label) {
-                         var menu = $(this).parent().find('.dropdown-wrapper');
-                         menu.toggleClass('dropdown-block');
-                         menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
-                         menu.find('input[type=checkbox]').toggle();
-                         menu.find('.advance_a').text("> Multi-selection");
-                         menu.find('.advance_a').attr('mode', 'Single');
-                         $(this).find('p:first').text("Please Select");
-                         menu.find('input:checkbox').removeAttr('checked');
-                         menu.find('p').addClass('single-p');
-                         menu.find('tr').addClass('trdropdownhover');
+        $('#t_enddate').click(function () {
+            $('#dp_start').datepicker('hide');
+        })
+        $('.proceed_btn').click(function (e) {
+            var label = $('#MultiSelectProcced').attr('proccedObject').toString();
+            $('.dropdown_new_btn').each(function () {
+                if ($(this).attr('label').toString() == label) {
+                    var menu = $(this).parent().find('.dropdown-wrapper');
+                    menu.toggleClass('dropdown-block');
+                    menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                    menu.find('input[type=checkbox]').toggle();
+                    menu.find('.advance_a').text("> Multi-selection");
+                    menu.find('.advance_a').attr('mode', 'Single');
+                    $(this).find('p:first').text("Please Select");
+                    menu.find('input:checkbox').removeAttr('checked');
+                    menu.find('p').addClass('single-p');
+                    menu.find('tr').addClass('trdropdownhover');
 
-                         //menu.find('#aclose_tag').css('display', 'none');
-                     }
-                 });
-                 $('#MultiSelectProcced').slideUp(400);
-                 e.stopPropagation();
-             });
+                    //menu.find('#aclose_tag').css('display', 'none');
+                }
+            });
+            $('#MultiSelectProcced').slideUp(400);
+            e.stopPropagation();
+        });
 
-             // Modified by Komal Rawal for ticket #1196
-             function isEmpty(el) {
-                 return !$.trim(el.html())
-             }
+        // Modified by Komal Rawal for ticket #1196
+        function isEmpty(el) {
+            return !$.trim(el.html())
+        }
 
-             if (isEmpty($('#CustomHtmlHelperfield'))) {
-                 $('#CustomHtmlHelperfield').hide();
-                 $('#CustomAttributeheading').hide();
-                 $('#divProgramSaveCancel').removeClass('border-top-div');//Added by Mitesh Vaishnav for PL ticket 1196
-             }
-             else {
-                 $('#CustomHtmlHelperfield').show();
-                 $('#CustomAttributeheading').show();
+        if (isEmpty($('#CustomHtmlHelperfield'))) {
+            $('#CustomHtmlHelperfield').hide();
+            $('#CustomAttributeheading').hide();
+            $('#divProgramSaveCancel').removeClass('border-top-div');//Added by Mitesh Vaishnav for PL ticket 1196
+        }
+        else {
+            $('#CustomHtmlHelperfield').show();
+            $('#CustomAttributeheading').show();
 
-             }
+        }
 </script>

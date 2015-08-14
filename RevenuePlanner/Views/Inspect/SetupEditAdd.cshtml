@@ -270,109 +270,117 @@
         $(document).keypress(function (e) {
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.top_spacing_geography');
+            
+            if ($('#dropdown_Table').find('.advance_a').attr('mode').toString() != "Multi") {
+                var theChar = String.fromCharCode(key);
+                var cur_check = '';
+                cur_check = selectbox_keys + theChar.toLowerCase();
 
-            var theChar = String.fromCharCode(key);
-            var cur_check = '';
-            cur_check = selectbox_keys + theChar.toLowerCase();
+                var $select = $('#dropdown_Table');
+                var lastElement = $select.find('tbody');
 
-            var $select = $('#dropdown_Table');
-            var lastElement = $select.find('tbody');
+                $this.find(".trdropdownhover").each(function () {
+                    var p = $(this).find('p');
+                    var text = jQuery(p).text().toLowerCase();
 
-            $this.find(".trdropdownhover").each(function () {
-                var p = $(this).find('p');
-                var text = jQuery(p).text().toLowerCase();
+                    if ($prevtext == '' || cur_check.length > 1) {
 
-                if ($prevtext == '' || cur_check.length > 1) {
-
-                    if (text.indexOf(cur_check) == 0) {
-                        $prevtext = text;
-                        if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
-                            $($_prevdata).removeClass('setfocusTr');
-                        }
-                        $_prevdata = jQuery(this);
-                        $nextdata = jQuery(this);
-                        $nextdata.addClass('setfocusTr');
-                        selectbox_keys = cur_check;
-                        $(p).closest('tr').focus();
-
-                        var x = $(this).position().top;
-                        lastElement.animate({ scrollTop: x }, 200);
-                        return false;
-                    }
-                }
-                else {
-                    /// find search_text from current li to downward direction in dropdown list.
-                    var _nextdatas = '';
-                    _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
-                    var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
-                    // $.each(_nextdatas, function (key, value) {
-                    _nextdatas.each(function (key, value) {
-                        var _anchor = $(value).find('p');
-                        var _atext = $(_anchor).text().toLowerCase();
-
-                        //// Compare current "li" anchor text is with previous selected anchor text.
-                        if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                            $prevtext = _atext; // set previous text variable with selected text.
-                            $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
+                        if (text.indexOf(cur_check) == 0) {
+                            $prevtext = text;
+                            if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
+                                $($_prevdata).removeClass('setfocusTr');
+                            }
                             $_prevdata = jQuery(this);
                             $nextdata = jQuery(this);
-                            $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                            $nextdata.addClass('setfocusTr');
                             selectbox_keys = cur_check;
-                            $(this).closest('tr').focus();
-                            cntr = cntr + 1;
+                            $(p).closest('tr').focus();
 
                             var x = $(this).position().top;
                             lastElement.animate({ scrollTop: x }, 200);
                             return false;
                         }
-                    });
-                    /// find search_text from start of the dropdown list.
-                    if (cntr == 0) {
-                        _nextdatas = $('#dropdown_Table').find('.top_spacing_geography').find('tr');
-                        $.each(_nextdatas, function (key, value) {
+                    }
+                    else {
+                        /// find search_text from current li to downward direction in dropdown list.
+                        var _nextdatas = '';
+                        _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
+                        var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
+                        // $.each(_nextdatas, function (key, value) {
+                        _nextdatas.each(function (key, value) {
                             var _anchor = $(value).find('p');
                             var _atext = $(_anchor).text().toLowerCase();
 
                             //// Compare current "li" anchor text is with previous selected anchor text.
                             if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                                $prevtext = _atext;
-                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                                $prevtext = _atext; // set previous text variable with selected text.
+                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
                                 $_prevdata = jQuery(this);
                                 $nextdata = jQuery(this);
                                 $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
                                 selectbox_keys = cur_check;
                                 $(this).closest('tr').focus();
+                                cntr = cntr + 1;
 
                                 var x = $(this).position().top;
                                 lastElement.animate({ scrollTop: x }, 200);
                                 return false;
                             }
                         });
+                        /// find search_text from start of the dropdown list.
+                        if (cntr == 0) {
+                            _nextdatas = $('#dropdown_Table').find('.top_spacing_geography').find('tr');
+                            $.each(_nextdatas, function (key, value) {
+                                var _anchor = $(value).find('p');
+                                var _atext = $(_anchor).text().toLowerCase();
+
+                                //// Compare current "li" anchor text is with previous selected anchor text.
+                                if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
+                                    $prevtext = _atext;
+                                    $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
+                                    $_prevdata = jQuery(this);
+                                    $nextdata = jQuery(this);
+                                    $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                    selectbox_keys = cur_check;
+                                    $(this).closest('tr').focus();
+
+                                    var x = $(this).position().top;
+                                    lastElement.animate({ scrollTop: x }, 200);
+                                    return false;
+                                }
+                            });
+                        }
+                        if (cur_check.length <= 1) {
+                            return false;
+                        }
                     }
-                    if (cur_check.length <= 1) {
-                        return false;
-                    }
+                });
+                if ($nextdata != -1) {
+                    $nextdata.removeClass('trdropdownhover');
+                    $nextdata.addClass('trdropdownhover').focus();
+                    $("#dropdown_btn p:first").text($nextdata.text());
                 }
-            });
-            if ($nextdata != -1) {
-                $nextdata.removeClass('trdropdownhover');
-                $nextdata.addClass('trdropdownhover').focus();              
-                $("#dropdown_btn p:first").text($nextdata.text());            
+                clearTimeout(selectbox_keys_timeout);
+                var selectbox_keys_timeout = setTimeout(function () {
+                    selectbox_keys = "";
+                }, 400);
+                e.stopPropagation();
+                return false;
             }
-            clearTimeout(selectbox_keys_timeout);
-            var selectbox_keys_timeout = setTimeout(function () {
-                selectbox_keys = "";
-            }, 400);
-            e.stopPropagation();
-            return false;
-        }).delegate("p", "mouseover", function (e) {
-            $(this).addClass('trdropdownhover');
+        }).delegate("p.text_ellipsis", "mouseover", function (e) {
+            var menu = $(this).parents('.dropdown-wrapper');
+            if (!menu.hasClass('dropdown-block')) {
+                $(this).addClass('trdropdownhover');
+            }
             //var $select = $('#dropdown_Table');
             //var lastElement = $select.find('tbody');
             //var x = $(this).position().top;
             //lastElement.animate({ scrollTop: x }, 200);
-        }).delegate("p", "mouseout", function (e) {
-            $(this).removeClass('trdropdownhover');
+        }).delegate("p.text_ellipsis", "mouseout", function (e) {
+            var menu = $(this).parents('.dropdown-wrapper');
+            if (!menu.hasClass('dropdown-block')) {
+                $(this).removeClass('trdropdownhover');
+            }
         });
     }
 

@@ -37,7 +37,7 @@
                         $(this).attr('mode', multiMode);
                         menu.find('input[type=checkbox]').toggle();
                         menu.find('p').removeClass('single-p');
-                        menu.find('tr').removeClass('trdropdownhover');
+                        menu.find('tr').removeClass('trdropdownhover setfocusTr');
                         menu.find('#aclose_tag').css('display', 'block');
                         var title = DivideEqualInputValue(menu);
                     }

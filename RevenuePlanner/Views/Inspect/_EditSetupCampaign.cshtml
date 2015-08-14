@@ -218,6 +218,7 @@
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.tbodycampaignprogram');
 
+             if ($('#dropdown_Table').find('.advance_a').attr('mode').toString() != "Multi") {
             var theChar = String.fromCharCode(key);
             var cur_check = '';
             cur_check = selectbox_keys + theChar.toLowerCase();
@@ -309,10 +310,17 @@
             }, 400);
             e.stopPropagation();
             return false;
+        }
         }).delegate("p", "mouseover", function (e) {
-            $(this).addClass('trdropdownhover');
+            var menu = $(this).parents('.dropdown-wrapper');
+            if (!menu.hasClass('dropdown-block')) {
+                $(this).addClass('trdropdownhover');
+            }
         }).delegate("p", "mouseout", function (e) {
-            $(this).removeClass('trdropdownhover');
+            var menu = $(this).parents('.dropdown-wrapper');
+            if (!menu.hasClass('dropdown-block')) {
+                $(this).removeClass('trdropdownhover');
+            }
         });
     }
 

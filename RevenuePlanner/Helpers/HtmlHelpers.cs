@@ -4477,15 +4477,15 @@ namespace RevenuePlanner.Helpers
 
                                 if (section == Enums.EntityType.Tactic.ToString() && item.value != null && item.value.Count > 1)
                                 {
-                                     DropDownStyle = "";
-                                     divPosition = "";
+                                    DropDownStyle = " style=\"position:absolute;";
+                                     divPosition = "style=\"position:relative;\"";//modified by mitesh vaishnav for PL ticket 1497
                                     if (fieldCounter % 4 == 3)
                                     {
-                                        DropDownStyle = " style=\"top:0px;\"";
-                                        divPosition = "style=\"position:relative;\"";
+                                        DropDownStyle = " top:0px;";
+                                        // divPosition = "style=\"position:relative;\"";//commented by mitesh vaishnav for PL ticket 1497
                                     }
 
-                                    sb.Append("<div " + divPosition + "><div class=\"dropdown-wrapper\"" + DropDownStyle + "><div class=\"drop-down_header viewmodedropdown geography_popup\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header top-head-attribute-header2 padding-left20\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header top-head-attribute-cvr\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header top-head-attribute-cost\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
+                                    sb.Append("<div " + divPosition + "><div class=\"dropdown-wrapper\"" + DropDownStyle + "\"><div class=\"drop-down_header viewmodedropdown geography_popup\"><table border=\"0\" class=\"table_drpdwn\"> <thead class=\"top_head_attribute\" style=\"display:none;\"><tr><td scope=\"col\" class=\"value_header top-head-attribute-header2 padding-left20\" style=\"display:none;\"><span>Value</span></td><td scope=\"col\" class=\"revenue_header top-head-attribute-cvr\" code=\"cvr\" title=\"CVR(%)\">CVR(%)</td><td scope=\"col\" class=\"cost_header top-head-attribute-cost\" code=\"" + Enums.InspectStage.Cost.ToString() + "\" title=\"Cost(%)\">Cost(%)</td></tr></thead><tbody class=\"top_spacing_geography\">");
                                     foreach (var objOption in item.option)
                                     {
                                         //check - if custom field's value inserted before from dropdownlist then set it as selected
