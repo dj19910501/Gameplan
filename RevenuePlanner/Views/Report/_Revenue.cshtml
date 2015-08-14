@@ -294,6 +294,7 @@
 
     $("#ddlTimeFrameSelectBox select").selectbox();
     $("#ddlRevenueTimeFrame").change(function () {
+        $("#ddlParentRevenueSummery,#ddlChildRevenueToPlan,#ddlCampaignRevenueToPlan,#ddlProgramRevenueToPlan,#ddlTacticRevenueToPlan,#ddlSortby,#Itemsperpage").multiselect("close");
         AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         Qurt_Month = AllocatedBy;
         var _BackHeadValues, parentlabel, Type, id;
@@ -360,7 +361,17 @@
         //#1489
         var id = '0';
         var parentlabel = $("#ddlParentRevenueSummery").val();
+        //var parentlabel = $("#ddlParentRevenueSummery").val();
         // var id = $("#ddlParentRevenueSummery").val();
+        var campId = $('#ddlCampaignRevenueToPlan').val();
+        var BackCampaignId = 0; //ForGet Back CampaignID
+
+        $(BackFwdRevenueList).each(function () {
+            if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueCampaign') {
+                BackCampaignId = this.BackId;
+            }
+
+        });
         if (parseInt($('#ddlCampaignRevenueToPlan').val()) > 0) {
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
@@ -368,11 +379,14 @@
                 BackId: $('#ddlCampaignRevenueToPlan').val(),
                 HeadHireachy: ''
             }
-        } else {
+        }
+
+        else {
+
             var _BackFwdVar = {
                 BackParentLabel: '@Common.RevenueCampaign',
-                BackChildLabel: '',
-                BackId: '0',
+                BackChildLabel: campId > 0 ? '@Common.RevenueCampaign' : (IsCardDetailsClick == true ? '@Common.RevenueCampaign' : ''),
+                BackId: campId > 0 ? campId : (IsCardDetailsClick == true ? (BackCampaignId > 0 ? BackCampaignId : 0) : 0),
                 HeadHireachy: ''
             }
             
@@ -387,12 +401,17 @@
                     BackId: masterCustomFieldOptionId,
                     HeadHireachy: ''
                 }
-                //id = masterCustomFieldOptionId;
-                //Type = "";
             }
-
         }
         TimeFrameRevenueList.push(_BackFwdVar);
+        @*else {
+            var _BackFwdVar = {
+                BackParentLabel: '@Common.RevenueCampaign',
+                BackChildLabel: '',
+                BackId: '0',
+                HeadHireachy: ''
+            }
+    }*@
         //}
     });
     $('#ddlProgramRevenueToPlan').change(function () {
@@ -406,12 +425,13 @@
         // var id = $("#ddlParentRevenueSummery").val();
         var programId = $('#ddlProgramRevenueToPlan').val();
         var campId = $('#ddlCampaignRevenueToPlan').val();
-        
         var BackCampaignId = 0; //ForGet Back CampaignID
+
         $(BackFwdRevenueList).each(function () {
             if (this.BackParentLabel == '@Common.RevenueCampaign' && this.BackChildLabel == '@Common.RevenueCampaign') {
                 BackCampaignId = this.BackId;
             }
+
         });
 
         if (parseInt($('#ddlProgramRevenueToPlan').val()) > 0) {

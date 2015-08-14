@@ -476,6 +476,7 @@
     }
 
     function CardDetailsClick(masterlabel, parentlabel, Type, id, OptionMain, HeadTitleval, _MqlActualProj, _MqlGoal, _MqlPercentage, _MqlisNegativePercntg) {
+        IsCardDetailsClick = true;
         var _BackFwdVar = {
             BackParentLabel: parentlabel,
             BackChildLabel: Type,
@@ -537,6 +538,7 @@
             }
         }
         else if (masterlabel == '@Common.CampaignCustomTitle') {
+            //masterCustomFieldOptionId = id;
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueCampaign') {
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
@@ -573,6 +575,7 @@
             }
         }
         else if (masterlabel == '@Common.ProgramCustomTitle') {
+           // masterCustomFieldOptionId = id;
             if (Type == '@RevenuePlanner.Helpers.Common.RevenueProgram') {
                 $("#CampaignChildDDL").css('display', '');
                 $("#CustomFieldChildDDL").css('display', 'none');
@@ -596,6 +599,7 @@
             }
         }
         else if (masterlabel == '@Common.TacticCustomTitle') {
+            masterCustomFieldOptionId = id;
             //  $("#ddlCampaignConversionToPlan").css('display', 'none');
             $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', 'none');
             //CustomFieldChildDDL
