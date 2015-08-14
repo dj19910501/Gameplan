@@ -125,8 +125,7 @@ gantt._render_grid_item = function (t) {
                 s = "";
             }
         }
-        else {
-            debugger;
+        else {           
             (s = o.template ? o.template(t) : t[o.name],
             s instanceof Date && (s = this.templates.date_grid(s)), s = "<div class='gantt_tree_content'>" + s + "</div>");
         }

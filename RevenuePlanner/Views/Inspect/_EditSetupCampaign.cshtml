@@ -241,6 +241,10 @@
                         selectbox_keys = cur_check;
                         $(p).closest('tr').focus();
 
+                        $select.find('input:checkbox').removeAttr('checked');
+                        var checkbx = $(this).find('input:checkbox');
+                        $(checkbx).attr('checked', 'checked');
+
                         var x = $(this).position().top;
                         lastElement.animate({ scrollTop: x }, 200);
                         return false;
@@ -266,6 +270,10 @@
                             $(this).closest('tr').focus();
                             cntr = cntr + 1;
 
+                            $select.find('input:checkbox').removeAttr('checked');
+                            var checkbx = $(this).find('input:checkbox');
+                            $(checkbx).attr('checked', 'checked');
+
                             var x = $(this).position().top;
                             lastElement.animate({ scrollTop: x }, 200);
                             return false;
@@ -287,6 +295,10 @@
                                 $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
                                 selectbox_keys = cur_check;
                                 $(this).closest('tr').focus();
+
+                                $select.find('input:checkbox').removeAttr('checked');
+                                var checkbx = $(this).find('input:checkbox');
+                                $(checkbx).attr('checked', 'checked');
 
                                 var x = $(this).position().top;
                                 lastElement.animate({ scrollTop: x }, 200);
