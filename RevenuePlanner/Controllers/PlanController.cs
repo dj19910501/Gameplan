@@ -10039,7 +10039,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 strHeader.Append(xmlUserlist);
-                strHeader.Append("<column width='140' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
+                strHeader.Append("<column width='150' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
                 strHeader.Append("<column width='135' type='ron' sort='int' align='center' id='mql'>#cspan</column>");
                 strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='revenue'>#cspan</column>");
                 strHeader.Append("</head>");
