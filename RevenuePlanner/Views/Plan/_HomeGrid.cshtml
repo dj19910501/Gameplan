@@ -58,6 +58,8 @@
         </div>
     </div>
 </div>
+<input type="button" id="useless" value="Click" name="useless" style="display:none;" />
+<p style="display:none;">Scrolled <span id="spanscroll">0</span> times.</p>
 <script type="text/javascript">
     var HomeGrid;
       var isTacticExist = '@isTacticExist';
@@ -70,9 +72,22 @@
 
     var cw = '@Model.CWLable' + " : " + number_format('@Model.CWValue', 0, '.', ',');
     $("#spncw").html(cw);
-    $(document).ready(
-        BindHomeGrid()
-       );
+
+
+    $(document).ready(function () {
+        BindHomeGrid();
+        $("input[name='useless']").click(doIt);
+        function doIt() {
+            //alert('did it');
+            return true;
+        }
+        $("#useless").click();
+        window.focus();
+
+        pageIsScroll = false;
+
+    });
+
     var $doc = $(document);
     $doc.click(function () {
         $('#popupType').css('display', 'none');
@@ -476,5 +491,33 @@
     });
        // LoadImprovementGrid(CurrentPlanId);
     });
-      
+    x = 0;
+    $('#useless').click(function () {
+        HomeGrid.sortRows(0, 'str', 'asc');
+        //HomeGrid.enableAutoHeight(true);
+        $("#spanscroll").text(x += 1);
+        return true;
+    });
+    function sortGrid() {
+        //alert('');
+        //HomeGrid.sortRows(0, 'str', 'asc');
+        return true;
+    }
+    document.addEventListener("DOMContentLoaded", function (event) {
+        console.log("DOM fully loaded and parsed");
+
+        $("#useless").click();
+    });
+    $(window).focus(function () {
+
+        //$("#useless").click();
+    });
+
+    $(document).scroll(function () {
+        if (pageIsScroll == false) {
+
+            pageIsScroll = true;
+            $("#useless").click();
+        }
+    });
 </script>
