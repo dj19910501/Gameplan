@@ -5378,8 +5378,9 @@ namespace RevenuePlanner.Helpers
                                 List<string> AllowedRightsForCurrentCustomField = new List<string>();
                                 List<int> lstRestrictedCustomFieldOptionIds = new List<int>();
                                 List<Models.CustomRestriction> fltrCustomRestriction = new List<Models.CustomRestriction>();
-                                foreach (int tacticId in lstTacticIds)
+                                foreach (int tacticId in lstTactic)
                                 {
+                                    isViewableEntity = true;
                                     var currentTacticEntities = tblCustomFieldEntity.Where(entity => entity.EntityId == tacticId).ToList();
                                     //// Get list of CustomFieldEntities for current selected tactic
                                     currentTacticCustomFields = currentTacticEntities.Select(entity => entity.CustomFieldId).Distinct().ToList();
@@ -5422,7 +5423,7 @@ namespace RevenuePlanner.Helpers
                                         lstAllowedEntityIds.Add(tacticId);
                                     }
 
-                                    isViewableEntity = true;
+                                    
                                 }
                             }
                             else
@@ -5626,8 +5627,9 @@ namespace RevenuePlanner.Helpers
                                 int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                                 List<CustomField_Entity> currentTacticEntities;
                                 List<Models.CustomRestriction> _CustomRestriction;
-                                foreach (int tacticId in lstTacticIds)
+                                foreach (int tacticId in lstTactic)
                                 {
+                                    isEditableEntity = true;
                                     currentTacticEntities = new List<CustomField_Entity>();
                                     //// Get list of CustomFieldEntities for current selected tactic
                                     currentTacticEntities = lstAllTacticCustomFieldEntities.Where(entity => entity.EntityId == tacticId).ToList();
@@ -5658,7 +5660,7 @@ namespace RevenuePlanner.Helpers
                                         lstEditableEntityIds.Add(tacticId);
                                     }
 
-                                    isEditableEntity = true;
+                                    
                                 }
                             }
                             else if (isDefaultRestrictionsEditable)
