@@ -15500,3 +15500,35 @@ background-position: right 0 bottom 9px !important;
 {
     padding-bottom:20px;
 }
+/*Added by Mitesh Vaishnav for PL ticket 1358*/
+/*make consistent dropdown list into dhtmlx tree grid*/
+.dhx_combo_select {
+  background-color: #ffffff !important;
+  border: 1px solid #dfdfdf !important;
+  border-radius: 6px;
+  cursor: default !important;
+  height: auto !important;
+  margin-right: 0;
+  max-height: 363px;
+  overflow: auto !important;
+  padding: 10px;
+  color:#333 !important;
+  line-height:20px;
+    vertical-align: middle;
+  position: absolute !important;
+  z-index: 600 !important;
+   font-family: "source_sans_proregular",Arial,"sans-serif" !important;
+}
+.dhx_combo_select > option {
+  font-size: 14px;
+  height: auto;
+  padding:4px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+}
+ .dhx_combo_select > option:hover {
+ background-color:#0081C2;
+ color:#fff;  
+    }
+ /*End Added by Mitesh Vaishnav for PL ticket 1358*/
