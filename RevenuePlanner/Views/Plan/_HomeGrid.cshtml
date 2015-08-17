@@ -252,6 +252,14 @@
             }
         });
     }
+    function formatDate(d) {
+        d = new Date(d);
+        function addZero(n) {
+            return n < 10 ? '0' + n : '' + n;
+        }
+        return addZero(d.getMonth() + 1) + "/" + addZero(d.getDate()) + "/" + d.getFullYear();
+    }
+
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var updatetype = rowId.split(".")[0];
         var Id;
@@ -329,7 +337,8 @@
                         return false;
                     }
                 }
-
+                nValue = formatDate(nValue);
+                oValue = formatDate(oValue);
             }
             if (UpdateColumn == "End Date") {
                 var endyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], edateindex).getValue()).getFullYear();
@@ -352,6 +361,8 @@
                         return false;
                     }
                 }
+                nValue = formatDate(nValue);
+                oValue = formatDate(oValue);
             }
             if (UpdateColumn.toString().trim() == "Target Stage Goal") {
                 var splitoval = oValue.split(" ");

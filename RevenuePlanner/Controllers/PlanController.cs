@@ -9187,8 +9187,8 @@ namespace RevenuePlanner.Controllers
                         GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">");
                     }
                     GridString.Append("]]></cell>");
-                    GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1'>" + Startdate + "</cell> <cell locked='1'>" + Enddate + "</cell>  <cell>" + totalcost + "</cell> ");
-                    GridString.Append(" <cell type='ro'>--</cell> <cell type='ro'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro'>--</cell> <cell >" + totalmql + "</cell> <cell >" + totalrevenue + "</cell> ");
+                    GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1' style='color:#999'>" + Startdate + "</cell> <cell locked='1' style='color:#999'>" + Enddate + "</cell>  <cell style='color:#999'>" + totalcost + "</cell> ");
+                    GridString.Append(" <cell type='ro' style='color:#999'>--</cell> <cell type='ro' style='color:#999'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro' style='color:#999'>--</cell> <cell style='color:#999'>" + totalmql + "</cell> <cell style='color:#999'>" + totalrevenue + "</cell> ");
                     Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
                     // type = "Campaign";
@@ -9224,10 +9224,10 @@ namespace RevenuePlanner.Controllers
                             }
                             GridString.Append("]]></cell>");
                             GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                            GridString.Append(" <cell bgColor='#C6EBF3' >" + Campaignitem.totalcost.ToString() + "</cell>");
-                            GridString.Append("<cell bgColor='#C6EBF3' type='ro'>--</cell> <cell bgColor='#C6EBF3'>" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
-                            GridString.Append("<cell  bgColor='#C6EBF3'>--</cell> <cell bgColor='#C6EBF3'>" + Campaignitem.totalmql.ToString() + "</cell>");
-                            GridString.Append("<cell  bgColor='#C6EBF3'>" + Campaignitem.totalrevenue.ToString() + "</cell> ");
+                            GridString.Append(" <cell bgColor='#C6EBF3' style='color:#999'>" + Campaignitem.totalcost.ToString() + "</cell>");
+                            GridString.Append("<cell bgColor='#C6EBF3' type='ro' style='color:#999'>--</cell> <cell bgColor='#C6EBF3'>" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
+                            GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999'>--</cell> <cell bgColor='#C6EBF3' style='color:#999'>" + Campaignitem.totalmql.ToString() + "</cell>");
+                            GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999'>" + Campaignitem.totalrevenue.ToString() + "</cell> ");
 
 
                             Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
@@ -9276,8 +9276,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     GridString.Append("]]></cell>");
                                     GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8'>" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8'>" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                                    GridString.Append(" <cell bgColor='#DFF0F8'>" + Programitem.totalcost + "</cell> <cell bgColor='#DFF0F8' type='ro'>--</cell>  <cell bgColor='#DFF0F8'>" + (Programitem.CreatedBy.ToString()) + "</cell> ");
-                                    GridString.Append(" <cell bgColor='#DFF0F8'>--</cell>  <cell bgColor='#DFF0F8'>" + Programitem.totalmql + "</cell>  <cell bgColor='#DFF0F8'>" + Programitem.totalrevenue + "</cell> ");
+                                    GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999'>" + Programitem.totalcost + "</cell> <cell bgColor='#DFF0F8' type='ro' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8'>" + (Programitem.CreatedBy.ToString()) + "</cell> ");
+                                    GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8' style='color:#999'>" + Programitem.totalmql + "</cell>  <cell bgColor='#DFF0F8' style='color:#999'>" + Programitem.totalrevenue + "</cell> ");
 
 
 
@@ -9321,12 +9321,12 @@ namespace RevenuePlanner.Controllers
                                                                                    new XElement("cell", tactic.startdate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", tactic.enddate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", new XAttribute("type", "edn"), tactic.totalcost),
-                                                                                  new XElement("cell", tactic.tactictypetitle),
+                                                                                  new XElement("cell", tactic.tactictypeid),
                                                                                     new XElement("cell", tactic.CreatedBy),
                                                                                  //  new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
                                                                                    new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.ProjectStage + " " + tactic.projectedstagevalue),
-                                                                                    new XElement("cell", tactic.totalmql),
-                                                                                     new XElement("cell", tactic.totalrevenue)));
+                                                                                    new XElement("cell", new XAttribute("style",  "color:#999"), tactic.totalmql),
+                                                                                     new XElement("cell", new XAttribute("style", " color:#999"), tactic.totalrevenue)));
 
                                         string finltactic = xmlElements.ToString().Remove(0, 6);
                                         GridString.Append(HttpUtility.HtmlDecode(finltactic.Remove(finltactic.ToString().Length - 7, 7)));
@@ -9999,12 +9999,14 @@ namespace RevenuePlanner.Controllers
                 //    && tactype.ModelId == modelId && tactype.IsDeployedToModel == true ).ToList();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => i.IsDeleted ==false).ToList();
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
                     string strUserList = string.Join(",", lstClientUsers);
                     lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
-                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                   // lstAllUserDetails = lstUserDetails;
+                   
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
@@ -10059,7 +10061,8 @@ namespace RevenuePlanner.Controllers
 
             if (userName.Count > 0)
             {
-                return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
+                return UserGuid.ToString();
+              //  return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
             }
             return "";
         }
