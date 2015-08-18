@@ -126,23 +126,32 @@
      //   HomeGrid.attachEvent("onMouseOver", function () { return false });
         HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
+            var locked = HomeGrid.cells(id, 0).getAttribute("locked");
+            if ((locked != null && locked != "") && locked == "1")
+                return false;
             return true;                                          //allows dragging in any other case
         });
        // HomeGrid.setDragText("rows");
         //   HomeGrid.splitAt(1);
         HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
         //HomeGrid.setColumnHidden(2, true);
-
-        HomeGrid.forEachRow(function (id) {
+        HomeGrid.sortRows(0, 'str', 'asc');
+        HomeGrid.forEachRow(function (rowid) {
         //    var cost = HomeGrid.cells(id, 5).getValue();
 
         //    HomeGrid.cells(id, 5).setValue(FormatNumber(cost, false));
-            var MQL = HomeGrid.cells(id, 9).getValue();
+            var MQL = HomeGrid.cells(rowid, 9).getValue();
 
-            HomeGrid.cells(id, 9).setValue(GetAbberiviatedValue(MQL));
-            var Revenue = HomeGrid.cells(id, 10).getValue();
+            HomeGrid.cells(rowid, 9).setValue(GetAbberiviatedValue(MQL));
+            var Revenue = HomeGrid.cells(rowid, 10).getValue();
 
-            HomeGrid.cells(id, 10).setValue(FormatNumber(Revenue, false));
+            HomeGrid.cells(rowid, 10).setValue(FormatNumber(Revenue, false));
+            //HomeGrid.forEachCell(rowid, function (cellobj, cellInd)
+            //{
+            //    var locked = HomeGrid.cells(rowid, cellInd).getAttribute("locked");
+            //    if ((locked != null && locked != "") && locked == "1")
+                   
+            //});
         });
     }
     function convertNumber(num) {
@@ -209,24 +218,24 @@
                     alert("Tactic can move only to same plan program."); return false;
             }
         else {
-                var stype = "";
-                var dtype = "";
-                if (sid.split(".")[0].toString() == "tact")
-                    stype = "Tactic";
-                else if (sid.split(".")[0].toString() == "prog")
-                    stype = "Program";
-                else if (sid.split(".")[0].toString() == "camp")
-                    stype = "Campaign";
-                else if (sid.split(".")[0].toString() == "plan")
-                    stype = "Plan";
-                if (dragTargettype.toString() == "tact")
-                    dtype = "Tactic";
-                else if (dragTargettype.toString() == "prog")
-                    dtype = "Program";
-                else if (dragTargettype.toString() == "camp")
-                    dtype = "Campaign";
-                else if (dragTargettype.toString() == "plan")
-                    dtype = "Plan";
+                var stype = GetItemType(sid.split(".")[0].toString());
+                var dtype = GetItemType(dragTargettype.toString());
+                //if (sid.split(".")[0].toString() == "tact")
+                //    stype = "Tactic";
+                //else if (sid.split(".")[0].toString() == "prog")
+                //    stype = "Program";
+                //else if (sid.split(".")[0].toString() == "camp")
+                //    stype = "Campaign";
+                //else if (sid.split(".")[0].toString() == "plan")
+                //    stype = "Plan";
+                //if (dragTargettype.toString() == "tact")
+                //    dtype = "Tactic";
+                //else if (dragTargettype.toString() == "prog")
+                //    dtype = "Program";
+                //else if (dragTargettype.toString() == "camp")
+                //    dtype = "Campaign";
+                //else if (dragTargettype.toString() == "plan")
+                //    dtype = "Plan";
                 alert(stype + " can not move to " + dtype); return false;
             }
         }
@@ -235,6 +244,18 @@
             return false;
         }
 
+    }
+    function GetItemType(val)
+    {
+        var itemType = "";
+        if (val.toString() == "tact")
+            itemType = "Tactic";
+        else if (val.toString() == "prog")
+            itemType = "Program";
+        else if (val.toString() == "camp")
+            itemType = "Campaign";
+        else if (val.toString() == "plan")
+            itemType = "Plan";
     }
     function SaveMoveTactic() {
         var sourseid = $("#hdnsourceid").val();

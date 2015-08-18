@@ -2211,8 +2211,10 @@ namespace RevenuePlanner.Controllers
             Plan_Campaign_ProgramModel pcpm = new Plan_Campaign_ProgramModel();
             pcpm.PlanCampaignId = id;
             pcpm.IsDeployedToIntegration = false;
-            pcpm.StartDate = GetCurrentDateBasedOnPlan();
-            pcpm.EndDate = GetCurrentDateBasedOnPlan(true);
+            pcpm.StartDate = pcp.StartDate;
+            pcpm.EndDate = pcp.EndDate;
+            //pcpm.StartDate = GetCurrentDateBasedOnPlan();
+            //pcpm.EndDate = GetCurrentDateBasedOnPlan(true);
             pcpm.CStartDate = pcp.StartDate;
             pcpm.CEndDate = pcp.EndDate;
             pcpm.ProgramBudget = 0;
