@@ -9061,26 +9061,7 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditable = false;
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-                var objPlan = db.Plans.FirstOrDefault(p => planIds.Contains(p.PlanId));
 
-                if (objPlan != null)
-                {
-                    if (objPlan.CreatedBy.Equals(Sessions.User.UserId))
-                    {
-                        IsPlanEditable = true;
-                    }
-                    else if (IsPlanEditAllAuthorized)
-                    {
-                        IsPlanEditable = true;
-                    }
-                    else if (IsPlanEditSubordinatesAuthorized)
-                    {
-                        if (lstSubordinatesIds.Contains(objPlan.CreatedBy))
-                        {
-                            IsPlanEditable = true;
-                        }
-                    }
-                }
                 //if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                 //{
                 //    IsPlanEditable = true;
@@ -9101,8 +9082,10 @@ namespace RevenuePlanner.Controllers
 
                 MainPlanID = Convert.ToInt32(planIds[0].ToString());
                 int? modelId = db.Plans.Where(p => p.PlanId == MainPlanID).Select(p => p.ModelId).FirstOrDefault();
-                GridString = GenerateXMHeader(GridString, MQLTitle, MainPlanID);
+
                 List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
+
+                GridString = GenerateXMHeader(GridString, MQLTitle, MainPlanID, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
 
                 GetGoalValue(lstplandetail, modelId.ToString(), stageList, objplangrid, objimprovement); // for plan grid header to bind goal detail
 
@@ -9196,6 +9179,24 @@ namespace RevenuePlanner.Controllers
               
                 foreach (var planitem in lstplandetail)
                 {
+
+
+                    if (planitem.CreatedBy.Equals(Sessions.User.UserId))
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else if (IsPlanEditAllAuthorized)
+                    {
+                        IsPlanEditable = true;
+                    }
+                    else if (IsPlanEditSubordinatesAuthorized)
+                    {
+                        if (lstSubordinatesIds.Contains(planitem.CreatedBy))
+                        {
+                            IsPlanEditable = true;
+                        }
+                    }
+
                     planid = planitem.PlanId;
                     if (lstcampaigndetail.Count > 0)
                     {
@@ -10121,7 +10122,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region method to generate grid header
-        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int planid)
+        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int planid, string PlanYear)
         {
 
             string xmlUserlist = string.Empty;
@@ -10161,7 +10162,7 @@ namespace RevenuePlanner.Controllers
 
                 strHeader.Append("<column width='330' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
                 strHeader.Append("<column type='ro' align='center' id='add' width='50' sort='na' ></column>");
-                strHeader.Append("<column type='ro' align='center' id='id' sort='na' width='0' >" + DateTime.Now.Year.ToString() + "</column>");
+                strHeader.Append("<column type='ro' align='center' id='id' sort='na' width='0' >" + PlanYear + "</column>");
                 strHeader.Append("<column width='110' type='dhxCalendar' sort='date' align='center' id='startdate' >#cspan</column>");
                 strHeader.Append("<column width='100' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
                 strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
