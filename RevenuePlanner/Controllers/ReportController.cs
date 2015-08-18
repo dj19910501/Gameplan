@@ -8023,14 +8023,14 @@ namespace RevenuePlanner.Controllers
                 objSeries1.name = "Actual/Projected";
                 objSeries1.data = serData1;
                 marker objMarker1 = new marker();
-                objMarker1.symbol = "square";
+                objMarker1.symbol = "circle"; //PL #1490  Add circular markers on the graphs- Dashrath Prajapati
                 objSeries1.marker = objMarker1;
 
                 series objSeries2 = new series();
                 objSeries2.name = "Goal";
                 objSeries2.data = serData2;
                 marker objMarker2 = new marker();
-                objMarker2.symbol = "square";
+                objMarker2.symbol = "circle"; //PL #1490  Add circular markers on the graphs- Dashrath Prajapati
                 objSeries2.marker = objMarker2;
 
                 lstseries.Add(objSeries1);

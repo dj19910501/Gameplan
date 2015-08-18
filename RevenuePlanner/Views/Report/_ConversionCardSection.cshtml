@@ -119,9 +119,9 @@
         var optionmain = '@ViewBag.Convoption';*@
         var divid = 1;// add by nishant sheth for give div id
         // End By Nishant Sheth
-
-        //alert(_CardData.length);
-        $.each(_CardData, function (key, value) {
+        var Strbundle = "";
+        var sb = getStringBuilder();
+       $.each(_CardData, function (key, value) {
 
             // Add By Nishant Sheth
             _btnDetailsId = 'buttonDtls_' + _fieldId;
@@ -195,62 +195,62 @@
             }
             //alert("key: " + key + ", Value: " + value.title);
             //_cardhtml = _cardhtml + '<div class="region-content">';
-            _cardhtml = _cardhtml + '<div class="region-content" inqval="' + _Inq_proj + '" tqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
-            _cardhtml = _cardhtml + '<div>';
-            _cardhtml = _cardhtml + '<div class="report-btn-group">';
-            _cardhtml = _cardhtml + '<div>';
-            _cardhtml = _cardhtml + '<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>';
+           sb.append('<div class="region-content" inqval="' + _Inq_proj + '" tqlval="' + _Tql_proj + '" cwval="' + _Cw_proj + '" id="carddiv_' + divid + '" title="' + _title + '">');
+           sb.append('<div>');
+           sb.append('<div class="report-btn-group">');
+           sb.append('<div>');
+           sb.append('<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>');
             //_cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular" name="">Details</button>';
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Tqlact_proj) + '","' + String(_Tqlgoal) + '","' + String(_Tqlpercentange) + '","' + String(_TqlIsNegative) + '")>Details</button>';
+                sb.append('<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_Tqlact_proj) + '","' + String(_Tqlgoal) + '","' + String(_Tqlpercentange) + '","' + String(_TqlIsNegative) + '")>Details</button>');
             }
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '<div>';
+            sb.append('</div>');
+            sb.append('<div>');
             // _cardhtml = _cardhtml + ' <p class="revanue-p-right">';
             //  _cardhtml = _cardhtml + '<input type="checkbox" /><label> Add to Compare</label>';
             //  _cardhtml = _cardhtml + '</p>';
             //   _cardhtml = _cardhtml + '<button id="" class="btn btn-blue text-shadow-blue source-sans-proregular report-blue-btn hideReport" name="">Compare</button>';
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '<div class="region-data region-data-waterfall">';
+            sb.append('</div>');
+            sb.append('</div>');
+            sb.append('<div class="region-data region-data-waterfall">');
 
-            _cardhtml = _cardhtml + '<div class="data">';
+            sb.append('<div class="data">');
             //_cardhtml = _cardhtml + '<span class="title">INQ</span>';
-            _cardhtml = _cardhtml + '<span class="title">' + _InqCard + '</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Inq_proj + '" id="' + _Inq_projId + '">' + _Inq_proj + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="title">Goal : </span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Inqgoal + '" id="' + _InqgoalId + '">' + _Inqgoal + '</span>';
-            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Inqpercentange + '" id="' + _InqPercntgId + '">' + _Inqpercentange + '</span></p>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('<span class="title">' + _InqCard + '</span>');
+            sb.append('<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Inq_proj + '" id="' + _Inq_projId + '">' + _Inq_proj + '</span></p>');
+            sb.append('<span class="title">Goal : </span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Inqgoal + '" id="' + _InqgoalId + '">' + _Inqgoal + '</span>');
+            sb.append('<p><span class="percentageval" orig-val="' + _Inqpercentange + '" id="' + _InqPercntgId + '">' + _Inqpercentange + '</span></p>');
+            sb.append('</div>');
 
-            _cardhtml = _cardhtml + '<div class="data data-arrow">';
-            _cardhtml = _cardhtml + '<p><span class="percentageConverval" orig-val="' + _ConPercentageFirst + '" id="' + _ConPercentageFirstId + '">' + _ConPercentageFirst + '</span></p>';
-            _cardhtml = _cardhtml + '<p><span class="arrow">➜</span></p>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('<div class="data data-arrow">');
+            sb.append('<p><span class="percentageConverval" orig-val="' + _ConPercentageFirst + '" id="' + _ConPercentageFirstId + '">' + _ConPercentageFirst + '</span></p>');
+            sb.append('<p><span class="arrow">➜</span></p>');
+            sb.append('</div>');
 
-            _cardhtml = _cardhtml + '<div class="data">';
+            sb.append('<div class="data">');
             //_cardhtml = _cardhtml + '<span class="title">TQL</span>';
-            _cardhtml = _cardhtml + '<span class="title">' + _TqlCard + '</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Tql_proj + '" id="' + _Tql_projId + '">' + _Tql_proj + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="title">Goal : </span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Tqltgoal + '" id="' + _TqlgoalId + '">' + _Tqltgoal + '</span>';
-            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Tqlpercentange + '" id="' + _TqlPercntgId + '">' + _Tqlpercentange + '</span></p>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('<span class="title">' + _TqlCard + '</span>');
+            sb.append('<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Tql_proj + '" id="' + _Tql_projId + '">' + _Tql_proj + '</span></p>');
+            sb.append('<span class="title">Goal : </span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Tqltgoal + '" id="' + _TqlgoalId + '">' + _Tqltgoal + '</span>');
+            sb.append('<p><span class="percentageval" orig-val="' + _Tqlpercentange + '" id="' + _TqlPercntgId + '">' + _Tqlpercentange + '</span></p>');
+            sb.append('</div>');
 
-            _cardhtml = _cardhtml + '<div class="data data-arrow">';
-            _cardhtml = _cardhtml + '<p><span class="percentageConverval" orig-val="' + _ConPercentageSecond + '" id="' + _ConPercentageSecondId + '">' + _ConPercentageSecond + '</span></p>';
-            _cardhtml = _cardhtml + '<p><span class="arrow">➜</span></p>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('<div class="data data-arrow">');
+            sb.append('<p><span class="percentageConverval" orig-val="' + _ConPercentageSecond + '" id="' + _ConPercentageSecondId + '">' + _ConPercentageSecond + '</span></p>');
+            sb.append('<p><span class="arrow">➜</span></p>');
+            sb.append('</div>');
 
-            _cardhtml = _cardhtml + '<div class="data">';
+            sb.append('<div class="data">');
             //_cardhtml = _cardhtml + '<span class="title">CW</span>';
-            _cardhtml = _cardhtml + '<span class="title">' + _CwCard + '</span>';
+            sb.append('<span class="title">' + _CwCard + '</span>');
             //_cardhtml = _cardhtml + '<p class="value"> <span class="carvdval-block" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span> <span class="sub-value"  orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">/' + _Cwgoal + '</span></p>';
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span>';
 
-            _cardhtml = _cardhtml + '<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="title">Goal : </span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">' + _Cwgoal + '</span>';
-            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span></p>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('<p class="value"> <span class="card carvdval-block" add-sep="false" orig-val="' + _Cw_proj + '" id="' + _Cw_projId + '">' + _Cw_proj + '</span></p>');
+            sb.append('<span class="title">Goal : </span></span><span class="inner-sub-value"></span><span class="card sub-value" add-sep="true" orig-val="' + _Cwgoal + '" id="' + _CwgoalId + '">' + _Cwgoal + '</span>');
+            sb.append('<p><span class="percentageval" orig-val="' + _Cwpercentange + '" id="' + _CwPercntgId + '">' + _Cwpercentange + '</span></p>');
+            sb.append('</div>');
 
 
             // _cardhtml = _cardhtml + '<div class="data">';
@@ -261,13 +261,14 @@
 
             //_cardhtml = _cardhtml + '<div id="dvNorthAmericaGraph1" class="region-graph">';
             //_cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '</div>';
-
+            sb.append('</div>');
+            sb.append('</div>');
+            sb.append('</div>');
             divid++;
+            Strbundle = sb.getStringBuilder();
+
         });
-        $("#dvCardSectionData").html(_cardhtml);
+        $("#dvCardSectionData").html(Strbundle);
         formatCardSectionValues();
         formatCardPercentageValue();
         formatPercentageValue();
@@ -283,8 +284,25 @@
 
         LoadPagination();
         CheckData();
-      
     });
+
+      
+    function getStringBuilder() {
+        var data = [];
+        var counter = 0;
+        return {
+            // adds string s to the stringbuilder
+            append: function (s) { data[counter++] = s; return this; },
+            // removes j elements starting at i, or 1 if j is omitted
+            remove: function (i, j) { data.splice(i, j || 1); return this; },
+            // inserts string s at i
+            insert: function (i, s) { data.splice(i, 0, s); return this; },
+
+            // builds the string
+            getStringBuilder: function (s) { return data.join(s || ""); return this; }
+        };
+    }
+
     function formatSetsubValues() {
         var _TypeCol = $(".cardsub");
         var _formatednumber = '';

@@ -109,7 +109,8 @@
 
         var divid = 1;// add by nishant sheth for give div id
         // End By Nishant Sheth
-
+        var Strbundle = "";
+        var sb = getStringBuilder();
         //alert(_CardData.length);
         $.each(_CardData, function (key, value) {
             _title = value.title;
@@ -177,64 +178,65 @@
             if (_title.length > 41) {
                 _titleSub = '...';
             }
-            _cardhtml = _cardhtml + '<div class="region-content" revenueval="' + _Revact_proj + '" costval="' + _Costact_proj + '" roival="' + _ROIact_proj + '" id="carddiv_' + divid + '" title="' + _title + '">';
-            _cardhtml = _cardhtml + '<div>';
-            _cardhtml = _cardhtml + '<div class="report-btn-group">';
-            _cardhtml = _cardhtml + '<div>';
-            _cardhtml = _cardhtml + '<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>';
+            sb.append('<div class="region-content" revenueval="' + _Revact_proj + '" costval="' + _Costact_proj + '" roival="' + _ROIact_proj + '" id="carddiv_' + divid + '" title="' + _title + '">');
+            sb.append('<div>');
+            sb.append('<div class="report-btn-group">');
+            sb.append('<div>');
+            sb.append('<p class="revanue-p">' + String(_title).substr(0, 40) + '' + _titleSub + '</p>');
             $("#titletext").val(_title).html();
             var _name = htmlEncode(_title);
             if (childlabelType != '@Common.RevenueTactic') {
 
-                _cardhtml = _cardhtml + '<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_revActual_Projected) + '","' + String(_revProjected) + '","' + String(_revGoalYTD) + '","' + String(_revGoalYear) + '","' + String(_revActualPercentage) + '","' + String(_revActualPercentageIsnegative) + '","' + String(_revProjectedPercentage) + '","' + String(_revProjectedPercentageIsnegative) + '")>Details</button>';
+                sb.append('<button id="' + _btnDetailsId + '" class="btn btn-blue text-shadow-blue source-sans-proregular" name="' + _btnDetailsId + '" onclick=javascript:CardDetailsClick("' + String(_masterParentLabel) + '","' + String(ParentLabel) + '","' + String(childlabelType) + '","' + String(_fieldId) + '","' + String(optionmain) + '","' + escape(_name) + '","' + String(_revActual_Projected) + '","' + String(_revProjected) + '","' + String(_revGoalYTD) + '","' + String(_revGoalYear) + '","' + String(_revActualPercentage) + '","' + String(_revActualPercentageIsnegative) + '","' + String(_revProjectedPercentage) + '","' + String(_revProjectedPercentageIsnegative) + '")>Details</button>');
             }
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '<div>';
+            sb.append('</div>');
+            sb.append('<div>');
 
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('</div>');
+            sb.append('</div>');
 
-            _cardhtml = _cardhtml + '<div class="region-data region-data-reveune">';
+            sb.append('<div class="region-data region-data-reveune">');
 
             //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            _cardhtml = _cardhtml + '<div class="dataR" style="width:10%">';
-            _cardhtml = _cardhtml + '<span class="title">Revenue</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span>';
-            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span></p>';
+            sb.append('<div class="dataR" style="width:10%">');
+            sb.append('<span class="title">Revenue</span>');
+            sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Revact_proj + '" id="' + _Revact_projId + '">' + _Revact_proj + '</span></p>');
+            sb.append('<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Revgoal + '" id="' + _RevgoalId + '">' + _Revgoal + '</span>');
+            sb.append('<p><span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span></p>');
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Revpercentange + '" id="' + _RevPercntgId + '">' + _Revpercentange + '</span>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('</div>');
 
             //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            _cardhtml = _cardhtml + '<div class="dataR" style="width:10%">';
-            _cardhtml = _cardhtml + '<span class="title">Cost</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="title">Projected : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span>';
-            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span></p>';
+            sb.append('<div class="dataR" style="width:10%">');
+            sb.append('<span class="title">Cost</span>');
+            sb.append('<p class="value"> <span class="cardval carvdval-block" add-sep="false" orig-val="' + _Costact_proj + '" id="' + _Costact_projId + '">' + _Costact_proj + '</span></p>');
+            sb.append('<span class="title">Projected : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _Costgoal + '" id="' + _CostgoalId + '">' + _Costgoal + '</span>');
+            sb.append('<p><span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span></p>');
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _Costpercentange + '" id="' + _CostPercntgId + '">' + _Costpercentange + '</span>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('</div>');
 
             //_cardhtml = _cardhtml + '<div class="dataR" style="min-width:' + tempdivdatawidth + 'px">';
-            _cardhtml = _cardhtml + '<div class="dataR" style="width:10%">';
+            sb.append('<div class="dataR" style="width:10%">');
             //_cardhtml = _cardhtml + '<div class="data">';
-            _cardhtml = _cardhtml + '<span class="title">ROI</span>';
-            _cardhtml = _cardhtml + '<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>';
-            _cardhtml = _cardhtml + '<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">' + _ROIgoal + '</span>';
-            _cardhtml = _cardhtml + '<p><span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span></p>';
+            sb.append('<span class="title">ROI</span>');
+            sb.append('<p class="value"> <span class="cardval carvdval-block" orig-val="' + _ROIact_proj + '" id="' + _ROIact_projId + '">' + _ROIact_proj + '</span></p>');
+            sb.append('<span class="title">Goal : </span><span class="inner-sub-value"></span><span class="cardsub sub-value" add-sep="true" orig-val="' + _ROIgoal + '" id="' + _ROIgoalId + '">' + _ROIgoal + '</span>');
+            sb.append('<p><span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span></p>');
             //_cardhtml = _cardhtml + '<span class="percentageval" orig-val="' + _ROIpercentange + '" id="' + _ROIPercntgId + '">' + _ROIpercentange + '</span>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('</div>');
 
 
-            _cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:35%;float:left;">';
+            sb.append('<div id="' + _linechartDivId + '" style="height:100%; width:35%;float:left;">');
             //_cardhtml = _cardhtml + '<div id="' + _linechartDivId + '" style="height:100%; width:419px;float:left;">';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('</div>');
 
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '</div>';
-            _cardhtml = _cardhtml + '</div>';
+            sb.append('</div>');
+            sb.append('</div>');
+            sb.append('</div>');
             divid++;
+            Strbundle = sb.getStringBuilder();
         });
-        $("#dvCardSectionData").html(_cardhtml);
+        $("#dvCardSectionData").html(Strbundle);
 
         formatCardSectionValues();
         formatCardPercentageValue();
@@ -250,6 +252,22 @@
         CheckData();
 
     });
+
+    function getStringBuilder() {
+        var data = [];
+        var counter = 0;
+        return {
+            // adds string s to the stringbuilder
+            append: function (s) { data[counter++] = s; return this; },
+            // removes j elements starting at i, or 1 if j is omitted
+            remove: function (i, j) { data.splice(i, j || 1); return this; },
+            // inserts string s at i
+            insert: function (i, s) { data.splice(i, 0, s); return this; },
+
+            // builds the string
+            getStringBuilder: function (s) { return data.join(s || ""); return this; }
+        };
+    }
 
     function loadlineChart(_chartdata, chartId) {
 
@@ -1186,7 +1204,7 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function SearchByTitle(TitleVal) {
-        debugger;
+      
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         SearchString = $('#txtSearch').val();

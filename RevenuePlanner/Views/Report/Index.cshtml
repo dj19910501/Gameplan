@@ -1706,7 +1706,7 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
     //End:- BarLineChart Script
 
     //Start:- Combination Chart Script
-        function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal, _pointLabelWidth, _actulValue) {
+        function BindRevenueCombinationChartData(_categories, _Barseries, _ChartDivId, _linechartseries, _plotlineVal, _pointLabelWidth,_isshowPlotLine,_actulValue) {
             Highcharts.setOptions({
                 lang: {
                     numericSymbols: ["k", "M", "B", "T", "P", "E"]
@@ -1737,7 +1737,7 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                     labels: {
                         enabled: false
                     },
-                    plotLines: [{
+                    plotLines:_isshowPlotLine.toLowerCase() == "true" ? [{  //PL #1394 Revenue to Plan: Today Line for Past & Future Plans : Dashrath Prajapati
                         color: 'black', // Color value
                         dashStyle: 'longdash', // Style of the plot line. Default to solid
                         value: _plotlineVal, // Value of where the line will appear
@@ -1750,7 +1750,7 @@ function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, is
                             x: -15,
                             y: -2
                         }
-                    }]
+                    }] : []
                     //plotBands: [{
                     //    color: '#ebebeb',
                     //    from: _plotBandFrom,
