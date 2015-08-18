@@ -1,4 +1,5 @@
 ﻿@using RevenuePlanner.Helpers
+@using System.Configuration
 
 <!DOCTYPE html>
 <html lang="en">
@@ -47,7 +48,7 @@
             </div>
         </div>
              @*PL#1441 added by dashrath Prajapti*@
-                <div class="login-header">
+                <div class="login-header" id="_loginLayout">
                            <img src="~/Content/images/infoGamePlan-Icon.png">
                             <p>We recently moved to a new web host, <a href="https://gameplan.hive9.com/" target="_blank">gameplan.hive9.com</a>. Please remember to update your bookmark. </p>
                         </div>
@@ -128,5 +129,10 @@
             var url = '@Url.Content("~/Login/LoadSupportPartialOnLogin/")';     //// Modified by Sohel Pathan on 23/05/2014 for internal review points.
             $("#div_contactSupport").load(url);
         });
+
+        var _isDisplayLayout = '@ConfigurationManager.AppSettings["ShowBookmark"].ToString()';
+        if (_isDisplayLayout == 'false') {
+            $("#_loginLayout").hide()
+        }
     });
 </script>
