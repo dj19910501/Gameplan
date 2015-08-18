@@ -9408,7 +9408,7 @@ namespace RevenuePlanner.Controllers
                                             projectedstagevalue = taskdata.ProjectedStageValue,
                                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                             ProjectStage = taskdata.Stage.Title,
-                                            IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) == true ? lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any()==true ? "0" : "1":"1"
+                                            IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) == true ? lsteditableEntityIds.Select(x => x == taskdata.PlanTacticId).Any() ? "0" : "1" : "1"
                                        
                                         });
 
