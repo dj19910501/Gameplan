@@ -1699,19 +1699,50 @@ namespace Integration.Salesforce
                 lstMappingMisMatch = lstMappingMisMatch.Concat(IdentifyDataTypeMisMatch(_mappingImprovementCampaign, lstSalesforceFieldDetail, Enums.EntityType.ImprovementCampaign.ToString())).ToList();
                 // End - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
+                #region "Remove mismatch record from  Mapping list"
+                foreach (SalesForceObjectFieldDetails objMisMatchItem in lstMappingMisMatch)
+                {
+                    if (objMisMatchItem.Section.Equals(Enums.EntityType.Tactic.ToString()))
+                    {
+                        _mappingTactic.Remove(objMisMatchItem.SourceField);
+                    }
+                    else if (objMisMatchItem.Section.Equals(Enums.EntityType.Program.ToString()))
+                    {
+                        _mappingProgram.Remove(objMisMatchItem.SourceField);
+                    }
+                    else if (objMisMatchItem.Section.Equals(Enums.EntityType.Campaign.ToString()))
+                    {
+                        _mappingCampaign.Remove(objMisMatchItem.SourceField);
+                    }
+                    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementTactic.ToString()))
+                    {
+                        _mappingImprovementTactic.Remove(objMisMatchItem.SourceField);
+                    }
+                    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementProgram.ToString()))
+                    {
+                        _mappingImprovementProgram.Remove(objMisMatchItem.SourceField);
+                    }
+                    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementCampaign.ToString()))
+                    {
+                        _mappingImprovementCampaign.Remove(objMisMatchItem.SourceField);
+                    }
+
+                }
+                #endregion
+
                 foreach (var Section in lstMappingMisMatch.Select(m => m.Section).Distinct().ToList())
                 {
                     string msg = "Data type mismatch for " +
                                 string.Join(",", lstMappingMisMatch.Where(m => m.Section == Section).Select(m => m.SourceField).ToList()) +
                                 " in salesforce for " + Section + ".";
                     Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section,true);
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Error, DateTime.Now));
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, msg);
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Info, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, msg);
                 }
-                if (lstMappingMisMatch.Count > 0)
-                {
-                    return true;
-                }
+                //if (lstMappingMisMatch.Count > 0)
+                //{
+                //    return true;
+                //}
                 
 
                 try
@@ -2664,15 +2695,20 @@ namespace Integration.Salesforce
                         }
                     }
 
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
-                    _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
+                   
                     // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
 
                     if (campaignList.Count > 0)
                     {
                         try
                         {
+                            #region "Get Campaign CustomFieldlist"
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
+                            _mappingCustomFields = CreateMappingCustomFieldDictionary(campaignIdList, Enums.EntityType.Campaign.ToString());
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Campaign.");
+                            
+                            #endregion
+
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncCampaingData process start.");
                             page = 0;
                             total = campaignList.Count;
@@ -2715,20 +2751,25 @@ namespace Integration.Salesforce
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Campaign data to Salesforce: " + exMessage);
                         }
                     }
-
-                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                    programIdList = programList.Select(c => c.PlanProgramId).ToList();
-
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-                    var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
-                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
-
-                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                    
                     if (programList.Count > 0)
                     {
                         try
                         {
+                            #region "Get Program Customfield list"
+                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                            programIdList = programList.Select(c => c.PlanProgramId).ToList();
+
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+                            var lstCustomFieldsprogram = CreateMappingCustomFieldDictionary(programIdList, Enums.EntityType.Program.ToString());
+                            if (_mappingCustomFields == null)
+                                _mappingCustomFields = new List<CustomFiledMapping>();
+                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsprogram).ToList();
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Program.");
+
+                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997 
+                            #endregion
+
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncProgramData process start.");
                             page = 0;
                             total = programList.Count;
@@ -2772,20 +2813,24 @@ namespace Integration.Salesforce
                         }
                     }
 
-                    // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                    List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
-                    _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
-
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                    var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
-                    _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
-                    // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-
                     if (tacticList.Count > 0)
                     {
                         try
                         {
+                            #region "Get Tacic Customfield list & Actual Cost"
+                            // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
+                            List<int> tacticIdList = tacticList.Select(c => c.PlanTacticId).Distinct().ToList();
+                            _mappingTactic_ActualCost = Common.CalculateActualCostTacticslist(tacticIdList);
+
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+                            var lstCustomFieldstactic = CreateMappingCustomFieldDictionary(tacticIdList, Enums.EntityType.Tactic.ToString());
+                            if (_mappingCustomFields == null)
+                               _mappingCustomFields = new List<CustomFiledMapping>();
+                            _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldstactic).ToList();
+                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get CustomField mapping dictionary for Tactic.");
+                            // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997 
+                            #endregion
+
                             page = 0;
                             total = tacticList.Count;
                             maxpage = (total / pushRecordBatchSize);
