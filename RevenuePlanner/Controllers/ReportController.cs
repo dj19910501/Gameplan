@@ -10819,7 +10819,7 @@ namespace RevenuePlanner.Controllers
                         }
                         else if (ParentLabel.Contains(Common.ProgramCustomTitle))
                         {
-                            if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
+                            if (int.TryParse(ParentLabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
                             {
                                 customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
                             }
@@ -10992,9 +10992,16 @@ namespace RevenuePlanner.Controllers
                             }
                             //ProjectedStageValue
                             ActualTacticTrendList = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, StageCode);
-                            if (StageCode != Enums.Stage.MQL.ToString())
+                            if (code != Enums.Stage.MQL.ToString())
                             {
-                                MqlActual = GetActualTrendModelForRevenue(_tacticdata, ActualRevenueDataTable, Enums.Stage.MQL.ToString());
+                                List<string> MqlActualStageList = new List<string>();
+                                MqlActualStageList.Add(Enums.Stage.MQL.ToString());
+                                List<Plan_Campaign_Program_Tactic_Actual> MqlActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+                                List<ActualTacticListByStage> MqlActualTacticStageList = new List<ActualTacticListByStage>();
+                                MqlActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, MqlActualStageList, IsTillCurrentMonth);
+                                MqlActualTacticList = MqlActualTacticStageList.Where(actual => actual.StageCode.Equals(Enums.Stage.MQL.ToString())).Select(actual => actual.ActualTacticList).FirstOrDefault();
+                                List<ActualDataTable> MqlActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _customfieldOptionId.ToString(), customFieldType, Enums.InspectStage.MQL, MqlActualTacticList, _tacticdata, IsTacticCustomField);
+                                MqlActual = GetActualTrendModelForRevenue(_tacticdata, MqlActualRevenueDataTable, Enums.Stage.MQL.ToString());
                             }
                             else
                             {
