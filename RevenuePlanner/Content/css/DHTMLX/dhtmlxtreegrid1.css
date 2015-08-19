@@ -2489,18 +2489,17 @@ div.dhx_page_active_skyblue {
 }
 
 .dhxgrid_sort_desc, .dhxgrid_sort_asc {
-    width: 20px;
+    width: 15px;
     height: 26px;
-    background-image: url("../../images/dhxgrid_skyblue_Images/sort_desc.png");
+    background-image: url("../../images/dhxgrid_skyblue_Images/arrow-down-results.png");
     background-repeat: no-repeat;
-    z-index: 10;
-    top:22px!important;
+    top:40px!important;
 }
 
 .dhxgrid_sort_asc {
-    width: 10px;
-    height: 8px;
-    background-image: url("../../images/dhxgrid_skyblue_Images/sort_asc.png");
+    width: 15px;
+    height: 26px;
+    background-image: url("../../images/dhxgrid_skyblue_Images/arrow-up-results.png");
     background-repeat: no-repeat;
       top:40px!important;
 }

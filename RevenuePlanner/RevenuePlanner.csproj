@@ -314,6 +314,7 @@
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgrid.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxtreegrid.css" />
+    <Content Include="Content\css\DHTMLX\dhtmlxtreegrid1.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
@@ -422,6 +423,8 @@
     <Content Include="Content\images\delete-btn.png" />
     <Content Include="Content\images\delete-icon.png" />
     <Content Include="Content\images\delete-large.png" />
+    <Content Include="Content\images\dhxgrid_skyblue_Images\arrow-down-results.png" />
+    <Content Include="Content\images\dhxgrid_skyblue_Images\arrow-up-results.png" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\combo_select_dhx_skyblue.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxcalendar_arrow_left.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxcalendar_arrow_right.gif" />
