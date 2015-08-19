@@ -1,5 +1,18 @@
 ﻿@using RevenuePlanner.Helpers
 @using System.Configuration
+@{
+    var _isDisplayLayout = "";
+    
+    if (Convert.ToString(ConfigurationManager.AppSettings["ShowBookmark"]) != null)
+    {
+        _isDisplayLayout = "yes";
+    }
+    else
+    {
+        _isDisplayLayout = "no";
+    }
+    
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,14 +22,14 @@
     <meta name="viewport" content="width=device-width" />
     <meta name="robots" content="noindex">
 
-     @Styles.Render("~/Content/css/GetCSSForLogin")
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.min.css")" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
-        <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
+    @Styles.Render("~/Content/css/GetCSSForLogin")
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
 
 
     @Scripts.Render("~/bundles/GetJSForLogin")
-            <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
     <!-- Hotjar -->
     <script>
         (function (f, b) {
@@ -27,13 +40,14 @@
             c.src = "//static.hotjar.com/c/hotjar-14175.js?sv=3";
             b.getElementsByTagName("head")[0].appendChild(c);
         })(window, document);
-</script> 
+    </script>
 </head>
 <body class="gradient">
     @* Start - Added by :- Sohel Pathan on 22/05/2014 for PL #469 *@
     <style type="text/css">
-        .icon-info-support {
-            width:300px;
+        .icon-info-support
+        {
+            width: 300px;
         }
     </style>
     @* End - Added by :- Sohel Pathan on 22/05/2014 for PL #469 *@
@@ -46,14 +60,14 @@
                 <div class="mrp-logo"></div>
             </div>
         </div>
-             @*PL#1441 added by dashrath Prajapti*@
-                <div class="login-header" id="_loginLayout">
-                           <img src="~/Content/images/infoGamePlan-Icon.png">
-                            <p>We recently moved to a new web host, <a href="https://gameplan.hive9.com/" target="_blank">gameplan.hive9.com</a>. Please remember to update your bookmark. </p>
-                        </div>
+        @*PL#1441 added by dashrath Prajapti*@
+        <div class="login-header" id="_loginLayout">
+            <img src="~/Content/images/infoGamePlan-Icon.png">
+            <p>We recently moved to a new web host, <a href="https://gameplan.hive9.com/" target="_blank">gameplan.hive9.com</a>. Please remember to update your bookmark. </p>
+        </div>
         @*<div class="row-fluid calc-height">*@
         <div class="row-fluid calc-height-login">
-        
+
 
             <div class="span12">
                 <div id="errorMessage" class="alert alert-error hide">
@@ -61,10 +75,10 @@
                     <strong>Error!</strong>
                     <div id="cErrors">@Html.ValidationSummary(true)</div>
                 </div>
-                 <div id="TimeOuterrorMessage" class="alert alert-error hide" style="float:left;margin-left:200px;width:70%;margin-top:5px;border:1px solid;">
+                <div id="TimeOuterrorMessage" class="alert alert-error hide" style="float: left; margin-left: 200px; width: 70%; margin-top: 5px; border: 1px solid;">
                     <a class="close">×</a>
-                    <strong style="float:left;">Timed out.</strong>
-                    <div id="timeOutcErrors" style="float:left;width:470px;">&nbsp;You were logged out of Gameplan<sup>TM</sup> due to inactivity. Please log in again.</div>
+                    <strong style="float: left;">Timed out.</strong>
+                    <div id="timeOutcErrors" style="float: left; width: 470px;">&nbsp;You were logged out of Gameplan<sup>TM</sup> due to inactivity. Please log in again.</div>
                 </div>
                 <div class="login-wrapper">
                     @RenderBody()
@@ -79,7 +93,7 @@
                         {
 
                             <br />
-                             @Sessions.ApplicationName @Html.Raw(" Release [")@ViewBag.ApplicationReleaseVersion@Html.Raw("]")    @* Modified by :- Sohel Pathan on 22/05/2014 for PL #469 to display release version from database *@
+                            @Sessions.ApplicationName @Html.Raw(" Release [")@ViewBag.ApplicationReleaseVersion@Html.Raw("]")    @* Modified by :- Sohel Pathan on 22/05/2014 for PL #469 to display release version from database *@
                         
                         }
                     </div>
@@ -117,6 +131,17 @@
         };
     })();
     $(document).ready(function () {
+            if ('@_isDisplayLayout' == "yes") {
+                var _isTrue = '@Convert.ToString(ConfigurationManager.AppSettings["ShowBookmark"])';
+                if (_isTrue == 'false') {
+                    $("#_loginLayout").hide()
+                }
+                else {
+                    $("#_loginLayout").show()
+                }
+              }
+        
+      
         $(".alert").find(".close").on("click", function (e) {
             e.stopPropagation();
             e.preventDefault();
@@ -129,9 +154,5 @@
             $("#div_contactSupport").load(url);
         });
 
-        var _isDisplayLayout = '@ConfigurationManager.AppSettings["ShowBookmark"].ToString()';
-        if (_isDisplayLayout == 'false') {
-            $("#_loginLayout").hide()
-        }
     });
 </script>
