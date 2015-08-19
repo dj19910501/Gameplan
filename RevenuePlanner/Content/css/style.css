@@ -15500,3 +15500,33 @@ background-position: right 0 bottom 9px !important;
 {
     padding-bottom:20px;
 }
+
+/*Added by Devanshi on 19-8-2015 Forgrid icone*/
+
+.grid_Search
+{
+background-image: url("../../Content/images/magnifying_glass.png");
+opacity: 1;
+background-position: center center;
+background-repeat: no-repeat;
+cursor: pointer;
+height: 22px;
+position: relative;
+width: 18px;
+margin: 6px auto 0px;
+float:left;
+}
+
+  .grid_add
+{
+background-image: url("../../Content/images/icon-plus_in_circle.png");
+opacity: 1;
+background-position: center center;
+background-repeat: no-repeat;
+cursor: pointer;
+height: 22px;
+position: relative;
+width: 22px;
+margin: 6px auto 0px;
+float:right;
+}

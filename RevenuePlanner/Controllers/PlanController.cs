@@ -9231,10 +9231,10 @@ namespace RevenuePlanner.Controllers
                         GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell  locked='1' style='color:#999'>" + planitem.Title + "</cell> ");
 
                     }
-                    GridString.Append("<cell><![CDATA[ <img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='PlanPopup' class='grid_Search' alt=\"" + planitem.PlanId + "\">");
+                    GridString.Append("<cell><![CDATA[   <div  class='grid_Search' id='PlanPopup' alt=\"" + planitem.PlanId + "\"></div>");
                     if (IsPlanCreateAll)
                     {
-                        GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\">");
+                        GridString.Append("<div  class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\"></div>");
                     }
                     GridString.Append("]]></cell>");
                     GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1' style='color:#999'>" + Startdate + "</cell> <cell locked='1' style='color:#999'>" + Enddate + "</cell>  <cell style='color:#999'>" + totalcost + "</cell> ");
@@ -9293,10 +9293,10 @@ namespace RevenuePlanner.Controllers
                             }
                           
                             GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.Title + "</cell> ");
-                            GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='CampaignPopup' class='grid_Search' alt=\"" + Campaignitem.PlanCampaignId + "\">");
+                            GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<div  class='grid_Search' id='CampaignPopup' alt=\"" + Campaignitem.PlanCampaignId + "\"></div> ");
                             if (Campaignitem.IsPlanCreateAll)
                             {
-                                GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" data-title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\">");
+                                GridString.Append("<div class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" data-title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
                             }
                             GridString.Append("]]></cell>");
                             GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
@@ -9367,10 +9367,10 @@ namespace RevenuePlanner.Controllers
                                     }
                                     GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>");
 
-                                    GridString.Append("<cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<img src='../Content/images/magnifying_glass.png' style='cursor:pointer;  float: left;margin-top:4px;' id='ProgramPopup' class='grid_Search' alt=\"" + Programitem.PlanProgramId + "\">");
+                                    GridString.Append("<cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
                                     if (Programitem.IsPlanCreateAll)
                                     {
-                                        GridString.Append("<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\">");
+                                        GridString.Append("<div class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
                                     }
                                     GridString.Append("]]></cell>");
                                     GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
@@ -9416,7 +9416,7 @@ namespace RevenuePlanner.Controllers
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.title),
-                                                                                   new XElement("cell", new XCData("<img src='../Content/images/magnifying_glass.png' style='cursor:pointer; float: left;margin-top:4px;' class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"> " + (tactic.IsPlanCreateAll == true ? "<img src='../Content/images/icon-plus_in_circle.png' style='cursor:pointer;' class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\">" : ""))),
+                                                                                   new XElement("cell", new XCData("<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> " + (tactic.IsPlanCreateAll == true ? "<div class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>" : ""))),
                                                                                    new XElement("cell", tactic.PlanTacticId),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.enddate.ToString("MM/dd/yyyy")),
@@ -9424,7 +9424,7 @@ namespace RevenuePlanner.Controllers
                                                                                   new XElement("cell", tactic.tactictypeid, new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1")),
                                                                                     new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.CreatedBy),
                                                                                  //  new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
-                                                                                   new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.ProjectStage + " " + tactic.projectedstagevalue),
+                                                                                   new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.projectedstagevalue + "-" + tactic.ProjectStage),
                                                                                     new XElement("cell", new XAttribute("style", "color:#999;background-color:#E4F1E1"), tactic.totalmql),
                                                                                      new XElement("cell", new XAttribute("style", " color:#999;background-color:#E4F1E1"), tactic.totalrevenue)));
 
@@ -9484,7 +9484,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 #region update Plan Detail
-                if (UpdateType == "plan")
+                if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.plan.ToString())
                 {
                     Plan plan = db.Plans.Where(_plan => _plan.PlanId == id).ToList().FirstOrDefault();
                     if (UpdateColumn == "Task Name")
@@ -9499,13 +9499,13 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 #region update tactic detail
-                if (UpdateType == "tact")
+                if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.tactic.ToString())
                 {
                     Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcptobjw => pcptobjw.PlanTacticId.Equals(id)).FirstOrDefault();
                     List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
                     double totalLineitemCost = 0;
                     // update tactic detail
-                    if (UpdateColumn == "Task Name")
+                    if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
                     {
                         var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                       join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
@@ -9522,21 +9522,21 @@ namespace RevenuePlanner.Controllers
                             pcpobj.Title = UpdateVal;
 
                     }
-                    else if (UpdateColumn == "Start Date")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
                     {
                         //  var pstartdate = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
                             pcpobj.StartDate = Convert.ToDateTime(UpdateVal);
                             var PStartDate = pcpobj.Plan_Campaign_Program.StartDate;
-                            if (PStartDate < Convert.ToDateTime(UpdateVal))
+                            if (PStartDate > Convert.ToDateTime(UpdateVal))
                             {
                                 pcpobj.Plan_Campaign_Program.StartDate = Convert.ToDateTime(UpdateVal);
                             }
 
                             var CStartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
 
-                            if (CStartDate < Convert.ToDateTime(UpdateVal))
+                            if (CStartDate > Convert.ToDateTime(UpdateVal))
                             {
                                 pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = Convert.ToDateTime(UpdateVal);
                             }
@@ -9544,7 +9544,7 @@ namespace RevenuePlanner.Controllers
                             //db.SaveChanges();
                         }
                     }
-                    else if (UpdateColumn == "End Date")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["enddate"])
                     {
                         //  var pstartdate = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(pcpobj.PlanProgramId)).FirstOrDefault().StartDate;
                         if (!string.IsNullOrEmpty(UpdateVal))
@@ -9566,7 +9566,7 @@ namespace RevenuePlanner.Controllers
                             //db.SaveChanges();
                         }
                     }
-                    else if (UpdateColumn == "Tactic Planned Cost")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"])
                     {
                         if ((db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => _tacCost.PlanTacticId == id).ToList()).Count() == 0 ||
                                     pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy.ToLower() == Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower()
@@ -9647,15 +9647,22 @@ namespace RevenuePlanner.Controllers
                         pcpobj.Cost = Convert.ToDouble(UpdateVal);
 
                     }
-                    else if (UpdateColumn == "Tactic Type")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
                     {
-                        pcpobj.TacticTypeId = Convert.ToInt32(UpdateVal);
+                        int tactictypeid = Convert.ToInt32(UpdateVal);
+                        pcpobj.TacticTypeId = tactictypeid;
+                        TacticType tt = db.TacticTypes.Where(tacType => tacType.TacticTypeId == tactictypeid).FirstOrDefault();
+                        pcpobj.ProjectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue;
+                      
+                        pcpobj.StageId = tt.StageId == null ? 0 : (int)tt.StageId;
+               
+
                     }
-                    else if (UpdateColumn == "Target Stage Goal")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["targetstagegoal"])
                     {
                         pcpobj.ProjectedStageValue = Convert.ToDouble(UpdateVal);
                     }
-                    else if (UpdateColumn == "Owner")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
                         oldOwnerId = pcpobj.CreatedBy;
                         pcpobj.CreatedBy = new Guid(UpdateVal);
@@ -9702,7 +9709,7 @@ namespace RevenuePlanner.Controllers
 
                     if (result > 0)
                     {
-                        if (UpdateColumn == "Owner")
+                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                             SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), pcpobj.Plan_Campaign_Program.Title.ToString(), pcpobj.Title.ToString());
                         if (UpdateColumn == "ParentID")
                         {
@@ -9730,7 +9737,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
  //// Calculate TotalLineItem cost.
-                        if (UpdateColumn == "Tactic Planned Cost")
+                        if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"])
                         {
                             Plan_Campaign_Program_Tactic_LineItem objOtherLineItem = tblTacticLineItem.FirstOrDefault(lineItem => lineItem.Title == Common.DefaultLineItemTitle && lineItem.LineItemTypeId == null);
                             if (pcpobj.Cost > totalLineitemCost)
@@ -9775,10 +9782,10 @@ namespace RevenuePlanner.Controllers
                 #endregion
                 #region update program detail
 
-                if (UpdateType == "prog")
+                if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.program.ToString())
                 {
                     Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
-                    if (UpdateColumn == "Task Name")
+                    if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
                     {
                         var pcpvar = (from pcp in db.Plan_Campaign_Program
                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
@@ -9794,7 +9801,7 @@ namespace RevenuePlanner.Controllers
                         else
                             pcpobj.Title = UpdateVal;
                     }
-                    else if (UpdateColumn == "Start Date")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
@@ -9806,7 +9813,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-                    else if (UpdateColumn == "End Date")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["enddate"])
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                         {
@@ -9817,7 +9824,7 @@ namespace RevenuePlanner.Controllers
                             }
                         }
                     }
-                    else if (UpdateColumn == "Owner")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
                         oldOwnerId = pcpobj.CreatedBy;
                         pcpobj.CreatedBy = new Guid(UpdateVal);
@@ -9828,7 +9835,7 @@ namespace RevenuePlanner.Controllers
 
                     if (result > 0)
                     {
-                        if (UpdateColumn == "Owner")
+                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                             SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString());
 
                     }
@@ -9837,12 +9844,12 @@ namespace RevenuePlanner.Controllers
 
                 #endregion
                 #region update Campaign detail
-                if (UpdateType == "camp")
+                if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.campaign.ToString())
                 {
                     int planId = db.Plan_Campaign.Where(_plan => _plan.PlanCampaignId.Equals(id)).FirstOrDefault().PlanId;
 
                     Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(id) && pcobjw.IsDeleted.Equals(false)).FirstOrDefault();
-                    if (UpdateColumn == "Task Name")
+                    if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
                     {
                         var pc = db.Plan_Campaign.Where(plancampaign => (plancampaign.PlanId.Equals(planId) && plancampaign.IsDeleted.Equals(false) && plancampaign.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower())
                             && !plancampaign.PlanCampaignId.Equals(id))).FirstOrDefault();
@@ -9856,19 +9863,19 @@ namespace RevenuePlanner.Controllers
                         else
                             pcobj.Title = UpdateVal;
                     }
-                    else if (UpdateColumn == "Start Date")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                             pcobj.StartDate = Convert.ToDateTime(UpdateVal);
 
                     }
-                    else if (UpdateColumn == "End Date")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["enddate"])
                     {
                         if (!string.IsNullOrEmpty(UpdateVal))
                             pcobj.EndDate = Convert.ToDateTime(UpdateVal);
 
                     }
-                    else if (UpdateColumn == "Owner")
+                    else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
                         oldOwnerId = pcobj.CreatedBy;
                         pcobj.CreatedBy = new Guid(UpdateVal);
@@ -9879,7 +9886,7 @@ namespace RevenuePlanner.Controllers
 
                     if (result > 0)
                     {
-                        if (UpdateColumn == "Owner")
+                        if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                             SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title);
 
                     }
@@ -10165,7 +10172,7 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append("<column type='ro' align='center' id='id' sort='na' width='0' >" + PlanYear + "</column>");
                 strHeader.Append("<column width='110' type='dhxCalendar' sort='date' align='center' id='startdate' >#cspan</column>");
                 strHeader.Append("<column width='100' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
-                strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
+                strHeader.Append("<column width='160' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
                 if (tblTacticTypes != null)
                 {
                     XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "str"), "#cspan",

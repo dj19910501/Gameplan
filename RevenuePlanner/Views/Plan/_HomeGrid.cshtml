@@ -123,6 +123,10 @@
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
         HomeGrid.attachEvent("onDrag", doOnDrag);
+        HomeGrid.attachEvent("onScroll", function (sLeft, sTop) {
+            $(".dhx_combo_select").css("display", "none");
+        });
+
      //   HomeGrid.attachEvent("onMouseOver", function () { return false });
         HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
@@ -146,12 +150,13 @@
             var Revenue = HomeGrid.cells(rowid, 10).getValue();
 
             HomeGrid.cells(rowid, 10).setValue(FormatNumber(Revenue, false));
-            //HomeGrid.forEachCell(rowid, function (cellobj, cellInd)
-            //{
-            //    var locked = HomeGrid.cells(rowid, cellInd).getAttribute("locked");
-            //    if ((locked != null && locked != "") && locked == "1")
-                   
-            //});
+
+            var psv = HomeGrid.cells(rowid, 8).getValue().split("-");
+            if (psv.length > 1) {
+                var psvnum = FormatCommas(psv[0], false);
+                HomeGrid.cells(rowid, 8).setValue(psvnum + " " + psv[1]);
+            }
+       
         });
     }
     function convertNumber(num) {
@@ -195,10 +200,12 @@
                         var dtactictitle = "";
 
                         for (a in DestinationMember) {
+                            if (DestinationMember[a].toString() != "" && DestinationMember[a].toString() != null) {
                             dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), 0).getValue();
                             if (dtactictitle == tacticname) {
                                 alert("Tactic with same title already exist in Targeted Program.");
                                 return false;
+                            }
                             }
 
                         }
@@ -245,8 +252,7 @@
         }
 
     }
-    function GetItemType(val)
-    {
+    function GetItemType(val) {
         var itemType = "";
         if (val.toString() == "tact")
             itemType = "Tactic";
@@ -266,7 +272,7 @@
             type: 'POST',
 
             url: '@Url.Action("SaveGridDetail")', // we are calling json method
-            data: { UpdateType: "tact", UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
+            data: { UpdateType: "tactic", UpdateColumn: "ParentID", UpdateVal: destinatinId, Id: parseInt(sourseid) },
             dataType: 'json',
 
             success: function (states) {
@@ -319,7 +325,7 @@
             if (UpdateColumn == "Target Stage Goal") {
                // this.editor.obj.class = "priceValue";
                 var psv = HomeGrid.cells(rowId, 8).getValue().split(" ");
-                this.editor.obj.value = psv[psv.length - 1];
+                this.editor.obj.value = psv[0];
             }
         }
         if (stage == 2) // start edit Shipping column
@@ -388,7 +394,7 @@
             }
             if (UpdateColumn.toString().trim() == "Target Stage Goal") {
                 var splitoval = oValue.split(" ");
-                if (nValue != splitoval[splitoval.length - 1]) {
+                if (nValue != splitoval[0]) {
                 var tactictypeindex = HomeGrid.getColIndexById('tactictype');
                 var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
                 GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue);
@@ -410,9 +416,12 @@
                             data: { tacticTypeId: tacticTypeId },
                             success: function (data) {
                                 pcost = data.revenue;
+                                var stagetitle = data.stageTitle;
                                 var projectedStageValue = data.projectedStageValue;
 
+                              //  HomeGrid.cells(rowId, 8).setValue(projectedStageValue + " " + stagetitle);
                         GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue);
+                                return false;
                             }
                         });
 
@@ -422,11 +431,12 @@
             }
 
             if (nValue != oValue) {
+                if (UpdateColumn != "Tactic Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
                 UpdateVal = nValue;
                 $.ajax({
                     type: 'POST',
                     url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                    data: { UpdateType: updatetype, UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
+                        data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                     dataType: 'json',
                     success: function (states) {
                         if (states.errormsg != null && states.errormsg.trim() != "") {
@@ -441,8 +451,10 @@
                         //}
                     }
                 });
-            }
             return true;
+                }
+              
+            }
         }
     }
     function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageValue, rowid, UpdateVal) {
@@ -478,23 +490,24 @@
                     type: 'POST',
 
                     url: '@Url.Action("SaveGridDetail")', // we are calling json method
-                    data: { UpdateType: "tact", UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(TacticID) },
+                    data: { UpdateType: GetItemType("tact"), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(TacticID) },
                     dataType: 'json',
 
                     success: function (states) {
-                        if (UpdateColumn == "Target Stage Goal") {
-                            var psv = HomeGrid.cells(rowid, 8).getAttribute("stage");
-                            HomeGrid.cells(rowid, 8).setValue(psv + " " + UpdateVal);
-                        }
-
                          LoadPlanGrid();
+                        //if (UpdateColumn == "Target Stage Goal") {
+                        //    var psv = HomeGrid.cells(rowid, 8).getAttribute("stage");
+                        //    HomeGrid.cells(rowid, 8).setValue(psv + " " + UpdateVal);
+                        //}
+
+                       
                     }
                 });
 
             }
 
         });
-
+        return true;
     }
 
 

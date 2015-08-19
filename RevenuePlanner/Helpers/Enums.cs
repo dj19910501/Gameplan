@@ -1075,6 +1075,19 @@ namespace RevenuePlanner.Helpers
             Info,
             None
         }
+        #region Plan Grid added by devanshi on 18-8-2015
+        public static Dictionary<string, string> PlanGrid_Column = new Dictionary<string, string>()
+       {
+           {"taskname","Task Name"},
+           {"startdate","Start Date"},
+           {"enddate","End Date"},
+           {"tacticplancost","Tactic Planned Cost"},
+           {"tactictype","Tactic Type"},
+           {"owner","Owner"},
+           {"targetstagegoal","Target Stage Goal"}
+       };
+     
+        #endregion
     }
 
     #region Authorization
