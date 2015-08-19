@@ -9258,10 +9258,10 @@ namespace RevenuePlanner.Controllers
                             Title = taskdata.Title,
                             StartDate = taskdata.StartDate,
                             EndDate = taskdata.EndDate,
-                            IsCampEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) == true ? true : false,
+                            IsCampEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? true : false,
                             CreatedBy = GetUserName(taskdata.CreatedBy),
-                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true
-
+                            IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
+                            CreatedByID= taskdata.CreatedBy
                         });
                         foreach (var Campaignitem in lstcampaignTaskData)
                         {
@@ -9270,12 +9270,14 @@ namespace RevenuePlanner.Controllers
                             //    type = "ron";
                             //}
 
-                            if (Campaignitem.IsCampEditable == true)
+                            //Modified By Komal Rawal for #1505
+                            if (Campaignitem.IsCampEditable == false)
+                            {
+                                if (lstSubordinatesIds.Contains(Campaignitem.CreatedByID))
                             {
 
                                 CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == Campaignitem.PlanCampaignId).Select(tact => tact.PlanTacticId).ToList();
                                 if (CustomTacticids.Count>0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
-                                // if (lsteditableEntityIds.Select(x => CustomTacticids.Contains(x)).Count() != CustomTacticids.Count())
                                 {
                                     IsEditable = "1";
                                     cellTextColor = "style='color:#999'";
@@ -9285,12 +9287,25 @@ namespace RevenuePlanner.Controllers
                                     cellTextColor = "style='color:#000'";
                                     IsEditable = "0";
                                 }
+
                             }
                             else
                             {
                                 IsEditable = "1";
                                 cellTextColor = "style='color:#999'";
+
+                                }
+
                             }
+                            else
+                            {
+                                //IsEditable = "1";
+                                //cellTextColor = "style='color:#999'";
+
+                                cellTextColor = "style='color:#000'";
+                                IsEditable = "0";
+                            }
+                            //End
                           
                             GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.Title + "</cell> ");
                             GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<div  class='grid_Search' id='CampaignPopup' alt=\"" + Campaignitem.PlanCampaignId + "\"></div> ");
@@ -9337,15 +9352,18 @@ namespace RevenuePlanner.Controllers
                                     EndDate = taskdata.EndDate,
                                     CreatedBy = GetUserName(taskdata.CreatedBy),
                                     IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
-                                    IsProgEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) == true ? true : false,
-
+                                    IsProgEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? true : false,
+                                    CreatedByID= taskdata.CreatedBy
                                 });
 
                                 foreach (var Programitem in lstprogramTaskData)
                                 {
                                     cellTextColor = "style='color:#000'";
                                     IsEditable = "0";
-                                    if (Programitem.IsProgEditable == true)
+                                    //Modified By Komal Rawal for #1505
+                                    if (Programitem.IsProgEditable == false)
+                                    {
+                                        if (lstSubordinatesIds.Contains(Programitem.CreatedByID))
                                     {
                                         CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.PlanProgramId == Programitem.PlanProgramId).Select(tact => tact.PlanTacticId).ToList();
                                        // if (lsteditableEntityIds.Select(x => CustomTacticids.Contains(x)).Count() != CustomTacticids.Count())
@@ -9364,7 +9382,15 @@ namespace RevenuePlanner.Controllers
                                     {
                                         IsEditable = "1";
                                         cellTextColor = "style='color:#999'";
+
+                                        }
                                     }
+                                    else
+                                    {
+                                        cellTextColor = "style='color:#000'";
+                                        IsEditable = "0";
+                                    }
+                                    //End
                                     GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>");
 
                                     GridString.Append("<cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
