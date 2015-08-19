@@ -423,7 +423,7 @@
                             {
                                 CurrentPlanId = 0;
                             }
-                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
                         }
                         else
                         {
@@ -431,7 +431,7 @@
                             {
                                 CurrentPlanId = 0;
                             }
-                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">Edit Plan</button>
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>
                         }
                     }
                     <!-- end -->
@@ -1486,6 +1486,13 @@
         $('.gantt-padding').height(contentWraper - positionGannt.top);
     }
 
+    //Added By Komal Rawal for #1498
+    function EditPlanHome() {
+        var pid = $("#CurrentPlanId").val();
+        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid +  '&isGridView=' + "True" ;
+        window.location.href = url;
+    }
+    //End
     // Added by Nirav for Custom Dropdown - 388
     /*added by Nirav for plan consistency on 14 apr 2014*/
     function EditPlan() {
