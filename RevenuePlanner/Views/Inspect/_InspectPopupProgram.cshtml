@@ -87,7 +87,7 @@
             {
                 
                 <span>
-                    @if (programMaster.OwnerId == Sessions.User.UserId && IsPlanEditable)
+                    @if (programMaster.OwnerId == Sessions.User.UserId || IsPlanEditable)
                     {
                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
                             <button class="delete-btn-gray" id="deleteProgram" type="button">Delete</button>
@@ -106,7 +106,7 @@
                         </div>
                     </div>
                       }
-                    @if (IsPlanEditable)
+                    @if (programMaster.OwnerId == Sessions.User.UserId || IsPlanEditable)
                     {
                        <span class="edit-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;cursor:pointer;"></span>
                        //  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
