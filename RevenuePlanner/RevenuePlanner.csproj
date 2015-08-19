@@ -313,7 +313,6 @@
     <Content Include="Content\css\dhtmlxgantt.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgrid.css" />
-    <Content Include="Content\css\DHTMLX\dhtmlxtreegrid.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxtreegrid1.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
@@ -444,10 +443,6 @@
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxmenu_subar.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxtoolbar_arrow.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxtoolbar_arrow_dis.gif" />
-    <Content Include="Content\images\dhxgrid_skyblue_Images\sort_asc.gif" />
-    <Content Include="Content\images\dhxgrid_skyblue_Images\sort_asc.png" />
-    <Content Include="Content\images\dhxgrid_skyblue_Images\sort_desc.gif" />
-    <Content Include="Content\images\dhxgrid_skyblue_Images\sort_desc.png" />
     <Content Include="Content\images\double-arow-icon.png" />
     <Content Include="Content\images\drop-down-logo.png" />
     <Content Include="Content\images\drpdown.png" />
