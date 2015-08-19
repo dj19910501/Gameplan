@@ -2537,30 +2537,47 @@ namespace RevenuePlanner.Controllers
             string pullClosedWon = Operation.Pull_ClosedWon.ToString();
             string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();
             string planEntityType = Enums.Section.Tactic.ToString();
-            var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == _inspectmodel.PlanTacticId && ipt.EntityType == planEntityType).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).ToList();
-            if (planEntityLogList.Where(planLog => planLog.Operation == pullResponses).FirstOrDefault() != null)
+            var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == _inspectmodel.PlanTacticId && ipt.EntityType == planEntityType).ToList();
+            if (planEntityLogList.Where(planLog => planLog.Operation == pullResponses).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault() != null)
             {
                 // viewbag which display last synced datetime of tactic for pull responses
-                ViewBag.INQLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullResponses).FirstOrDefault().SyncTimeStamp;
+                ViewBag.INQLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullResponses).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
             }
-            if (planEntityLogList.Where(planLog => planLog.Operation == pullClosedWon).FirstOrDefault() != null)
+            if (planEntityLogList.Where(planLog => planLog.Operation == pullClosedWon).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault() != null)
             {
                 // viewbag which display last synced datetime of tactic for pull closed won
-                ViewBag.CWLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullClosedWon).FirstOrDefault().SyncTimeStamp;
+                ViewBag.CWLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullClosedWon).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
             }
-            if (planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).FirstOrDefault() != null)
+            if (planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault() != null)
             {
                 // viewbag which display last synced datetime of tactic for pull qualified leads
-                ViewBag.MQLLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).FirstOrDefault().SyncTimeStamp;
+                ViewBag.MQLLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
             }
             ////End : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             string entityType = Enums.EntityType.Tactic.ToString();
+           
             var topThreeCustomFields = db.CustomFields.Where(cf => cf.IsDefault == true && cf.IsDeleted == false && cf.IsRequired == true && cf.ClientId == Sessions.User.ClientId && cf.EntityType == entityType).Take(3).ToList().Select((cf, Index) => new CustomFieldReviewTab()
             {
+                CustomFieldId=cf.CustomFieldId,
                 Name = cf.Name,
-                Class = "customfield-review" + (Index + 1).ToString(),
-                Value = cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Count > 0 ? string.Join(",", cf.CustomFieldOptions.Where(a => a.IsDeleted == false && cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList()) : "N/A"
+                Class = "customfield-review" + (Index + 1).ToString()
+               // cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).Any() ? string.Join(",", cf.CustomFieldOptions.Where(a => a.IsDeleted == false && cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList()) : "N/A"
             }).ToList();
+            var customFieldIds = topThreeCustomFields.Select(Tcf => Tcf.CustomFieldId).ToList();
+            var customFieldValues = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
+            var customFieldOption = db.CustomFieldOptions.Where(co => co.IsDeleted.Equals(false) && customFieldIds.Contains(co.CustomFieldId)).Select(co => new { co.Value, co.CustomFieldOptionId }).ToList();
+            foreach (var customField in topThreeCustomFields)
+            {
+                if (customFieldValues.Where(ct=>ct.CustomFieldId==customField.CustomFieldId).Any())
+                {
+                    var ExistingCustomFieldValues = customFieldValues.Where(ct => ct.CustomFieldId == customField.CustomFieldId).Select(ct => ct.Value).ToList();
+                    customField.Value = string.Join(",", customFieldOption.Where(a => ExistingCustomFieldValues.Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList());
+                }
+                else
+                {
+                    customField.Value="N/A";
+                }
+            }
             ViewBag.TopThreeCustomFields = topThreeCustomFields;
 
             return PartialView("Review");

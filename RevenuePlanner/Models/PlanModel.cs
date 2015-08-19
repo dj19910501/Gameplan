@@ -458,6 +458,7 @@ namespace RevenuePlanner.Models
     /// </summary>
     public class CustomFieldReviewTab
     {
+        public int CustomFieldId { get; set; }
         public string Name { get; set; }
         public string Value { get; set; }
         public string Class { get; set; }
