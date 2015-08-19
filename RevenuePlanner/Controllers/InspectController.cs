@@ -6813,7 +6813,7 @@ namespace RevenuePlanner.Controllers
 
                         }
 
-                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
+                        if (lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                         {
                             IsPlanEditable = true;
                         }
@@ -6856,7 +6856,7 @@ namespace RevenuePlanner.Controllers
 
                         }
 
-                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
+                        if (lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
                         {
                             IsPlanEditable = true;
                         }
