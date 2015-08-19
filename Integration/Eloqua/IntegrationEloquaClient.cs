@@ -50,7 +50,7 @@ namespace Integration.Eloqua
         private List<CustomFiledMapping> _mappingCustomFields { get; set; }  // Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
         private List<CampaignNameConvention> SequencialOrderedTableList { get; set; }
         private List<string> IntegrationInstanceTacticIds { get; set; }
-        private List<string> campaignMetadata { get; set; }
+        private Dictionary<string, string> campaignMetadata { get; set; }
         private Dictionary<string, string> customFields { get; set; }
         private static string NotFound = "NotFound";
         //Start - Added by Mitesh Vaishnav for PL ticket #1002 Custom Naming: Integration
@@ -127,14 +127,14 @@ namespace Integration.Eloqua
         private void InitEloqua()
         {
             ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-            campaignMetadata = new List<string>();
-            campaignMetadata.Add("name");
-            campaignMetadata.Add("description");
-            campaignMetadata.Add("startAt");
-            campaignMetadata.Add("endAt");
-            campaignMetadata.Add("budgetedCost");
-            campaignMetadata.Add("currentStatus");
-            campaignMetadata.Add("actualCost");
+            campaignMetadata = new Dictionary<string,string>();
+            campaignMetadata.Add("name", "string,text");
+            campaignMetadata.Add("description", "string,text");
+            campaignMetadata.Add("startAt", "date,datetime");
+            campaignMetadata.Add("endAt", "date,datetime");
+            campaignMetadata.Add("budgetedCost", "int,double,float,numeric");
+            campaignMetadata.Add("currentStatus", "string,text");
+            campaignMetadata.Add("actualCost", "int,double,float,numeric");
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace Integration.Eloqua
         public List<string> GetTargetDataType()
         {
             List<string> targetDataTypeList = customFields.Select(customField => customField.Value).ToList();
-            targetDataTypeList.AddRange(campaignMetadata);
+            targetDataTypeList.AddRange(campaignMetadata.Select(target=>target.Key).ToList());
             return targetDataTypeList.OrderBy(targetDataType => targetDataType).ToList();
         }
 
@@ -236,6 +236,14 @@ namespace Integration.Eloqua
                      TargetField = rs.name,
                      TargetDatatype = rs.dataType,
                  }).ToList();
+            EloquaObjectFieldDetails objEloquafield ;
+            campaignMetadata.ToList().ForEach(fixTarget =>
+                                                {
+                                                    objEloquafield = new EloquaObjectFieldDetails();
+                                                    objEloquafield.TargetField = fixTarget.Key;
+                                                    objEloquafield.TargetDatatype = fixTarget.Value;
+                                                    TargetDataTypeList.Add(objEloquafield);
+                                                });
             return TargetDataTypeList.OrderBy(q => q.TargetField).ToList();
 
         }
@@ -483,19 +491,33 @@ namespace Integration.Eloqua
                 }
                 // End - Modified by Sohel Pathan on 05/12/2014 for PL ticket #995, 996, & 997
 
+                #region "Remove mismatch record from  Mapping list"
+                foreach (EloquaObjectFieldDetails objMisMatchItem in lstMappingMisMatch)
+                {
+                    if (objMisMatchItem.Section.Equals(Enums.EntityType.Tactic.ToString()))
+                    {
+                        _mappingTactic.Remove(objMisMatchItem.SourceField);
+                    }
+                    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementTactic.ToString()))
+                    {
+                        _mappingImprovementTactic.Remove(objMisMatchItem.SourceField);
+                    }
+                }
+                #endregion
+
                 foreach (var Section in lstMappingMisMatch.Select(m => m.Section).Distinct().ToList())
                 {
                     string msg = "Data type mismatch for " +
                                 string.Join(",", lstMappingMisMatch.Where(m => m.Section == Section).Select(m => m.SourceField).ToList()) +
                                 " in Eloqua for " + Section + ".";
                     Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section, true);
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Error, DateTime.Now));
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, msg);
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Info, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, msg);
                 }
-                if (lstMappingMisMatch.Count > 0)
-                {
-                    return true;
-                }
+                //if (lstMappingMisMatch.Count > 0)
+                //{
+                //    return true;
+                //}
 
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
                 _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
@@ -1547,7 +1569,7 @@ namespace Integration.Eloqua
                     }
                 }
                 // End - Added by Sohel Pathan on 04/12/2014 for PL ticket #995, 996, & 997
-                if (campaignMetadata.Contains(mapping.Value))
+                if (campaignMetadata.Select(target => target.Key).ToList().Contains(mapping.Value))
                 {
                     keyvaluepair.Add(mapping.Value, value);
                 }
