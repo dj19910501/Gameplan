@@ -414,27 +414,7 @@
                     </div>*@
                
                 <div id="divPlanEditButtonHome">
-                    <!-- start -->
-                    @{
-                        if (Model.PlanId != null)
-                        {
-                            int pid = Model.PlanId;
-                            if (CurrentPlanId != 0)
-                            {
-                                CurrentPlanId = 0;
-                            }
                             <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>/*changed by Nirav for plan consistency on 14 apr 2014*/
-                        }
-                        else
-                        {
-                            if (CurrentPlanId != 0)
-                            {
-                                CurrentPlanId = 0;
-                            }
-                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>
-                        }
-                    }
-                    <!-- end -->
             </div>
         </div>
         </div>
