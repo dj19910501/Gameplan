@@ -483,6 +483,20 @@ namespace Integration.Eloqua
                 }
                 // End - Modified by Sohel Pathan on 05/12/2014 for PL ticket #995, 996, & 997
 
+                #region "Remove mismatch record from  Mapping list"
+                foreach (EloquaObjectFieldDetails objMisMatchItem in lstMappingMisMatch)
+                {
+                    if (objMisMatchItem.Section.Equals(Enums.EntityType.Tactic.ToString()))
+                    {
+                        _mappingTactic.Remove(objMisMatchItem.SourceField);
+                    }
+                    else if (objMisMatchItem.Section.Equals(Enums.EntityType.ImprovementTactic.ToString()))
+                    {
+                        _mappingImprovementTactic.Remove(objMisMatchItem.SourceField);
+                    }
+                }
+                #endregion
+
                 foreach (var Section in lstMappingMisMatch.Select(m => m.Section).Distinct().ToList())
                 {
                     string msg = "Data type mismatch for " +
@@ -492,10 +506,10 @@ namespace Integration.Eloqua
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Error, DateTime.Now));
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, msg);
                 }
-                if (lstMappingMisMatch.Count > 0)
-                {
-                    return true;
-                }
+                //if (lstMappingMisMatch.Count > 0)
+                //{
+                //    return true;
+                //}
 
                 BDSService.BDSServiceClient objBDSservice = new BDSService.BDSServiceClient();
                 _mappingUser = objBDSservice.GetUserListByClientId(_clientId).Select(u => new { u.UserId, u.FirstName, u.LastName }).ToDictionary(u => u.UserId, u => u.FirstName + " " + u.LastName);
