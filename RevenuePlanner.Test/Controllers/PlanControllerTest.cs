@@ -203,7 +203,7 @@ namespace RevenuePlanner.Test.Controllers
              PlanController controller = new PlanController();
              controller.Url = MockHelpers.FakeUrlHelper.UrlHelper();
              Sessions.PlanId = DataHelper.GetPlanId();
-             var result = controller.Budgeting() as JsonResult;
+             var result = controller.Budgeting(Sessions.PlanId) as JsonResult;
              if (result != null)
              {
                  // data object should not be null in json result

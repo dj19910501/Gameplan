@@ -736,7 +736,7 @@ namespace RevenuePlanner.Controllers
                     if (RedirectType.ToLower() == "budgeting")
                     {
                         TempData["SuccessMessage"] = Common.objCached.PlanSaved;
-                        return Json(new { id = Sessions.PlanId, redirect = Url.Action("Budgeting") });
+                        return Json(new { id = Sessions.PlanId, redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId }) });
                     }
                     else
                     {
@@ -2440,7 +2440,7 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }) });
+                                    return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget }) });
                                 }
                                 else
                                 {
@@ -2521,7 +2521,7 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "campaign" + cid.ToString() }) });
+                                    return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget, expand = "campaign" + cid.ToString() }) });
                                 }
                                 else
                                 {
@@ -2610,7 +2610,7 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "program" + pid.ToString() }) });
+                                    return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget, expand = "program" + pid.ToString() }) });
                                 }
                                 else
                                 {
@@ -2869,7 +2869,7 @@ namespace RevenuePlanner.Controllers
                                 if (!string.IsNullOrEmpty(CalledFromBudget))
                                 {
                                     TempData["SuccessMessage"] = string.Format("Line Item {0} deleted successfully", Title);
-                                    return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = "tactic" + tid.ToString() }) });
+                                    return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget, expand = "tactic" + tid.ToString() }) });
                                 }
                                 else
                                 {
@@ -2961,9 +2961,9 @@ namespace RevenuePlanner.Controllers
 
                         string expand = CloneType.ToLower().Replace(" ", "");
                         if (expand == "campaign")
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget }), Id = rtResult, msg = strMessage });
+                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget }), Id = rtResult, msg = strMessage });
                         else
-                            return Json(new { redirect = Url.Action("Budgeting", new { type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage });
+                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage });
                     }
                     else
                     {
@@ -6677,7 +6677,7 @@ namespace RevenuePlanner.Controllers
         /// View fro the initial render page 
         /// </summary>
         /// <returns></returns>
-        public ActionResult Budgeting()
+        public ActionResult Budgeting(int PlanId)
         {
             ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
             HomePlanModel planmodel = new Models.HomePlanModel();
@@ -6685,9 +6685,9 @@ namespace RevenuePlanner.Controllers
             {
                 bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
                 ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
-                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId);
+                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == PlanId);
                 var IsQuarter = objPlan.Year;
-                ViewBag.PlanId = Sessions.PlanId;
+                ViewBag.PlanId = PlanId;
 
                 bool IsPlanCreateAll = false;
                 if (IsPlanCreateAuthorized)
@@ -6744,7 +6744,7 @@ namespace RevenuePlanner.Controllers
                 //}
                 //objHomePlan.plans = planList;
 
-                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(Sessions.PlanId);
+                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(PlanId);
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
                 ViewBag.IsQuarter = IsQuarter;
                 #endregion
@@ -8724,7 +8724,7 @@ namespace RevenuePlanner.Controllers
                     lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
 
                     //// Custom Restrictions applied
-                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
 
                 string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
@@ -8751,7 +8751,7 @@ namespace RevenuePlanner.Controllers
 
 
                     // Custom Restrictions applied
-                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
 
                 string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
@@ -9157,7 +9157,7 @@ namespace RevenuePlanner.Controllers
                 }
                 List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                         lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                        TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId)).Select(tacticlist => tacticlist).ToList();
+                TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
                 //End
                 int PlanCnt = 1, CampCnt = 1, ProgCnt = 1;
 
@@ -9435,7 +9435,7 @@ namespace RevenuePlanner.Controllers
                                             projectedstagevalue = taskdata.ProjectedStageValue,
                                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                             ProjectStage = taskdata.Stage.Title,
-                                            IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) == true ? lsteditableEntityIds.Select(x => x == taskdata.PlanTacticId).Any() ? "0" : "1" : "1"
+                                            IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Select(x => x == taskdata.PlanTacticId).Any() ? "0" : "1" : "1" : "0"
                                        
                                         });
 

@@ -67,6 +67,10 @@
     SetBudget("#pbudget");
     SetPriceValue("#pMQLs");
     if (Planid != "0") {
+        if(Planid == "")
+        {
+            Planid = @Sessions.PlanId;
+        }
     if (typeof filters != "undefined") {
         var SelectedPlansCount = filters.SelectedPlans.length;
         if (SelectedPlansCount > 1) {
@@ -74,13 +78,15 @@
         }
         else {
             $(document).on("click", "#DivBulldollerbg", function (e) {
-                window.location.href = '@Url.Action("Budgeting", "Plan")';
+                    var url = '@Url.Content("~/Plan/Budgeting?PlanId=")' + Planid;
+                    window.location.href = url;
                 });
         }
     }
     else {
         $(document).on("click", "#DivBulldollerbg", function (e) {
-            window.location.href = '@Url.Action("Budgeting", "Plan")';
+                var url = '@Url.Content("~/Plan/Budgeting?PlanId=")' + Planid ;
+                window.location.href = url;
             });
     }
     }
