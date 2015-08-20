@@ -230,22 +230,7 @@
         else {
                 var stype = GetItemType(sid.split(".")[0].toString());
                 var dtype = GetItemType(dragTargettype.toString());
-                //if (sid.split(".")[0].toString() == "tact")
-                //    stype = "Tactic";
-                //else if (sid.split(".")[0].toString() == "prog")
-                //    stype = "Program";
-                //else if (sid.split(".")[0].toString() == "camp")
-                //    stype = "Campaign";
-                //else if (sid.split(".")[0].toString() == "plan")
-                //    stype = "Plan";
-                //if (dragTargettype.toString() == "tact")
-                //    dtype = "Tactic";
-                //else if (dragTargettype.toString() == "prog")
-                //    dtype = "Program";
-                //else if (dragTargettype.toString() == "camp")
-                //    dtype = "Campaign";
-                //else if (dragTargettype.toString() == "plan")
-                //    dtype = "Plan";
+
                 alert(stype + " can not move to " + dtype); return false;
             }
         }
@@ -279,7 +264,7 @@
             dataType: 'json',
 
             success: function (states) {
-                LoadPlanGrid();
+                //   LoadPlanGrid();
             }
         });
     }
@@ -290,6 +275,16 @@
         }
         return addZero(d.getMonth() + 1) + "/" + addZero(d.getDate()) + "/" + d.getFullYear();
     }
+    var progid = 0;
+    var campid = 0;
+    var planid = 0;
+    var progActVal = 0;
+    var CampActVal = 0;
+    var PlanActVal = 0;
+    var diff = 0;
+    var newProgVal = 0;
+    var newCampVal = 0;
+    var newPlanVal = 0;
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var updatetype = rowId.split(".")[0];
@@ -305,11 +300,7 @@
         }
         if (stage == 1) {
 
-            //if (UpdateColumn == "Tactic Planned Cost") {
-            //    var numb = HomeGrid.cells(rowId, costindex).getValue();
-            //   // this.editor.obj.style.textAlign = "center";
-            //    this.editor.obj.value = convertNumber(numb);
-            //}
+
             $(".dhx_combo_edit").off("keydown");
             if (UpdateColumn == "Tactic Planned Cost" || UpdateColumn == "Target Stage Goal") {
 
@@ -326,22 +317,17 @@
             }
            
             if (UpdateColumn == "Target Stage Goal") {
-               // this.editor.obj.class = "priceValue";
                 var psv = HomeGrid.cells(rowId, 8).getValue().split(" ");
                 this.editor.obj.value = psv[0];
             }
         }
         if (stage == 2) // start edit Shipping column
         {
-            // var combo = HomeGrid.getCombo(4);
-            // for getting column value using name
             var sdateindex = HomeGrid.getColIndexById('startdate');
             var edateindex = HomeGrid.getColIndexById('enddate');
             var idindex = HomeGrid.getColIndexById('id');
             var costindex = HomeGrid.getColIndexById('plannedcost');
             var stageindex = HomeGrid.getColIndexById('inq');
-            // var value = HomeGrid.cells(rowId, index).getValue();
-            // end
           
             if (UpdateColumn == "" || UpdateColumn == null)
                 UpdateColumn = HomeGrid.getColLabel(Colind, 0);
@@ -409,9 +395,6 @@
             if (UpdateColumn == "Tactic Type") {
 
                 var tacticTypeId = nValue;
-
-
-                if (tacticTypeId != '') {
                     if (nValue != oValue) {
                         $.ajax({
                             type: 'POST',
@@ -421,19 +404,24 @@
                                 pcost = data.revenue;
                                 var stagetitle = data.stageTitle;
                                 var projectedStageValue = data.projectedStageValue;
-
+                            if (parseFloat(projectedStageValue) > 0)
+                                HomeGrid.cells(rowId, 8).setValue(FormatCommas(projectedStageValue.toString(), false) + " " + stagetitle);
+                            else
+                                HomeGrid.cells(rowId, 8).setValue(projectedStageValue + " " + stagetitle);
+                            HomeGrid.cells(rowId, 8).setAttribute("stage", stagetitle);
                         GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue);
-                                return false;
                             }
                         });
-
-                    }
-                    else return false;
+                    return true;
                 }
             }
 
             if (nValue != oValue) {
                 if (UpdateColumn != "Tactic Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
+                    progid = HomeGrid.getParentId(rowId);
+                    campid = HomeGrid.getParentId(progid);
+                    planid = HomeGrid.getParentId(campid);
+
                 UpdateVal = nValue;
                 $.ajax({
                     type: 'POST',
@@ -446,11 +434,26 @@
                             HomeGrid.cells(rowId, cellInd).setValue(oValue);
                             return false;
                         }
-                        if (UpdateColumn == "Start Date" || UpdateColumn == "End Date")
-                          LoadPlanGrid();
-                        //if (UpdateColumn == "Tactic Planned Cost") {
-                        //    HomeGrid.cells(rowId, 5).setValue(FormatNumber(nValue, false));
-                        //}
+                            if (UpdateColumn == "Start Date") {
+
+                                ComapreDate(updatetype, rowId, sdateindex, nValue, UpdateColumn);
+                            }
+
+                            if (UpdateColumn == "End Date") {
+
+                                ComapreDate(updatetype, rowId, edateindex, nValue, UpdateColumn);
+                            }
+                            if (UpdateColumn == "Tactic Planned Cost") {
+                                diff = parseInt(nValue) - parseInt(oValue);
+                                SetColumUpdatedValue(5, diff);
+
+                                HomeGrid.cells(progid, 5).setValue((newProgVal));
+                                HomeGrid.cells(campid, 5).setValue((newCampVal));
+                                HomeGrid.cells(planid, 5).setValue((newPlanVal));
+
+
+                                //HomeGrid.cells(rowId, 5).setValue((nValue));
+                            }
                     }
                 });
             return true;
@@ -459,11 +462,155 @@
             }
         }
     }
+    function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
+        if (updatetype == "tact") {
+
+            progid = HomeGrid.getParentId(rowId);
+            campid = HomeGrid.getParentId(progid);
+            planid = HomeGrid.getParentId(campid);
+            var programid = HomeGrid.cells(progid, 2).getValue();
+            var campaignid = HomeGrid.cells(campid, 2).getValue();
+
+            var ProgstartDate = HomeGrid.cells(progid, dateindex).getValue();
+            var Campstartdate = HomeGrid.cells(campid, dateindex).getValue();
+            var Planstartdate = HomeGrid.cells(planid, dateindex).getValue();
+            if (Updatecolumn == "Start Date") {
+                if (formatDate(ProgstartDate) > formatDate(nValue))
+                    HomeGrid.cells(progid, dateindex).setValue(formatDate(nValue));
+                if (formatDate(Campstartdate) > formatDate(nValue)) {
+                    HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
+                }
+                if (formatDate(Planstartdate) > formatDate(nValue)) {
+                    HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
+                }
+                var tactActMinDate = HomeGrid.getUserData(progid, "tsdate");
+                var progMinDate = HomeGrid.getUserData(campid, "psdate");
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetMinMaxDate")', // we are calling json method
+                    data: { Parentid: parseInt(campaignid), UpdateType: "Tactic", updatedid: parseInt(programid) },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (formatDate(data.TactMinDate) != formatDate(tactActMinDate))
+                            HomeGrid.setUserData(progid, "tsdate", formatDate(data.TactMinDate));
+                        if (formatDate(data.TactMinDate) != formatDate(tactActMinDate))
+                            HomeGrid.setUserData(campid, "tsdate", formatDate(data.TactMinDate));
+                        if (formatDate(data.ProgMinDate) != formatDate(progMinDate))
+                            HomeGrid.setUserData(campid, "psdate", formatDate(data.ProgMinDate));
+                    },
+                    error: function (ts) {  }
+                });
+
+            }
+            else if (Updatecolumn == "End Date") {
+                if (formatDate(ProgstartDate) < formatDate(nValue))
+                    HomeGrid.cells(progid, dateindex).setValue(formatDate(nValue));
+                if (formatDate(Campstartdate) < formatDate(nValue)) {
+                    HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
+                }
+                if (formatDate(Planstartdate) < formatDate(nValue)) {
+                    HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
+                }
+                var tactActMaxDate = HomeGrid.getUserData(progid, "tedate");
+                var progMaxDate = HomeGrid.getUserData(campid, "pedate");
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetMinMaxDate")', // we are calling json method
+                    data: { Parentid: parseInt(campaignid), UpdateType: "Tactic", updatedid: parseInt(programid) },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (formatDate(data.TactMaxDate) != formatDate(tactActMaxDate))
+                            HomeGrid.setUserData(progid, "tedate", formatDate(data.TactMaxDate));
+                        if (formatDate(data.TactMaxDate) != formatDate(tactActMaxDate))
+                            HomeGrid.setUserData(campid, "tedate", formatDate(data.TactMaxDate));
+                        if (formatDate(data.ProgMaxDate) != formatDate(progMaxDate))
+                            HomeGrid.setUserData(campid, "psdate", formatDate(data.ProgMaxDate));
+                    }
+                });
+               
+            }
+
+        }
+        else if (updatetype == "prog") {
+           
+            campid = HomeGrid.getParentId(rowId);
+            planid = HomeGrid.getParentId(campid);
+            var programid = HomeGrid.cells(rowId, 2).getValue();
+            var campaignid = HomeGrid.cells(campid, 2).getValue();
+
+            var Campstartdate = HomeGrid.cells(campid, dateindex).getValue();
+            var Planstartdate = HomeGrid.cells(planid, dateindex).getValue();
+            if (Updatecolumn == "Start Date") {
+                if (formatDate(Campstartdate) > formatDate(nValue)) {
+                    HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
+                }
+                if (formatDate(Planstartdate) > formatDate(nValue)) {
+                    HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
+                }
+                var progMinDate = HomeGrid.getUserData(campid, "psdate");
+                var tactMinDate = HomeGrid.getUserData(campid, "tsdate");
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetMinMaxDate")', // we are calling json method
+                    data: { Parentid: parseInt(campaignid), UpdateType: "Program", updatedid: parseInt(programid) },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (formatDate(data.TactMinDate) != formatDate(tactMinDate))
+                            HomeGrid.setUserData(campid, "tsdate", formatDate(data.TactMinDate));
+                        if (formatDate(data.ProgMinDate) != formatDate(progMinDate))
+                            HomeGrid.setUserData(campid, "psdate", formatDate(data.ProgMinDate));
+                    },
+                    error: function (ts) {  }
+                });
+            }
+            else if (Updatecolumn == "End Date") {
+                if (formatDate(Campstartdate) < formatDate(nValue)) {
+                    HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
+                }
+                if (formatDate(Planstartdate) < formatDate(nValue)) {
+                    HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
+                }
+                var progMaxDate = HomeGrid.getUserData(campid, "pedate");
+                var tactMaxDate = HomeGrid.getUserData(campid, "tedate");
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetMinMaxDate")', // we are calling json method
+                    data: { Parentid: parseInt(campaignid), UpdateType: "Program", updatedid: parseInt(programid) },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (formatDate(data.TactMaxDate) != formatDate(tactMaxDate))
+                            HomeGrid.setUserData(campid, "tedate", formatDate(data.TactMaxDate));
+                        if (formatDate(data.ProgMaxDate) != formatDate(progMaxDate))
+                            HomeGrid.setUserData(campid, "pedate", formatDate(data.ProgMaxDate));
+                    },
+                    error: function (ts) {  }
+                });
+            }
+        }
+        else if (updatetype == "camp") {
+            planid = HomeGrid.getParentId(rowId);
+            var Planstartdate = HomeGrid.cells(planid, dateindex).getValue();
+            if (Updatecolumn == "Start Date") {
+                if (formatDate(Planstartdate) > formatDate(nValue)) {
+                    HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
+                }
+            }
+            else if (Updatecolumn == "Start Date") {
+                if (formatDate(Planstartdate) < formatDate(nValue)) {
+                    HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
+                }
+            }
+        }
+    }
     function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageValue, rowid, UpdateVal) {
         var pmql = 0;
         var pcost = 0;
         var isAssortment = true;
         var StageValue = 0;
+        var revenue = 0;
+        progid = HomeGrid.getParentId(rowid);
+        campid = HomeGrid.getParentId(progid);
+        planid = HomeGrid.getParentId(campid);
         StageValue = projectedStageValue;
         $.ajax({
             type: 'POST',
@@ -472,21 +619,47 @@
                 tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: StageValue, RedirectType: isAssortment, isTacticTypeChange: true
             },
             success: function (data) {
+                var tactActMqlVal = HomeGrid.cells(rowid, 9).getAttribute("actval");
+                var mqlConversion = 0;
+                if (data.revenue != null)
+                    revenue = data.revenue;
                 if (data.mql == 'N/A') {
                     HomeGrid.setCellExcellType(rowid, 9, "ro");
                     HomeGrid.cells(rowid, 9).setValue(data.mql);
+                    diff = parseInt(-tactActMqlVal);
+                    SetColumUpdatedValue(9, diff);
                 }
                 else {
                     HomeGrid.setCellExcellType(rowid, 9, "ron");
-                    var mqlConversion = 0;
+
+
                     if (data.mql != null)
                         mqlConversion = data.mql;
-                    var mqlValue = FormatCommas(mqlConversion.toString(), false);
+
+                    var mqlValue = GetAbberiviatedValue(mqlConversion.toString(), false);
                     HomeGrid.cells(rowid, 9).setValue(mqlValue);
+
+
+
+                    diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
+                    SetColumUpdatedValue(9, diff);
+
+
                 }
-                HomeGrid.cells(rowid, 10).setValue(data.revenue);
+                HomeGrid.cells(progid, 9).setValue(GetAbberiviatedValue(newProgVal), false);
+                HomeGrid.cells(campid, 9).setValue(GetAbberiviatedValue(newCampVal), false);
+                HomeGrid.cells(planid, 9).setValue(GetAbberiviatedValue(newPlanVal), false);
+                HomeGrid.cells(rowid, 9).setAttribute("actval", mqlConversion);
 
+                HomeGrid.cells(rowid, 10).setValue(FormatNumber(revenue));
+                var tactActRevenuVal = HomeGrid.cells(rowid, 10).getAttribute("actval");
+                diff = parseInt(revenue) - parseInt(tactActRevenuVal);
 
+                SetColumUpdatedValue(10, diff);
+                HomeGrid.cells(progid, 10).setValue((FormatNumber(newProgVal)));
+                HomeGrid.cells(campid, 10).setValue((FormatNumber(newCampVal)));
+                HomeGrid.cells(planid, 10).setValue((FormatNumber(newPlanVal)));
+                HomeGrid.cells(rowid, 10).setAttribute("actval", revenue);
                 $.ajax({
 
                     type: 'POST',
@@ -496,23 +669,29 @@
                     dataType: 'json',
 
                     success: function (states) {
-                         LoadPlanGrid();
-                        //if (UpdateColumn == "Target Stage Goal") {
-                        //    var psv = HomeGrid.cells(rowid, 8).getAttribute("stage");
-                        //    HomeGrid.cells(rowid, 8).setValue(psv + " " + UpdateVal);
-                        //}
-
-                       
+                        //    LoadPlanGrid();
+                        if (UpdateColumn == "Target Stage Goal") {
+                            var psv = HomeGrid.cells(rowid, 8).getAttribute("stage");
+                            HomeGrid.cells(rowid, 8).setValue(UpdateVal + " " + psv);
+                        }
                     }
                 });
-
             }
-
         });
-        return true;
     }
+    function SetColumUpdatedValue(CellInd, diff) {
+        progActVal = HomeGrid.cells(progid, CellInd).getAttribute("actval");
+        CampActVal = HomeGrid.cells(campid, CellInd).getAttribute("actval");
+        PlanActVal = HomeGrid.cells(planid, CellInd).getAttribute("actval");
 
+        newProgVal = parseInt(progActVal) + parseInt(diff);
+        newCampVal = parseInt(CampActVal) + parseInt(diff);
+        newPlanVal = parseInt(PlanActVal) + parseInt(diff);
 
+        HomeGrid.cells(progid, CellInd).setAttribute("actval", newProgVal);
+        HomeGrid.cells(campid, CellInd).setAttribute("actval", newCampVal);
+        HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);
+    }
     $(document).ready(function () {
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");

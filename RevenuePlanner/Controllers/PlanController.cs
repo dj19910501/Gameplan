@@ -9237,8 +9237,8 @@ namespace RevenuePlanner.Controllers
                         GridString.Append("<div  class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\"></div>");
                     }
                     GridString.Append("]]></cell>");
-                    GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1' style='color:#999'>" + Startdate + "</cell> <cell locked='1' style='color:#999'>" + Enddate + "</cell>  <cell style='color:#999'>" + totalcost + "</cell> ");
-                    GridString.Append(" <cell type='ro' style='color:#999'>--</cell> <cell type='ro' style='color:#999'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro' style='color:#999'>--</cell> <cell style='color:#999'>" + totalmql + "</cell> <cell style='color:#999'>" + totalrevenue + "</cell> ");
+                    GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1' style='color:#999'>" + Startdate + "</cell> <cell locked='1' style='color:#999'>" + Enddate + "</cell>  <cell style='color:#999' actval=\"" + totalcost + "\">" + totalcost + "</cell> ");
+                    GridString.Append(" <cell type='ro' style='color:#999'>--</cell> <cell type='ro' style='color:#999'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro' style='color:#999'>--</cell> <cell style='color:#999' actval=\"" + totalmql + "\">" + totalmql + "</cell> <cell style='color:#999' actval=\"" + totalrevenue + "\">" + totalrevenue + "</cell> ");
                     Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
                     // type = "Campaign";
@@ -9276,7 +9276,7 @@ namespace RevenuePlanner.Controllers
                                 if (lstSubordinatesIds.Contains(Campaignitem.CreatedByID))
                             {
 
-                                CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == Campaignitem.PlanCampaignId).Select(tact => tact.PlanTacticId).ToList();
+                                CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.PlanCampaignId == Campaignitem.PlanCampaignId).Select(tact => tact.PlanTacticId).ToList();
                                 if (CustomTacticids.Count>0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
                                 {
                                     IsEditable = "1";
@@ -9315,10 +9315,10 @@ namespace RevenuePlanner.Controllers
                             }
                             GridString.Append("]]></cell>");
                             GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                            GridString.Append(" <cell bgColor='#C6EBF3' style='color:#999'>" + Campaignitem.totalcost.ToString() + "</cell>");
+                            GridString.Append(" <cell bgColor='#C6EBF3' style='color:#999' actval=\"" + Campaignitem.totalcost.ToString() + "\">" + Campaignitem.totalcost.ToString() + "</cell>");
                             GridString.Append("<cell bgColor='#C6EBF3' type='ro' style='color:#999'>--</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
-                            GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999'>--</cell> <cell bgColor='#C6EBF3' style='color:#999'>" + Campaignitem.totalmql.ToString() + "</cell>");
-                            GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999'>" + Campaignitem.totalrevenue.ToString() + "</cell> ");
+                            GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999'>--</cell> <cell bgColor='#C6EBF3' style='color:#999' actval=\"" + Campaignitem.totalmql.ToString() + "\">" + Campaignitem.totalmql.ToString() + "</cell>");
+                            GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999' actval=\"" + Campaignitem.totalrevenue.ToString() + "\">" + Campaignitem.totalrevenue.ToString() + "</cell> ");
 
 
                             Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
@@ -9329,10 +9329,11 @@ namespace RevenuePlanner.Controllers
                                 Enddate = Programfilterlst.Max(r => r.EndDate).ToString("MM/dd/yyyy");
                                 GridString.Append("<userdata name='psdate'>" + Startdate + "</userdata>");
                                 GridString.Append("<userdata name='pedate'>" + Enddate + "</userdata>");
-                                if (programtactic != null && programtactic.Count > 0)
+                                var CampaignTactic = programtactic.Where(tact => tact.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == Campaignitem.PlanCampaignId).ToList();
+                                if (CampaignTactic != null && CampaignTactic.Count > 0)
                                 {
-                                    Startdate = programtactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
-                                    Enddate = programtactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                    Startdate = CampaignTactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                    Enddate = CampaignTactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
                                     GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
                                     GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
                                 }
@@ -9365,7 +9366,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (lstSubordinatesIds.Contains(Programitem.CreatedByID))
                                     {
-                                        CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.PlanProgramId == Programitem.PlanProgramId).Select(tact => tact.PlanTacticId).ToList();
+                                        CustomTacticids = TacticfilterList.Where(tact => tact.PlanProgramId == Programitem.PlanProgramId).Select(tact => tact.PlanTacticId).ToList();
                                        // if (lsteditableEntityIds.Select(x => CustomTacticids.Contains(x)).Count() != CustomTacticids.Count())
                                         if (CustomTacticids.Count > 0 &&  lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
                                         {
@@ -9400,8 +9401,8 @@ namespace RevenuePlanner.Controllers
                                     }
                                     GridString.Append("]]></cell>");
                                     GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                                    GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999'>" + Programitem.totalcost + "</cell> <cell bgColor='#DFF0F8' type='ro' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Programitem.CreatedBy.ToString()) + "</cell> ");
-                                    GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8' style='color:#999'>" + Programitem.totalmql + "</cell>  <cell bgColor='#DFF0F8' style='color:#999'>" + Programitem.totalrevenue + "</cell> ");
+                                    GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + Programitem.totalcost.ToString() + "\">" + Programitem.totalcost + "</cell> <cell bgColor='#DFF0F8' type='ro' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Programitem.CreatedBy.ToString()) + "</cell> ");
+                                    GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + Programitem.totalmql.ToString() + "\">" + Programitem.totalmql + "</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + Programitem.totalrevenue.ToString() + "\">" + Programitem.totalrevenue + "</cell> ");
 
 
 
@@ -9409,8 +9410,13 @@ namespace RevenuePlanner.Controllers
                                     if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                     {
 
-                                        Startdate = finalTacticfilterList.Min(r => r.StartDate).ToString("MM/dd/yyyy");
-                                        Enddate = finalTacticfilterList.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                                        var ProgramTactic = programtactic.Where(tact => tact.Plan_Campaign_Program.PlanProgramId == Programitem.PlanProgramId).ToList();
+                                        if (CampaignTactic != null && CampaignTactic.Count > 0)
+                                        {
+                                            Startdate = CampaignTactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                                            Enddate = CampaignTactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+
+                                        }
                                         GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
                                         GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
 
@@ -9447,12 +9453,12 @@ namespace RevenuePlanner.Controllers
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.enddate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), new XAttribute("type", "edn"), tactic.totalcost),
-                                                                                  new XElement("cell", tactic.tactictypeid, new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1")),
+                                                                                  new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.tactictypeid),
                                                                                     new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.CreatedBy),
                                                                                  //  new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.projectedstagevalue + "-" + tactic.ProjectStage),
-                                                                                    new XElement("cell", new XAttribute("style", "color:#999;background-color:#E4F1E1"), tactic.totalmql),
-                                                                                     new XElement("cell", new XAttribute("style", " color:#999;background-color:#E4F1E1"), tactic.totalrevenue)));
+                                                                                    new XElement("cell", new XAttribute("style", "color:#999;background-color:#E4F1E1"), new XAttribute("actval", tactic.totalmql), tactic.totalmql),
+                                                                                     new XElement("cell", new XAttribute("style", " color:#999;background-color:#E4F1E1"), new XAttribute("actval", tactic.totalrevenue), tactic.totalrevenue)));
 
                                         string finltactic = xmlElements.ToString().Remove(0, 6);
                                         GridString.Append(HttpUtility.HtmlDecode(finltactic.Remove(finltactic.ToString().Length - 7, 7)));
@@ -10306,6 +10312,41 @@ namespace RevenuePlanner.Controllers
             }
         }
         #endregion
+
+        #region method to get max min date
+        [HttpPost]
+        public JsonResult GetMinMaxDate(int Parentid, string UpdateType, int updatedid = 0)
+        {
+            string TactMinDate = string.Empty;
+            string TactMaxDate = string.Empty;
+            string ProgMinDate = string.Empty;
+            string ProgMaxDate = string.Empty;
+            try
+            {
+              
+                    var ProgramTactic = db.Plan_Campaign_Program_Tactic.Where(tact => tact.PlanProgramId == updatedid).ToList();
+                    if (ProgramTactic != null && ProgramTactic.Count() > 0)
+                    {
+                        TactMinDate = ProgramTactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                        TactMaxDate = ProgramTactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                    }
+                    var CampaignProg = db.Plan_Campaign_Program.Where(tact => tact.PlanCampaignId == Parentid).ToList();
+                    if (CampaignProg != null && CampaignProg.Count() > 0)
+                    {
+                        ProgMinDate = CampaignProg.Min(r => r.StartDate).ToString("MM/dd/yyyy");
+                        ProgMaxDate = CampaignProg.Max(r => r.EndDate).ToString("MM/dd/yyyy");
+                    }
+             
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+            }
+            return Json(new { TactMinDate = TactMinDate, TactMaxDate = TactMaxDate, ProgMinDate = ProgMinDate, ProgMaxDate = ProgMaxDate });
+        }
+        #endregion
+       
         #region "Common Methods"
         /// <summary>
         /// Added By: Viral Kadiya.
