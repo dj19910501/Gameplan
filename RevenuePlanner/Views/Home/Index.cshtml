@@ -273,7 +273,21 @@
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
                 SelectedPlanTitle = $(this).text();
-                BindUpcomingActivites(CurrentPlanId);
+
+                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                    if (CurrentPlanId > 0) {
+                        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                            EditPlanHome();
+                            return true;
+                        }
+                        else {
+                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+                            window.location.href = url;
+                        }
+                    }
+                }
+                
+                @*BindUpcomingActivites(CurrentPlanId);
                 Currenttime = $('#ddlUpComingActivites').val();
                 isQuater = Currenttime;
 
@@ -304,7 +318,7 @@
                 arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
                 // $('#cSuccessDuplicatePlan').empty();
                 $('#successMessage').slideUp(1);
-                $('#content_wraper').removeClass('padding-top40');
+                $('#content_wraper').removeClass('padding-top40');*@
             });
         }
 
