@@ -48,7 +48,7 @@
         <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
         <div class="wraper-btns cf">
             <div >
-                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="displayconfirm('@Url.Action("Index", "Home", new { activeMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Plan, currentPlanId = CurrentPlanId})');" style="min-width:90%">< Back to Plan</button>
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="BackToPlan()" style="min-width:90%">< Back to Plan</button>
             </div>
         </div>
     </div>
@@ -169,6 +169,8 @@
         $("#aoffCost").addClass('request-btn-active');
         $('.red-corner-budget').css('display', 'none');
     });
+
+
     function ShowChangeLog(CurrentPlanId) {
         $('.changes').html('');
         var url = '@Url.Content("~/Home/LoadChangeLog/")';
@@ -602,6 +604,13 @@ function onClickPlanTitle() {
         }
     });
 }
+
+function BackToPlan() {
+    var pid = $("#CurrentPlanId").val();
+    var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid;
+        window.location.href = url;
+    }
+
 
 $(document).on("click", "#LeftNavInput", function (e) {
     //Added By : Kalpesh Sharma : #741: Maintain context while switching with in plan's tabs

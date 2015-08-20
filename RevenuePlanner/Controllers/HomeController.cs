@@ -467,7 +467,8 @@ namespace RevenuePlanner.Controllers
                                                                            objPlanTacticProgram = tactic.Plan_Campaign_Program,
                                                                            objPlanTacticCampaign = tactic.Plan_Campaign_Program.Plan_Campaign,
                                                                            objPlanTacticCampaignPlan = tactic.Plan_Campaign_Program.Plan_Campaign.Plan,
-                                                                           TacticType = tactic.TacticType
+                                                                           TacticType = tactic.TacticType,
+                                                                           CreatedBy = tactic.CreatedBy
                                                                        }).ToList();
             
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
@@ -497,7 +498,8 @@ namespace RevenuePlanner.Controllers
                 //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
             
                 List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId)).Select(tactic => tactic).ToList();
+                //Modified By Komal Rawal for #1505
+                lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) || tactic.CreatedBy  == Sessions.User.UserId).Select(tactic => tactic).ToList();
             }
          
             //// Modified By Maninder Singh Wadhva PL Ticket#47
@@ -2080,11 +2082,11 @@ namespace RevenuePlanner.Controllers
                 List<int> lstAllowedEntityIds = new List<int>();
                 if (lstTactic.Count() > 0)
                 {
-                    List<int> lstPlanTacticId = lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).Distinct().ToList();
-                    lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstPlanTacticId, false);
+                    lstAllowedEntityIds = lstTactic.Select(tactic => tactic.objPlanTactic.PlanTacticId).Distinct().ToList();
+                 //   lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstPlanTacticId, false);
                 }
 
-                var NewTaskDataTacticforPlan = taskDataTacticforPlan.Where(task => !lstAllowedEntityIds.Count.Equals(0) && lstAllowedEntityIds.Contains(task.plantacticid)).Select(task => new
+                var NewTaskDataTacticforPlan = taskDataTacticforPlan.Where(task => !lstAllowedEntityIds.Count.Equals(0) && (lstAllowedEntityIds.Contains(task.plantacticid))).Select(task => new
                 {
                     id = task.id,
                     text = task.text,
@@ -3552,7 +3554,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, TacticIds, false);
-                TacticList = TacticList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).Select(tactic => tactic).ToList();
+                TacticList = TacticList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
             }
 
             var lstPlanTacticActual = (from tacticActual in objDbMrpEntities.Plan_Campaign_Program_Tactic_Actual
@@ -3852,7 +3854,7 @@ namespace RevenuePlanner.Controllers
                     lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
 
                     //// Custom Restrictions applied
-                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
 
                 string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
@@ -3879,7 +3881,7 @@ namespace RevenuePlanner.Controllers
 
 
                     // Custom Restrictions applied
-                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
 
                 string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
@@ -4351,7 +4353,7 @@ namespace RevenuePlanner.Controllers
                 AllowedTacticIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, new List<int>() { planTacticId }, false);
 
                 var objTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == planTacticId && tactic.IsDeleted == false
-                                                                    && AllowedTacticIds.Contains(tactic.PlanTacticId))
+                                                                    && (AllowedTacticIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId))
                                                                     .Select(tactic => tactic.PlanTacticId);
 
                 if (objTactic.Count() != 0)
@@ -4438,7 +4440,7 @@ namespace RevenuePlanner.Controllers
                     List<int> planTacticIds = TacticUserList.Select(tactic => tactic.PlanTacticId).ToList();
                     lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
                     //// Custom Restrictions applied
-                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId)).ToList();
+                    TacticUserList = TacticUserList.Where(tactic => lstAllowedEntityIds.Contains(tactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
 
                 var objTacticType = TacticUserList.GroupBy(pc => new { title = pc.TacticType.Title, id = pc.TacticTypeId }).Select(pc => new

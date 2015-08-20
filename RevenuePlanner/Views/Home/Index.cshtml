@@ -431,7 +431,7 @@
                             Publish Plan
                         </button>
                     }
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("AddActual", "Plan", new { PlanId = CurrentPlanId })'" style="min-width:90%">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width:90%">
                         Add Actuals
                     </button>
                     @if (IsPlanEditable)
@@ -441,7 +441,7 @@
                             Edit Plan Definition
                         </button>
                     }
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("Budgeting", "Plan")'"  style="min-width:90%">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()"  style="min-width:90%">
                         Edit Plan Budget & Cost
                     </button>
                 </div>
@@ -852,10 +852,7 @@
         else {
 
             $("#CalenderView").hide();
-            $("#divupcomingact").hide();
-            $("#liplanrequest").hide();
             $("#divgridview").show();
-            $('.nav').addClass('no-bottom-border');
             $("#ImprovementGrid").show();
 
             //Call the function for grid view
@@ -1473,6 +1470,20 @@
         window.location.href = url;
     }
     //End
+    function AddActuals() {
+        var pid = $("#CurrentPlanId").val();
+        var url = '@Url.Content("~/Plan/AddActual?PlanId=")' + pid;
+        window.location.href = url;
+    }
+
+    function CallBudget() {
+        var pid = $("#CurrentPlanId").val();
+        var url = '@Url.Content("~/Plan/Budgeting?PlanId=")' + pid;
+        window.location.href = url;
+    }
+
+    
+
     // Added by Nirav for Custom Dropdown - 388
     /*added by Nirav for plan consistency on 14 apr 2014*/
     function EditPlan() {

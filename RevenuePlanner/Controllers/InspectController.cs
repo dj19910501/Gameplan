@@ -367,7 +367,7 @@ namespace RevenuePlanner.Controllers
                         if (RedirectType.ToLower() == "budgeting")
                         {
                             TempData["SuccessMessage"] = Common.objCached.PlanSaved;
-                            return Json(new { id = plan.PlanId, redirect = Url.Action("Budgeting") });
+                            return Json(new { id = plan.PlanId, redirect = Url.Action("Budgeting", new { PlanId = plan.PlanId }) });
                         }
                         else if (RedirectType.ToLower() == "")
                         {
@@ -6767,7 +6767,7 @@ namespace RevenuePlanner.Controllers
                         }
 
                         //Modify by Mitesh Vaishnav for PL ticket 746
-                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
+                        if (lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
                         {
                             IsPlanEditable = true;
                         }
@@ -8448,24 +8448,24 @@ namespace RevenuePlanner.Controllers
                                 if (IsPlan)
                                 {
                                     TempData["SuccessMessageDeletedPlan"] = strMessage;
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("PlanSelector", "Plan", new { type = CalledFromBudget }) });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("PlanSelector", "Plan", new {PlanId = Sessions.PlanId, type = CalledFromBudget }) });
                                 }
                                 // End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                                 else if (IsCampaign)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }) });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new {PlanId = Sessions.PlanId, type = CalledFromBudget }) });
                                 }
                                 else if (IsProgram)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "campaign" + cid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { PlanId = Sessions.PlanId,type = CalledFromBudget }), expand = "campaign" + cid.ToString() });
                                 }
                                 else if (IsTactic)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "program" + pid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new {PlanId = Sessions.PlanId, type = CalledFromBudget }), expand = "program" + pid.ToString() });
                                 }
                                 else if (IsLineItem)
                                 {
-                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new { type = CalledFromBudget }), expand = "tactic" + tid.ToString() });
+                                    return Json(new { IsSuccess = true, msg = strMessage, opt = Enums.InspectPopupRequestedModules.Budgeting.ToString(), redirect = Url.Action("Budgeting", "Plan", new {PlanId = Sessions.PlanId, type = CalledFromBudget }), expand = "tactic" + tid.ToString() });
                                 }
                             }
                             else if (IsIndex)

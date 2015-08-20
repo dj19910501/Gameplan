@@ -75,6 +75,9 @@
 
 
     $(document).ready(function () {
+        $("#divupcomingact").hide();
+        $("#liplanrequest").hide();
+        $('.nav').addClass('no-bottom-border');
         BindHomeGrid();
         $("input[name='useless']").click(doIt);
         function doIt() {
