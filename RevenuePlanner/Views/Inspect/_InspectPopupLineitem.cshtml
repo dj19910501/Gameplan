@@ -390,6 +390,7 @@
     });
 
     $("#btnEditlineItem").on("click", function () {
+        isDataModified = true;
         var activeTab = $("#InspectTab li.active a").text();
         if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
             $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
@@ -585,6 +586,7 @@
     });
 
     $('#CloneLineItem').click(function () {
+        isDataModified = true;
         var idPlanProgram = $("#hdnPlanLineItemID").val();
         var Title = $("#lblLineitemTitle").html();
         $.ajax({
@@ -660,6 +662,7 @@ function SaveMessageOnParent(value) {
 
 $("#deleteLineItem").click(function () {
     if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
+        isDataModified = true;
         var ProgramId = $("#hdnPlanLineItemID").val();
             var uId = $(window).attr('name');
             var arrClosedTaskString = null;

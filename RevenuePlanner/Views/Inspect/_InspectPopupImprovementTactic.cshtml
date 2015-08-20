@@ -375,6 +375,7 @@
 });*@
 
     $('#btnEditImrovement').on("click", function (e) {     //Modified for #1318 by Komal Rawal to handle the Save function
+        isDataModified = true;
         var activeTab = $("#InspectTab li.active a").text()
         var planTacticId = $("#hdnPlanTacticId").val();
 

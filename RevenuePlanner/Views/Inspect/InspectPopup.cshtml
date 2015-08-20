@@ -338,6 +338,7 @@
           //Dharmraj End 14July2014 : ticket #547, No warning of data loss during Add actuals
 
           $('#EditForm').on("click", function (e) {
+              isDataModified = true;
               //Modified for #1318 by Komal Rawal to handle the Save function
               var activeTab = $("#InspectTab li.active a").text()
               var planTacticId = $("#hdnPlanTacticId").val();
@@ -707,6 +708,7 @@
 
 
     $('#CloneTactic').click(function () {
+        isDataModified = true;
         var idPlanTactic = $("#hdnPlanTacticId").val();
         var Title = $("#lblTacticTitle").html();
         $.ajax({
@@ -777,6 +779,7 @@
 
     $("#deleteTactic").click(function () {
         if (confirm('@Common.objCached.ConfirmationForDeleteTactic')) {
+            isDataModified = true;
         var ProgramId = $("#hdnPlanTacticId").val();
         var uId = $(window).attr('name');
         var arrClosedTaskString = null;
