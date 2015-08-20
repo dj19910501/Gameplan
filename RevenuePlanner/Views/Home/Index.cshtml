@@ -2860,6 +2860,7 @@ function Quarter() {
                       $("#modal-container-186470").addClass("transition-close");
                       $("#modal-container-186470").removeClass("transition_y");
                       addDefaultModalPopupBackgroungColor();
+                      if (isDataModified) {
                       if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                           if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                               $('body').removeClass('bodyOverflow');
@@ -2877,7 +2878,8 @@ function Quarter() {
             }
 
                       RefreshCurrentTab();
-                      if (!isDataModified) {
+                      }
+                      else {
                           $('body').removeClass('bodyOverflow');
                           gantt.refreshData();	//Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
                       }

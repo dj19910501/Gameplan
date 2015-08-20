@@ -380,6 +380,7 @@
     });
 
     $('#lnkEdit').click(function () {
+        isDataModified = true;
         var InspectValue = $("#hdnInspectPopup").val();
         var tabtext = ($("#li" + InspectValue).children('a').text());
         var planId = $("#hdnPlanId").val();

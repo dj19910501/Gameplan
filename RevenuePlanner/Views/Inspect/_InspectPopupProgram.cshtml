@@ -341,6 +341,7 @@
               loadAddSetup();
           }
           $("#EditProgram").on("click", function () {
+              isDataModified = true;
               var activeTab = $("#InspectTab li.active a").text();
               var planProgramId = $("#hdnPlanProgramId").val();
               if ($('#EditProgram').hasClass('edit-icon-white')) {
@@ -568,6 +569,7 @@
     });
 
     $('#CloneProgram').click(function () {
+        isDataModified = true;
         var idPlanProgram = $("#hdnPlanProgramId").val();
         var Title = $("#lblProgramTitle").html();
         $.ajax({
@@ -637,6 +639,7 @@
 
     $("#deleteProgram").click(function () {
         if (confirm('@Common.objCached.ConfirmationForDeleteProgram')) {
+            isDataModified = true;
             var ProgramId = $("#hdnPlanProgramId").val();
             var uId = $(window).attr('name');
             var arrClosedTaskString = null;
