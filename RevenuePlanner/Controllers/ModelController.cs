@@ -1289,7 +1289,7 @@ namespace RevenuePlanner.Controllers
                     var intInstanceProjMgmt = objModel.IntegrationInstance4;
                      bool isIntegratedWithWorkFront = false;
                      List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>(); 
-                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString())) 
+                     if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Title == Enums.IntegrationInstanceType.WorkFront.ToString())) 
                      {
                          isIntegratedWithWorkFront = true;
                      }
@@ -1371,7 +1371,7 @@ namespace RevenuePlanner.Controllers
                 var intInstanceProjMgmt = objModel.IntegrationInstance4;
                 bool isIntegratedWithWorkFront = false;
                 List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
-                if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString()))
+                if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.IntegrationType.Title == Enums.IntegrationInstanceType.WorkFront.ToString())) 
                 {
                     isIntegratedWithWorkFront = true;
                 }
