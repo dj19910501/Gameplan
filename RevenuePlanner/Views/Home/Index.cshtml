@@ -2870,26 +2870,18 @@ function Quarter() {
                               if (isDataModified) {
                               if (gridSearchFlag == 1) {
                                   LoadPlanGrid();
-                                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
-                                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
-                                          }
-                                      
                                   gridSearchFlag = 0;
-                                      
-                                  return true;
                               }
                               else {
                                   var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
-                                      $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId, function () {
-                                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
-                                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
-                                          }
-                                      });
-                        return true;
+                                      $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
                                      
                                   }
                               }
-                              
+                                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+                                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+                                          }
+                        return true;
                              
                           }
                           else if (isDataModified) {
