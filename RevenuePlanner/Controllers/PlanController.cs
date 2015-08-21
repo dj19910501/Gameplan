@@ -9020,7 +9020,7 @@ namespace RevenuePlanner.Controllers
         {
             bool IsPlanCreateAll = false;
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-
+            bool IsFiltered = false;
             //List<Stage> stageList = new List<Stage>();
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
@@ -9138,6 +9138,7 @@ namespace RevenuePlanner.Controllers
                 lstTacticIds = TacticfilterList.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
+                    IsFiltered = true;
                     TacticfilterList = TacticfilterList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
                                              (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
                                              (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
@@ -9160,7 +9161,7 @@ namespace RevenuePlanner.Controllers
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
                 //End
                 int PlanCnt = 1, CampCnt = 1, ProgCnt = 1;
-
+                bool IsPlan = false;
                 int planid = 0;
                 string type = string.Empty;
                 string Startdate = string.Empty;
@@ -9174,9 +9175,26 @@ namespace RevenuePlanner.Controllers
                 string cellTextColor = string.Empty;
                 string IsEditable = string.Empty;
                 List<int> CustomTacticids = new List<int>();
-               
+               if(!IsFiltered)
+               {
+                   IsPlan = true;
+
+               }
+               else
+               {
+                  if( TacticfilterList.Count()>0)
+                  {
+                      IsPlan = true;
+                  }
+                  else
+                  {
+                      IsPlan = false;
+                  }
+               }
               
               
+				if (IsPlan)
+                {
                 foreach (var planitem in lstplandetail)
                 {
 
@@ -9261,15 +9279,13 @@ namespace RevenuePlanner.Controllers
                             IsCampEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? true : false,
                             CreatedBy = GetUserName(taskdata.CreatedBy),
                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
-                            CreatedByID= taskdata.CreatedBy
+                                CreatedByID = taskdata.CreatedBy,
+                                tacticids = TacticfilterList.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == taskdata.PlanCampaignId).Any()
                         });
                         foreach (var Campaignitem in lstcampaignTaskData)
                         {
-                            //if (!Campaignitem.Permission)
-                            //{
-                            //    type = "ron";
-                            //}
-
+                                if (Campaignitem.tacticids == true)
+                                {
                             //Modified By Komal Rawal for #1505
                             if (Campaignitem.IsCampEditable == false)
                             {
@@ -9354,11 +9370,15 @@ namespace RevenuePlanner.Controllers
                                     CreatedBy = GetUserName(taskdata.CreatedBy),
                                     IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                     IsProgEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? true : false,
-                                    CreatedByID= taskdata.CreatedBy
+                                            CreatedByID = taskdata.CreatedBy,
+                                            tacticids = TacticfilterList.Where(t => t.Plan_Campaign_Program.PlanProgramId == taskdata.PlanProgramId).Any()
+
                                 });
 
                                 foreach (var Programitem in lstprogramTaskData)
                                 {
+                                            if (Programitem.tacticids == true)
+                                            {
                                     cellTextColor = "style='color:#000'";
                                     IsEditable = "0";
                                     //Modified By Komal Rawal for #1505
@@ -9467,16 +9487,17 @@ namespace RevenuePlanner.Controllers
                                     GridString.Append("</row>");
                                     ProgCnt = ProgCnt + 1;
                                 }
-
+                                        }
                             }
 
                             GridString.Append("</row>");
                             CampCnt = CampCnt + 1;
                         }
                     }
+                        }
                     GridString.Append("</row>");
                     PlanCnt = PlanCnt + 1;
-
+                    }
                 }
                 GridString.Append("</rows>");
 
