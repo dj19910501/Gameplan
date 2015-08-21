@@ -9224,17 +9224,17 @@ namespace RevenuePlanner.Controllers
                     }
                     if (IsPlanEditable)
                     {
-                        GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell locked='0' >" + planitem.Title + "</cell> ");
+                        GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell locked='0' >" + HttpUtility.HtmlEncode(planitem.Title) + "</cell> ");
                     }
                     else
                     {
-                        GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell  locked='1' style='color:#999'>" + planitem.Title + "</cell> ");
+                        GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell  locked='1' style='color:#999'>" + HttpUtility.HtmlEncode(planitem.Title) + "</cell> ");
 
                     }
                     GridString.Append("<cell><![CDATA[   <div  class='grid_Search' id='PlanPopup' alt=\"" + planitem.PlanId + "\"></div>");
                     if (IsPlanCreateAll)
                     {
-                        GridString.Append("<div  class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + planitem.Title + "/" + IsPlanCreateAll.ToString().ToLower() + "\"></div>");
+                        GridString.Append("<div  class='grid_add' id='Plan'  alt=\"" + planitem.PlanId + "\" data-title=\"" + HttpUtility.HtmlEncode(planitem.Title) + "/" + IsPlanCreateAll.ToString().ToLower() + "\"></div>");
                     }
                     GridString.Append("]]></cell>");
                     GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1' style='color:#999'>" + Startdate + "</cell> <cell locked='1' style='color:#999'>" + Enddate + "</cell>  <cell style='color:#999' actval=\"" + totalcost + "\">" + totalcost + "</cell> ");
@@ -9307,11 +9307,11 @@ namespace RevenuePlanner.Controllers
                             }
                             //End
                           
-                            GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.Title + "</cell> ");
+                            GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Campaignitem.Title) + "</cell> ");
                             GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<div  class='grid_Search' id='CampaignPopup' alt=\"" + Campaignitem.PlanCampaignId + "\"></div> ");
                             if (Campaignitem.IsPlanCreateAll)
                             {
-                                GridString.Append("<div class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" data-title=\"" + Campaignitem.Title + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
+                                GridString.Append("<div class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" data-title=\"" + HttpUtility.HtmlEncode(Campaignitem.Title) + "/" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
                             }
                             GridString.Append("]]></cell>");
                             GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
@@ -9394,10 +9394,10 @@ namespace RevenuePlanner.Controllers
                                     //End
                                     GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>");
 
-                                    GridString.Append("<cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.Title + "</cell><cell bgColor='#DFF0F8'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
+                                    GridString.Append("<cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Programitem.Title) + "</cell><cell bgColor='#DFF0F8'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
                                     if (Programitem.IsPlanCreateAll)
                                     {
-                                        GridString.Append("<div class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
+                                        GridString.Append("<div class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + HttpUtility.HtmlEncode(Programitem.Title) + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
                                     }
                                     GridString.Append("]]></cell>");
                                     GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
@@ -9447,8 +9447,8 @@ namespace RevenuePlanner.Controllers
 
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
-                                                                                   new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.title),
-                                                                                   new XElement("cell", new XCData("<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> " + (tactic.IsPlanCreateAll == true ? "<div class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + tactic.title + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>" : ""))),
+                                                                                   new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), HttpUtility.HtmlEncode(tactic.title)),
+                                                                                   new XElement("cell", new XCData("<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> " + (tactic.IsPlanCreateAll == true ? "<div class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + HttpUtility.HtmlEncode(tactic.title) + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>" : ""))),
                                                                                    new XElement("cell", tactic.PlanTacticId),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.enddate.ToString("MM/dd/yyyy")),
