@@ -870,6 +870,7 @@ namespace Integration.Eloqua
                     planIMPTactic.ModifiedBy = _userId;
                     instanceLogTactic.Status = StatusResult.Success.ToString();
 
+                    #region "Add ImprovementTactic synced comment to Plan_Improvement_Campaign_Program_Tactic_Comment table"
                     //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                     Plan_Improvement_Campaign_Program_Tactic_Comment objImpTacticComment = new Plan_Improvement_Campaign_Program_Tactic_Comment();
                     objImpTacticComment.ImprovementPlanTacticId = planIMPTactic.ImprovementPlanTacticId;
@@ -886,7 +887,8 @@ namespace Integration.Eloqua
                     }
 
                     db.Entry(objImpTacticComment).State = EntityState.Added;
-                    db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(objImpTacticComment);
+                    db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(objImpTacticComment); 
+                    #endregion
                     //End : Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                     sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + ")");
                 }
@@ -921,6 +923,27 @@ namespace Integration.Eloqua
                         planIMPTactic.LastSyncDate = DateTime.Now;
                         planIMPTactic.ModifiedDate = DateTime.Now;
                         planIMPTactic.ModifiedBy = _userId;
+
+                        #region "Add ImprovementTactic synced comment to Plan_Improvement_Campaign_Program_Tactic_Comment table"
+                        //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                        Plan_Improvement_Campaign_Program_Tactic_Comment objImpTacticComment = new Plan_Improvement_Campaign_Program_Tactic_Comment();
+                        objImpTacticComment.ImprovementPlanTacticId = planIMPTactic.ImprovementPlanTacticId;
+                        objImpTacticComment.Comment = Common.ImprovementTacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
+                        objImpTacticComment.CreatedDate = DateTime.Now;
+                        ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
+                        if (Common.IsAutoSync)
+                        {
+                            objImpTacticComment.CreatedBy = new Guid();
+                        }
+                        else
+                        {
+                            objImpTacticComment.CreatedBy = this._userId;
+                        }
+
+                        db.Entry(objImpTacticComment).State = EntityState.Added;
+                        db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(objImpTacticComment);
+                        #endregion
+
                         instanceLogTactic.Status = StatusResult.Success.ToString();
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + ")");
                     }
@@ -1095,6 +1118,7 @@ namespace Integration.Eloqua
                     planTactic.ModifiedBy = _userId;
                     instanceLogTactic.Status = StatusResult.Success.ToString();
 
+                    #region "Add synced Tactic comment to Plan_Campaign_Program_Tactic_Comment table"
                     //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                     Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
                     objTacticComment.PlanTacticId = planTactic.PlanTacticId;
@@ -1112,7 +1136,8 @@ namespace Integration.Eloqua
 
                     db.Entry(objTacticComment).State = EntityState.Added;
                     db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
-                    // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                    // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic 
+                    #endregion
                     sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                 }
                 catch (Exception e)
@@ -1148,6 +1173,28 @@ namespace Integration.Eloqua
                         planTactic.LastSyncDate = DateTime.Now;
                         planTactic.ModifiedDate = DateTime.Now;
                         planTactic.ModifiedBy = _userId;
+
+                        #region "Add update Tactic comment to Plan_Campaign_Program_Tactic_Comment table"
+                        //Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+                        Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                        objTacticComment.PlanTacticId = planTactic.PlanTacticId;
+                        objTacticComment.Comment = Common.TacticUpdatedComment + Integration.Helper.Enums.IntegrationType.Eloqua.ToString();
+                        objTacticComment.CreatedDate = DateTime.Now;
+                        ////Modified by Maninder Singh Wadhva on 06/26/2014 #531 When a tactic is synced a comment should be created in that tactic
+                        if (Common.IsAutoSync)
+                        {
+                            objTacticComment.CreatedBy = new Guid();
+                        }
+                        else
+                        {
+                            objTacticComment.CreatedBy = this._userId;
+                        }
+
+                        db.Entry(objTacticComment).State = EntityState.Added;
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
+                        // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic 
+                        #endregion
+
                         instanceLogTactic.Status = StatusResult.Success.ToString();
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                     }

@@ -204,12 +204,35 @@ namespace Integration
         /// </summary>
         private void SyncImprovementTactic()//new code added for #532 by uday
         {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+
+            Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Get Integration Instance Id based on ImprovementPlanTacticId.");
             /// Write query to get integration instance id and integration type.
             _integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.Single(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
                 _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
-                IdentifyIntegration();
+                var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+                if (Instance != null && Instance.IsActive)
+                {
+                    IdentifyIntegration();
+                }
+                else
+                {
+                    IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+                    instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
+                    instanceLogStart.SyncStart = DateTime.Now;
+                    instanceLogStart.CreatedBy = _userId;
+                    instanceLogStart.CreatedDate = DateTime.Now;
+                    instanceLogStart.ErrorDescription = "Instance have inactive status.";
+                    instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
+                    db.Entry(instanceLogStart).State = EntityState.Added;
+                    Instance.LastSyncStatus = StatusResult.Error.ToString();
+                    db.Entry(Instance).State = EntityState.Modified;
+                    int resulValue = db.SaveChanges();
+                    Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.ImprovementTactic, EntityType.IntegrationInstance.ToString(), "Instance have inactive status.", Enums.SyncStatus.Error, DateTime.Now));
+                }
             }
         }
 
@@ -231,7 +254,7 @@ namespace Integration
                 if (integrationInstanceId.HasValue)
                 {
                     _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
-                    _integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+                    _integrationInstanceId = integrationInstanceId;//db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
                 }
                 else if (integrationInstanceProjectManagmentId.HasValue)
                 {
@@ -249,7 +272,7 @@ namespace Integration
                     {
 
                         IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
-                        instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_id);
+                        instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
                         instanceLogStart.SyncStart = DateTime.Now;
                         instanceLogStart.CreatedBy = _userId;
                         instanceLogStart.CreatedDate = DateTime.Now;
@@ -261,6 +284,7 @@ namespace Integration
                         db.Entry(Instance).State = EntityState.Modified;
                         int resulValue = db.SaveChanges();
                         Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                        _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, EntityType.IntegrationInstance.ToString(), "Instance have inactive status.", Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
                 else
@@ -288,7 +312,27 @@ namespace Integration
             if (_integrationInstanceId.HasValue)
             {
                 _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
-                IdentifyIntegration();
+                var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+                if (Instance != null && Instance.IsActive)
+                {
+                    IdentifyIntegration();
+                }
+                else
+                {
+                    IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+                    instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
+                    instanceLogStart.SyncStart = DateTime.Now;
+                    instanceLogStart.CreatedBy = _userId;
+                    instanceLogStart.CreatedDate = DateTime.Now;
+                    instanceLogStart.ErrorDescription = "Instance have inactive status.";
+                    instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
+                    db.Entry(instanceLogStart).State = EntityState.Added;
+                    Instance.LastSyncStatus = StatusResult.Error.ToString();
+                    db.Entry(Instance).State = EntityState.Modified;
+                    int resulValue = db.SaveChanges();
+                    Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Program, EntityType.IntegrationInstance.ToString(), "Instance have inactive status.", Enums.SyncStatus.Error, DateTime.Now));
+                }
             }
         }
             catch (Exception ex)
@@ -311,7 +355,27 @@ namespace Integration
             if (_integrationInstanceId.HasValue)
             {
                 _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
-                IdentifyIntegration();
+                var Instance = db.IntegrationInstances.Where(i => i.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+                if (Instance != null && Instance.IsActive)
+                {
+                    IdentifyIntegration();
+                }
+                else
+                {
+                    IntegrationInstanceLog instanceLogStart = new IntegrationInstanceLog();
+                    instanceLogStart.IntegrationInstanceId = Convert.ToInt32(_integrationInstanceId);
+                    instanceLogStart.SyncStart = DateTime.Now;
+                    instanceLogStart.CreatedBy = _userId;
+                    instanceLogStart.CreatedDate = DateTime.Now;
+                    instanceLogStart.ErrorDescription = "Instance have inactive status.";
+                    instanceLogStart.Status = Enums.SyncStatus.Error.ToString();
+                    db.Entry(instanceLogStart).State = EntityState.Added;
+                    Instance.LastSyncStatus = StatusResult.Error.ToString();
+                    db.Entry(Instance).State = EntityState.Modified;
+                    int resulValue = db.SaveChanges();
+                    Common.SaveIntegrationInstanceLogDetails(_id, instanceLogStart.IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Instance have inactive status.");
+                    _lstAllSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Campaign, EntityType.IntegrationInstance.ToString(), "Instance have inactive status.", Enums.SyncStatus.Error, DateTime.Now));
+                }
             }
         }
             catch (Exception ex)

@@ -31,8 +31,13 @@ namespace Integration.Helper
         public static string UnableToUpdate = "Unable to update";
         public static string UnableToDelete = "Unable to delete";
         public static string TacticSyncedComment = "Tactic synced with ";
+        public static string TacticUpdatedComment = "Tactic updated with ";
         public static string ProgramSyncedComment = "Program synced with ";
+        public static string ProgramUpdatedComment = "Program updated with ";
+        public static string CampaignSyncedComment = "Campaign synced with ";
+        public static string CampaignUpdatedComment = "Campaign updated with ";
         public static string ImprovementTacticSyncedComment = "Improvement Tactic synced with ";
+        public static string ImprovementTacticUpdatedComment = "Improvement Tactic updated with ";
 
         public static string OpportunityObjectError = "Opportunity : ";
         public static string CampaignMemberObjectError = "Campaign Member : ";
