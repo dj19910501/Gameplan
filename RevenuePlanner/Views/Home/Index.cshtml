@@ -286,7 +286,7 @@
                         }
                     }
                 }
-                
+
                 @*BindUpcomingActivites(CurrentPlanId);
                 Currenttime = $('#ddlUpComingActivites').val();
                 isQuater = Currenttime;
@@ -422,15 +422,15 @@
 
             <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
             <div class="wraper-btns cf">
-               
+
                 @*<div id="divAddPlan">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="window.location.href='@Url.Action("CreatePlan", "Plan")'" style="min-width:90%">Create New Plan</button>
                     </div>*@
-               
+
                 <div id="divPlanEditButtonHome">
-                            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>
+                </div>
             </div>
-        </div>
         </div>
 
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsPlanSummary">
@@ -445,7 +445,7 @@
                             Publish Plan
                         </button>
                     }
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width:90%">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="AddActuals()" style="min-width: 90%">
                         Add Actuals
                     </button>
                     @if (IsPlanEditable)
@@ -455,7 +455,7 @@
                             Edit Plan Definition
                         </button>
                     }
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()"  style="min-width:90%">
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()" style="min-width: 90%">
                         Edit Plan Budget & Cost
                     </button>
                 </div>
@@ -806,6 +806,7 @@
 
     var isFirstCall = true;
 
+    var inspectCloseFocus = "";
     //Added By Komal Rawal for #1376
     function toggleStatus(obj) {
 
@@ -1042,6 +1043,7 @@
 
         $.ajax({
             url: '@Url.Content("~/Plan/LoadHomeGrid/")',
+            async:false,
             data: {
                 planId: SelectedPlanIds.toString(),
                 ownerIds: OwnerIds.toString(),
@@ -1053,7 +1055,8 @@
                 $("#divgridview").html('');
                 $("#divgridview").html(result);
 
-                $(".grid_Search").click(function (e) {               
+                $(".grid_Search").click(function (e) {
+                    inspectCloseFocus = $(this).position().top;
                     var id = $(this).attr('alt');
                     var type = $(this).attr('id');
                     gridSearchFlag = 1;
@@ -1480,7 +1483,7 @@
     //Added By Komal Rawal for #1498
     function EditPlanHome() {
         var pid = $("#CurrentPlanId").val();
-        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid +  '&isGridView=' + "True" ;
+        var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
         window.location.href = url;
     }
     //End
@@ -1496,7 +1499,7 @@
         window.location.href = url;
     }
 
-    
+
 
     // Added by Nirav for Custom Dropdown - 388
     /*added by Nirav for plan consistency on 14 apr 2014*/
@@ -2008,14 +2011,14 @@ function AjaxRequest() {
                     }
 
                     // To hide/show current plan edit button based on user plan edit permission
-                        if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                            $("#DivButtonsHome").show();
-                            $('.WelcomeMessageBorder').show();
+                    if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                        $("#DivButtonsHome").show();
+                        $('.WelcomeMessageBorder').show();
                         GetCurrentPlanPermissionDetail();
                     }
                     else {
-                            $("#DivButtonsHome").hide();
-                            $('.WelcomeMessageBorder').hide();
+                        $("#DivButtonsHome").hide();
+                        $('.WelcomeMessageBorder').hide();
                         //  $("#divAddActuals").hide();
                     }
 
@@ -2154,13 +2157,13 @@ function GetCurrentPlanPermissionDetail() {
             }
             else {
                 if (data.IsPlanEditable) {
-                        $("#DivButtonsHome").show();
-                        $('.WelcomeMessageBorder').show();
+                    $("#DivButtonsHome").show();
+                    $('.WelcomeMessageBorder').show();
                     $("#isViewOnly").val(true);
                 }
                 else {
-                        $("#DivButtonsHome").hide();
-                        $('.WelcomeMessageBorder').hide();
+                    $("#DivButtonsHome").hide();
+                    $('.WelcomeMessageBorder').hide();
                     $("#isViewOnly").val(false);
                 }
             }
@@ -2767,7 +2770,7 @@ function Quarter() {
                                   }
 
                                   //// Attaching double click event
-                                  eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null) });
+                                  eventTaskDoubleClick = gantt.attachEvent("onTaskDblClick", function (taskId, e) { ShowModel(taskId, null)});
 
                               }
 
@@ -2860,28 +2863,50 @@ function Quarter() {
                       $("#modal-container-186470").addClass("transition-close");
                       $("#modal-container-186470").removeClass("transition_y");
                       addDefaultModalPopupBackgroungColor();
-                      if (isDataModified) {
-            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                    $('body').removeClass('bodyOverflow');
-                    if (gridSearchFlag == 1) {
-                        LoadPlanGrid();
-                        gridSearchFlag = 0;
-                        return true;
-                    }
-                    else {
-                        var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
-                        $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
-                        return true;
-                    }
-                }
-            }
-
-                      RefreshCurrentTab();
+                      $('body').removeClass('bodyOverflow');
+                      if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                          if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                              
+                              if (isDataModified) {
+                                  if (gridSearchFlag == 1) {
+                                      debugger;
+                                      LoadPlanGrid();
+                                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+                                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+                                          }
+                                      
+                                      gridSearchFlag = 0;
+                                      
+                                      return true;
+                                  }
+                                  else {
+                                      var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
+                                      $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId, function () {
+                                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+                                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+                                          }
+                                      });
+                                      return true;
+                                     
+                                  }
+                              }
+                              
+                             
+                          }
+                          else if (isDataModified) {
+                              RefreshCurrentTab();
+                          }
+                          else {
+                              gantt.refreshData();
+                          }
                       }
                       else {
-                          $('body').removeClass('bodyOverflow');
-                          gantt.refreshData();	//Added by Viral Kadiya on 11/07/2014 for PL #941 to refresh gantt data
+                          if (isDataModified) {
+                              RefreshCurrentTab();
+                          }
+                          else {
+                              gantt.refreshData();
+                          }
                       }
                       $(".datepicker.dropdown-menu").each(function () {
                           $(this).remove();
@@ -2889,32 +2914,33 @@ function Quarter() {
 
                       //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
                       //// display popup based on type and name and title.                       
+                      if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()' || document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                          $(".gantt_last_cell").dblclick(function (e) {
+                              e.stopPropagation();
+                          });
 
-                      $(".gantt_last_cell").dblclick(function (e) {
-                          e.stopPropagation();
-                      });
+                          $(".gantt_add").click(function (e) {
+                              var type = $(this).attr('id');
+                              var name = $(this).attr('Name');
+                              var title = $(this).attr('aria-label');
+                              var permission = $(this).attr('Permission');
+                              DisplayPopUpMenu(type, name, title, permission, e);
+                          });
 
-                      $(".gantt_add").click(function (e) {
-                          var type = $(this).attr('id');
-                          var name = $(this).attr('Name');
-                          var title = $(this).attr('aria-label');
-                          var permission = $(this).attr('Permission');
-                          DisplayPopUpMenu(type, name, title, permission, e);
-                      });
+                          var $doc = $(document);
+                          $doc.click(function () {
+                              $('#popupType').css('display', 'none');
+                          });
 
-                      var $doc = $(document);
-                      $doc.click(function () {
-                          $('#popupType').css('display', 'none');
-                      });
+                          $(document).mouseup(function (e) {
+                              $('#popupType').css("display", "none");
+                          });
+                          $(".gantt_ver_scroll").scroll(function () {
+                              $('#popupType').css('display', 'none');
+                          });
+                      }
 
-                      $(document).mouseup(function (e) {
-                          $('#popupType').css("display", "none");
-                      });
-                      $(".gantt_ver_scroll").scroll(function () {
-                          $('#popupType').css('display', 'none');
-                      });
-
-        });
+                  });
               }
 
               //Scrip Addded By Bhavesh for Inspect Popup
@@ -2926,8 +2952,8 @@ function Quarter() {
               function loadInspectPopup(id, section, tabValue, mode, parentId) {
                   parentId = typeof parentId !== 'undefined' ? parentId : '0';
                   var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
-                  $("#divPartial").empty();
-                  $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
+        $("#divPartial").empty();
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
                       if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                           //// Call function to redirect on service unavailibility.
                           //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -3099,15 +3125,15 @@ function Quarter() {
                   $.ajax({
                       type: 'POST',
                       url: '@Url.Content("~/Inspect/ApproveDeclineTactic/")',
-                          data: {
-                              planTacticId: approveDeclineTacticId,
-                              isApprove: false,
-                              isImprovement: isImprovement
-                          },
-                          dataType: "json",
-                          success: function (data) {
-                              if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
-                                  window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                      data: {
+                          planTacticId: approveDeclineTacticId,
+                          isApprove: false,
+                          isImprovement: isImprovement
+                      },
+                      dataType: "json",
+                      success: function (data) {
+                          if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                              window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                           }
                           else {
                               if (data.result == true) {
@@ -3132,7 +3158,7 @@ function Quarter() {
                               }
                           }
                       }
-                      });
+                  });
               }
 
               //tbody tr
@@ -4178,7 +4204,7 @@ function Quarter() {
                 var contentHeight = $('#popupType').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
                 $('#popupType').css({
-                   // 'display': 'block',
+                    // 'display': 'block',
                     'top': targetBottomOffset,
                     'left': left,
                 });
@@ -4254,36 +4280,36 @@ function Quarter() {
                 url: '@Url.Content("~/Inspect/Clone")',
                 data: {
                     CloneType: '@Enums.DuplicationModule.Campaign',
-                Id: idPlanCamaign,
-                title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RequestedModule',
-                planId: PlanId
-            },
+                    Id: idPlanCamaign,
+                    title: Title,
+                    CalledFromBudget: '@CalledFromBudget',
+                    RequsetedModule: '@RequestedModule',
+                    planId: PlanId
+                },
                 success: function (data) {
                     if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
                         window.location = '@Url.Content("~/Login/Index")';
-                }
-                else if (data.IsSuccess) {
-                    RefreshCurrentTab();
-                    ShowMessage(isError, data.msg);
+                    }
+                    else if (data.IsSuccess) {
+                        RefreshCurrentTab();
+                        ShowMessage(isError, data.msg);
 
-                    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                        if (CurrentPlanId > 0) {
-                            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                                LoadPlanGrid();
+                        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                            if (CurrentPlanId > 0) {
+                                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                    LoadPlanGrid();
+                                }
                             }
                         }
-                    }
 
-                    return;
+                        return;
+                    }
+                    else {
+                        isError = true;
+                        ShowMessage(isError, data.msg);
+                        return false;
+                    }
                 }
-                else {
-                    isError = true;
-                    ShowMessage(isError, data.msg);
-                    return false;
-                }
-            }
             });
         });
 
@@ -4636,18 +4662,18 @@ function () {
     }
 })
 
- function DisplayEditablePopup(id, type) {  
+function DisplayEditablePopup(id, type) {
     if (type == "PlanPopup") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, 0, '@RequestedModule');
     }
     else if (type == "CampaignPopup") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, 0, '@RequestedModule');
+    }
+    else if (type == "ProgramPopup") {
+        ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, 0, '@RequestedModule');
+    }
+    else if (type == "TacticPopup") {
+        ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
        }
-       else if (type == "ProgramPopup") {
-           ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, 0, '@RequestedModule');
-   }
-   else if (type == "TacticPopup") {
-       ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
-  }
 }
 </script>
