@@ -376,9 +376,9 @@ namespace RevenuePlanner.Controllers
                         int intRandomColorNumber = rnd.Next(Common.ColorcodeList.Count);
                         objIt.ColorCode = Convert.ToString(Common.ColorcodeList[intRandomColorNumber]);
                         objIt.IsDeployedToIntegration = deployToIntegrationStatus;
-
-                        db.ImprovementTacticTypes.Attach(objIt);
+                      //  db.ImprovementTacticTypes.Attach(objIt);
                         db.Entry(objIt).State = EntityState.Added;
+                        db.ImprovementTacticTypes.Add(objIt);
                         int result = db.SaveChanges();
                         
                         improvementId = objIt.ImprovementTacticTypeId;
