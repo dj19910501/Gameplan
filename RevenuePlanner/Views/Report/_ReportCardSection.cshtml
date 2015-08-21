@@ -48,11 +48,10 @@
     <input type='hidden' id='current_page' />
     <input type='hidden' id='show_per_page' />
     <div class="search">
-        <input id="txtSearch" />
 
+        <input  id="txtSearch" value="" />
+         <input type='hidden' id='hiddensearch' />
         <button class="search-btn" onclick="SearchByTitle($('#txtSearch').val())" id="btnSearch">search</button>
-
-
     </div>
 </div>
 <div id="dvCardSectionData"></div>
@@ -1208,6 +1207,9 @@ function fillCardProgramDropDown(campaignId, type) {
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         SearchString = $('#txtSearch').val();
+        $('#txtSearch').attr('value', SearchString);
+        $("#hiddensearch").val(SearchString);
+        //$("#txtsearch").val(SearchString);
         //myApp.showPleaseWait();
         @*var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + String(SearchString).trim() + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;*@
         var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain; //PL #1399 Dashrath Prajapati
@@ -1237,5 +1239,6 @@ function fillCardProgramDropDown(campaignId, type) {
             $("#NorecordfoundMsg").css("display", "none");
         }
     }
+
     //END PL #1399 added by dashrath prajapati 
 </script>

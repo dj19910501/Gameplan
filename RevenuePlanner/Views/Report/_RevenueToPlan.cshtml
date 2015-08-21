@@ -18,6 +18,9 @@
 }
 <div class="revenue-to-plan-graph">
     <div id="dvRevenuePlanBarChart" class="graph" style="height: 100%; padding-left: 0%; width:99%;"></div>
+      <input type="hidden" id="_BarChartdata" value="" />
+      <input type="hidden" id="_LineChartdata" value="" />
+      <input type="hidden" id="_DatatTooltip" value="" />
     <div class="graph-table">
         <div class="table-responsive">
             <table class="graph-table">
@@ -33,6 +36,7 @@
     var IsBack = '';
     var BackHeadTitle = "";
     var SearchString = '';
+    var revcategories, revbarseries, revbarchartDivId, revlineseries, revtodayValue, revpointLabelWidth, revisDisplay, revActualList;
     $(document).ready(function () {
          @*var _revGoal = '@revenue_Projected_Goal.Goal';*@
         var _revActual_Projected = '@revenue_Projected_Goal.Actual_Projected';
@@ -84,6 +88,8 @@
         var _barchartdata = "@revenue_barchartModel";
         var _BarChartdata = (_barchartdata.toString().replace(/&quot;/g, '"'));
         _BarChartdata = JSON.parse(_BarChartdata);
+        
+        $('#_BarChartdata').val(JSON.stringify(_BarChartdata));
         var barchartDivId = "#dvRevenuePlanBarChart";
         //End: Get BarChart Model
 
@@ -91,13 +97,22 @@
         var _linechartdata = "@revenue_linechartModel";
         var _LineChartdata = (_linechartdata.toString().replace(/&quot;/g, '"'));
         _LineChartdata = JSON.parse(_LineChartdata);
+        $('#_LineChartdata').val(JSON.stringify(_LineChartdata));
         //End: Get LineChart Model
         //PL #1437 - dashrath
         var _dataTooltip = '@revenue_datatableModel';
         var _DatatTooltip = (_dataTooltip.toString().replace(/&quot;/g, '"'));
         _DatatTooltip = JSON.parse(_DatatTooltip);
+        $('#_DatatTooltip').val(JSON.stringify(_DatatTooltip));
         //up to here
-
+        revcategories= _BarChartdata.categories;
+        revbarseries= _BarChartdata.series;
+        revbarchartDivId = barchartDivId;
+        revlineseries= _LineChartdata.series;
+        revtodayValue = _LineChartdata.todayValue;
+        revpointLabelWidth = _LineChartdata.pointLabelWidth;
+        revisDisplay = _LineChartdata.isDisplay;
+        revActualList = _DatatTooltip.ActualList;
         //BindRevenueBarChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId);
         BindRevenueCombinationChartData(_BarChartdata.categories, _BarChartdata.series, barchartDivId, _LineChartdata.series, _LineChartdata.todayValue, _LineChartdata.pointLabelWidth, _LineChartdata.isDisplay,_DatatTooltip.ActualList);
         // End:- Revenue To Plan BarChart script

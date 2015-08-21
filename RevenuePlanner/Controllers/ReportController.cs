@@ -8,13 +8,16 @@ using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using System.Transactions;
 using Elmah;
-using EvoPdf.HtmlToPdf;
+//using EvoPdf.HtmlToPdf;
 using System.Web;
 using System.IO;
 using System.Web.Script.Serialization;
 using System.Data.Objects.SqlClient;
 using RevenuePlanner.BDSService;
 using RevenuePlanner.Helpers;
+using EvoPdf;
+using System.Text;
+
 namespace RevenuePlanner.Controllers
 {
     public class ReportController : CommonController
@@ -3602,7 +3605,7 @@ namespace RevenuePlanner.Controllers
                             optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                             ////
                             string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
-
+                            //toEmailIds = "nishant.sheth@indusa.com";
                             foreach (string toEmail in toEmailIds.Split(','))
                             {
                                 Report_Share reportShare = new Report_Share();
@@ -3656,22 +3659,54 @@ namespace RevenuePlanner.Controllers
                 htmlOfCurrentView = htmlOfCurrentView.Replace("class=\"percentageFormat\"", "");
             }
             //// End - Added Sohel Pathan on 30/12/2014 for and Internal Review Point
-            PdfConverter pdfConverter = new PdfConverter();
-            pdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
+            //PdfConverter pdfConverter = new PdfConverter();
+            //pdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
 
-            pdfConverter.PdfDocumentOptions.PdfPageSize = PdfPageSize.Custom;
-            pdfConverter.PdfDocumentOptions.CustomPdfPageSize = new System.Drawing.SizeF(1024, 1000);
-            pdfConverter.PdfDocumentOptions.EmbedFonts = true;
+            //pdfConverter.PdfDocumentOptions.PdfPageSize = PdfPageSize.A4;
+            //pdfConverter.PdfDocumentOptions.CustomPdfPageSize = new System.Drawing.SizeF(1024,30000);
+            //pdfConverter.PdfDocumentOptions.EmbedFonts = true;
 
-            /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-            int marginTopBottom = 50;
-            pdfConverter.PdfDocumentOptions.TopMargin = marginTopBottom;
-            pdfConverter.PdfDocumentOptions.BottomMargin = marginTopBottom;
+            ///*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
+            //int marginTopBottom = 50;
+            //pdfConverter.PdfDocumentOptions.TopMargin = marginTopBottom;
+            //pdfConverter.PdfDocumentOptions.BottomMargin = marginTopBottom;
 
-            pdfConverter.PdfDocumentOptions.PdfCompressionLevel = PdfCompressionLevel.Normal;
-            pdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
-            byte[] pdf = pdfConverter.GetPdfBytesFromHtmlString(htmlOfCurrentView);
+            //pdfConverter.PdfDocumentOptions.PdfCompressionLevel = PdfCompressionLevel.Normal;
+            //pdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
+            // byte[] pdf = pdfConverter.GetPdfBytesFromHtmlString(htmlOfCurrentView);
+            string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+            string baseUrl = domain + "/Report/Index/";
 
+            HtmlToPdfConverter htmlToPdfConverter = new HtmlToPdfConverter();
+            htmlToPdfConverter.LicenseKey = "4W9+bn19bn5ue2B+bn1/YH98YHd3d3c=";
+            //htmlToPdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
+            // htmlToPdfConverter.ClipHtmlView = true;
+            htmlToPdfConverter.HtmlViewerWidth = 1024;
+            htmlToPdfConverter.PdfDocumentOptions.EmbedFonts = true;
+            htmlToPdfConverter.PdfDocumentOptions.PdfPageSize = PdfPageSize.A4;
+            //htmlToPdfConverter.PdfDocumentOptions.AutoSizePdfPage = true;
+            htmlToPdfConverter.PdfDocumentOptions.PdfCompressionLevel = PdfCompressionLevel.Normal;
+            htmlToPdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
+            htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 0;
+            htmlToPdfConverter.PdfDocumentOptions.RightMargin = 0;
+            htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;
+            htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 20;
+            htmlToPdfConverter.PdfDocumentOptions.X = 0;
+            //if (yLocationTextBox.Text.Length > 0)
+            htmlToPdfConverter.PdfDocumentOptions.Y = 0;
+            //if (contentWidthTextBox.Text.Length > 0)
+            htmlToPdfConverter.PdfDocumentOptions.Width = 0;
+            //if (contentHeightTextBox.Text.Length > 0)
+            htmlToPdfConverter.PdfDocumentOptions.Height = 0;
+
+            // Set HTML content top and bottom spacing or leave them not set to have no spacing for the HTML content
+            htmlToPdfConverter.PdfDocumentOptions.TopSpacing = 0;
+            htmlToPdfConverter.PdfDocumentOptions.BottomSpacing = 0;
+            // htmlToPdfConverter.PdfDocumentOptions.FitWidth = true;
+            //htmlToPdfConverter.PdfDocumentOptions.StretchToFit = false;
+            //htmlToPdfConverter.PdfDocumentOptions.AutoSizePdfPage = false;
+            //htmlToPdfConverter.PdfDocumentOptions.FitHeight = false;
+            byte[] pdf = htmlToPdfConverter.ConvertHtml(htmlOfCurrentView, baseUrl);
             return new System.IO.MemoryStream(pdf);
         }
 
@@ -3684,66 +3719,144 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return html string with CSS and Javascript.</returns>
         private string AddCSSAndJS(string htmlOfCurrentView, string reportType)
         {
+            string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+            //string js = ReadJs("");
+            string returnhtml = "";
+            StringBuilder html = new StringBuilder();
+            html.Append("<html>");
+            html.Append("<head>");
+            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/bootstrap.css"));
+            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/bootstrap-responsive.css"));
+            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/style.css"));
+            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/datepicker.css"));
+            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/style_extended.css"));
+            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/DHTMLX/dhtmlxgantt.css"));
+            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/Select2/select2.css"));
 
-            string html = "<html>";
-            html += "<head>";
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
+            // html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.min.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery-migrate-1.2.1.min.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/bootstrap.min.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.slimscroll.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.slidepanel.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/scripts.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/scripts_extended.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/jquery.form.min.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/bootstrap-datepicker.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.price_format.1.8_v2.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.price_format.1.8.min.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/slimScrollHorizontal.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.mCustomScrollbar.concat.min.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.actual.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/highcharts.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/jquery.selectbox-0.2.js"));
 
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.min.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery-migrate-1.2.1.min.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/bootstrap.min.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.slimscroll.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.slidepanel.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/scripts.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/scripts_extended.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/jquery.form.min.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/bootstrap-datepicker.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.price_format.1.8_v2.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.price_format.1.8.min.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/slimScrollHorizontal.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/jquery.selectbox-0.2.js"));
 
             /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.multiselect_v1.js"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/jquery.multiselect.filter.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.multiselect_v1.js"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.multiselect.filter.js"));
 
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/font-awesome.min.css"));
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/modernizr-2.5.3.js"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/font-awesome.min.css"));
+            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/modernizr-2.5.3.js"));
 
-            html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/dhtmlxchart.js"));
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/dhtmlxchart.css"));
+            //html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/dhtmlxchart.js"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/dhtmlxchart.css"));
 
             /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-            html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/jquery.multiselect.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/jquery.multiselect.css"));
 
-            html += "</head>";
-            html += "<body style='background: none repeat scroll 0 0 #FFFFFF; font-size: 14px;'>";
-            html += htmlOfCurrentView;
-            html += "</body>";
-            html += "</html>";
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/jquery.mCustomScrollbar.css"));
+            //html.Append("<style type='text/css'>");
+            //html.Append("#table-sparkline {");
+            //html.Append("margin: 0 auto;");
+            //html.Append("border-collapse: collapse;");
+            //html.Append("}");
+            //html.Append("th {");
+            //html.Append("font-weight: bold;");
+            //html.Append("text-align: left;");
+            //html.Append("}");
+            //html.Append("td,tbody th {");
+            //html.Append("padding: 5px;");
+            //html.Append("border-top: 1px solid silver;");
+            //html.Append("height: 20px;");
+            //html.Append("}");
+
+            //html.Append(".highcharts-tooltip>span {");
+            //html.Append("background: white;");
+            //html.Append("border: 1px solid silver;");
+            //html.Append("border-radius: 3px;");
+            //html.Append("box-shadow: 1px 1px 2px #888;");
+            //html.Append("padding: 8px;");
+            //html.Append("}");
+            //html.Append(".dvsparkline div {");
+            //html.Append("float:right;");
+            //html.Append("}");
+            //html.Append(".lastraw {");
+            //html.Append("font-size: 15px;");
+            //html.Append("font-weight: bold;");
+            //html.Append("line-height: 25px;");
+            //html.Append("text-align: left;");
+            //html.Append("}");
+            //html.Append(".nobold {");
+            //html.Append("font-weight:inherit !important;");
+            //html.Append("}");
+            //html.Append(".redLabel {");
+            //html.Append("color:#ff0000 !important;");
+            //html.Append("}");
+            //html.Append(".greenLabel {");
+            //html.Append("color:#009E26 !important;");
+            //html.Append("}");
+            //html.Append(".hideReport {");
+            //html.Append("display:none !important;");
+            //html.Append("}");
+            //html.Append(".sbHolder {");
+            //html.Append("z-index: 1499;");
+            //html.Append("}");
+            //html.Append(".nobold {");
+            //html.Append("font-weight:inherit !important;");
+            //html.Append("}");
+            //html.Append("  .redLabel {");
+            //html.Append("color: #ff0000 !important;");
+            //html.Append("}");
+            //html.Append(".greenLabel {");
+            //html.Append("color: #009E26 !important;");
+            //html.Append("}");
+            //html.Append(".revenue-to-plan-graph {");
+            //html.Append("padding: 20px;");
+            //html.Append("}");
+            //html.Append(".carvdval-block");
+            //html.Append("{");
+            //html.Append("display: block;");
+            //html.Append("}");
+            //html.Append("</style>");
+            html.Append("</head>");
+            html.Append("<body style='background: none repeat scroll 0 0 #FFFFFF; font-size: 14px;'>");
+            html.Append(htmlOfCurrentView);
+            html.Append("</body>");
+            html.Append("</html>");
 
             if (reportType.Equals(Enums.ReportType.Summary.ToString()))
             {
-                html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportSummary.js"));
+                //html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportSummaryData.js"));
             }
             else if (reportType.Equals(Enums.ReportType.Revenue.ToString()))
             {
-                html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportRevenue.js"));
+               // html.Append(string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportRevenueData.js")));
             }
             else
             {
-                html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
+                // html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
             }
 
+            returnhtml = Convert.ToString(html);
 
-
-            return html;
+            return returnhtml;
         }
 
         #endregion

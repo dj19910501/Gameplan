@@ -8,7 +8,6 @@
 
 <link href="@Url.Content("~/Content/css/Select2/select2.css")" rel="stylesheet" />
 <script src="~/Scripts/js/Select2/select2.js"></script>
-
 <div class="row-fluid calc-height" id="DivShareReportContainer">
     <div class="span12">
         @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
@@ -182,34 +181,41 @@
         /*Modified By Maninder Singh Wadhva on  10/21/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLConversion()
         {
+            
+            //.nextAll(".portlet-content:first")
+            //var filterHTML = $('.revenue-filter').html();
             var filterHTML = $('.report-heder-tab').parent().html();
-            var html = filterHTML;
-            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div></div></div>');
-         //   $html.find('div[id="chartDiv1"]').empty();
-         //   $html.find('div[id="chartDiv2"]').empty();
-         //   $html.find('div[id="chartDiv3"]').empty();
-            $html.find("li.disabled > a").each(function(){
-                $(this).parent().removeClass("disabled");
-                $(this).css("background-color","#E0DFDF");
-            });
-            $html.find("#table_reports5 tbody tr td").each(function () {
-                $(this).css("width", "60px");
-            });
-
-            $html.find('.multiselection-area').remove();
-            //$html.find('.budgetReportFilter-area-right').remove();
+            //var filterHTML = $('#dvRevenueCardSection').html();
+            var html  = '';
+           
+            //html += '<div style="margin-left: 100px;"> ' + $htmlgraph + filterHTML + '</div>';
+            html += '<div style="margin-left: 100px;">' + filterHTML + '</div>';
+            var $html = $(html);
+          
+            //revenue-to-plan-graph
+          
             $html.find('div[class="report-heder-tab"]').empty();
             $html.find('div').removeClass("report-heder-tab");
+            $html.find('#dvConversionCombineChart').css('height','');
+            //$html.find("div[id^='dvline_']").css('height','');
+            $html.find("button[id^='buttonDtls_']").remove();
+            $html.find("#divMainReportPart").removeClass('margin_top20');
+            $html.find('.slimScrollRail').css('height','');
+            $html.find('.highcharts-container').css('width','100%');
+            $html.find("#txtSearch").val($html.find("#txtSearch").val());
+            //$("div[id^='dvline_']").css('height','');
             //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
             //$html.find('div').removeClass("budgetReportFilter-area clearfix");
+            $html.find('#AViewDetailReportRevenue').remove();
+            $html.find('#AViewDetailReportConversion').remove();
+            $html.find('.multiselection-area').remove();
+            //$html.find('.budgetReportFilter-area-right').remove();
             //$html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
-
-            ReplaceMultiselectByLabelConversionSummary($html);
-            ReplaceMultiselectByLableConversionPlan($html);
-            ReplaceMultiselectByLableMQLPerformance($html);
-            html = $html.wrap('<p/>').parent().html();
+            //alert($html.html());
+            html = $html.html();
+            //alert(html);
             return escape(html);
         }
 
@@ -272,48 +278,52 @@
         }
 
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-        function GetHTMLRevenue()
-        {
-            var filterHTML = $('.report-heder-tab').parent().html();
-            var html = filterHTML;
-            var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
-            $html.find("#table_reports4").before('<div style="width:100%;height:20px;"></div>');
-            $html.find("#table_reports2 thead tr th:nth-child(1)").removeClass("width96px").css("width","60px");
-            $html.find("#table_reports2 tbody tr td").each(function () {
-                $(this).css("width","60px");
-            });
+        //function GetHTMLRevenue()
+        //{
+        //    debugger;
+        //    var filterHTML = $('.report-heder-tab').parent().html();
 
-            $html.find("li.disabled > a").each(function(){
-                $(this).parent().removeClass("disabled");
-                $(this).css("background-color","#E0DFDF");
-            });
+        //    var html = filterHTML;
+        //    var $html = $('<div id="content_wraper" class="span10 all-height" style="width:100%">' + html + '</div>');
 
-            $html.find("a").each(function(){
-                $(this).removeAttr("href");
-            });
+        //    alert($html.find(".graph-table").html());
+        //    $html.find("#table_reports4").before('<div style="width:100%;height:20px;"></div>');
+        //    $html.find("#table_reports2 thead tr th:nth-child(1)").removeClass("width96px").css("width","60px");
+        //    $html.find("#table_reports2 tbody tr td").each(function () {
+        //        $(this).css("width","60px");
+        //    });
+
+        //    $html.find("li.disabled > a").each(function(){
+        //        $(this).parent().removeClass("disabled");
+        //        $(this).css("background-color","#E0DFDF");
+        //    });
+
+        //    $html.find("a").each(function(){
+        //        $(this).removeAttr("href");
+        //    });
             
-            $html.find('div[id="chartDiv3"]').empty();
-            $html.find('div[id="chartDiv4"]').empty();
-            $html.find('div[id="chartDiv5"]').empty();
-            $html.find('div[id="chartDiv6"]').empty();
-            $html.find('div[class="report-heder-tab"]').empty();
-            $html.find('div').removeClass("report-heder-tab");
-            //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
-            //$html.find('div').removeClass("budgetReportFilter-area clearfix");
-            $html.find('.multiselection-area').remove();
-            //$html.find('.budgetReportFilter-area-right').remove();
-            //$html.find('div').removeClass("budgetReportFilter-area-left");
-            $html.find('#DivShareReportContainer').remove();
-            $html.find('#DivShareReportCoknfirmationContainer').remove();
+        //    $html.find('div[id="chartDiv3"]').empty();
+        //    $html.find('div[id="chartDiv4"]').empty();
+        //    $html.find('div[id="chartDiv5"]').empty();
+        //    $html.find('div[id="chartDiv6"]').empty();
+        //    $html.find('div[class="report-heder-tab"]').empty();
+        //    $html.find('div').removeClass("report-heder-tab");
+        //    //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+        //    //$html.find('div').removeClass("budgetReportFilter-area clearfix");
+        //    $html.find('.multiselection-area').remove();
+        //    //$html.find('.budgetReportFilter-area-right').remove();
+        //    //$html.find('div').removeClass("budgetReportFilter-area-left");
+        //    $html.find('#DivShareReportContainer').remove();
+        //    $html.find('#DivShareReportCoknfirmationContainer').remove();
 
-            ReplaceMultiselectByLableRevenueSummary($html);
-            ReplaceMultiselectByLableRevenueToPlan($html);
-            ReplaceMultiselectByLableRevenueRealization($html);
-            ReplaceMultiselectByLableRevenueContribution($html);
+        //    ReplaceMultiselectByLableRevenueSummary($html);
+        //    ReplaceMultiselectByLableRevenueToPlan($html);
+        //    ReplaceMultiselectByLableRevenueRealization($html);
+        //    ReplaceMultiselectByLableRevenueContribution($html);
 
-            html = $html.wrap('<p/>').parent().html();
-            return escape(html);
-        }
+        //    html = $html.wrap('<p/>').parent().html();
+        //    return escape(html);
+        //}
 
         //// Function replace multiselect by label in revenue summary section.
         //// Added By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF
@@ -398,11 +408,22 @@
 
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLSummary(){
+            
             var filterHTML = $('.report-heder-tab').parent().html();
             var html  = '';
+           
             html += '<div style="margin-left: 100px;"></br>' + filterHTML + '</div>';
             var $html = $(html);
-            $html.find('div[id="chartDiv"]').empty();
+           
+          
+            $html.find('button[id="btnRevenueDetails"]').hide();
+            $html.find('button[id="btnConversionDetails"]').hide();
+            $html.find('button[id="btnFinancialDetails"]').hide();
+            //$html.find('div[id="RevenueLineChart"]').empty();
+
+           
+            // loadChart();
+            //$html.find('div[id="RevenueLineChart"]').html();
             $html.find('div[class="report-heder-tab"]').empty();
             $html.find('div').removeClass("report-heder-tab");
             //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
@@ -416,9 +437,56 @@
             $html.find('#DivShareReportCoknfirmationContainer').remove();
             //alert($html.html());
             html = $html.html();
+            //alert(html);
             return escape(html);
         }
 
+        function GetHTMLRevenue()
+        {
+            
+            var search = $("input#txtSearch").val();
+            //alert(search);
+            //.nextAll(".portlet-content:first")
+            //var filterHTML = $('.revenue-filter').html();
+            var filterHTML =   $('.report-heder-tab').parent().html();
+            //var filterHTML = $('#dvRevenueCardSection').html();
+            var html  = '';
+           
+            //html += '<div style="margin-left: 100px;"> ' + $htmlgraph + filterHTML + '</div>';
+            html += '<div style="margin-left: 100px;" style="width:1250px;">' + filterHTML + '</div>';
+            var $html = $(html);
+          
+            //revenue-to-plan-graph
+            //$html.find("input#txtSearch").val(search);
+            $html.find('div[class="report-heder-tab"]').empty();
+            $html.find('div').removeClass("report-heder-tab");
+            $html.find('#dvRevenuePlanBarChart').css('height','');
+            $html.find("div[id^='dvline_']").css('height','');
+            $html.find("button[id^='buttonDtls_']").remove();
+            $html.find("#divMainReportPart").removeClass('margin_top20');
+            $html.find('.slimScrollRail').css('height','');
+            $html.find('.highcharts-container').css('width','100%');
+            //$("div[id^='dvline_']").css('height','');
+            //$html.find('div[class="budgetReportFilter-area clearfix"]').empty();
+            //$html.find('div').removeClass("budgetReportFilter-area clearfix");
+            $html.find('#AViewDetailReportRevenue').remove();
+            $html.find('#AViewDetailReportConversion').remove();
+            $html.find('.multiselection-area').remove();
+            //$html.find('.budgetReportFilter-area-right').remove();
+            //$html.find('div').removeClass("budgetReportFilter-area-left");
+            $html.find('#DivShareReportContainer').remove();
+            $html.find('#DivShareReportCoknfirmationContainer').remove();
+            //alert($html.html());
+            html = $html.html();
+            //alert(html);
+            return escape(html);
+        }
+
+        function loadChart()
+        {
+            var linechartDivId = "#RevenueLineChart";
+            BindLineChart(para1, para2, para3, para4, linechartDivId, 260, false);
+        }
         //// Close popup and error message.
         $('#BtnCloseConfirmation').on("click", function () {
             $('#modal-container-confirmation').modal("hide");

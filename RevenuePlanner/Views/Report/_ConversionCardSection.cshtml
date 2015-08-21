@@ -1336,6 +1336,7 @@
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").val();
         SearchString = $('#txtSearch').val();
+        $('#txtSearch').attr('value', SearchString);
         //myApp.showPleaseWait();
         var _url = "@Url.Content("~/Report/SearchSortPaginataionConverstion/")" + "?PageNo=0&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain; //PL #1399 Dashrath Prajapati
         $("#dvCardSectionData").load(_url);

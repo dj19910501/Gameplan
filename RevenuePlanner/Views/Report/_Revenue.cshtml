@@ -25,6 +25,7 @@
 </style>
 @Html.Hidden("hdnIsPlanExistToShowReport", isPlanExistToShowReport)
 <section class="report-overview-wraper">
+    <div id="revnuesection">
     <div id="DivNoPlanToShowReport" style="border-top:none; display:none;" class="NoDataFound">No data found for selected active filters.</div>
     @if (isPlanExistToShowReport)
     {
@@ -91,6 +92,7 @@
             @Html.Partial("_ReportCardSection", revenue_cardsectionModel)
         </div>
     }
+        </div>
 </section>
 
 
