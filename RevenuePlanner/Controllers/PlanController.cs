@@ -9464,6 +9464,22 @@ namespace RevenuePlanner.Controllers
                                             IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Select(x => x == taskdata.PlanTacticId).Any() ? "0" : "1" : "1" : "0"
                                        
                                         });
+                                                    //foreach (var tactic in lsttacticTaskData)
+                                                    //{
+                                                    //    GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "."+tactic.index+"' bgColor='#E4F1E1' open='1'>");
+
+                                                    //    GridString.Append("<cell bgColor='#E4F1E1' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + tactic.title + "</cell><cell bgColor='#E4F1E1'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
+                                                    //    if (Programitem.IsPlanCreateAll)
+                                                    //    {
+                                                    //        GridString.Append("<div class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
+                                                    //    }
+                                                    //    GridString.Append("]]></cell>");
+                                                    //    GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell> ");
+                                                    //    GridString.Append(" <cell bgColor='#E4F1E1' style='color:#999' actval=\"" + tactic.totalcost.ToString() + "\">" + tactic.totalcost + "</cell> <cell bgColor='#E4F1E1' type='ro' style='color:#999'>"+tactic.tactictypeid+"</cell>  <cell bgColor='#E4F1E1' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell> ");
+                                                    //    GridString.Append(" <cell bgColor='#E4F1E1' style='color:#999'>" + tactic.projectedstagevalue + "-" + tactic.ProjectStage + "</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + tactic.totalmql.ToString() + "\">" + tactic.totalmql + "</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + tactic.totalrevenue.ToString() + "\">" + tactic.totalrevenue + "</cell> ");
+                                                    //    GridString.Append("</row>");
+
+                                                    //}
 
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
