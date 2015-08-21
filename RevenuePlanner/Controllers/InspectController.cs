@@ -514,7 +514,7 @@ namespace RevenuePlanner.Controllers
                                        PlanCampaignId = Convert.ToInt32(tc.PlanCampaignId),
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
-                                       CommentedBy = userName.Where(user => user.UserId == tc.CreatedBy).Select(user => user.FirstName).FirstOrDefault() + " " + userName.Where(user => user.UserId == tc.CreatedBy).Select(user => user.LastName).FirstOrDefault(),
+                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
                                    }).ToList();
             //// Get Owner name by OwnerId from Username list.
@@ -627,6 +627,28 @@ namespace RevenuePlanner.Controllers
                 }
             }
             ViewBag.IsCampaignEditable = IsCampaignEditable;
+
+            #region "Show Sync button in Review page only Integration InstanceType "Salesforce"
+            bool isInstanceSalesforce = false;
+            if (_inspectmodel.IsDeployedToIntegration && _inspectmodel.IsIntegrationInstanceExist == "Yes")
+            {
+                int? integrationInstanceId = db.Plan_Campaign.FirstOrDefault(t => t.PlanCampaignId == _inspectmodel.PlanCampaignId).Plan.Model.IntegrationInstanceId;
+                string integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                if (integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
+                {
+                    isInstanceSalesforce = true;
+                    #region "Set Campagin Last Synced Timestamp to ViewBag variable"
+                    string campaignEntityType = Enums.Section.Campaign.ToString();
+                    var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == _inspectmodel.PlanCampaignId && ipt.EntityType == campaignEntityType).ToList();
+                    if (planEntityLogList.Any())
+                    {
+                        ViewBag.CampaignLastSync = planEntityLogList.OrderByDescending(log => log.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
+                    }
+                    #endregion
+                }
+            }
+            ViewBag.IsInstanceSalesfore = isInstanceSalesforce;
+            #endregion
 
             return PartialView("_ReviewCampaign");
         }
@@ -1818,7 +1840,7 @@ namespace RevenuePlanner.Controllers
                                        PlanProgramId = Convert.ToInt32(tc.PlanProgramId),
                                        Comment = tc.Comment,
                                        CommentDate = tc.CreatedDate,
-                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault(),
+                                       CommentedBy = userName.Where(u => u.UserId == tc.CreatedBy).Any() ? userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.FirstName).FirstOrDefault() + " " + userName.Where(u => u.UserId == tc.CreatedBy).Select(u => u.LastName).FirstOrDefault() : Common.GameplanIntegrationService,
                                        CreatedBy = tc.CreatedBy
                                    }).ToList();
 
@@ -1940,6 +1962,28 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsProgramEditable = IsProgramEditable;
 
+            #region "Show Sync button in Review page only Integration InstanceType "Salesforce"
+            bool isInstanceSalesforce = false;
+            if (im.IsDeployedToIntegration && im.IsIntegrationInstanceExist == "Yes")
+            {
+                int? integrationInstanceId = db.Plan_Campaign.FirstOrDefault(t => t.PlanCampaignId == im.PlanCampaignId).Plan.Model.IntegrationInstanceId;
+                string integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                if (integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
+                {
+                    isInstanceSalesforce = true;
+                    #region "Set Program Last Synced Timestamp to ViewBag variable"
+                    string programEntityType = Enums.Section.Program.ToString();
+                    var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == im.PlanProgramId && ipt.EntityType == programEntityType).ToList();
+                    if (planEntityLogList.Any())
+                    {
+                        ViewBag.ProgramLastSync = planEntityLogList.OrderByDescending(log => log.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
+                    }
+                    #endregion
+                }
+            }
+            ViewBag.IsInstanceSalesfore = isInstanceSalesforce; 
+            #endregion
+            
             return PartialView("_ReviewProgram");
         }
 
@@ -2553,6 +2597,12 @@ namespace RevenuePlanner.Controllers
                 // viewbag which display last synced datetime of tactic for pull qualified leads
                 ViewBag.MQLLastSync = planEntityLogList.Where(planLog => planLog.Operation == pullQualifiedLeads).OrderByDescending(ipt => ipt.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
             }
+
+            if (planEntityLogList.Any())
+            {
+                ViewBag.TacticLastSync = planEntityLogList.OrderByDescending(log => log.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
+            }
+
             ////End : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             string entityType = Enums.EntityType.Tactic.ToString();
            
@@ -5057,6 +5107,18 @@ namespace RevenuePlanner.Controllers
             }
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
 
+            #region "Set ImprovementTactic Last sync TimeStamap"
+            if (im.IsDeployedToIntegration && im.IsIntegrationInstanceExist == "Yes")
+            {
+                string ImprovementTacticEntityType = Enums.Section.ImprovementTactic.ToString();
+                var planEntityLogList = db.IntegrationInstancePlanEntityLogs.Where(ipt => ipt.EntityId == im.ImprovementPlanTacticId && ipt.EntityType == ImprovementTacticEntityType).ToList();
+                if (planEntityLogList.Any())
+                {
+                    ViewBag.ImprovementTacticLastSync = planEntityLogList.OrderByDescending(log => log.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
+                }
+            } 
+            #endregion
+
             return PartialView("_ReviewImprovementTactic");
         }
 
@@ -7153,7 +7215,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="id">Plan Tactic Id.</param>
         /// <param name="section">Decide which section to open for Inspect Popup (tactic,program or campaign)</param>
         /// <param name="IsDeployedToIntegration">bool value</param>
-        public JsonResult SaveSyncToIntegration(int id, string section, bool IsDeployedToIntegration)
+        public JsonResult SaveSyncToIntegration(int id, string section)
         {
             bool returnValue = false;
             string strPlanEntity = string.Empty;
@@ -7161,40 +7223,114 @@ namespace RevenuePlanner.Controllers
             {
                 if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
-                    var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id);
-                    objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
-                    db.Entry(objTactic).State = EntityState.Modified;
-                    db.SaveChanges();
+                    //var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tactic => _tactic.PlanTacticId == id);
+                    //objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                    //db.Entry(objTactic).State = EntityState.Modified;
+
+                        #region "Sync Tactic to respective Integration Instance"
+                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                        externalIntegration.Sync();
+                        #endregion
                     returnValue = true;
                     strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]; // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                 {
-                    var objProgram = db.Plan_Campaign_Program.FirstOrDefault(_program => _program.PlanProgramId == id);
-                    objProgram.IsDeployedToIntegration = IsDeployedToIntegration;
-                    db.Entry(objProgram).State = EntityState.Modified;
-                    db.SaveChanges();
+                    //var objProgram = db.Plan_Campaign_Program.FirstOrDefault(_program => _program.PlanProgramId == id);
+                    //objProgram.IsDeployedToIntegration = IsDeployedToIntegration;
+                    //db.Entry(objProgram).State = EntityState.Modified;
+                    //db.SaveChanges();
+
+                    #region "Sync Tactic to respective Integration Instance"
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Program);
+                    externalIntegration.Sync();
+                    #endregion
+
                     returnValue = true;
                     strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Program.ToString()];    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
                 else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
                 {
-                    var objCampaign = db.Plan_Campaign.FirstOrDefault(_campaign => _campaign.PlanCampaignId == id);
-                    objCampaign.IsDeployedToIntegration = IsDeployedToIntegration;
-                    db.Entry(objCampaign).State = EntityState.Modified;
-                    db.SaveChanges();
+                    //var objCampaign = db.Plan_Campaign.FirstOrDefault(_campaign => _campaign.PlanCampaignId == id);
+                    //objCampaign.IsDeployedToIntegration = IsDeployedToIntegration;
+                    //db.Entry(objCampaign).State = EntityState.Modified;
+                    //db.SaveChanges();
+
+                        #region "Sync Tactic to respective Integration Instance"
+                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Campaign);
+                        externalIntegration.Sync();
+                        #endregion
+
                     returnValue = true;
                     strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()];   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
                 else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                 {
-                    var objITactic = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(_imprvTactic => _imprvTactic.ImprovementPlanTacticId == id);
-                    objITactic.IsDeployedToIntegration = IsDeployedToIntegration;
-                    db.Entry(objITactic).State = EntityState.Modified;
-                    db.SaveChanges();
+                    //var objITactic = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(_imprvTactic => _imprvTactic.ImprovementPlanTacticId == id);
+                    //objITactic.IsDeployedToIntegration = IsDeployedToIntegration;
+                    //db.Entry(objITactic).State = EntityState.Modified;
+                    //db.SaveChanges();
+                   
+                    #region "Sync Tactic to respective Integration Instance"
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
+                    externalIntegration.Sync();
+                    #endregion
+
                     returnValue = true;
                     strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()];  // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
+
+                #region "Save synced comment to Plan_Campaign_Program_Tactic_Comment table - 1468"
+                string syncComment = string.Empty;
+
+                if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                {
+                    //// Save Comment for Improvement Tactic.
+                    Plan_Improvement_Campaign_Program_Tactic_Comment pcptc = new Plan_Improvement_Campaign_Program_Tactic_Comment();
+                    syncComment = Convert.ToString(Enums.Section.ImprovementTactic) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    pcptc.ImprovementPlanTacticId = id;
+                    pcptc.Comment = syncComment;
+                    DateTime currentdate = DateTime.Now;
+                    pcptc.CreatedDate = currentdate;
+                    string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                    pcptc.CreatedBy = Sessions.User.UserId;
+                    db.Entry(pcptc).State = EntityState.Added;
+                    db.Plan_Improvement_Campaign_Program_Tactic_Comment.Add(pcptc);
+                }
+                else
+                {
+
+                    //// Save Comment for Tactic,Program,Campaign.
+                    Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
+                   
+                    if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                    {
+                        pcptc.PlanTacticId = id;
+                        syncComment = Convert.ToString(Enums.Section.Tactic) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    }
+                    else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                    {
+
+                        pcptc.PlanProgramId = id;
+                        syncComment = Convert.ToString(Enums.Section.Program) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    }
+                    else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                    {
+
+                        pcptc.PlanCampaignId = id;
+                        syncComment = Convert.ToString(Enums.Section.Campaign) + " synced by " + Sessions.User.FirstName + " " + Sessions.User.LastName;
+                    }
+                    pcptc.Comment = syncComment;
+                    DateTime currentdate = DateTime.Now;
+                    pcptc.CreatedDate = currentdate;
+                    string displayDate = currentdate.ToString("MMM dd") + " at " + currentdate.ToString("hh:mmtt");
+                    pcptc.CreatedBy = Sessions.User.UserId;
+                    db.Entry(pcptc).State = EntityState.Added;
+                    db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
+                }
+                db.SaveChanges();
+                #endregion
+
             }
             catch (Exception e)
             {
@@ -7786,7 +7922,13 @@ namespace RevenuePlanner.Controllers
                                             db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
                                             AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower());
+
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                            if (program.IsDeployedToIntegration == true)
+                                            {
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Program);
+                                                externalIntegration.Sync();
+                                            }
                                         }
                                         else if (program.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                                         {
@@ -7846,6 +7988,11 @@ namespace RevenuePlanner.Controllers
                                             db.SaveChanges();
                                             AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower());
                                             result = Common.InsertChangeLog(Sessions.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                                            if (campaign.IsDeployedToIntegration == true)
+                                            {
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Campaign);
+                                                externalIntegration.Sync();
+                                            }
                                         }
                                         else if (campaign.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString()))
                                         {
@@ -8639,16 +8786,17 @@ namespace RevenuePlanner.Controllers
                     db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
                     db.SaveChanges();
 
-                    if (isApproved)
-                    {
-                        Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
-                        if (item.IsDeployedToIntegration == true)
-                        {
-                            ExternalIntegration externalIntegration = new ExternalIntegration(item.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
-                            externalIntegration.Sync();
-                        }
-                    }
-                    else if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                    //if (isApproved)
+                    //{
+                    //    Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                    //    if (item.IsDeployedToIntegration == true)
+                    //    {
+                    //        ExternalIntegration externalIntegration = new ExternalIntegration(item.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                    //        externalIntegration.Sync();
+                    //    }
+                    //}
+                    //else 
+                    if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                     {
                         Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
                     }
@@ -8698,16 +8846,17 @@ namespace RevenuePlanner.Controllers
                     db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
                     db.SaveChanges();
 
-                    if (isApproved)
-                    {
-                        Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
-                        if (item.IsDeployedToIntegration == true)
-                        {
-                            ExternalIntegration externalIntegration = new ExternalIntegration(item.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
-                            externalIntegration.Sync();
-                        }
-                    }
-                    else if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
+                    //if (isApproved)
+                    //{
+                    //    Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
+                    //    if (item.IsDeployedToIntegration == true)
+                    //    {
+                    //        ExternalIntegration externalIntegration = new ExternalIntegration(item.PlanTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                    //        externalIntegration.Sync();
+                    //    }
+                    //}
+                    //else 
+                    if (item.Status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString()))
                     {
                         Common.InsertChangeLog(Sessions.PlanId, null, item.PlanTacticId, item.Title.ToString(), Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.declined, null);
                     }

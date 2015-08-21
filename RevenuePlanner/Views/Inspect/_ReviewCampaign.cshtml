@@ -5,6 +5,12 @@
     bool IsCampaignEditable = (bool)ViewBag.IsCampaignEditable;
     ////Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     string IntegrationStatus = campaignReview.IsIntegrationInstanceExist;
+    bool isInstanceSalesforce = (bool)ViewBag.IsInstanceSalesfore;
+    var CampaignLastSync = (dynamic)null;
+    if (isInstanceSalesforce)
+    {
+        CampaignLastSync = ViewBag.CampaignLastSync != null ? (DateTime)ViewBag.CampaignLastSync : (DateTime?)null;
+    }
     if (campaignReview.IsIntegrationInstanceExist == "Yes" && !campaignReview.IsDeployedToIntegration)
     {
         IntegrationStatus = "No";
@@ -51,13 +57,17 @@
             <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
         </div>
     </div>
+
+    <div style="margin-bottom: 0px; width: 93%;margin-top:140px;">
+        @if (CampaignLastSync != null)
+        {
+            <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Campaign last synced on @CampaignLastSync.ToString("MMM dd, yyyy ") at  @CampaignLastSync.ToString("hh:mm tt").ToLower()</span>
+        }
+</div>
 </div>
 
 <div class="span2 right-col-tab" id="inspect-modal-left-column2">
-    
-   
         <div class="inspect-bolder-label">Notes</div>
-
         <div id="divComment" class="chat-div" style="overflow: auto;height: 290px !important;">
             <div id="divInnerComment" class="comment-scroll-section all-height">
                 @foreach (var item in ViewBag.ReviewModel)
@@ -140,6 +150,7 @@
         countNotSubmittedProgram = programList.Where(p => !p.Status.Equals(statussubmit)).Count();
         countNotDeclineProgram = programList.Where(p => !p.Status.Equals(statusdecline)).Count();
 
+        bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
         if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
         {
 
@@ -189,6 +200,7 @@
             {
                 isVisibleStatus = false;
             }
+            isVisibleSyncButton = true;
         }
         else if (campaignReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
         {
@@ -234,15 +246,21 @@
             {
                 isVisibleStatus = false;
             }
+            isVisibleSyncButton = true;
         }
 
         if (IsCampaignEditable)
         {
-            if ((bool)ViewBag.IsModelDeploy)
+            // Show Sync button when Integration InstanceType is "Salesforce". Implement this by "isInstanceSalesfore" flag from controller.
+            if ((bool)ViewBag.IsModelDeploy && (bool)campaignReview.IsDeployedToIntegration && isVisibleSyncButton && isInstanceSalesforce)
             {
         <div class="margin-top23 margin-right10" style="float: left;">
             <div id="btn_sync_status" class="btn-group dropup">
-                <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
+                <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
+                                  <span class="flag-icon sync-icon-dropdown"></span>
+                                  <span id="spanSyncStatus">Sync</span>
+                              </button>
+                    @*<button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
                     <span class="flag-icon sync-icon-dropdown"></span>
                     <span id="spanSyncStatus">
                         @if (campaignReview.IsDeployedToIntegration)
@@ -274,7 +292,8 @@
                     <li>
                         <a id="aNotSync">Don't Sync</a>
                     </li>
-                </ul>
+                    </ul>*@
+
             </div>
         </div> 
             }
@@ -369,10 +388,11 @@
 
           $("#btnSync").click(function () {
               var IsDeployedToIntegration = false;
-              var spanSyncStatus = $("#hdnSyncStatusValue").val();
-              if (spanSyncStatus == 'Sync') {
-                  IsDeployedToIntegration = true;
-              }
+              IsDeployedToIntegration = '@campaignReview.IsDeployedToIntegration';
+              //var spanSyncStatus = $("#hdnSyncStatusValue").val();
+              //if (spanSyncStatus == 'Sync') {
+              //    IsDeployedToIntegration = true;
+              //}
               var PlanCampaignId = $('#hdnPlanCampaignId').val();
 
               $.ajax({
@@ -380,8 +400,8 @@
                   url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                   data: {
                       id: PlanCampaignId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", //section parameter added to save tactic comment
-                      IsDeployedToIntegration: IsDeployedToIntegration
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()" //section parameter added to save tactic comment
+                      //IsDeployedToIntegration: IsDeployedToIntegration
                   },
                   success: function (data) {
                       if (data.result) {
@@ -396,6 +416,16 @@
                               }
                           }
                           /*End : Added by Mitesh Vaishnav for PL ticket #690 */
+
+                          var inspectMode = '';
+                          var IsEditable = $("#hdnCampaignOpt").val();
+                          if (IsEditable == strViewMode.toString())
+                              inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                          else
+                              inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                          var requestedModule = $("#hdnRedirectType").val();
+                          loadReview($('#hdnPlanCampaignId').val(), TabReview);
+
                           $("#successMessage").css("display", "block");
                           $("#spanMessageSuccess").empty();
                           $("#spanMessageSuccess").text(data.msg);
@@ -410,11 +440,11 @@
               });
           });
 
-          $("#uldivSync li a").click(function () {
-              $("#spanSyncStatus").html($(this).text());
-              $("#hdnSyncStatusValue").val($(this).text());
+          //$("#uldivSync li a").click(function () {
+          //    $("#spanSyncStatus").html($(this).text());
+          //    $("#hdnSyncStatusValue").val($(this).text());
 
-          });
+          //});
 
 
           var divheight = $("#divInnerComment").height();

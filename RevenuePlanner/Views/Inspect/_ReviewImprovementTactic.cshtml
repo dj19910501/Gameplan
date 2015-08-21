@@ -8,6 +8,7 @@
     {
         IntegrationStatus = "No";
     }
+    var ImprovementTacticLastSync = ViewBag.ImprovementTacticLastSync;
 }
 <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
     <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
@@ -42,6 +43,12 @@
             </span>
         </div>
         </div>
+    <div style="margin-bottom: 0px; width: 93%;margin-top:80px;">
+        @if (ImprovementTacticLastSync != null)
+        {
+            <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">ImprovementTactic last synced on @ImprovementTacticLastSync.ToString("MMM dd, yyyy ") at  @ImprovementTacticLastSync.ToString("hh:mm tt").ToLower()</span>
+        }
+</div>
 </div>
 
 <div class="span2 right-col-tab" id="inspect-modal-left-column2">
@@ -93,6 +100,7 @@
         string Reject = "Decline";
         List<string> aryStatus = new List<string>();
         bool isVisibleStatus = true;
+        bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
         if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
         {
 
@@ -127,6 +135,7 @@
             {
                 isVisibleStatus = false;
             }
+            isVisibleSyncButton = true;
         }
         else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
         {
@@ -156,15 +165,20 @@
             {
                 isVisibleStatus = false;
             }
+            isVisibleSyncButton = true;
         }
 
         if (IsDeployToIntegrationVisible)
         {
-            if ((bool)ViewBag.IsModelDeploy)
+            if ((bool)ViewBag.IsModelDeploy && isVisibleSyncButton)
             {
         <div class="margin-top23 margin-right10" style="float: left;">
             <div id="btn_sync_status" class="btn-group dropup">
-                <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
+                <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
+                                  <span class="flag-icon sync-icon-dropdown"></span>
+                                  <span id="spanSyncStatus">Sync</span>
+                              </button>
+                @*<button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px;">
                     <span class="flag-icon sync-icon-dropdown"></span>
                     <span id="spanSyncStatus">
                         @if (tacticReview.IsDeployedToIntegration)
@@ -196,7 +210,7 @@
                     <li>
                         <a id="aNotSync">Don't Sync</a>
                     </li>
-                </ul>
+                </ul>*@
             </div>
         </div> 
             }
@@ -286,10 +300,11 @@
           $("#btnSync").click(function () {
 
               var IsDeployedToIntegration = false;
-              var spanSyncStatus = $("#hdnSyncStatusValue").val();
-              if (spanSyncStatus == 'Sync') {
-                  IsDeployedToIntegration = true;
-              }
+              IsDeployedToIntegration = '@tacticReview.IsDeployedToIntegration';
+              //var spanSyncStatus = $("#hdnSyncStatusValue").val();
+              //if (spanSyncStatus == 'Sync') {
+              //    IsDeployedToIntegration = true;
+              //}
               var PlanTacticId = $('#hdnPlanTacticId').val();
 
               $.ajax({
@@ -297,8 +312,8 @@
                   url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                   data: {
                       id: PlanTacticId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", //section parameter added to save tactic comment
-                      IsDeployedToIntegration: IsDeployedToIntegration
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()" //section parameter added to save tactic comment
+                      //IsDeployedToIntegration: IsDeployedToIntegration
                   },
                   success: function (data) {
                       if (data.result) {
@@ -313,6 +328,9 @@
                               }
                           }
                           /*End : Added by Mitesh Vaishnav for PL ticket #690 */
+                          var requestedModule = $("#hdnRequestedModule").val();
+                          //loadInspectPopup($('#hdnPlanTacticId').val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);//section parameter passed to open tactic popup
+                          loadReview($('#hdnPlanTacticId').val(), TabReview);
                           $("#successMessage").css("display", "block");
                           $("#spanMessageSuccess").empty();
                           $("#spanMessageSuccess").text(data.msg);
@@ -327,10 +345,10 @@
               });
           });
 
-          $("#uldivSync li a").click(function () {
-              $("#spanSyncStatus").html($(this).text());
-              $("#hdnSyncStatusValue").val($(this).text());
-          });
+          //$("#uldivSync li a").click(function () {
+          //    $("#spanSyncStatus").html($(this).text());
+          //    $("#hdnSyncStatusValue").val($(this).text());
+          //});
 
 
           var divheight = $("#divInnerComment").height();

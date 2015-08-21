@@ -5,6 +5,12 @@
     bool IsProgramEditable = (bool)ViewBag.IsProgramEditable;
     ////Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
     string IntegrationStatus = programReview.IsIntegrationInstanceExist;    
+    bool isInstanceSalesforce = (bool)ViewBag.IsInstanceSalesfore;
+    var ProgramLastSync = (dynamic)null;
+    if(isInstanceSalesforce)
+    {
+        ProgramLastSync = ViewBag.ProgramLastSync != null ? (DateTime)ViewBag.ProgramLastSync : (DateTime?)null;
+    }
     if (programReview.IsIntegrationInstanceExist == "Yes" && !programReview.IsDeployedToIntegration)
     {
         IntegrationStatus = "No";
@@ -49,7 +55,15 @@
             <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
         </div>
     </div>
+    <div style="margin-bottom: 0px; width: 93%;margin-top:80px;">
+        @if (ProgramLastSync != null)
+        {
+            <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Program last synced on @ProgramLastSync.ToString("MMM dd, yyyy ") at  @ProgramLastSync.ToString("hh:mm tt").ToLower()</span>
+        }
 </div>
+</div>
+
+
 
 <div class="span2 right-col-tab" id="inspect-modal-left-column2">
    
@@ -127,6 +141,8 @@
             countNotSubmittedTactic = tacticList.Where(p => !p.Status.Equals(statussubmit)).Count();
             countNotDeclineTactic = tacticList.Where(p => !p.Status.Equals(statusdecline)).Count();
 
+            bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
+            
             if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
             {
                 if ((bool)ViewBag.IsValidOwner)
@@ -144,6 +160,7 @@
                 {
                     isVisibleStatus = false;
                 }
+                
             }
             else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
             {
@@ -174,6 +191,7 @@
                 {
                     isVisibleStatus = false;
                 }
+                isVisibleSyncButton = true;
             }
             else if (programReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
             {
@@ -219,16 +237,24 @@
                 {
                     isVisibleStatus = false;
                 }
+                isVisibleSyncButton = true;
             }
 
 
                 if (IsProgramEditable)
                 {
-                    if ((bool)ViewBag.IsModelDeploy)
+                    // Show Sync button when Integration InstanceType is "Salesforce". Implement this by "isInstanceSalesfore" flag from controller.
+                    if ((bool)ViewBag.IsModelDeploy && (bool)programReview.IsDeployedToIntegration && isVisibleSyncButton && isInstanceSalesforce)
                     {
                 <div class="margin-top23 margin-right10" style="float: left;">
                 <div id="btn_sync_status" class="btn-group dropup">
-                    <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:65px;">
+                                <button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width: 65px; border-radius: 4px;">
+                                  <span class="flag-icon sync-icon-dropdown"></span>
+                                  <span id="spanSyncStatus">Sync</span>
+                                </button>
+
+                                @*Below code commented by Viral kadiya to implement PL ticket #1468.*@
+                                @*<button id="btnSync" class="btn buttom-width resize-drop-button without-border-buttom displayinherit  btn-blue text-shadow-blue source-sans-proregular" style="width:65px;">
                         <span class="flag-icon sync-icon-dropdown"></span>
                         <span id="spanSyncStatus">
                             @if (programReview.IsDeployedToIntegration)
@@ -260,7 +286,7 @@
                             <li>
                                 <a id="aNotSync">Don't Sync</a>
                             </li>
-                        </ul>
+                                    </ul>*@
                 </div>
             </div> 
                     }
@@ -354,10 +380,11 @@
           $("#btnSync").click(function () {
 
               var IsDeployedToIntegration = false;
-              var spanSyncStatus = $("#hdnSyncStatusValue").val();
-              if (spanSyncStatus == 'Sync') {
-                  IsDeployedToIntegration = true;
-              }
+              IsDeployedToIntegration = '@programReview.IsDeployedToIntegration';
+              //var spanSyncStatus = $("#hdnSyncStatusValue").val();
+              //if (spanSyncStatus == 'Sync') {
+              //    IsDeployedToIntegration = true;
+              //}
               var PlanProgramId = $('#hdnPlanProgramId').val();
 
               $.ajax({
@@ -365,8 +392,8 @@
                   url: '@Url.Content("~/Inspect/SaveSyncToIntegration/")',
                   data: {
                       id: PlanProgramId,
-                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", //section parameter added to save tactic comment
-                      IsDeployedToIntegration: IsDeployedToIntegration
+                      section: "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()" //section parameter added to save tactic comment
+                      //IsDeployedToIntegration: IsDeployedToIntegration
                   },
                   success: function (data) {
                       if (data.result) {
@@ -381,6 +408,16 @@
                               }
                           }
                           /*End : Added by Mitesh Vaishnav for PL ticket #690 */
+
+                          var inspectMode = '';
+                          var IsEditable = $("#hdnProgramOpt").val();
+                          if (IsEditable == strViewMode.toString())
+                              inspectMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                              else
+                                  inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                              var requestedModule = $("#hdnRedirectType").val();
+                          loadReview($("#hdnPlanProgramId").val(), TabReview);
+
                           $("#successMessage").css("display", "block");
                           $("#spanMessageSuccess").empty();
                           $("#spanMessageSuccess").text(data.msg);
@@ -395,10 +432,10 @@
               });
           });
 
-          $("#uldivSync li a").click(function () {
-              $("#spanSyncStatus").html($(this).text());
-              $("#hdnSyncStatusValue").val($(this).text());
-          });
+          //$("#uldivSync li a").click(function () {
+          //    $("#spanSyncStatus").html($(this).text());
+          //    $("#hdnSyncStatusValue").val($(this).text());
+          //});
 
           var divheight = $("#divInnerComment").height();
           $("#divComment").scrollTop(divheight);
@@ -441,6 +478,8 @@
 
                               $("#spanMessageSuccess").empty();
                               $("#spanMessageSuccess").text(data.msg);
+
+                              //Refresh Review page
                               var inspectMode = '';
                               var IsEditable = $("#hdnProgramOpt").val();
                               if (IsEditable == strViewMode.toString())
@@ -448,7 +487,6 @@
                             else
                                 inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                               var requestedModule = $("#hdnRedirectType").val();
-                              //  loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
                               loadReview($("#hdnPlanProgramId").val(), TabReview);
                           }
                           else {
