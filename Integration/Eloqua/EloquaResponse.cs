@@ -679,6 +679,7 @@ namespace Integration.Eloqua
                                     DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
                                     List<EloquaResponseModel> lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
                                                                                     r.peroid >= tacticStartDate && r.peroid <= tacticEndDate).ToList();
+                                    
                                     foreach (EloquaResponseModel item in lstTacticResponse)
                                     {
                                         string tmpPeriod = "Y" + item.peroid.Month.ToString();
@@ -702,6 +703,7 @@ namespace Integration.Eloqua
                                             db.Entry(actualTactic).State = EntityState.Added;
                                         }
                                         lstResponse.Remove(item);
+                                        db.SaveChanges();
                                     }
 
                                     objTactic.LastSyncDate = DateTime.Now;
