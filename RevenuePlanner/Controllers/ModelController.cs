@@ -2264,7 +2264,7 @@ namespace RevenuePlanner.Controllers
                     if (oldModel != null)
                     {
                         //// Added By Kalpesh Sharma #560: Method to Specify a Name for Cloned Model 07-11-2014
-                        result = oldModel.Title + " " + DateTime.Now.ToString("MMddyy");
+                        result = oldModel.Title + " " + DateTime.Now.ToString("MMddyy_HHmmss");
                         ModelName = oldModel.Title;
                         StatusOpt = 1;
                     }
