@@ -406,6 +406,7 @@ namespace RevenuePlanner.Controllers
          
 
             bool IsRequest = false;
+            bool IsFiltered = false;
             string planYear = string.Empty;
             int year;
             bool isNumeric = int.TryParse(timeFrame, out year);
@@ -419,6 +420,11 @@ namespace RevenuePlanner.Controllers
                 planYear = DateTime.Now.Year.ToString();
             }
 
+            if (customFieldIds != "" || ownerIds != "" || TacticTypeid != "" || StatusIds != "")
+            {
+                IsFiltered = true;
+
+            }
 
             //// Get list of planIds from filtered plans
             var filteredPlanIds = lstPlans.Where(plan => plan.Year == planYear).ToList().Select(plan => plan.PlanId).ToList();
@@ -577,10 +583,19 @@ namespace RevenuePlanner.Controllers
                     lstTactic = lstTactic.Where(t => t.objPlanTactic.IsDeleted == false && !viewBy.Equals(PlanGanttTypes.Request.ToString()))
                                     .Select(planTactic => planTactic).ToList<Plan_Tactic>();
 
-                    //List<string> improvementTacticStatus = GetStatusAsPerSelectedType(viewBy, objactivemenu);
+                    if (IsFiltered && lstTactic.Count() == 0)
+                    {
+                        lstImprovementTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                    }
+                    else
+                    {
                     lstImprovementTactic = lstImprovementTactic.Where(improvementTactic => improvementTactic.IsDeleted == false && !viewBy.Equals(PlanGanttTypes.Request.ToString()))
                                                                .Select(improvementTactic => improvementTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+
+                    }
+                
                 }
+
             }
             else if (objactivemenu.Equals(Enums.ActiveMenu.Home))
             {
@@ -595,10 +610,16 @@ namespace RevenuePlanner.Controllers
                 statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
                 lstTactic = lstTactic.Where(t => status.Contains(t.objPlanTactic.Status) || (!viewBy.Equals(PlanGanttTypes.Request.ToString()) ? statusCD.Contains(t.objPlanTactic.Status) : false)).Select(planTactic => planTactic).ToList<Plan_Tactic>();
 
-                //List<string> improvementTacticStatus = GetStatusAsPerSelectedType(viewBy, objactivemenu);
+                if (IsFiltered && lstTactic.Count() == 0)
+                {
+                    lstImprovementTactic = new List<Plan_Improvement_Campaign_Program_Tactic>();
+                }
+                else
+                {
                 lstImprovementTactic = lstImprovementTactic.Where(improveTactic => status.Contains(improveTactic.Status) || (!viewBy.Equals(PlanGanttTypes.Request.ToString()) ? statusCD.Contains(improveTactic.Status) : false))
                                                            .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
 
+                }
                 //// Prepare objects for ImprovementTactic section of Left side accordian pane
                 improvementTacticForAccordion = GetImprovementTacticForAccordion(lstImprovementTactic);
                 improvementTacticTypeForAccordion = GetImprovementTacticTypeForAccordion(lstImprovementTactic);
@@ -624,7 +645,7 @@ namespace RevenuePlanner.Controllers
                     {
                         viewBy = PlanGanttTypes.Tactic.ToString();
                     }
-                    return PrepareTacticAndRequestTabResult(planId, viewBy, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
+                    return PrepareTacticAndRequestTabResult(planId, viewBy,IsFiltered, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
                 }
                 else
                 {
@@ -1300,10 +1321,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementTacticTypeForAccordion">list of improvement tactic type for accrodian(left side pane)</param>
         /// <param name="viewByListResult">list of viewBy dropdown options</param>
         /// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        private JsonResult PrepareTacticAndRequestTabResult(string planId, string viewBy, bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
+        private JsonResult PrepareTacticAndRequestTabResult(string planId, string viewBy,bool IsFiltered,bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
         {
             Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
-            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, planId, viewBy, IsRequest, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
+            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, planId, viewBy, IsFiltered, IsRequest,planYear, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
          //   Debug.WriteLine("Step 7.1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
             //Added By komal Rawal for #1282
             
@@ -1526,7 +1547,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="lstTactic">list of tactics</param>
         /// <param name="lstImprovementTactic">list of imporvementTactics</param>
         /// <returns>Returns object list of tasks for GANNT CHART</returns>
-        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist ,string planId, string viewBy, bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic)
+        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist, string planId, string viewBy, bool IsFiltered, bool IsRequest, string planYear, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic)
         {
             string tacticStatusSubmitted = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
@@ -1565,7 +1586,7 @@ namespace RevenuePlanner.Controllers
                 mqlLevel = Convert.ToInt32(stageList.FirstOrDefault(stage => stage.Code == mqlstage).Level);
             }
 
-            if (IsRequest) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
+            if (IsRequest || IsFiltered) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
             {
 
             #region Prepare Plan Task Data
@@ -1609,6 +1630,7 @@ namespace RevenuePlanner.Controllers
 
             //// Get list of plan Ids
             var planIdList = lstTactic.Select(tactic => tactic.PlanId).ToList().Distinct();
+
 
             #region Prepare Plan data for Improvement
             //// Prepate task data improvement Tacic list for gantt chart
