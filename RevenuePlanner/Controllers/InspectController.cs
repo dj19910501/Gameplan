@@ -2432,9 +2432,11 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsModelDeploy = _inspectmodel.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
 
             bool isValidOwner = false;
+            bool isEditable = false;
             if (_inspectmodel.OwnerId == Sessions.User.UserId)
             {
                 isValidOwner = true;
+                isEditable = true;
             }
             ViewBag.IsValidOwner = isValidOwner;
             /*Added by Mitesh Vaishnav on 13/06/2014 to address changes related to #498 Customized Target Stage - Publish model*/
@@ -2474,8 +2476,24 @@ namespace RevenuePlanner.Controllers
             if (lstSubOrdinatesPeers.Contains(_inspectmodel.OwnerId))
             {
                 isValidManagerUser = true;
+                isEditable = true;
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
+
+            if (isEditable && !isValidOwner)
+            {
+                List<int> planTacticIds = new List<int>();
+                List<int> lstAllowedEntityIds = new List<int>();
+
+                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic => tactic.PlanTacticId).ToList();
+                lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                if (lstAllowedEntityIds.Count != planTacticIds.Count)
+                {
+                    isEditable = false;
+                }
+
+            }
+            ViewBag.IsEditable = isEditable;
 
             // Modified by komal Rawal for #1158
             bool IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);

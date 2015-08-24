@@ -223,7 +223,7 @@
 
 
             @{    
-
+                //Modified By Komal Rawal for #1375
                 string Submit = "Submit for Approval";
                 string Approve = "Approve";
                 string Reject = "Decline";
@@ -232,7 +232,7 @@
                 bool isVisibleSyncButton = false;   // Display sync button only when Tactic status from "Approved, In-Progress or Completed".
                 if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString()))
                 {
-                    if ((bool)ViewBag.IsValidOwner)
+                    if ((bool)ViewBag.IsEditable)
                     {
                         aryStatus.Add(Submit);
                     }
@@ -243,7 +243,7 @@
                 }
                 else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString()))
                 {
-                    if ((bool)ViewBag.IsValidManagerUser)
+                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
                     {
                         aryStatus.Add(Approve);
                         aryStatus.Add(Reject);
@@ -255,7 +255,7 @@
                 }
                 else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()))
                 {
-                    if ((bool)ViewBag.IsValidManagerUser)
+                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
                     {
                         aryStatus.Add(Reject);
                     }
@@ -267,10 +267,11 @@
                 }
                 else if (tacticReview.Status.Equals(RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString()))
                 {
-                    if ((bool)ViewBag.IsValidManagerUser)
+                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
                     {
                         if ((bool)ViewBag.IsValidOwner)
                         {
+                            
                             aryStatus.Add(Submit);
                         }
                         else
@@ -280,7 +281,7 @@
                     }
                     else
                     {
-                        if ((bool)ViewBag.IsValidOwner)
+                        if ((bool)ViewBag.IsValidOwner && ViewBag.IsEditable)
                         {
                             aryStatus.Add(Submit);
                         }
@@ -292,7 +293,7 @@
                 }
                 else
                 {
-                    if ((bool)ViewBag.IsValidManagerUser)
+                    if ((bool)ViewBag.IsValidManagerUser && ViewBag.IsEditable)
                     {
                         aryStatus.Add(Reject);
                     }
