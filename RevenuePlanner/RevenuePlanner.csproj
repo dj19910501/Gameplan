@@ -50,7 +50,7 @@
     </Reference>
     <Reference Include="evohtmltopdf, Version=6.2.0.0, Culture=neutral, PublicKeyToken=e1fcbb86597de299, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\evohtmltopdf.dll</HintPath>
+      <HintPath>DLLs\evohtmltopdf.dll</HintPath>
     </Reference>
     <Reference Include="HelperSharp, Version=1.0.5120.16113, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -252,7 +252,6 @@
     <Content Include="App_Readme\Elmah.SqlServer.sql" />
     <Content Include="App_Readme\Elmah.SqlServer.txt" />
     <Content Include="App_Readme\Elmah.txt" />
-    <Content Include="bin\evohtmltopdf.dll" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left.gif" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left_abs.gif" />
     <Content Include="codebase\imgs\dhxgrid_skyblue\ar_left_abs_dis.gif" />
@@ -621,7 +620,6 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="DLLs\Elmah.dll" />
     <Content Include="DLLs\evohtmltopdf.dll" />
-    <Content Include="DLLs\evointernal.dll" />
     <Content Include="DLLs\HelperSharp.dll" />
     <Content Include="DLLs\Newtonsoft.Json.dll" />
     <Content Include="DLLs\RestSharp.dll" />
@@ -994,6 +992,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="bin\" />
     <Folder Include="Filters\" />
   </ItemGroup>
   <ItemGroup>
