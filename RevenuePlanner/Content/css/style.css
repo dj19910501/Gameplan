@@ -15530,3 +15530,18 @@ width: 22px;
 margin: 6px auto 0px;
 float:right;
 }
+.btn-blue-grid{
+    background: url('../images/btn-bg-35h.jpg') repeat-x !important;
+    display: initial;
+    max-width: 220px !important;
+    height: 30px !important;
+    border: none !important;
+    color: #fff;
+    margin-bottom: 18px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-top:7px;
+    float:right;
+    margin-right:10px;
+}
+/* End */

@@ -11,6 +11,7 @@
 <style>
     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
         text-align: center;
+        padding-left:0px !important;
     }
 
     div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
@@ -28,6 +29,10 @@
     <span id="spninq"></span>
     <span id="spnmql"></span>
     <span id="spncw"></span>
+    <a class="btn btn-blue-grid text-shadow-blue source-sans-proregular"  id="exportcsv" onclick="return ExportToCSV();">
+        <img src="~/Content/images/grid-export.png" /> Export .csv
+    </a>
+   
 </div>
 
 <div id="gridbox" style="background-color:white;width:100%;"></div>
@@ -81,7 +86,6 @@
         BindHomeGrid();
         $("input[name='useless']").click(doIt);
         function doIt() {
-            //alert('did it');
             return true;
         }
         $("#useless").click();
@@ -104,34 +108,30 @@
     $(".grid_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
-    function Action(type, id) {
-        //alert("type=" + type + "<br/>id=" + id);
-    }
+ 
 
     function ExportToCSV()
     {
-       // HomeGrid.setCSVDelimiter("\t");
         HomeGrid.enableCSVAutoID(true);
         HomeGrid.enableCSVHeader(true);
-      //  HomeGrid.enableMathSerialization(true);
-        HomeGrid.setSerializableColumns("true,false,true,true,true,true,true,true,true,true,true");
+        HomeGrid.setSerializableColumns("true,true,false,false,true,true,true,true,true,true,true,true");
         var myCSVString = HomeGrid.serializeToCSV(true);
+        var lines = myCSVString.split(",");
+        lines.splice(0, 9);
+        lines.splice(1, 1, "Task Name");
         $("#exportcsv").attr('download', 'Grid.csv')
-        $("#exportcsv").attr("href", 'data:Application/octet-stream,' + encodeURIComponent(myCSVString));
+        $("#exportcsv").attr("href", 'data:Application/octet-stream,' + encodeURIComponent(lines));
     }
     function BindHomeGrid() {
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
-        //  HomeGrid.enableTreeGridLines();
         HomeGrid.enableDragAndDrop(true);
-        //HomeGrid.setDragBehavior("sibling-next");
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
      
-        HomeGrid.setNumberFormat("$0,000", 5, ".", ",");
-        //HomeGrid.setNumberFormat("0,000", 9, ".", ",");
-        //HomeGrid.setNumberFormat("$0,000", 10, ".", ",");
+        HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
+    
         HomeGrid.setImageSize(1, 1);
 
        HomeGrid.csvParser = HomeGrid.csvExtParser;
@@ -142,7 +142,6 @@
             $(".dhx_combo_select").css("display", "none");
         });
 
-     //   HomeGrid.attachEvent("onMouseOver", function () { return false });
         HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
             var locked = HomeGrid.cells(id, 0).getAttribute("locked");
@@ -150,26 +149,22 @@
                 return false;
             return true;                                          //allows dragging in any other case
         });
-       // HomeGrid.setDragText("rows");
-        //   HomeGrid.splitAt(1);
+   
         HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
-        //HomeGrid.setColumnHidden(2, true);
-        HomeGrid.sortRows(0, 'str', 'asc');
+        HomeGrid.sortRows(1, 'str', 'asc');
         HomeGrid.forEachRow(function (rowid) {
-        //    var cost = HomeGrid.cells(id, 5).getValue();
+       
+            var MQL = HomeGrid.cells(rowid, 10).getValue();
 
-        //    HomeGrid.cells(id, 5).setValue(FormatNumber(cost, false));
-            var MQL = HomeGrid.cells(rowid, 9).getValue();
+            HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
+            var Revenue = HomeGrid.cells(rowid, 11).getValue();
 
-            HomeGrid.cells(rowid, 9).setValue(GetAbberiviatedValue(MQL));
-            var Revenue = HomeGrid.cells(rowid, 10).getValue();
+            HomeGrid.cells(rowid, 11).setValue(FormatNumber(Revenue, false));
 
-            HomeGrid.cells(rowid, 10).setValue(FormatNumber(Revenue, false));
-
-            var psv = HomeGrid.cells(rowid, 8).getValue().split("_");
+            var psv = HomeGrid.cells(rowid, 9).getValue().split("_");
             if (psv.length > 1) {
                 var psvnum = FormatCommas(psv[0], false);
-                HomeGrid.cells(rowid, 8).setValue(psvnum + " " + psv[1]);
+                HomeGrid.cells(rowid, 9).setValue(psvnum + " " + psv[1]);
             }
        
         });
@@ -211,7 +206,7 @@
 
                     var sourseid = HomeGrid.cells(sid, HomeGrid.getColIndexById('id')).getValue();
                     var destinatinId = HomeGrid.cells(tid, HomeGrid.getColIndexById('id')).getValue();
-                    var tacticname = HomeGrid.cells(sid, 0).getValue();
+                    var tacticname = HomeGrid.cells(sid, 1).getValue();
                         var dtactictitle = "";
 
                         for (a in DestinationMember) {
@@ -225,14 +220,14 @@
 
                         }
 
-                    ProgarmName = HomeGrid.cells(tid, 0).getValue();
+                    ProgarmName = HomeGrid.cells(tid, 1).getValue();
                     $("#lipname").html(ProgarmName);
                     $("#hdnsourceid").val(sourseid);
                     $("#hdndestid").val(destinatinId);
                     $("#divMovetacticPopup").modal('show');
                     }
                     else {
-                        ProgarmName = HomeGrid.cells(tid, 0).getValue();
+                        ProgarmName = HomeGrid.cells(tid, 1).getValue();
                         alert("Tactic is already in " + ProgarmName+".");
                     }
                 }
@@ -311,8 +306,6 @@
                 return false;
         }
         if (stage == 1) {
-
-
             $(".dhx_combo_edit").off("keydown");
             if (UpdateColumn == "Tactic Planned Cost" || UpdateColumn == "Target Stage Goal") {
 
@@ -329,22 +322,18 @@
             }
            
             if (UpdateColumn == "Target Stage Goal") {
-               // this.editor.obj.class = "priceValue";
-                var psv = HomeGrid.cells(rowId, 8).getValue().split(" ");
+                var psv = HomeGrid.cells(rowId, 9).getValue().split(" ");
                 this.editor.obj.value = psv[0];
             }
         }
         if (stage == 2) // start edit Shipping column
         {
-            // var combo = HomeGrid.getCombo(4);
-            // for getting column value using name
+          
             var sdateindex = HomeGrid.getColIndexById('startdate');
             var edateindex = HomeGrid.getColIndexById('enddate');
             var idindex = HomeGrid.getColIndexById('id');
             var costindex = HomeGrid.getColIndexById('plannedcost');
             var stageindex = HomeGrid.getColIndexById('inq');
-            // var value = HomeGrid.cells(rowId, index).getValue();
-            // end
           
             if (UpdateColumn == "" || UpdateColumn == null)
                 UpdateColumn = HomeGrid.getColLabel(Colind, 0);
@@ -412,9 +401,6 @@
             if (UpdateColumn == "Tactic Type") {
 
                 var tacticTypeId = nValue;
-
-
-               
                     if (nValue != oValue) {
                         $.ajax({
                             type: 'POST',
@@ -425,10 +411,10 @@
                                 var stagetitle = data.stageTitle;
                                 var projectedStageValue = data.projectedStageValue;
                             if (parseFloat(projectedStageValue) > 0)
-                                HomeGrid.cells(rowId, 8).setValue(FormatCommas(projectedStageValue.toString(), false) + " " + stagetitle);
+                                HomeGrid.cells(rowId, 9).setValue(FormatCommas(projectedStageValue.toString(), false) + " " + stagetitle);
                             else
-                                HomeGrid.cells(rowId, 8).setValue(projectedStageValue + " " + stagetitle);
-                            HomeGrid.cells(rowId, 8).setAttribute("stage", stagetitle);
+                                HomeGrid.cells(rowId, 9).setValue(projectedStageValue + " " + stagetitle);
+                            HomeGrid.cells(rowId, 9).setAttribute("stage", stagetitle);
                             GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue, data.stageId);
                             }
                         });
@@ -467,12 +453,11 @@
                                 diff = parseInt(nValue) - parseInt(oValue);
                                 SetColumUpdatedValue(5, diff);
 
-                                HomeGrid.cells(progid, 5).setValue((newProgVal));
-                                HomeGrid.cells(campid, 5).setValue((newCampVal));
-                                HomeGrid.cells(planid, 5).setValue((newPlanVal));
+                                HomeGrid.cells(progid, 6).setValue((newProgVal));
+                                HomeGrid.cells(campid, 6).setValue((newCampVal));
+                                HomeGrid.cells(planid, 6).setValue((newPlanVal));
 
 
-                                //HomeGrid.cells(rowId, 5).setValue((nValue));
                             }
                     }
                 });
@@ -488,8 +473,8 @@
             progid = HomeGrid.getParentId(rowId);
             campid = HomeGrid.getParentId(progid);
             planid = HomeGrid.getParentId(campid);
-            var programid = HomeGrid.cells(progid, 2).getValue();
-            var campaignid = HomeGrid.cells(campid, 2).getValue();
+            var programid = HomeGrid.cells(progid, 3).getValue();
+            var campaignid = HomeGrid.cells(campid, 3).getValue();
 
             var ProgstartDate = HomeGrid.cells(progid, dateindex).getValue();
             var Campstartdate = HomeGrid.cells(campid, dateindex).getValue();
@@ -555,8 +540,8 @@
            
             campid = HomeGrid.getParentId(rowId);
             planid = HomeGrid.getParentId(campid);
-            var programid = HomeGrid.cells(rowId, 2).getValue();
-            var campaignid = HomeGrid.cells(campid, 2).getValue();
+            var programid = HomeGrid.cells(rowId, 3).getValue();
+            var campaignid = HomeGrid.cells(campid, 3).getValue();
 
             var Campstartdate = HomeGrid.cells(campid, dateindex).getValue();
             var Planstartdate = HomeGrid.cells(planid, dateindex).getValue();
@@ -639,37 +624,37 @@
                 tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: StageValue, RedirectType: isAssortment, isTacticTypeChange: true, StageID: stageid
             },
             success: function (data) {
-                var tactActMqlVal = HomeGrid.cells(rowid, 9).getAttribute("actval");
+                var tactActMqlVal = HomeGrid.cells(rowid, 10).getAttribute("actval");
                 var mqlConversion = 0;
                 if (data.revenue != null)
                     revenue = data.revenue;
                 if (data.mql == 'N/A') {
-                    HomeGrid.setCellExcellType(rowid, 9, "ro");
-                    HomeGrid.cells(rowid, 9).setValue(data.mql);
+                    HomeGrid.setCellExcellType(rowid, 10, "ro");
+                    HomeGrid.cells(rowid, 10).setValue(data.mql);
                     diff = parseInt(-tactActMqlVal);
-                    SetColumUpdatedValue(9, diff);
+                    SetColumUpdatedValue(10, diff);
                 }
                 else {
-                    HomeGrid.setCellExcellType(rowid, 9, "ron");
+                    HomeGrid.setCellExcellType(rowid, 10, "ron");
 
 
                     if (data.mql != null)
                         mqlConversion = data.mql;
 
                     var mqlValue = GetAbberiviatedValue(mqlConversion.toString(), false);
-                    HomeGrid.cells(rowid, 9).setValue(mqlValue);
+                    HomeGrid.cells(rowid, 10).setValue(mqlValue);
 
 
 
                     diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
-                    SetColumUpdatedValue(9, diff);
+                    SetColumUpdatedValue(10, diff);
 
 
                 }
-                HomeGrid.cells(progid, 9).setValue(GetAbberiviatedValue(newProgVal), false);
-                HomeGrid.cells(campid, 9).setValue(GetAbberiviatedValue(newCampVal), false);
-                HomeGrid.cells(planid, 9).setValue(GetAbberiviatedValue(newPlanVal), false);
-                HomeGrid.cells(rowid, 9).setAttribute("actval", mqlConversion);
+                HomeGrid.cells(progid, 10).setValue(GetAbberiviatedValue(newProgVal), false);
+                HomeGrid.cells(campid, 10).setValue(GetAbberiviatedValue(newCampVal), false);
+                HomeGrid.cells(planid, 10).setValue(GetAbberiviatedValue(newPlanVal), false);
+                HomeGrid.cells(rowid, 10).setAttribute("actval", mqlConversion);
 
                 HomeGrid.cells(rowid, 10).setValue(FormatNumber(revenue));
                 var tactActRevenuVal = HomeGrid.cells(rowid, 10).getAttribute("actval");
@@ -691,8 +676,8 @@
                     success: function (states) {
                         //    LoadPlanGrid();
                         if (UpdateColumn == "Target Stage Goal") {
-                            var psv = HomeGrid.cells(rowid, 8).getAttribute("stage");
-                            HomeGrid.cells(rowid, 8).setValue(UpdateVal + " " + psv);
+                            var psv = HomeGrid.cells(rowid, 9).getAttribute("stage");
+                            HomeGrid.cells(rowid, 9).setValue(UpdateVal + " " + psv);
                         }
                     }
                 });
@@ -736,29 +721,20 @@
             DisplayPopUpMenu(type, name, title, permission, e);
 
     });
-       // LoadImprovementGrid(CurrentPlanId);
     });
     x = 0;
     $('#useless').click(function () {
         HomeGrid.sortRows(0, 'str', 'asc');
-        //HomeGrid.enableAutoHeight(true);
         $("#spanscroll").text(x += 1);
         return true;
     });
-    function sortGrid() {
-        //alert('');
-        //HomeGrid.sortRows(0, 'str', 'asc');
-        return true;
-    }
+   
     document.addEventListener("DOMContentLoaded", function (event) {
         console.log("DOM fully loaded and parsed");
 
         $("#useless").click();
     });
-    $(window).focus(function () {
 
-        //$("#useless").click();
-    });
 
     $(document).scroll(function () {
         if (pageIsScroll == false) {

@@ -9242,11 +9242,11 @@ namespace RevenuePlanner.Controllers
                     }
                     if (IsPlanEditable)
                     {
-                            GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell locked='0' >" + HttpUtility.HtmlEncode(planitem.Title) + "</cell> ");
+                            GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>Plan</cell><cell locked='0' >" + HttpUtility.HtmlEncode(planitem.Title) + "</cell> ");
                     }
                     else
                     {
-                            GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell  locked='1' style='color:#999'>" + HttpUtility.HtmlEncode(planitem.Title) + "</cell> ");
+                            GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>Plan</cell><cell  locked='1' style='color:#999'>" + HttpUtility.HtmlEncode(planitem.Title) + "</cell> ");
 
                     }
                     GridString.Append("<cell><![CDATA[   <div  class='grid_Search' id='PlanPopup' alt=\"" + planitem.PlanId + "\"></div>");
@@ -9284,7 +9284,25 @@ namespace RevenuePlanner.Controllers
                         });
                         foreach (var Campaignitem in lstcampaignTaskData)
                         {
+                                if (!IsFiltered)
+                                {
+                                    IsPlan = true;
+
+                                }
+                                else
+                                {
                                 if (Campaignitem.tacticids == true)
+                                {
+                                        IsPlan = true;
+                                    }
+                                    else
+                                    {
+                                        IsPlan = false;
+                                    }
+                                }
+
+
+                                if (IsPlan)
                                 {
                             //Modified By Komal Rawal for #1505
                             if (Campaignitem.IsCampEditable == false)
@@ -9323,7 +9341,7 @@ namespace RevenuePlanner.Controllers
                             }
                             //End
                           
-                                    GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell  bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Campaignitem.Title) + "</cell> ");
+                                    GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell>Campaign</cell><cell  bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Campaignitem.Title) + "</cell> ");
                             GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<div  class='grid_Search' id='CampaignPopup' alt=\"" + Campaignitem.PlanCampaignId + "\"></div> ");
                             if (Campaignitem.IsPlanCreateAll)
                             {
@@ -9377,7 +9395,23 @@ namespace RevenuePlanner.Controllers
 
                                 foreach (var Programitem in lstprogramTaskData)
                                 {
+                                            if (!IsFiltered)
+                                            {
+                                                IsPlan = true;
+
+                                            }
+                                            else
+                                            {
                                             if (Programitem.tacticids == true)
+                                            {
+                                                    IsPlan = true;
+                                                }
+                                                else
+                                                {
+                                                    IsPlan = false;
+                                                }
+                                            }
+                                            if (IsPlan)
                                             {
                                     cellTextColor = "style='color:#000'";
                                     IsEditable = "0";
@@ -9412,7 +9446,7 @@ namespace RevenuePlanner.Controllers
                                         IsEditable = "0";
                                     }
                                     //End
-                                    GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'>");
+                                                GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'><cell>Program</cell>");
 
                                                 GridString.Append("<cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Programitem.Title) + "</cell><cell bgColor='#DFF0F8'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
                                     if (Programitem.IsPlanCreateAll)
@@ -9483,6 +9517,7 @@ namespace RevenuePlanner.Controllers
 
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
+                                                                                              new XElement("cell", "Tactic"),
                                                                                                new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), HttpUtility.HtmlEncode(tactic.title)),
                                                                                                new XElement("cell", new XCData("<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> " + (tactic.IsPlanCreateAll == true ? "<div class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + HttpUtility.HtmlEncode(tactic.title) + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>" : ""))),
                                                                                    new XElement("cell", tactic.PlanTacticId),
@@ -10244,9 +10279,9 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append("<?xml version='1.0' encoding='iso-8859-1'?>");
                 strHeader.Append("<rows>");
 
-                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Target Stage Goal," + MQLTitle + ",Revenue</param>");
+                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>Activity Type,#rspan,#rspan,id,Start Date,End Date,Tactic Planned Cost,Tactic Type,Owner,Target Stage Goal," + MQLTitle + ",Revenue</param>");
                 strHeader.Append(" </call></beforeInit>");
-
+                strHeader.Append("<column type='ro' align='center' id='activitytype' sort='na' width='0'></column>");
                 strHeader.Append("<column width='330' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
                 strHeader.Append("<column type='ro' align='center' id='add' width='50' sort='na' ></column>");
                 strHeader.Append("<column type='ro' align='center' id='id' sort='na' width='0' >" + PlanYear + "</column>");
