@@ -701,6 +701,7 @@ namespace Integration.Eloqua
                                             actualTactic.CreatedBy = _userId;
                                             db.Entry(actualTactic).State = EntityState.Added;
                                         }
+                                        db.SaveChanges();
                                         lstResponse.Remove(item);
                                     }
 
