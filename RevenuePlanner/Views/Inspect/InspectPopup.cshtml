@@ -83,7 +83,7 @@
             <span>
                 @if (!(InspectMode == Enums.InspectPopupMode.Add.ToString()))
                 {
-                    if (tacticMaster.OwnerId == Sessions.User.UserId || IsPlanEditable)
+                    if (IsPlanEditable)
                     {
                     <div class="delete-btn-tab" style="float: right;" id="divDeleteTactic">
                         <button class="delete-btn-gray" id="deleteTactic" type="button">Delete</button>
@@ -103,7 +103,7 @@
                     </div>
                     }
 
-                    if (tacticMaster.OwnerId == Sessions.User.UserId || IsPlanEditable)
+                    if (IsPlanEditable)
                     {
                     <span class="edit-icon-white btn-blue btn-large" style="display: block; cursor: pointer;" id="EditForm"></span>
                     }

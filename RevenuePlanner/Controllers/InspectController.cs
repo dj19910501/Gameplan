@@ -6824,6 +6824,7 @@ namespace RevenuePlanner.Controllers
                 Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
                 bool IsPlanEditable = false;
                 bool IsPlanCreateAll = false;
+                bool IsOwner = false;
 
 
                 #endregion
@@ -6861,6 +6862,11 @@ namespace RevenuePlanner.Controllers
                                 IsPlanCreateAll = false;
                             }
 
+                        }
+
+                        if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsOwner = true;
                         }
 
                         //Modify by Mitesh Vaishnav for PL ticket 746
@@ -6909,6 +6915,10 @@ namespace RevenuePlanner.Controllers
                             }
 
                         }
+                        if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsOwner = true;
+                        }
 
                         if (lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
                         {
@@ -6951,6 +6961,11 @@ namespace RevenuePlanner.Controllers
                                 IsPlanCreateAll = false;
                             }
 
+                        }
+
+                        if (objPlan_Campaign.CreatedBy.Equals(Sessions.User.UserId))
+                        {
+                            IsOwner = true;
                         }
 
                         if (lstSubordinatesIds.Contains(objPlan_Campaign.CreatedBy))
@@ -7033,7 +7048,7 @@ namespace RevenuePlanner.Controllers
                     // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
 
                     //// Custom Restrictions
-                    if (IsPlanEditable)
+                    if (IsPlanEditable && !IsOwner)
                     {
                         //// Start - Added by Sohel Pathan on 27/01/2015 for PL ticket #1140
                         List<int> planTacticIds = new List<int>();
@@ -7105,7 +7120,10 @@ namespace RevenuePlanner.Controllers
                         //// End - Added by Sohel Pathan on 27/01/2015 for PL ticket #1140
                     }
                 }
-
+                if (IsOwner)
+                {
+                    IsPlanEditable = true;
+                }
                 ViewBag.IsPlanEditable = IsPlanEditable;
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
             }
