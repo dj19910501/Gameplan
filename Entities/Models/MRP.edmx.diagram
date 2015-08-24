@@ -31,7 +31,6 @@
         <EntityTypeShape EntityType="MRPModel.IntegrationTypeAttribute" Width="1.5" PointX="3.6502571812133571" PointY="9.7238181576709355" />
         <EntityTypeShape EntityType="MRPModel.LineItemType" Width="1.5" PointX="5.69786648531345" PointY="22.7791524933554" />
         <EntityTypeShape EntityType="MRPModel.MasterTacticType" Width="1.5" PointX="4.2043790166286659" PointY="10.230331902499465" />
-        <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="3.0976764872193696" PointY="9.18518199454303" />
         <EntityTypeShape EntityType="MRPModel.Model_Stage" Width="1.5" PointX="8.3228813783837872" PointY="20.0271449927367" />
         <EntityTypeShape EntityType="MRPModel.Notification" Width="1.5" PointX="2.0603347765562754" PointY="19.934501701935428" />
         <EntityTypeShape EntityType="MRPModel.Plan" Width="1.5" PointX="5.1056321752749536" PointY="31.508655950198257" />
@@ -84,21 +83,12 @@
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLog_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceCW" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceINQ" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMQL" />
         <AssociationConnector Association="MRPModel.FK_SyncFrequency_IntegrationInstance" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_Attribute_IntegrationTypeAttribute" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceSection_IntegrationInstanceLog" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstancePlanEntityLog_IntegrationInstanceSection" />
         <AssociationConnector Association="MRPModel.FK_IntegrationTypeAttribute_IntegrationType" />
-        <AssociationConnector Association="MRPModel.FK_LineItemType_Model" />
         <AssociationConnector Association="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_LineItemType" />
-        <AssociationConnector Association="MRPModel.FK_Model_Model" />
-        <AssociationConnector Association="MRPModel.FK_Model_Stage_Model" />
-        <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
-        <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
         <AssociationConnector Association="MRPModel.FK_Model_Category_Stage_Stage" />
         <AssociationConnector Association="MRPModel.FK_User_Notification_Notification" />
         <AssociationConnector Association="MRPModel.FK_Plan_Budget_Plan" />
@@ -134,8 +124,6 @@
         <AssociationConnector Association="MRPModel.FK_ImprovementTacticType_ImprovementTacticType" />
         <EntityTypeShape EntityType="MRPModel.IntegrationInstance_UnprocessData" Width="1.5" PointX="7.25" PointY="38.125" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstance_UnprocessData_IntegrationInstance" />
-        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceProjMgmt" />
-        <AssociationConnector Association="MRPModel.FK_Model_Model1" />
         <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTemplate" Width="1.5" PointX="1" PointY="1" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceId" />
         <EntityTypeShape EntityType="MRPModel.CustomField_Entity" Width="1.5" PointX="13.25" PointY="8.375" />
@@ -145,6 +133,15 @@
         <AssociationConnector Association="MRPModel.FK_PortfolioTableId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLogDetail" Width="1.5" PointX="15.375" PointY="0.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLogID" />
+        <EntityTypeShape EntityType="MRPModel.Model" Width="1.5" PointX="7.875" PointY="42.25" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceCW" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceINQ" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstanceMQL" />
+        <AssociationConnector Association="MRPModel.FK_LineItemType_Model" />
+        <AssociationConnector Association="MRPModel.FK_Model_Model" />
+        <AssociationConnector Association="MRPModel.FK_Plan_Plan" />
+        <AssociationConnector Association="MRPModel.fk_TacticType_Model" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

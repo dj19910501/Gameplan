@@ -1286,7 +1286,7 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.IsModelIntegrated = true;
                     //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
-                    var intInstanceProjMgmt = objModel.IntegrationInstance4;
+                    var intInstanceProjMgmt = objModel.IntegrationInstance;
                      bool isIntegratedWithWorkFront = false;
                      List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>(); 
                      if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString())) 
@@ -1368,7 +1368,7 @@ namespace RevenuePlanner.Controllers
             if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
             {
                 ViewBag.IsModelIntegrated = true;
-                var intInstanceProjMgmt = objModel.IntegrationInstance4;
+                var intInstanceProjMgmt = objModel.IntegrationInstance;
                 bool isIntegratedWithWorkFront = false;
                 List<IntegrationWorkFrontTemplate> workFrontTemplates = new List<IntegrationWorkFrontTemplate>();
                 if ((intInstanceProjMgmt != null) && (intInstanceProjMgmt.Instance == Enums.IntegrationInstanceType.WorkFront.ToString()))
@@ -2385,7 +2385,6 @@ namespace RevenuePlanner.Controllers
                     newModel.CreatedBy = Sessions.User.UserId;
                     newModel.ModifiedBy = null;
                     newModel.ModifiedDate = null;
-
                     objMrpEntities.Models.Add(newModel);
                     objMrpEntities.SaveChanges();
                     newModelId = newModel.ModelId;

@@ -25,7 +25,6 @@ namespace RevenuePlanner.Models
         public bool AllowedTargetStage { get; set; }
         public int ModelId { get; set; }
     
-        public virtual Model Model { get; set; }
         public virtual Stage Stage { get; set; }
     }
 }
