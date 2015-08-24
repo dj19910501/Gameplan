@@ -108,7 +108,17 @@
         //alert("type=" + type + "<br/>id=" + id);
     }
 
-
+    function ExportToCSV()
+    {
+       // HomeGrid.setCSVDelimiter("\t");
+        HomeGrid.enableCSVAutoID(true);
+        HomeGrid.enableCSVHeader(true);
+      //  HomeGrid.enableMathSerialization(true);
+        HomeGrid.setSerializableColumns("true,false,true,true,true,true,true,true,true,true,true");
+        var myCSVString = HomeGrid.serializeToCSV(true);
+        $("#exportcsv").attr('download', 'Grid.csv')
+        $("#exportcsv").attr("href", 'data:Application/octet-stream,' + encodeURIComponent(myCSVString));
+    }
     function BindHomeGrid() {
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
@@ -123,6 +133,8 @@
         //HomeGrid.setNumberFormat("0,000", 9, ".", ",");
         //HomeGrid.setNumberFormat("$0,000", 10, ".", ",");
         HomeGrid.setImageSize(1, 1);
+
+       HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
         HomeGrid.attachEvent("onDrag", doOnDrag);
@@ -154,7 +166,7 @@
 
             HomeGrid.cells(rowid, 10).setValue(FormatNumber(Revenue, false));
 
-            var psv = HomeGrid.cells(rowid, 8).getValue().split("-");
+            var psv = HomeGrid.cells(rowid, 8).getValue().split("_");
             if (psv.length > 1) {
                 var psvnum = FormatCommas(psv[0], false);
                 HomeGrid.cells(rowid, 8).setValue(psvnum + " " + psv[1]);
@@ -391,7 +403,7 @@
                 if (nValue != splitoval[0]) {
                 var tactictypeindex = HomeGrid.getColIndexById('tactictype');
                 var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
-                GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue);
+                GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue,null);
                 return true;
             }
                 else
@@ -417,7 +429,7 @@
                             else
                                 HomeGrid.cells(rowId, 8).setValue(projectedStageValue + " " + stagetitle);
                             HomeGrid.cells(rowId, 8).setAttribute("stage", stagetitle);
-                        GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue);
+                            GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue, data.stageId);
                             }
                         });
                     return true;
@@ -610,7 +622,7 @@
             }
         }
     }
-    function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageValue, rowid, UpdateVal) {
+    function GetConversionRate(TacticID, TacticTypeID, UpdateColumn, projectedStageValue, rowid, UpdateVal,stageid) {
         var pmql = 0;
         var pcost = 0;
         var isAssortment = true;
@@ -624,7 +636,7 @@
             type: 'POST',
             url: '@Url.Content("~/Plan/CalculateMQL")',
             data: {
-                tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: StageValue, RedirectType: isAssortment, isTacticTypeChange: true
+                tactictid: parseInt(TacticID), TacticTypeId: parseInt(TacticTypeID), projectedStageValue: StageValue, RedirectType: isAssortment, isTacticTypeChange: true, StageID: stageid
             },
             success: function (data) {
                 var tactActMqlVal = HomeGrid.cells(rowid, 9).getAttribute("actval");
