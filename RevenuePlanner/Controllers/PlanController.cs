@@ -9284,7 +9284,25 @@ namespace RevenuePlanner.Controllers
                         });
                         foreach (var Campaignitem in lstcampaignTaskData)
                         {
+                                if (!IsFiltered)
+                                {
+                                    IsPlan = true;
+
+                                }
+                                else
+                                {
                                 if (Campaignitem.tacticids == true)
+                                {
+                                        IsPlan = true;
+                                    }
+                                    else
+                                    {
+                                        IsPlan = false;
+                                    }
+                                }
+
+
+                                if (IsPlan)
                                 {
                             //Modified By Komal Rawal for #1505
                             if (Campaignitem.IsCampEditable == false)
@@ -9377,7 +9395,23 @@ namespace RevenuePlanner.Controllers
 
                                 foreach (var Programitem in lstprogramTaskData)
                                 {
+                                            if (!IsFiltered)
+                                            {
+                                                IsPlan = true;
+
+                                            }
+                                            else
+                                            {
                                             if (Programitem.tacticids == true)
+                                            {
+                                                    IsPlan = true;
+                                                }
+                                                else
+                                                {
+                                                    IsPlan = false;
+                                                }
+                                            }
+                                            if (IsPlan)
                                             {
                                     cellTextColor = "style='color:#000'";
                                     IsEditable = "0";
