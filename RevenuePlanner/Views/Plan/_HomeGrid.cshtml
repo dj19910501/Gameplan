@@ -111,6 +111,7 @@
  
 
     function ExportToCSV() {
+        var planname = HomeGrid.cellByIndex(0, 1).getValue();
         HomeGrid.enableCSVAutoID(true);
         HomeGrid.enableCSVHeader(true);
         HomeGrid.setSerializableColumns("true,true,false,false,true,true,true,true,true,true,true,true");
@@ -118,7 +119,7 @@
         var lines = myCSVString.split(",");
         lines.splice(0, 9);
         lines.splice(1, 1, "Task Name");
-        $("#exportcsv").attr('download', 'Grid.csv')
+        $("#exportcsv").attr('download', planname+'_GridData.csv')
         $("#exportcsv").attr("href", 'data:Application/octet-stream,' + encodeURIComponent(lines));
     }
     function BindHomeGrid() {

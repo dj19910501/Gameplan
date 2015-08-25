@@ -9814,7 +9814,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), pcpobj.Plan_Campaign_Program.Title.ToString(), pcpobj.Title.ToString());
+                            SendEmailnotification(pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign_Program.Plan_Campaign.Title.ToString(), pcpobj.Plan_Campaign_Program.Title.ToString(), pcpobj.Title.ToString(), Enums.Section.Tactic.ToString().ToLower());
                         if (UpdateColumn == "ParentID")
                         {
                             if (pcpobj.IntegrationInstanceTacticId != null && oldProgramId > 0)
@@ -9940,7 +9940,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString());
+                            SendEmailnotification(pcpobj.Plan_Campaign.Plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString(), Enums.Section.Program.ToString().ToLower());
 
                     }
                 }
@@ -9991,7 +9991,7 @@ namespace RevenuePlanner.Controllers
                     if (result > 0)
                     {
                         if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                            SendEmailnotification(oldOwnerId, new Guid(UpdateVal), pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title);
+                            SendEmailnotification(pcobj.Plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title, Enums.Section.Campaign.ToString().ToLower());
 
                     }
                 }
@@ -10104,7 +10104,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region "Send Email Notification For Owner changed"
-        public void SendEmailnotification(Guid oldOwnerID, Guid NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title)
+        public void SendEmailnotification(int PlanID, int ChangeID, Guid oldOwnerID, Guid NewOwnerID, string PlanTitle, string CampaignTitle, string ProgramTitle, string Title, string section)
         {
 
             try
@@ -10140,7 +10140,7 @@ namespace RevenuePlanner.Controllers
 
                         if (lstRecepientEmail.Count > 0)
                         {
-                            // string strURL = GetNotificationURLbyStatus(pcobj.PlanId, form.PlanCampaignId, Enums.Section.Campaign.ToString().ToLower());
+                            string strURL = GetNotificationURLbyStatus(PlanID, ChangeID, section);
                             Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), "");// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
                         }
                     }
@@ -10152,7 +10152,37 @@ namespace RevenuePlanner.Controllers
             }
         }
         #endregion
+        #region
+        /// <summary>
+        /// Function to get Notification URL.
+        /// Added By: Viral Kadiya on 12/4/2014.
+        /// </summary>
+        /// <param name="planId">Plan Id.</param>
+        /// <param name="planTacticId">Plan Tactic Id.</param>
+        /// <param name="section">Section.</param>
+        /// <returns>Return NotificationURL.</returns>
+        public string GetNotificationURLbyStatus(int planId = 0, int planTacticId = 0, string section = "")
+        {
+            string strURL = string.Empty;
+            try
+            {
+                if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                else if (section == Convert.ToString(Enums.Section.Program).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planProgramId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                else if (section == Convert.ToString(Enums.Section.Campaign).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planCampaignId = planTacticId, activeMenu = "Plan" }, Request.Url.Scheme);
+                else if (section == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planTacticId = planTacticId, isImprovement = true, activeMenu = "Plan" }, Request.Url.Scheme);
 
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return strURL;
+        }
+        #endregion
         #region method for getting goal value for homegrid
         protected void GetGoalValue(List<Plan> plandetail, string modelId, List<Stage> stageList, Plangrid objplangrid, PlanImprovement objimprovement)
         {
