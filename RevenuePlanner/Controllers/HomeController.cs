@@ -1326,7 +1326,7 @@ namespace RevenuePlanner.Controllers
         private JsonResult PrepareTacticAndRequestTabResult(string planId, string viewBy,bool IsFiltered,bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
         {
             Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
-            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, planId, viewBy, IsFiltered, IsRequest, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
+            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, planId, viewBy, IsFiltered, IsRequest,planYear, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
          //   Debug.WriteLine("Step 7.1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
             //Added By komal Rawal for #1282
             
@@ -1549,7 +1549,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="lstTactic">list of tactics</param>
         /// <param name="lstImprovementTactic">list of imporvementTactics</param>
         /// <returns>Returns object list of tasks for GANNT CHART</returns>
-        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist ,string planId, string viewBy,bool IsFiltered, bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic)
+        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist, string planId, string viewBy, bool IsFiltered, bool IsRequest, string planYear, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic)
         {
             string tacticStatusSubmitted = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
@@ -1874,7 +1874,8 @@ namespace RevenuePlanner.Controllers
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
 
                 #region Plan
-                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => PlanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false))
+                //Modified by Komal Rawal for #1537 to get Plan according to year.
+                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => PlanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear)
                                                   .ToList()
                                                    .Select(plan => new
                                                    {
