@@ -5611,6 +5611,8 @@ namespace RevenuePlanner.Helpers
                             return lstTactic;
                         }
                        
+
+                    
                         //End
                     //var lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
                     //                                                                                customFieldEntity.CustomField.IsDeleted.Equals(false) &&
@@ -5620,6 +5622,8 @@ namespace RevenuePlanner.Helpers
                     //                                                                                lstTactic.Contains(customFieldEntity.EntityId))
                     //                                                                        .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
                     lstAllTacticCustomFieldEntities = lstAllTacticCustomFieldEntities.Where(customFieldEntity => lstTactic.Contains(customFieldEntity.EntityId)).ToList();
+                    var entityids= lstAllTacticCustomFieldEntities.Select(entity =>entity.EntityId).ToList();
+                    List<int> othertacticIds = lstTactic.Where(tac => !entityids.Contains(tac)).Select(tac => tac).ToList();
                         if (lstAllTacticCustomFieldEntities.Count > 0)
                         {
                             //// Get Custom Restrictions
@@ -5703,6 +5707,7 @@ namespace RevenuePlanner.Helpers
                                 lstEditableEntityIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
                             }
                         }
+                        lstEditableEntityIds = lstEditableEntityIds.Concat(othertacticIds).ToList();
                     }
                     else
                     {

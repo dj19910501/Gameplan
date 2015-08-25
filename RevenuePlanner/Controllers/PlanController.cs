@@ -9311,15 +9311,16 @@ namespace RevenuePlanner.Controllers
                             {
 
                                 CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.PlanCampaignId == Campaignitem.PlanCampaignId).Select(tact => tact.PlanTacticId).ToList();
-                                if (CustomTacticids.Count>0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
+                                           //Modified By Komal Rawal for #1545 to check custom restrictions.
+                                            if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
                                 {
-                                    IsEditable = "1";
+                                                IsEditable = "1"; // readonly
                                     cellTextColor = "style='color:#999'";
                                 }
                                 else
                                 {
                                     cellTextColor = "style='color:#000'";
-                                    IsEditable = "0";
+                                                IsEditable = "0";// editable
                                 }
 
                             }
@@ -9421,8 +9422,9 @@ namespace RevenuePlanner.Controllers
                                         if (lstSubordinatesIds.Contains(Programitem.CreatedByID))
                                     {
                                         CustomTacticids = TacticfilterList.Where(tact => tact.PlanProgramId == Programitem.PlanProgramId).Select(tact => tact.PlanTacticId).ToList();
-                                       // if (lsteditableEntityIds.Select(x => CustomTacticids.Contains(x)).Count() != CustomTacticids.Count())
-                                        if (CustomTacticids.Count > 0 &&  lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
+
+                                                        // if (CustomTacticids.Count > 0 &&  lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
+                                                        if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
                                         {
                                             IsEditable = "1";
                                             cellTextColor = "style='color:#999'";
@@ -9495,7 +9497,7 @@ namespace RevenuePlanner.Controllers
                                             projectedstagevalue = taskdata.ProjectedStageValue,
                                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                             ProjectStage = taskdata.Stage.Title,
-                                            IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Select(x => x == taskdata.PlanTacticId).Any() ? "0" : "1" : "1" : "0"
+                                                        IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0"
                                        
                                         });
                                                     //foreach (var tactic in lsttacticTaskData)
