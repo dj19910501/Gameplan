@@ -453,19 +453,16 @@
                             }
                             if (UpdateColumn == "Tactic Planned Cost") {
                                 diff = parseInt(nValue) - parseInt(oValue);
-                                SetColumUpdatedValue(5, diff);
-
+                                SetColumUpdatedValue(6, diff);
                                 HomeGrid.cells(progid, 6).setValue((newProgVal));
                                 HomeGrid.cells(campid, 6).setValue((newCampVal));
                                 HomeGrid.cells(planid, 6).setValue((newPlanVal));
-
-
+                                HomeGrid.cells(rowId, 6).setValue((nValue));
                             }
                     }
                 });
-            return true;
                 }
-              
+            return true;
             }
         }
     }
@@ -658,15 +655,15 @@
                 HomeGrid.cells(planid, 10).setValue(GetAbberiviatedValue(newPlanVal), false);
                 HomeGrid.cells(rowid, 10).setAttribute("actval", mqlConversion);
 
-                HomeGrid.cells(rowid, 10).setValue(FormatNumber(revenue));
-                var tactActRevenuVal = HomeGrid.cells(rowid, 10).getAttribute("actval");
+                HomeGrid.cells(rowid, 11).setValue(FormatNumber(revenue));
+                var tactActRevenuVal = HomeGrid.cells(rowid, 11).getAttribute("actval");
                 diff = parseInt(revenue) - parseInt(tactActRevenuVal);
 
-                SetColumUpdatedValue(10, diff);
-                HomeGrid.cells(progid, 10).setValue((FormatNumber(newProgVal)));
-                HomeGrid.cells(campid, 10).setValue((FormatNumber(newCampVal)));
-                HomeGrid.cells(planid, 10).setValue((FormatNumber(newPlanVal)));
-                HomeGrid.cells(rowid, 10).setAttribute("actval", revenue);
+                SetColumUpdatedValue(11, diff);
+                HomeGrid.cells(progid, 11).setValue((FormatNumber(newProgVal)));
+                HomeGrid.cells(campid, 11).setValue((FormatNumber(newCampVal)));
+                HomeGrid.cells(planid, 11).setValue((FormatNumber(newPlanVal)));
+                HomeGrid.cells(rowid, 11).setAttribute("actval", revenue);
                 $.ajax({
 
                     type: 'POST',
