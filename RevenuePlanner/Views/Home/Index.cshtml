@@ -2905,7 +2905,7 @@ function Quarter() {
 
                       //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
                       //// display popup based on type and name and title.                       
-                      if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()' || document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                      if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()' || document.getElementById("liGrid").className.indexOf("active") < 0) {
                           $(".gantt_last_cell").dblclick(function (e) {
                               e.stopPropagation();
                           });
