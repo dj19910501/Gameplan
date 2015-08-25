@@ -2476,24 +2476,11 @@ namespace RevenuePlanner.Controllers
             if (lstSubOrdinatesPeers.Contains(_inspectmodel.OwnerId))
             {
                 isValidManagerUser = true;
-                isEditable = true;
+              
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
-            if (isEditable && !isValidOwner)
-            {
-                List<int> planTacticIds = new List<int>();
-                List<int> lstAllowedEntityIds = new List<int>();
-
-                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic => tactic.PlanTacticId).ToList();
-                lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                if (lstAllowedEntityIds.Count != planTacticIds.Count)
-                {
-                    isEditable = false;
-                }
-
-            }
-            ViewBag.IsEditable = isEditable;
+          
 
             // Modified by komal Rawal for #1158
             bool IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
@@ -2522,6 +2509,10 @@ namespace RevenuePlanner.Controllers
             try
             {
                 lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
+                if (lstSubOrdinates.Contains(_inspectmodel.OwnerId))
+                {
+                isEditable = true;
+                }
             }
             catch (Exception e)
             {
@@ -2536,6 +2527,21 @@ namespace RevenuePlanner.Controllers
                     return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
                 }
             }
+
+            if (isEditable && !isValidOwner)
+            {
+                List<int> planTacticIds = new List<int>();
+                List<int> lstAllowedEntityIds = new List<int>();
+
+                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic => tactic.PlanTacticId).ToList();
+                lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                if (lstAllowedEntityIds.Count != planTacticIds.Count)
+                {
+                    isEditable = false;
+                }
+
+            }
+            ViewBag.IsEditable = isEditable;
 
             bool IsDeployToIntegrationVisible = false;
             if (_inspectmodel.OwnerId.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
