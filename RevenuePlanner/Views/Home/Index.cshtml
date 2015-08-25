@@ -2284,7 +2284,7 @@ function renderGantt(taskData) {
         gantt.config.date_scale = " %Y";
 
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize:true }, { name: "add", label: "", width: 44 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         //// Getting quarter
@@ -2348,7 +2348,7 @@ function renderGantt(taskData) {
         gantt.config.step = 12;
         gantt.config.date_scale = " %Y";
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "add", label: "", width: 44 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date(), m = date.getMonth();
@@ -2413,7 +2413,7 @@ function renderGantt(taskData) {
         gantt.config.step = 1;
         gantt.config.date_scale = "%Y";
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*" }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 44 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();
@@ -2621,7 +2621,7 @@ function Quarter() {
     gantt.config.date_scale = " %Y";
 
     gantt.config.scale_height = 60;
-    gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+    gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, ];
     gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
     //// Getting quarter
@@ -2660,7 +2660,7 @@ function Quarter() {
                            gantt.config.step = 1;
                            gantt.config.date_scale = "%Y";
                            gantt.config.scale_height = 60;
-                           gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+                           gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, ];
                            gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
                            gantt.config.start_date = new Date(planYear, 00, 01);
@@ -2689,7 +2689,7 @@ function Quarter() {
                    gantt.config.date_scale = " %Y";
 
                    gantt.config.scale_height = 60;
-                   gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+                   gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, ];
                    gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
                    //// Getting quarter
@@ -2730,7 +2730,7 @@ function Quarter() {
                                           gantt.config.step = 1;
                                           gantt.config.date_scale = "%Y";
                                           gantt.config.scale_height = 60;
-                                          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*' }, ];
+                                          gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, ];
                                           gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
                                           gantt.config.start_date = new Date(planYear + 1, 00, 01);
