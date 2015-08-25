@@ -110,8 +110,7 @@
     });
  
 
-    function ExportToCSV()
-    {
+    function ExportToCSV() {
         HomeGrid.enableCSVAutoID(true);
         HomeGrid.enableCSVHeader(true);
         HomeGrid.setSerializableColumns("true,true,false,false,true,true,true,true,true,true,true,true");
@@ -140,6 +139,7 @@
         HomeGrid.attachEvent("onDrag", doOnDrag);
         HomeGrid.attachEvent("onScroll", function (sLeft, sTop) {
             $(".dhx_combo_select").css("display", "none");
+            $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
         });
 
         HomeGrid.attachEvent("onBeforeDrag", function (id) {
@@ -211,7 +211,7 @@
 
                         for (a in DestinationMember) {
                             if (DestinationMember[a].toString() != "" && DestinationMember[a].toString() != null) {
-                            dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), 0).getValue();
+                                dtactictitle = HomeGrid.cells(DestinationMember[a].toString(), 1).getValue();
                             if (dtactictitle == tacticname) {
                                 alert("Tactic with same title already exist in Targeted Program.");
                                 return false;
