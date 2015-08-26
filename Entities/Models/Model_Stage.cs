@@ -11,7 +11,7 @@ namespace RevenuePlanner.Models
 {
     using System;
     using System.Collections.Generic;
-    
+
     public partial class Model_Stage
     {
         public int ModelStageId { get; set; }
@@ -24,7 +24,8 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool AllowedTargetStage { get; set; }
         public int ModelId { get; set; }
-    
+
+        public virtual Model Model { get; set; }
         public virtual Stage Stage { get; set; }
     }
 }

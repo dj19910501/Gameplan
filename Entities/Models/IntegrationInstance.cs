@@ -11,7 +11,7 @@ namespace RevenuePlanner.Models
 {
     using System;
     using System.Collections.Generic;
-    
+
     public partial class IntegrationInstance
     {
         public IntegrationInstance()
@@ -23,14 +23,15 @@ namespace RevenuePlanner.Models
             this.IntegrationInstanceLogs = new HashSet<IntegrationInstanceLog>();
             this.IntegrationInstancePlanEntityLogs = new HashSet<IntegrationInstancePlanEntityLog>();
             this.IntegrationInstanceSections = new HashSet<IntegrationInstanceSection>();
-            this.IntegrationInstance_UnprocessData = new HashSet<IntegrationInstance_UnprocessData>();
-            this.IntegrationWorkFrontTemplates = new HashSet<IntegrationWorkFrontTemplate>();
             this.Models = new HashSet<Model>();
             this.Models1 = new HashSet<Model>();
             this.Models2 = new HashSet<Model>();
             this.Models3 = new HashSet<Model>();
+            this.IntegrationInstance_UnprocessData = new HashSet<IntegrationInstance_UnprocessData>();
+            this.Models4 = new HashSet<Model>();
+            this.IntegrationWorkFrontTemplates = new HashSet<IntegrationWorkFrontTemplate>();
         }
-    
+
         public int IntegrationInstanceId { get; set; }
         public int IntegrationTypeId { get; set; }
         public System.Guid ClientId { get; set; }
@@ -48,7 +49,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool CustomNamingPermission { get; set; }
         public bool IsFirstPullCW { get; set; }
-    
+
         public virtual ICollection<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public virtual IntegrationType IntegrationType { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
@@ -57,12 +58,13 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationInstanceLog> IntegrationInstanceLogs { get; set; }
         public virtual ICollection<IntegrationInstancePlanEntityLog> IntegrationInstancePlanEntityLogs { get; set; }
         public virtual ICollection<IntegrationInstanceSection> IntegrationInstanceSections { get; set; }
-        public virtual SyncFrequency SyncFrequency { get; set; }
-        public virtual ICollection<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
-        public virtual ICollection<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
         public virtual ICollection<Model> Models { get; set; }
         public virtual ICollection<Model> Models1 { get; set; }
         public virtual ICollection<Model> Models2 { get; set; }
         public virtual ICollection<Model> Models3 { get; set; }
+        public virtual SyncFrequency SyncFrequency { get; set; }
+        public virtual ICollection<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
+        public virtual ICollection<Model> Models4 { get; set; }
+        public virtual ICollection<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
     }
 }

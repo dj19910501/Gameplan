@@ -11,17 +11,18 @@ namespace RevenuePlanner.Models
 {
     using System;
     using System.Collections.Generic;
-    
+
     public partial class Model
     {
         public Model()
         {
             this.LineItemTypes = new HashSet<LineItemType>();
             this.Model1 = new HashSet<Model>();
+            this.Model_Stage = new HashSet<Model_Stage>();
             this.Plans = new HashSet<Plan>();
             this.TacticTypes = new HashSet<TacticType>();
         }
-    
+
         public int ModelId { get; set; }
         public string Title { get; set; }
         public string Version { get; set; }
@@ -43,7 +44,7 @@ namespace RevenuePlanner.Models
         public System.Guid ClientId { get; set; }
         public double AverageDealSize { get; set; }
         public Nullable<int> IntegrationInstanceIdProjMgmt { get; set; }
-    
+
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
         public virtual IntegrationInstance IntegrationInstance2 { get; set; }
@@ -51,7 +52,11 @@ namespace RevenuePlanner.Models
         public virtual ICollection<LineItemType> LineItemTypes { get; set; }
         public virtual ICollection<Model> Model1 { get; set; }
         public virtual Model Model2 { get; set; }
+        public virtual ICollection<Model_Stage> Model_Stage { get; set; }
         public virtual ICollection<Plan> Plans { get; set; }
         public virtual ICollection<TacticType> TacticTypes { get; set; }
+        public virtual IntegrationInstance IntegrationInstance4 { get; set; }
+        public virtual Model Model11 { get; set; }
+        public virtual Model Model3 { get; set; }
     }
 }

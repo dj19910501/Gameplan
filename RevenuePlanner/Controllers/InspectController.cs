@@ -2571,7 +2571,7 @@ namespace RevenuePlanner.Controllers
             //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1); }
             //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2); }
             //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3); }
-         //   if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null &&  pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null &&  pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
             ViewBag.IntegrationInstances = modelIntegrationList;
 
             //create a dictionary of each instance type name ("Salesforce", "WorkFront", etc) and the front end urls)
