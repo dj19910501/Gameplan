@@ -330,7 +330,7 @@
         }
         if (stage == 2) // start edit Shipping column
         {
-          
+            if (nValue != null && nValue != "") {
             var sdateindex = HomeGrid.getColIndexById('startdate');
             var edateindex = HomeGrid.getColIndexById('enddate');
             var idindex = HomeGrid.getColIndexById('id');
@@ -463,6 +463,7 @@
                 });
                 }
             return true;
+                }
             }
         }
     }
