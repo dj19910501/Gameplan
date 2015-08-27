@@ -100,9 +100,9 @@ BEGIN TRAN
 						WHILE @@FETCH_STATUS = 0
 						BEGIN
 							
-							IF NOT EXISTS(Select 1 from IntegrationInstance_Attribute where IntegrationInstanceId=@ClientSecret_IntegrationInstanceID and IntegrationTypeAttributeId=@ClientSecret_Attr and Value=@ClientID)
+							IF NOT EXISTS(Select 1 from IntegrationInstance_Attribute where IntegrationInstanceId=@ClientSecret_IntegrationInstanceID and IntegrationTypeAttributeId=@ClientSecret_Attr and Value=@ClientSecret)
 							BEGIN	
-								INSERT INTO IntegrationInstance_Attribute Values(@ClientSecret_IntegrationInstanceID,@ClientSecret_Attr,@ClientID,GETDATE(),@ClientSecret_CreatedBy)
+								INSERT INTO IntegrationInstance_Attribute Values(@ClientSecret_IntegrationInstanceID,@ClientSecret_Attr,@ClientSecret,GETDATE(),@ClientSecret_CreatedBy)
 							END
 	
 							SELECT @intErrorCode = @@ERROR
