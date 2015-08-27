@@ -15544,4 +15544,9 @@ float:right;
     float:right;
     margin-right:10px;
 }
+.btn-blue-grid:hover {
+    background: url('../images/btn-bg-35h-hover.jpg') repeat-x !important;
+    color: #fff;
+}
+
 /* End */
