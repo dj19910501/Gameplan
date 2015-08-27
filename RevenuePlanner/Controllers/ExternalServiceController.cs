@@ -984,8 +984,8 @@ namespace RevenuePlanner.Controllers
                     {
                         List<int> attributeIds = form.IntegrationTypeAttributes.Select(attr => attr.IntegrationTypeAttributeId).ToList();
                         List<IntegrationTypeAttribute> integrationTypeAttributes = db.IntegrationTypeAttributes.Where(attr => attributeIds.Contains(attr.IntegrationTypeAttributeId)).ToList();
-                        string companyname = string.Empty;
-
+                        string companyname ,eloquaClientId,eloquaClientSecret;
+                        companyname = eloquaClientId = eloquaClientSecret = string.Empty;
 
                         //// Get ConsumerKey based on Attributes.
                         foreach (IntegrationTypeAttribute integrationTypeAttribute in integrationTypeAttributes)
@@ -994,8 +994,17 @@ namespace RevenuePlanner.Controllers
                             {
                                 companyname = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
                             }
-
+                            if (integrationTypeAttribute.Attribute.ToUpper().Equals(Common.eloquaClientIdLabel.ToUpper()))
+                            {
+                                eloquaClientId = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
+                            if (integrationTypeAttribute.Attribute.ToUpper().Equals((Common.eloquaClientSecretLabel.ToUpper())))
+                            {
+                                eloquaClientSecret = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.IntegrationTypeAttributeId.Equals(integrationTypeAttribute.IntegrationTypeAttributeId)).Value;
+                            }
                         }
+                        //eloquaClientId = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.Attribute.ToUpper().Equals(Common.eloquaClientIdLabel.ToUpper())).Value;
+                        //eloquaClientSecret = form.IntegrationTypeAttributes.FirstOrDefault(attr => attr.Attribute.ToUpper().Equals(Common.eloquaClientSecretLabel.ToUpper())).Value;
                         if (!string.IsNullOrWhiteSpace(companyname))
                         {
                             //// Check Credentials whether Authenticate or not for Eloqua Client.
@@ -1006,6 +1015,8 @@ namespace RevenuePlanner.Controllers
                             RevenuePlanner.Models.IntegrationType integrationType = GetIntegrationTypeById(form.IntegrationTypeId);
                             integrationEloquaClient._apiURL = integrationType.APIURL;
                             integrationEloquaClient._apiVersion = integrationType.APIVersion;
+                            integrationEloquaClient._eloquaClientID = eloquaClientId;
+                            integrationEloquaClient._ClientSecret = eloquaClientSecret;
                             integrationEloquaClient.Authenticate();
                             isAuthenticated = integrationEloquaClient.IsAuthenticated;
                          }

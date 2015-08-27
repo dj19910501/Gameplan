@@ -310,7 +310,7 @@
 
                 /* --Remove Sync Button Brad Gray 07 Aug 2015 PL#1462
                 * Left commented to be added back in after completion of PL#1468 */
-                if (IsDeployToIntegrationVisible && isVisibleSyncButton)
+                if (IsDeployToIntegrationVisible && isVisibleSyncButton && tacticReview.IsDeployedToIntegration)
                 {
                     if ((bool)ViewBag.IsModelDeploy)
                     {
@@ -488,8 +488,9 @@
                         else
                             inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                         var requestedModule = $("#hdnRequestedModule").val();
-                        //loadInspectPopup($('#hdnPlanTacticId').val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", data.TabValue, inspectMode, 0, requestedModule);
-                        loadReview($("#hdnPlanTacticId").val(), TabReview);
+                        //alert("TacticID:" + $('#hdnPlanTacticId').val() + ", data.TabValue:" + TabReview + ", inspectMode:" + inspectMode + ", requestedModule:" + requestedModule);
+                        loadInspectPopup($('#hdnPlanTacticId').val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", TabReview, inspectMode, 0, requestedModule);
+                        //loadReview($("#hdnPlanTacticId").val(), TabReview);
 
                         $("#successMessage").css("display", "block");
                         $("#spanMessageSuccess").empty();

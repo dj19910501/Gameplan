@@ -417,7 +417,7 @@
                                   inspectMode = '@Enums.InspectPopupMode.Edit.ToString()';
                               var requestedModule = $("#hdnRedirectType").val();
                           loadReview($("#hdnPlanProgramId").val(), TabReview);
-
+                          //loadInspectPopup($("#hdnPlanProgramId").val(), "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", TabReview, inspectMode, 0, requestedModule);
                           $("#successMessage").css("display", "block");
                           $("#spanMessageSuccess").empty();
                           $("#spanMessageSuccess").text(data.msg);

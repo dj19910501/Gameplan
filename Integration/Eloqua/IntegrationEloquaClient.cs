@@ -64,6 +64,9 @@ namespace Integration.Eloqua
         private Dictionary<int, int> _mappingPlan_FolderId { get; set; }
         private string titleMappedValue = "name";
         private List<string> statusList { get; set; }
+        private string _AccessToken { get; set; }
+        public string _eloquaClientID { get; set; }
+        public string _ClientSecret { get; set; }
 
         #endregion
 
@@ -153,6 +156,8 @@ namespace Integration.Eloqua
             this._password = Common.Decrypt(integrationInstance.Password);
             this._apiURL = integrationInstance.IntegrationType.APIURL;
             this._apiVersion = integrationInstance.IntegrationType.APIVersion;
+            this._eloquaClientID = attributeKeyPair[Common.eloquaClientIdLabel];
+            this._ClientSecret = attributeKeyPair[Common.eloquaClientSecretLabel];
         }
 
         /// <summary>
@@ -169,6 +174,7 @@ namespace Integration.Eloqua
                 Resource = string.Format("/assets/campaign/fields?search={0}&depth=complete",
                                   "*")
             };
+            request.AddParameter("Authorization", "Bearer " + _AccessToken,ParameterType.HttpHeader);
 
             IRestResponse response = _client.Execute(request);
 
@@ -198,7 +204,7 @@ namespace Integration.Eloqua
                 RequestFormat = DataFormat.Json,
                 Resource = string.Format("/assets/contact/fields?search={0}&depth=complete", "*")
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             IRestResponse response = _client.Execute(request);
 
             JObject data = JObject.Parse(response.Content);
@@ -229,6 +235,7 @@ namespace Integration.Eloqua
         public List<EloquaObjectFieldDetails> GetEloquaFieldDetail()
         {
             var request = new RestRequest(Method.GET) { Resource = "/assets/campaign/fields?depth=complete", RequestFormat = DataFormat.Json, RootElement = "elements" };
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             var response = _client.Execute<List<CampaignFieldObject>>(request);
             List<EloquaObjectFieldDetails> TargetDataTypeList = new List<EloquaObjectFieldDetails>();
             TargetDataTypeList = response.Data.Select(rs => new EloquaObjectFieldDetails()
@@ -737,7 +744,7 @@ namespace Integration.Eloqua
                 Resource = "/assets/campaign",
                 RequestFormat = DataFormat.Json
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             if (tactic.ContainsKey(titleMappedValue))
             {
                 tactic[titleMappedValue] = Common.TruncateName(tactic[titleMappedValue].ToString());
@@ -785,7 +792,7 @@ namespace Integration.Eloqua
                 Resource = "/assets/campaign/" + elouqaCampaignId,
                 RequestFormat = DataFormat.Json
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             IRestResponse<EloquaCampaign> response = _client.Execute<EloquaCampaign>(request);
             return response.Data;
         }
@@ -806,6 +813,7 @@ namespace Integration.Eloqua
                 Resource = string.Format("/assets/campaign/{0}", id),
                 RequestFormat = DataFormat.Json
             };
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             tactic.Remove("folderId");
             if (tactic.ContainsKey(titleMappedValue))
             {
@@ -1454,7 +1462,7 @@ namespace Integration.Eloqua
                 RequestFormat = DataFormat.Json,
                 Resource = string.Format("/assets/campaign/folders?search={0}&depth=complete", "'" + FolderName + "'")
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             IRestResponse response = _client.Execute(request);
 
             return response;
@@ -1477,7 +1485,7 @@ namespace Integration.Eloqua
                                   strSearchTerm),
                 RequestFormat = DataFormat.Json
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             IRestResponse response = _client.Execute(request);
             //// Manipulation of contact list response and store into model
             string TacticResult = response.Content.ToString();
@@ -1530,7 +1538,7 @@ namespace Integration.Eloqua
                 Resource = "/assets/campaign/" + id,
                 RequestFormat = DataFormat.Json
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             IRestResponse<object> response = _client.Execute<object>(request);
             //// Modified by: Maninder
             //// Modified Date: 08/26/2014
@@ -1842,11 +1850,11 @@ namespace Integration.Eloqua
                     entityId = _id;
 
                 Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Eloqua Authentication start.");
-                _apiURL = GetInstanceURL();
+                //_apiURL = GetInstanceURL();   // commented by Viral Kadiya to Implement PL ticket #910: Implement OAuth authentication of Eloqua.
                 if (!string.IsNullOrWhiteSpace(_apiURL))
                 {
-                    _client = this.AuthenticateBase();
-                    _isAuthenticated = true;
+                    //_client = this.AuthenticateBase();
+                    this.OAuthAuthenticateBase();   // Added by Viral Kadiya to Implement PL ticket #910: Implement OAuth authentication of Eloqua.
                 }
                 Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Eloqua Authentication end.");
             }
@@ -1874,12 +1882,13 @@ namespace Integration.Eloqua
                 entityId = _id;
             Common.SaveIntegrationInstanceLogDetails(entityId, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Get instance URL");
             RestClient baseClient = AuthenticateBase();
+
             RestRequest request = new RestRequest(Method.GET)
             {
                 Resource = "/id",
                 RequestFormat = DataFormat.Json
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             string url = string.Empty;
             IRestResponse<InstanceURL> instanceURL = baseClient.Execute<InstanceURL>(request);
             if (instanceURL.ResponseStatus == ResponseStatus.Completed && instanceURL.StatusCode == HttpStatusCode.OK)
@@ -1907,6 +1916,63 @@ namespace Integration.Eloqua
                 Authenticator = new HttpBasicAuthenticator(_companyName + "\\" + _username, _password)
             };
         }
+
+        /// <summary>
+        /// Function to authenticate eloqua instance credentials.
+        /// </summary>
+        /// <returns>Returns client object.</returns>
+        private void OAuthAuthenticateBase()
+        {
+            string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            try
+            {
+                //const string clientId = "745d7e5e-1265-41b3-83ec-d8724a033f98";
+                //const string clientSecret = "1ZXwfhoxJfEq0SlvVuj~0ticvR6lmC74vkg2YaqsOSZJOqcqizH~hcduhCGg6zT9y4VRrSVRnoV3XCW3XWoCFTceDYE~pKn2pBSK";
+                
+                //IRestClient restClient = new RestClient(_apiURL);
+                RestClient restClient = new RestClient(_apiURL);
+                restClient.Authenticator = new HttpBasicAuthenticator(_eloquaClientID, _ClientSecret);
+                RestRequest request = new RestRequest("/auth/oauth2/token?grant_type=password&scope=full&username=" + _companyName + "\\" + _username + "&password=" + _password);
+                request.Method = Method.POST;
+                IRestResponse response = restClient.Post(request);
+
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    _isAuthenticated = true;
+                    Eloqua_RefreshToken objOAuthTokens= JsonConvert.DeserializeObject<Eloqua_RefreshToken>(response.Content);
+                    _AccessToken = objOAuthTokens.access_token;
+                    restClient.BaseUrl = GetInstanceURL(); 
+                }
+                else
+                    _isAuthenticated = false;
+
+                _client = restClient;
+            }
+            catch (Exception ex)
+            {
+                string exMessage = Common.GetInnermostException(ex);
+                Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "An error ocured while OAuth authentication with Eloqua: " + exMessage);
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, string.Empty, "An error ocured while OAuth authentication with Eloqua.", Enums.SyncStatus.Error, DateTime.Now));
+                _isResultError = true;
+                _ErrorMessage = exMessage;
+                _isAuthenticated = false;
+            }
+        }
+
+        #region "Update Access Token based on Refresh Token"
+        //private IRestResponse GetUpdatedAccessToken(string strRefreshToken)
+        //{
+        //    const string clientId = "745d7e5e-1265-41b3-83ec-d8724a033f98";
+        //    const string clientSecret = "1ZXwfhoxJfEq0SlvVuj~0ticvR6lmC74vkg2YaqsOSZJOqcqizH~hcduhCGg6zT9y4VRrSVRnoV3XCW3XWoCFTceDYE~pKn2pBSK";
+        //    string strEloquaLoginUrl = "https://login.eloqua.com";
+        //    IRestClient restClient = new RestClient(strEloquaLoginUrl);
+        //    restClient.Authenticator = new HttpBasicAuthenticator(clientId, clientSecret);
+        //    IRestRequest request = new RestRequest("/auth/oauth2/token?grant_type=refresh_token&scope=full&refresh_token=" + strRefreshToken);
+        //    request.Method = Method.POST;
+        //    IRestResponse response = restClient.Post(request);
+        //    return response;
+        //} 
+        #endregion
 
         #endregion
 
@@ -1969,7 +2035,7 @@ namespace Integration.Eloqua
                 Resource = string.Format("/data/contact/view/{0}/contacts/list/{1}?page={2}", eloquaViewId, elouqaContactListId, page),
                 RequestFormat = DataFormat.Json
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             IRestResponse response = _client.Execute(request);
 
             return response;
@@ -1993,7 +2059,7 @@ namespace Integration.Eloqua
                     Resource = string.Format("/assets/contact/list/{0}", elouqaContactListId),
                     RequestFormat = DataFormat.Json
                 };
-
+                request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
                 IRestResponse response = _client.Execute(request);
 
                 return response;
@@ -2024,7 +2090,7 @@ namespace Integration.Eloqua
                     Resource = string.Format("/assets/contact/list/{0}", elouqaContactListId),
                     RequestFormat = DataFormat.Json
                 };
-
+                request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
                 request.AddBody(contactListDetails);
 
                 IRestResponse response = _client.Execute(request);

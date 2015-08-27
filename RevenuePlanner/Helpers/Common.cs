@@ -185,6 +185,12 @@ namespace RevenuePlanner.Helpers
         public static List<string> TOPPerformanceColumnList = new List<string>() { "Name", "Proj. vs Goal", "Trend" };
         public static List<string> TOPCostColumnList = new List<string>() { "Name", "Cost", "Trend" };
         public static List<string> TOPROIColumnList = new List<string>() { "Name", "ROI", "Trend" };
+
+        #region "Eloqua ClientID & ClientSecret"
+        public static string eloquaClientIdLabel = "ClientId";
+        public static string eloquaClientSecretLabel = "ClientSecret"; 
+        #endregion
+
         #endregion
 
         #region Functions for File and IO Handling

@@ -170,7 +170,7 @@
 
         if (IsDeployToIntegrationVisible)
         {
-            if ((bool)ViewBag.IsModelDeploy && isVisibleSyncButton)
+            if ((bool)ViewBag.IsModelDeploy && isVisibleSyncButton && tacticReview.IsDeployedToIntegration)
             {
         <div class="margin-top23 margin-right10" style="float: left;">
             <div id="btn_sync_status" class="btn-group dropup">

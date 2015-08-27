@@ -58,7 +58,8 @@ namespace Integration.Helper
         public static readonly int CustomNameLimitSet = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["CustomNameLimitSet"]); ////Added by :- Pratik Chauhan on 04/02/2015 for PL ticket #1147
         public static readonly string DateFormatForSalesforce = "yyyy-MM-ddTHH:mm:ss.000+0000";
         public static bool IsAutoSync = false;
-
+        public static string eloquaClientIdLabel = "ClientId";
+        public static string eloquaClientSecretLabel = "ClientSecret";
         /// <summary>
         /// Added by Bhavesh
         /// Date: 28/7/2015
@@ -670,5 +671,13 @@ namespace Integration.Helper
         public int EntityId { get; set; }
         public string Value { get; set; }
         public string CustomNameValue { get; set; }
+    }
+
+    public class Eloqua_RefreshToken
+    {
+        public string access_token { get; set; }
+        public string token_type { get; set; }
+        public int expires_in { get; set; }
+        public string refresh_token { get; set; }
     }
 }
