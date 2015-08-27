@@ -1868,7 +1868,6 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                Plan Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(Sessions.PlanId));
                 List<int> PlanId = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
@@ -1976,7 +1975,7 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 var taskDataPlanMerged = newTaskDataPlan.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic);
-                List<Plan_Improvement_Campaign_Program_Tactic> ImprovementTacticForTaskData = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Plan.PlanId) &&
+                List<Plan_Improvement_Campaign_Program_Tactic> ImprovementTacticForTaskData = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => PlanId.Contains(improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)&&
                                                                                     improveTactic.IsDeleted.Equals(false) &&
                                                                                     (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
                                                                              .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
@@ -1996,7 +1995,7 @@ namespace RevenuePlanner.Controllers
                                                                                                       CalendarEndDate,
                                                                                                       _campgn.StartDate,
                                                                                                       _campgn.EndDate),
-                                                            progress = GetCampaignProgress(Plan, _campgn, ImprovementTacticForTaskData),//progress = 0,
+                                                            progress = GetCampaignProgress( _campgn, ImprovementTacticForTaskData),//progress = 0,
                                                             open = false,
                                                             parent = string.Format("L{0}", _campgn.PlanId),
                                                             color = CampaignColor,
@@ -2040,7 +2039,7 @@ namespace RevenuePlanner.Controllers
                                                                                                           CalendarEndDate,
                                                                                                           prgrm.StartDate,
                                                                                                           prgrm.EndDate),
-                                                                progress = GetProgramProgress(Plan, prgrm, ImprovementTacticForTaskData), 
+                                                                progress = GetProgramProgress( prgrm, ImprovementTacticForTaskData), 
                                                             // progress = 0,
                                                                 open = false,
                                                                 parent = string.Format("L{0}_C{1}", prgrm.Plan_Campaign.PlanId, prgrm.PlanCampaignId),
@@ -2087,7 +2086,7 @@ namespace RevenuePlanner.Controllers
                                                                                                                   CalendarEndDate,
                                                                                                                   _tac.StartDate,
                                                                                                                   _tac.EndDate),
-                                                                        progress = GetTacticProgress(Plan, _tac, ImprovementTacticForTaskData),
+                                                                        progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
                                                                         // progress = 0,
                                                                         open = false,
                                                                         isSubmitted = _tac.Status == tacticStatusSubmitted,
@@ -2145,7 +2144,7 @@ namespace RevenuePlanner.Controllers
 
         }
 
-        public double GetTacticProgress(Plan plan, Plan_Campaign_Program_Tactic planCampaignProgramTactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public double GetTacticProgress(Plan_Campaign_Program_Tactic planCampaignProgramTactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             double result = 0;
             // List of all improvement tactic.
@@ -2168,7 +2167,7 @@ namespace RevenuePlanner.Controllers
             return result;
         }
 
-        public double GetCampaignProgress(Plan plan, Plan_Campaign planCampaign, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public double GetCampaignProgress(Plan_Campaign planCampaign, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             double result = 0;
             // List of all improvement tactic.
@@ -2222,7 +2221,7 @@ namespace RevenuePlanner.Controllers
             }
             return result;
         }
-        public double GetProgramProgress(Plan plan, Plan_Campaign_Program planCampaignProgram, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
+        public double GetProgramProgress( Plan_Campaign_Program planCampaignProgram, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
         {
             double result = 0;
             // List of all improvement tactic.
@@ -4500,12 +4499,13 @@ namespace RevenuePlanner.Controllers
         {
             DateTime minDate = DateTime.Now;
             int Year = int.Parse(year);
-            if (lstCampaign.Count > 0)
+            var CampaignList = lstCampaign.Where(campaign => campaign.PlanId == planId).Select(campaign => campaign).ToList();
+            if (CampaignList.Count() > 0)
             {
                 //List<int> queryPlanCampaignId = lstCampaign.Where(campaign => campaign.PlanId == planId).Select(campaign => campaign.PlanCampaignId).ToList<int>();
                 //minDate = queryPlanCampaignId.Count() > 0 ? lstCampaign.Where(campaign => queryPlanCampaignId.Contains(campaign.PlanCampaignId)).Select(campaign => campaign.StartDate).Min() : DateTime.MinValue;
              
-                minDate =  lstCampaign.Where(campaign => campaign.PlanId==planId).Select(campaign => campaign.StartDate).Min() ;
+                minDate = CampaignList.Select(campaign => campaign.StartDate).Min();
 
             }
             else
@@ -4521,11 +4521,12 @@ namespace RevenuePlanner.Controllers
         {
             DateTime EndDate = DateTime.Now;
             int Year = int.Parse(year);
-            if (lstCampaign.Count > 0)
+            var CampaignList = lstCampaign.Where(campaign => campaign.PlanId == planId).Select(campaign => campaign).ToList();
+            if (CampaignList.Count > 0)
             {
                 //List<int> queryPlanCampaignId = lstCampaign.Where(campaign => campaign.PlanId == planId).Select(campaign => campaign.PlanCampaignId).ToList<int>();
                 //EndDate = queryPlanCampaignId.Count() > 0 ? lstCampaign.Where(campaign => queryPlanCampaignId.Contains(campaign.PlanCampaignId)).Select(campaign => campaign.EndDate).Min() : DateTime.MinValue;
-                EndDate = lstCampaign.Where(campaign => campaign.PlanId == planId).Select(campaign => campaign.EndDate).Min();
+                EndDate = CampaignList.Select(campaign => campaign.EndDate).Max();
             }
             else
             {

@@ -40,13 +40,13 @@ namespace RevenuePlanner.Helpers
                     return CampaignClone(PlanId, Suffix, UserId, ID, TacticStatus);
 
                 case "Program":
-                    return ProgramClone(Suffix, UserId, ID, TacticStatus);
+                    return ProgramClone(PlanId, Suffix, UserId, ID, TacticStatus);
 
                 case "Tactic":
-                    return TacticClone(Suffix, UserId, ID, TacticStatus);
+                    return TacticClone(PlanId, Suffix, UserId, ID, TacticStatus);
 
                 case "LineItem":
-                    return LineItemClone(Suffix, UserId, ID, TacticStatus);
+                    return LineItemClone(PlanId, Suffix, UserId, ID, TacticStatus);
             }
             return 0;
         }
@@ -380,10 +380,9 @@ namespace RevenuePlanner.Helpers
         /// <param name="UserId"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public int ProgramClone(string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int ProgramClone(int planId,string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
-            int planId = Sessions.PlanId;
 
             if (ID == 0)
                 return returnFlag;
@@ -495,10 +494,9 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int TacticClone(string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int TacticClone(int planid, string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
-            int planid = Sessions.PlanId;
             if (ID == 0)
                 return returnFlag;
             try
@@ -577,10 +575,9 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int LineItemClone(string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int LineItemClone( int planid,string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
-            int planid = Sessions.PlanId;
 
             if (ID == 0)
                 return returnFlag;

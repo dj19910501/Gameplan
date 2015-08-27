@@ -875,7 +875,7 @@ namespace RevenuePlanner.Controllers
                         //Create default Plan Improvement Campaign, Program
                         int returnValue = CreatePlanImprovementCampaignAndProgram();
                     }
-                    return Json(new { id = Sessions.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully." }) });
+                    return Json(new { id = plan.PlanId, redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = plan.PlanId, ismsg = "Plan Saved Successfully." }) });
 
                 }
             }
@@ -2676,7 +2676,10 @@ namespace RevenuePlanner.Controllers
                 //Reintialize the Monthly list for Actual Allocation object 
                 List<string> MonthlyList = Common.lstMonthly;
                 var objPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(_line => _line.PlanLineItemId == id && _line.IsDeleted == false); // Modified by :- Sohel Pathan on 05/09/2014 for PL ticket #749
-                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == Sessions.PlanId && _plan.IsDeleted == false);   // Modified by :- Sohel Pathan on 05/09/2014 for PL ticket #749
+
+                //get planId from database.
+                int planId = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == objPlanLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
+                var objPlan = db.Plans.FirstOrDefault(_plan => _plan.PlanId == planId && _plan.IsDeleted == false);   // Modified by :- Sohel Pathan on 05/09/2014 for PL ticket #749
                 var objPlanTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(_tac => _tac.PlanTacticId == tid && _tac.IsDeleted == false);    // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
                 //// Get LineItem Cost.
@@ -2969,7 +2972,7 @@ namespace RevenuePlanner.Controllers
                     {
                         ViewBag.CampaignID = Session["CampaignID"];
                         TempData["SuccessMessageDeletedPlan"] = strMessage;
-                        return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Sessions.PlanId }), planId = Sessions.PlanId, Id = rtResult, msg = strMessage });
+                        return Json(new { redirect = Url.Action("Index", "Home", new { activeMenu = Enums.ActiveMenu.Plan, currentPlanId = Id }), planId = Id, Id = rtResult, msg = strMessage });
                     }
                 }
                 return Json(new { });
@@ -8150,7 +8153,7 @@ namespace RevenuePlanner.Controllers
                 List<string> lstMonthly = Common.lstMonthly;
                 var objPlanCampaign = db.Plan_Campaign.FirstOrDefault(_camp => _camp.PlanCampaignId == CampaignId && _camp.IsDeleted == false);    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
 
-                var objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
+                var objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId == objPlanCampaign.PlanId && _pln.IsDeleted == false);  //Sessions.PlanId  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
 
                 var lstSelectedProgram = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.PlanCampaignId == CampaignId && _prgrm.IsDeleted == false).ToList();
 
@@ -8278,7 +8281,9 @@ namespace RevenuePlanner.Controllers
                 }
                 //// End-Added by Mitesh Vaishnav for PL ticket #571
 
-                var objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId == Sessions.PlanId && _pln.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
+                int planid = db.Plan_Campaign_Program.Where(p => p.PlanProgramId == PlanProgramId && p.IsDeleted.Equals(false)).Select(p => p.Plan_Campaign.PlanId).FirstOrDefault();
+
+              var objPlan = db.Plans.FirstOrDefault(_pln => _pln.PlanId == planid && _pln.IsDeleted == false);   // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
 
                 var lstSelectedProgram = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.PlanProgramId == PlanProgramId && _prgrm.IsDeleted == false).ToList();
 
@@ -8953,10 +8958,10 @@ namespace RevenuePlanner.Controllers
             var NoOfPrograms = ProgramIds.Count();
 
             //To Get Mql And Cost
-            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(Sessions.PlanId) && _imprvTactic.IsDeleted == false).Select(_imprvTactic => _imprvTactic).ToList();
+            List<Plan_Improvement_Campaign_Program_Tactic> improvementActivities = db.Plan_Improvement_Campaign_Program_Tactic.Where(_imprvTactic => _imprvTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(id) && _imprvTactic.IsDeleted == false).Select(_imprvTactic => _imprvTactic).ToList();
             List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
             List<StageList> stageListType = Common.GetStageList();
-            int? ModelId = db.Plans.Where(_plan => _plan.PlanId == Sessions.PlanId).Select(_plan => _plan.ModelId).FirstOrDefault();
+            int? ModelId = db.Plans.Where(_plan => _plan.PlanId == id).Select(_plan => _plan.ModelId).FirstOrDefault();
             List<ModelDateList> modelDateList = new List<ModelDateList>();
             var ModelList = db.Models.Where(mdl => mdl.IsDeleted == false);
             int MainModelId = (int)ModelId;
