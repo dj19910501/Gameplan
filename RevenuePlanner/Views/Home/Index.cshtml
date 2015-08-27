@@ -1055,13 +1055,6 @@
                 $("#divgridview").html('');
                 $("#divgridview").html(result);
 
-                $(".grid_Search").click(function (e) {
-                    inspectCloseFocus = $(this).position().top;
-                    var id = $(this).attr('alt');
-                    var type = $(this).attr('id');
-                    gridSearchFlag = 1;
-                    DisplayEditablePopup(id, type);
-                });
             }
         });
 

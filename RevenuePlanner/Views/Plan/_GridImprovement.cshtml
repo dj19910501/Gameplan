@@ -89,7 +89,6 @@
             e.stopPropagation();
             $.ajaxSetup({ cache: false });
             var idTactic = $(this).parent().attr("index");
-
             if (idTactic == 0) {
                 $("a#divimpTactic").removeClass('1');
                 $(this).parent().addClass('1');
@@ -1190,7 +1189,7 @@
 
 
     function displayConfirmCommonImprovement(functionName) {
-        if (isDataChanged()) {
+        if (isImpDataChanged()) {
             $('#spanMessageError').html("You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").slideDown(400);
             $("#btnConfirmOK").click(function () {
@@ -1205,7 +1204,7 @@
     }
 
     function displayconfirmForDeleteEvent(id, type) {
-        if (isDataChanged()) {
+        if (isImpDataChanged()) {
             $('#spanMessageError').html("You have unsaved changes. Do you wish to leave this page and lose your work?&nbsp;&nbsp;&nbsp;<a id='btnConfirmOK' class='btn-gray CursorHand' style='color:gray;'>Continue</a>&nbsp;&nbsp;<a style='color:gray;' id='confirmClose' href='#' class='underline'>Cancel</a>");
             $("#errorMessage").slideDown(400);
 
@@ -1223,7 +1222,7 @@
         }
     }
 
-    function isDataChanged() {
+    function isImpDataChanged() {
         var changed = false;
         $('#slidepanel').find("input[type=text],textarea,select, .priceValue").each(function () {   // Modified by Sohel Pathan on 18/08/2014 for Internal Review Points
             var iv = $(this).attr("myValue");
