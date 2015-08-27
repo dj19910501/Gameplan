@@ -4420,17 +4420,15 @@ namespace RevenuePlanner.Helpers
                             //// To increase performance we added this code. By Pratik Chauhan
                             db.Configuration.AutoDetectChangesEnabled = false;
 
-                            List<CustomField_Entity> tblCustomField = new List<CustomField_Entity>();
-                            tblCustomField = db.CustomField_Entity.ToList();
-
                             //// Start - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
+                            //List<CustomField_Entity> tblCustomField = new List<CustomField_Entity>();
                             if (section == Enums.Section.Plan.ToString() && id != 0)
                             {
                                 var PlanId = id;
                                 string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
                                 string entityTypeProgram = Enums.EntityType.Program.ToString();
                                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
-                                List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
+                                //List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
                                 
                                 var lineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false) && lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
                                 lineItemList.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
@@ -4441,19 +4439,20 @@ namespace RevenuePlanner.Helpers
                                 var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId && pcpt.IsDeleted == false).ToList();
                                 tacticList.ForEach(pcpt => { pcpt.IsDeleted = true; pcpt.ModifiedDate = System.DateTime.Now; pcpt.ModifiedBy = Sessions.User.UserId; });
                                 var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
-                                tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
+                                //tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
 
                                 var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
                                 programList.ForEach(pcp => { pcp.IsDeleted = true; pcp.ModifiedDate = System.DateTime.Now; pcp.ModifiedBy = Sessions.User.UserId; });
                                 var programIds = programList.Select(a => a.PlanProgramId).ToList();
-                                tblCustomField.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
+                                //tblCustomField.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram).ToList().ForEach(a => customFieldList.Add(a));
 
                                 var campaignList = db.Plan_Campaign.Where(pc => pc.PlanId == PlanId && pc.IsDeleted == false).ToList();
                                 campaignList.ForEach(pc => { pc.IsDeleted = true; pc.ModifiedDate = System.DateTime.Now; pc.ModifiedBy = Sessions.User.UserId; });
                                 var campaignIds = campaignList.Select(a => a.PlanCampaignId).ToList();
-                                tblCustomField.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
+                                //tblCustomField.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
                                 db.Plans.Where(p => p.PlanId == PlanId && p.IsDeleted == false).ToList().ForEach(p => p.IsDeleted = true);
 
+                                var customFieldList = db.CustomField_Entity.Where(a => (campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic)).ToList();
                                 customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                             }
                             //// End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
@@ -4478,18 +4477,13 @@ namespace RevenuePlanner.Helpers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
                                 //// when campaign deleted then custom field's value for this campaign and custom field's value of appropriate program and tactic will be deleted
-                                var campaign_customFieldList = tblCustomField.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
-                                campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
                                 var programIds = Plan_Campaign_ProgramList.Select(a => a.PlanProgramId).ToList();
                                 string sectionProgram = Enums.EntityType.Program.ToString();
-                                var program_customFieldList = tblCustomField.Where(a => programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram).ToList();
-                                program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
                                 var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
                                 string sectionTactic = Enums.EntityType.Tactic.ToString();
-                                var tactic_customFieldList = tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
-                                tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                var campaign_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
+                                campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
 
                             }
@@ -4511,13 +4505,14 @@ namespace RevenuePlanner.Helpers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
                                 //// when program deleted then custom field's value for this program and custom field's value of appropriate tactic will be deleted
-                                var program_customFieldList = tblCustomField.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
-                                program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
-
                                 var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
                                 string sectionTactic = Enums.EntityType.Tactic.ToString();
-                                var tactic_customFieldList = tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
-                                tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+                                var program_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
+                                program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
+
+                                
+                                //var tactic_customFieldList = tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
+                                //tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
                             }
                             else if (section == Enums.Section.Tactic.ToString() && id != 0)
@@ -4535,7 +4530,7 @@ namespace RevenuePlanner.Helpers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactics
                                 //// when tactic deleted then custom field's value for this tactic will be deleted 
-                                var tactic_customFieldList = tblCustomField.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
+                                var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
                                 tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactic
                             }
