@@ -2964,9 +2964,9 @@ namespace RevenuePlanner.Controllers
 
                         string expand = CloneType.ToLower().Replace(" ", "");
                         if (expand == "campaign")
-                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget }), Id = rtResult, msg = strMessage });
+                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Id, type = CalledFromBudget }), Id = rtResult, msg = strMessage });
                         else
-                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Sessions.PlanId, type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage });
+                            return Json(new { redirect = Url.Action("Budgeting", new { PlanId = Id, type = CalledFromBudget, expand = expand + Id.ToString() }), Id = rtResult, msg = strMessage });
                     }
                     else
                     {
