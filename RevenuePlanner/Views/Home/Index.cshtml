@@ -934,12 +934,33 @@
         // added by devanshi for #1431
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+
+                var SelectedPlanIds = CurrentPlanId;
+
+                filters.customFieldIds = [];
+
+                $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                    if ($(this).attr('checked') == 'checked') {
+                        var chkid = $(this).attr("id");
+                        if (chkid != undefined && chkid != 'undefined') {
+                            filters.customFieldIds.push(chkid);
+                        }
+                    }
+                });
+
+                var CustomFieldId = filters.customFieldIds;
+                var OwnerIds = filters.OwnerIds;
+                var TacticTypeids = filters.TacticTypeids;
+                var StatusIds = filters.StatusIds;
+
                 $("#CalenderView").hide();
                 $("#divgridview").show();
                 $("#ImprovementGrid").show();
                 LoadPlanGrid();
-                // LoadImprovementGrid(CurrentPlanId);
-
+                //Modified By Komal Rawal for #1447 - to Change the header data according to the filter selected.
+                GetHealderData(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
+                GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
+                //End
             }
             else {
                 UpdateCalenderView();
@@ -1073,7 +1094,6 @@
             success: function (result) {
                 $("#divgridview").html('');
                 $("#divgridview").html(result);
-
             }
         });
 
