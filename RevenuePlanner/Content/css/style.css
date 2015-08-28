@@ -15559,13 +15559,13 @@ float:right;
 
 .clue-tip-message-orange-grid {
     margin: 0 0 10px 10px;
-    padding: 12px;
-    width: 20%;
+    padding: 7px;
+    width: 18%;
     color: #FFA039;
     border: 1px solid #FFA039;
     background-color: #FCF8E7;
     border-radius: 4px;
-    font-size: 15px;
+    font-size: 13px;
     position:absolute;
 }
 /* End */
