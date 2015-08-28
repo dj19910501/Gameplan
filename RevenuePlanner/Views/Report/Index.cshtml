@@ -300,7 +300,7 @@
        <li id="liRevenue"><a class="revenue" ><span></span>REVENUE</a></li>
        @*<li id="liConversion"><a class="conversion" ><span></span>CONVERSION</a></li>*@
        <li id="liConversion"><a class="conversion" ><span></span>WATERFALL</a></li> @*--title changed by dashrath prajapati*@
-       <li id="liBudgetreport"><a class="budget" ><span></span>BUDGET</a></li>
+       <li id="liBudgetreport"><a class="budget" ><span></span>FINANCE</a></li> @*PL#1545 Dashrath Prajapati*@
    </ul>
 </div>
 
@@ -1257,7 +1257,7 @@ $('#liConversion').click(function () {
 //// budget click event
 $('#liBudgetreport').click(function () {
     if (isAllowClick) {
-        document.title = "Budget";
+        document.title = "Finance"; //PL#1545 Dashrath Prajapati
         isAllowClick = false;
         if (leftPaneOption != '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
             leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()';
