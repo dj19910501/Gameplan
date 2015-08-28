@@ -63,12 +63,15 @@
         onClickPlanTitle();
         SetAttributeData();
 
-        RefreshCurrentTab();
+        
         if ($('#IsGridView').val() == "True") {
             $("#CalenderView").hide();
         }
+        else {
+            RefreshCurrentTab();
+        }
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            GetCollaborators(CurrentPlanId);
+           // GetCollaborators(CurrentPlanId);
             $("#lblMarkringActivitiestitle").show();
            // $("#nl-form2").show();
         }
@@ -78,8 +81,8 @@
         }
         $('.request-icons').show();
         var SelectedPlans = filters.SelectedPlans.toString();
-        GetHealderData(SelectedPlans);
-        GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime);
+            GetHealderData(SelectedPlans);
+            GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime);
     });
 
     $("#ddlTabViewBy").change(function () {
