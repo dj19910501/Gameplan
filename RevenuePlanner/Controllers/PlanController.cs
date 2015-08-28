@@ -44,6 +44,8 @@ namespace RevenuePlanner.Controllers
         List<Plan_Tactic_LineItem_Values> LineItemList = new List<Plan_Tactic_LineItem_Values>();
         List<Stage> stageList = new List<Stage>();
         List<User> lstUserDetails = new List<User>();
+        List<int> lstCustomFieldsRequired = new List<int>();
+        List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
         #endregion
 
         //public ActionResult Create(int id = 0, bool isBackFromAssortment = false)
@@ -9105,6 +9107,11 @@ namespace RevenuePlanner.Controllers
                 var programtactic = db.Plan_Campaign_Program_Tactic.Where(_tactic => lstprogramId.Contains(_tactic.PlanProgramId) && _tactic.IsDeleted.Equals(false)).ToList();
 
                 List<int> lsttacticId = programtactic.Select(tactic => tactic.PlanTacticId).ToList();
+                string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+                string section = Enums.Section.Tactic.ToString();
+                lstCustomFieldsRequired = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false
+                     && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true) && customField.IsRequired == true).Select(customField => customField.CustomFieldId).ToList();
+                tacticcustomfieldsentity = db.CustomField_Entity.Where(t => lsttacticId.Contains(t.EntityId)).ToList();
 
                 if (programtactic != null && programtactic.Count > 0)
                     IsTacticExist = true;
@@ -9502,8 +9509,9 @@ namespace RevenuePlanner.Controllers
                                             projectedstagevalue = taskdata.ProjectedStageValue,
                                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                             ProjectStage = taskdata.Stage.Title,
-                                                        IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0"
-                                       
+                                                        IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0",
+                                                        //   IsRequiredfalse = tacticcustomfieldsentity.Where(t => t.EntityId == taskdata.PlanTacticId).Select(cust => cust.CustomFieldId).Intersect(lstCustomFieldsRequired).Count() != lstCustomFieldsRequired.Count() ? true : false
+                                                        IsRequiredfalse = CheckTActicPermission(taskdata)
                                         });
                                                     //foreach (var tactic in lsttacticTaskData)
                                                     //{
@@ -9525,7 +9533,8 @@ namespace RevenuePlanner.Controllers
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
                                                                                               new XElement("cell", "Tactic"),
-                                                                                               new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), HttpUtility.HtmlEncode(tactic.title)),
+                                                                                                           new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), HttpUtility.HtmlEncode(tactic.title), tactic.IsRequiredfalse == true ? new XCData("<span id='tacticIsRequired'></span>") : null),
+
                                                                                                new XElement("cell", new XCData("<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> " + (tactic.IsPlanCreateAll == true ? "<div class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + HttpUtility.HtmlEncode(tactic.title) + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>" : ""))),
                                                                                    new XElement("cell", tactic.PlanTacticId),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
@@ -9575,6 +9584,24 @@ namespace RevenuePlanner.Controllers
             return PartialView("_HomeGrid", objplangrid);
         }
         #endregion
+        public bool CheckTActicPermission(Plan_Campaign_Program_Tactic tacticObj)
+        {
+            if (string.IsNullOrEmpty(tacticObj.Title))
+                return true;
+            else if (tacticObj.TacticTypeId == null)
+                return true;
+            else if (tacticObj.CreatedBy == null)
+                return true;
+            else
+            {
+                var tcnt = tacticcustomfieldsentity.Where(t => t.EntityId == tacticObj.PlanTacticId).Select(cust => cust.CustomFieldId).Intersect(lstCustomFieldsRequired).Count();
+                var trequiredcnt = lstCustomFieldsRequired.Count();
+                if (tcnt != trequiredcnt)
+                    return true;
+                else
+                    return false;
+            }
+        }
         #region Save gridview detail from home
         /// <summary>
         /// Added By:Devanshi Gandhi

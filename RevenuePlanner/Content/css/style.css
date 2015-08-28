@@ -15539,8 +15539,8 @@ float:right;
     color: #fff;
     margin-bottom: 18px;
     padding-bottom: 0px;
-    padding-top: 0px;
-    margin-top:7px;
+    padding-top: 5px;
+    margin-top:4px;
     float:right;
     margin-right:10px;
 }
@@ -15548,5 +15548,24 @@ float:right;
     background: url('../images/btn-bg-35h-hover.jpg') repeat-x !important;
     color: #fff;
 }
+.orange-corner-grid {
+     border-bottom: 13px solid transparent;
+    border-right: 12.5px solid #ff931e;
+    float: right;
+     cursor: pointer;
+    margin-right: -4px;
+    margin-top: -29px;
+}
 
+.clue-tip-message-orange-grid {
+    margin: 0 0 10px 10px;
+    padding: 12px;
+    width: 15%;
+    color: #FFA039;
+    border: 1px solid #FFA039;
+    background-color: #FCF8E7;
+    border-radius: 4px;
+    font-size: 13px;
+    position:absolute;
+}
 /* End */
