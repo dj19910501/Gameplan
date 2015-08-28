@@ -115,7 +115,19 @@
     }
 
 
-    function GetHealderData(selectedPlanIds) {
+    function GetHealderData(selectedPlanIds,Cid, OId,Tacticids,StatusId) {
+        var CustomId = "";
+        var OwnerIds = "";
+        var TacticTypeids = "";
+        var StatusIds = "";
+
+        if( typeof Cid  != "undefined" || typeof OId  != "undefined" ||typeof Tacticids  != "undefined" ||typeof StatusId  != "undefined" )
+        {
+            CustomId = Cid;
+            OwnerIds = OId;
+            TacticTypeids = Tacticids;
+            StatusIds = StatusId;
+        }
         var newUrl = '';
         if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
         newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
@@ -132,7 +144,11 @@
         data: {
             planid: selectedPlanIds,
             activeMenu: $('#ActiveMenu').val().toLowerCase(),
-            year: isQuater
+            year: isQuater,
+            CustomFieldId:CustomId.toString(),
+            OwnerIds:OwnerIds.toString(),
+            TacticTypeids:TacticTypeids.toString(),
+            StatusIds:StatusIds.toString()
         },
         dataType: "json",
         success: function (data) {
@@ -190,8 +206,19 @@
         }
     });
 }
-    function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam) {
-       // alert('chart');
+    function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam,Cid, OId,Tacticids,StatusId) {
+        var CustomId = "";
+        var OwnerIds = "";
+        var TacticTypeids = "";
+        var StatusIds = "";
+
+        if( typeof Cid  != "undefined" || typeof OId  != "undefined" ||typeof Tacticids  != "undefined" ||typeof StatusId  != "undefined" )
+        {
+            CustomId = Cid;
+            OwnerIds = OId;
+            TacticTypeids = Tacticids;
+            StatusIds = StatusId;
+        }
     var newUrl = '';
     var isMultiple = false;
     newUrl = '@Url.Action("GetNumberOfActivityPerMonth", "Home")';
@@ -211,7 +238,11 @@
         data: {
             planid: selectedPlanIds,
             strparam: strParam,
-            isMultiplePlan: isMultiple
+            isMultiplePlan: isMultiple,
+            CustomFieldId:CustomId.toString(),
+            OwnerIds:OwnerIds.toString(),
+            TacticTypeids:TacticTypeids.toString(),
+            StatusIds:StatusIds.toString()
         },
         dataType: "json",
         success: function (data) {

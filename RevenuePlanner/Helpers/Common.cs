@@ -1540,7 +1540,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId)
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId,string CustomFieldId="",string OwnerIds="",string TacticTypeids="",string StatusIds="")
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -1571,6 +1571,56 @@ namespace RevenuePlanner.Helpers
             if (objPlan != null)
             {
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList();
+
+                //Modified By Komal Rawal for #1447
+                List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                List<int> lstTacticIds = new List<int>();
+
+                //// Owner filter criteria.
+                List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+
+                //TacticType filter criteria
+                List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+
+                //Status filter criteria
+                List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+
+                //// Custom Field Filter Criteria.
+                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? new List<string>() : CustomFieldId.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                if (filteredCustomFields.Count > 0)
+                {
+                    filteredCustomFields.ForEach(customField =>
+                    {
+                        string[] splittedCustomField = customField.Split('_');
+                        lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                    });
+
+                }
+
+                if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                {
+                    lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                    planTacticIds = planTacticIds.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+
+                    //// Apply Custom restriction for None type
+                    if (planTacticIds.Count() > 0)
+                    {
+
+                        if (filteredCustomFields.Count > 0)
+                        {
+                            lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                            //// get Allowed Entity Ids
+                            planTacticIds = planTacticIds.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                        }
+
+                    }
+                }
+
+                //End
 
                 if (objPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Draft.ToString()].ToString(), StringComparison.OrdinalIgnoreCase))
                 {
@@ -1676,7 +1726,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planIds">list plan ids</param>
         /// <returns></returns>
-        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu, string year)
+        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu, string year,string CustomFieldId,string OwnerIds,string TacticTypeids,string StatusIds)
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities db = new MRPEntities();
@@ -1693,7 +1743,60 @@ namespace RevenuePlanner.Helpers
             var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true).Select(m => m).ToList();
             if (planList != null && planList.Count > 0)
             {
+                //Modified By Komal Rawal for #1447
+                List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                List<int> lstTacticIds = new List<int>();
+
+                //// Owner filter criteria.
+                List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+               
+                //TacticType filter criteria
+                List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+                
+                //Status filter criteria
+                List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+
+                //// Custom Field Filter Criteria.
+                List<string> filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? new List<string>() : CustomFieldId.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                if (filteredCustomFields.Count > 0)
+                {
+                    filteredCustomFields.ForEach(customField =>
+                    {
+                        string[] splittedCustomField = customField.Split('_');
+                        lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                        lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                    });
+
+                }
+
+               
                 List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();
+
+                if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                {
+                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.PlanId).ToList();
+                    planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
+                                             (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
+                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
+
+                    //// Apply Custom restriction for None type
+                    if (planTacticsList.Count() > 0)
+                    {
+
+                        if (filteredCustomFields.Count > 0)
+                        {
+                            lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                            //// get Allowed Entity Ids
+                            planTacticsList = planTacticsList.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanId)).ToList();
+                        }
+
+                    }
+                }
+
+                //End
+                
+                
                 var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
                 var tacticids = planTacticsList.Select(t => t.objPlanTactic.PlanTacticId).ToList();
                 List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticids.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();

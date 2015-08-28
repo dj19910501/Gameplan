@@ -1150,13 +1150,13 @@ namespace RevenuePlanner.Controllers
         /// Get plan by plan id
         /// </summary>
         /// <param name="planid"></param>
-        public JsonResult GetPlanByPlanID(int planid)
+        public JsonResult GetPlanByPlanID(int planid, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
             try
             {
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid,CustomFieldId,OwnerIds,TacticTypeids,StatusIds),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -1179,7 +1179,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated list of plan ids</param>
         /// <param name="activeMenu">Get Active Menu</param>
         /// <returns>returns Json object with values required to show in plan/home header</returns>
-        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu, string year)
+        public JsonResult GetPlanByMultiplePlanIDs(string planid, string activeMenu, string year,string CustomFieldId = "",string OwnerIds= "",string TacticTypeids="",string StatusIds="")
         {
             planid = System.Web.HttpUtility.UrlDecode(planid);
             List<int> planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(p => int.Parse(p)).ToList();
@@ -1188,7 +1188,7 @@ namespace RevenuePlanner.Controllers
             {
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds, activeMenu, year),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValueForMultiplePlans(planIds, activeMenu, year,CustomFieldId,OwnerIds,TacticTypeids,StatusIds),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)

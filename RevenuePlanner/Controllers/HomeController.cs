@@ -3080,7 +3080,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated string of Plan Ids</param>
         /// <param name="strparam">Upcoming Activity dropdown selected option e.g. planyear, thisyear</param>
         /// <returns>returns Activity Chart object as jsonresult</returns>
-        public JsonResult GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan)
+        public JsonResult GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -3150,6 +3150,57 @@ namespace RevenuePlanner.Controllers
                                                                                                                                         CalendarEndDate,
                                                                                                                                         tactic.StartDate,
                                                                                                                                         tactic.EndDate).Equals(false)).ToList();
+
+            //Modified By Komal Rawal for #1447
+            List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+            List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+            List<int> lstTacticIds = new List<int>();
+
+            //// Owner filter criteria.
+            List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+
+            //TacticType filter criteria
+            List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+
+            //Status filter criteria
+            List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+
+            //// Custom Field Filter Criteria.
+            List<string> filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? new List<string>() : CustomFieldId.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+            if (filteredCustomFields.Count > 0)
+            {
+                filteredCustomFields.ForEach(customField =>
+                {
+                    string[] splittedCustomField = customField.Split('_');
+                    lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                    lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                });
+
+            }
+
+            if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+            {
+                lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                         (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                         (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+
+                //// Apply Custom restriction for None type
+                if (objPlan_Campaign_Program_Tactic.Count() > 0)
+                {
+
+                    if (filteredCustomFields.Count > 0)
+                    {
+                        lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                        //// get Allowed Entity Ids
+                        objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                    }
+
+                }
+            }
+
+            //End
+
 
             //// Prepare an array of month as per selected dropdown paramter
             int[] monthArray = new int[12];
