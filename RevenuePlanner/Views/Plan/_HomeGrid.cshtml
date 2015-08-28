@@ -107,7 +107,7 @@
 
         //End
 
-	  $("#spnError").hover(function () {
+        $(".orange-corner-grid").hover(function () {
             $("#divTacticReqMsg").css('display', 'block');
             var position = $(this).offset();
             var targetOffset = $(this).offset().top;
@@ -157,7 +157,7 @@
         lines.splice(0, 9);
         lines.splice(1, 1, "Task Name");
         $("#exportcsv").attr('download', planname+'_GridData.csv')
-        $("#exportcsv").attr("href", 'data:Application/octet-stream,' + encodeURIComponent(lines));
+            $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
     }
         else {
             $('#cErrorInspectPopup').html('No Records found for Export Grid data.');
@@ -216,14 +216,17 @@
             }
        
         });
-        $('#gridbox').find('#tacticIsRequired').each(function () {
-            var div = $(this).parent().parent();
+        $('#gridbox').find('tbody tr').each(function () {
+            var spnerror = $(this).find("#tacticIsRequired");
+            if (typeof spnerror != 'undefined' && spnerror!=null) {
+                var div = $(spnerror).parent().parent();
             //if ($(this).hasClass('ev_dhx_skyblue') || $(this).hasClass('odd_dhx_skyblue')) {
             //    var div = $(this).find('.treegrid_cell');
-            //    if (typeof div != 'undefined') {
+                if (typeof div != 'undefined') {
+                    $(spnerror).remove();
                  $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
-            //    }
-            //}
+                }
+            }
         })
     }
     function convertNumber(num) {
