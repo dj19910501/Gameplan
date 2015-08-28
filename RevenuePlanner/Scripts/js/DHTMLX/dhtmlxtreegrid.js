@@ -20400,7 +20400,7 @@ dhtmlXGridObject.prototype.csvExtParser = {
     },
     str: function(c, a, d) {
         for (var b = 0; b < c.length; b++) {
-            c[b] = '"' + c[b].replace(this._quote, '\\"') + '"'
+            c[b] = '"' + c[b].replace(this._quote, "''") + '"'
         }
         return c.join(a)
     }

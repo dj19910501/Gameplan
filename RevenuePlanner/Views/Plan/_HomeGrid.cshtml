@@ -38,7 +38,7 @@
 <div id="gridbox" style="background-color:white;width:100%;"></div>
 
 <textarea id="mytextarea1" style="width:0px;height:0px;display:none;">@Model.xmlstring</textarea>
-<div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fileds out before submission for approval.</div>
+<div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
 
 @*Added by Komal Rawal for #1432*@
 <div id="ImprovementGrid"  class="improvement-grid-wrapper">
@@ -156,6 +156,11 @@
         var lines = myCSVString.split(",");
         lines.splice(0, 9);
         lines.splice(1, 1, "Task Name");
+        //$.each(lines, function (i, data) {
+           
+        //    data = data.replace("\"","''" );
+        //    alert(data);
+        //});
         $("#exportcsv").attr('download', planname+'_GridData.csv')
             $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
     }
