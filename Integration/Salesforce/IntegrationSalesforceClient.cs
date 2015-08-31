@@ -853,7 +853,30 @@ namespace Integration.Salesforce
                 int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), DateTime.Now, _userId);
 
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Creating Eloqua & Model IntegrationInstanceId mapping list start.");
-                List<Plan> lstPlans = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+                //List<Plan> lstPlans = db.Plans.Where(p => p.Model.IntegrationInstanceIdINQ == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+
+                #region "Check for pulling Responses whether Model/Plan associated or not with current Instance"
+                List<Model> lstModels = db.Models.Where(objmdl => objmdl.IntegrationInstanceIdINQ == _integrationInstanceId && objmdl.Status.Equals("Published") && objmdl.IsActive == true).ToList();
+                if (lstModels == null || lstModels.Count <= 0)
+                {
+                    // Save & display Message: No single Model associated with current Instance.
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: There is no single Model associated with this Instance to pull Responses.", Enums.SyncStatus.Error, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Responses: There is no single Model associated with this Instance to pull Responses.");
+                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                    return; // no error.
+                }
+                List<int> ModelIds = lstModels.Select(mdl => mdl.ModelId).ToList();
+                List<Plan> lstPlans = db.Plans.Where(objplan => ModelIds.Contains(objplan.Model.ModelId) && objplan.IsActive == true).ToList();
+                if (lstPlans == null || lstPlans.Count <= 0)
+                {
+                    // Save & display Message: No single Plan associated with current Instance.
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: There is no single Plan associated with this Instance to pull Responses.", Enums.SyncStatus.Error, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Responses: There is no single Plan associated with this Instance to pull Responses.");
+                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                    return; // no error.
+                }
+                #endregion
+                
                 Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
                 //// Get Eloqua integration type Id.
@@ -1413,7 +1436,30 @@ namespace Integration.Salesforce
                 int IntegrationInstanceSectionId = Common.CreateIntegrationInstanceSection(_integrationInstanceLogId, _integrationInstanceId, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), DateTime.Now, _userId);
 
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Creating Eloqua & Model IntegrationInstanceId mapping list start.");
-                List<Plan> lstPlans = db.Plans.Where(p => p.Model.IntegrationInstanceIdCW == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+                //List<Plan> lstPlans = db.Plans.Where(p => p.Model.IntegrationInstanceIdCW == _integrationInstanceId && p.Model.Status.Equals(published)).ToList();
+
+                #region "Check for pulling CW whether Model/Plan associated or not with current Instance"
+                List<Model> lstModels = db.Models.Where(objmdl => objmdl.IntegrationInstanceIdCW == _integrationInstanceId && objmdl.Status.Equals("Published") && objmdl.IsActive == true).ToList();
+                if (lstModels == null || lstModels.Count <= 0)
+                {
+                    // Save & display Message: No single Model associated with current Instance.
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Pull Closed Deals: There is no single Model associated with this Instance to pull CWs.", Enums.SyncStatus.Info, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Closed Deals: There is no single Model associated with this Instance to pull CWs.");
+                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                    return; // no error.
+                }
+                List<int> ModelIds = lstModels.Select(mdl => mdl.ModelId).ToList();
+                List<Plan> lstPlans = db.Plans.Where(objplan => ModelIds.Contains(objplan.Model.ModelId) && objplan.IsActive == true).ToList();
+                if (lstPlans == null || lstPlans.Count <= 0)
+                {
+                    // Save & display Message: No single Plan associated with current Instance.
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Pull Closed Deals: There is no single Plan associated with this Instance to pull CWs.", Enums.SyncStatus.Info, DateTime.Now));
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Closed Deals: There is no single Plan associated with this Instance to pull CWs.");
+                    Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
+                    return; // no error.
+                }
+                #endregion
+                
                 Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
                 //// Get Eloqua integration type Id.
