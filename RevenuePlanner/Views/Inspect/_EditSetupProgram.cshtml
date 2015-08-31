@@ -492,7 +492,7 @@
 
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
-                if ($(this).val() == '') {
+                if ($(this).val().toString().trim() == '') {
                     $(this).addClass("error");
                     iserror = true;
                 }
