@@ -3719,59 +3719,60 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return html string with CSS and Javascript.</returns>
         private string AddCSSAndJS(string htmlOfCurrentView, string reportType)
         {
-            string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+          //  string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
             //string js = ReadJs("");
             string returnhtml = "";
             StringBuilder html = new StringBuilder();
             html.Append("<html>");
             html.Append("<head>");
+            string url = Url.Content("~/Content/css/bootstrap.css");
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/bootstrap.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap.css")));
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/bootstrap-responsive.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap-responsive.css")));
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/style.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/style.css")));
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/datepicker.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/datepicker.css")));
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/style_extended.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/style_extended.css")));
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/DHTMLX/dhtmlxgantt.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/DHTMLX/dhtmlxgantt.css")));
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/Select2/select2.css"));
 
             // html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.min.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery-migrate-1.2.1.min.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/bootstrap.min.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.slimscroll.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.slidepanel.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/scripts.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/scripts_extended.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/jquery.form.min.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/bootstrap-datepicker.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.price_format.1.8_v2.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.price_format.1.8.min.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/slimScrollHorizontal.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.mCustomScrollbar.concat.min.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.actual.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/highcharts.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/jquery.selectbox-0.2.js"));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.min.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery-migrate-1.2.1.min.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/bootstrap.min.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.slimscroll.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.slidepanel.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/scripts.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/scripts_extended.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/jquery.form.min.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/bootstrap-datepicker.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.price_format.1.8_v2.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.price_format.1.8.min.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/slimScrollHorizontal.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.actual.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/highcharts.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/jquery.selectbox-0.2.js")));
 
 
             /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.multiselect_v1.js"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/js/jquery.multiselect.filter.js"));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.multiselect_v1.js")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.multiselect.filter.js")));
 
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/font-awesome.min.css"));
-            html.Append(string.Format("<script src='{0}'></script>", domain + "/Scripts/modernizr-2.5.3.js"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/font-awesome.min.css")));
+            html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/modernizr-2.5.3.js")));
 
             //html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/dhtmlxchart.js"));
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/dhtmlxchart.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/dhtmlxchart.css")));
 
             /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/jquery.multiselect.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/jquery.multiselect.css")));
 
-            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", domain + "/Content/css/jquery.mCustomScrollbar.css"));
+            html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/jquery.mCustomScrollbar.css")));
             //html.Append("<style type='text/css'>");
             //html.Append("#table-sparkline {");
             //html.Append("margin: 0 auto;");
@@ -3855,7 +3856,7 @@ namespace RevenuePlanner.Controllers
             }
 
             returnhtml = Convert.ToString(html);
-
+          
             return returnhtml;
         }
 
