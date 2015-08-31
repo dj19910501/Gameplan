@@ -9028,14 +9028,12 @@ namespace RevenuePlanner.Controllers
             bool IsPlanCreateAll = false;
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
             bool IsFiltered = false;
-            //List<Stage> stageList = new List<Stage>();
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
 
             string xmlstring = string.Empty;
             string xmlUserlist = string.Empty;
             string stageMQL = Enums.Stage.MQL.ToString();
-            double MQLs = 0;
             StringBuilder GridString = new StringBuilder();
             Plangrid objplangrid = new Plangrid();
             PlanImprovement objimprovement = new PlanImprovement();
@@ -9069,20 +9067,9 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
 
-                //if (objPlan_Campaign_Program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program.CreatedBy))
-                //{
-                //    IsPlanEditable = true;
-                //}
-                //if (objPlan_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(objPlan_Campaign_Program_Tactic.CreatedBy))
-                //{
-                //    IsPlanEditable = true;
-                //}
-                //End
+
                 stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
                 string MQLTitle = stageList.Where(stage => stage.Code.ToLower() == Enums.PlanGoalType.MQL.ToString().ToLower()).Select(stage => stage.Title).FirstOrDefault();
-
-
-              
 
 
                 int MainPlanID = 0;
@@ -9171,6 +9158,8 @@ namespace RevenuePlanner.Controllers
                 List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                         lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
+                TempData["TacticfilterList"] = TacticfilterList;
+                TempData["lsteditableEntityIds"] = lsteditableEntityIds;
                 //End
                 int PlanCnt = 1, CampCnt = 1, ProgCnt = 1;
                 bool IsPlan = false;
@@ -9271,7 +9260,6 @@ namespace RevenuePlanner.Controllers
                     GridString.Append(" <cell type='ro' style='color:#999'>--</cell> <cell type='ro' style='color:#999'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro' style='color:#999'>--</cell> <cell style='color:#999' actval=\"" + totalmql + "\">" + totalmql + "</cell> <cell style='color:#999' actval=\"" + totalrevenue + "\">" + totalrevenue + "</cell> ");
                     Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
                     CampCnt = 1;
-                    // type = "Campaign";
                     if (Campaignfilterlst.Count > 0)
                     {
                         var lstcampaignTaskData = Campaignfilterlst.Select((taskdata, index) => new
@@ -9280,9 +9268,7 @@ namespace RevenuePlanner.Controllers
 
                             totalcost = LineItemList.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Cost),
                             totalmql = ListTacticMQLValue.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.MQL),
-                            // totalcost = 0,
-                            // totalmql = 0,
-                            // totalrevenue=0,
+
                             PlanCampaignId = taskdata.PlanCampaignId,
                             totalrevenue = ListTacticMQLValue.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Revenue),
                             Title = taskdata.Title,
@@ -9346,8 +9332,6 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                                //IsEditable = "1";
-                                //cellTextColor = "style='color:#999'";
 
                                 cellTextColor = "style='color:#000'";
                                 IsEditable = "0";
@@ -9369,7 +9353,6 @@ namespace RevenuePlanner.Controllers
 
 
                             Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
-                            //  type = "Program";
                             if (Programfilterlst != null && Programfilterlst.Count > 0)
                             {
                                 Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
@@ -9391,9 +9374,6 @@ namespace RevenuePlanner.Controllers
                                     totalcost = LineItemList.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Cost),
                                     totalmql = ListTacticMQLValue.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.MQL),
                                     totalrevenue = ListTacticMQLValue.Where(l => l.Programid == taskdata.PlanProgramId).Sum(l => l.Revenue),
-                                    // totalcost = 0,
-                                    //totalmql = 0,
-                                    //totalrevenue = 0,
                                     PlanProgramId = taskdata.PlanProgramId,
                                     Title = taskdata.Title,
                                     StartDate = taskdata.StartDate,
@@ -9488,17 +9468,13 @@ namespace RevenuePlanner.Controllers
                                         GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
                                         GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
 
-                                        //    type = "Tactic";
-
                                         var lsttacticTaskData = finalTacticfilterList.Select((taskdata, index) => new
                                         {
                                             index = index,
                                             totalcost = LineItemList.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Cost),
                                             totalmql = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.MQL),
                                             totalrevenue = ListTacticMQLValue.Where(l => l.PlanTacticId == taskdata.PlanTacticId).Sum(l => l.Revenue),
-                                            // totalcost =0,
-                                            //totalmql = 0,
-                                            //totalrevenue =0,
+
                                             PlanTacticId = taskdata.PlanTacticId,
                                             title = taskdata.Title,
                                             startdate = taskdata.StartDate,
@@ -9510,31 +9486,14 @@ namespace RevenuePlanner.Controllers
                                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                             ProjectStage = taskdata.Stage.Title,
                                                         IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0",
-                                                        //   IsRequiredfalse = tacticcustomfieldsentity.Where(t => t.EntityId == taskdata.PlanTacticId).Select(cust => cust.CustomFieldId).Intersect(lstCustomFieldsRequired).Count() != lstCustomFieldsRequired.Count() ? true : false
-                                                        IsRequiredfalse = CheckTActicPermission(taskdata)
+                                                        IsRequiredfalse = CheckTacticRequiredfield(taskdata)
                                         });
-                                                    //foreach (var tactic in lsttacticTaskData)
-                                                    //{
-                                                    //    GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "."+tactic.index+"' bgColor='#E4F1E1' open='1'>");
 
-                                                    //    GridString.Append("<cell bgColor='#E4F1E1' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + tactic.title + "</cell><cell bgColor='#E4F1E1'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
-                                                    //    if (Programitem.IsPlanCreateAll)
-                                                    //    {
-                                                    //        GridString.Append("<div class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + Programitem.Title + "/" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");
-                                                    //    }
-                                                    //    GridString.Append("]]></cell>");
-                                                    //    GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell> ");
-                                                    //    GridString.Append(" <cell bgColor='#E4F1E1' style='color:#999' actval=\"" + tactic.totalcost.ToString() + "\">" + tactic.totalcost + "</cell> <cell bgColor='#E4F1E1' type='ro' style='color:#999'>"+tactic.tactictypeid+"</cell>  <cell bgColor='#E4F1E1' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell> ");
-                                                    //    GridString.Append(" <cell bgColor='#E4F1E1' style='color:#999'>" + tactic.projectedstagevalue + "-" + tactic.ProjectStage + "</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + tactic.totalmql.ToString() + "\">" + tactic.totalmql + "</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + tactic.totalrevenue.ToString() + "\">" + tactic.totalrevenue + "</cell> ");
-                                                    //    GridString.Append("</row>");
-
-                                                    //}
 
                                         var xmlElements = new XElement("rows", from tactic in lsttacticTaskData
                                                                                select new XElement("row", new XAttribute("style", "background-color:#E4F1E1"), new XAttribute("id", "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + ""),
                                                                                               new XElement("cell", "Tactic"),
                                                                                                            new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), HttpUtility.HtmlEncode(tactic.title), tactic.IsRequiredfalse == true ? new XCData("<span id='tacticIsRequired'></span>") : null),
-
                                                                                                new XElement("cell", new XCData("<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> " + (tactic.IsPlanCreateAll == true ? "<div class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + HttpUtility.HtmlEncode(tactic.title) + "/" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>" : ""))),
                                                                                    new XElement("cell", tactic.PlanTacticId),
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.startdate.ToString("MM/dd/yyyy")),
@@ -9542,7 +9501,6 @@ namespace RevenuePlanner.Controllers
                                                                                    new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), new XAttribute("type", "edn"), tactic.totalcost),
                                                                                   new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.tactictypeid),
                                                                                     new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), tactic.CreatedBy),
-                                                                                 //  new XElement("cell", new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), tactic.projectedstagevalue),
                                                                                                new XElement("cell", new XAttribute("locked", tactic.IstactEditable), new XAttribute("style", tactic.IstactEditable == "1" ? "color:#999;background-color:#E4F1E1" : "color:#000;background-color:#E4F1E1"), new XAttribute("type", "edn"), new XAttribute("tactictype", tactic.tactictypeid), new XAttribute("stage", tactic.ProjectStage), tactic.projectedstagevalue + "_" + tactic.ProjectStage),
                                                                                     new XElement("cell", new XAttribute("style", "color:#999;background-color:#E4F1E1"), new XAttribute("actval", tactic.totalmql), tactic.totalmql),
                                                                                      new XElement("cell", new XAttribute("style", " color:#999;background-color:#E4F1E1"), new XAttribute("actval", tactic.totalrevenue), tactic.totalrevenue)));
@@ -9584,7 +9542,10 @@ namespace RevenuePlanner.Controllers
             return PartialView("_HomeGrid", objplangrid);
         }
         #endregion
-        public bool CheckTActicPermission(Plan_Campaign_Program_Tactic tacticObj)
+        #region Check tactic required field condition
+        public bool CheckTacticRequiredfield(Plan_Campaign_Program_Tactic tacticObj)
+        {
+            try
         {
             if (string.IsNullOrEmpty(tacticObj.Title))
                 return true;
@@ -9602,6 +9563,13 @@ namespace RevenuePlanner.Controllers
                     return false;
             }
         }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+                return true;
+            }
+        }
+        #endregion
         #region Save gridview detail from home
         /// <summary>
         /// Added By:Devanshi Gandhi
@@ -10323,8 +10291,6 @@ namespace RevenuePlanner.Controllers
                                 orderby tacType.Title
                                 select tacType;
 
-                //List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false)
-                //    && tactype.ModelId == modelId && tactype.IsDeployedToModel == true ).ToList();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
                 lstUsers = lstUsers.Where(i => i.IsDeleted ==false).ToList();
@@ -10333,7 +10299,6 @@ namespace RevenuePlanner.Controllers
                 {
                     string strUserList = string.Join(",", lstClientUsers);
                     lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
-                   // lstAllUserDetails = lstUserDetails;
                    
                     if (lstUserDetails.Count > 0)
                     {
@@ -10382,6 +10347,7 @@ namespace RevenuePlanner.Controllers
             return strHeader;
         }
         #endregion
+        #region method to get owner full name by guid
         public string GetUserName(Guid UserGuid)
         {
 
@@ -10390,10 +10356,10 @@ namespace RevenuePlanner.Controllers
             if (userName.Count > 0)
             {
                 return UserGuid.ToString();
-              //  return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
             }
             return "";
         }
+        #endregion
         #region method to calculate tactic cost , revenue and MQl
         protected void CalculateTacticCostRevenue(int? modelId, List<int> lsttacticId, List<Plan_Campaign_Program_Tactic> programtactic, PlanImprovement objimprovement)
         {
@@ -10491,6 +10457,92 @@ namespace RevenuePlanner.Controllers
 
             }
             return Json(new { TactMinDate = TactMinDate, TactMaxDate = TactMaxDate, ProgMinDate = ProgMinDate, ProgMaxDate = ProgMaxDate });
+        }
+        #endregion
+
+        #region method to check permission of tactic , campaign or program by owner id
+        [HttpPost]
+        public JsonResult CheckPermissionByOwner(string NewOwnerID, string UpdateType, int updatedid = 0)
+        {
+            string cellTextColor = string.Empty;
+            string CellBackGroundcolor = string.Empty;
+            string IsLocked = string.Empty;
+            List<Plan_Campaign_Program_Tactic> TacticfilterList = new List<Plan_Campaign_Program_Tactic>();
+            List<int> CustomTacticids = new List<int>();
+            List<int> lsteditableEntityIds = new List<int>();
+            Guid OwnerID = new Guid( NewOwnerID);
+            bool IsEditable = false;
+            try
+            {
+                if (TempData["lsteditableEntityIds"] != null)
+                {
+                    lsteditableEntityIds = (List<int>)TempData["lsteditableEntityIds"];
+                    TempData["lsteditableEntityIds"] = lsteditableEntityIds;
+                }
+                List<Guid> lstSubordinatesIds = new List<Guid>();
+                bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                if (IsTacticAllowForSubordinates)
+                {
+                    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                }
+                if (TempData["TacticfilterList"] != null)
+                {
+                    TacticfilterList = (List<Plan_Campaign_Program_Tactic>)TempData["TacticfilterList"];
+                    TempData["TacticfilterList"] = TacticfilterList;
+                    IsEditable = OwnerID.Equals(Sessions.User.UserId) == true ? true : false;
+                    if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.tactic.ToString())
+                    {
+                        CustomTacticids = new List<int>(updatedid);
+                        CellBackGroundcolor = "background-color:#E4F1E1;";
+                    }
+                    else if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.program.ToString())
+                    {
+                        CustomTacticids = TacticfilterList.Where(tact => tact.PlanProgramId == updatedid).Select(tact => tact.PlanTacticId).ToList();
+                       // CellBackGroundcolor = "background-color:#E4F1E1;";
+                    }
+                    else if (UpdateType.ToLower() == Enums.ChangeLog_ComponentType.campaign.ToString())
+                    {
+                        CustomTacticids = TacticfilterList.Where(tact => tact.Plan_Campaign_Program.PlanCampaignId == updatedid).Select(tact => tact.PlanTacticId).ToList();
+                        //CellBackGroundcolor = "background-color:#E4F1E1;";
+                    }
+                    if (IsEditable == false)
+                    {
+                        if (lstSubordinatesIds.Contains(OwnerID))
+                        {
+
+                            if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
+                            {
+                                IsLocked = "1";
+                                cellTextColor = "color:#999; " + CellBackGroundcolor + "";
+                            }
+                            else
+                            {
+                                cellTextColor = "color:#000; " + CellBackGroundcolor + "";
+                                IsLocked = "0";
+                            }
+                        }
+                        else
+                        {
+                            IsLocked = "1";
+                            cellTextColor = "color:#999; " + CellBackGroundcolor + "";
+
+                        }
+                    }
+                    else
+                    {
+                        cellTextColor = "style='color:#000; " + CellBackGroundcolor + "'";
+                        IsLocked = "0";
+                    }
+                }
+
+
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+            }
+            return Json(new { IsLocked = IsLocked, cellTextColor = cellTextColor });
         }
         #endregion
        

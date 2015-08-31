@@ -522,6 +522,11 @@
                                 HomeGrid.cells(planid, 6).setValue((newPlanVal));
                                 HomeGrid.cells(rowId, 6).setValue((nValue));
                             }
+                                if(UpdateColumn =="Owner")
+                                {
+                                    CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
+                                  
+                                }
                     }
                 });
                 }
@@ -529,6 +534,34 @@
                 }
             }
         }
+    }
+    function CheckPermissionByOwner(rowId, NewOwner,updatetype,updateid)
+    {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("CheckPermissionByOwner")', // we are calling json method
+            data: { NewOwnerID: NewOwner, UpdateType: GetItemType(updatetype), updatedid: parseInt(updateid) },
+            dataType: 'json',
+            success: function (data) {
+                if (data.IsLocked == "1") {
+                    HomeGrid.cells(rowId, 1).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, 4).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, 5).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, 6).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, 7).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, 8).setAttribute("locked", data.IsLocked);
+                    HomeGrid.cells(rowId, 9).setAttribute("locked", data.IsLocked);
+                    HomeGrid.setCellTextStyle(rowId, 1, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 4, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 5, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 6, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 7, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 8, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 9, data.cellTextColor);
+                }
+            },
+            error: function (ts) { }
+        });
     }
     function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
         if (updatetype == "tact") {
@@ -619,7 +652,7 @@
                 var tactMinDate = HomeGrid.getUserData(campid, "tsdate");
                 $.ajax({
                     type: 'POST',
-                    url: '@Url.Action("GetMinMaxDate")', // we are calling json method
+                    url: '@Url.Action("GetMinMaxDate")', 
                     data: { Parentid: parseInt(campaignid), UpdateType: "Program", updatedid: parseInt(programid) },
                     dataType: 'json',
                     success: function (data) {
