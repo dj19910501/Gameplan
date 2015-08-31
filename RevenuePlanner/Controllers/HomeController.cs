@@ -647,7 +647,7 @@ namespace RevenuePlanner.Controllers
                     {
                         viewBy = PlanGanttTypes.Tactic.ToString();
                     }
-                    return PrepareTacticAndRequestTabResult(planId, viewBy,IsFiltered, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
+                    return PrepareTacticAndRequestTabResult(filteredPlanIds, viewBy,IsFiltered, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
                 }
                 else
                 {
@@ -667,7 +667,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            return Json(new { }, JsonRequestBehavior.AllowGet);
+            return Json(new { isError = true }, JsonRequestBehavior.AllowGet);
         }
 
         #region Prepare Custom Fields Tab data (Tabs other than Tactic and Request)
@@ -1323,10 +1323,10 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementTacticTypeForAccordion">list of improvement tactic type for accrodian(left side pane)</param>
         /// <param name="viewByListResult">list of viewBy dropdown options</param>
         /// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        private JsonResult PrepareTacticAndRequestTabResult(string planId, string viewBy,bool IsFiltered,bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
+        private JsonResult PrepareTacticAndRequestTabResult(List<int> filterplanId, string viewBy,bool IsFiltered,bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
         {
             Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
-            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, planId, viewBy, IsFiltered, IsRequest,planYear, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
+            List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, filterplanId, viewBy, IsFiltered, IsRequest, planYear, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
          //   Debug.WriteLine("Step 7.1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
             //Added By komal Rawal for #1282
             
@@ -1549,7 +1549,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="lstTactic">list of tactics</param>
         /// <param name="lstImprovementTactic">list of imporvementTactics</param>
         /// <returns>Returns object list of tasks for GANNT CHART</returns>
-        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist, string planId, string viewBy, bool IsFiltered, bool IsRequest, string planYear, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic)
+        public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist, List<int> filterplanId, string viewBy, bool IsFiltered, bool IsRequest, string planYear, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic)
         {
             string tacticStatusSubmitted = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
@@ -1868,13 +1868,12 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                List<int> PlanId = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
 
                 #region Plan
                 //Modified by Komal Rawal for #1537 to get Plan according to year.
-                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => PlanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear)
+                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear)
                                                   .ToList()
                                                    .Select(plan => new
                                                    {
@@ -1975,14 +1974,12 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 var taskDataPlanMerged = newTaskDataPlan.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic);
-                List<Plan_Improvement_Campaign_Program_Tactic> ImprovementTacticForTaskData = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => PlanId.Contains(improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)&&
+                List<Plan_Improvement_Campaign_Program_Tactic> ImprovementTacticForTaskData = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => filterplanId.Contains(improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)&&
                                                                                     improveTactic.IsDeleted.Equals(false) &&
                                                                                     (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
                                                                              .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
                 #region Prepare Campaign Task Data for PLan
-                var taskDataCampaignforPlan = objDbMrpEntities.Plan_Campaign.Where(_campgn => PlanId.Contains(_campgn.PlanId) && _campgn.IsDeleted.Equals(false))
-                                                       .ToList()
-                                                       .Where(_campgn => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+                var taskDataCampaignforPlan = lstCampaign.Where(_campgn => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                 CalendarEndDate,
                                                                                                                 _campgn.StartDate,
                                                                                                                 _campgn.EndDate).Equals(false))
@@ -2023,10 +2020,7 @@ namespace RevenuePlanner.Controllers
 
                 #endregion
                 #region Prepare Program Task Data for Plan
-                var taskDataProgramforPlan = objDbMrpEntities.Plan_Campaign_Program.Where(prgrm => PlanId.Contains(prgrm.Plan_Campaign.PlanId) &&
-                                                                        prgrm.IsDeleted.Equals(false))
-                                                            .ToList()
-                                                            .Where(prgrm => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+                var taskDataProgramforPlan = lstProgram.Where(prgrm => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                     CalendarEndDate,
                                                                                                                     prgrm.StartDate,
                                                                                                                     prgrm.EndDate).Equals(false))
@@ -2070,35 +2064,32 @@ namespace RevenuePlanner.Controllers
                 #region Prepare Tactic data for Plan
                 //// Prepare task data tactic list for gantt chart
 
-                var taskDataTacticforPlan = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(_tac => PlanId.Contains(_tac.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                _tac.IsDeleted.Equals(false))
-                                                                    .ToList()
-                                                                    .Where(_tac => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+                var taskDataTacticforPlan = lstTactic.Where(_tac => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                             CalendarEndDate,
-                                                                                                                            _tac.StartDate,
-                                                                                                                            _tac.EndDate).Equals(false))
+                                                                                                                            _tac.objPlanTactic.StartDate,
+                                                                                                                            _tac.objPlanTactic.EndDate).Equals(false))
                                                                     .Select(_tac => new
                                                                     {
-                                                                        id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", _tac.Plan_Campaign_Program.Plan_Campaign.PlanId, _tac.Plan_Campaign_Program.PlanCampaignId, _tac.Plan_Campaign_Program.PlanProgramId, _tac.PlanTacticId, _tac.TacticTypeId),
-                                                                        text = _tac.Title,
-                                                                        start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.StartDate),
+                                                                        id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", _tac.PlanId, _tac.PlanCampaignId, _tac.objPlanTactic.PlanProgramId, _tac.objPlanTactic.PlanTacticId, _tac.objPlanTactic.TacticTypeId),
+                                                                        text = _tac.objPlanTactic.Title,
+                                                                        start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.objPlanTactic.StartDate),
                                                                         duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                                                                                   CalendarEndDate,
-                                                                                                                  _tac.StartDate,
-                                                                                                                  _tac.EndDate),
-                                                                        progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
+                                                                                                                  _tac.objPlanTactic.StartDate,
+                                                                                                                  _tac.objPlanTactic.EndDate),
+                                                                        progress = GetTacticProgress(_tac.objPlanTactic, ImprovementTacticForTaskData),
                                                                         // progress = 0,
                                                                         open = false,
-                                                                        isSubmitted = _tac.Status == tacticStatusSubmitted,
-                                                                        isDeclined = _tac.Status == tacticStatusDeclined,
-                                                                        projectedStageValue = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tm => tm.TacticObj.PlanTacticId == _tac.PlanTacticId).INQValue) : "N/A" : "0",
-                                                                        mqls = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.StageId).Level <= mqlLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.PlanTacticId).MQLValue) : "N/A" : "0",
-                                                                        cost = _tac.Cost,
-                                                                        cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? _tac.Status == tacticStatusSubmitted || _tac.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.PlanTacticId).RevenueValue, 1) : 0 : 0,
-                                                                        parent = string.Format("L{0}_C{1}_P{2}", _tac.Plan_Campaign_Program.Plan_Campaign.PlanId, _tac.Plan_Campaign_Program.PlanCampaignId, _tac.Plan_Campaign_Program.PlanProgramId),
+                                                                        isSubmitted = _tac.objPlanTactic.Status == tacticStatusSubmitted,
+                                                                        isDeclined = _tac.objPlanTactic.Status == tacticStatusDeclined,
+                                                                        projectedStageValue = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.objPlanTactic.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tm => tm.TacticObj.PlanTacticId == _tac.objPlanTactic.PlanTacticId).INQValue) : "N/A" : "0",
+                                                                        mqls = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == _tac.objPlanTactic.StageId).Level <= mqlLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.objPlanTactic.PlanTacticId).MQLValue) : "N/A" : "0",
+                                                                        cost = _tac.objPlanTactic.Cost,
+                                                                        cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? _tac.objPlanTactic.Status == tacticStatusSubmitted || _tac.objPlanTactic.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == _tac.objPlanTactic.PlanTacticId).RevenueValue, 1) : 0 : 0,
+                                                                        parent = string.Format("L{0}_C{1}_P{2}", _tac.PlanId, _tac.PlanCampaignId, _tac.objPlanTactic.PlanProgramId),
                                                                         color = TacticColor,
-                                                                        plantacticid = _tac.PlanTacticId,
-                                                                        Status = _tac.Status,
+                                                                        plantacticid = _tac.objPlanTactic.PlanTacticId,
+                                                                        Status = _tac.objPlanTactic.Status,
                                                                         CreatedBy = _tac.CreatedBy
                                                                         
                                                                     }).OrderBy(_tac => _tac.text).ToList();
@@ -2138,9 +2129,6 @@ namespace RevenuePlanner.Controllers
 
                 return taskDataPlanMerged.ToList<object>();
             }
-
-
-          
 
         }
 

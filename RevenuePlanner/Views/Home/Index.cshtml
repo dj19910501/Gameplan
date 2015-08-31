@@ -2014,10 +2014,16 @@ function AjaxRequest() {
             },
             dataType: "json",
             success: function (data) {
+               
                 if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
+                else if (data.isError != 'undefined' && data.isError == true)
+                {
+                    ShowMessage(true, "Error occured due to exception. Please contact system admin.");
+                }
                 else {
+
                     type = data.ViewBy.toString();
                     if (getViewByList == true) {
                         BindViewSelections(data.ViewById, type);
