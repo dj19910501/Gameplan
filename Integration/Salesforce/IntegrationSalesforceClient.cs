@@ -861,7 +861,7 @@ namespace Integration.Salesforce
                 {
                     // Save & display Message: No single Model associated with current Instance.
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: There is no single Model associated with this Instance to pull Responses.", Enums.SyncStatus.Info, DateTime.Now));
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Responses: There is no single Model associated with this Instance to pull Responses.");
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull Responses: There is no single Model associated with this Instance to pull Responses.");
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                     return; // no error.
                 }
@@ -871,7 +871,7 @@ namespace Integration.Salesforce
                 {
                     // Save & display Message: No single Plan associated with current Instance.
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: There is no single Plan associated with this Instance to pull Responses.", Enums.SyncStatus.Info, DateTime.Now));
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Responses: There is no single Plan associated with this Instance to pull Responses.");
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull Responses: There is no single Plan associated with this Instance to pull Responses.");
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                     return; // no error.
                 }
@@ -1444,7 +1444,7 @@ namespace Integration.Salesforce
                 {
                     // Save & display Message: No single Model associated with current Instance.
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Pull Closed Deals: There is no single Model associated with this Instance to pull CWs.", Enums.SyncStatus.Info, DateTime.Now));
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Closed Deals: There is no single Model associated with this Instance to pull CWs.");
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull Closed Deals: There is no single Model associated with this Instance to pull CWs.");
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                     return; // no error.
                 }
@@ -1454,7 +1454,7 @@ namespace Integration.Salesforce
                 {
                     // Save & display Message: No single Plan associated with current Instance.
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Pull Closed Deals: There is no single Plan associated with this Instance to pull CWs.", Enums.SyncStatus.Info, DateTime.Now));
-                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Pull Closed Deals: There is no single Plan associated with this Instance to pull CWs.");
+                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull Closed Deals: There is no single Plan associated with this Instance to pull CWs.");
                     Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                     return; // no error.
                 }
