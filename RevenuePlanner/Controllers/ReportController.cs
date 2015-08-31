@@ -3689,8 +3689,16 @@ namespace RevenuePlanner.Controllers
             htmlToPdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
             htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 0;
             htmlToPdfConverter.PdfDocumentOptions.RightMargin = 0;
+            if (reportType == Enums.ReportType.Conversion.ToString())
+            {
             htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;
+                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 70;
+            }
+            else
+            {
+                htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;
             htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 20;
+            }
             htmlToPdfConverter.PdfDocumentOptions.X = 0;
             //if (yLocationTextBox.Text.Length > 0)
             htmlToPdfConverter.PdfDocumentOptions.Y = 0;

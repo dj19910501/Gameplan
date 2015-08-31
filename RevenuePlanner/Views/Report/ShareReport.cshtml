@@ -213,6 +213,9 @@
             //$html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
+            $html.find("#page_navigation").children("ul").children("li").removeAttr('onclick');
+            $html.find("#page_navigation").children("ul").children("li").children("a").removeAttr("href");
+            $html.find('.sbHolder').children('a').removeAttr('href');
             //alert($html.html());
             html = $html.html();
             //alert(html);
@@ -435,6 +438,7 @@
             //$html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
+            $html.find('.sbHolder').children('a').removeAttr('href');
             //alert($html.html());
             html = $html.html();
             //alert(html);
@@ -476,6 +480,9 @@
             //$html.find('div').removeClass("budgetReportFilter-area-left");
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
+            $html.find("#page_navigation").children("ul").children("li").removeAttr('onclick');
+            $html.find("#page_navigation").children("ul").children("li").children("a").removeAttr("href");
+            $html.find('.sbHolder').children('a').removeAttr('href');
             //alert($html.html());
             html = $html.html();
             //alert(html);
