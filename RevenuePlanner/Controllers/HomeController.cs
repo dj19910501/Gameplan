@@ -1974,10 +1974,6 @@ namespace RevenuePlanner.Controllers
                 #endregion
 
                 var taskDataPlanMerged = newTaskDataPlan.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic);
-                List<Plan_Improvement_Campaign_Program_Tactic> ImprovementTacticForTaskData = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => filterplanId.Contains(improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)&&
-                                                                                    improveTactic.IsDeleted.Equals(false) &&
-                                                                                    (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
-                                                                             .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
                 #region Prepare Campaign Task Data for PLan
                 var taskDataCampaignforPlan = lstCampaign.Where(_campgn => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
                                                                                                                 CalendarEndDate,
@@ -1992,7 +1988,8 @@ namespace RevenuePlanner.Controllers
                                                                                                       CalendarEndDate,
                                                                                                       _campgn.StartDate,
                                                                                                       _campgn.EndDate),
-                                                            progress = GetCampaignProgress( _campgn, ImprovementTacticForTaskData),//progress = 0,
+                                                          //  progress = GetCampaignProgress( _campgn, ImprovementTacticForTaskData),//progress = 0,
+                                                            progress = GetCampaignProgress(lstTactic, _campgn, EffectiveDateListByPlanIds, _campgn.PlanId),
                                                             open = false,
                                                             parent = string.Format("L{0}", _campgn.PlanId),
                                                             color = CampaignColor,
@@ -2033,7 +2030,8 @@ namespace RevenuePlanner.Controllers
                                                                                                           CalendarEndDate,
                                                                                                           prgrm.StartDate,
                                                                                                           prgrm.EndDate),
-                                                                progress = GetProgramProgress( prgrm, ImprovementTacticForTaskData), 
+                                                               // progress = GetProgramProgress( prgrm, ImprovementTacticForTaskData),
+                                                                progress = GetProgramProgress(lstTactic, prgrm, EffectiveDateListByPlanIds, prgrm.Plan_Campaign.PlanId),
                                                             // progress = 0,
                                                                 open = false,
                                                                 parent = string.Format("L{0}_C{1}", prgrm.Plan_Campaign.PlanId, prgrm.PlanCampaignId),
@@ -2077,7 +2075,8 @@ namespace RevenuePlanner.Controllers
                                                                                                                   CalendarEndDate,
                                                                                                                   _tac.objPlanTactic.StartDate,
                                                                                                                   _tac.objPlanTactic.EndDate),
-                                                                        progress = GetTacticProgress(_tac.objPlanTactic, ImprovementTacticForTaskData),
+                                                                       //   progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
+                                                                        progress = GetTacticProgress((_tac.objPlanTactic.StartDate != null ? _tac.objPlanTactic.StartDate : new DateTime()), EffectiveDateListByPlanIds, _tac.PlanId),
                                                                         // progress = 0,
                                                                         open = false,
                                                                         isSubmitted = _tac.objPlanTactic.Status == tacticStatusSubmitted,
@@ -2130,130 +2129,8 @@ namespace RevenuePlanner.Controllers
                 return taskDataPlanMerged.ToList<object>();
             }
 
+
         }
-
-        public double GetTacticProgress(Plan_Campaign_Program_Tactic planCampaignProgramTactic, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
-        {
-            double result = 0;
-            // List of all improvement tactic.
-            //List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(plan.PlanId) &&
-            //                                                                          improveTactic.IsDeleted.Equals(false) &&
-            //                                                                          (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
-            //  
-
-            if (improvementTactic.Count > 0)
-            {
-                DateTime minDate = improvementTactic.Select(t => t.EffectiveDate).Min(); // Minimun date of improvement tactic
-
-                DateTime tacticStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgramTactic.StartDate)); // start Date of tactic
-
-                if (tacticStartDate > minDate) // If any tactic affected by at least one improvement tactic.
-                {
-                    result = 1;
-                }
-            }
-            return result;
-        }
-
-        public double GetCampaignProgress(Plan_Campaign planCampaign, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
-        {
-            double result = 0;
-            // List of all improvement tactic.
-            //List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(plan.PlanId) &&
-            //                                                                          improveTactic.IsDeleted.Equals(false) &&
-            //                                                                          (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
-            //                                                                   .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
-
-            if (improvementTactic.Count > 0)
-            {
-                DateTime minDate = improvementTactic.Select(t => t.EffectiveDate).Min(); // Minimun date of improvement tactic
-
-                // Start date of Campaign
-                DateTime campaignStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaign.StartDate));
-
-                // List of all tactics
-                var lstTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(_tac => _tac.Plan_Campaign_Program.PlanCampaignId.Equals(planCampaign.PlanCampaignId) &&
-                                                                            _tac.IsDeleted.Equals(false))
-                                                                .Select(_tac => _tac)
-                                                                .ToList()
-                                                                .Where(_tac => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-                                                                                                                        CalendarEndDate,
-                                                                                                                        _tac.StartDate,
-                                                                                                                        _tac.EndDate).Equals(false));
-
-                // List of all tactics that are affected by improvement tactic
-                var lstAffectedTactic = lstTactic.Where(_tac => (_tac.StartDate > minDate).Equals(true))
-                                                 .Select(_tac => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.StartDate)) })
-                                                 .ToList();
-
-                if (lstAffectedTactic.Count > 0)
-                {
-                    DateTime tacticMinStartDate = lstAffectedTactic.Select(t => t.startDate).Min(); // minimum start Date of tactics
-                    if (tacticMinStartDate > minDate) // If any tactic affected by at least one improvement tactic.
-                    {
-                        double campaignDuration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, planCampaign.StartDate, planCampaign.EndDate);
-
-                        // difference b/w campaign start date and tactic minimum date
-                        double daysDifference = (tacticMinStartDate - campaignStartDate).TotalDays;
-
-                        if (daysDifference > 0) // If no. of days are more then zero then it will return progress
-                        {
-                            result = (daysDifference / campaignDuration);
-                        }
-                        else
-                        {
-                            result = 1;
-                        }
-                    }
-                }
-            }
-            return result;
-        }
-        public double GetProgramProgress( Plan_Campaign_Program planCampaignProgram, List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic)
-        {
-            double result = 0;
-            // List of all improvement tactic.
-            //List<Plan_Improvement_Campaign_Program_Tactic> improvementTactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improveTactic => improveTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId.Equals(plan.PlanId) &&
-            //                                                                          improveTactic.IsDeleted.Equals(false) &&
-            //                                                                          (improveTactic.EffectiveDate > CalendarEndDate).Equals(false))
-            //                                                                   .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
-
-            if (improvementTactic.Count > 0)
-            {
-                DateTime minDate = improvementTactic.Select(_imprvTactic => _imprvTactic.EffectiveDate).Min(); // Minimun date of improvement tactic
-
-                // Start date of program
-                DateTime programStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgram.StartDate));
-
-                // List of all tactics that are affected by improvement tactic
-                var lstAffectedTactic = planCampaignProgram.Plan_Campaign_Program_Tactic.Where(_tac => _tac.IsDeleted.Equals(false) && (_tac.StartDate > minDate).Equals(true))
-                                                                                              .Select(_tac => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, _tac.StartDate)) })
-                                                                                              .ToList();
-
-                if (lstAffectedTactic.Count > 0)
-                {
-                    DateTime tacticMinStartDate = lstAffectedTactic.Select(_tac => _tac.startDate).Min(); // minimum start Date of tactics
-                    if (tacticMinStartDate > minDate) // If any tactic affected by at least one improvement tactic.
-                    {
-                        double programDuration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, planCampaignProgram.StartDate, planCampaignProgram.EndDate);
-
-                        // difference b/w program start date and tactic minimum date
-                        double daysDifference = (tacticMinStartDate - programStartDate).TotalDays;
-
-                        if (daysDifference > 0) // If no. of days are more then zero then it will return progress
-                        {
-                            result = (daysDifference / programDuration);
-                        }
-                        else
-                        {
-                            result = 1;
-                        }
-                    }
-                }
-            }
-            return result;
-        }
-
 
 
         /// <summary>
