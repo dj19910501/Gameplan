@@ -3863,7 +3863,7 @@ namespace RevenuePlanner.Controllers
                 // html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
             }
 
-            returnhtml = Convert.ToString(html);
+            returnhtml = Convert.ToString(Convert.ToString(html).Replace("%2B","+"));
           
             return returnhtml;
         }

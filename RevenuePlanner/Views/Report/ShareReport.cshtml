@@ -478,6 +478,17 @@
             $html.find('.multiselection-area').remove();
             //$html.find('.budgetReportFilter-area-right').remove();
             //$html.find('div').removeClass("budgetReportFilter-area-left");
+            //$.each($html.find("span[id^='ROI_act_']"),function(){
+            //    var spanid=this.id;
+            //    $html.find("#"+spanid).text($(html.find("#"+spanid).text().replace(/[+]/g,"%2B")));
+            //});
+            //$html.find("span[id^='ROI_act_']").text($html.find("span[id^='ROI_act_']").text().replace(/[+]/g,"%2B"));
+            var dd = $html.find("span[id^='ROI_act_']");
+            for(var i=0;i<dd.length;i++){
+                //alert(dd[i].id);
+                $html.find("#"+dd[i].id).text($html.find("#"+dd[i].id).text().replace(/[+]/g,"%2B"));
+                //    alert($html.find("#"+dd[i].id).text())
+            }
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
             $html.find("#page_navigation").children("ul").children("li").removeAttr('onclick');
