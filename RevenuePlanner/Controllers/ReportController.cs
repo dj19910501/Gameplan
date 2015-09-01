@@ -1208,14 +1208,14 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        var optionlist = db.CustomFieldOptions.Where(customfieldoption => customfieldoption.CustomFieldId == customfieldId && customfieldoption.IsDeleted == false).ToList();
-                        returnData = optionlist.Select(option => new ViewByModel
-                        {
-                            Value = option.CustomFieldOptionId.ToString(),
-                            Text = option.Value
-                        }).Select(option => option).Distinct().OrderBy(option => option.Text).ToList();
-                        returnData = returnData.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-                    }
+                            var optionlist = db.CustomFieldOptions.Where(customfieldoption => customfieldoption.CustomFieldId == customfieldId && customfieldoption.IsDeleted == false).ToList();
+                            returnData = optionlist.Select(option => new ViewByModel
+                            {
+                                Value = option.CustomFieldOptionId.ToString(),
+                                Text = option.Value
+                            }).Select(option => option).Distinct().OrderBy(option => option.Text).ToList();
+                            returnData = returnData.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+                        }
                     }
                     else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
@@ -3691,13 +3691,18 @@ namespace RevenuePlanner.Controllers
             htmlToPdfConverter.PdfDocumentOptions.RightMargin = 0;
             if (reportType == Enums.ReportType.Conversion.ToString())
             {
-            htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;
+                htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;
                 htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 70;
+            }
+            else if (reportType == Enums.ReportType.Summary.ToString())
+            {
+                htmlToPdfConverter.PdfDocumentOptions.TopMargin = 10;
+                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 55;
             }
             else
             {
                 htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;
-            htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 20;
+                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 20;
             }
             htmlToPdfConverter.PdfDocumentOptions.X = 0;
             //if (yLocationTextBox.Text.Length > 0)
@@ -3727,7 +3732,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return html string with CSS and Javascript.</returns>
         private string AddCSSAndJS(string htmlOfCurrentView, string reportType)
         {
-          //  string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+            //  string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
             //string js = ReadJs("");
             string returnhtml = "";
             StringBuilder html = new StringBuilder();
@@ -3856,15 +3861,15 @@ namespace RevenuePlanner.Controllers
             }
             else if (reportType.Equals(Enums.ReportType.Revenue.ToString()))
             {
-               // html.Append(string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportRevenueData.js")));
+                // html.Append(string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportRevenueData.js")));
             }
             else
             {
                 // html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/ReportConversion.js"));
             }
 
-            returnhtml = Convert.ToString(Convert.ToString(html).Replace("%2B","+"));
-          
+            returnhtml = Convert.ToString(Convert.ToString(html).Replace("%2B", "+"));
+
             return returnhtml;
         }
 
@@ -8889,7 +8894,7 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                        customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                     }
                     var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
 
@@ -8913,17 +8918,17 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        _TacticOptionList = cusomfieldEntity.Where(cfe => customfieldoption.Select(cfo => cfo.CustomFieldOptionId).ToList().Contains(Convert.ToInt32(cfe.Value))).GroupBy(pc => new { id = Convert.ToInt32(pc.Value) }).Select(pc =>
-                                     new RevenueContrinutionData
-                                     {
-                                         Title = customfieldoption.Where(cfo => cfo.CustomFieldOptionId == pc.Key.id).FirstOrDefault().title,
-                                         CustomFieldOptionid = pc.Key.id,
-                                         planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                                               (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
+                            _TacticOptionList = cusomfieldEntity.Where(cfe => customfieldoption.Select(cfo => cfo.CustomFieldOptionId).ToList().Contains(Convert.ToInt32(cfe.Value))).GroupBy(pc => new { id = Convert.ToInt32(pc.Value) }).Select(pc =>
+                                         new RevenueContrinutionData
+                                         {
+                                             Title = customfieldoption.Where(cfo => cfo.CustomFieldOptionId == pc.Key.id).FirstOrDefault().title,
+                                             CustomFieldOptionid = pc.Key.id,
+                                             planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
+                                                   (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
                                              // planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(t.TacticObj.TacticTypeId)).Select(t => t.TacticObj.PlanTacticId).ToList()
 
-                                     }).ToList();
-                    }
+                                         }).ToList();
+                        }
                     }
                     else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
                     {
@@ -8939,7 +8944,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if (ParentLabel.Contains(Common.TacticCustomTitle) && customfieldId == 0)
                         {
-                        PlanTacticIdsList = _TacticOptionList.Where(rev => rev.CustomFieldOptionid.Equals(_customfieldOptionId)).Select(rev => rev.planTacticList).FirstOrDefault();
+                            PlanTacticIdsList = _TacticOptionList.Where(rev => rev.CustomFieldOptionid.Equals(_customfieldOptionId)).Select(rev => rev.planTacticList).FirstOrDefault();
                         }
                         else
                         {
@@ -10979,9 +10984,9 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                        customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
+                            customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                         }
-                        
+
                         var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
                         if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                         {
@@ -11001,18 +11006,18 @@ namespace RevenuePlanner.Controllers
                             }
                             else
                             {
-                            _TacticOptionList = (from cfo in db.CustomFieldOptions
-                                                 where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
-                                                 select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
-                                          new RevenueContrinutionData
-                                          {
-                                              Title = pc.Key.title,
-                                              CustomFieldOptionid = pc.Key.id,
-                                              // Fetch the filtered list based upon custom fields type
-                                              planTacticList = TacticData.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                                                  (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                          }).ToList();
-                        }
+                                _TacticOptionList = (from cfo in db.CustomFieldOptions
+                                                     where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
+                                                     select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
+                                              new RevenueContrinutionData
+                                              {
+                                                  Title = pc.Key.title,
+                                                  CustomFieldOptionid = pc.Key.id,
+                                                  // Fetch the filtered list based upon custom fields type
+                                                  planTacticList = TacticData.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
+                                                      (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
+                                              }).ToList();
+                            }
                         }
                         else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
                         {
@@ -11028,7 +11033,7 @@ namespace RevenuePlanner.Controllers
                         {
                             if (ParentLabel.Contains(Common.TacticCustomTitle) && customfieldId == 0)
                             {
-                            PlanTacticIdsList = _TacticOptionList.Where(rev => rev.CustomFieldOptionid.Equals(_customfieldOptionId)).Select(rev => rev.planTacticList).FirstOrDefault();
+                                PlanTacticIdsList = _TacticOptionList.Where(rev => rev.CustomFieldOptionid.Equals(_customfieldOptionId)).Select(rev => rev.planTacticList).FirstOrDefault();
                             }
                             else
                             {
@@ -12523,11 +12528,11 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                    List<int> tacticIds = new List<int>();
-                    tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
-                    string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
-                    tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
-                    TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
+                        List<int> tacticIds = new List<int>();
+                        tacticIds = TacticList.Select(p => p.PlanTacticId).Distinct().ToList();
+                        string customfiledvalue = Convert.ToString(masterCustomFieldOptionId);
+                        tacticIds = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && tacticIds.Contains(c.EntityId) && c.Value == customfiledvalue).Select(c => c.EntityId).ToList();
+                        TacticList = TacticList.Where(t => tacticIds.Contains(t.PlanTacticId)).ToList();
                     }
                 }
             }
