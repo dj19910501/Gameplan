@@ -15569,3 +15569,8 @@ float:right;
     position:absolute;
 }
 /* End */
+/*Added by Mitesh for PL ticket 1465 remove white.greyed background when expand the column on calender*/
+.gantt_grid_resize_area {
+    background: transparent !important;
+    border:0 !important;
+}

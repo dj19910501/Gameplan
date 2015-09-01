@@ -3891,7 +3891,7 @@ gantt._render_tasks_scales = function (val) {
 		var scales = this._get_scales();
 		scale_height = (this.config.scale_height-1);
 		var resize = this._get_resize_options();
-		var avail_width = resize.x ? Math.max(this.config.autosize_min_width, 0) : width_Offset;//modified by Mitesh Vaishnav for merge Old and new version of dhtmlx // this.$task.offsetWidth;
+		var avail_width = this.$task.offsetWidth;//resize.x ? Math.max(this.config.autosize_min_width, 0) : width_Offset;//modified by Mitesh Vaishnav for merge Old and new version of dhtmlx // this.$task.offsetWidth;
 
 		var cfgs = helpers.prepareConfigs(scales,this.config.min_column_width, avail_width, scale_height);
 		var cfg = this._tasks = cfgs[cfgs.length - 1];
@@ -3908,7 +3908,7 @@ gantt._render_tasks_scales = function (val) {
 
 			html.push("<div class=\""+cssClass+"\" style=\"height:"+(cfgs[i].height)+"px;line-height:"+(cfgs[i].height)+"px\">" + this._prepare_scale_html(cfgs[i]) + "</div>");
 		}
-		gantt._render_data();//modified by Mitesh Vaishnav for merge Old and new version of dhtmlx // this.$task.offsetWidth;
+		//gantt._render_data();//modified by Mitesh Vaishnav for merge Old and new version of dhtmlx // this.$task.offsetWidth;
 		scales_html = html.join("");
 		outer_width = cfg.full_width + this.$scroll_ver.offsetWidth + "px";
 		data_width = cfg.full_width + "px";
@@ -9112,10 +9112,11 @@ gantt.render = function(){
 
 		var new_pos =gantt._restore_scroll_state();
 		var new_date = gantt.dateFromPos(new_pos.x);
-		if(!(+visible_date == +new_date && new_pos.y == pos.y)){
-			if(visible_date){
-				this.showDate(visible_date);
-			}
+		if (!(+visible_date == +new_date && new_pos.y == pos.y)) {
+            //removed by Mitesh for PL ticket 1465 : first month pushed slight in first column when resize first column
+			//if(visible_date){
+			//	this.showDate(visible_date);
+			//}
 			gantt.scrollTo(undefined, pos.y);
 		}
 	}
