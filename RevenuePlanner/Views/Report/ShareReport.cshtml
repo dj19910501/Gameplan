@@ -10,13 +10,13 @@
 <script src="~/Scripts/js/Select2/select2.js"></script>
 <div class="row-fluid calc-height" id="DivShareReportContainer">
     <div class="span12">
-        @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
+        @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@
         <div id="modal-container-sharereport" class="form-inspect-share hide fade height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            @*Modified by Sohel on 3rd April 2014 for PL# 398 to display error message on the top of sharing pop-up, below div has been place inside from outside of main div *@ 
-        <div id="errorMessageShareReportPopup" class="alert alert-error hide error-over-modal">
-            <a class="close">×</a>
-            <strong>Error! </strong><span id="spanMessageErrorShareReportPopup"></span>
-        </div>
+            @*Modified by Sohel on 3rd April 2014 for PL# 398 to display error message on the top of sharing pop-up, below div has been place inside from outside of main div *@
+            <div id="errorMessageShareReportPopup" class="alert alert-error hide error-over-modal">
+                <a class="close">×</a>
+                <strong>Error! </strong><span id="spanMessageErrorShareReportPopup"></span>
+            </div>
             @**@
             <div class="login-wrapper">
                 <form name="share-report">
@@ -36,12 +36,14 @@
 
 <div class="row-fluid calc-height" id="DivShareReportConfirmationContainer">
     <div class="span12">
-        @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@ 
+        @*Modified by Sohel on 28th March to remove fixed height of pop-up. height-auto class has been added*@
         <div id="modal-container-confirmation" class="form-inspect-share-confirmation hide fade height-auto" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="login-wrapper">
                 <form name="login-register">
-                    <h2 class="primary-title source-sans-prosemibold">Report Successfully<br />
-                        Shared With</h2>
+                    <h2 class="primary-title source-sans-prosemibold">
+                        Report Successfully<br />
+                        Shared With
+                    </h2>
                     <label id="email-confirmation"></label>
                     @*Modified by Sohel on 1st April 2014 for BTS ticket #153, solved reset data issue on confirmation button click event*@
                     <button class="form-inspect-share-button btn btn-large" id="BtnCloseConfirmation" type="button">Close</button>
@@ -89,9 +91,9 @@
         //// Close error message.
         $(".alert").find(".close").on("click", function (e) {
             e.stopPropagation();
-            e.preventDefault(); 
+            e.preventDefault();
             $(this).closest(".alert").slideUp(400);
-        });	
+        });
 
         //// Populating email id.
         var emails = @Html.Raw(Json.Encode(@ViewBag.EmailIds));
@@ -112,21 +114,21 @@
         $('form[name="share-report"]').on("submit", function (e) {
             if ($("#select2Email").select2("val") == "") {
                 var msgspan = "@RevenuePlanner.Helpers.Common.objCached.ValidateEmailAtleastone";
-                    $("#errorMessageShareReportPopup").css("display", "block");
-                    $(".input-block-level").addClass("error");
+                $("#errorMessageShareReportPopup").css("display", "block");
+                $(".input-block-level").addClass("error");
                 //// Added by Sohel on 2nd April for PL#398 to display validation error properly
-                    $(".select2-choices").css("background-image", "none");
-                    $(".select2-choices").addClass("error-background");
+                $(".select2-choices").css("background-image", "none");
+                $(".select2-choices").addClass("error-background");
                 ////
-                    $("#spanMessageErrorShareReportPopup").text(msgspan);
-                }
-                else {
-                    $(".input-block-level").removeClass("error");
-                    $(".select2-choices").removeClass("error-background");
-                    $("#errorMessageShareReportPopup").css("display", "none");
+                $("#spanMessageErrorShareReportPopup").text(msgspan);
+            }
+            else {
+                $(".input-block-level").removeClass("error");
+                $(".select2-choices").removeClass("error-background");
+                $("#errorMessageShareReportPopup").css("display", "none");
                 // Send mail and show confirmation popup.
-                    ShareReport($("#select2Email").select2("val").toString(), $("#TxtOptionalMessage").val());
-                }
+                ShareReport($("#select2Email").select2("val").toString(), $("#TxtOptionalMessage").val());
+            }
 
             return false;
         });
@@ -176,24 +178,24 @@
             else {
                 return false;
             }
-    }
+        }
 
         /*Modified By Maninder Singh Wadhva on  10/21/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLConversion()
         {
-            
+
             //.nextAll(".portlet-content:first")
             //var filterHTML = $('.revenue-filter').html();
             var filterHTML = $('.report-heder-tab').parent().html();
             //var filterHTML = $('#dvRevenueCardSection').html();
             var html  = '';
-           
+
             //html += '<div style="margin-left: 100px;"> ' + $htmlgraph + filterHTML + '</div>';
             html += '<div style="margin-left: 100px;">' + filterHTML + '</div>';
             var $html = $(html);
-          
+
             //revenue-to-plan-graph
-          
+
             $html.find('div[class="report-heder-tab"]').empty();
             $html.find('div').removeClass("report-heder-tab");
             $html.find('#dvConversionCombineChart').css('height','');
@@ -244,7 +246,7 @@
             parentValue = $html.find('#btnMultiselect_ddlParentConversionSummery').attr("title");
             $html.find('#DivSummaryButtonsConversionSummary').css("float","right");
             $html.find('#DivSummaryButtonsConversionSummary').css("width","70%");
-            
+
             $html.find('#DivSummaryButtonsConversionSummary').empty();
             $html.find('#DivSummaryButtonsConversionSummary').append("<div class='filter-detail'>\
                                                                     <div>\
@@ -264,7 +266,7 @@
             $html.find('#ParentULMQLConversion').addClass("margin-top10");
             $html.find('#DivSummaryButtonsConversionPlan').css("float","right");
             $html.find('#DivSummaryButtonsConversionPlan').css("width","74%");
-            
+
             $html.find('#DivSummaryButtonsConversionPlan').empty();
             $html.find('#DivSummaryButtonsConversionPlan').append("<div class='filter-detail'>\
                                                                     <div>\
@@ -320,7 +322,7 @@
         //    $html.find("a").each(function(){
         //        $(this).removeAttr("href");
         //    });
-            
+
         //    $html.find('div[id="chartDiv3"]').empty();
         //    $html.find('div[id="chartDiv4"]').empty();
         //    $html.find('div[id="chartDiv5"]').empty();
@@ -351,7 +353,7 @@
             var childValue = $html.find('#btnMultiselect_ddlChildRevenueSummery').attr("title");
             $html.find('#DivSummaryButtonsRevenueSummary').css("float","right");
             $html.find('#DivSummaryButtonsRevenueSummary').css("width","74%");
-            
+
             $html.find('#DivSummaryButtonsRevenueSummary').empty();
             $html.find('#DivSummaryButtonsRevenueSummary').append("<div class='filter-detail'>\
                                                                     <div>\
@@ -372,7 +374,7 @@
             $html.find('#ParentULRevenueToPlan').addClass("margin-top10");
             $html.find('#DivSummaryButtonsRevenueToPlan').css("float","right");
             $html.find('#DivSummaryButtonsRevenueToPlan').css("width","74%");
-            
+
             $html.find('#DivSummaryButtonsRevenueToPlan').empty();
             $html.find('#DivSummaryButtonsRevenueToPlan').append("<div class='filter-detail'>\
                                                                     <div>\
@@ -393,7 +395,7 @@
 
             $html.find('#DivSummaryButtonsRevenueRealization').css("float","right");
             $html.find('#DivSummaryButtonsRevenueRealization').css("width","74%");
-            
+
             $html.find('#DivSummaryButtonsRevenueRealization').empty();
             $html.find('#DivSummaryButtonsRevenueRealization').append("<div class='filter-detail'>\
                                                                     <div>\
@@ -413,7 +415,7 @@
             $html.find('#ParentULRevenueContribution').addClass("margin-top10");
             $html.find('#DivSummaryButtonsRevenueContribution').css("float","right");
             $html.find('#DivSummaryButtonsRevenueContribution').css("width","74%");
-            
+
             $html.find('#DivSummaryButtonsRevenueContribution').empty();
             $html.find('#DivSummaryButtonsRevenueContribution').append("<div class='filter-detail'>\
                                                                     <div>\
@@ -430,17 +432,17 @@
             
             var filterHTML = $('.report-heder-tab').parent().html();
             var html  = '';
-           
+
             html += '<div style="margin-left: 100px;"></br>' + filterHTML + '</div>';
             var $html = $(html);
-           
-          
+
+
             $html.find('button[id="btnRevenueDetails"]').hide();
             $html.find('button[id="btnConversionDetails"]').hide();
             $html.find('button[id="btnFinancialDetails"]').hide();
             //$html.find('div[id="RevenueLineChart"]').empty();
 
-           
+
             // loadChart();
             //$html.find('div[id="RevenueLineChart"]').html();
             $html.find('div[class="report-heder-tab"]').empty();
@@ -455,6 +457,13 @@
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
             $html.find('.sbHolder').children('a').removeAttr('href');
+            var a =$html.find("#BottomBarchartData").children("tr");
+            var TableColumn=a.length;
+            if(TableColumn==12)
+            {
+                $html.find("td.tdbottomChartData").css("line-height","18px");
+            }
+            
             //alert($html.html());
             html = $html.html();
             //alert(html);
@@ -463,7 +472,7 @@
 
         function GetHTMLRevenue()
         {
-            
+
             var search = $("input#txtSearch").val();
             //alert(search);
             //.nextAll(".portlet-content:first")
@@ -471,11 +480,11 @@
             var filterHTML =   $('.report-heder-tab').parent().html();
             //var filterHTML = $('#dvRevenueCardSection').html();
             var html  = '';
-           
+
             //html += '<div style="margin-left: 100px;"> ' + $htmlgraph + filterHTML + '</div>';
             html += '<div style="margin-left: 100px;" style="width:1250px;">' + filterHTML + '</div>';
             var $html = $(html);
-          
+
             //revenue-to-plan-graph
             //$html.find("input#txtSearch").val(search);
             $html.find('div[class="report-heder-tab"]').empty();
