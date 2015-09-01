@@ -216,6 +216,22 @@
             $html.find("#page_navigation").children("ul").children("li").removeAttr('onclick');
             $html.find("#page_navigation").children("ul").children("li").children("a").removeAttr("href");
             $html.find('.sbHolder').children('a').removeAttr('href');
+            var InqPer = $html.find("span[id^='Inq_percentage_']");
+            for(var i=0;i<InqPer.length;i++){
+                $html.find("#"+InqPer[i].id).text($html.find("#"+InqPer[i].id).text().replace(/[+]/g,"%2B"));
+            }
+            var TqlPer = $html.find("span[id^='Tql_percentage_']");
+            for(var i=0;i<TqlPer.length;i++){
+                $html.find("#"+TqlPer[i].id).text($html.find("#"+TqlPer[i].id).text().replace(/[+]/g,"%2B"));
+            }
+            var CWPer = $html.find("span[id^='Cw_percentage_']");
+            for(var i=0;i<CWPer.length;i++){
+                $html.find("#"+CWPer[i].id).text($html.find("#"+CWPer[i].id).text().replace(/[+]/g,"%2B"));
+            }
+            var TablePerformance = $html.find("span[id^='Performance_']");
+            for(var i=0;i<TablePerformance.length;i++){
+                $html.find("#"+TablePerformance[i].id).text($html.find("#"+TablePerformance[i].id).text().replace(/[+]/g,"%2B"));
+            }
             //alert($html.html());
             html = $html.html();
             //alert(html);
@@ -483,11 +499,21 @@
             //    $html.find("#"+spanid).text($(html.find("#"+spanid).text().replace(/[+]/g,"%2B")));
             //});
             //$html.find("span[id^='ROI_act_']").text($html.find("span[id^='ROI_act_']").text().replace(/[+]/g,"%2B"));
-            var dd = $html.find("span[id^='ROI_act_']");
-            for(var i=0;i<dd.length;i++){
-                //alert(dd[i].id);
-                $html.find("#"+dd[i].id).text($html.find("#"+dd[i].id).text().replace(/[+]/g,"%2B"));
-                //    alert($html.find("#"+dd[i].id).text())
+            var ROISPAN = $html.find("span[id^='ROI_act_']");
+            for(var i=0;i<ROISPAN.length;i++){
+                $html.find("#"+ROISPAN[i].id).text($html.find("#"+ROISPAN[i].id).text().replace(/[+]/g,"%2B"));
+            }
+            var RevPer = $html.find("span[id^='Revenue_percentage_']");
+            for(var i=0;i<RevPer.length;i++){
+                $html.find("#"+RevPer[i].id).text($html.find("#"+RevPer[i].id).text().replace(/[+]/g,"%2B"));
+            }
+            var CostPer = $html.find("span[id^='Cost_percentage_']");
+            for(var i=0;i<CostPer.length;i++){
+                $html.find("#"+CostPer[i].id).text($html.find("#"+CostPer[i].id).text().replace(/[+]/g,"%2B"));
+            }
+            var ROIPer = $html.find("span[id^='ROI_percentage_']");
+            for(var i=0;i<ROIPer.length;i++){
+                $html.find("#"+ROIPer[i].id).text($html.find("#"+ROIPer[i].id).text().replace(/[+]/g,"%2B"));
             }
             $html.find('#DivShareReportContainer').remove();
             $html.find('#DivShareReportCoknfirmationContainer').remove();
