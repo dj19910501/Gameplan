@@ -811,9 +811,11 @@
             var type = $(this).attr('id');
             var name = $(this).attr('alt');
             var title = $(this).attr('data-title');
-            var chk_permission = title.split("/");
-            title = chk_permission[0];
-            var permission = chk_permission[1];
+            /*Modified by Mitesh for PL ticket 1570
+            combination of title and permission conflict when title has "\" separator*/
+            var permission = $(this).attr('permission');
+            //title = chk_permission[0];
+            //var permission = chk_permission[1];
             DisplayPopUpMenu(type, name, title, permission, e);
 
     });
