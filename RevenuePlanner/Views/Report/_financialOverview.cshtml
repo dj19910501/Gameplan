@@ -77,6 +77,7 @@
 </div>
 
 <script type="text/javascript">
+    var _barchartTDClass = "tdbottomChartData";
     $(function () {
 
         @*var _plannedCostChartData = "@PlannedCostbarchartdata";
@@ -178,9 +179,9 @@
         formatBottomBarChartData();
 
     });
-    var _barchartTDClass = "tdbottomChartData";
-    var _tdPlannedPrefix = "tdPlannedChart_", _tdActualPrefix = "tdActualChart_", _tdBudgetPrefix = "tdBudgetChart_";
+   
     function DisplayBottomBarchartData() {
+        var _tdPlannedPrefix = "tdPlannedChart_", _tdActualPrefix = "tdActualChart_", _tdBudgetPrefix = "tdBudgetChart_";
         var _catCount = '@Model.CategoriesCount';
         var _plannedCostList = '@btmPlannedCostChartData';
         var _actualCostList = '@btmActualCostChartData';
@@ -212,7 +213,7 @@
             if (_intactualCost > _intbudgetCost)
                 _redlabel = ' redLabel';
             _html +='<tr>';
-            _html += '<td id="' + _tdActualId + '" class="' + _barchartTDClass +  _redlabel +'" orig-val="' + _actualCostList[i] + '">' + _actualCostList[i] + '</td>';
+            _html += '<td id="' + _tdActualId + '" class="' + _barchartTDClass+_redlabel  +'" orig-val="' + _actualCostList[i] + '">' + _actualCostList[i] + '</td>';
             _html += '<td id="' + _tdPlannedId + '" class="' + _barchartTDClass + '" orig-val="' + _plannedCostList[i] + '">' + _plannedCostList[i] + '</td>';
             _html += '<td id="' + _tdBudgetId + '" class="' + _barchartTDClass + '" orig-val="' + _budgetCostList[i] + '">' + _budgetCostList[i] + '</td>';
             _html += '</tr>';

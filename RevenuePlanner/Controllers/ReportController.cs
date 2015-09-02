@@ -6151,7 +6151,7 @@ namespace RevenuePlanner.Controllers
                         #region "Quarter 1 Calculation"
 
                         PlannedCostList = _tacCostList.Where(plancost => Q1.Contains(plancost.Period)).Select(plancost => plancost.Value).ToList();
-                        TacticActualCostList.ForEach(tactic => _ActualCostValue = tactic.ActualList.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.Value));
+                        TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Q1.Contains(actual.Period)).Sum(actual => actual.Value));
                         BudgetCostList = _tacBudgetList.Where(budgtcost => Q1.Contains(budgtcost.Period)).Select(budgtcost => budgtcost.Value).ToList();
 
                         _PlannedCostValue = PlannedCostList.Sum(val => val);
