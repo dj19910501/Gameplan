@@ -188,8 +188,8 @@
             lines.splice(1, 1, "Campaign");
             lines.splice(2, 1, "Program");
             lines.splice(3, 1, "Tactic");
-           
-        $("#exportcsv").attr('download', planname+'_GridData.csv')
+            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0,20);
+            $("#exportcsv").attr('download', Filename + ' @DateTime.Now'+ '_GridData.csv')
             $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
 
             BindHomeGrid();
