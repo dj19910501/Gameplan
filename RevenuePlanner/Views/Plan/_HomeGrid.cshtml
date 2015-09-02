@@ -805,12 +805,12 @@
                     SetColumUpdatedValue(10, diff);
                 }
                 else {
-                    HomeGrid.setCellExcellType(rowid, 10, "ron");
+                   // HomeGrid.setCellExcellType(rowid, 10, "ron");
 
 
                     if (data.mql != null) {
                         mqlConversion = data.mql;
-
+                    }
                     var mqlValue = GetAbberiviatedValue(mqlConversion.toString(), false);
                     HomeGrid.cells(rowid, 10).setValue(mqlValue);
 
@@ -819,7 +819,7 @@
                     diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
                         HomeGrid.cells(rowid, 10).setAttribute("actval", mqlConversion);
                     SetColumUpdatedValue(10, diff);
-                    }
+                   
 
                   
 
