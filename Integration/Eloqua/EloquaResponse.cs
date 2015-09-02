@@ -110,11 +110,14 @@ namespace Integration.Eloqua
 
                 //// Get SalesForce integration type Id.
                 string salesforceCode = Enums.IntegrationType.Salesforce.ToString();
-                var salesforceIntegrationType = db.IntegrationTypes.Where(type => type.Code == salesforceCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
-                int SalesForceintegrationTypeId = Convert.ToInt32(salesforceIntegrationType);
+                //var salesforceIntegrationType = db.IntegrationTypes.Where(type => type.Code == salesforceCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
+                //int SalesForceintegrationTypeId = Convert.ToInt32(salesforceIntegrationType);
+
+                List<int> salesforceIntegrationType = db.IntegrationTypes.Where(type => type.Code == salesforceCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).ToList();
 
                 //// Get All SalesForceIntegrationTypeIds to retrieve  SalesForcePlanIds.
-                List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => instance.IntegrationTypeId.Equals(SalesForceintegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
+                //List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => instance.IntegrationTypeId.Equals(SalesForceintegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
+                List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => salesforceIntegrationType.Contains(instance.IntegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
 
                 //// Get all PlanIds whose Tactic data PUSH on SalesForce.
                 List<int> lstSalesForcePlanIds = lstPlans.Where(objplan => lstSalesForceIntegrationTypeIds.Contains(objplan.Model.IntegrationInstanceId.Value)).Select(objplan => objplan.PlanId).ToList();
@@ -339,7 +342,7 @@ namespace Integration.Eloqua
                                                                               {
                                                                                   CRMId = _SalTac,
                                                                                   ShortCRMId = shortSalIntegInstanceTacticId,
-                                                                                  EloquaId = integrationEloquaClient.GetEloquaCampaignIdByCRMId(shortSalIntegInstanceTacticId)
+                                                                                  EloquaId = integrationEloquaClient.GetEloquaCampaignIdByCRMId(_SalTac)
                                                                               });
                                 }
                             }

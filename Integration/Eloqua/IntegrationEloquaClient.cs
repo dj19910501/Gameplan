@@ -1477,15 +1477,61 @@ namespace Integration.Eloqua
         /// <returns>Returns eloqua campaign object.</returns>
         public string GetEloquaCampaignIdByCRMId(string crmId)
         {
-            string strSearchTerm = "crmId='" + crmId.ToString() + "'";  // Get Campaign data using Search query based on CRMId.
+            #region "Old Code"
+            //string strSearchTerm = "crmId='" + crmId.ToString() + "'";  // Get Campaign data using Search query based on CRMId.
+            //string _EloquaCampaignId = string.Empty;
+            //RestRequest request = new RestRequest(Method.GET)
+            //{
+            //    Resource = string.Format("/assets/campaigns?search={0}&depth=complete",
+            //                      strSearchTerm),
+            //    RequestFormat = DataFormat.Json
+            //};
+
+            //IRestResponse response = _client.Execute(request);
+            ////// Manipulation of contact list response and store into model
+            //string TacticResult = response.Content.ToString();
+            //if (!string.IsNullOrEmpty(TacticResult))
+            //{
+            //    JObject joResponse = JObject.Parse(TacticResult);
+            //    JArray elementsArray = (JArray)joResponse["elements"];
+            //    if (elementsArray.Count > 0)
+            //    {
+            //        _EloquaCampaignId = elementsArray[0]["id"].ToString();
+            //    }
+            //} 
+            #endregion
+
             string _EloquaCampaignId = string.Empty;
+            _EloquaCampaignId = GetEloquaCampaignIdBy_Short_Long_CRMId(crmId);
+
+            // if EloquaCampaignID blank for long CRMID then get EloquaCampaignID for Short CRMID.
+            if (string.IsNullOrEmpty(_EloquaCampaignId) || _EloquaCampaignId == "0")
+            {
+                crmId = crmId.Substring(0, 15);
+                _EloquaCampaignId = GetEloquaCampaignIdBy_Short_Long_CRMId(crmId);
+            }
+
+            return _EloquaCampaignId;
+        }
+
+        /// <summary>
+        /// Function to get Eloqua CampaignId by long or short CRMId(SalesforceId).
+        /// Added By: Viral Kadiya
+        /// Added Date: 09/02/2015
+        /// </summary>
+        /// <param name="crmId">Salesforce Id.</param>
+        /// <returns>Returns eloqua campaign ID.</returns>
+        public string GetEloquaCampaignIdBy_Short_Long_CRMId(string crmId)
+        {
+            string strSearchTerm = "crmId='" + crmId.ToString() + "'";  // Get Campaign data using Search query based on CRMId.
+            string eloquaCampaignId = string.Empty;
             RestRequest request = new RestRequest(Method.GET)
             {
                 Resource = string.Format("/assets/campaigns?search={0}&depth=complete",
                                   strSearchTerm),
                 RequestFormat = DataFormat.Json
             };
-            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
+
             IRestResponse response = _client.Execute(request);
             //// Manipulation of contact list response and store into model
             string TacticResult = response.Content.ToString();
@@ -1495,10 +1541,10 @@ namespace Integration.Eloqua
                 JArray elementsArray = (JArray)joResponse["elements"];
                 if (elementsArray.Count > 0)
                 {
-                    _EloquaCampaignId = elementsArray[0]["id"].ToString();
+                    eloquaCampaignId = elementsArray[0]["id"].ToString();
                 }
             }
-            return _EloquaCampaignId;
+            return eloquaCampaignId;
         }
         #endregion
 
