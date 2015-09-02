@@ -148,21 +148,51 @@
     function ExportToCSV() {
         var count = HomeGrid.getRowsNum();
         if (count > 0) {
-        var planname = HomeGrid.cellByIndex(0, 1).getValue();
+            //Modified BY Komal rawal for #1471
+            HomeGrid.insertColumn(2);
+            HomeGrid.setColumnHidden(2, true);
+            HomeGrid.insertColumn(3);
+            HomeGrid.setColumnHidden(3, true);
+            HomeGrid.insertColumn(4);
+            HomeGrid.setColumnHidden(4, true);
+            HomeGrid.insertColumn(5);
+            HomeGrid.setColumnHidden(5, true);
+            for (var i = 0; i < count; i++) {
+                var planname = HomeGrid.cellByIndex(i, 1).getValue();
+                var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
+                if (ActivityTypeName == "Plan") {
+
+                    HomeGrid.cellByIndex(i, 2).setValue(planname);
+                }
+                if (ActivityTypeName == "Campaign") {
+
+                    HomeGrid.cellByIndex(i, 3).setValue(planname);
+                }
+                if (ActivityTypeName == "Program") {
+
+                    HomeGrid.cellByIndex(i, 4).setValue(planname);
+                }
+                if (ActivityTypeName == "Tactic") {
+
+                    HomeGrid.cellByIndex(i, 5).setValue(planname);
+                }
+            }
+
         HomeGrid.enableCSVAutoID(true);
         HomeGrid.enableCSVHeader(true);
-        HomeGrid.setSerializableColumns("true,true,false,false,true,true,true,true,true,true,true,true");
+            HomeGrid.setSerializableColumns("false,false,true,true,true,true,false,false,true,true,true,true,true,true,true,true");
         var myCSVString = HomeGrid.serializeToCSV(true);
         var lines = myCSVString.split(",");
-        lines.splice(0, 9);
-        lines.splice(1, 1, "Task Name");
-        //$.each(lines, function (i, data) {
+            lines.splice(0, 11);
+            lines.splice(0, 1, "Plan");
+            lines.splice(1, 1, "Campaign");
+            lines.splice(2, 1, "Program");
+            lines.splice(3, 1, "Tactic");
            
-        //    data = data.replace("\"","''" );
-        //    alert(data);
-        //});
         $("#exportcsv").attr('download', planname+'_GridData.csv')
             $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
+
+            BindHomeGrid();
     }
         else {
             $('#cErrorInspectPopup').html('No Records found for Export Grid data.');
@@ -170,6 +200,7 @@
             $('#errorMessageInspectPopup').css("display","block");
         }
     }
+
     $('#errorMessageInspectPopup .close').click(function () {
         $('#errorMessageInspectPopup').css("display", "none");
     });
