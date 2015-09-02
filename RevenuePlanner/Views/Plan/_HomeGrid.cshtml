@@ -765,7 +765,7 @@
                     HomeGrid.setCellExcellType(rowid, 10, "ron");
 
 
-                    if (data.mql != null)
+                    if (data.mql != null) {
                         mqlConversion = data.mql;
 
                     var mqlValue = GetAbberiviatedValue(mqlConversion.toString(), false);
@@ -774,14 +774,18 @@
 
 
                     diff = parseInt(mqlConversion) - parseInt(tactActMqlVal);
+                        HomeGrid.cells(rowid, 10).setAttribute("actval", mqlConversion);
                     SetColumUpdatedValue(10, diff);
+                    }
+
+                  
 
 
                 }
                 HomeGrid.cells(progid, 10).setValue(GetAbberiviatedValue(newProgVal), false);
                 HomeGrid.cells(campid, 10).setValue(GetAbberiviatedValue(newCampVal), false);
                 HomeGrid.cells(planid, 10).setValue(GetAbberiviatedValue(newPlanVal), false);
-                HomeGrid.cells(rowid, 10).setAttribute("actval", mqlConversion);
+           
 
                 HomeGrid.cells(rowid, 11).setValue(FormatNumber(revenue));
                 var tactActRevenuVal = HomeGrid.cells(rowid, 11).getAttribute("actval");
