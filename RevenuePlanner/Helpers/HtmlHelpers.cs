@@ -4257,7 +4257,6 @@ namespace RevenuePlanner.Helpers
                 //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                 //// User custom Restrictions
                 var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
-
                 //// Start - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                 List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
                 if (mode != Enums.InspectPopupMode.ReadOnly.ToString() && section == Enums.EntityType.Tactic.ToString())
@@ -4334,6 +4333,17 @@ namespace RevenuePlanner.Helpers
                     {
                         if (mode == Enums.InspectPopupMode.Edit.ToString() && editableOptions == true)
                         {
+                            //Added By komal Rawal
+                            int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                            List<int> viewoptionid = userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == item.customFieldId && restriction.Permission == ViewEditPermission).Select(res => res.CustomFieldOptionId).ToList();
+                           List<int> Values = item.value.Select(int.Parse).ToList();
+                        
+                        //   var itemvaluelist = item.value.Where(a => viewoptionid.Contains(int.Parse(a))).Select(a=>a).ToList();
+                           var itemvaluelist = viewoptionid.Where(a => item.value.Contains(Convert.ToString(a))).Select(a => a).ToList();
+                        
+                            //End
+
+
                             DropDownStyle = " style=\"";
                             divPosition = "style=\"position:relative;\"";
                             require = "";
@@ -4356,7 +4366,7 @@ namespace RevenuePlanner.Helpers
                              singlehover = "";
                              trhover = "";
                              footerclose = "";
-                            if ((item.value == null) || (item.value != null && item.value.Count <= 1))
+                             if ((item.value == null) || (item.value != null && itemvaluelist.Count <= 1))
                             {
                                 displayCheckbox = "style=\"display:none;\"";
                                 selectionMode = "Single";
