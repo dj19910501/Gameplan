@@ -193,6 +193,49 @@
             $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
 
             BindHomeGrid();
+				         $(".orange-corner-grid").hover(function () {
+                $("#divTacticReqMsg").css('display', 'block');
+                var position = $(this).offset();
+                var targetOffset = $(this).offset().top;
+                var targetHeight = $(this).height();
+                var contentHeight = $('#divTacticReqMsg').outerHeight();
+                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+                //var left = $(this).left;
+                //var target = $(this).target;
+                //var top = $(this).top;
+                $('#divTacticReqMsg').css({
+                    // 'display': 'block',
+                    'top': targetBottomOffset,
+                    'left': position.left,
+                });
+                $('#popupType').css('display', 'none');
+                $('#dhx_combo_select').css('display', 'none');
+                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+            }, function () {
+                $("#divTacticReqMsg").css('display', 'none');
+            });
+            $(".grid_Search").click(function (e) {
+                inspectCloseFocus = $(this).position().top;
+                var id = $(this).attr('alt');
+                var type = $(this).attr('id');
+                gridSearchFlag = 1;
+                DisplayEditablePopup(id, type);
+            });
+            $(".grid_add").click(function (e) {
+                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+                gridSearchFlag = 1;
+                var type = $(this).attr('id');
+                var name = $(this).attr('alt');
+                var title = $(this).attr('data-title');
+                /*Modified by Mitesh for PL ticket 1570
+                combination of title and permission conflict when title has "\" separator*/
+                var permission = $(this).attr('permission');
+                //title = chk_permission[0];
+                //var permission = chk_permission[1];
+                DisplayPopUpMenu(type, name, title, permission, e);
+
+            });
+        
     }
         else {
             $('#cErrorInspectPopup').html('No Records found for Export Grid data.');
