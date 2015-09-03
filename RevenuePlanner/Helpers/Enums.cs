@@ -664,7 +664,8 @@ namespace RevenuePlanner.Helpers
             Summary = 0,
             Revenue = 1,
             Conversion = 2,
-            Budget = 3
+            Budget = 3,
+            Waterfall = 4 //PL 1562 Dashrath Prajpati
         }
 
         /// <summary>

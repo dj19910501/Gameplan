@@ -1426,7 +1426,7 @@ gantt._render_grid_header = function () {
 gantt._render_grid_item = function (item) {
 	if (!gantt._is_grid_visible())
 		return null;
-
+	_item = item.text.replace(/'/g, "&#39;"); //PL #1555 Calendar View: Displaying Extra Characters - Dashrath Prajapati
 	var columns = this.getGridColumns();
 	var cells = [];
 	var width = 0;
@@ -1439,7 +1439,7 @@ gantt._render_grid_item = function (item) {
 		
 		if ("add" == col.name && i == columns.length - 1) {
 		    if (item.type == "Plan" && item.Permission == true) {
-		        value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
+		        value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>  ";
 		    }
 
 		    else if (item.type == "Campaign" && item.Permission == true) {

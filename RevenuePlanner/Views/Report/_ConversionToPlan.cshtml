@@ -113,6 +113,7 @@
         var optionmain = '@ViewBag.Convoption';
         @*var BackHeadTitle = '@Convert.ToString(TempData["ConvBackParentLabel"])';*@
         var iscard = '@IsCard';
+        var elemString;
         if (iscard.toLowerCase() != "false") {
 
             var HeadTitle = document.getElementById('head-title');
@@ -121,9 +122,11 @@
                 IsCardDetailsClick = false;//#1489
             }
             else {
-                 HeadTitle.innerHTML = decodeURIComponent(BackHeadTitle);
+                HeadTitle.innerHTML = decodeURIComponent(BackHeadTitle);
+                elemString = $('<span/>').html(HeadTitle.innerHTML).text(); //#PL 1549 Reports: Displaying Extra Characters in case of Special Characters Dashrath Prajapati
+                HeadTitle.innerHTML = elemString;
             }
-            $("#head-title").attr('title', '' + HeadTitle.innerHTML + '');
+            $("#head-title").attr('title', '' + $('<span/>').html(HeadTitle.innerHTML).text() + ''); //#PL 1549 Reports: Displaying Extra Characters in case of Special Characters Dashrath Prajapati
             if (BackHeadTitle == 'Waterfall') {
                 IsCardDetailsClick = false;//#1489
                 var marketingDiv = document.getElementById('div-mareketing-drp');

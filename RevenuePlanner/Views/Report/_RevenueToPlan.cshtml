@@ -125,6 +125,7 @@
         // End:- Revenue To Plan DataTable script
 
         // Nishant
+        var elemString;
         var iscard = '@IsCard';
         if (iscard.toLowerCase() != "false") {
 
@@ -135,8 +136,10 @@
             }
             else {
                 HeadTitle.innerHTML = decodeURIComponent(BackHeadTitle);
+                elemString = $('<span/>').html(HeadTitle.innerHTML).text(); //#PL 1549 Reports: Displaying Extra Characters in case of Special Characters -Dashrath Prajapati
+                HeadTitle.innerHTML = elemString;
             }
-            $("#head-title").attr('title', '' + decodeURIComponent(HeadTitle.innerHTML) + '');
+            $("#head-title").attr('title', '' + $('<span/>').html(HeadTitle.innerHTML).text() + ''); //#PL 1549 Reports: Displaying Extra Characters in case of Special Characters -Dashrath Prajapati
 
             if (BackHeadTitle == 'Marketing Revenue') {
                 IsCardDetailsClick = false;//#1489

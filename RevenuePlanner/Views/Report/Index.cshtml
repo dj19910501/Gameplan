@@ -726,6 +726,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
     //}
 
     //// Load Plan data based on selected year
+    var _item;
     function LoadPlanData() {
         var strYear = OptionMain;
         if (OptionMain == 'thisquarter') {
@@ -745,7 +746,8 @@ function GetOwnerListForFilter(Planids, ifexists) {
                         $("#PlanAllModule").css("display", "block");
                         $("#NoPlanFound").hide();
                         $.each(data, function (index, item) {
-                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Text + '" onchange="OnPlanchange(this)" id="' + item.Value + '"></input></li>');
+                            _item = item.Value.replace(/'/g, "&#39;"); //PL #1556 Reports: Clustered Plan Names - Dashrath Prajapati
+                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + _item + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + _item + '" onchange="OnPlanchange(this)" id="' + _item + '"></input></li>');
                         });
                     }
                     else {
@@ -885,7 +887,8 @@ function GetOwnerListForFilter(Planids, ifexists) {
             else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
                 LoadRevenueData();
             }
-            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                //PL 1562 Dashrath Prajpati
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()') {
                 LoadConversionData();
             }
     }
@@ -1136,7 +1139,8 @@ function LoadYearDropdown() {
             else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
                 isClick = false;
             }
-            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+                //PL 1562 Dashrath Prajpati
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()') {
                 isClick = false;
             }
             else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
@@ -1244,7 +1248,7 @@ $('#liConversion').click(function () {
             GetOwnerListForFilter(PlanIds, true);
             GetTacticTypelist(PlanIds, true);
         }
-        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
+        leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()';  //PL 1562 Dashrath Prajpati
         LoadYearDropdown(leftPaneOption);
         RemoveAllActiveItem();
         $(this).addClass('active');
