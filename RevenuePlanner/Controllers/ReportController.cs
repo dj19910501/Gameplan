@@ -3605,7 +3605,7 @@ namespace RevenuePlanner.Controllers
                             optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                             ////
                             string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
-                            //toEmailIds = "nishant.sheth@indusa.com";
+                            //toEmailIds = "dashrath.prajapati@indusa.com";
                             foreach (string toEmail in toEmailIds.Split(','))
                             {
                                 Report_Share reportShare = new Report_Share();
@@ -3696,8 +3696,8 @@ namespace RevenuePlanner.Controllers
             }
             else if (reportType == Enums.ReportType.Summary.ToString())
             {
-                htmlToPdfConverter.PdfDocumentOptions.TopMargin = 10;
-                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 55;
+                htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;    //PL 1479 obsevation1- Dashrath Prajapati
+                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 90; //PL 1479 obsevation1- Dashrath Prajapati
             }
             else
             {
