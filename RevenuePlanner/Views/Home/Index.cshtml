@@ -286,7 +286,7 @@
                         }
                     }
                 }
-                
+
                 @*BindUpcomingActivites(CurrentPlanId);
                 Currenttime = $('#ddlUpComingActivites').val();
                 isQuater = Currenttime;
@@ -421,68 +421,7 @@
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
 
             <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
-            @*<input value="Export to PDF" type="button" onclick='CallPDF()'>*@
-            <div id="testdiv" style="display:none;">
-                <div style="display:block;width:100%;margin:0 auto;">
-                    <div style="width: 100%; background-color: rgb(36, 133, 186); color: rgb(255, 255, 255); font-size: 16px;">
-                        <div style="padding: 20px 14px; height: 23px;">
-                            <div style="float: left;  margin-top: -5px;font-size:19px">
-                                Hive9™
-                            </div>
-                            <div style="float: right; height: 31px;margin-top: -4px;">
-                                @*<img src="@Url.Content(" ~ />Content/images/game-plan-logo.png")" style="height: 100%; width: auto;">*@
-                                <img src="http://121.244.200.162:8085/MRPDev/Content/images/game-plan-logo.png" style="height: 100%; width: auto;">
-                            </div>
-                        </div>
-                    </div>
-                    <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
-                        <h2 style="color: #040707; margin: 0 0 7px;">Marketing Activities (Ongoing)</h2>
-                    </div>
-                    <div style="padding:4px;">
-                        @*<div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('@Url.Content(" ~ />Content/images/bullhorn-bg.png")') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">*@
-                        <div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('http://121.244.200.162:8085/MRPDev/Content/images/bullhorn-bg.png') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">
-                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="mqllabeltest">
-                                Projected MQLs
-                            </span>
-                            <p style="margin-top:20px;word-break:break-all">
-                                <span style="font-size: 22px; color: rgb(123, 122, 124);" id="mqlspanvalue">270</span>
-                            </p>
-                            <p style="font-size: 13px; margin: -15px 0px 0px; color: rgb(85, 151, 91); font-weight: 600;word-break: break-all;" id="mqlspanpercentage">+8.0%</p>
-                            <p></p>
-                        </div>
-                        <div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 4px; ">
-                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="budgetlabeltest">
-                                Budget
-                            </span>
-                            <p style="margin-top:20px;word-break:break-all">
-                                <span style="font-size: 22px; color: rgb(123, 122, 124);" id="budgetspanvalue">$800,000</span>
-                            </p>
-                            <p></p>
-                        </div>
-                        <div style="border:1px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 4px;">
-                            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
-                                Tactics
-                            </span>
-                            <p style="margin-top:20px;word-break:break-all">
-                                <span style="font-size: 22px; color: rgb(123, 122, 124);" id="ptacticcounttest">36</span>
-                            </p>
-
-                            <p></p>
-                        </div>
-                        @*<div style="display:none; border:1px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 4px;">
-                                <span style="color:#918E89;font-size:15px;  font-weight: 600;">
-                                    Tactic Distribution
-                                </span>
-                                <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
-                                    <img style="width:100%" src="images/graph-chart-small.jpg">
-                                </p>
-
-                                <p></p>
-                            </div>*@
-                    </div>
-                    <br />
-                </div>
-            </div>
+          
             <div class="wraper-btns cf">
 
                 @*<div id="divAddPlan">
@@ -568,7 +507,68 @@
         </div>
 
     </div>
+      @*<input value="Export to PDF" type="button" onclick='CallPDF()'>*@
+            <div id="testdiv" style="display:none;">
+                <div style="display:block;width:100%;margin:0 auto;">
+                    <div style="width: 100%; background-color: rgb(36, 133, 186); color: rgb(255, 255, 255); font-size: 16px;">
+                        <div style="padding: 20px 14px; height: 23px;">
+                            <div style="float: left;  margin-top: -5px;font-size:19px">
+                                Hive9™
+                            </div>
+                            <div style="float: right; height: 31px;margin-top: -4px;">
+                               @*  <img src="@Url.Content("~/Content/images/game-plan-logo.png")" style="height: 100%; width: auto;">*@
+                               <img id="imglogopdf" src="" style="height: 100%; width: auto;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
+                        <h2 style="color: #040707; margin: 0 0 7px;">Marketing Activities (Ongoing)</h2>
+                    </div>
+                    <div style="padding:4px;">
+                        @*<div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('@Url.Content(" ~ />Content/images/bullhorn-bg.png")') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">*@
+			<div id="mqlmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;    border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="mqllabeltest">
+                                Projected MQLs
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="mqlspanvalue">270</span>
+                            </p>
+                            <p style="font-size: 13px; margin: -15px 0px 0px; font-weight: 600;word-break: break-all;" id="mqlspanpercentage">+8.0%</p>
+                            <p></p>
+                        </div>
+                        <div id="budgetmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px; ">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="budgetlabeltest">
+                                Budget
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="budgetspanvalue">$800,000</span>
+                            </p>
+                            <p></p>
+                        </div>
+                        <div style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                                Tactics
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="ptacticcounttest">36</span>
+                            </p>
 
+                            <p></p>
+                        </div>
+                        @*<div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
+                        <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                            Tactic Distribution
+                        </span>
+                                <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
+                                    <img style="width:100%" src="images/graph-chart-small.jpg">
+                                </p>
+
+                                <p></p>
+                            </div>*@
+                    </div>
+                    <br />
+                </div>
+            </div>
     <!-- Sidebar Block Starts -->
     <div id="sidebar" class="span2 sidebar">
         <div class="WelcomeMessageBorder"></div>
@@ -869,6 +869,16 @@
         TacticTypeids: [],
         StatusIds: []
     };
+
+    var PdfFilters = {
+        customFieldIds: [],
+        PlanIDs: [],
+        SelectedPlans: [],
+        PlanTitles: [],
+        OwnerIds: [],
+        TacticTypeids: [],
+        StatusIds: []
+    };
     var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
 
@@ -1038,7 +1048,6 @@
         else {
             UpdateCalenderView();
         }
-        PdfFilters = filters;// Add By Nishant Sheth
     }
 
     //Modified By komal Rawal 
@@ -1060,7 +1069,7 @@
 
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
-        var TacticTypeids = filters.TacticTypeids; 
+        var TacticTypeids = filters.TacticTypeids;
         var StatusIds = filters.StatusIds;
 
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
@@ -1095,7 +1104,7 @@
                     getViewByList = true;
                     RefreshCurrentTab();
                     //Modified By Komal Rawal for #1447 - to Change the header data according to the filter selected.
-                    GetHealderData(SelectedPlanIds,CustomFieldId, OwnerIds,TacticTypeids,StatusIds);
+                    GetHealderData(SelectedPlanIds, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
                     GetNumberOfActivityPerMonByPlanId(SelectedPlanIds, Currenttime, CustomFieldId, OwnerIds, TacticTypeids, StatusIds);
                     //End
                 }
@@ -1154,7 +1163,7 @@
 
         $.ajax({
             url: '@Url.Content("~/Plan/LoadHomeGrid/")',
-            async:false,
+            async: false,
             data: {
                 planId: SelectedPlanIds.toString(),
                 ownerIds: OwnerIds.toString(),
@@ -1609,11 +1618,12 @@
                 isselectedplan = true;
             }
         });
-
-        $.each(PdfFilters.SelectedPlans, function () {
-            innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
-            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
-        });
+        if (PdfFilters.SelectedPlans.length > 0) {
+            $.each(PdfFilters.SelectedPlans, function () {
+                innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
         if (PdfFilters.SelectedPlans.length > 0) {
             DropDownPlan = false;
         }
@@ -1659,7 +1669,7 @@
         }
         var Parentid = "";
         $.each($('#divCustomFieldsFilter').find('.dropdown-section'), function () {
-            
+
             var headertitle = $(this).find("h2 span").text();
             var innerfiltervalue = "";
 
@@ -1668,11 +1678,11 @@
             Parentid = Parentid.substring(sl + 1, sl.length).toString();
 
             if (PdfFilters.customFieldIds.length > 0) {
-                
+
                 var a = PdfFilters.customFieldIds;
                 $.each(a, function () {
                     if (this != null && this != undefined && this != 'undefined') {
-                        
+
                         var liId = this.toString();
                         var splitIds = liId.split('_');
                         if (Parentid == splitIds[0].toString()) {
@@ -1736,10 +1746,12 @@
 
         var innerfiltervalueOwner = "";
         var isselectedOwner = true;
-        $.each(PdfFilters.OwnerIds, function () {
-            innerfiltervalueOwner += " " + $('#' + this).parent().parent("#ulSelectedOwner").children().children('#' + this).attr("plantitle") + ",";
-            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
-        });
+        if (PdfFilters.OwnerIds.length > 0) {
+            $.each(PdfFilters.OwnerIds, function () {
+                innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
         //$("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
         //    if ($(this).attr('checked') == 'checked') {
         //        isselectedOwner = true;
@@ -1774,10 +1786,12 @@
 
         var innerfiltervalueTacticType = "";
         var isselectedTacticType = true;
-        $.each(PdfFilters.TacticTypeids, function () {
-            innerfiltervalueTacticType += " " + $('#' + this).parent().parent("#ulTacticType").children().children('#' + this).attr("plantitle") + ",";
-            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
-        });
+        if (PdfFilters.TacticTypeids.length > 0) {
+            $.each(PdfFilters.TacticTypeids, function () {
+                innerfiltervalueTacticType += " " + $("#ulTacticType").find('#liTT' + this).attr("title") + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
         //$("#ulTacticType").find("input[type=checkbox]").each(function () {
         //    if ($(this).attr('checked') == 'checked') {
         //        isselectedTacticType = true;
@@ -1812,10 +1826,12 @@
 
         var innerfiltervalueStatus = "";
         var isselectedStatus = true;
-        $.each(PdfFilters.StatusIds, function () {
-            innerfiltervalueStatus += " " + $('#' + this).parent().parent("#ulStatus").children().children('#' + this).attr("plantitle") + ",";
-            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
-        });
+        if (PdfFilters.StatusIds.length > 0) {
+            $.each(PdfFilters.StatusIds, function () {
+                innerfiltervalueStatus += " " + $("#ulStatus").find('#' + this).parent().find("span").text() + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
         //$("#ulStatus").find("input[type=checkbox]").each(function () {
         //    if ($(this).attr('checked') == 'checked') {
         //        isselectedStatus = true;
@@ -1852,6 +1868,40 @@
         $("#mqllabeltest").text($("#pmqlLabel").text());
         $("#mqlspanvalue").text($("#pMQLs").text());
         $("#mqlspanpercentage").text($("#pMQLImproved").text());
+        $("#pMQLImproved").parent().find('.greenfont').each(function () {
+            $("#mqlspanpercentage").css("color", "#559659");
+        });
+        $("#pMQLImproved").parent().find('.redfont').each(function () {
+            $("#mqlspanpercentage").css("color", "#EF2240");
+        });
+
+        var originurl = document.location.origin;
+        var mypathurl = document.location.pathname.split('/')[1];
+        var urlpdf = originurl + "/" + mypathurl + "/";
+        $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
+        $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
+            $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
+            //  $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg.png")')");
+
+            $("#mqlmaindiv").css("background-position", "right bottom");
+            $("#mqlmaindiv").css("background-repeat", "no-repeat");
+        });
+
+        $("#DivBullhornbg").parent().find('.bullhorn-bg-disabled').each(function () {
+            $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg-disabled.png')");
+            //   $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg-disabled.png")')");
+            $("#mqlmaindiv").css("background-position", "right bottom");
+            $("#mqlmaindiv").css("background-repeat", "no-repeat");
+        });
+
+        $("#DivBullhornbg").parent().find('.bulldoller-bg').each(function () {
+
+            $("#budgetmaindiv").css("background-image", "url('" + urlpdf + "Content/images/icon-dollar.png')");
+            //     $("#budgetmaindiv").css("background-image", "url('@Url.Content("~/Content/images/icon-dollar.png")')");
+            $("#budgetmaindiv").css("background-position", "right bottom");
+            $("#budgetmaindiv").css("background-repeat", "no-repeat");
+        });
+
 
         $("#budgetlabeltest").text($("#pcostLabel").text());
         $("#budgetspanvalue").text($("#pbudget").text());
@@ -1863,24 +1913,33 @@
         //       <span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">Enterprise, Mid-Market, SMB</span>
         //   </p>
         var headerhtml = $("#testdiv").html();
+
         var datestart;
         var dateend;
-        //if ($.isNumeric(isQuater)) {
-        //    datestart = new Date(isQuater, 1, 1);
-        //    dateend = new Date(isQuater, 12, 31);
-        //}
+        if ($.isNumeric(isQuater)) {
+            datestart = "01-01-" + isQuater;
+            dateend = "01-01-" + (parseInt(isQuater) + 1).toString();
+        }
+        else if (isQuater == 'thismonth') {
+            var date = new Date(), m = date.getMonth();
+            datestart = "01-" + (m + 1).toString() + "-" + date.getFullYear().toString();
+            dateend = "01-" + (m + 2).toString() + "-" + date.getFullYear().toString();
+        }
+        else if (isQuater == 'thisquarter') {
+            var startDate = getQarterStartDate();
+            var m = startDate.getMonth();
+            datestart = "01-" + (m + 1).toString() + "-" + startDate.getFullYear().toString();
+            dateend = "01-" + (m + 4).toString() + "-" + startDate.getFullYear().toString();
+        }
         gantt.exportToPDF({
             header: headerhtml,
-            start: "01-01-2015",
-            end: "31-12-2015",
+            start: datestart,
+            end: dateend
+
         });
     }
 
-    $(window).load(function () {
-        
-        PdfFilters = filters;
 
-    });
     //End
     function AddActuals() {
         var pid = $("#CurrentPlanId").val();
@@ -1894,7 +1953,7 @@
         window.location.href = url;
     }
 
-    
+
 
     // Added by Nirav for Custom Dropdown - 388
     /*added by Nirav for plan consistency on 14 apr 2014*/
@@ -2352,6 +2411,24 @@ function AjaxRequest() {
     var TacticTypeids = filters.TacticTypeids; //Modified for #1283
     var GetSelectedPlanNo = filters.SelectedPlans.length;
     var StatusIds = filters.StatusIds;
+    PdfFilters.SelectedPlans = [];
+    $.each(filters.SelectedPlans, function () {
+        PdfFilters.SelectedPlans.push(this);
+    });
+    PdfFilters.OwnerIds = [];
+    $.each(filters.OwnerIds, function () {
+        PdfFilters.OwnerIds.push(this);
+    });
+    PdfFilters.TacticTypeids = [];
+    $.each(filters.TacticTypeids, function () {
+        PdfFilters.TacticTypeids.push(this);
+    });
+    PdfFilters.StatusIds = [];
+    $.each(filters.StatusIds, function () {
+        PdfFilters.StatusIds.push(this);
+    });
+    //PdfFilters.SelectedPlans = filters.SelectedPlans;
+    PdfFilters.customFieldIds = filters.customFieldIds;
 
 
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -2377,12 +2454,11 @@ function AjaxRequest() {
             },
             dataType: "json",
             success: function (data) {
-               
+
                 if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
-                else if (data.isError != 'undefined' && data.isError == true)
-                {
+                else if (data.isError != 'undefined' && data.isError == true) {
                     ShowMessage(true, "Error occured due to exception. Please contact system admin.");
                 }
                 else {
@@ -2413,12 +2489,12 @@ function AjaxRequest() {
 
                     // To hide/show current plan edit button based on user plan edit permission
                     if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                        $("#DivButtonsHome").show();
+                        $("#divPlanEditButtonHome").show();
                         $('.WelcomeMessageBorder').show();
                         GetCurrentPlanPermissionDetail();
                     }
                     else {
-                        $("#DivButtonsHome").hide();
+                        $("#divPlanEditButtonHome").hide();
                         $('.WelcomeMessageBorder').hide();
                         //  $("#divAddActuals").hide();
                     }
@@ -2510,18 +2586,18 @@ function AjaxRequest() {
 
             }
         });
-    }
-    else {
-        $('#DivloadPlan').hide();
-        $('.tab-content').hide();
-        $('#chart2').hide();
-        $('#pbudget').attr("original-title", "$0");
-        $('.changes').hide();
-        $('#Notabcontent').show();
+}
+else {
+    $('#DivloadPlan').hide();
+    $('.tab-content').hide();
+    $('#chart2').hide();
+    $('#pbudget').attr("original-title", "$0");
+    $('.changes').hide();
+    $('#Notabcontent').show();
         // Start - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #63
-        $('#marketing-activities').hide();
-        $('#improvements').hide();
-    }
+    $('#marketing-activities').hide();
+    $('#improvements').hide();
+}
 }
 
 function BindViewSelections(data, type) {
@@ -2558,12 +2634,12 @@ function GetCurrentPlanPermissionDetail() {
             }
             else {
                 if (data.IsPlanEditable) {
-                    $("#DivButtonsHome").show();
+                    $("#divPlanEditButtonHome").show();
                     $('.WelcomeMessageBorder').show();
                     $("#isViewOnly").val(true);
                 }
                 else {
-                    $("#DivButtonsHome").hide();
+                    $("#divPlanEditButtonHome").hide();
                     $('.WelcomeMessageBorder').hide();
                     $("#isViewOnly").val(false);
                 }
@@ -2685,7 +2761,7 @@ function renderGantt(taskData) {
         gantt.config.date_scale = " %Y";
 
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize:true }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "add", label: "", width: 44 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         //// Getting quarter
@@ -3261,46 +3337,46 @@ function Quarter() {
               });
               function CloseIconClick() {
                   $('.close-x-big-icon').click(function () {
-                   
+
                       $("#modal-container-186470").addClass("transition-close");
                       $("#modal-container-186470").removeClass("transition_y");
                       addDefaultModalPopupBackgroungColor();
                       $('body').removeClass('bodyOverflow');
                       if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                           if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                              
+
                               if (isDataModified) {
-                              if (gridSearchFlag == 1) {
-                                  LoadPlanGrid();
-                                  gridSearchFlag = 0;
-                              }
-                              else {
-                                  var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
-                                      $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
-                                     
+                                  if (gridSearchFlag == 1) {
+                                      LoadPlanGrid();
+                                      gridSearchFlag = 0;
                                   }
+                                  else {
+                                      var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
+                                  $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
+
                               }
-                                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
-                                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
-                                          }
-                        return true;
-                             
                           }
-                          else if (isDataModified) {
-                      RefreshCurrentTab();
+                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+                          }
+                          return true;
+
+                      }
+                      else if (isDataModified) {
+                          RefreshCurrentTab();
                       }
                       else {
-                              gantt.refreshData();
-                          }
+                          gantt.refreshData();
+                      }
+                  }
+                  else {
+                      if (isDataModified) {
+                          RefreshCurrentTab();
                       }
                       else {
-                          if (isDataModified) {
-                              RefreshCurrentTab();
-                          }
-                          else {
-                              gantt.refreshData();
-                          }
+                          gantt.refreshData();
                       }
+                  }
                       $(".datepicker.dropdown-menu").each(function () {
                           $(this).remove();
                       });
@@ -3308,45 +3384,45 @@ function Quarter() {
                       //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
                       //// display popup based on type and name and title.                       
                       if (activeMenu != '@Enums.ActiveMenu.Plan.ToString().ToLower()' || document.getElementById("liGrid").className.indexOf("active") < 0) {
-                      $(".gantt_last_cell").dblclick(function (e) {
-                          e.stopPropagation();
-                      });
+                          $(".gantt_last_cell").dblclick(function (e) {
+                              e.stopPropagation();
+                          });
 
-                      $(".gantt_add").click(function (e) {
-                          var type = $(this).attr('id');
-                          var name = $(this).attr('Name');
-                          var title = $(this).attr('aria-label');
-                          var permission = $(this).attr('Permission');
-                          DisplayPopUpMenu(type, name, title, permission, e);
-                      });
+                          $(".gantt_add").click(function (e) {
+                              var type = $(this).attr('id');
+                              var name = $(this).attr('Name');
+                              var title = $(this).attr('aria-label');
+                              var permission = $(this).attr('Permission');
+                              DisplayPopUpMenu(type, name, title, permission, e);
+                          });
 
-                      var $doc = $(document);
-                      $doc.click(function () {
-                          $('#popupType').css('display', 'none');
-                      });
+                          var $doc = $(document);
+                          $doc.click(function () {
+                              $('#popupType').css('display', 'none');
+                          });
 
-                      $(document).mouseup(function (e) {
-                          $('#popupType').css("display", "none");
-                      });
-                      $(".gantt_ver_scroll").scroll(function () {
-                          $('#popupType').css('display', 'none');
-                      });
+                          $(document).mouseup(function (e) {
+                              $('#popupType').css("display", "none");
+                          });
+                          $(".gantt_ver_scroll").scroll(function () {
+                              $('#popupType').css('display', 'none');
+                          });
                       }
 
                   });
-    }
+              }
 
-    //Scrip Addded By Bhavesh for Inspect Popup
+              //Scrip Addded By Bhavesh for Inspect Popup
 
-    // Added By Bhavesh
-    // Inspect Popup
-    /// Start Script Of Inspect Popup
-    /// Modified by Kunal to add  section parameter to open popup campaign, program or tactic wise
-    function loadInspectPopup(id, section, tabValue, mode, parentId) {
-        parentId = typeof parentId !== 'undefined' ? parentId : '0';
-        var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
-                  $("#divPartial").empty();
-                  $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
+              // Added By Bhavesh
+              // Inspect Popup
+              /// Start Script Of Inspect Popup
+              /// Modified by Kunal to add  section parameter to open popup campaign, program or tactic wise
+              function loadInspectPopup(id, section, tabValue, mode, parentId) {
+                  parentId = typeof parentId !== 'undefined' ? parentId : '0';
+                  var url = '@Url.Content("~/Inspect/LoadInspectPopup")';
+        $("#divPartial").empty();
+        $("#divPartial").load(url + '?id=' + id + '&Section=' + section + '&TabValue=' + tabValue + '&InspectPopupMode=' + mode + '&parentId=' + parentId + '&RequestedModule=' + '@Enums.InspectPopupRequestedModules.Index.ToString()', function (response, status, xhr) {
                       if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                           //// Call function to redirect on service unavailibility.
                           //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -3527,44 +3603,44 @@ function Quarter() {
                       success: function (data) {
                           if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                               window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                          }
+                          else {
+                              if (data.result == true) {
+                                  if (task.isSubmitted) {
+                                      $('#RequestCount').html($('#RequestCount').html() - 1);
+                                  }
+                                  var index = $(e.parentNode.parentNode).attr("data-index");
+                                  var activityTemp = activities.data[index];
+                                  activities.data.splice(index, 1);
+                                  $('#table_activities tbody tr').remove();
+                                  activityTemp.isDeclined = true;
+                                  activityTemp.isSubmitted = false;
+                                  activities.data.push(activityTemp);
+                                  FillTacticsTable();
+                                  gantt.refreshData();
+                                  isRequest = true;
+                                  // Added by Dharmraj to refresh current tab for PL #364
+                                  RefreshCurrentTab();
                               }
                               else {
-                                  if (data.result == true) {
-                                      if (task.isSubmitted) {
-                                          $('#RequestCount').html($('#RequestCount').html() - 1);
-                                      }
-                                      var index = $(e.parentNode.parentNode).attr("data-index");
-                                      var activityTemp = activities.data[index];
-                                      activities.data.splice(index, 1);
-                                      $('#table_activities tbody tr').remove();
-                                      activityTemp.isDeclined = true;
-                                      activityTemp.isSubmitted = false;
-                                      activities.data.push(activityTemp);
-                                      FillTacticsTable();
-                                      gantt.refreshData();
-                                      isRequest = true;
-                                      // Added by Dharmraj to refresh current tab for PL #364
-                                      RefreshCurrentTab();
-                                  }
-                                  else {
-                                      alert('Not Declined');
-                                  }
+                                  alert('Not Declined');
                               }
                           }
+                      }
                   });
-                  }
+              }
 
-                  //tbody tr
-                  $("#table_activities").on("click", ".sm", function () {
-                      ShowModel($(this.parentNode).attr("id"), null)
-                  })
-                  //End Creating and Populating tabulated data
+              //tbody tr
+              $("#table_activities").on("click", ".sm", function () {
+                  ShowModel($(this.parentNode).attr("id"), null)
+              })
+              //End Creating and Populating tabulated data
 
-                  /// Script End
-                  /// Added By: Maninder Singh Wadhva.
+              /// Script End
+              /// Added By: Maninder Singh Wadhva.
 
-                  /// Ended Script Of Inspect Popup
-                  //Commented by komal Rawal for new homepage UI
+              /// Ended Script Of Inspect Popup
+              //Commented by komal Rawal for new homepage UI
     @*function GetHealderData(selectedPlanIds) {
     alert(1);
                   var newUrl = '';
@@ -4676,7 +4752,7 @@ function Quarter() {
                     Id: idPlanCamaign,
                     title: Title,
                     CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RequestedModule',
+                    RequsetedModule: '@RequestedModule',
                     planId: PlanId
                 },
                 success: function (data) {
@@ -4688,20 +4764,20 @@ function Quarter() {
                         ShowMessage(isError, data.msg);
 
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                        if (CurrentPlanId > 0) {
-                            if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                                LoadPlanGrid();
+                            if (CurrentPlanId > 0) {
+                                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                    LoadPlanGrid();
+                                }
                             }
                         }
-                    }
 
-                    return;
-                }
-                else {
-                    isError = true;
-                    ShowMessage(isError, data.msg);
-                    return false;
-                }
+                        return;
+                    }
+                    else {
+                        isError = true;
+                        ShowMessage(isError, data.msg);
+                        return false;
+                    }
                 }
             });
         });
@@ -5064,9 +5140,9 @@ function DisplayEditablePopup(id, type) {
     }
     else if (type == "ProgramPopup") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, 0, '@RequestedModule');
+    }
+    else if (type == "TacticPopup") {
+        ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
        }
-       else if (type == "TacticPopup") {
-           ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
-   }
 }
 </script>
