@@ -462,7 +462,7 @@
            
             if (UpdateColumn == "Target Stage Goal") {
                 var psv = HomeGrid.cells(rowId, 9).getValue().split(" ");
-                this.editor.obj.value = psv[0];
+                this.editor.obj.value = (psv[0].replace(/,/g, ""));
             }
         }
         if (stage == 2) // start edit Shipping column
@@ -528,7 +528,7 @@
             }
             if (UpdateColumn.toString().trim() == "Target Stage Goal") {
                 var splitoval = oValue.split(" ");
-                if (nValue != splitoval[0]) {
+                    if (nValue != splitoval[0].replace(/,/g, "")) {
                 var tactictypeindex = HomeGrid.getColIndexById('tactictype');
                 var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
                 GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue,null);
@@ -851,7 +851,7 @@
                         //    LoadPlanGrid();
                         if (UpdateColumn == "Target Stage Goal") {
                             var psv = HomeGrid.cells(rowid, 9).getAttribute("stage");
-                            HomeGrid.cells(rowid, 9).setValue(UpdateVal + " " + psv);
+                            HomeGrid.cells(rowid, 9).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         }
                     }
                 });
