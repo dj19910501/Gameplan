@@ -3697,7 +3697,7 @@ namespace RevenuePlanner.Controllers
             else if (reportType == Enums.ReportType.Summary.ToString())
             {
                 htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;    //PL 1479 obsevation1- Dashrath Prajapati
-                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 90; //PL 1479 obsevation1- Dashrath Prajapati
+                htmlToPdfConverter.PdfDocumentOptions.BottomMargin =90; //PL 1479 obsevation1- Dashrath Prajapati
             }
             else
             {
