@@ -46,7 +46,7 @@
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
-
+<script src="http://export.dhtmlx.com/gantt/api.js"></script>
 
 <style type="text/css">
     .pull-right > span {
@@ -421,6 +421,68 @@
         <div class="padding-content padding-bottom0 hide sidebar-toogle-wrapper" id="DivButtonsHome">
 
             <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
+            @*<input value="Export to PDF" type="button" onclick='CallPDF()'>*@
+            <div id="testdiv" style="display:none;">
+                <div style="display:block;width:100%;margin:0 auto;">
+                    <div style="width: 100%; background-color: rgb(36, 133, 186); color: rgb(255, 255, 255); font-size: 16px;">
+                        <div style="padding: 20px 14px; height: 23px;">
+                            <div style="float: left;  margin-top: -5px;font-size:19px">
+                                Hive9™
+                            </div>
+                            <div style="float: right; height: 31px;margin-top: -4px;">
+                                @*<img src="@Url.Content(" ~ />Content/images/game-plan-logo.png")" style="height: 100%; width: auto;">*@
+                                <img src="http://121.244.200.162:8085/MRPDev/Content/images/game-plan-logo.png" style="height: 100%; width: auto;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
+                        <h2 style="color: #040707; margin: 0 0 7px;">Marketing Activities (Ongoing)</h2>
+                    </div>
+                    <div style="padding:4px;">
+                        @*<div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('@Url.Content(" ~ />Content/images/bullhorn-bg.png")') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">*@
+                        <div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('http://121.244.200.162:8085/MRPDev/Content/images/bullhorn-bg.png') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="mqllabeltest">
+                                Projected MQLs
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 22px; color: rgb(123, 122, 124);" id="mqlspanvalue">270</span>
+                            </p>
+                            <p style="font-size: 13px; margin: -15px 0px 0px; color: rgb(85, 151, 91); font-weight: 600;word-break: break-all;" id="mqlspanpercentage">+8.0%</p>
+                            <p></p>
+                        </div>
+                        <div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 4px; ">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="budgetlabeltest">
+                                Budget
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 22px; color: rgb(123, 122, 124);" id="budgetspanvalue">$800,000</span>
+                            </p>
+                            <p></p>
+                        </div>
+                        <div style="border:1px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 4px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                                Tactics
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 22px; color: rgb(123, 122, 124);" id="ptacticcounttest">36</span>
+                            </p>
+
+                            <p></p>
+                        </div>
+                        @*<div style="display:none; border:1px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 4px;">
+                                <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                                    Tactic Distribution
+                                </span>
+                                <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
+                                    <img style="width:100%" src="images/graph-chart-small.jpg">
+                                </p>
+
+                                <p></p>
+                            </div>*@
+                    </div>
+                    <br />
+                </div>
+            </div>
             <div class="wraper-btns cf">
 
                 @*<div id="divAddPlan">
@@ -430,6 +492,9 @@
                 <div id="divPlanEditButtonHome">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>
                 </div>
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnHomeReport" onclick='CallPDF()'>
+                    Export to .pdf
+                </button>
             </div>
         </div>
 
@@ -457,6 +522,9 @@
                     }
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()"  style="min-width:90%">
                         Edit Plan Budget & Cost
+                    </button>
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnPlanReport" onclick='CallPDF()'>
+                        Export to .pdf
                     </button>
                 </div>
                 @*  @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
@@ -861,6 +929,7 @@
             $("#divupcomingact").show();
             $("#liplanrequest").show();
             $('.nav').removeClass('no-bottom-border');
+            $("#btnPlanReport").css("display", "block");
             RefreshCurrentTab();
 
         }
@@ -869,7 +938,7 @@
             $("#CalenderView").hide();
             $("#divgridview").show();
             $("#ImprovementGrid").show();
-
+            $("#btnPlanReport").css("display", "none");
             //Call the function for grid view
             LoadPlanGrid();
             //  LoadImprovementGrid(CurrentPlanId);
@@ -969,6 +1038,7 @@
         else {
             UpdateCalenderView();
         }
+        PdfFilters = filters;// Add By Nishant Sheth
     }
 
     //Modified By komal Rawal 
@@ -1056,6 +1126,7 @@
     }
     // modify by devanshi
     function LoadPlanGrid() {
+        $("#btnPlanReport").css("display", "none");// Add By Nishant Sheth
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             SelectedPlanIds = filters.SelectedPlans.toString();
         }
@@ -1518,6 +1589,298 @@
         var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
         window.location.href = url;
     }
+
+    function CallPDF() {
+        //  $("#gantt_here").css("Width", $("#testdiv").width());
+        gantt.init("gantt_here");
+        var htmltestdiv = '';
+        htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
+        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Timeframe: </label>';
+        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+        htmltestdiv += isQuater + '</span>';
+        htmltestdiv += '</p>';
+
+        var innerfiltervalueplan = "";
+        var isselectedplan = true;
+        var DropDownPlan = true;
+        $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                isselectedplan = true;
+            }
+        });
+
+        $.each(PdfFilters.SelectedPlans, function () {
+            innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+        });
+        if (PdfFilters.SelectedPlans.length > 0) {
+            DropDownPlan = false;
+        }
+        if (DropDownPlan == true) {
+            innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+        }
+
+        //if (isselectedplan) {
+
+        //    $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueplan += " " + chkid + ",";
+        //                DropDownPlan = false;
+        //            }
+        //        }
+        //    });
+        //    if (DropDownPlan == true) {
+        //        innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+        //    }
+        //}
+        //else {
+
+        //    $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().attr("title");
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueplan += " " + chkid + ",";
+        //            DropDownPlan = false;
+        //        }
+        //    });
+        //    if (DropDownPlan == true) {
+        //        innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+        //    }
+        //}
+        if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Plan: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueplan = DropDownPlan == true ? innerfiltervalueplan : innerfiltervalueplan.substring(0, innerfiltervalueplan.length - 1);
+            htmltestdiv += innerfiltervalueplan + '</span>';
+            htmltestdiv += '</p>';
+        }
+        var Parentid = "";
+        $.each($('#divCustomFieldsFilter').find('.dropdown-section'), function () {
+            
+            var headertitle = $(this).find("h2 span").text();
+            var innerfiltervalue = "";
+
+            Parentid = this.id;
+            var sl = Parentid.lastIndexOf('-');
+            Parentid = Parentid.substring(sl + 1, sl.length).toString();
+
+            if (PdfFilters.customFieldIds.length > 0) {
+                alert(Parentid);
+                var a = PdfFilters.customFieldIds;
+                $.each(a, function () {
+                    if (this != null && this != undefined && this != 'undefined') {
+                        
+                        var liId = this.toString();
+                        var splitIds = liId.split('_');
+                        if (Parentid == splitIds[0].toString()) {
+                            var actualId = "#li_" + Parentid + "_" + splitIds[1];
+                            var chkid = $(actualId).attr("title");
+                            innerfiltervalue += " " + chkid + ",";
+                        }
+                        //var chkid = $(liId).parent().attr("title");
+                        //innerfiltervalue += " " + chkid + ",";
+                    }
+                });
+                if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
+                    htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                    htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+                    htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                    innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+                    htmltestdiv += innerfiltervalue + '</span>';
+                    htmltestdiv += '</p>';
+                }
+            }
+            //alert(id.substring(sl + 1, sl.length));
+        });
+        //$('#divCustomFieldsFilter').find('.dropdown-section').each(function () {
+        //    var headertitle = $(this).find("h2 span").text();
+
+        //    var innerfiltervalue = "";
+        //    var isselected = true;
+        //    $(this).find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            isselected = true;
+        //        }
+        //    });
+        //    if (isselected) {
+        //        $(this).find("input[type=checkbox]").each(function () {
+        //            if ($(this).attr('checked') == 'checked') {
+        //                var chkid = $(this).parent().attr("title");
+        //                if (chkid != undefined && chkid != 'undefined') {
+        //                    innerfiltervalue += " " + chkid + ",";
+        //                }
+        //            }
+        //        });
+        //    }
+        //    else {
+        //        $(this).find("input[type=checkbox]").each(function () {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalue += " " + chkid + ",";
+        //            }
+        //        });
+        //    }
+        //    if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
+        //        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+        //        htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+        //        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+        //        innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+        //        htmltestdiv += innerfiltervalue + '</span>';
+        //        htmltestdiv += '</p>';
+        //    }
+
+        //});
+
+        var innerfiltervalueOwner = "";
+        var isselectedOwner = true;
+        $.each(PdfFilters.OwnerIds, function () {
+            innerfiltervalueOwner += " " + $('#' + this).parent().parent("#ulSelectedOwner").children().children('#' + this).attr("plantitle") + ",";
+            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+        });
+        //$("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        isselectedOwner = true;
+        //    }
+        //});
+        //if (isselectedOwner) {
+        //    $("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueOwner += " " + chkid + ",";
+        //            }
+        //        }
+        //    });
+        //}
+        //else {
+        //    $("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().attr("title");
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueOwner += " " + chkid + ",";
+        //        }
+        //    });
+        //}
+        if (innerfiltervalueOwner != undefined && innerfiltervalueOwner != 'undefined' && innerfiltervalueOwner != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Owner: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueOwner = innerfiltervalueOwner.substring(0, innerfiltervalueOwner.length - 1);
+            htmltestdiv += innerfiltervalueOwner + '</span>';
+            htmltestdiv += '</p>';
+        }
+
+        var innerfiltervalueTacticType = "";
+        var isselectedTacticType = true;
+        $.each(PdfFilters.TacticTypeids, function () {
+            innerfiltervalueTacticType += " " + $('#' + this).parent().parent("#ulTacticType").children().children('#' + this).attr("plantitle") + ",";
+            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+        });
+        //$("#ulTacticType").find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        isselectedTacticType = true;
+        //    }
+        //});
+        //if (isselectedTacticType) {
+        //    $("#ulTacticType").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueTacticType += " " + chkid + ",";
+        //            }
+        //        }
+        //    });
+        //}
+        //else {
+        //    $("#ulTacticType").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().attr("title");
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueTacticType += " " + chkid + ",";
+        //        }
+        //    });
+        //}
+        if (innerfiltervalueTacticType != undefined && innerfiltervalueTacticType != 'undefined' && innerfiltervalueTacticType != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Tactic Type: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueTacticType = innerfiltervalueTacticType.substring(0, innerfiltervalueTacticType.length - 1);
+            htmltestdiv += innerfiltervalueTacticType + '</span>';
+            htmltestdiv += '</p>';
+        }
+
+        var innerfiltervalueStatus = "";
+        var isselectedStatus = true;
+        $.each(PdfFilters.StatusIds, function () {
+            innerfiltervalueStatus += " " + $('#' + this).parent().parent("#ulStatus").children().children('#' + this).attr("plantitle") + ",";
+            //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+        });
+        //$("#ulStatus").find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        isselectedStatus = true;
+        //    }
+        //});
+        //if (isselectedStatus) {
+        //    $("#ulStatus").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().find("span").text();
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueStatus += " " + chkid + ",";
+        //            }
+        //        }
+        //    });
+        //}
+        //else {
+        //    $("#ulStatus").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().find("span").text();
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueStatus += " " + chkid + ",";
+        //        }
+        //    });
+        //}
+        if (innerfiltervalueStatus != undefined && innerfiltervalueStatus != 'undefined' && innerfiltervalueStatus != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Status: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueStatus = innerfiltervalueStatus.substring(0, innerfiltervalueStatus.length - 1);
+            htmltestdiv += innerfiltervalueStatus + '</span>';
+            htmltestdiv += '</p>';
+        }
+        $("#filterdiv").html('');
+        $("#filterdiv").append(htmltestdiv);
+        $("#mqllabeltest").text($("#pmqlLabel").text());
+        $("#mqlspanvalue").text($("#pMQLs").text());
+        $("#mqlspanpercentage").text($("#pMQLImproved").text());
+
+        $("#budgetlabeltest").text($("#pcostLabel").text());
+        $("#budgetspanvalue").text($("#pbudget").text());
+        $("#ptacticcounttest").text($("#ptacticcount").text());
+
+
+        //<p style=" line-height: 24px;margin: 0;">
+        //       <label style="color:#050708;font-weight: 600;">Business Unit:</label>
+        //       <span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">Enterprise, Mid-Market, SMB</span>
+        //   </p>
+        var headerhtml = $("#testdiv").html();
+        var datestart;
+        var dateend;
+        //if ($.isNumeric(isQuater)) {
+        //    datestart = new Date(isQuater, 1, 1);
+        //    dateend = new Date(isQuater, 12, 31);
+        //}
+        gantt.exportToPDF({
+            header: headerhtml,
+            start: "01-01-2015",
+            end: "31-12-2015",
+        });
+    }
+
+    $(window).load(function () {
+        
+        PdfFilters = filters;
+
+    });
     //End
     function AddActuals() {
         var pid = $("#CurrentPlanId").val();
