@@ -254,11 +254,13 @@
         HomeGrid.enableDragAndDrop(true);
         HomeGrid.enableAutoHeight(true);
         HomeGrid.enableAutoWidth(false);
-     
+        HomeGrid.enableStableSorting(true);
         HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
     
         HomeGrid.setImageSize(1, 1);
+        HomeGrid.setCustomSorting(sort_Owner, 8);
 
+        HomeGrid.setCustomSorting(sort_TacticType, 7);
        HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
@@ -308,6 +310,21 @@
             }
         })
     }
+    function sort_Owner(a, b, ord, a_id, b_id) {
+
+        a = HomeGrid.cells(a_id, 8).getText();
+        b = HomeGrid.cells(b_id, 8).getText();
+        return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
+    };
+    function sort_TacticType(a, b, ord, a_id, b_id) {
+        var atype = a_id.split(".")[0].toString();
+        var btype = b_id.split(".")[0].toString();
+        if (atype == "tact" && btype == "tact") {
+            a = HomeGrid.cells(a_id, 7).getText();
+            b = HomeGrid.cells(b_id, 7).getText();
+            return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
+        } else return 0;
+    };
     function convertNumber(num) {
         var finlval = 0;
         var base = parseFloat(num.replace('$', ''));
