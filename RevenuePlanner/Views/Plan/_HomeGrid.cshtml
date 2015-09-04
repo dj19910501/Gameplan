@@ -147,6 +147,8 @@
 
     function ExportToCSV() {
         var count = HomeGrid.getRowsNum();
+        var parentid = 0;
+        var parentname = "";
         if (count > 0) {
             //Modified BY Komal rawal for #1471
             HomeGrid.insertColumn(2);
@@ -157,24 +159,33 @@
             HomeGrid.setColumnHidden(4, true);
             HomeGrid.insertColumn(5);
             HomeGrid.setColumnHidden(5, true);
+            //  var planname = HomeGrid.cellByIndex(0, 1).getValue();
             for (var i = 0; i < count; i++) {
-                var planname = HomeGrid.cellByIndex(i, 1).getValue();
+                //  HomeGrid.cellByIndex(i, 2).setValue(planname);
+                var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
                 var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
                 if (ActivityTypeName == "Plan") {
 
-                    HomeGrid.cellByIndex(i, 2).setValue(planname);
+                    HomeGrid.cellByIndex(i, 2).setValue(Taskname);
                 }
                 if (ActivityTypeName == "Campaign") {
 
-                    HomeGrid.cellByIndex(i, 3).setValue(planname);
+                    HomeGrid.cellByIndex(i, 3).setValue(Taskname);
                 }
                 if (ActivityTypeName == "Program") {
-
-                    HomeGrid.cellByIndex(i, 4).setValue(planname);
+                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
+                    HomeGrid.cellByIndex(i, 4).setValue(Taskname);
                 }
                 if (ActivityTypeName == "Tactic") {
-
-                    HomeGrid.cellByIndex(i, 5).setValue(planname);
+                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 4).setValue(parentname);
+                    parentid = HomeGrid.getParentId(parentid);
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
+                    HomeGrid.cellByIndex(i, 5).setValue(Taskname);
                 }
             }
 
