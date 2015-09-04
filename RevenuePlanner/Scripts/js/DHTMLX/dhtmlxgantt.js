@@ -1089,7 +1089,7 @@ gantt._on_click = function(e) {
 		gantt.callEvent("onEmptyClick", [e]);
 	}
 
-	if(res){
+	//if (res) { //Commented by Komal Rawal for #1584
 		var default_action = gantt._find_ev_handler(e, trg, gantt._click, id);
 		if(!default_action)
 			return;
@@ -1097,7 +1097,7 @@ gantt._on_click = function(e) {
 		if(id && gantt.getTask(id) && gantt.config.select_task){
 			gantt.selectTask(id);
 		}
-	}
+	//}
 
 };
 gantt._on_contextmenu = function(e){
