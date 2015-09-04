@@ -10319,8 +10319,8 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append("<column width='160' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
                 if (tblTacticTypes != null)
                 {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "str"), "#cspan",
-                        lstTactic.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), i.Title)));
+                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "sort_TacticType"), "#cspan",
+                        lstTactic.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), HttpUtility.HtmlDecode(i.Title))));
 
                     xmltactictype = xmlElements.ToString();
 
@@ -10328,8 +10328,8 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append(xmltactictype);
                 if (lstUserDetails != null)
                 {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "str"), "#cspan",
-                        lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlEncode(i.FirstName), HttpUtility.HtmlEncode(i.LastName)))));
+                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "sort_Owner"), "#cspan",
+                        lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlDecode(i.FirstName), HttpUtility.HtmlDecode(i.LastName)))));
                     xmlUserlist = xmlElements.ToString();
                 }
 

@@ -147,6 +147,8 @@
 
     function ExportToCSV() {
         var count = HomeGrid.getRowsNum();
+        var parentid = 0;
+        var parentname = "";
         if (count > 0) {
             //Modified BY Komal rawal for #1471
             HomeGrid.insertColumn(2);
@@ -157,24 +159,33 @@
             HomeGrid.setColumnHidden(4, true);
             HomeGrid.insertColumn(5);
             HomeGrid.setColumnHidden(5, true);
+            //  var planname = HomeGrid.cellByIndex(0, 1).getValue();
             for (var i = 0; i < count; i++) {
-                var planname = HomeGrid.cellByIndex(i, 1).getValue();
+                //  HomeGrid.cellByIndex(i, 2).setValue(planname);
+                var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
                 var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
                 if (ActivityTypeName == "Plan") {
 
-                    HomeGrid.cellByIndex(i, 2).setValue(planname);
+                    HomeGrid.cellByIndex(i, 2).setValue(Taskname);
                 }
                 if (ActivityTypeName == "Campaign") {
 
-                    HomeGrid.cellByIndex(i, 3).setValue(planname);
+                    HomeGrid.cellByIndex(i, 3).setValue(Taskname);
                 }
                 if (ActivityTypeName == "Program") {
-
-                    HomeGrid.cellByIndex(i, 4).setValue(planname);
+                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
+                    HomeGrid.cellByIndex(i, 4).setValue(Taskname);
                 }
                 if (ActivityTypeName == "Tactic") {
-
-                    HomeGrid.cellByIndex(i, 5).setValue(planname);
+                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 4).setValue(parentname);
+                    parentid = HomeGrid.getParentId(parentid);
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
+                    HomeGrid.cellByIndex(i, 5).setValue(Taskname);
                 }
             }
 
@@ -258,7 +269,9 @@
         HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
     
         HomeGrid.setImageSize(1, 1);
+        HomeGrid.setCustomSorting(sort_Owner, 8);
 
+        HomeGrid.setCustomSorting(sort_TacticType, 7);
        HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
         HomeGrid.attachEvent("onEditCell", doOnEditCell);
@@ -308,6 +321,21 @@
             }
         })
     }
+    function sort_Owner(a, b, ord, a_id, b_id) {
+
+        a = HomeGrid.cells(a_id, 8).getText();
+        b = HomeGrid.cells(b_id, 8).getText();
+        return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
+    };
+    function sort_TacticType(a, b, ord, a_id, b_id) {
+        var atype = a_id.split(".")[0].toString();
+        var btype = b_id.split(".")[0].toString();
+        if (atype == "tact" && btype == "tact") {
+            a = HomeGrid.cells(a_id, 7).getText();
+            b = HomeGrid.cells(b_id, 7).getText();
+            return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
+        } else return 0;
+    };
     function convertNumber(num) {
         var finlval = 0;
         var base = parseFloat(num.replace('$', ''));
@@ -596,8 +624,7 @@
                                 HomeGrid.cells(planid, 6).setValue((newPlanVal));
                                 HomeGrid.cells(rowId, 6).setValue((nValue));
                             }
-                                if(UpdateColumn =="Owner")
-                                {
+                                if (UpdateColumn == "Owner") {
                                     CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
                                   
                                 }
@@ -609,8 +636,7 @@
             }
         }
     }
-    function CheckPermissionByOwner(rowId, NewOwner,updatetype,updateid)
-    {
+    function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
         $.ajax({
             type: 'POST',
             url: '@Url.Action("CheckPermissionByOwner")', // we are calling json method
