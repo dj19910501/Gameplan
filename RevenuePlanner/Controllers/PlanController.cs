@@ -10143,7 +10143,7 @@ namespace RevenuePlanner.Controllers
                         if (lstRecepientEmail.Count > 0)
                         {
                             string strURL = GetNotificationURLbyStatus(PlanID, ChangeID, section);
-                            Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), "");// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.
+                            Common.SendNotificationMailForOwnerChanged(lstRecepientEmail.ToList<string>(), NewOwnerName, ModifierName, Title, ProgramTitle, CampaignTitle, PlanTitle, Enums.Section.Campaign.ToString().ToLower(), strURL); ////Added by Rahul Shah on 03/09/2015 fo PL Ticket #1521
                         }
                     }
                 }

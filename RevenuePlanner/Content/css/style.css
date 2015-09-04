@@ -9660,11 +9660,11 @@ div.sub {
 footer {
     text-align: center;
     /*#832  Footer should run all the way below the left bar*/
-    position: relative;
+    /*position: relative;*/ /* commented by Rahul Shah on 04/09/2015 for ticket #1510 */
     bottom: 0;
     width: 100%;
     /*width: 83%;*/
-    z-index: -1; /* Added by Arpita Soni on 02/01/2015 for ticket #1052*/
+    /*z-index: -1;*/ /* Added by Arpita Soni on 02/01/2015 for ticket #1052*/ /* commented by Rahul Shah on 04/09/2015 for ticket #1510 */
     /*margin-left: 280px;*/
     /*End #832*/
 }

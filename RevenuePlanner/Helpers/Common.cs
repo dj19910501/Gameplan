@@ -595,7 +595,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ProgramName">Program name of tactic for which owner has been changed</param>
         /// <param name="CampaignName">Campaign name of tactic for which owner has been changed</param>
         /// <param name="PlanName">Plan name of tactic for which owner has been changed</param>
-        public static void SendNotificationMailForOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string Section, string URL = "")
+        public static void SendNotificationMailForOwnerChanged(List<string> EmailIds, string NewOwnerName, string ModifierName, string TacticName, string ProgramName, string CampaignName, string PlanName, string Section, string URL) //Modified by Rahul Shah on 03/09/2015 fo PL Ticket #1521. passed URL
         {
             string emailBody, OwnerChanged, email;
             MRPEntities db = new MRPEntities();

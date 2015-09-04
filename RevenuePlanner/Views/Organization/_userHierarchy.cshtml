@@ -1,47 +1,49 @@
 ﻿@model RevenuePlanner.Models.UserHierarchyModel
 @using RevenuePlanner.Helpers
 
-    @{
-        var userId = Model.UserId;
-        var userLabelId = "spnUserName" + userId;
-        var hdnEmailId = "hdnEmail" + userId;
-        var hdnPhoneId = "hdnPhone" + userId;
-        var hdnJobTitleId = "hdnJobTitle" + userId;
-        var stringClass = string.Empty;
-        if (Model.subUsers.Count == 0)
-        {
-            stringClass = "no-nesting";
-        }
-
-        string varUrl = Url.Action("vieweditpermission", "Organization");
-        string EditURL = varUrl + "?Id=" + Model.UserId + "&Mode=Edit";
-        string ViewURL = varUrl + "?Id=" + Model.UserId + "&Mode=View";
+@{
+    var userId = Model.UserId;
+    var userLabelId = "spnUserName" + userId;
+    var hdnEmailId = "hdnEmail" + userId;
+    var hdnPhoneId = "hdnPhone" + userId;
+    var hdnJobTitleId = "hdnJobTitle" + userId;
+    var stringClass = string.Empty;
+    if (Model.subUsers.Count == 0)
+    {
+        stringClass = "no-nesting";
     }
-    <li class="@stringClass">
-        @if (Model.subUsers.Count == 0)
-        {
-            <span class="hitarea"></span>
-        }
-        <span id="@userLabelId">@Model.FirstName @Model.LastName</span>
-        <span class="job-role" style="background-color:@Model.ColorCode">@Model.RoleTitle</span>
-        @if ((bool)ViewBag.IsUserAdminAuthorized)
-        {
+
+    string varUrl = Url.Action("vieweditpermission", "Organization");
+    string EditURL = varUrl + "?Id=" + Model.UserId + "&Mode=Edit";
+    string ViewURL = varUrl + "?Id=" + Model.UserId + "&Mode=View";
+}
+<li class="@stringClass">
+    @if (Model.subUsers.Count == 0)
+    {
+        <span class="hitarea"></span>
+    }
+    @*<span id="@userLabelId">@Model.FirstName @Model.LastName</span>*@ @*commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+
+    <span id="@userId" class="treeview hover" style="text-decoration:underline">@Model.FirstName @Model.LastName</span> @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+    <span class="job-role" style="background-color:@Model.ColorCode">@Model.RoleTitle</span>
+    @if ((bool)ViewBag.IsUserAdminAuthorized)
+    {
         <a class="btn btn-default" href='@EditURL'>Edit</a>
+    }
+    <a class="btn btn-default" href='@ViewURL'>View</a>
+    <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
+    <input type="hidden" id="@hdnEmailId" value="@Model.Email" />
+    <input type="hidden" id="@hdnPhoneId" value="@Model.Phone" />
+    <input type="hidden" id="@hdnJobTitleId" value="@Model.JobTitle" />
+    @{
+        if (Model.subUsers.Count > 0)
+        {
+            <ul>
+                @for (int j = 0; j < Model.subUsers.Count; j++)
+                {
+                    Html.RenderPartial("_userHierarchy", Model.subUsers[j]);
+                }
+            </ul>
         }
-        <a class="btn btn-default" href='@ViewURL'>View</a>
-        <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
-        <input type="hidden" id="@hdnEmailId" value="@Model.Email" />
-        <input type="hidden" id="@hdnPhoneId" value="@Model.Phone" />
-        <input type="hidden" id="@hdnJobTitleId" value="@Model.JobTitle" />
-        @{
-            if (Model.subUsers.Count > 0)
-            {
-                <ul>
-                    @for (int j = 0; j < Model.subUsers.Count; j++)
-		            {
-                        Html.RenderPartial("_userHierarchy", Model.subUsers[j]);
-		            }
-                </ul>
-            }
-        }
-    </li>
+    }
+</li>
