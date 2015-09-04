@@ -279,19 +279,9 @@ namespace Integration.WorkFront
             try
             {
                 SyncInstanceTemplates(ref SyncErrors);
-                //Retrieves list of all programs tied to the integration instance and deployed to integration
-                List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => program.IsDeleted == false && program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && program.IsDeployedToIntegration == true && statusList.Contains(program.Status)).ToList();
-                if(programList.Count() > 0)
-                {
-                    foreach(Plan_Campaign_Program program in programList)
-                    {
-                        syncError = (syncError || syncProgram(program, ref SyncErrors));
-                    }
-                }
-                db.SaveChanges(); //must save changes here or tactics won't sync correctly when both program and tactic are new
+                
                 //Retrieves list of all tactics tied to the integrated programs and deployed to integrationtic
-                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && 
-                    tactic.Plan_Campaign_Program.IsDeployedToIntegration == true && tactic.IsDeployedToIntegration == true &&
+                List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.IsDeployedToIntegration == true &&
                     tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && statusList.Contains(tactic.Status)).ToList();
                 if (tacticList.Count() > 0)
                 {
@@ -458,6 +448,7 @@ namespace Integration.WorkFront
            finally
            {
                db.Entry(instanceLogProgram).State = EntityState.Added;
+               db.SaveChanges();
            }
             return syncError;
       }
@@ -584,7 +575,18 @@ namespace Integration.WorkFront
                 //program portfolio information -- all programs should be linked to a portfolio in WorkFront
                 IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
                     port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
-                if (portfolioInfo == null) { throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); }
+                if (portfolioInfo == null) 
+                {
+                    bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
+                    if (programError) { throw new ClientException("Cannot Sync the Program associated with Tactic. Tactic: " + tactic.Title + "; Program: " + tactic.Plan_Campaign_Program.Title); }
+                    portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
+                    port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault(); //try again to get info
+
+                    if (portfolioInfo == null) //check again to ensure we got information
+                    {
+                        throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); //it didn't work - throw excecption
+                    }
+                } 
 
 
                 if (currentMode.Equals(Enums.Mode.Create))

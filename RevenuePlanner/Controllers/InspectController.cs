@@ -2602,6 +2602,7 @@ namespace RevenuePlanner.Controllers
             
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             ViewBag.TacticIntegrationInstance = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == _inspectmodel.PlanTacticId).FirstOrDefault().IntegrationInstanceTacticId;
+            ViewBag.TacticIntegrationProjMgmtInstance = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == _inspectmodel.PlanTacticId).FirstOrDefault().IntegrationWorkFrontProjectID;
             string pullResponses = Operation.Pull_Responses.ToString();
             string pullClosedWon = Operation.Pull_ClosedWon.ToString();
             string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();

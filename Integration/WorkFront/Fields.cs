@@ -84,17 +84,8 @@ namespace Integration.WorkFront
             projFields.Add(WorkFrontField.NAME.ToString());
             projFields.Add(WorkFrontField.DESCRIPTION.ToString());
             projFields.Add(WorkFrontField.WORKFRONTPROJECTSTATUS.ToString());
-            projFields.Add(WorkFrontField.ACTUALCOST.ToString());
-            projFields.Add(WorkFrontField.ACTUALBENEFIT.ToString());
-            projFields.Add(WorkFrontField.ACTUALDURATIONMINUTES.ToString());
-            projFields.Add(WorkFrontField.ACTUALCOMPLETIONDATE.ToString());
+            projFields.Add(WorkFrontField.PROJECTEDCOMPLETIONDATE.ToString());
             projFields.Add(WorkFrontField.BUDGET.ToString());
-            projFields.Add(WorkFrontField.DURATIONMINUTES.ToString());
-            projFields.Add(WorkFrontField.ACTUALSTARTDATE.ToString());
-            projFields.Add(WorkFrontField.ACTUALVALUE.ToString());
-            projFields.Add(WorkFrontField.ROI.ToString());
-            projFields.Add(WorkFrontField.SPONSORID.ToString());
-            projFields.Add(WorkFrontField.OWNERID.ToString());
             return projFields;
         }
 
@@ -104,17 +95,8 @@ namespace Integration.WorkFront
             pfields.Add(WorkFrontField.NAME.ToAPIString());
             pfields.Add(WorkFrontField.DESCRIPTION.ToAPIString());
             pfields.Add(WorkFrontField.WORKFRONTPROJECTSTATUS.ToAPIString());
-            pfields.Add(WorkFrontField.ACTUALCOST.ToAPIString());
-            pfields.Add(WorkFrontField.ACTUALBENEFIT.ToAPIString());
-            pfields.Add(WorkFrontField.ACTUALDURATIONMINUTES.ToAPIString());
-            pfields.Add(WorkFrontField.ACTUALCOMPLETIONDATE.ToAPIString());
+            pfields.Add(WorkFrontField.PROJECTEDCOMPLETIONDATE.ToAPIString());
             pfields.Add(WorkFrontField.BUDGET.ToAPIString());
-            pfields.Add(WorkFrontField.DURATIONMINUTES.ToAPIString());
-            pfields.Add(WorkFrontField.ACTUALSTARTDATE.ToAPIString());
-            pfields.Add(WorkFrontField.ACTUALVALUE.ToAPIString());
-            pfields.Add(WorkFrontField.ROI.ToAPIString());
-            pfields.Add(WorkFrontField.SPONSORID.ToAPIString());
-            pfields.Add(WorkFrontField.OWNERID.ToAPIString());
             return pfields;
         }
 
@@ -127,7 +109,7 @@ namespace Integration.WorkFront
             fieldDetails.Add(WorkFrontField.ACTUALBENEFIT);
             fieldDetails.Add(WorkFrontField.ACTUALCOST);
             fieldDetails.Add(WorkFrontField.ACTUALDURATIONMINUTES);
-            fieldDetails.Add(WorkFrontField.ACTUALCOMPLETIONDATE);
+            fieldDetails.Add(WorkFrontField.PROJECTEDCOMPLETIONDATE);
             fieldDetails.Add(WorkFrontField.BUDGET);
             fieldDetails.Add(WorkFrontField.DURATIONMINUTES);
             return fieldDetails;
@@ -142,14 +124,14 @@ namespace Integration.WorkFront
             public static readonly WorkFrontField ACTUALBENEFIT = new WorkFrontField("actualBenefit", "Actual Benefit", "int", true);
             public static readonly WorkFrontField ACTUALCOST = new WorkFrontField("actualCost", "Actual Cost", "int", true);
             public static readonly WorkFrontField ACTUALDURATIONMINUTES = new WorkFrontField("actualDurationMinutes", "Actual Duration in Minutes", "int", true);
-            public static readonly WorkFrontField ACTUALCOMPLETIONDATE = new WorkFrontField("actualCompletionDate", "Actual Completion Date", "date", true);
+            public static readonly WorkFrontField PROJECTEDCOMPLETIONDATE = new WorkFrontField("projectedCompletionDate", "Projected Completion Date", "date", true);
             public static readonly WorkFrontField BUDGET = new WorkFrontField("budget", "Budget", "int", true);
             public static readonly WorkFrontField DURATIONMINUTES = new WorkFrontField("durationMinutes", "Duration in Minutes", "int", true);
             public static readonly WorkFrontField ACTUALSTARTDATE = new WorkFrontField("actualStartDate", "Actual Start Date", "date", true);
             public static readonly WorkFrontField ACTUALVALUE = new WorkFrontField("actualValue", "Actual Value", "double", true);
             public static readonly WorkFrontField ROI = new WorkFrontField("roi", "ROI", "double", true);
-            public static readonly WorkFrontField SPONSORID = new WorkFrontField("sponsorID", "Sponsor ID", "string", true);
-            public static readonly WorkFrontField OWNERID = new WorkFrontField("ownerID", "Owner ID", "string", true);
+            public static readonly WorkFrontField SPONSORID = new WorkFrontField("sponsorID", "Sponsor ID", "string", false);
+            public static readonly WorkFrontField OWNERID = new WorkFrontField("ownerID", "Owner ID", "string", false);
 
             /// <summary>
             /// String representation of the Fields
