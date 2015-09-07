@@ -46,8 +46,7 @@
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
-
-
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/ganttExportapi.js")"></script>
 <style type="text/css">
     .pull-right > span {
         margin-right: -15px !important;
@@ -430,6 +429,9 @@
                 <div id="divPlanEditButtonHome">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlanHome()" style="min-width: 90%">Edit Plan</button>
                 </div>
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnHomeReport" onclick='CallPDF()'>
+                    Export to .pdf
+                </button>
             </div>
         </div>
 
@@ -457,6 +459,9 @@
                     }
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="CallBudget()"  style="min-width:90%">
                         Edit Plan Budget & Cost
+                    </button>
+                    <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:90%" id="btnPlanReport" onclick='CallPDF()'>
+                        Export to .pdf
                     </button>
                 </div>
                 @*  @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
@@ -500,7 +505,68 @@
         </div>
 
     </div>
+      @*<input value="Export to PDF" type="button" onclick='CallPDF()'>*@
+            <div id="testdiv" style="display:none;">
+                <div style="display:block;width:100%;margin:0 auto;">
+                    <div style="width: 100%; background-color: rgb(36, 133, 186); color: rgb(255, 255, 255); font-size: 16px;">
+                        <div style="padding: 20px 14px; height: 23px;">
+                            <div style="float: left;  margin-top: -5px;font-size:19px">
+                                Hive9™
+                            </div>
+                            <div style="float: right; height: 31px;margin-top: -4px;">
+                               @*  <img src="@Url.Content("~/Content/images/game-plan-logo.png")" style="height: 100%; width: auto;">*@
+                               <img id="imglogopdf" src="" style="height: 100%; width: auto;">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background-color:#fff;padding: 20px 14px;" id="filterdiv">
+                        <h2 style="color: #040707; margin: 0 0 7px;">Marketing Activities (Ongoing)</h2>
+                    </div>
+                    <div style="padding:4px;">
+                        @*<div style="border:1px solid #E7E8E8;width:22.3% ;margin-right:2.5%;text-align: center;background:url('@Url.Content(" ~ />Content/images/bullhorn-bg.png")') no-repeat bottom right;display: inline-block;height:100px;vertical-align:top;    border-radius: 4px;">*@
+			<div id="mqlmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;    border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="mqllabeltest">
+                                Projected MQLs
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="mqlspanvalue">270</span>
+                            </p>
+                            <p style="font-size: 13px; margin: -15px 0px 0px; font-weight: 600;word-break: break-all;" id="mqlspanpercentage">+8.0%</p>
+                            <p></p>
+                        </div>
+                        <div id="budgetmaindiv" style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px; ">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;" id="budgetlabeltest">
+                                Budget
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="budgetspanvalue">$800,000</span>
+                            </p>
+                            <p></p>
+                        </div>
+                        <div style="border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;   border-radius: 5px;">
+                            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                                Tactics
+                            </span>
+                            <p style="margin-top:20px;word-break:break-all">
+                                <span style="font-size: 30px; color: rgb(123, 122, 124);" id="ptacticcounttest">36</span>
+                            </p>
 
+                            <p></p>
+                        </div>
+                        @*<div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
+                        <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                            Tactic Distribution
+                        </span>
+                                <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
+                                    <img style="width:100%" src="images/graph-chart-small.jpg">
+                                </p>
+
+                                <p></p>
+                            </div>*@
+                    </div>
+                    <br />
+                </div>
+            </div>
     <!-- Sidebar Block Starts -->
     <div id="sidebar" class="span2 sidebar">
         <div class="WelcomeMessageBorder"></div>
@@ -801,6 +867,16 @@
         TacticTypeids: [],
         StatusIds: []
     };
+
+    var PdfFilters = {
+        customFieldIds: [],
+        PlanIDs: [],
+        SelectedPlans: [],
+        PlanTitles: [],
+        OwnerIds: [],
+        TacticTypeids: [],
+        StatusIds: []
+    };
     var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
 
@@ -861,6 +937,7 @@
             $("#divupcomingact").show();
             $("#liplanrequest").show();
             $('.nav').removeClass('no-bottom-border');
+            $("#btnPlanReport").css("display", "block");
             RefreshCurrentTab();
 
         }
@@ -869,7 +946,7 @@
             $("#CalenderView").hide();
             $("#divgridview").show();
             $("#ImprovementGrid").show();
-
+            $("#btnPlanReport").css("display", "none");
             //Call the function for grid view
             LoadPlanGrid();
             //  LoadImprovementGrid(CurrentPlanId);
@@ -1056,6 +1133,7 @@
     }
     // modify by devanshi
     function LoadPlanGrid() {
+        $("#btnPlanReport").css("display", "none");// Add By Nishant Sheth
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             SelectedPlanIds = filters.SelectedPlans.toString();
         }
@@ -1518,6 +1596,351 @@
         var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
         window.location.href = url;
     }
+
+    function CallPDF() {
+        //  $("#gantt_here").css("Width", $("#testdiv").width());
+        gantt.init("gantt_here");
+        var htmltestdiv = '';
+        htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
+        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Timeframe: </label>';
+        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+        htmltestdiv += isQuater + '</span>';
+        htmltestdiv += '</p>';
+
+        var innerfiltervalueplan = "";
+        var isselectedplan = true;
+        var DropDownPlan = true;
+        $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                isselectedplan = true;
+            }
+        });
+        if (PdfFilters.SelectedPlans.length > 0) {
+            $.each(PdfFilters.SelectedPlans, function () {
+                innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
+        if (PdfFilters.SelectedPlans.length > 0) {
+            DropDownPlan = false;
+        }
+        if (DropDownPlan == true) {
+            innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+        }
+
+        //if (isselectedplan) {
+
+        //    $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueplan += " " + chkid + ",";
+        //                DropDownPlan = false;
+        //            }
+        //        }
+        //    });
+        //    if (DropDownPlan == true) {
+        //        innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+        //    }
+        //}
+        //else {
+
+        //    $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().attr("title");
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueplan += " " + chkid + ",";
+        //            DropDownPlan = false;
+        //        }
+        //    });
+        //    if (DropDownPlan == true) {
+        //        innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+        //    }
+        //}
+        if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Plan: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueplan = DropDownPlan == true ? innerfiltervalueplan : innerfiltervalueplan.substring(0, innerfiltervalueplan.length - 1);
+            htmltestdiv += innerfiltervalueplan + '</span>';
+            htmltestdiv += '</p>';
+        }
+        var Parentid = "";
+        $.each($('#divCustomFieldsFilter').find('.dropdown-section'), function () {
+
+            var headertitle = $(this).find("h2 span").text();
+            var innerfiltervalue = "";
+
+            Parentid = this.id;
+            var sl = Parentid.lastIndexOf('-');
+            Parentid = Parentid.substring(sl + 1, sl.length).toString();
+
+            if (PdfFilters.customFieldIds.length > 0) {
+
+                var a = PdfFilters.customFieldIds;
+                $.each(a, function () {
+                    if (this != null && this != undefined && this != 'undefined') {
+
+                        var liId = this.toString();
+                        var splitIds = liId.split('_');
+                        if (Parentid == splitIds[0].toString()) {
+                            var actualId = "#li_" + Parentid + "_" + splitIds[1];
+                            var chkid = $(actualId).attr("title");
+                            innerfiltervalue += " " + chkid + ",";
+                        }
+                        //var chkid = $(liId).parent().attr("title");
+                        //innerfiltervalue += " " + chkid + ",";
+                    }
+                });
+                if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
+                    htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                    htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+                    htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                    innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+                    htmltestdiv += innerfiltervalue + '</span>';
+                    htmltestdiv += '</p>';
+                }
+            }
+            //alert(id.substring(sl + 1, sl.length));
+        });
+        //$('#divCustomFieldsFilter').find('.dropdown-section').each(function () {
+        //    var headertitle = $(this).find("h2 span").text();
+
+        //    var innerfiltervalue = "";
+        //    var isselected = true;
+        //    $(this).find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            isselected = true;
+        //        }
+        //    });
+        //    if (isselected) {
+        //        $(this).find("input[type=checkbox]").each(function () {
+        //            if ($(this).attr('checked') == 'checked') {
+        //                var chkid = $(this).parent().attr("title");
+        //                if (chkid != undefined && chkid != 'undefined') {
+        //                    innerfiltervalue += " " + chkid + ",";
+        //                }
+        //            }
+        //        });
+        //    }
+        //    else {
+        //        $(this).find("input[type=checkbox]").each(function () {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalue += " " + chkid + ",";
+        //            }
+        //        });
+        //    }
+        //    if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
+        //        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+        //        htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+        //        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+        //        innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+        //        htmltestdiv += innerfiltervalue + '</span>';
+        //        htmltestdiv += '</p>';
+        //    }
+
+        //});
+
+        var innerfiltervalueOwner = "";
+        var isselectedOwner = true;
+        if (PdfFilters.OwnerIds.length > 0) {
+            $.each(PdfFilters.OwnerIds, function () {
+                innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
+        //$("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        isselectedOwner = true;
+        //    }
+        //});
+        //if (isselectedOwner) {
+        //    $("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueOwner += " " + chkid + ",";
+        //            }
+        //        }
+        //    });
+        //}
+        //else {
+        //    $("#ulSelectedOwner").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().attr("title");
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueOwner += " " + chkid + ",";
+        //        }
+        //    });
+        //}
+        if (innerfiltervalueOwner != undefined && innerfiltervalueOwner != 'undefined' && innerfiltervalueOwner != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Owner: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueOwner = innerfiltervalueOwner.substring(0, innerfiltervalueOwner.length - 1);
+            htmltestdiv += innerfiltervalueOwner + '</span>';
+            htmltestdiv += '</p>';
+        }
+
+        var innerfiltervalueTacticType = "";
+        var isselectedTacticType = true;
+        if (PdfFilters.TacticTypeids.length > 0) {
+            $.each(PdfFilters.TacticTypeids, function () {
+                innerfiltervalueTacticType += " " + $("#ulTacticType").find('#liTT' + this).attr("title") + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
+        //$("#ulTacticType").find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        isselectedTacticType = true;
+        //    }
+        //});
+        //if (isselectedTacticType) {
+        //    $("#ulTacticType").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().attr("title");
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueTacticType += " " + chkid + ",";
+        //            }
+        //        }
+        //    });
+        //}
+        //else {
+        //    $("#ulTacticType").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().attr("title");
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueTacticType += " " + chkid + ",";
+        //        }
+        //    });
+        //}
+        if (innerfiltervalueTacticType != undefined && innerfiltervalueTacticType != 'undefined' && innerfiltervalueTacticType != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Tactic Type: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueTacticType = innerfiltervalueTacticType.substring(0, innerfiltervalueTacticType.length - 1);
+            htmltestdiv += innerfiltervalueTacticType + '</span>';
+            htmltestdiv += '</p>';
+        }
+
+        var innerfiltervalueStatus = "";
+        var isselectedStatus = true;
+        if (PdfFilters.StatusIds.length > 0) {
+            $.each(PdfFilters.StatusIds, function () {
+                innerfiltervalueStatus += " " + $("#ulStatus").find('#' + this).parent().find("span").text() + ",";
+                //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
+            });
+        }
+        //$("#ulStatus").find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        isselectedStatus = true;
+        //    }
+        //});
+        //if (isselectedStatus) {
+        //    $("#ulStatus").find("input[type=checkbox]").each(function () {
+        //        if ($(this).attr('checked') == 'checked') {
+        //            var chkid = $(this).parent().find("span").text();
+        //            if (chkid != undefined && chkid != 'undefined') {
+        //                innerfiltervalueStatus += " " + chkid + ",";
+        //            }
+        //        }
+        //    });
+        //}
+        //else {
+        //    $("#ulStatus").find("input[type=checkbox]").each(function () {
+        //        var chkid = $(this).parent().find("span").text();
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            innerfiltervalueStatus += " " + chkid + ",";
+        //        }
+        //    });
+        //}
+        if (innerfiltervalueStatus != undefined && innerfiltervalueStatus != 'undefined' && innerfiltervalueStatus != '') {
+            htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+            htmltestdiv += '<label style="color:#050708;font-weight: 600;">Status: </label>';
+            htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+            innerfiltervalueStatus = innerfiltervalueStatus.substring(0, innerfiltervalueStatus.length - 1);
+            htmltestdiv += innerfiltervalueStatus + '</span>';
+            htmltestdiv += '</p>';
+        }
+        $("#filterdiv").html('');
+        $("#filterdiv").append(htmltestdiv);
+        $("#mqllabeltest").text($("#pmqlLabel").text());
+        $("#mqlspanvalue").text($("#pMQLs").text());
+        $("#mqlspanpercentage").text($("#pMQLImproved").text());
+        $("#pMQLImproved").parent().find('.greenfont').each(function () {
+            $("#mqlspanpercentage").css("color", "#559659");
+        });
+        $("#pMQLImproved").parent().find('.redfont').each(function () {
+            $("#mqlspanpercentage").css("color", "#EF2240");
+        });
+
+        var originurl = document.location.origin;
+        var mypathurl = document.location.pathname.split('/')[1];
+        var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
+        //var urlpdf = originurl + "/";// This line uncomment for production version and uncomment above line
+        $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
+        $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
+            $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
+            //  $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg.png")')");
+
+            $("#mqlmaindiv").css("background-position", "right bottom");
+            $("#mqlmaindiv").css("background-repeat", "no-repeat");
+        });
+
+        $("#DivBullhornbg").parent().find('.bullhorn-bg-disabled').each(function () {
+            $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg-disabled.png')");
+            //   $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg-disabled.png")')");
+            $("#mqlmaindiv").css("background-position", "right bottom");
+            $("#mqlmaindiv").css("background-repeat", "no-repeat");
+        });
+
+        $("#DivBullhornbg").parent().find('.bulldoller-bg').each(function () {
+
+            $("#budgetmaindiv").css("background-image", "url('" + urlpdf + "Content/images/icon-dollar.png')");
+            //     $("#budgetmaindiv").css("background-image", "url('@Url.Content("~/Content/images/icon-dollar.png")')");
+            $("#budgetmaindiv").css("background-position", "right bottom");
+            $("#budgetmaindiv").css("background-repeat", "no-repeat");
+        });
+
+
+        $("#budgetlabeltest").text($("#pcostLabel").text());
+        $("#budgetspanvalue").text($("#pbudget").text());
+        $("#ptacticcounttest").text($("#ptacticcount").text());
+
+
+        //<p style=" line-height: 24px;margin: 0;">
+        //       <label style="color:#050708;font-weight: 600;">Business Unit:</label>
+        //       <span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">Enterprise, Mid-Market, SMB</span>
+        //   </p>
+        var headerhtml = $("#testdiv").html();
+        //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
+        var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
+        //alert(Script);
+        var datestart;
+        var dateend;
+        if ($.isNumeric(isQuater)) {
+            datestart = "01-01-" + isQuater;
+            dateend = "01-01-" + (parseInt(isQuater) + 1).toString();
+        }
+        else if (isQuater == 'thismonth') {
+            var date = new Date(), m = date.getMonth();
+            datestart = "01-" + (m + 1).toString() + "-" + date.getFullYear().toString();
+            dateend = "01-" + (m + 2).toString() + "-" + date.getFullYear().toString();
+        }
+        else if (isQuater == 'thisquarter') {
+            var startDate = getQarterStartDate();
+            var m = startDate.getMonth();
+            datestart = "01-" + (m + 1).toString() + "-" + startDate.getFullYear().toString();
+            dateend = "01-" + (m + 4).toString() + "-" + startDate.getFullYear().toString();
+        }
+        gantt.exportToPDF({
+            header: headerhtml,
+            start: datestart,
+            end: dateend
+
+        });
+    }
+
+
     //End
     function AddActuals() {
         var pid = $("#CurrentPlanId").val();
@@ -1989,6 +2412,24 @@ function AjaxRequest() {
     var TacticTypeids = filters.TacticTypeids; //Modified for #1283
     var GetSelectedPlanNo = filters.SelectedPlans.length;
     var StatusIds = filters.StatusIds;
+    PdfFilters.SelectedPlans = [];
+    $.each(filters.SelectedPlans, function () {
+        PdfFilters.SelectedPlans.push(this);
+    });
+    PdfFilters.OwnerIds = [];
+    $.each(filters.OwnerIds, function () {
+        PdfFilters.OwnerIds.push(this);
+    });
+    PdfFilters.TacticTypeids = [];
+    $.each(filters.TacticTypeids, function () {
+        PdfFilters.TacticTypeids.push(this);
+    });
+    PdfFilters.StatusIds = [];
+    $.each(filters.StatusIds, function () {
+        PdfFilters.StatusIds.push(this);
+    });
+    //PdfFilters.SelectedPlans = filters.SelectedPlans;
+    PdfFilters.customFieldIds = filters.customFieldIds;
 
 
     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -2050,12 +2491,12 @@ function AjaxRequest() {
 
                     // To hide/show current plan edit button based on user plan edit permission
                     if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                        $("#DivButtonsHome").show();
+                        $("#divPlanEditButtonHome").show();
                         $('.WelcomeMessageBorder').show();
                         GetCurrentPlanPermissionDetail();
                     }
                     else {
-                        $("#DivButtonsHome").hide();
+                        $("#divPlanEditButtonHome").hide();
                         $('.WelcomeMessageBorder').hide();
                         //  $("#divAddActuals").hide();
                     }
@@ -2195,12 +2636,12 @@ function GetCurrentPlanPermissionDetail() {
             }
             else {
                 if (data.IsPlanEditable) {
-                    $("#DivButtonsHome").show();
+                    $("#divPlanEditButtonHome").show();
                     $('.WelcomeMessageBorder').show();
                     $("#isViewOnly").val(true);
                 }
                 else {
-                    $("#DivButtonsHome").hide();
+                    $("#divPlanEditButtonHome").hide();
                     $('.WelcomeMessageBorder').hide();
                     $("#isViewOnly").val(false);
                 }
