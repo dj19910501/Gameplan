@@ -46,8 +46,7 @@
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
-<script src="http://export.dhtmlx.com/gantt/api.js"></script>
-
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/ganttExportapi.js")"></script>
 <style type="text/css">
     .pull-right > span {
         margin-right: -15px !important;
@@ -1877,7 +1876,8 @@
 
         var originurl = document.location.origin;
         var mypathurl = document.location.pathname.split('/')[1];
-        var urlpdf = originurl + "/" + mypathurl + "/";
+        var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
+        //var urlpdf = originurl + "/";// This line uncomment for production version and uncomment above line
         $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
         $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
             $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
@@ -1913,7 +1913,9 @@
         //       <span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">Enterprise, Mid-Market, SMB</span>
         //   </p>
         var headerhtml = $("#testdiv").html();
-
+        //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
+        var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
+        //alert(Script);
         var datestart;
         var dateend;
         if ($.isNumeric(isQuater)) {
