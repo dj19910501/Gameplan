@@ -152,7 +152,7 @@ body {
 }
 
 .info-user {
-    height: 58px;
+    height: 64px; /*changed - OldValue:58px - by Viral #1464*/
     float: right;
     margin-right: 10px; /*change 4m 22 to 10 uday 8 -7-2014 #559*/
     padding: 20px 10px 0 10px;
@@ -15587,4 +15587,80 @@ float:right;
     line-height:20px !important;
     font-family:"source_sans_prosemibold",Arial,"sans-serif" !important;
      font-size: 13px !important;
+}
+/*by bheru ticket 1464 7-9-2015*/
+.user_title {
+    max-width: 65%;
+    padding-top: 14px;
+}
+
+    .user_title .avatar-user {
+        float: right;
+            margin-top: 5px
+    }
+
+    .user_title p:first-child {
+        background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+        margin-bottom: 0;
+    min-width: 78px;
+        margin-top: 4px;
+    }
+
+    .user_title p:last-child {
+        background: rgba(0, 0, 0, 0) url("../images/arrow-down-head.png") no-repeat scroll 0 0;
+        clear: both;
+        font-size: 14px;
+        margin-top: -10px;
+        padding-top: 0;
+        max-width: 148px;
+        float: left;
+        padding-right: 37px;
+        text-align: right;
+    }
+
+    .user_title p {
+        line-height: 18px;
+        max-width: 94%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+@media (max-width: 1440px) {
+
+    .row-fluid .integration-block {
+        width: 14%;
+    }
+
+    .inspect_attribute_parent .span3 .dropdown_new_btn {
+        padding: 2px 0;
+        width: 100%;
+    }
+
+        .inspect_attribute_parent .span3 .dropdown_new_btn > p {
+            max-width: 79%;
+            padding-left: 12px;
+        }
+}
+
+@media (max-width: 1366px) {
+
+    .review_block_top .size80x78 {
+        width: 74px !important;
+    }
+
+    .review_block_bottom .size65x38 {
+        width: 56px !important;
+    }
+}
+
+@media (max-width: 1280px) {
+    .review_block_top .size80x78 {
+        height: 78px !important;
+        width: 68px !important;
+    }
+
+    .review_block_bottom .size65x38 {
+        width: 52px !important;
+    }
 }
