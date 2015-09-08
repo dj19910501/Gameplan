@@ -15574,3 +15574,17 @@ float:right;
     background: transparent !important;
     border:0 !important;
 }
+
+/*Added by devanshi for #1592*/
+.dhx_combo_select {
+    border: 1px solid #808080 !important;
+    border-radius: 6px !important;
+    padding-left: 10px;
+    max-height: 363px;
+    overflow: auto; /*width:100%;*/
+    background-color: #fff; /*margin-right:10px;*/
+    margin-right: 0;
+    line-height:20px !important;
+    font-family:"source_sans_prosemibold",Arial,"sans-serif" !important;
+     font-size: 13px !important;
+}
