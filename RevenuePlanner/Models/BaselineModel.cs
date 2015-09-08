@@ -23,6 +23,7 @@ namespace RevenuePlanner.Models
         public int? IntegrationInstanceIdMQL { get; set; }
         public int? IntegrationInstanceIdCW { get; set; }
         public int? IntegrationInstanceIdProjMgmt { get; set; } //added by Brad Gray PL#1448
+        public int? IntegrationInstanceEloquaId { get; set; } //added by Bhavesh #1534
         public List<ModelStage> lstmodelstage { get; set; }
         public List<ModelVersion> Versions { get; set; }
     }

@@ -2301,7 +2301,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="integrationInstanceId"></param>
         /// <param name="deleteIntegrationInstanceModel"></param>
         /// <returns></returns>
-        public static bool DeleteIntegrationInstance(int integrationInstanceId, bool deleteIntegrationInstanceModel = false, int modelId = 0)
+        public static bool DeleteIntegrationInstance(int integrationInstanceId, bool deleteIntegrationInstanceModel = false, int modelId = 0, bool iseloquainstance = false)
         {
             try
             {
@@ -2313,7 +2313,14 @@ namespace RevenuePlanner.Helpers
                         {
                             var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
                                 a.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
+                            if (iseloquainstance)
+                            {
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
+                            else
+                            {
                             Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
                                 a.IntegrationInstanceProgramId != null).ToList();
@@ -2325,7 +2332,14 @@ namespace RevenuePlanner.Helpers
 
                             var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
                                 a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceTacticId != null).ToList();
+                            if (iseloquainstance)
+                            {
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
+                            else
+                            {
                             Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
 
                             var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
                                 a.IntegrationInstanceProgramId != null).ToList();
@@ -2336,8 +2350,19 @@ namespace RevenuePlanner.Helpers
 
                             if (deleteIntegrationInstanceModel == true)
                             {
-                                var ModelsList = db.Models.Where(a => a.IsDeleted.Equals(false) && a.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceId != null).ToList();
-                                ModelsList.ForEach(a => { a.IntegrationInstanceId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                List<Model> ModelsList = db.Models.Where(a => a.IsDeleted.Equals(false)).ToList();
+                                if (iseloquainstance)
+                                {
+                                    // Get Eloqua related Models and set null value for that records.
+                                    List<Model> elqModelsList = ModelsList.Where(a => a.IntegrationInstanceEloquaId == integrationInstanceId && a.IntegrationInstanceEloquaId != null).ToList();
+                                    elqModelsList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                }
+                                else
+                                {
+                                    // Get Salesforce related Models and set null value for that records.
+                                    List<Model> salModelsList = ModelsList.Where(a => a.IntegrationInstanceId == integrationInstanceId && a.IntegrationInstanceId != null).ToList();
+                                    salModelsList.ForEach(a => { a.IntegrationInstanceId = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                }
                             }
                         }
                         else
@@ -2345,7 +2370,14 @@ namespace RevenuePlanner.Helpers
                             var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
                                                                                                               a.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId == modelId
                                                                                                         ).ToList();
+                            if (iseloquainstance)
+                            {
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
+                            else
+                            {
                             Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) &&
                                                                                                 a.Plan_Campaign.Plan.ModelId == modelId
@@ -2359,7 +2391,14 @@ namespace RevenuePlanner.Helpers
                             var Plan_Improvement_Campaign_Program_TacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) &&
                                                                                                                                       a.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.ModelId == modelId
                                                                                                                                 ).ToList();
+                            if (iseloquainstance)
+                            {
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceEloquaId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
+                            else
+                            {
                             Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                            }
 
                             var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.ModelId == modelId
                                                                                                                   ).ToList();
@@ -4495,7 +4534,7 @@ namespace RevenuePlanner.Helpers
         public static bool CheckModelIntegrationExist(Model objModel)
         {
             bool isIntegrationInstanceExist = true;
-            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null && objModel.IntegrationInstanceIdProjMgmt == null) //Modified Brad Gray 7/23/2015 PL#1448
+            if (objModel.IntegrationInstanceId == null && objModel.IntegrationInstanceIdCW == null && objModel.IntegrationInstanceIdINQ == null && objModel.IntegrationInstanceIdMQL == null && objModel.IntegrationInstanceIdProjMgmt == null && objModel.IntegrationInstanceEloquaId == null) //Modified Brad Gray 7/23/2015 PL#1448
             {
                 isIntegrationInstanceExist = false;
             }

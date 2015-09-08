@@ -145,6 +145,7 @@
         <AssociationConnector Association="MRPModel.FK_PortfolioTableId" />
         <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLogDetail" Width="1.5" PointX="15.375" PointY="0.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLogID" />
+        <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance1" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

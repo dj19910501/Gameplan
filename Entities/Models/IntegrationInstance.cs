@@ -11,7 +11,7 @@ namespace RevenuePlanner.Models
 {
     using System;
     using System.Collections.Generic;
-
+    
     public partial class IntegrationInstance
     {
         public IntegrationInstance()
@@ -30,8 +30,9 @@ namespace RevenuePlanner.Models
             this.IntegrationInstance_UnprocessData = new HashSet<IntegrationInstance_UnprocessData>();
             this.Models4 = new HashSet<Model>();
             this.IntegrationWorkFrontTemplates = new HashSet<IntegrationWorkFrontTemplate>();
+            this.Models11 = new HashSet<Model>();
         }
-
+    
         public int IntegrationInstanceId { get; set; }
         public int IntegrationTypeId { get; set; }
         public System.Guid ClientId { get; set; }
@@ -49,7 +50,7 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> ModifiedBy { get; set; }
         public bool CustomNamingPermission { get; set; }
         public bool IsFirstPullCW { get; set; }
-
+    
         public virtual ICollection<IntegrationInstance_Attribute> IntegrationInstance_Attribute { get; set; }
         public virtual IntegrationType IntegrationType { get; set; }
         public virtual ICollection<IntegrationInstanceDataTypeMapping> IntegrationInstanceDataTypeMappings { get; set; }
@@ -66,5 +67,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<IntegrationInstance_UnprocessData> IntegrationInstance_UnprocessData { get; set; }
         public virtual ICollection<Model> Models4 { get; set; }
         public virtual ICollection<IntegrationWorkFrontTemplate> IntegrationWorkFrontTemplates { get; set; }
+        public virtual ICollection<Model> Models11 { get; set; }
     }
 }

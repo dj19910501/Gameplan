@@ -383,7 +383,8 @@ namespace RevenuePlanner.Helpers
         }
         public static Dictionary<string, string> IntegrationActivity = new Dictionary<string, string>()
         {
-            {"IntegrationInstanceId","Push Tactic Data"},
+            {"IntegrationInstanceId","Push Tactic Data - Salesforce"},
+            {"IntegrationInstanceEloquaId","Push Tactic Data - Eloqua"},
             {"IntegrationInstanceIdINQ","Pull Responses"},
             {"IntegrationInstanceIdMQL","Pull Qualified Leads"},
             {"IntegrationInstanceIdCW","Pull Closed Deals"},

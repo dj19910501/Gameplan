@@ -1153,7 +1153,7 @@ namespace RevenuePlanner.Controllers
             int Modelid = id;
             Model objModel = objDbMrpEntities.Models.Where(model => model.ModelId == Modelid).Select(model => model).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683 and Brad Gray on 07/23/2015 for PL#1448
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
+            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null)
             {
                 ViewBag.IsModelIntegrated = true;
             }
@@ -1282,7 +1282,7 @@ namespace RevenuePlanner.Controllers
             {
                 var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
                 //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
+                if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null)
                 {
                     ViewBag.IsModelIntegrated = true;
                     //Begin added by Brad Gray 7/28/2015 PL#1374, #1373
@@ -1365,7 +1365,7 @@ namespace RevenuePlanner.Controllers
         {
             var objModel = objDbMrpEntities.Models.Where(model => model.ModelId == ModelId).FirstOrDefault();
             //// Modified by Mitesh Vaishnav for  on 06/08/2014 PL ticket #683
-            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null)
+            if (objModel.IntegrationInstanceId != null || objModel.IntegrationInstanceIdCW != null || objModel.IntegrationInstanceIdINQ != null || objModel.IntegrationInstanceIdMQL != null || objModel.IntegrationInstanceIdProjMgmt != null || objModel.IntegrationInstanceEloquaId != null)
             {
                 ViewBag.IsModelIntegrated = true;
                 var intInstanceProjMgmt = objModel.IntegrationInstance4;
@@ -2345,6 +2345,7 @@ namespace RevenuePlanner.Controllers
                             newModel.IntegrationInstanceIdINQ = null;
                             newModel.IntegrationInstanceIdMQL = null;
                             newModel.IntegrationInstanceIdProjMgmt = null; //Added Brad Gray 23 July 2015 PL#1448
+                            newModel.IntegrationInstanceEloquaId = null;
                             newModel.EffectiveDate = null;
                             newModel.Model11 = null;
                             newModel.Model3 = null;
@@ -2365,6 +2366,7 @@ namespace RevenuePlanner.Controllers
                         newModel.IntegrationInstanceIdINQ = oldModel.IntegrationInstanceIdINQ;
                         newModel.IntegrationInstanceIdMQL = oldModel.IntegrationInstanceIdMQL;
                         newModel.IntegrationInstanceIdProjMgmt = oldModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
+                        newModel.IntegrationInstanceEloquaId = oldModel.IntegrationInstanceEloquaId;
                         newModel.ClientId = oldModel.ClientId;
                         newModel.AverageDealSize = oldModel.AverageDealSize;
                         ////End :Added by Mitesh Vaishnav for PL ticket #659 
@@ -2460,7 +2462,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="IsIntegrationChanged">IsIntegrationChanged flag</param>
         /// <returns>returns json result object</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]
-        public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel, bool IsIntegrationChanged = false)
+        public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel, bool IsIntegrationChanged = false, bool IsIntegrationEloquaChanged = false)
         {
             //// set values of objDbMrpEntities.Model object as per posted values and update objDbMrpEntities.Model
             bool returnValue = false;
@@ -2475,6 +2477,11 @@ namespace RevenuePlanner.Controllers
                         int integrationId = Convert.ToInt32(objModel.IntegrationInstanceId);
                         Common.DeleteIntegrationInstance(integrationId, false, id);
                     }
+                    if (IsIntegrationEloquaChanged)
+                    {
+                        int integrationId = Convert.ToInt32(objModel.IntegrationInstanceEloquaId);
+                        Common.DeleteIntegrationInstance(integrationId, false, id, true);
+                    }
                     if (objModel != null)
                     {
                         objModel.IntegrationInstanceId = objBaselineModel.IntegrationInstanceId;
@@ -2482,6 +2489,7 @@ namespace RevenuePlanner.Controllers
                         objModel.IntegrationInstanceIdINQ = objBaselineModel.IntegrationInstanceIdINQ;
                         objModel.IntegrationInstanceIdMQL = objBaselineModel.IntegrationInstanceIdMQL;
                         objModel.IntegrationInstanceIdProjMgmt = objBaselineModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 22 July 2015 for PL#1448
+                        objModel.IntegrationInstanceEloquaId = objBaselineModel.IntegrationInstanceEloquaId; //added Bhavesh Dobariya #1534
                         objModel.ModifiedBy = Sessions.User.UserId;
                         objModel.ModifiedDate = DateTime.Now;
                         objDbMrpEntities.Entry(objModel).State = EntityState.Modified;
@@ -2543,7 +2551,7 @@ namespace RevenuePlanner.Controllers
             }
 
             List<IntegrationSelectionModel> lstIntegrationOverview = new List<IntegrationSelectionModel>();
-            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL, objModel.IntegrationInstanceIdProjMgmt };
+            List<int?> ModelInstances = new List<int?>() { objModel.IntegrationInstanceId, objModel.IntegrationInstanceIdCW, objModel.IntegrationInstanceIdINQ, objModel.IntegrationInstanceIdMQL, objModel.IntegrationInstanceIdProjMgmt, objModel.IntegrationInstanceEloquaId };
 
             //// creating List of model integration instance 
             var lstInstance = (from integrationInstance in objDbMrpEntities.IntegrationInstances
@@ -2555,6 +2563,25 @@ namespace RevenuePlanner.Controllers
                 if (key.ToString() == "IntegrationInstanceId")
                 {
                     var objInstance = lstInstance.Where(instance => instance.IntegrationInstanceId == objModel.IntegrationInstanceId).FirstOrDefault();
+                    objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
+                    if (objInstance != null)
+                    {
+                        objIntSelection.Instance = objInstance.Instance;
+                        objIntSelection.IntegrationType = objInstance.IntegrationType.Title != null ? objInstance.IntegrationType.Title : Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = objInstance.LastSyncDate != null ? Convert.ToDateTime(objInstance.LastSyncDate).ToString(Common.DateFormatForModelIntegrationLastSync) : "---";
+
+                    }
+                    else
+                    {
+                        objIntSelection.Instance = Common.TextForModelIntegrationInstanceNull;
+                        objIntSelection.IntegrationType = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                        objIntSelection.LastSync = Common.TextForModelIntegrationInstanceTypeOrLastSyncNull;
+                    }
+                    lstIntegrationOverview.Add(objIntSelection);
+                }
+                else if (key.ToString() == "IntegrationInstanceEloquaId")
+                {
+                    var objInstance = lstInstance.Where(instance => instance.IntegrationInstanceId == objModel.IntegrationInstanceEloquaId).FirstOrDefault();
                     objIntSelection.Setup = Enums.IntegrationActivity[key].ToString();
                     if (objInstance != null)
                     {
@@ -2689,6 +2716,7 @@ namespace RevenuePlanner.Controllers
             objBaselineModel.IntegrationInstanceIdINQ = objModel.IntegrationInstanceIdINQ;
             objBaselineModel.IntegrationInstanceIdMQL = objModel.IntegrationInstanceIdMQL;
             objBaselineModel.IntegrationInstanceIdProjMgmt = objModel.IntegrationInstanceIdProjMgmt; //Added Brad Gray 23 July 2015 PL#1448
+            objBaselineModel.IntegrationInstanceEloquaId = objModel.IntegrationInstanceEloquaId; //Added Bhavesh #1534 27aug 2015
             ViewBag.ModelPublishEdit = Common.objCached.ModelPublishEdit;
             ViewBag.ModelPublishCreateNew = Common.objCached.ModelPublishCreateNew;
             ViewBag.ModelPublishComfirmation = Common.objCached.ModelPublishComfirmation;
@@ -2722,6 +2750,7 @@ namespace RevenuePlanner.Controllers
             ViewData["IntegrationInstancesSalesforce"] = lstInstance.Where(instance => instance.Code == insType);
             ViewData["IntegrationInstancesProjMgmt"] = lstInstance.Where(instance => instance.Code == workfrontType); //Added by Brad Gray for PL#1448
             ViewData["IntegrationInstancesWithoutProjMgmt"] = lstInstance.Where(instance => instance.Code != workfrontType); //Added by Brad Gray for PL#1448
+            ViewData["IntegrationInstancesEloqua"] = lstInstance.Where(instance => instance.Code == elqType);
 
             #region "Filtered MQL Eloqua Integration Instances based on Client Integration Permisssion"
             Guid clientId = Sessions.User.ClientId;

@@ -848,19 +848,16 @@ namespace RevenuePlanner.Controllers
                     if (form.IsActiveStatuChanged == true && form.IsActive == false)
                     {
                         // Remove association of Integrartion from Plan
-                        var objModelList = db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceId == form.IntegrationInstanceId).ToList();
-
-                        if (objModelList != null)
-                        {
-                            foreach (var item in objModelList)
-                            {
-                                item.IntegrationInstanceId = null;
-                                item.ModifiedDate = DateTime.Now;
-                                item.ModifiedBy = Sessions.User.UserId;
-                                db.Entry(item).State = EntityState.Modified;
+                        List<Model> ModelList = db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false)).ToList();
+                        
+                        // Get Salesforce Model list and remove respective record from that table.
+                        List<Model> salModelList = ModelList.Where(_mdl => (_mdl.IntegrationInstanceId == form.IntegrationInstanceId)).ToList();
+                        salModelList.ForEach(_mdl => { _mdl.IntegrationInstanceId = null; _mdl.ModifiedDate = DateTime.Now; _mdl.ModifiedBy = Sessions.User.UserId; db.Entry(_mdl).State = EntityState.Modified; });
+                        
+                        // Get Eloqua Model list and remove respective record from that table.
+                        List<Model> elqModelList = ModelList.Where(_mdl => (_mdl.IntegrationInstanceEloquaId == form.IntegrationInstanceId)).ToList();
+                        elqModelList.ForEach(_mdl => { _mdl.IntegrationInstanceEloquaId = null; _mdl.ModifiedDate = DateTime.Now; _mdl.ModifiedBy = Sessions.User.UserId; db.Entry(_mdl).State = EntityState.Modified; });
                                 db.SaveChanges();
-                            }
-                        }
                     }
                     scope.Complete();
                 }
@@ -2107,18 +2104,30 @@ namespace RevenuePlanner.Controllers
                             //// Status changed from Active to InActive, So remove all the integration dependency with Models.
                             if (form.IsActiveStatuChanged == true && form.IsActive == false && !IsAddOperation)
                             {
+                                List<Model> ModelList = db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false)).ToList();
+                                
                                 //// Remove association of Integrartion from Plan
-                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceId == form.IntegrationInstanceId).ToList().ForEach(
+                                ModelList.Where(_mdl => _mdl.IntegrationInstanceId == form.IntegrationInstanceId).ToList().ForEach(
                                     ObjIntegrationInstance =>
                                     {
-                                        ObjIntegrationInstance.IntegrationInstanceIdINQ = null;
+                                        ObjIntegrationInstance.IntegrationInstanceId = null;
+                                        ObjIntegrationInstance.ModifiedDate = DateTime.Now;
+                                        ObjIntegrationInstance.ModifiedBy = Sessions.User.UserId;
+                                        db.Entry(ObjIntegrationInstance).State = EntityState.Modified;
+                                    });
+
+                                //// Remove association of Integrartion from Plan
+                                ModelList.Where(_mdl => _mdl.IntegrationInstanceEloquaId == form.IntegrationInstanceId).ToList().ForEach(
+                                    ObjIntegrationInstance =>
+                                    {
+                                        ObjIntegrationInstance.IntegrationInstanceEloquaId = null;
                                         ObjIntegrationInstance.ModifiedDate = DateTime.Now;
                                         ObjIntegrationInstance.ModifiedBy = Sessions.User.UserId;
                                         db.Entry(ObjIntegrationInstance).State = EntityState.Modified;
                                     });
 
                                 //// Identify IntegrationInstanceId for INQ in Model Table and set reference null
-                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdINQ == form.IntegrationInstanceId).ToList().ForEach(
+                                ModelList.Where(_mdl => _mdl.IntegrationInstanceIdINQ == form.IntegrationInstanceId).ToList().ForEach(
                                     INQ =>
                                     {
                                         INQ.IntegrationInstanceIdINQ = null;
@@ -2128,7 +2137,7 @@ namespace RevenuePlanner.Controllers
                                     });
 
                                 //// Identify IntegrationInstanceId for MQL in Model Table and set reference null
-                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdMQL == form.IntegrationInstanceId).ToList().ForEach(
+                                ModelList.Where(_mdl => _mdl.IntegrationInstanceIdMQL == form.IntegrationInstanceId).ToList().ForEach(
                                     MQL =>
                                     {
                                         MQL.IntegrationInstanceIdMQL = null;
@@ -2138,17 +2147,17 @@ namespace RevenuePlanner.Controllers
                                     });
 
                                 //// Identify IntegrationInstanceId for CW in Model Table and set reference null
-                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdCW == form.IntegrationInstanceId).ToList().ForEach(
+                                ModelList.Where(_mdl => _mdl.IntegrationInstanceIdCW == form.IntegrationInstanceId).ToList().ForEach(
                                     CW =>
                                     {
-                                        CW.IntegrationInstanceIdINQ = null;
+                                        CW.IntegrationInstanceIdCW = null;
                                         CW.ModifiedDate = DateTime.Now;
                                         CW.ModifiedBy = Sessions.User.UserId;
                                         db.Entry(CW).State = EntityState.Modified;
                                     });
 
                                 //// Identify IntegrationInstanceId for Project Management in Model Table and set reference null
-                                db.Models.Where(_mdl => _mdl.IsDeleted.Equals(false) && _mdl.IntegrationInstanceIdProjMgmt == form.IntegrationInstanceId).ToList().ForEach(
+                                ModelList.Where(_mdl => _mdl.IntegrationInstanceIdProjMgmt == form.IntegrationInstanceId).ToList().ForEach(
                                     ProjMgmt =>
                                     {
                                         ProjMgmt.IntegrationInstanceIdProjMgmt = null;
@@ -2159,7 +2168,6 @@ namespace RevenuePlanner.Controllers
 
                                 db.SaveChanges();
                             }
-
                             scope.Complete();
                         }
 

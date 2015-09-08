@@ -36,6 +36,7 @@ namespace RevenuePlanner.Models
         public bool IsDeployedToIntegration { get; set; }
         public string IntegrationInstanceTacticId { get; set; }
         public Nullable<System.DateTime> LastSyncDate { get; set; }
+        public string IntegrationInstanceEloquaId { get; set; }
     
         public virtual ImprovementTacticType ImprovementTacticType { get; set; }
         public virtual Plan_Improvement_Campaign_Program Plan_Improvement_Campaign_Program { get; set; }

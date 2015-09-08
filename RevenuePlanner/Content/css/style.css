@@ -5403,7 +5403,7 @@ input::-moz-placeholder {
     vertical-align: text-top;
 }
 
-;
+
 /*---------------------------
           Profile 
 -----------------------------*/
@@ -5413,7 +5413,7 @@ input::-moz-placeholder {
 
 .inputs-aligned-horizontal > label {
     text-align: right;
-    width: 25%;
+    width: 28%;
     float: left;
     line-height: 32px;
 }
