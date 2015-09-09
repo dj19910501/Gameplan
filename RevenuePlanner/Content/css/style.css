@@ -2723,7 +2723,7 @@ ul.welcome-sprite {
 }*/
 #inspect-modal-left-column2, #inspect-modal-left-column3, #inspect-modal-left-column4 {
     padding-left: 3.5%;
-    margin: 10px auto !important;
+    margin: 0 auto !important;/*by bheru 08-09-2015*/
     /*margin-top: 20px;*/
 }
 /* */
@@ -15598,7 +15598,13 @@ float:right;
         float: right;
             margin-top: 5px
     }
-
+	   .inspect-date{
+   position: relative;
+    }
+ .inspect-date .dropdown-menu {
+     position: absolute;
+     left:auto !important;
+}
     .user_title p:first-child {
         background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
         margin-bottom: 0;
