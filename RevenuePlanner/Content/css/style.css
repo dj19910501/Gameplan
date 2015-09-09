@@ -2723,7 +2723,7 @@ ul.welcome-sprite {
 }*/
 #inspect-modal-left-column2, #inspect-modal-left-column3, #inspect-modal-left-column4 {
     padding-left: 3.5%;
-    margin: 10px auto !important;
+    margin: 0 auto !important;/*by bheru 08-09-2015*/
     /*margin-top: 20px;*/
 }
 /* */
@@ -4419,6 +4419,7 @@ span.link-blue, a.link-blue {
 
 .datepicker:before {
     border-bottom: none !important;
+
 }
 
 .datepicker:after {
@@ -5403,7 +5404,7 @@ input::-moz-placeholder {
     vertical-align: text-top;
 }
 
-;
+
 /*---------------------------
           Profile 
 -----------------------------*/
@@ -15573,4 +15574,11 @@ float:right;
 .gantt_grid_resize_area {
     background: transparent !important;
     border:0 !important;
+}  
+ .inspect-date{
+   position: relative;
+    }
+ .inspect-date .dropdown-menu {
+     position: absolute;
+     left:auto !important;
 }

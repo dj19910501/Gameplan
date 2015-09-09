@@ -63,8 +63,8 @@
     @*End - Added by Viral Kadiya on 11/24/2014 for PL ticket #980.*@
     @* Added by bhavesh #711 *@
      #multipleselect_ddlOwner {
-        left: 0 !important;
-        top: 20px !important;
+        left: -3 !important;
+        top: 29px !important;
         min-width:205px;
     }
 
@@ -104,7 +104,7 @@
 
                 @if (IsProgramEdit)
                 {
-                    <span style="min-width: 100%; position: relative;">
+                    <span style="min-width: 100%; position: relative;display:block;">
                         @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                     </span>
                 }
@@ -114,7 +114,7 @@
                 }
                 <p>Start Date</p>
                 <span style="position: relative;">
-                    <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                    <div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                         @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small input-setup", id = "t_startdate" })
                         <span class="add-on">
                             <img src="~/Content/images/gray-calendar-icon.png"></span>
@@ -122,7 +122,7 @@
                 </span>
                 <p class="clear-section">End Date</p>
                 <span style="position: relative;">
-                    <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                    <div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                         @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small input-setup", id = "t_enddate" })
                         <span class="add-on">
                             <img src="~/Content/images/gray-calendar-icon.png"></span>

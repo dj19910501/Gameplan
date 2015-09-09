@@ -56,13 +56,13 @@
      }
     @* Start - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 *@
     #multipleselect_ddlOwner {
-        left: 0 !important;
-        top: 20px !important;
+     left: -3px !important;
+    top: 29px !important;
         min-width:205px;
     }
       #multipleselect_ddlTacticType {
-        left: 0 !important;
-        top: 20px !important;
+       left: -3px !important;
+       top: 29px !important;
         min-width:205px;
     }
      #multipleselect_ddlcampaign {
@@ -71,9 +71,11 @@
         min-width:205px;
     }
      #multipleselect_ddlProgram {
-        left: 0 !important;
-        top: 20px !important;
+        left: -3px  !important;
+        top: 36px !important;
         min-width:205px;
+       right:0;
+    margin:0 auto;
     }
     @* End - Added by Sohel Pathan on 18/11/2014 for PL ticket #708 *@
 
@@ -127,11 +129,11 @@
                     }
                 </div>
 
-                <div style="width: 47%" class="pull-right-assortment reports-button-group pull-left">
+                <div style="width: 47%; position: relative" class="pull-right-assortment reports-button-group pull-left">
                     <label class="inspect-bolder-label" title="Qualified Leads">Parent Program</label>
                     @if (IsTackticAddEdit && !isCreated)
                     {
-                        <span style="min-width: 100%; position: relative;">
+                        <span style="min-width: 100%; position: relative; display: block;">
                             @Html.DropDownListFor(model => model.PlanProgramId, new SelectList((System.Collections.IEnumerable)ViewBag.CampaignProgramList, "PlanProgramId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlProgram", label = "Parent Program" })
                         </span>
                     }
@@ -154,7 +156,7 @@
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Start Date</p>
             <span style="position: relative;">
-                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                <div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                     @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_startdate", label = "Start_Date" })
                     <span class="add-on">
                         <img src="~/Content/images/gray-calendar-icon.png"></span>
@@ -162,7 +164,7 @@
             </span>
             <p class="clear-section" style="margin-top: 2px;">End Date</p>
             <span style="position: relative;">
-                <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
+                <div class="dp  input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                     @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_enddate", label = "End_Date" })
                     <span class="add-on">
                         <img src="~/Content/images/gray-calendar-icon.png"></span>
@@ -173,7 +175,7 @@
             <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
-                <span style="min-width: 100%; position: relative;">
+                <span style="min-width: 100%; position: relative; display: block;">
                     @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
