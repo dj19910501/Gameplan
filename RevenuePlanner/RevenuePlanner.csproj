@@ -696,10 +696,10 @@
     <Content Include="Content\fonts\fontawesome-webfont.ttf" />
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="RevenuePlanner.wpp.targets" />
-    <Content Include="Service References\BDSService\BDSService1.disco" />
+    <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Web.config" />
     <None Include="Service References\BDSService\BDSService.disco" />
-    <Content Include="Service References\BDSService\BDSService1.wsdl" />
+    <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">
       <SubType>Designer</SubType>
     </None>

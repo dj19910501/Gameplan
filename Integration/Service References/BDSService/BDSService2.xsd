@@ -874,7 +874,7 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetMultipleTeamMembersNameByApplicationId">
+  <xs:element name="GetMultipleTeamMemberNameByApplicationId">
     <xs:complexType>
       <xs:sequence>
         <xs:element minOccurs="0" name="userIdList" nillable="true" type="xs:string" />
@@ -882,10 +882,10 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
-  <xs:element name="GetMultipleTeamMembersNameByApplicationIdResponse">
+  <xs:element name="GetMultipleTeamMemberNameByApplicationIdResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q142="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetMultipleTeamMembersNameByApplicationIdResult" nillable="true" type="q142:ArrayOfUser" />
+        <xs:element xmlns:q142="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetMultipleTeamMemberNameByApplicationIdResult" nillable="true" type="q142:ArrayOfUser" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

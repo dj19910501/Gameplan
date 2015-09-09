@@ -1364,7 +1364,7 @@ namespace RevenuePlanner.Helpers
                 {
                     List<string> collaboratorIds = Common.GetCollaboratorId(planId).Distinct().ToList();
                     List<User> lstUserDetails = new List<User>();
-                    lstUserDetails = objBDSUserRepository.GetMultipleTeamMembersNameByApplicationId(string.Join(",", collaboratorIds), Sessions.ApplicationId);
+                    lstUserDetails = objBDSUserRepository.GetMultipleTeamMemberNameByApplicationId(string.Join(",", collaboratorIds), Sessions.ApplicationId);
                     foreach (string userId in lstUserDetails.Select(x => x.UserId.ToString()))
                     {
                         if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)

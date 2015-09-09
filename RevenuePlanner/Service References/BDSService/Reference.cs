@@ -2371,11 +2371,11 @@ namespace RevenuePlanner.BDSService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse")]
         System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameAsync(string userIdList);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMembersNameByApplicationId", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMembersNameByApplicationIdResponse")]
-        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMembersNameByApplicationId(string userIdList, System.Guid applicationid);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationId", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationIdResponse")]
+        System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberNameByApplicationId(string userIdList, System.Guid applicationid);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMembersNameByApplicationId", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMembersNameByApplicationIdResponse")]
-        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMembersNameByApplicationIdAsync(string userIdList, System.Guid applicationid);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationId", ReplyAction="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameByApplicationIdResponse")]
+        System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameByApplicationIdAsync(string userIdList, System.Guid applicationid);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylist", ReplyAction="http://tempuri.org/IBDSService/GetClientApplicationactivitylistResponse")]
         System.Collections.Generic.List<RevenuePlanner.BDSService.ApplicationActivity> GetClientApplicationactivitylist(System.Guid applicationid);
@@ -2879,12 +2879,12 @@ namespace RevenuePlanner.BDSService {
             return base.Channel.GetMultipleTeamMemberNameAsync(userIdList);
         }
         
-        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMembersNameByApplicationId(string userIdList, System.Guid applicationid) {
-            return base.Channel.GetMultipleTeamMembersNameByApplicationId(userIdList, applicationid);
+        public System.Collections.Generic.List<RevenuePlanner.BDSService.User> GetMultipleTeamMemberNameByApplicationId(string userIdList, System.Guid applicationid) {
+            return base.Channel.GetMultipleTeamMemberNameByApplicationId(userIdList, applicationid);
         }
         
-        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMembersNameByApplicationIdAsync(string userIdList, System.Guid applicationid) {
-            return base.Channel.GetMultipleTeamMembersNameByApplicationIdAsync(userIdList, applicationid);
+        public System.Threading.Tasks.Task<System.Collections.Generic.List<RevenuePlanner.BDSService.User>> GetMultipleTeamMemberNameByApplicationIdAsync(string userIdList, System.Guid applicationid) {
+            return base.Channel.GetMultipleTeamMemberNameByApplicationIdAsync(userIdList, applicationid);
         }
         
         public System.Collections.Generic.List<RevenuePlanner.BDSService.ApplicationActivity> GetClientApplicationactivitylist(System.Guid applicationid) {
