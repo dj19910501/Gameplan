@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:ser="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:tns="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
   <xs:complexType name="User">
     <xs:sequence>
       <xs:element minOccurs="0" name="Answer" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="BusinessUnitId" type="ser:guid" />
       <xs:element minOccurs="0" name="Client" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ClientId" type="ser:guid" />
       <xs:element minOccurs="0" name="DisplayName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
       <xs:element minOccurs="0" name="IsClientAdmin" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDeleted" type="xs:boolean" />
       <xs:element minOccurs="0" name="IsDirector" type="xs:boolean" />
@@ -207,7 +205,6 @@
       <xs:element minOccurs="0" name="ColorCode" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Email" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="FirstName" nillable="true" type="xs:string" />
-      <xs:element minOccurs="0" name="GeographyId" type="ser:guid" />
       <xs:element minOccurs="0" name="JobTitle" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="LastName" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="ManagerId" nillable="true" type="ser:guid" />
@@ -218,4 +215,20 @@
     </xs:sequence>
   </xs:complexType>
   <xs:element name="UserHierarchy" nillable="true" type="tns:UserHierarchy" />
+  <xs:complexType name="ArrayOfClientDatabase">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ClientDatabase" nillable="true" type="tns:ClientDatabase" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfClientDatabase" nillable="true" type="tns:ArrayOfClientDatabase" />
+  <xs:complexType name="ClientDatabase">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="ClientDatabaseID" type="xs:int" />
+      <xs:element minOccurs="0" name="ClientID" type="ser:guid" />
+      <xs:element minOccurs="0" name="ConnectionString" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="DatabaseName" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="EncryptedConnectionString" nillable="true" type="xs:base64Binary" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ClientDatabase" nillable="true" type="tns:ClientDatabase" />
 </xs:schema>

@@ -2,10 +2,10 @@
 <wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="BDSService" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <xsd:schema targetNamespace="http://tempuri.org/Imports">
-      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
-      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" />
-      <xsd:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd0" namespace="http://tempuri.org/" />
+      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" />
+      <xsd:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IBDSService_ValidateUser_InputMessage">
@@ -350,11 +350,29 @@
   <wsdl:message name="IBDSService_GetMultipleTeamMemberName_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetMultipleTeamMemberNameResponse" />
   </wsdl:message>
+  <wsdl:message name="IBDSService_GetMultipleTeamMembersNameByApplicationId_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultipleTeamMembersNameByApplicationId" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetMultipleTeamMembersNameByApplicationId_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultipleTeamMembersNameByApplicationIdResponse" />
+  </wsdl:message>
   <wsdl:message name="IBDSService_GetClientApplicationactivitylist_InputMessage">
     <wsdl:part name="parameters" element="tns:GetClientApplicationactivitylist" />
   </wsdl:message>
   <wsdl:message name="IBDSService_GetClientApplicationactivitylist_OutputMessage">
     <wsdl:part name="parameters" element="tns:GetClientApplicationactivitylistResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetDatabaseList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDatabaseList" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_GetDatabaseList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDatabaseListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_SetDefaultRightsForDababase_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetDefaultRightsForDababase" />
+  </wsdl:message>
+  <wsdl:message name="IBDSService_SetDefaultRightsForDababase_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetDefaultRightsForDababaseResponse" />
   </wsdl:message>
   <wsdl:portType name="IBDSService">
     <wsdl:operation name="ValidateUser">
@@ -585,9 +603,21 @@
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberName" message="tns:IBDSService_GetMultipleTeamMemberName_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMemberNameResponse" message="tns:IBDSService_GetMultipleTeamMemberName_OutputMessage" />
     </wsdl:operation>
+    <wsdl:operation name="GetMultipleTeamMembersNameByApplicationId">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMembersNameByApplicationId" message="tns:IBDSService_GetMultipleTeamMembersNameByApplicationId_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetMultipleTeamMembersNameByApplicationIdResponse" message="tns:IBDSService_GetMultipleTeamMembersNameByApplicationId_OutputMessage" />
+    </wsdl:operation>
     <wsdl:operation name="GetClientApplicationactivitylist">
       <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylist" message="tns:IBDSService_GetClientApplicationactivitylist_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetClientApplicationactivitylistResponse" message="tns:IBDSService_GetClientApplicationactivitylist_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDatabaseList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/GetDatabaseList" message="tns:IBDSService_GetDatabaseList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/GetDatabaseListResponse" message="tns:IBDSService_GetDatabaseList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetDefaultRightsForDababase">
+      <wsdl:input wsaw:Action="http://tempuri.org/IBDSService/SetDefaultRightsForDababase" message="tns:IBDSService_SetDefaultRightsForDababase_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IBDSService/SetDefaultRightsForDababaseResponse" message="tns:IBDSService_SetDefaultRightsForDababase_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IBDSService" type="tns:IBDSService">
@@ -1105,8 +1135,35 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetMultipleTeamMembersNameByApplicationId">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetMultipleTeamMembersNameByApplicationId" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GetClientApplicationactivitylist">
       <soap:operation soapAction="http://tempuri.org/IBDSService/GetClientApplicationactivitylist" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDatabaseList">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/GetDatabaseList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetDefaultRightsForDababase">
+      <soap:operation soapAction="http://tempuri.org/IBDSService/SetDefaultRightsForDababase" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1117,7 +1174,7 @@
   </wsdl:binding>
   <wsdl:service name="BDSService">
     <wsdl:port name="BasicHttpBinding_IBDSService" binding="tns:BasicHttpBinding_IBDSService">
-      <soap:address location="http://localhost:51731/BDSService.svc" />
+      <soap:address location="http://stage-new:8085/BDSServiceOct/BDSService.svc" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <xs:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
-  <xs:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" />
-  <xs:import schemaLocation="http://localhost:51731/BDSService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" />
+  <xs:import schemaLocation="http://stage-new:8085/BDSServiceOct/BDSService.svc?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
   <xs:element name="ValidateUser">
     <xs:complexType>
       <xs:sequence>
@@ -874,17 +874,61 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+  <xs:element name="GetMultipleTeamMembersNameByApplicationId">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="userIdList" nillable="true" type="xs:string" />
+        <xs:element xmlns:q141="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q141:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetMultipleTeamMembersNameByApplicationIdResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q142="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetMultipleTeamMembersNameByApplicationIdResult" nillable="true" type="q142:ArrayOfUser" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
   <xs:element name="GetClientApplicationactivitylist">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q141="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q141:guid" />
+        <xs:element xmlns:q143="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="applicationid" type="q143:guid" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetClientApplicationactivitylistResponse">
     <xs:complexType>
       <xs:sequence>
-        <xs:element xmlns:q142="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetClientApplicationactivitylistResult" nillable="true" type="q142:ArrayOfApplicationActivity" />
+        <xs:element xmlns:q144="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetClientApplicationactivitylistResult" nillable="true" type="q144:ArrayOfApplicationActivity" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDatabaseList">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q145="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userid" type="q145:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="GetDatabaseListResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q146="http://schemas.datacontract.org/2004/07/BDSService.BDSEntities" minOccurs="0" name="GetDatabaseListResult" nillable="true" type="q146:ArrayOfClientDatabase" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetDefaultRightsForDababase">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element xmlns:q147="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="userId" type="q147:guid" />
+        <xs:element xmlns:q148="http://schemas.microsoft.com/2003/10/Serialization/" minOccurs="0" name="clientId" type="q148:guid" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="SetDefaultRightsForDababaseResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="SetDefaultRightsForDababaseResult" type="xs:int" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>

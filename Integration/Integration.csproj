@@ -121,25 +121,28 @@
     <Content Include="DLL\RestSharp.dll" />
     <Content Include="DLL\SalesforceSharp.dll" />
     <Content Include="DLL\Tamir.SharpSSH.dll" />
+    <None Include="Service References\BDSService\BDSService.disco" />
     <Fakes Include="Fakes\Excel.fakes" />
-    <None Include="Service References\BDSService\BDSService1.disco" />
-    <None Include="Service References\BDSService\BDSService1.wsdl" />
-    <None Include="Service References\BDSService\BDSService4.xsd">
+    <None Include="Service References\BDSService\BDSService.wsdl" />
+    <None Include="Service References\BDSService\BDSService.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService41.xsd">
+    <None Include="Service References\BDSService\BDSService1.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService42.xsd">
+    <None Include="Service References\BDSService\BDSService2.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\BDSService\BDSService43.xsd">
+    <None Include="Service References\BDSService\BDSService3.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Service References\BDSService\Integration.BDSService.ApplicationActivity.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\BDSService\Integration.BDSService.Client.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\BDSService\Integration.BDSService.ClientDatabase.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\BDSService\Integration.BDSService.CustomRestriction.datasource">
