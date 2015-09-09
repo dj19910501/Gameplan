@@ -981,11 +981,21 @@ namespace RevenuePlanner.Controllers
                     TempData["ErrorMessage"] = Common.objCached.ErrorOccured;
                 }
             }
-            // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917
-            //// On User Details Save button click, if team member details updated then redirect to "Index" action to display Teamlist otherwise redirect to same page("Edit" view).
-            if (form.UserId != Sessions.User.UserId)
-                return RedirectToAction("Index");
-            return RedirectToAction("Edit");
+            // Modified by Viral Kadiya on 11/04/2014 for PL ticket #917         
+            // add inner if condition to redirect organization hierarchy by Rahul Shah on 04/09/2015 fo PL Ticket #1112
+            if (Request.UrlReferrer.AbsolutePath.Contains("OrganizationHierarchy"))
+            {
+                return RedirectToAction("OrganizationHierarchy", "Organization", new { area = "" });
+            }
+            else
+            {
+                if (form.UserId != Sessions.User.UserId)
+                {
+                    return RedirectToAction("Index");
+                }
+                return RedirectToAction("Edit");
+            }
+
         }
 
         #endregion

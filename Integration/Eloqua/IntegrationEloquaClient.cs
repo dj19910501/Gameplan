@@ -580,7 +580,7 @@ namespace Integration.Eloqua
             string published = Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString();
             StringBuilder sbMessage;
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceId == _integrationInstanceId && p.Model.Status.Equals(published)).Select(p => p.PlanId).ToList();
+            List<int> planIds = db.Plans.Where(p => p.Model.IntegrationInstanceEloquaId == _integrationInstanceId && p.Model.Status.Equals(published)).Select(p => p.PlanId).ToList();
             SetMappingEloquaFolderIdsPlanId(planIds);
             try
             {
@@ -856,7 +856,7 @@ namespace Integration.Eloqua
         private Plan_Improvement_Campaign_Program_Tactic SyncImprovementData(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, ref StringBuilder sbMessage)
         {
             StringBuilder sb = new StringBuilder();
-            Enums.Mode currentMode = Common.GetMode(planIMPTactic.IntegrationInstanceTacticId);
+            Enums.Mode currentMode = Common.GetMode(planIMPTactic.IntegrationInstanceEloquaId);
             int _ImprvmntTacticFolderId = 0;
             _ImprvmntTacticFolderId = GetEloquaFolderIdByPlanId(planIMPTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId);
 
@@ -872,7 +872,7 @@ namespace Integration.Eloqua
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
                 try
                 {
-                    planIMPTactic.IntegrationInstanceTacticId = CreateImprovementTactic(planIMPTactic, _ImprvmntTacticFolderId);
+                    planIMPTactic.IntegrationInstanceEloquaId = CreateImprovementTactic(planIMPTactic, _ImprvmntTacticFolderId);
                     planIMPTactic.LastSyncDate = DateTime.Now;
                     planIMPTactic.ModifiedDate = DateTime.Now;
                     planIMPTactic.ModifiedBy = _userId;
@@ -967,7 +967,6 @@ namespace Integration.Eloqua
                     _ErrorMessage = Common.msgChildLevelError.ToString();
                     if (e.Message.Contains(NotFound))// || e.Message.Contains(InternalServerError))
                     {
-                        //planIMPTactic.IntegrationInstanceTacticId = null;
                         //planIMPTactic = SyncImprovementData(planIMPTactic);
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + ")");
                         return planIMPTactic;
@@ -1024,7 +1023,7 @@ namespace Integration.Eloqua
                 titleMappedValue = _mappingTactic["Title"].ToString();
             }
 
-            return UpdateEloquaCampaign(planIMPTactic.IntegrationInstanceTacticId, tactic);
+            return UpdateEloquaCampaign(planIMPTactic.IntegrationInstanceEloquaId, tactic);
         }
 
         /// <summary>
@@ -1038,7 +1037,7 @@ namespace Integration.Eloqua
         {
             IDictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
             tactic.Add("type", "Campaign");
-            tactic.Add("id", planIMPTactic.IntegrationInstanceTacticId);
+            tactic.Add("id", planIMPTactic.IntegrationInstanceEloquaId);
 
             if (folderId > 0)
             {
@@ -1063,7 +1062,7 @@ namespace Integration.Eloqua
         {
             IDictionary<string, object> tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic);
             tactic.Add("type", "Campaign");
-            tactic.Add("id", planTactic.IntegrationInstanceTacticId);
+            tactic.Add("id", planTactic.IntegrationInstanceEloquaId);
 
             if (folderId > 0)
             {
@@ -1091,7 +1090,7 @@ namespace Integration.Eloqua
                     tactic[titleMappedValue] = planTactic.TacticCustomName;
                 }
             }
-            return UpdateEloquaCampaign(planTactic.IntegrationInstanceTacticId, tactic);
+            return UpdateEloquaCampaign(planTactic.IntegrationInstanceEloquaId, tactic);
         }
 
         /// <summary>
@@ -1104,7 +1103,7 @@ namespace Integration.Eloqua
         {
             StringBuilder sb = new StringBuilder();
             //this will be replaced while optimization
-            Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceTacticId);
+            Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceEloquaId);
             int _tacFolderId = 0;
             _tacFolderId = GetEloquaFolderIdByPlanId(planTactic.Plan_Campaign_Program.Plan_Campaign.PlanId);
 
@@ -1120,7 +1119,7 @@ namespace Integration.Eloqua
                 instanceLogTactic.SyncTimeStamp = DateTime.Now;
                 try
                 {
-                    planTactic.IntegrationInstanceTacticId = CreateTactic(planTactic, _tacFolderId);
+                    planTactic.IntegrationInstanceEloquaId = CreateTactic(planTactic, _tacFolderId);
                     planTactic.LastSyncDate = DateTime.Now;
                     planTactic.ModifiedDate = DateTime.Now;
                     planTactic.ModifiedBy = _userId;
@@ -1221,8 +1220,6 @@ namespace Integration.Eloqua
 
                     if (e.Message.Contains(NotFound))
                     {
-                        //planTactic.IntegrationInstanceTacticId = null;
-                        //planTactic = SyncTacticData(planTactic);
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                         return planTactic;
                     }
@@ -1531,7 +1528,7 @@ namespace Integration.Eloqua
                                   strSearchTerm),
                 RequestFormat = DataFormat.Json
             };
-
+            request.AddParameter("Authorization", "Bearer " + _AccessToken, ParameterType.HttpHeader);
             IRestResponse response = _client.Execute(request);
             //// Manipulation of contact list response and store into model
             string TacticResult = response.Content.ToString();

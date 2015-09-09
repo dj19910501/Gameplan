@@ -739,6 +739,7 @@
     <Content Include="Scripts\js\DHTMLX\dhtmlXGrid_excell_combo.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgrid_split.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid.js" />
+    <Content Include="Scripts\js\ganttExportapi.js" />
     <Content Include="Scripts\js\highcharts.js" />
     <Content Include="Scripts\js\html5shiv.js" />
     <Content Include="Scripts\js\jquery-migrate-1.2.1.js" />

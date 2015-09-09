@@ -30,7 +30,7 @@ body.gradient{background: url("../images/gradient-body.jpg") repeat-x #fff; }
 #header .title{color: #ffffff; font-size: 30px; line-height: 89px}
 .min-width{/*min-width: 1200px*/}
 .mrp-logo{background: url('../images/mrp-logo.png') no-repeat; width: 150px; height: 78px; float: right; margin-right: -64px}
-.info-user{height: 58px; float: right; margin-right: 22px; padding: 20px 10px 0 10px}
+.info-user{height: 64px; float: right; margin-right: 22px; padding: 20px 10px 0 10px}
 .info-user p{background: url("../images/arrow-down-header.png") no-repeat 0 16px; cursor: pointer; padding-left: 20px; color: #fff; float: left; width: auto; margin-right: 15px; line-height: 35px; font-size: 18px; padding-top: 5px}
 .info-user.selected p{background: url("../images/arrow-down-header-white.png") no-repeat 0 16px;}
 .info-user.selected{background:#1a405c;}

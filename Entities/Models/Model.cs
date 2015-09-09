@@ -11,7 +11,7 @@ namespace RevenuePlanner.Models
 {
     using System;
     using System.Collections.Generic;
-
+    
     public partial class Model
     {
         public Model()
@@ -22,7 +22,7 @@ namespace RevenuePlanner.Models
             this.Plans = new HashSet<Plan>();
             this.TacticTypes = new HashSet<TacticType>();
         }
-
+    
         public int ModelId { get; set; }
         public string Title { get; set; }
         public string Version { get; set; }
@@ -44,7 +44,8 @@ namespace RevenuePlanner.Models
         public System.Guid ClientId { get; set; }
         public double AverageDealSize { get; set; }
         public Nullable<int> IntegrationInstanceIdProjMgmt { get; set; }
-
+        public Nullable<int> IntegrationInstanceEloquaId { get; set; }
+    
         public virtual IntegrationInstance IntegrationInstance { get; set; }
         public virtual IntegrationInstance IntegrationInstance1 { get; set; }
         public virtual IntegrationInstance IntegrationInstance2 { get; set; }
@@ -58,5 +59,6 @@ namespace RevenuePlanner.Models
         public virtual IntegrationInstance IntegrationInstance4 { get; set; }
         public virtual Model Model11 { get; set; }
         public virtual Model Model3 { get; set; }
+        public virtual IntegrationInstance IntegrationInstance11 { get; set; }
     }
 }

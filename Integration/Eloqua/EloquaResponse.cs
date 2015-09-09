@@ -120,13 +120,13 @@ namespace Integration.Eloqua
                 List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => salesforceIntegrationType.Contains(instance.IntegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
 
                 //// Get all PlanIds whose Tactic data PUSH on SalesForce.
-                List<int> lstSalesForcePlanIds = lstPlans.Where(objplan => lstSalesForceIntegrationTypeIds.Contains(objplan.Model.IntegrationInstanceId.Value)).Select(objplan => objplan.PlanId).ToList();
+               // List<int> lstSalesForcePlanIds = lstPlans.Where(objplan => lstSalesForceIntegrationTypeIds.Contains(objplan.Model.IntegrationInstanceId.Value)).Select(objplan => objplan.PlanId).ToList();
 
                 //// Get All PlanIds.
                 List<int> AllplanIds = lstPlans.Select(objplan => objplan.PlanId).ToList();
 
                 //// Get Eloqua PlanIds.
-                List<int> lstEloquaplanIds = lstPlans.Where(objplan => !lstSalesForcePlanIds.Contains(objplan.PlanId)).Select(plan => plan.PlanId).ToList();
+                //List<int> lstEloquaplanIds = lstPlans.Where(objplan => !lstSalesForcePlanIds.Contains(objplan.PlanId)).Select(plan => plan.PlanId).ToList();
                 try
                 {
                     ////local variables declaration
@@ -324,7 +324,7 @@ namespace Integration.Eloqua
                             var MQLLevel = db.Stages.Where(ObjStage => ObjStage.Code == Common.StageMQL && ObjStage.ClientId == _ClientId && ObjStage.IsDeleted == false).Select(ObjStage => ObjStage.Level).FirstOrDefault();
 
                             //// Get list of SalesForceIntegrationInstanceTacticID(CRMId).
-                            List<string> lstSalesForceIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => lstSalesForcePlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.IntegrationInstanceTacticId != null).Select(_tac => _tac.IntegrationInstanceTacticId).ToList();
+                            List<string> lstSalesForceIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId)).Select(_tac => _tac.IntegrationInstanceTacticId).ToList();
 
                             if (lstSalesForceIntegrationInstanceTacticIds == null)
                                 lstSalesForceIntegrationInstanceTacticIds = new List<string>();
@@ -348,17 +348,17 @@ namespace Integration.Eloqua
                             }
 
                             //// Get Eloqua tactic list
-                            List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => lstEloquaplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                           campaignIds.Contains(tactic.IntegrationInstanceTacticId) &&
+                            List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => (campaignIds.Contains(tactic.IntegrationInstanceEloquaId) ||
+                                campaignIds.Contains(lstEloquaIntegrationInstanceTacticIds.Where(_instance => (_instance.CRMId == tactic.IntegrationInstanceTacticId) || (_instance.ShortCRMId == tactic.IntegrationInstanceTacticId)).Select(d => d.EloquaId).FirstOrDefault())) &&
                                                                                                                            tactic.Stage.Level <= MQLLevel).ToList();
 
-                            //// Get SalesForce tactic list
-                            List<Plan_Campaign_Program_Tactic> lstSalesForceTactic = lstAllTactics.Where(tactic => lstSalesForcePlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                           campaignIds.Contains(lstEloquaIntegrationInstanceTacticIds.Where(_instance => (_instance.CRMId == tactic.IntegrationInstanceTacticId) || (_instance.ShortCRMId == tactic.IntegrationInstanceTacticId)).Select(d => d.EloquaId).FirstOrDefault()) &&
-                                                                                                                           tactic.Stage.Level <= MQLLevel).ToList();
-                            //// Merge list of Eloqua & SalesForce Tactics.
+                            ////// Get SalesForce tactic list
+                            //List<Plan_Campaign_Program_Tactic> lstSalesForceTactic = lstAllTactics.Where(tactic => lstSalesForcePlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                            //                                                                                               campaignIds.Contains(lstEloquaIntegrationInstanceTacticIds.Where(_instance => (_instance.CRMId == tactic.IntegrationInstanceTacticId) || (_instance.ShortCRMId == tactic.IntegrationInstanceTacticId)).Select(d => d.EloquaId).FirstOrDefault()) &&
+                            //                                                                                               tactic.Stage.Level <= MQLLevel).ToList();
+                            ////// Merge list of Eloqua & SalesForce Tactics.
                             List<Plan_Campaign_Program_Tactic> lstTactic = lstEloquaTactic;
-                            lstSalesForceTactic.ForEach(_salesTac => lstTactic.Add(_salesTac));
+                          //  lstSalesForceTactic.ForEach(_salesTac => lstTactic.Add(_salesTac));
 
                             #endregion
 
@@ -377,7 +377,7 @@ namespace Integration.Eloqua
                                 if (lstEloquaIntegrationInstanceTacticIds.Any(_instance => _instance.CRMId == objTactic.IntegrationInstanceTacticId))
                                     objIntegrationInstanceTacticId = lstEloquaIntegrationInstanceTacticIds.Where(_instance => (_instance.CRMId == objTactic.IntegrationInstanceTacticId) || (_instance.ShortCRMId == objTactic.IntegrationInstanceTacticId)).Select(_instance => _instance.EloquaId).FirstOrDefault();
                                 else
-                                    objIntegrationInstanceTacticId = objTactic.IntegrationInstanceTacticId;
+                                    objIntegrationInstanceTacticId = objTactic.IntegrationInstanceEloquaId;
 
                                 //// filter list based on period for tactic start and end date.
                                 List<elements> lstTacticContacts = element.Where(Objelement => !string.IsNullOrEmpty(Objelement.CampaignId) && Objelement.CampaignId == objIntegrationInstanceTacticId && Objelement.peroid >= tacticStartDate && Objelement.peroid <= tacticEndDate && Objelement.peroid != null).Select(Objelement => Objelement).ToList();
@@ -707,7 +707,7 @@ namespace Integration.Eloqua
                             var lstExternalTacticIdSub = lstResponse.Where(t => !string.IsNullOrEmpty(t.externalTacticId)).Select(t => t.externalTacticId.Substring(0, 15)).ToList();
                             List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
                             List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                           (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstExternalTacticIdSub.Contains(tactic.IntegrationInstanceTacticId)) &&
+                                                                                                                               (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId) || lstExternalTacticIdSub.Contains(tactic.IntegrationInstanceTacticId)) &&
                                                                                                                            tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false &&
@@ -717,7 +717,7 @@ namespace Integration.Eloqua
                             {
                                 DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
                                 DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
-                                List<EloquaResponseModel> lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceTacticId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
+                                    List<EloquaResponseModel> lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceEloquaId || r.externalTacticId == objTactic.IntegrationInstanceTacticId) &&
                                                                                 r.peroid >= tacticStartDate && r.peroid <= tacticEndDate).ToList();
                                 foreach (EloquaResponseModel item in lstTacticResponse)
                                 {
@@ -776,7 +776,7 @@ namespace Integration.Eloqua
                             var lstExternalTacticIdSub = unproceessdatalist.Where(t => !string.IsNullOrEmpty(t.ExternalCampaignID)).Select(t => t.ExternalCampaignID.Substring(0, 15)).ToList();
                             List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
                             List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                           (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstExternalTacticIdSub.Contains(tactic.IntegrationInstanceTacticId)) &&
+                                                                                                                               (lstExternalTacticId.Contains(tactic.IntegrationInstanceTacticId) || lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId) || lstExternalTacticIdSub.Contains(tactic.IntegrationInstanceTacticId)) &&
                                                                                                                            tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false &&
@@ -786,7 +786,7 @@ namespace Integration.Eloqua
                             {
                                 DateTime tacticStartDate = new DateTime(objTactic.StartDate.Year, 1, 1);
                                 DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
-                                var lstTacticResponse = unproceessdatalist.Where(r => (r.EloquaCampaignID == objTactic.IntegrationInstanceTacticId || r.ExternalCampaignID == objTactic.IntegrationInstanceTacticId) &&
+                                    var lstTacticResponse = unproceessdatalist.Where(r => (r.EloquaCampaignID == objTactic.IntegrationInstanceEloquaId || r.ExternalCampaignID == objTactic.IntegrationInstanceTacticId) &&
                                                                                 r.ResponseDateTime >= tacticStartDate && r.ResponseDateTime <= tacticEndDate);
                                 string unprocessdatalog =string.Empty;
                                 foreach (var item in lstTacticResponse)

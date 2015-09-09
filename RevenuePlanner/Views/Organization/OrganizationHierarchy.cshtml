@@ -22,6 +22,24 @@
     @Html.Partial("~/Views/shared/_preferences.cshtml")
 }
 
+@* Added by Rahul Shah on 04/09/2015 for PL Ticket #1112*@
+@if (TempData["SuccessMessage"] != null)
+{
+    if (!Convert.ToString(TempData["SuccessMessage"]).ToLower().Contains("model"))
+    {
+        <!--success message-->
+        <div id="successMessage" class="alert hide alert-success message-position">
+            <a class="close">×</a>
+            <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+        </div>
+        <!--success message-->
+        TempData["SuccessMessage"] = "";
+    }
+}
+
+
+
+
 <!--success message-->
 <div id="successMessage" class="alert hide alert-success message-position">
     <a class="close">×</a>
@@ -34,17 +52,41 @@
     <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
 </div>
 <!--error message-->
+@*Commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+@*<ul class="nav nav-tabs">
+        <li class="source-sans-proregular">
+            <h2 class="title-header">Organization</h2>
+        </li>
+    </ul>*@
+@*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+<div id="hdrOrganization">
+    <ul class="nav nav-tabs">
+        <li class="source-sans-proregular">
+            <h2 class="title-header">Organization</h2>
+        </li>
+    </ul>
+</div>
 
-<ul class="nav nav-tabs">
-    <li class="source-sans-proregular">
-        <h2 class="title-header">Organization</h2>
-    </li>
-</ul>
+<div id="hdrEditUser" style="display: none;">
+    <ul class="nav nav-tabs margin-bottom0">
+        <li class="source-sans-proregular">
+            <h2 class="title-header">Edit User</h2>
+        </li>
+    </ul>
+    <a class="link-gray" href="@Url.Action("OrganizationHierarchy", "Organization")">« BACK TO LIST</a>
+</div>
+
+<div class="row" id="dvEditUser" style="display: none;">
+    <div class="span2 content-colum-left content-img-user">
+        <div id="dvUserImage"></div>
+    </div>
+    <div id="dvEditUserDetails"></div>
+</div>
 
 <div class="padding-content cf source-sans-proregular" id="content">
     <div class="row">
         <div id="internalLink" class="span2 width216">
-           @Html.Partial("~/Views/Organization/_organization.cshtml")
+            @Html.Partial("~/Views/Organization/_organization.cshtml")
         </div>
         <div class="span9">
 
@@ -69,24 +111,28 @@
                                 string varUrl = Url.Action("vieweditpermission", "Organization");
                                 string EditURL = varUrl + "?Id=" + UserHierarchy[i].UserId + "&Mode=Edit";
                                 string ViewURL = varUrl + "?Id=" + UserHierarchy[i].UserId + "&Mode=View";
-                                
-                            <li class="@stringClass">
-                                @if (UserHierarchy[i].subUsers.Count == 0)
-                                {
-                                    <span class="hitarea"></span>
-                                }
-                                <span id="@userLabelId">@UserHierarchy[i].FirstName @UserHierarchy[i].LastName</span>
-                                <span class="job-role" style="background-color:@UserHierarchy[i].ColorCode">@UserHierarchy[i].RoleTitle</span>
-                                @if ((bool)ViewBag.IsUserAdminAuthorized)
-                                {
-                                <a class="btn btn-default" href='@EditURL'>Edit</a>
-                                }
-                                <a class="btn btn-default" href='@ViewURL'>View</a>
-                                <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
-                                <input type="hidden" id="@hdnEmailId" value="@UserHierarchy[i].Email" />
-                                <input type="hidden" id="@hdnPhoneId" value="@UserHierarchy[i].Phone" />
-                                <input type="hidden" id="@hdnJobTitleId" value="@UserHierarchy[i].JobTitle" />
-                                @{
+
+                                <li class="@stringClass">
+                                    @if (UserHierarchy[i].subUsers.Count == 0)
+                                    {
+                                        <span class="hitarea"></span>
+                                    }
+                                    @*<span id="@userLabelId">@UserHierarchy[i].FirstName @UserHierarchy[i].LastName</span>*@ @*Commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+
+                                    <span id="@userId" class="treeview hover" style="text-decoration:underline">@UserHierarchy[i].FirstName @UserHierarchy[i].LastName</span> @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+
+
+                                    <span class="job-role" style="background-color:@UserHierarchy[i].ColorCode">@UserHierarchy[i].RoleTitle</span>
+                                    @if ((bool)ViewBag.IsUserAdminAuthorized)
+                                    {
+                                        <a class="btn btn-default" href='@EditURL'>Edit</a>
+                                    }
+                                    <a class="btn btn-default" href='@ViewURL'>View</a>
+                                    <a class="btn btn-default" onclick="showContactDetail('@userId');">Contact</a>
+                                    <input type="hidden" id="@hdnEmailId" value="@UserHierarchy[i].Email" />
+                                    <input type="hidden" id="@hdnPhoneId" value="@UserHierarchy[i].Phone" />
+                                    <input type="hidden" id="@hdnJobTitleId" value="@UserHierarchy[i].JobTitle" />
+                                    @{
                                 if (UserHierarchy[i].subUsers.Count > 0)
                                 {
                                     <ul>
@@ -96,10 +142,10 @@
                                         }
                                     </ul>
                                 }
-                                }
+                                    }
 
-                            </li>
-                            }  
+                                </li>
+                            }
                         }
                     </ul>
                 </li>
@@ -140,7 +186,21 @@
             hideContactDetail();
         });
 
-        });
+        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+            $("#successMessage").slideUp(400);
+        }
+        else {
+            $("#successMessage").slideDown(1200);
+        }
+        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+            $("#errorMessage").slideUp(400);
+        }
+        else {
+            $("#errorMessage").slideDown(400);
+            $("html, body").animate({ scrollTop: 0 }, 1000);
+        }
+
+    });
 
     function showContactDetail(userId) {
         $("#lblUserName").html($("#spnUserName" + userId).html());
@@ -158,5 +218,67 @@
         $("#modal-container-186470").hide();
         $(".modal-backdrop").hide();
     }
+    //Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112
 
+    function OnTeamMemberClick(userid) {
+        $('#SuccMsg').val('');
+        $('#ErrMsg').val('');
+        $("#successMessage").slideUp(1);
+        $("#errorMessage").slideUp(1);
+        $.ajax({
+            url: '@Url.Content("~/user/EditUserDetails")', type: "GET",
+            data: { usrid: userid, src: 'myteam' },
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data != null && data != 'undefined') {
+                    if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    } else {
+                        $("#content").css('display', 'none');
+                        $("#hdrOrganization").css('display', 'none');
+                        $("#hdrEditUser").css('display', 'block');
+                        $("#dvEditUser").css('display', 'block');
+                        $("#dvEditUserDetails").html(data);
+                        LoadUserImage(userid);
+                    }
+                }
+            }
+        });
+    }
+    //Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112
+    function LoadUserImage(userid) {
+        $.ajax({
+            url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
+            data: { id: userid, width: 60, height: 60, src: 'myteam' },
+            async: false,
+            cache: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data != null && data != 'undefined') {
+                    if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                        //// Function to redirect to login page on unavailability of web service.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
+                        var imag = "<img  alt=''"
+                         + "src='" + "data:image/jpg;base64,"
+                         + data.base64imgage + "' class='img-user' style='height:140px; width:140px;'/>";
+                        $("#dvUserImage").html(imag);
+                    }
+                }
+            }
+        });
+    }
+    //Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112
+    $(".treeview").click(function () {
+
+        OnTeamMemberClick($(this).attr('Id'));
+
+    });
 </script>

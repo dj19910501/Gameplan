@@ -6,22 +6,22 @@
     string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
 }
 
-    <div class="padding-right70">
-        <ul class="nav nav-pills nav-stacked width216">
+<div class="padding-right70">
+    <ul class="nav nav-pills nav-stacked width216">
 
-            <li id="MPermission"><a href='@ViewPermissionURL'>My Permissions</a></li>
+        <li id="MPermission"><a href='@ViewPermissionURL'>My Permissions</a></li>
 
-            <li id="OHierarchy"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-
-            @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-                {
+        <li id="OHierarchy"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
+        <li id="Muser"><a href="@Url.Action("Index", "User")">Manage User</a></li>         @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+        @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
+        {
 
             <li id="MRoles"><a href="@Url.Content("~/Organization/ManageRoles/")">Manage Roles</a></li>
-            }
-           
+        }
 
-        </ul>
-    </div>
+
+    </ul>
+</div>
 <script>
     $(document).ready(
         function () {
@@ -38,6 +38,13 @@
                 $('#MPermission a').attr('href', '#');
                 if (!$('#MPermission').hasClass('active')) {
                     $('#MPermission').addClass('active');
+                }
+            }
+                @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+            else if ('@ViewBag.PageTitle' == 'TeamMember') {
+                if (!$('#Muser').hasClass('active')) {
+                    $('#Muser').addClass('active');
+
                 }
             }
             else if ('@ViewBag.PageTitle' == 'ManageRole') {

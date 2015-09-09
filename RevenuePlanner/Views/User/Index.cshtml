@@ -5,11 +5,23 @@
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.js")"></script>
 
 @{
-    ViewBag.Title = "My Team";
+    //Commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112
+    //ViewBag.Title = "My Team";
+    //ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    //ViewBag.PageTitle = "TeamMember";
+    //ViewBag.ModuleTitle = "MyProfile";
+
+    //Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112
+
+    ViewBag.Title = "Manage User";
     ViewBag.ActiveMenu = RevenuePlanner.Helpers.Enums.ActiveMenu.Pref;
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var UserHierarchy = (List<RevenuePlanner.Models.UserHierarchyModel>)ViewBag.UserHierarchy;
+    string varUrlnew = Url.Action("vieweditpermission", "Organization");
+    string ViewPermissionURL = varUrlnew + "?Id=" + Sessions.User.UserId + "&Mode=MyPermission";
     ViewBag.PageTitle = "TeamMember";
-    ViewBag.ModuleTitle = "MyProfile";
+    ViewBag.ModuleTitle = "Organization";
 }
 
 @Html.Hidden("SuccMsg", TempData["SuccessMessage"])
@@ -23,12 +35,12 @@
 {
     if (!Convert.ToString(TempData["SuccessMessage"]).ToLower().Contains("model"))
     {
-<!--success message-->
-<div id="successMessage" class="alert hide alert-success message-position">
-    <a class="close">×</a>
-    <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
-</div>
-<!--success message-->
+        <!--success message-->
+        <div id="successMessage" class="alert hide alert-success message-position">
+            <a class="close">×</a>
+            <strong>Success.</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["SuccessMessage"]))
+        </div>
+        <!--success message-->
         TempData["SuccessMessage"] = "";
     }
 }
@@ -37,313 +49,330 @@
 {
     if (!Convert.ToString(TempData["ErrorMessage"]).ToLower().Contains("model"))
     {
-<!--error message-->
-<div id="errorMessage" class="alert hide alert-error message-position">
-    <a class="close">×</a>
-    <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
-</div>
-<!--error message-->
+        <!--error message-->
+        <div id="errorMessage" class="alert hide alert-error message-position">
+            <a class="close">×</a>
+            <strong>Error!</strong> @Html.Raw(HttpUtility.HtmlDecode((string)TempData["ErrorMessage"]))
+        </div>
+        <!--error message-->
         TempData["ErrorMessage"] = "";
     }
 }
-<div id="hdrMyTeam">
-<ul class="nav nav-tabs">
-    <li class="source-sans-proregular">
-        <h2 class="title-header">My Team</h2>
-    </li>
-</ul>
-</div>
-@* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
-<div id="hdrEditUser" style="display: none;">
-    <ul class="nav nav-tabs margin-bottom0">
-        <li class="source-sans-proregular">
-            <h2 class="title-header">Edit User</h2>
-        </li>
-    </ul>
-    <a class="link-gray" href="@Url.Action("Index", "User")">« BACK TO LIST</a>
-</div>
-@* End - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
-<div class="padding-content cf source-sans-proregular">
-    <div class="row" id="dvMyTeam">
-       @Html.Partial("~/Views/User/_myprofile.cshtml")
-        <div class="span10 content-colum-right">
-            <table class="table table-striped table-hover myteam" id="userTable">
-                <thead>
-                    <tr>
-                        <th title="First Name">First Name
-                        </th>
-                        <th title="Last Name">Last Name
-                        </th>
-                        @*<th title="Business Unit">Business Unit
-                        </th>*@
-                        <th title="Role">Role
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr id="@item.UserId" class="userRow">
-                            <td title="@item.FirstName">
-                                @Html.DisplayFor(model => item.FirstName)
-                            </td>
-                            <td title="@item.LastName" >
-                                @Html.DisplayFor(model => item.LastName)
-                            </td>
-                            <td title="@item.RoleTitle">
-                                @Html.DisplayFor(model => item.RoleTitle)
-                            </td>
-                            @if((bool)ViewBag.IsUserAdminAuthorized) 
-                            {
-                                //if (permRoleCodesForDel.Contains(item.RoleCode))
-                                //{
-                                //    if ((bool)ViewBag.IsUserAdminAuthorized) //if (isViewOnly != "true")
-                                //    {
-                                <td class="userDelete">
-                                    @if (item.IsManager == false)    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-                                    {
-                                        <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');" >
-                                            <span class="x-icon hide pull-right" title="Delete Member"></span>
-                                        </a>
-                                    }
-                                    @* Start -- Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
-                                    else
-                                    {
-                                        <a onclick="DeleteOnEdit('@item.UserId.ToString()');" >
-                                            <span class="x-icon hide pull-right" title="Delete Member"></span>
-                                        </a>
-                                    }
-                                    @* End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
-                                </td>
-                                    }
-                                    else
-                                    {
-                                <td class="userDelete">
-                                    <span></span>
-                                </td>
-                                }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
-            {
-                <p>
-                    <a id="lnkAddUser" href="@Url.Action("Create", "User")" class="link-blue">Add New User</a>
-                </p>
-            }
-        @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
-        @if ((bool)ViewBag.IsUserAdminAuthorized)
-        {
-            if ((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers != null)
-                {
-                    if (((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers).Count > 0)
-                    {
-                    <table class="table table-striped table-hover myteam">
+        @*commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+        @*<div id="hdrMyTeam">
+            <ul class="nav nav-tabs">
+                <li class="source-sans-proregular">
+                    <h2 class="title-header">My Team</h2>
+                </li>
+            </ul>
+            </div>*@
+        @*//Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+        <div id="hdrOrganization">
+            <ul class="nav nav-tabs">
+                <li class="source-sans-proregular">
+                    <h2 class="title-header">Organization</h2>
+                </li>
+            </ul>
+        </div>
+        @* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
+        <div id="hdrEditUser" style="display: none;">
+            <ul class="nav nav-tabs margin-bottom0">
+                <li class="source-sans-proregular">
+                    <h2 class="title-header">Edit User</h2>
+                </li>
+            </ul>
+            <a class="link-gray" href="@Url.Action("Index", "User")">« BACK TO LIST</a>
+        </div>
+        @* End - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
+        <div class="padding-content cf source-sans-proregular">
+
+            <div class="row" id="dvMyTeam">
+                @*@Html.Partial("~/Views/User/_myprofile.cshtml")*@ @*commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+                <div id="userData" class="span2 width216">
+                    @Html.Partial("~/Views/Organization/_organization.cshtml") @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+                </div>
+                <div class="span10 content-colum-right">
+                    <table class="table table-striped table-hover myteam" id="userTable">
                         <thead>
                             <tr>
-                                <th colspan="4">
-                                    <h4>Following users are not available in Gameplan, please assign to Gameplan by selecting role and assign link </h4>
+                                <th title="First Name">
+                                    First Name
                                 </th>
-                            </tr>
-                            <tr>
-                                <th title="First Name">First Name</th>
-                                <th title="Last Name">Last Name</th>
-                                <th title="Role">Role</th>
+                                <th title="Last Name">
+                                    Last Name
+                                </th>
+                                @*<th title="Business Unit">Business Unit
+                                    </th>*@
+                                <th title="Role">
+                                    Role
+                                </th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (var item in (List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers)
+                            @foreach (var item in Model)
                             {
-                                <tr id="@item.UserId">
-                                    <td class="Inactive OtherUserList" title="@item.FirstName">
+                                <tr id="@item.UserId" class="userRow">
+                                    <td title="@item.FirstName">
                                         @Html.DisplayFor(model => item.FirstName)
                                     </td>
-                                    <td class="Inactive OtherUserList border-r" title="@item.LastName" >
+                                    <td title="@item.LastName">
                                         @Html.DisplayFor(model => item.LastName)
                                     </td>
-                                    <td class="Inactive OtherUserList">
-                                        <div class="selectBox" id="ddlAssignRole">
-                                            @Html.DropDownListFor(model => item.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select", new { @class = "hide" })
-                                        </div>
+                                    <td title="@item.RoleTitle">
+                                        @Html.DisplayFor(model => item.RoleTitle)
                                     </td>
-                                    <td class="Inactive" id="tdAssign ">
-                                        <a class="assignUser"><span>Assign</span></a>
-                                    </td>
+                                    @if ((bool)ViewBag.IsUserAdminAuthorized)
+                                    {
+                                        //if (permRoleCodesForDel.Contains(item.RoleCode))
+                                        //{
+                                        //    if ((bool)ViewBag.IsUserAdminAuthorized) //if (isViewOnly != "true")
+                                        //    {
+                                        <td class="userDelete">
+                                            @if (item.IsManager == false)    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+                                            {
+                                                <a href="@Url.Action("Delete", "User", new { id = item.UserId })" onclick="return confirm('Are you sure you want to delete this Member?');">
+                                                    <span class="x-icon hide pull-right" title="Delete Member"></span>
+                                                </a>
+                                            }
+                                            @* Start -- Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
+                                            else
+                                            {
+                                                <a onclick="DeleteOnEdit('@item.UserId.ToString()');">
+                                                    <span class="x-icon hide pull-right" title="Delete Member"></span>
+                                                </a>
+                                            }
+                                            @* End - Added by Sohel Pathan on 26/06/2014 for PL ticket #517 *@
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td class="userDelete">
+                                            <span></span>
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
                     </table>
+                    @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
+                    {
+                        <p>
+                            <a id="lnkAddUser" href="@Url.Action("Create", "User")" class="link-blue">Add New User</a>
+                        </p>
                     }
-                }
-        }
-        @* End- Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+                    @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+                    @if ((bool)ViewBag.IsUserAdminAuthorized)
+                    {
+                        if ((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers != null)
+                        {
+                            if (((List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers).Count > 0)
+                            {
+                                <table class="table table-striped table-hover myteam">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="4">
+                                                <h4>Following users are not available in Gameplan, please assign to Gameplan by selecting role and assign link </h4>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th title="First Name">First Name</th>
+                                            <th title="Last Name">Last Name</th>
+                                            <th title="Role">Role</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in (List<RevenuePlanner.BDSService.User>)ViewBag.OtherUsers)
+                                        {
+                                            <tr id="@item.UserId">
+                                                <td class="Inactive OtherUserList" title="@item.FirstName">
+                                                    @Html.DisplayFor(model => item.FirstName)
+                                                </td>
+                                                <td class="Inactive OtherUserList border-r" title="@item.LastName">
+                                                    @Html.DisplayFor(model => item.LastName)
+                                                </td>
+                                                <td class="Inactive OtherUserList">
+                                                    <div class="selectBox" id="ddlAssignRole">
+                                                        @Html.DropDownListFor(model => item.RoleId, new SelectList((System.Collections.IEnumerable)ViewData["Roles"], "RoleId", "Title"), "Please Select", new { @class = "hide" })
+                                                    </div>
+                                                </td>
+                                                <td class="Inactive" id="tdAssign ">
+                                                    <a class="assignUser"><span>Assign</span></a>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                        }
+                    }
+                    @* End- Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+                </div>
             </div>
-    </div>
 
-    @* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
-    <div class="row" id="dvEditUser" style="display: none;">
-        <div class="span2 content-colum-left content-img-user">
-            <div id="dvUserImage"></div>
-</div>
-        <div id="dvEditUserDetails"></div>
-    </div>
-    @* End - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
-</div>
+            @* Start - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
+            <div class="row" id="dvEditUser" style="display: none;">
+                <div class="span2 content-colum-left content-img-user">
+                    <div id="dvUserImage"></div>
+                </div>
+                <div id="dvEditUserDetails"></div>
+            </div>
+            @* End - Added by Viral Kadiya on 11/04/2014 for PL Ticket #917*@
+        </div>
 
-<script type="text/javascript">
-    $(document).ready(function () {
+        <script type="text/javascript">
+            $(document).ready(function () {
 
-        $(".selectBox select").selectbox(); @* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+                $(".selectBox select").selectbox(); @* Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
 
-        $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
-        /*close x event on message*/
-        $(".close").click(function (e) {
-            e.stopPropagation();
-            e.preventDefault();
-            $(this).closest(".alert").slideUp(400);
-        });
+                $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
+                /*close x event on message*/
+                $(".close").click(function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    $(this).closest(".alert").slideUp(400);
+                });
 
-        if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
-            $("#successMessage").slideUp(400);
-        }
-        else {
-            $("#successMessage").slideDown(1200);
-        }
-        if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
-            $("#errorMessage").slideUp(400);
-        }
-        else {
-            $("#errorMessage").slideDown(400);
-            $("html, body").animate({ scrollTop: 0 }, 1000);
-        }
-
-        $('.myteam td').click(function () {
-            var tdClass = this.getAttribute('class');
-            var userId = $(this).closest('tr').attr('id');
-            if (tdClass == null || tdClass == '') {
-                if (userId != null) {
-                    OnTeamMemberClick(userId);  @* Modified by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
-        }
-    }
-    else {
-                if (tdClass.toString().toLowerCase() == 'userdelete' || tdClass.toString().toLowerCase() == 'Inactive') {   @* Modified by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
-            return;
-        }
-    }
-        });
-    });
-
-    // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
-    function DeleteOnEdit(userId) {
-        alert('@ViewBag.NotifyBeforManagerDeletion');
-        OnTeamMemberClick(userId);
-    }
-
-
-
-    @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
-    $('.assignUser').click(function () {
-
-        $('.sbHolder').each(function () {
-            if ($(this).hasClass("selectBoxError")) {
-                $(this).removeClass("selectBoxError");
-            }
-        });
-
-        var row = $(this).parent().parent();
-        var UserId = row.attr('id'); //row.find('#item_UserId').val();
-        var ddlRoleId = row.find('#item_RoleId').val();
-        if (ddlRoleId == '') {
-            row.find('.sbHolder').addClass("selectBoxError");
-            return false;
-        }
-        else {
-            row.find('.sbHolder').removeClass("selectBoxError");
-        }
-
-        $.ajax(
-        {
-            type: "GET",
-            cache: false,
-            url: '@Url.Content("~/User/AssignUser")',
-            data: { UserId: UserId, RoleId: ddlRoleId },
-            success: function (data) {
-                if (data == 'success') {
-                    window.location.reload(true);
-                }
-                else if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
-                    //// Function to redirect to login page on unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                if ($('#SuccMsg').val() == null || $('#SuccMsg').val() == '') {
+                    $("#successMessage").slideUp(400);
                 }
                 else {
-                    alert(data);
+                    $("#successMessage").slideDown(1200);
                 }
-            }
-        });
-    });
-    @* End - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+                if ($('#ErrMsg').val() == null || $('#ErrMsg').val() == '') {
+                    $("#errorMessage").slideUp(400);
+                }
+                else {
+                    $("#errorMessage").slideDown(400);
+                    $("html, body").animate({ scrollTop: 0 }, 1000);
+                }
 
-    @* Start - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
-    function OnTeamMemberClick(userid) {
-        $('#SuccMsg').val('');
-        $('#ErrMsg').val('');
-        $("#successMessage").slideUp(1);
-        $("#errorMessage").slideUp(1);
-        $.ajax({
-            url: '@Url.Content("~/user/EditUserDetails")', type: "GET",
-            data: { usrid: userid, src: 'myteam' },
-            async: false,
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                if (data != null && data != 'undefined') {
-                        if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
-                        //// Function to redirect to login page on unavailability of web service.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                     } else {
-                    $("#dvMyTeam").css('display', 'none');
-                    $("#hdrMyTeam").css('display', 'none');
-                    $("#hdrEditUser").css('display', 'block');
-                    $("#dvEditUser").css('display', 'block');
-                    $("#dvEditUserDetails").html(data);
-                    LoadUserImage(userid);
-                }
-                }
-            }
-        });
-    }
-    
-    //Load Team Member profile image
-    function LoadUserImage(userid) {
-        $.ajax({
-            url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
-            data: { id: userid, width: 60, height: 60, src: 'myteam' },
-            async: false,
-            cache: false,
-            contentType: "application/json; charset=utf-8",
-            success: function (data) {
-                if (data != null && data != 'undefined') {
-                    if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
-                        //// Function to redirect to login page on unavailability of web service.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                $('.myteam td').click(function () {
+                    var tdClass = this.getAttribute('class');
+                    var userId = $(this).closest('tr').attr('id');
+                    if (tdClass == null || tdClass == '') {
+                        if (userId != null) {
+                            OnTeamMemberClick(userId);  @* Modified by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
+                        }
                     }
                     else {
-                    var imag = "<img  alt=''"
-                     + "src='" + "data:image/jpg;base64,"
-                     + data.base64imgage + "' class='img-user' style='height:140px; width:140px;'/>";
-                    $("#dvUserImage").html(imag);
+                        if (tdClass.toString().toLowerCase() == 'userdelete' || tdClass.toString().toLowerCase() == 'Inactive') {   @* Modified by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+                            return;
+                        }
                     }
-                }
+                });
+            });
+
+            // Added by Sohel Pathan on 26/06/2014 for PL ticket #517
+            function DeleteOnEdit(userId) {
+                alert('@ViewBag.NotifyBeforManagerDeletion');
+                OnTeamMemberClick(userId);
             }
-        });
-    }
-    @* End - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
-</script>
+
+
+
+            @* Start - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+            $('.assignUser').click(function () {
+
+                $('.sbHolder').each(function () {
+                    if ($(this).hasClass("selectBoxError")) {
+                        $(this).removeClass("selectBoxError");
+                    }
+                });
+
+                var row = $(this).parent().parent();
+                var UserId = row.attr('id'); //row.find('#item_UserId').val();
+                var ddlRoleId = row.find('#item_RoleId').val();
+                if (ddlRoleId == '') {
+                    row.find('.sbHolder').addClass("selectBoxError");
+                    return false;
+                }
+                else {
+                    row.find('.sbHolder').removeClass("selectBoxError");
+                }
+
+                $.ajax(
+                {
+                    type: "GET",
+                    cache: false,
+                    url: '@Url.Content("~/User/AssignUser")',
+                    data: { UserId: UserId, RoleId: ddlRoleId },
+                    success: function (data) {
+                        if (data == 'success') {
+                            window.location.reload(true);
+                        }
+                        else if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                            //// Function to redirect to login page on unavailability of web service.
+                            //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                            //// Ticket: 942 Exception handeling in Gameplan.
+                            window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                        }
+                        else {
+                            alert(data);
+                        }
+                    }
+                });
+            });
+            @* End - Added by Sohel Pathan on 10/07/2014 for PL ticket #586 *@
+
+            @* Start - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
+            function OnTeamMemberClick(userid) {
+                $('#SuccMsg').val('');
+                $('#ErrMsg').val('');
+                $("#successMessage").slideUp(1);
+                $("#errorMessage").slideUp(1);
+                $.ajax({
+                    url: '@Url.Content("~/user/EditUserDetails")', type: "GET",
+                    data: { usrid: userid, src: 'myteam' },
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data != null && data != 'undefined') {
+                            if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                                //// Function to redirect to login page on unavailability of web service.
+                                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                //// Ticket: 942 Exception handeling in Gameplan.
+                                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                            } else {
+                                $("#dvMyTeam").css('display', 'none');
+                                //$("#hdrMyTeam").css('display', 'none');  @*Commented by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+                                $("#hdrOrganization").css('display', 'none'); @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+                                $("#hdrEditUser").css('display', 'block');
+                                $("#dvEditUser").css('display', 'block');
+                                $("#dvEditUserDetails").html(data);
+                                LoadUserImage(userid);
+                            }
+                        }
+                    }
+                });
+            }
+
+            //Load Team Member profile image
+            function LoadUserImage(userid) {
+                $.ajax({
+                    url: '@Url.Content("~/user/LoadUserImage")', type: "GET",
+                    data: { id: userid, width: 60, height: 60, src: 'myteam' },
+                    async: false,
+                    cache: false,
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data != null && data != 'undefined') {
+                            if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
+                                //// Function to redirect to login page on unavailability of web service.
+                                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                                //// Ticket: 942 Exception handeling in Gameplan.
+                                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                            }
+                            else {
+                                var imag = "<img  alt=''"
+                                 + "src='" + "data:image/jpg;base64,"
+                                 + data.base64imgage + "' class='img-user' style='height:140px; width:140px;'/>";
+                                $("#dvUserImage").html(imag);
+                            }
+                        }
+                    }
+                });
+            }
+            @* End - Added by Viral Kadiya on 11/04/2014 for PL ticket #917 *@
+        </script>

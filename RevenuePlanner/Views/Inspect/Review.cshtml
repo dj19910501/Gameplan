@@ -14,6 +14,7 @@
     var MQLLastSync = ViewBag.MQLLastSync;
     var TacticLastSync = ViewBag.TacticLastSync;
     var tacticIntegrationInstance = ViewBag.TacticIntegrationInstance;
+    var tacticIntegrationProjMgmtInstance = ViewBag.TacticIntegrationProjMgmtInstance;
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
 }
 
@@ -146,7 +147,7 @@
 
             @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
             <div style="margin-bottom: 0px; width: 93%;margin-top:33px;">
-                @if (tacticIntegrationInstance != null)
+                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance !=null)
                 {
                     if (INQLastSync != null)
                     {

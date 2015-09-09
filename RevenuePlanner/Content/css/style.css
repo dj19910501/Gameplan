@@ -152,7 +152,7 @@ body {
 }
 
 .info-user {
-    height: 58px;
+    height: 64px; /*changed - OldValue:58px - by Viral #1464*/
     float: right;
     margin-right: 10px; /*change 4m 22 to 10 uday 8 -7-2014 #559*/
     padding: 20px 10px 0 10px;
@@ -5403,7 +5403,7 @@ input::-moz-placeholder {
     vertical-align: text-top;
 }
 
-;
+
 /*---------------------------
           Profile 
 -----------------------------*/
@@ -5413,7 +5413,7 @@ input::-moz-placeholder {
 
 .inputs-aligned-horizontal > label {
     text-align: right;
-    width: 25%;
+    width: 28%;
     float: left;
     line-height: 32px;
 }
@@ -9660,11 +9660,11 @@ div.sub {
 footer {
     text-align: center;
     /*#832  Footer should run all the way below the left bar*/
-    position: relative;
+    /*position: relative;*/ /* commented by Rahul Shah on 04/09/2015 for ticket #1510 */
     bottom: 0;
     width: 100%;
     /*width: 83%;*/
-    z-index: -1; /* Added by Arpita Soni on 02/01/2015 for ticket #1052*/
+    /*z-index: -1;*/ /* Added by Arpita Soni on 02/01/2015 for ticket #1052*/ /* commented by Rahul Shah on 04/09/2015 for ticket #1510 */
     /*margin-left: 280px;*/
     /*End #832*/
 }
@@ -15573,4 +15573,94 @@ float:right;
 .gantt_grid_resize_area {
     background: transparent !important;
     border:0 !important;
+}
+
+/*Added by devanshi for #1592*/
+.dhx_combo_select {
+    border: 1px solid #808080 !important;
+    border-radius: 6px !important;
+    padding-left: 10px;
+    max-height: 363px;
+    overflow: auto; /*width:100%;*/
+    background-color: #fff; /*margin-right:10px;*/
+    margin-right: 0;
+    line-height:20px !important;
+    font-family:"source_sans_prosemibold",Arial,"sans-serif" !important;
+     font-size: 13px !important;
+}
+/*by bheru ticket 1464 7-9-2015*/
+.user_title {
+    max-width: 65%;
+    padding-top: 14px;
+}
+
+    .user_title .avatar-user {
+        float: right;
+            margin-top: 5px
+    }
+
+    .user_title p:first-child {
+        background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+        margin-bottom: 0;
+    min-width: 78px;
+        margin-top: 4px;
+    }
+
+    .user_title p:last-child {
+        background: rgba(0, 0, 0, 0) url("../images/arrow-down-head.png") no-repeat scroll 0 0;
+        clear: both;
+        font-size: 14px;
+        margin-top: -10px;
+        padding-top: 0;
+        max-width: 148px;
+        float: left;
+        padding-right: 37px;
+        text-align: right;
+    }
+
+    .user_title p {
+        line-height: 18px;
+        max-width: 94%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+@media (max-width: 1440px) {
+
+    .row-fluid .integration-block {
+        width: 14%;
+    }
+
+    .inspect_attribute_parent .span3 .dropdown_new_btn {
+        padding: 2px 0;
+        width: 100%;
+    }
+
+        .inspect_attribute_parent .span3 .dropdown_new_btn > p {
+            max-width: 79%;
+            padding-left: 12px;
+        }
+}
+
+@media (max-width: 1366px) {
+
+    .review_block_top .size80x78 {
+        width: 74px !important;
+    }
+
+    .review_block_bottom .size65x38 {
+        width: 56px !important;
+    }
+}
+
+@media (max-width: 1280px) {
+    .review_block_top .size80x78 {
+        height: 78px !important;
+        width: 68px !important;
+    }
+
+    .review_block_bottom .size65x38 {
+        width: 52px !important;
+    }
 }

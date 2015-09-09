@@ -12,11 +12,13 @@
     <div class="mrp-logo"></div>
     @if (Sessions.User != null)
     {
-        <div class="info-user cf">
-            <p class="source-sans-prolight user-drop-down">@Sessions.User.FirstName @Sessions.User.LastName<span class="divider"> | </span>@Sessions.User.JobTitle
+        <div class="info-user cf user_title">
+            <p class="source-sans-prolight user-drop-down">@Sessions.User.FirstName @Sessions.User.LastName@*<span class="divider"> | </span>*@
             </p>
-            @*<img class="avatar-user" src="@Url.Content("~/Content/images/photo-user.jpg")" alt="User avatar" />*@
             <img class="avatar-user" src="@Url.Action("UserPhoto", "Home")" alt="User avatar" />
+            <p class="user-drop-down">@Sessions.User.JobTitle</p>
+            @*<img class="avatar-user" src="@Url.Content("~/Content/images/photo-user.jpg")" alt="User avatar" />*@
+           
 
         </div>
         <div class="dropdown-info-user" style="display: none;">

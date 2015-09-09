@@ -77,10 +77,18 @@
             {
                 <h4 style="display: block; margin-left: 180px; margin-bottom: 20px;">Instance Selection</h4> 
                 <div class="cf inputs-aligned-horizontal">
-                    <label>Push Tactic Data</label>
+                    <label>Push Tactic Data - Salesforce</label>
 
                     <div class="selectBox" id="ddlIntegrationInstance">
-                        @Html.DropDownListFor(model => model.IntegrationInstanceId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesWithoutProjMgmt"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
+                        @Html.DropDownListFor(model => model.IntegrationInstanceId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesSalesforce"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
+                    </div>
+
+                </div>
+                <div class="cf inputs-aligned-horizontal">
+                    <label>Push Tactic Data - Eloqua</label>
+
+                    <div class="selectBox" id="ddlIntegrationInstanceEloqua">
+                        @Html.DropDownListFor(model => model.IntegrationInstanceEloquaId, new SelectList((System.Collections.IEnumerable)ViewData["IntegrationInstancesEloqua"], "InstanceId", "InstanceName"), "None", new { @class = "hide" })
                     </div>
 
                 </div>
@@ -162,25 +170,36 @@
         $('#btnSubmit').click(function () {
             /*Modified by Mitesh vaishnav on 13/08/2014 for PL ticket #690*/
             /*Check for Integration instanse of pushing tactic data is changed than confirm process*/
+            var iseloqua = true;
+            var issalesforce = false;
             if ('@Model.IntegrationInstanceId.ToString()' == $('#IntegrationInstanceId').val() || '@Model.IntegrationInstanceId' == null || '@Model.IntegrationInstanceId' == '') {
-                SaveIntegration(false);
+                issalesforce = false;
+            }
+            if ('@Model.IntegrationInstanceEloquaId.ToString()' == $('#IntegrationInstanceEloquaId').val() || '@Model.IntegrationInstanceEloquaId' == null || '@Model.IntegrationInstanceEloquaId' == '') {
+                iseloqua = true;
+            }
+            if (!iseloqua && !issalesforce) {
+                SaveIntegration(false,false);
             }
             else {
                 var confirmMessage = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
                 if (confirmMessage == true) {
-                    SaveIntegration(true);
+                        SaveIntegration(iseloqua, issalesforce);
                 }
             }
 
             return false;
         });
 
-        function SaveIntegration(IsIntegrationChanged) {
+        function SaveIntegration(IsIntegrationChanged, IsIntegrationEloquaChanged) {
             var modelId = parseInt('@modelId');
             var ajaxData = $("form").serialize() + "&id=" + modelId;
 
             if (IsIntegrationChanged) {
                 ajaxData = ajaxData + "&IsIntegrationChanged=" + true;
+            }
+            if (IsIntegrationEloquaChanged) {
+                ajaxData = ajaxData + "&IsIntegrationEloquaChanged=" + true;
             }
 
             $.ajax({
