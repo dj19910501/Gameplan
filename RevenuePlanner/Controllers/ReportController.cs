@@ -5653,7 +5653,8 @@ namespace RevenuePlanner.Controllers
 
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
             string strContatedIndividualList = string.Join(",", tacticList.Select(tactic => tactic.CreatedBy.ToString()));
-            var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+            //var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+            var individuals = bdsUserRepository.GetMultipleTeamMembersNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId);
 
             return individuals;
 

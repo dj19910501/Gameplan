@@ -10298,7 +10298,8 @@ namespace RevenuePlanner.Controllers
                 if (lstClientUsers.Count() > 0)
                 {
                     string strUserList = string.Join(",", lstClientUsers);
-                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    //lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMembersNameByApplicationId(strUserList, Sessions.ApplicationId);   //PL #1532 Grid View & Tactic Pop-up: Displaying Users which are not in Gameplan - Dashrath Prajapati                
                    
                     if (lstUserDetails.Count > 0)
                     {

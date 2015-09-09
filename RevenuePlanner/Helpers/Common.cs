@@ -1357,13 +1357,15 @@ namespace RevenuePlanner.Helpers
 
             if (planId > 0)
             {
-
+                BDSServiceClient objBDSUserRepository = new BDSServiceClient();
                 MRPEntities db = new MRPEntities();
                 List<string> newCollaboratorId = new List<string>();
                 List<object> data = new List<object>();
                 {
                     List<string> collaboratorIds = Common.GetCollaboratorId(planId).Distinct().ToList();
-                    foreach (string userId in collaboratorIds)
+                    List<User> lstUserDetails = new List<User>();
+                    lstUserDetails = objBDSUserRepository.GetMultipleTeamMembersNameByApplicationId(string.Join(",", collaboratorIds), Sessions.ApplicationId);
+                    foreach (string userId in lstUserDetails.Select(x => x.UserId.ToString()))
                     {
                         if (System.Web.HttpContext.Current.Cache[userId + "_photo"] != null)
                         {
@@ -1378,7 +1380,7 @@ namespace RevenuePlanner.Helpers
                 }
 
                 byte[] imageBytesUserImageNotFound = Common.ReadFile(HttpContext.Current.Server.MapPath("~") + "/content/images/user_image_not_found.png");
-                BDSServiceClient objBDSUserRepository = new BDSServiceClient();
+            
                 List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
 
                 foreach (User user in users)
