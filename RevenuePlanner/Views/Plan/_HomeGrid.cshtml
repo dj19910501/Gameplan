@@ -334,15 +334,27 @@
                         HomeGrid.openItem(pid);
                        
                     }
-                    HomeGrid.selectRow(HomeGrid.getRowIndex(pid), true, true, true);
+                    HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
                     var scrolltop = $(".cellselected").offset().top;
                     $("html").scrollTop(scrolltop);
                     ///  HomeGrid.showRow((pid));
                   
                 }
+
+            }
+            else if (isEditTactic != 0)
+            {
+               // HomeGrid.expandAll();
+                if (id == isEditTactic)
+                {
+                    HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+                    var scrolltop = $(".rowselected").offset().top;
+                    $("html").scrollTop(scrolltop);
+                }
             }
         });
         isCopyTactic = 0;
+        isEditTactic = 0;
       
         $('#gridbox').find('tbody tr').each(function () {
             var spnerror = $(this).find("#tacticIsRequired");
@@ -688,12 +700,15 @@
                     HomeGrid.cells(rowId, 8).setAttribute("locked", data.IsLocked);
                     HomeGrid.cells(rowId, 9).setAttribute("locked", data.IsLocked);
                     HomeGrid.setCellTextStyle(rowId, 1, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 2, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 4, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 5, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 6, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 7, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 8, data.cellTextColor);
                     HomeGrid.setCellTextStyle(rowId, 9, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 10, data.cellTextColor);
+                    HomeGrid.setCellTextStyle(rowId, 11, data.cellTextColor);
                 }
             },
             error: function (ts) { }

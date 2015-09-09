@@ -880,7 +880,7 @@
     var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
     var isCopyTactic = 0;
-
+    var isEditTactic = 0;
     var isFirstCall = true;
 
     var inspectCloseFocus = "";
@@ -949,6 +949,8 @@
             $("#ImprovementGrid").show();
             $("#btnPlanReport").css("display", "none");
             //Call the function for grid view
+            isCopyTactic = 0;
+            isEditTactic = 0;
             LoadPlanGrid();
             //  LoadImprovementGrid(CurrentPlanId);
 
@@ -5145,6 +5147,8 @@ function () {
 })
 
 function DisplayEditablePopup(id, type) {
+        isEditTactic = id;
+
     if (type == "PlanPopup") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, 0, '@RequestedModule');
     }
