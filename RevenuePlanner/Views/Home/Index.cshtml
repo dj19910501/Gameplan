@@ -879,6 +879,7 @@
     };
     var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
+    var isCopyTactic = 0;
 
     var isFirstCall = true;
 
@@ -4730,6 +4731,7 @@ function Quarter() {
 
         //Child Campaign
         $('#ChildCampaign').click(function () {
+            isCopyTactic = PlanId;
             var planId = PlanId; // $("#hdnPlanId").val(); 
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');
             $('.taskpopup').css('display', 'none');
@@ -4737,6 +4739,7 @@ function Quarter() {
 
         //new Campaign
         $('#NewCampaign').click(function () {
+            isCopyTactic = PlanId;
             var planId = PlanId; // $("#hdnPlanId").val();
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", 0, planId, '@RequestedModule');
             $('.taskpopup').css('display', 'none');
@@ -4744,6 +4747,7 @@ function Quarter() {
 
         ////Copy Campaign.
         $('#CloneCampaign1').click(function () {
+            isCopyTactic = CampaignId;
             var idPlanCamaign = CampaignId;//$("#hdnPlanCampaignId").val();
             var Title = title;//$("#lblCampaignTitle").html();
             $.ajax({
@@ -4786,18 +4790,21 @@ function Quarter() {
 
         //Child Program
     $('#ChildProgram').click(function () {
+            isCopyTactic = CampaignId;
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');
         $('.taskpopup').css('display', 'none');
     });
 
         //New Program
     $('#NewProgram').click(function () {
+            isCopyTactic = CampaignId;
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", 0, CampaignId, '@RequestedModule');
         $('.taskpopup').css('display', 'none');
     });
 
         //Copy Program
     $('#CloneProgram1').click(function () {
+            isCopyTactic = ProgramId;
         var idPlanProgram = ProgramId;// $("#hdnPlanProgramId").val();
         var Title = title;// $("#lblProgramTitle").html();
         $.ajax({
@@ -4837,6 +4844,7 @@ function Quarter() {
 
         //Child Tactic
     $("#ChildTactic").on("click", function () {
+            isCopyTactic = ProgramId;
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
@@ -4846,6 +4854,7 @@ function Quarter() {
 
         //New Tactic
     $("#NewTactic1").on("click", function () {
+            isCopyTactic = ProgramId;
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", 0, ProgramId, '@RequestedModule');
         $("#errorMessage").css("display", "none");
         $("#successMessage").css("display", "none");
@@ -4855,6 +4864,7 @@ function Quarter() {
 
         //Copy Tactic
     $('#CloneTactic1').click(function () {
+            isCopyTactic = TacticId;
         var idPlanTactic = TacticId;// $("#hdnPlanTacticId").val();
         var Title = title;// $("#lblTacticTitle").html();
         $.ajax({
@@ -4894,6 +4904,7 @@ function Quarter() {
 
         //Child Line Item
     $('#ChildLineItem').click(function () {
+            isCopyTactic = TacticId;
         ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", 0, TacticId, '@RequestedModule');
         $('.taskpopup').css('display', 'none');
     });
