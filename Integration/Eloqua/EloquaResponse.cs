@@ -634,7 +634,18 @@ namespace Integration.Eloqua
                         return true;
                     }
 
-                    srclist = client.GetFileList(SFTPSourcePath);
+                    try
+                    {
+                        srclist = client.GetFileList(SFTPSourcePath);
+                    }
+                    catch (Exception)
+                    {
+                        string exMessage = "Pull Responses: " + objIntegrationInstanceExternalServer.SFTPFileLocation + " path does not exist at External Server. Please configure proper FileLocation in ExternalServer Configuration screen.";
+                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, exMessage);
+                        lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                        Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, exMessage);
+                        return true;
+                    }
                     srclist.Remove(".");
                     srclist.Remove("..");
 
