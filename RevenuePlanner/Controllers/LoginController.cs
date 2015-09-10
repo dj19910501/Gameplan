@@ -721,7 +721,7 @@ namespace RevenuePlanner.Controllers
 
                         //string tempUrl = "http://localhost:57856/Login/SecurityQuestion/" + PasswordResetRequestId;
 
-                        //Common.sendMail(objUser.Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
+                        Common.sendMail(objUser.Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
 
 
                         form.IsSuccess = true;
