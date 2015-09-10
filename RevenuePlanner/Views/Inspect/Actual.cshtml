@@ -230,7 +230,7 @@
                     <tr class="height42">
                         <th id="rP" class="text-align-right projected font3F3F3F setBudget border-none">@tacticActual.Revenues</th> @* Modified by Sohel Pathan on 10/09/2014 for Internal Review Points *@
                         <input type="hidden" id="hdnRp" value="@tacticActual.Revenues" />  @* Added by Sohel Pathan on 10/09/2014 for Internal Review Points *@
-                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right setBudget border-none" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th> @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@
+                        <th id="lblTotalRevenue" class="border-r font3F3F3F text-align-right border-none" ov="@tacticActual.RevenuesActual">@tacticActual.RevenuesActual</th> @* Modified by Sohel Pathan on 12/09/2014 for PL ticket #760 *@
                     </tr>
                     <tr class="height42" id="tr_rightCost">
                         <th id="cP" class="text-align-right projected font3F3F3F setBudget border-none">@tacticActual.Cost</th> @* Modified by Sohel Pathan on 15/09/2014 for PL ticket #760 *@
@@ -371,16 +371,18 @@
                     if ($("#Cost-" + LineItemActual[i].Period).attr('ov') != '') {
                         var costForMonth = parseFloat($("#Cost-" + LineItemActual[i].Period).attr('ov'));
                         var finalCost = costForMonth + parseFloat(LineItemActual[i].Value);
-                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),false));
+                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),true));
+                        //$("#Cost-" + LineItemActual[i].Period).text(finalCost.toString());
                         $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
-                        SetBudget("#Cost-" + LineItemActual[i].Period);
+                        //SetBudget("#Cost-" + LineItemActual[i].Period);
                        
                     }
                     else {
                         var finalCost = parseFloat(LineItemActual[i].Value);
-                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(),false));
+                        $("#Cost-" + LineItemActual[i].Period).text(FormatCurrency(finalCost.toString(), true));
+                        //$("#Cost-" + LineItemActual[i].Period).text(finalCost.toString());
                         $("#Cost-" + LineItemActual[i].Period).attr('ov', finalCost.toString());
-                        SetBudget("#Cost-" + LineItemActual[i].Period);
+                        //SetBudget("#Cost-" + LineItemActual[i].Period);
                         
                     }
                     
@@ -396,7 +398,8 @@
                             $("#trLine" + ids[i].toString()).find('input').each(function () {
                                 if ($(this).val().trim() != '') {
                                     var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                                    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                                    //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                                    if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$')) {
                                         totalLineCost += parseFloat(currentValue);
                                     }
                                 }
@@ -404,14 +407,14 @@
 
                             document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = totalLineCost;
 
-                            document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(totalLineCost.toString(), false);
-                            SetBudget("#lblTotal-" + ids[i].toString());
-                            $("#lblTotal-" + ids[i].toString()).attr('ov', totalLineCost.toString());
+                            document.getElementById("lblTotal-" + ids[i].toString()).innerHTML = FormatCurrency(totalLineCost.toString(), true);
+                            //SetBudget("#lblTotal-" + ids[i].toString());
+                            $("#lblTotal-" + ids[i].toString()).attr('ov', parseFloat(totalLineCost.toString()));
 
                             // Start - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                             var lblProjected = ReplaceCC(document.getElementById("lblProjected-" + ids[i].toString()).innerHTML);
                             document.getElementById("lblProjected-" + ids[i].toString()).innerHTML = lblProjected;
-                            document.getElementById("lblProjected-" + ids[i].toString()).innerHTML = FormatCurrency(lblProjected.toString(), false);
+                            document.getElementById("lblProjected-" + ids[i].toString()).innerHTML = FormatCurrency(lblProjected.toString(), true);
                             SetBudget("#lblProjected-" + ids[i].toString());
                             // End - Added by Sohel Pathan on 12/09/2014 for PL ticket #760
                         }
@@ -423,11 +426,15 @@
         //when line item's input value will be changed,It will affect to total cost and month wise cost
         $('.lines').find('input').each(function () {
             $(this).keyup(function () {
-                
-                
+                //debugger;
                     var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                currentValue = currentValue == '' ? "0" : currentValue;
-                    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    currentValue = currentValue == '' ? "0" : currentValue;
+                    //if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$'))
+                    //{
+                    //    alert('currentValue:' + currentValue);
+                    //}
+                //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$')){
                         
                         /*Start - Total of line item actuals for month*/
                         var arr = $(this).attr('id').split('-')
@@ -445,8 +452,8 @@
                         
                         totalcost = (oldMonthTotalCost + parseFloat(currentValue)) - oldValue;
                         
-                        $("#Cost-" + arr[1]).text(FormatCurrency(totalcost.toString(),false));
-                        SetBudget("#Cost-" + arr[1]);
+                        $("#Cost-" + arr[1]).text(FormatCurrency(totalcost.toString(),true));
+                        //SetBudget("#Cost-" + arr[1]);
                         $("#Cost-" + arr[1]).attr('ov', totalcost.toString());
                         /*End - Total of line item actuals for month*/
 
@@ -456,21 +463,21 @@
                         }
                         parentTotalCost = (parentTotalCost + parseFloat(currentValue)) - oldValue;
                         
-                        $("#lblTotalCost").html(FormatCurrency(parentTotalCost.toString(), false));
-                        $("#lblTotalCost").attr('ov', parentTotalCost.toString());
-                        SetBudget('#lblTotalCost');
+                        $("#lblTotalCost").html(FormatCurrency(parentTotalCost.toString(), true));
+                        $("#lblTotalCost").attr('ov', parseFloat(parentTotalCost.toString()));
+                        //SetBudget('#lblTotalCost');
                         /*End - Total actual cost*/
                         /*start Particular line item actual cost*/
                         var oldLineItemTotal = 0;
                         var TotalLineItemValue = 0;
-                       
                         if ($("#lblTotal-" + arr[0]).attr('ov') != '') {
                             oldLineItemTotal = parseFloat($("#lblTotal-" + arr[0]).attr('ov'));
                         }
                         TotalLineItemValue = (oldLineItemTotal + parseFloat(currentValue)) - oldValue;
-                        $("#lblTotal-" + arr[0]).text(FormatCurrency(TotalLineItemValue.toString(),false));
+                        $("#lblTotal-" + arr[0]).text(FormatCurrency(TotalLineItemValue.toString(),true));
                         $("#lblTotal-" + arr[0]).attr('ov', TotalLineItemValue.toString());
-                        SetBudget("#lblTotal-" + arr[0]);
+                        var _val = $("#lblTotal-" + arr[0]).html();
+                        //SetBudget("#lblTotal-" + arr[0]);
                         /*End Particular line item actual cost*/
                         $(this).attr('ov', currentValue);
                         calculateRIO();
@@ -484,7 +491,7 @@
                 $("#trCost").find('th').each(function () {
                     if ($(this).attr('ov') != '' && typeof $(this).attr('ov') != 'undefined') {
                         var currentValue = $(this).attr('ov');
-                        if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                        if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$')) {
                             cost += parseFloat(currentValue);
                         }
                     }
@@ -495,16 +502,16 @@
                 $("#trCost").find('input').each(function () {
                     if ($(this).val().trim() != '') {
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
-                        if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                        if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$')) {
                             cost += parseFloat(currentValue);
                         }
                     }
 
                 });
             }
-            $("#lblTotalCost").html(FormatCurrency(cost.toString(), false));
-            SetBudget("#lblTotalCost");
-            $("#lblTotalCost").attr('ov', cost.toString());
+            $("#lblTotalCost").html(FormatCurrency(cost.toString(), true));
+            //SetBudget("#lblTotalCost");
+            $("#lblTotalCost").attr('ov', parseFloat(cost.toString())).toString();
             calculateRIO();
         }
         /*End Added by Mitesh Vaishnav for PL ticket #695*/
@@ -519,7 +526,7 @@
         }
         function getLoadActual() {
             //Added By : Kalpesh Sharma Functional and code Review changes 
-            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble:true });
             $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
 
             document.getElementById('inqP').innerHTML = FormatCommas(document.getElementById('inqP').innerHTML, false);
@@ -535,10 +542,10 @@
             document.getElementById('lblTotalCW').innerHTML = FormatCommas(document.getElementById('lblTotalCW').innerHTML, false);
             
             document.getElementById('rP').innerHTML = FormatCurrency(document.getElementById('rP').innerHTML, true);   // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
-            document.getElementById('lblTotalRevenue').innerHTML = FormatCurrency(document.getElementById('lblTotalRevenue').innerHTML, false);
+            document.getElementById('lblTotalRevenue').innerHTML = FormatCurrency(document.getElementById('lblTotalRevenue').innerHTML, true);
 
             document.getElementById('cP').innerHTML = FormatCurrency(document.getElementById('cP').innerHTML, true);    // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
-            document.getElementById('lblTotalCost').innerHTML = FormatCurrency(document.getElementById('lblTotalCost').innerHTML, false);
+            document.getElementById('lblTotalCost').innerHTML = FormatCurrency(document.getElementById('lblTotalCost').innerHTML, true);
 
 
             var pcost = $("#hdnCp").val();  // Modified by Sohel Pathan on 10/09/2014 for Internal Review Points
@@ -553,10 +560,13 @@
 
         $('#tblActual').find('input').each(function () {
             if (!$(this).parent().parent().hasClass('lines'))
-            $(this).keyup(function () {
+                $(this).keyup(function (e) {
                     var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                     currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
-                    if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    var _isCurrency = $(this).hasClass("currency_dollar");
+                //if (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$')){
+
+                    if (!_isCurrency && currentValue.match('^(0|[1-9][0-9]*)$')) {
                         //  $(this).removeClass("error");
                         var arr = (this).id.split('-');
                         var ida = "lblTotal" + arr[0];
@@ -567,19 +577,44 @@
                                 totalvalue = cvalue + parseFloat(totalvalue);
                             }
                         });
-                        if (arr[0] == 'Revenue' || arr[0]=='Cost') {
-                            document.getElementById(ida).innerHTML = totalvalue;
-                            document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
-                            SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                                $("#" + ida).attr('ov',totalvalue.toString());
-                            }
-                        else {
+                        //if (arr[0] == 'Revenue' || arr[0]=='Cost') {
+                        //    document.getElementById(ida).innerHTML = totalvalue;
+                        //    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                        //    SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                        //        $("#" + ida).attr('ov',totalvalue.toString());
+                        //    }
+                        //else {
                             $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
                             document.getElementById(ida).innerHTML = totalvalue;
                             document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
                             SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
-                        }
+                        //}
 
+                        calculateRIO();
+                    }
+                    
+                    if ((_isCurrency) && (currentValue.match('^(0|[1-9][0-9]*)+(\.[0-9][0-9]?)$'))) {
+                        var arr = (this).id.split('-');
+                        var ida = "lblTotal" + arr[0];
+                        var totalvalue = 0;
+                        $('#tr' + arr[0]).find('input').each(function () {
+                            var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                            if (!isNaN(cvalue)) {
+                                totalvalue = cvalue + parseFloat(totalvalue);
+                            }
+                        });
+                        if (arr[0] == 'Revenue' || arr[0] == 'Cost') {
+                            document.getElementById(ida).innerHTML = totalvalue;
+                            document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                            //SetBudget('#' + ida);    // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                            $("#" + ida).attr('ov', totalvalue.toString());
+                        }
+                        //else {
+                        //    $('#hdn' + ida.toString()).val(totalvalue); // Added by Sohel Pathan on 27/08/2014 for Internal Review Points
+                        //    document.getElementById(ida).innerHTML = totalvalue;
+                        //    document.getElementById(ida).innerHTML = FormatCommas(document.getElementById(ida).innerHTML, false);
+                        //    SetPriceValue(document.getElementById(ida)); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                        //}
                         calculateRIO();
                     }
             });
@@ -680,10 +715,14 @@
             $("#errorMessage").css("display", "none");
             $("#successMessage").css("display", "none");
             $('#tblActual').find('input').each(function () {
-           
 
                 if ($(this).val().trim() != '') {
-                    if ($(this).val().trim().replace(/,/g, '').replace('$', '').match('^(0|[1-9][0-9]*)$')) {
+                    var _isCurrency = $(this).hasClass("currency_dollar");
+                    //alert(_isCurrency);
+                    if ((!_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('$', '').match('^(0|[1-9][0-9]*)$'))) {
+                        $(this).removeClass("error");
+                    }
+                    else if ((_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('.', '').replace('$', '').match('^(0|[1-9][0-9]*)$'))) {
                         $(this).removeClass("error");
                     }
                     else {
@@ -701,7 +740,7 @@
                             PlanTacticId: planTacticId,
                             StageTitle: arr[0],
                             Period: arr[1],
-                            ActualValue: thisValue,
+                            ActualValue: thisValue.toString(),
                             TotalProjectedStageValueActual: totalProjectedStageValueActual,
                             TotalMQLActual: totalMQLActual,
                             TotalCWActual: totalCWActual,
@@ -732,7 +771,6 @@
                 
             });
             // Added by Viral kadiya on 11/12/2014 to update tactic title for PL ticket #946.
-       
             if (title == '') {
                 isError = true;
             }

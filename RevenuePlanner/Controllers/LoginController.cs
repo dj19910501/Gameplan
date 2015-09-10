@@ -60,7 +60,7 @@ namespace RevenuePlanner.Controllers
         /// Login view
         /// </summary>
         /// <returns></returns>
-        public ActionResult Index(string returnUrl = "", bool sessionTimeout=false)
+        public ActionResult Index(string returnUrl = "", bool sessionTimeout = false)
         {
             /* Bug 25:Unavailability of BDSService leads to no error shown to user */
 
@@ -135,12 +135,12 @@ namespace RevenuePlanner.Controllers
                     obj = objBDSServiceClient.ValidateUser(applicationId, form.UserEmail.Trim(), singlehash);
                     if (obj == null)
                         ModelState.AddModelError("", Common.objCached.InvalidLogin);
-                    
+
                     //Start  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     System.Web.Security.FormsAuthentication.SetAuthCookie(obj.UserId.ToString(), false);
                     //End  Manoj Limbachiya : 10/23/2013 - Auto login if coockie is presented
                     Sessions.User = obj;
-                    
+
                     //Start Manoj Limbachiya : 11/23/2013 - Menu filling and Role Permission
                     if (Sessions.AppMenus == null)
                     {
@@ -232,7 +232,7 @@ namespace RevenuePlanner.Controllers
                         MVCUrl defaultURL = Common.DefaultRedirectURL(Enums.ActiveMenu.None);
                         if (defaultURL == null)
                             return RedirectToAction("Index", "Home");
-                        
+
                         if (!string.IsNullOrEmpty(defaultURL.queryString))
                         {
                             return RedirectToAction(defaultURL.actionName, defaultURL.controllerName, new { activeMenu = defaultURL.queryString });
@@ -274,7 +274,7 @@ namespace RevenuePlanner.Controllers
                 {
                     //// Added By: Maninder Singh Wadhva on 11/24/2014.
                     //// Ticket: 942 Exception handeling in Gameplan.
-                    return RedirectToAction("DBServiceUnavailable", "Login");                    
+                    return RedirectToAction("DBServiceUnavailable", "Login");
                 }
 
                 /* Bug 25:Unavailability of BDSService leads to no error shown to user */
@@ -552,73 +552,73 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-            string notificationContactSupport = Enums.Custom_Notification.ContactSupport.ToString();
-            string emailSubject = Sessions.ApplicationName + "/" + CompanyName;
-            Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationContactSupport));
-            //this is to decode the html content which we have encoded into text on client side.added by uday on 28-5-2014 for editor in contact support.
-            Issue = HttpUtility.UrlDecode(Issue, System.Text.Encoding.Default);
+                string notificationContactSupport = Enums.Custom_Notification.ContactSupport.ToString();
+                string emailSubject = Sessions.ApplicationName + "/" + CompanyName;
+                Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationContactSupport));
+                //this is to decode the html content which we have encoded into text on client side.added by uday on 28-5-2014 for editor in contact support.
+                Issue = HttpUtility.UrlDecode(Issue, System.Text.Encoding.Default);
 
-            //Added for send the images in the Email section
-            //Added By : Kalpesh Sharma
-            // #453: Support request Issue field needs to be bigger
+                //Added for send the images in the Email section
+                //Added By : Kalpesh Sharma
+                // #453: Support request Issue field needs to be bigger
 
-            MatchCollection mc = Regex.Matches(Issue, @"\<img(.*?)\"">");
+                MatchCollection mc = Regex.Matches(Issue, @"\<img(.*?)\"">");
 
-            AlternateView tempAlternateView = AlternateView.CreateAlternateViewFromString((""), null, "text/html");
+                AlternateView tempAlternateView = AlternateView.CreateAlternateViewFromString((""), null, "text/html");
 
-            for (int i = 0; i < mc.Count; i++)
-            {
-                var extractBase64String = mc[i].Groups[0].Value;
-
-                if (!string.IsNullOrEmpty(extractBase64String))
+                for (int i = 0; i < mc.Count; i++)
                 {
-                    string RandomNumber = Common.GenerateRandomNumber();
+                    var extractBase64String = mc[i].Groups[0].Value;
 
-                    Issue = Issue.Replace(extractBase64String, "<img src='cid:" + RandomNumber + "'>");
-
-                    var metadataStart = extractBase64String.IndexOf("base64,");
-
-                    // Remove the string if match is found.
-                    extractBase64String = extractBase64String.Remove(0, metadataStart + 7);
-
-                    int lastPosition = Common.GetNthIndex(extractBase64String, '"', 1);
-
-                    if (lastPosition == extractBase64String.Length)
+                    if (!string.IsNullOrEmpty(extractBase64String))
                     {
-                        extractBase64String = extractBase64String.Remove(lastPosition, 1);
-                    }
-                    else
-                    {
-                        extractBase64String = extractBase64String.Remove(lastPosition, (extractBase64String.Length - lastPosition));
-                    }
+                        string RandomNumber = Common.GenerateRandomNumber();
 
-                    byte[] imageBytes = Convert.FromBase64String(extractBase64String);
+                        Issue = Issue.Replace(extractBase64String, "<img src='cid:" + RandomNumber + "'>");
 
-                    LinkedResource linkedResource = new LinkedResource(new MemoryStream(imageBytes));
-                    linkedResource.ContentId = RandomNumber;
-                    linkedResource.TransferEncoding = TransferEncoding.Base64;
-                    tempAlternateView.LinkedResources.Add(linkedResource);
+                        var metadataStart = extractBase64String.IndexOf("base64,");
+
+                        // Remove the string if match is found.
+                        extractBase64String = extractBase64String.Remove(0, metadataStart + 7);
+
+                        int lastPosition = Common.GetNthIndex(extractBase64String, '"', 1);
+
+                        if (lastPosition == extractBase64String.Length)
+                        {
+                            extractBase64String = extractBase64String.Remove(lastPosition, 1);
+                        }
+                        else
+                        {
+                            extractBase64String = extractBase64String.Remove(lastPosition, (extractBase64String.Length - lastPosition));
+                        }
+
+                        byte[] imageBytes = Convert.FromBase64String(extractBase64String);
+
+                        LinkedResource linkedResource = new LinkedResource(new MemoryStream(imageBytes));
+                        linkedResource.ContentId = RandomNumber;
+                        linkedResource.TransferEncoding = TransferEncoding.Base64;
+                        tempAlternateView.LinkedResources.Add(linkedResource);
+                    }
                 }
+
+                //End : Added for send the images in the Email section
+
+                string emailBody = notification.EmailContent.Replace("[EmailToBeReplaced]", emailId).Replace("[IssueToBeReplaced]", Issue);
+                AlternateView htmltextview = AlternateView.CreateAlternateViewFromString(("<html><body>" + emailBody + "</body></html>"), null, "text/html");
+
+                foreach (LinkedResource item in tempAlternateView.LinkedResources)
+                {
+                    htmltextview.LinkedResources.Add(item);
+                }
+
+                var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true, htmltextview); //email will be sent to Support email Id defined in web.config
+                if (success == 1)
+                {
+                    return Json(true, JsonRequestBehavior.AllowGet);
+                }
+                else
+                    return Json(false, JsonRequestBehavior.AllowGet);
             }
-
-            //End : Added for send the images in the Email section
-
-            string emailBody = notification.EmailContent.Replace("[EmailToBeReplaced]", emailId).Replace("[IssueToBeReplaced]", Issue);
-            AlternateView htmltextview = AlternateView.CreateAlternateViewFromString(("<html><body>" + emailBody + "</body></html>"), null, "text/html");
-
-            foreach (LinkedResource item in tempAlternateView.LinkedResources)
-            {
-                htmltextview.LinkedResources.Add(item);
-            }
-
-            var success = Common.sendMail(Common.SupportMail, Common.FromSupportMail, emailBody, emailSubject, string.Empty, Common.FromAlias, string.Empty, true, htmltextview); //email will be sent to Support email Id defined in web.config
-            if (success == 1)
-            {
-                return Json(true, JsonRequestBehavior.AllowGet);
-            }
-            else
-                return Json(false, JsonRequestBehavior.AllowGet);
-        }
             catch (Exception e)
             {
                 ErrorSignal.FromCurrentContext().Raise(e);
@@ -692,39 +692,39 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                        BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
-                        objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
-                        objPasswordResetRequest.UserId = objUser.UserId;
-                        objPasswordResetRequest.AttemptCount = 0;
-                        objPasswordResetRequest.CreatedDate = DateTime.Now;
+                    BDSService.PasswordResetRequest objPasswordResetRequest = new BDSService.PasswordResetRequest();
+                    objPasswordResetRequest.PasswordResetRequestId = Guid.NewGuid();
+                    objPasswordResetRequest.UserId = objUser.UserId;
+                    objPasswordResetRequest.AttemptCount = 0;
+                    objPasswordResetRequest.CreatedDate = DateTime.Now;
 
-                        string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
+                    string PasswordResetRequestId = objBDSServiceClient.CreatePasswordResetRequest(objPasswordResetRequest);
 
-                        if (PasswordResetRequestId == string.Empty)
-                        {
-                            ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
-                        }
-                        else
-                        {
-                            // Send email
-                            string notificationShare = "";
-                            string emailBody = "";
-                            Notification notification = new Notification();
-                            notificationShare = Enums.Custom_Notification.ResetPasswordLink.ToString();
-                            notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
+                    if (PasswordResetRequestId == string.Empty)
+                    {
+                        ModelState.AddModelError("", Common.objCached.ServiceUnavailableMessage);
+                    }
+                    else
+                    {
+                        // Send email
+                        string notificationShare = "";
+                        string emailBody = "";
+                        Notification notification = new Notification();
+                        notificationShare = Enums.Custom_Notification.ResetPasswordLink.ToString();
+                        notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(notificationShare));
 
-                            //Changes made by Komal rawal for #1328
-                            TempData["UserId"] = objUser.UserId;
-                            string PasswordResetLink = Url.Action("ResetPassword", "Login", new { id = PasswordResetRequestId }, Request.Url.Scheme);
-                            emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
-                                                                 .Replace("[ExpireDateToBeReplaced]", objPasswordResetRequest.CreatedDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
+                        //Changes made by Komal rawal for #1328
+                        TempData["UserId"] = objUser.UserId;
+                        string PasswordResetLink = Url.Action("ResetPassword", "Login", new { id = PasswordResetRequestId }, Request.Url.Scheme);
+                        emailBody = notification.EmailContent.Replace("[PasswordResetLinkToBeReplaced]", "<a href='" + PasswordResetLink + "'>" + PasswordResetLink + "</a>")
+                                                             .Replace("[ExpireDateToBeReplaced]", objPasswordResetRequest.CreatedDate.AddHours(int.Parse(ConfigurationManager.AppSettings["ForgotPasswordLinkExpiration"])).ToString());
 
-                            //string tempUrl = "http://localhost:57856/Login/SecurityQuestion/" + PasswordResetRequestId;
+                        //string tempUrl = "http://localhost:57856/Login/SecurityQuestion/" + PasswordResetRequestId;
 
-                            Common.sendMail(objUser.Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
+                        //Common.sendMail(objUser.Email, Common.FromMail, emailBody, notification.Subject, string.Empty);
 
 
-                            form.IsSuccess = true;
+                        form.IsSuccess = true;
                     }
                 }
             }
@@ -932,24 +932,26 @@ namespace RevenuePlanner.Controllers
                     else
                     {
 
-                if (string.IsNullOrEmpty(Convert.ToString(TempData["UserId"])))
-                {
-                    return RedirectToAction("Index", "Login", new { returnUrl = "" });
-                }
-                else
-                {
+                        //if (string.IsNullOrEmpty(Convert.ToString(TempData["UserId"])))                //Commented by Rahul Shah on 09/09/2015 for #1577   
+                        if (string.IsNullOrEmpty(Convert.ToString(objPasswordResetRequest.UserId)))      //Added by Rahul Shah on 09/09/2015 for #1577   
+                        {
+                            return RedirectToAction("Index", "Login", new { returnUrl = "" });
+                        }
+                        else
+                        {
                             objPasswordResetRequest.PasswordResetRequestId = PasswordResetRequestId;
                             objPasswordResetRequest.IsUsed = true;
                             objBDSServiceClient.UpdatePasswordResetRequest(objPasswordResetRequest);
-                    Guid UserId = Guid.Parse(TempData["UserId"].ToString());
+                            //Guid UserId = Guid.Parse(TempData["UserId"].ToString());                      //Commented by Rahul Shah on 09/09/2015 for #1577
+                            Guid UserId = objPasswordResetRequest.UserId;                               //Added by Rahul Shah on 09/09/2015 for #1577  
 
-                    TempData["UserId"] = null;
+                            TempData["UserId"] = null;
 
-                    ResetPasswordModel objResetPasswordModel = new ResetPasswordModel();
+                            ResetPasswordModel objResetPasswordModel = new ResetPasswordModel();
 
-                    objResetPasswordModel.UserId = UserId;
+                            objResetPasswordModel.UserId = UserId;
 
-                    return View(objResetPasswordModel);
+                            return View(objResetPasswordModel);
                         }
                     }
                 }

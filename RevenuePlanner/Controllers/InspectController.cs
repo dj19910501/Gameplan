@@ -2920,8 +2920,8 @@ namespace RevenuePlanner.Controllers
                                     deleteMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
 
                                     //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                                    Int64 projectedStageValue = 0, mql = 0, cw = 0, cost = 0;
-                                    double revenue = 0;
+                                    //Int64 projectedStageValue = 0, mql = 0, cw = 0, cost = 0;
+                                    double revenue = 0, projectedStageValue = 0, mql = 0, cw = 0, cost = 0;
 
                                     //// If Actuals value exist then save Actuals values.
                                     if (actualResult.IsActual)

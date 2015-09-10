@@ -173,7 +173,7 @@ namespace RevenuePlanner.Models
 
         public string Period { get; set; }
 
-        public long ActualValue { get; set; }
+        public double ActualValue { get; set; }
 
         public long TotalProjectedStageValueActual { get; set; }
 

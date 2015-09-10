@@ -213,7 +213,7 @@
             function key_check(e) {
                 //Start modified by Mtesh vaishnav for PL ticket #1071 issue
                 // Allow: backspace, delete, tab, escape, enter and .
-                if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110]) !== -1 ||
+                if ($.inArray(e.keyCode, [8, 9, 27, 13, 46, 110, 190]) !== -1 ||
                     //        // Allow: Ctrl+A
                    (e.keyCode == 65 && e.ctrlKey === true) ||
                     //        // Allow: home, end, left, right
