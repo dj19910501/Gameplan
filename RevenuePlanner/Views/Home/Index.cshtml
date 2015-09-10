@@ -553,6 +553,24 @@
 
                             <p></p>
                         </div>
+                <div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
+                    <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                        Activity Distribution
+                    </span>
+                    @*<p style="margin: 13px 4px 0;word-break: break-all;word-break:break-all">
+                    </p>*@
+                        <div id="chartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;display:none;">
+                            <div id="JAN" style="margin-left:3px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
+                            <div id="APR" style="margin-left: 35px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">A</div>
+                            <div id="JUL" style="margin-left: 69px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
+                            <div id="OCT" style="margin-left: 101px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">O</div>
+                            <div id="DEC" style="margin-left: 123px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">D</div>
+                            <div id="border" style="border: 1px solid; width: 100%; float: left; margin-top: 63px;margin-left:-5px;"></div>
+                        </div>
+                    <div id="AttachChartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;">
+                    </div>
+
+                    </div>
                         @*<div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
                         <span style="color:#918E89;font-size:15px;  font-weight: 600;">
                             Tactic Distribution
@@ -733,6 +751,7 @@
     var pid = $('#PlanId').val();
     var CurrentPlanId = pid;
     var isDataModified = false; // Added by Sohel Pathan on 13/11/2014 for PL ticket #933.
+    var GanttTaskData;// Added By Nishant Sheth #1533 for color bar
 </script>
 
 @if (activeMenu.ToLower() == "plan") //// Added by Komal Rawal for new Homepage UI
@@ -1602,7 +1621,13 @@
 
     function CallPDF() {
         //  $("#gantt_here").css("Width", $("#testdiv").width());
+      
+        $.each(GanttTaskData.data, function () {
+            this.color = '#'+this.colorcode;
+        });
+        
         gantt.init("gantt_here");
+        gantt.parse(GanttTaskData);
         var htmltestdiv = '';
         htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
         htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
@@ -1914,6 +1939,47 @@
         //       <label style="color:#050708;font-weight: 600;">Business Unit:</label>
         //       <span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">Enterprise, Mid-Market, SMB</span>
         //   </p>
+        //var ChartHtml = $("#chartCanvas").html();
+        //var Canvas = $("#chart2").find(".dhx_canvas_text");
+        //var i = 0;
+        //$.each(Canvas, function () {
+            
+        //    if (i > 4) {
+        //        var left = (0.73 * parseFloat($(this).css('left')));
+        //        var top = (0.67 * parseFloat($(this).css('top')));
+        //        var text = $(this).text();
+        //        var BarHeight = ((70.6 - parseFloat(top))/1.667);
+        //        //ChartHtml += "<div style='margin-left:" + left + "%;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;height:80%'>";
+        //        ChartHtml += "<div style='margin-top:" + top + "%;margin-left:" + left + "%;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;height:70.6%'>";
+        //        ChartHtml += text;
+        //        ChartHtml += "<div style='width:62.5%;background-color: #C633C9;height:" + BarHeight + "%;'></div>";
+        //        ChartHtml += "</div>";
+        //        //ChartHtml += "</div>";
+        //    }
+        //    i++;
+        //});
+
+        var ChartHtml = $("#chartCanvas").html();
+        var Canvas = $("#chart2").find(".dhx_canvas_text");
+        var i = 0;
+        var AttachChartHtml = ChartHtml;
+        $.each(Canvas, function () {
+            
+            if (i > 4) {
+                var left = $(this).css('left');
+                var top = $(this).css('top');
+                var text = $(this).text();
+                var BarHeight = 55 - parseInt(top);
+                AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                AttachChartHtml += text;
+                AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                AttachChartHtml += "</div>";
+            }
+            i++;
+        });
+
+        $("#AttachChartCanvas").html('');
+        $("#AttachChartCanvas").html(AttachChartHtml);
         var headerhtml = $("#testdiv").html();
         //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
         var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
@@ -2458,7 +2524,7 @@ function AjaxRequest() {
             },
             dataType: "json",
             success: function (data) {
-               
+                
                 if (data.serviceUnavailable != 'undefined' && data.serviceUnavailable == '#') {
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
@@ -2533,6 +2599,7 @@ function AjaxRequest() {
                         $('#marketing-activities').hide();
                     }
 
+                    //GanttTaskData = data.taskData; // Add By Nishant Sheth
                     renderGantt(data.taskData);
                     var w1 = window.innerWidth;
                     var w3 = document.body.clientWidth;
@@ -2747,7 +2814,8 @@ function renderGantt(taskData) {
     var tasks = {
         data: taskData
     };
-
+    
+    GanttTaskData = tasks;// Add By Nishant Sheth
     $.each(tasks.data, function (index, objData) {
         objData.start_date = new Date(objData.start_date);
     });
