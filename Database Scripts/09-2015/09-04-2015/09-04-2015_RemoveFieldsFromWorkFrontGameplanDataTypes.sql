@@ -10,7 +10,11 @@
   if exists (select * from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
 	[dbo].[IntegrationType].Code ='WorkFront' ) )
   begin
-    delete from [dbo].[GameplanDataType] where GameplanDataTypeId in 
+    delete FROM IntegrationInstanceDataTypeMapping where GameplanDataTypeId in 
+	 (select GameplanDataTypeId from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
+	[dbo].[IntegrationType].Code ='WorkFront' ) and DisplayFieldName = 'Owner')
+
+	delete from [dbo].[GameplanDataType] where GameplanDataTypeId in 
 	 (select GameplanDataTypeId from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
 	[dbo].[IntegrationType].Code ='WorkFront' ) and DisplayFieldName = 'Owner')
  end
@@ -21,7 +25,11 @@
   if exists (select * from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
 	[dbo].[IntegrationType].Code ='WorkFront' ) )
   begin
-    delete from [dbo].[GameplanDataType] where GameplanDataTypeId in 
+    delete FROM IntegrationInstanceDataTypeMapping where GameplanDataTypeId in 
+	 (select GameplanDataTypeId from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
+	[dbo].[IntegrationType].Code ='WorkFront' ) and DisplayFieldName = 'Start Date')
+
+	delete from [dbo].[GameplanDataType] where GameplanDataTypeId in 
 	 (select GameplanDataTypeId from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
 	[dbo].[IntegrationType].Code ='WorkFront' ) and DisplayFieldName = 'Start Date')
  end
@@ -32,6 +40,10 @@
   if exists (select * from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
 	[dbo].[IntegrationType].Code ='WorkFront' ) )
   begin
+  delete FROM IntegrationInstanceDataTypeMapping where GameplanDataTypeId in 
+	 (select GameplanDataTypeId from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
+	[dbo].[IntegrationType].Code ='WorkFront' ) and DisplayFieldName = 'End Date')
+
     delete from [dbo].[GameplanDataType] where GameplanDataTypeId in 
 	 (select GameplanDataTypeId from [dbo].[GameplanDataType] where IntegrationTypeId in (select IntegrationTypeId from [dbo].[IntegrationType] where 
 	[dbo].[IntegrationType].Code ='WorkFront' ) and DisplayFieldName = 'End Date')
