@@ -668,7 +668,8 @@
         $('#divTab').find("input,input[type=text],textarea,select").each(function () {
             var iv = $(this).attr("myValue");
             if ($(this).val() != iv) {
-                changed = true;
+                //changed = true;
+                changed = false;
             }
         });
         return changed;
