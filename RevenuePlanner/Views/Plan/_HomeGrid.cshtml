@@ -299,10 +299,10 @@
         HomeGrid.forEachRow(function (rowid) {
        
             var MQL = HomeGrid.cells(rowid, 10).getValue();
-
+            if(MQL!="--")
             HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
             var Revenue = HomeGrid.cells(rowid, 11).getValue();
-
+            if (Revenue != "--")
             HomeGrid.cells(rowid, 11).setValue(FormatNumber(Revenue, false));
 
             var psv = HomeGrid.cells(rowid, 9).getValue().split("_");
@@ -630,6 +630,7 @@
                             else
                                 HomeGrid.cells(rowId, 9).setValue(projectedStageValue + " " + stagetitle);
                             HomeGrid.cells(rowId, 9).setAttribute("stage", stagetitle);
+                            HomeGrid.cells(rowId, 9).setAttribute("tactictype", tacticTypeId);
                             GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue, data.stageId);
                             }
                         });
