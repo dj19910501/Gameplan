@@ -1117,7 +1117,7 @@ body {
 .shadow-scroll, .shadow-scroll-gantt {
     background: url("../images/shadow-sidebar-horizontal.png") repeat-x;
     height: 17px;
-    position: relative;
+    /*position: relative;*/  /*Commented by Rahul Shah on 08/09/2015 for PL #1582 */
     top: -17px;
     margin-left: 6px; /*Added by Sohel on 31st March 2014 for PL #362*/
     width: 98.5%; /*Added by Sohel on 31st March 2014 for PL #362*/
