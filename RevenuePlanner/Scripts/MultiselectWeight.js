@@ -88,7 +88,6 @@
                             }
                         }
                         else {
-                            
                             menu.toggleClass('dropdown-block minimum-width215');
                             menu.find('.text_ellipsis').toggleClass('minmax-width200');
                             menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
@@ -100,8 +99,6 @@
                             menu.find('p').addClass('single-p');
                             menu.find('tr').addClass('trdropdownhover');
                             menu.find('#aclose_tag').css('display', 'none');
-
-                            
                         }
                     }
                 });
@@ -175,8 +172,48 @@
 
                 });
                 menu.find('.first_show').on('click', function (e) {
+                    filters.chekboxIds = [];
                     var checkbx = $(this).find('input:checkbox');
+                    var ParentValue = checkbx.attr('name');
                     var title = "";
+                    //Modified by Komal Rawal for #1538 Attribute dependency
+                    if (menu.find('.advance_a').attr('mode') != singleMode) {
+                        $(this).parent().parent().find("input[type=checkbox]").each(function () {
+                            if ($(this).attr('checked') == 'checked') {
+                                var chkid = $(this).val();
+                                if (chkid != undefined && chkid != 'undefined') {
+                                    filters.chekboxIds.push(chkid);
+                                }
+                            }
+                        });
+                    }
+                    else
+                        filters.chekboxIds.push(checkbx.val());
+
+                    $('#CustomHtmlHelperfield').find('.span3').each(function () {
+                        var cnt = 0;
+                        if ($(this).attr('parentid') == ParentValue) {
+                            var maindiv = $(this);
+                            $(this).css("display", "inline-block");
+                            $(this).find('.trdropdownhover').css("display", "none");
+                            $(this).find('.trdropdownhover').each(function () {
+                                var ParentOptionId = $(this).attr('parentid');
+                                var i;
+                                for (i = 0 ; i < filters.chekboxIds.length; i++) {
+                                    if (ParentOptionId == filters.chekboxIds[i]) {
+                                        if ($(this).css("display") == "none") {
+                                            $(this).css("display", "block");
+                                            cnt++;
+                                        }
+                                    }
+                                }
+
+                            });
+                            if (cnt == 0)
+                                maindiv.css("display", "none");
+                        }
+                    });
+                    //End
                     Button.find('p:first').text("");
                     if (menu.find('.advance_a').attr('mode') == singleMode) {
                         menu.find('input:checkbox').removeAttr('checked');
@@ -189,6 +226,7 @@
                     }
                     else {
                         title = DivideEqualInputValue(menu);
+
                         if (title.indexOf(',') > 0) {
                             title = title.slice(0, -2);
                             Button.find('p:first').text(title);

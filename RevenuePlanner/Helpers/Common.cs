@@ -4339,7 +4339,8 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
-            
+           
+            List<CustomFieldDependency> DependencyList = db.CustomFieldDependencies.Where(a=>a.IsDeleted == false).Select(a => a).ToList();
             var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true)).ToList().Select(a => new CustomFieldModel
             {
                 customFieldId = a.CustomFieldId,
@@ -4348,21 +4349,52 @@ namespace RevenuePlanner.Helpers
                 description = a.Description,
                 isRequired = a.IsRequired,
                 entityType = a.EntityType,
+                isChild = DependencyList.Select(list => list.ChildCustomFieldId).ToList().Contains(a.CustomFieldId) ? true : false,
+                ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
                 option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
                 {
+                    ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
+                    ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).FirstOrDefault(),
                     customFieldOptionId = o.CustomFieldOptionId,
+                    ChildOptionIds = DependencyList.Select(list => list.ChildOptionId).ToList(),
                     value = o.Value
                 }).OrderBy(o => o.value).ToList()
 
             }).OrderBy(a => a.name,new AlphaNumericComparer()).ToList();
             List<int> customFieldIds = lstCustomFields.Select(cs => cs.customFieldId).ToList();
             var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
+            var Parentid = DependencyList.Select(a => a.ParentOptionId).ToList();
+            var childOptionid = DependencyList.Select(a => a.ChildOptionId.ToString()).ToList();
+            var childid = DependencyList.Select(a => a.ChildCustomFieldId).ToList();
+            List<string> ListIDs = Parentid.Select(a => a.ToString()).ToList();
+            List<string> entityvalues = EntityValue.Select(a=>a.Value).ToList();
             foreach (var CustomFieldId in customFieldIds)
             {
                 lstCustomFields.Where(c => c.customFieldId == CustomFieldId).FirstOrDefault().value = EntityValue.Where(ev => ev.CustomFieldId == CustomFieldId).Select(ev => ev.Value).ToList();
+            
             }
-           
-            return lstCustomFields;
+
+            foreach (var item in EntityValue)
+            {
+                bool IsSelected = false;
+                if (ListIDs.Where(v => entityvalues.Contains(v)).Any())
+                {
+                    IsSelected = childid.Contains(item.CustomFieldId) && childOptionid.Contains(item.Value);
+                }
+                lstCustomFields.Where(c => c.customFieldId == item.CustomFieldId).FirstOrDefault().IsSelected = IsSelected;
+
+            }
+            List<CustomFieldModel> finalList = new List<CustomFieldModel>();
+            foreach (var item in lstCustomFields.Where(cfParent => cfParent.ParentId == 0).ToList())
+            {
+                finalList.Add(item);
+                foreach (var childItem in lstCustomFields.Where(cfParent => cfParent.ParentId == item.customFieldId).ToList())
+                {
+                    finalList.Add(childItem);
+                }
+            }
+          
+            return finalList;
         }
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #718 

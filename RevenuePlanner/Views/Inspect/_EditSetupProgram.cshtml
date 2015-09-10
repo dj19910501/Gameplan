@@ -91,7 +91,7 @@
         @Html.Hidden("hdnRedirect", (bool)ViewBag.RedirectType, new { id = "hdnRedirectType" })
         @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })       @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
 
-        <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting" style="margin-bottom: 0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
             <div class="span6" id="inspect-modal-left-column1">
                 <p>@Html.Raw("Parent Campaign")</p>
                 @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(CampaignTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = CampaignTitle })
@@ -99,7 +99,7 @@
                 <p>Description</p>
                 @Html.TextArea("Description", Model.Description, new { id = "Description", @class = "span12 text-area-size input-setup", placeholder = "Optional", rows = "3" })  @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
             </div>
-            <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left: 10px;">
                 <p>@Html.Raw("Owner")</p>
 
                 @if (IsProgramEdit)
@@ -143,7 +143,9 @@
 
             </div>
 
-            <div class="span3" id="inspect-modal-left-column3">
+
+
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
                 <p>Program Budget</p>
                 @Html.TextBoxFor(model => model.ProgramBudget, new { @class = "currency_dollar input-setup", placeholder = "Required", require = "true", id = "txtProgramBudget", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
                 <p>Remaining Campaign Budget</p>
@@ -178,7 +180,7 @@
                 <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
             </li>
         </ul>
-        <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
             @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanProgramId, Enums.EntityType.Program.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
         </div>
                  

@@ -53,7 +53,7 @@
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "PlanTacticId" })
      @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting" style="margin-bottom:0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom:0px;">
 
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Parent Campaign")</p>
@@ -67,7 +67,7 @@
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
-        <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left: 10px;">
             <p>@Html.Raw("Parent Tactic")</p>
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
               @if (!isOtherLineitem)
@@ -80,7 +80,7 @@
 
 
         </div>
-        <div class="span3" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
             <p>@Html.Raw("Owner")</p>
             @Html.TextBox("txtOwner", owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
             <p>@Html.Raw("Line Item Cost")</p>

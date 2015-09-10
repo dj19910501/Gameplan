@@ -8213,7 +8213,8 @@ input.icon-check-blue {
 
 .integration-review-imglink{
     height: 79px !important;
-    width: 134px !important;
+    text-align: left;/*by bheru 26-8-2015*/
+    width: 106px !important;/*by bheru 26-8-2015*/
     display: block;
     border: 1px solid;
     border-color: transparent;
@@ -14844,7 +14845,7 @@ div.clue-bottom-default .cluetip-arrows {
 
 /*start :  conversion - Ravindra Singh 07/02/2015 */
 .Attribute-content-text {
-   width: 100%;
+   width: 94%;/*by bheru 31-8-2015*/
     height: 22px;
     border: 1px solid #ccc;
     word-wrap: break-word;
@@ -15669,4 +15670,47 @@ float:right;
     .review_block_bottom .size65x38 {
         width: 52px !important;
     }
+}
+	  
+	 .partial_wrapper
+{
+height:100%;
+}
+
+
+/* by bheru 26-8-2015*/
+.row-fluid .integration-block {
+ margin-left: 5px;
+    width: 21%;
+}
+.integration-block .size65x38 {
+margin:0 auto;    
+float:none;
+}
+.inspect_attribute_parent .paddingleft25px{
+padding-left:0;
+}
+/*.inspect_attribute_parent .span3:nth-child(4n+1){
+padding-left:0;
+clear:both;
+float:left;
+}*/
+.inspect_attribute_parent .span3{
+  display: inline-block;
+  float: none;
+  padding: 0 1%;
+  vertical-align: top;
+  width: 23%;
+}
+.inspect_attribute_parent .dropdown_new_btn {
+margin-right:0;
+width:232px;
+}
+.review_no_padding {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-top:0 !important
+}
+.no_margin_top {
+margin-top:0px !important
 }

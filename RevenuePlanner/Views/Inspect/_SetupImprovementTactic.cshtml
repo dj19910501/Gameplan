@@ -86,7 +86,7 @@
                 </div>
             }
         </div>
-        <div class="span3" id="inspect-modal-left-column2" style="margin-left: 10px;">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left: 10px;">
             <p>Improvement Tactic Type <span class="required-asterisk">*</span></p>
             @if (InspectMode == Enums.InspectPopupMode.Edit.ToString() || InspectMode == Enums.InspectPopupMode.Add.ToString())
             {
@@ -95,10 +95,11 @@
                 @Html.TextBoxFor(model => model.Cost, new { placeholder = "$0", @class = "input-small truncate resubmission input-setup", style = "", id = "txtCost", label = "Cost" })
                 <p>Effective Date</p>
                 <span style="position: relative;">
-                    <div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
+                    <div class="dp datepicker input-append date without-margin calendar-width sidebar-datepicker" id="dp_start" data-date="@Model.EffectiveDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker" style="padding:0 0 4px;">
                         @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "span12 input-small truncate resubmission input-setup", id = "txtDate", label = "Effective_Date" })
                         <span class="add-on">
-                            <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png"></span>
+                            <img class="marginTop-5px" src="~/Content/images/gray-calendar-icon.png">
+                        </span>
                     </div>
                 </span>
             }
@@ -111,7 +112,7 @@
                 @Html.TextBoxFor(model => model.EffectiveDate, new { @class = "input-small truncate", style = "background:#F2F2F2;", id = "txtDate", @readonly = "true" })
             }
         </div>
-        <div class="span3" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
             <p>Owner</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
 

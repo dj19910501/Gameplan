@@ -111,7 +111,7 @@
     @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
      
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom: 0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
 
             <div class="cf width100">
@@ -147,7 +147,7 @@
             <p class="margin-top-10">Description</p>
             @Html.TextArea("Description", Model.Description, new { placeholder = "Optional", @class = "span12 text-area-size input-setup", id = "Description" })   @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
         </div>
-        <div class="span3" id="inspect-modal-left-column2">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             <span style="min-width: 100%; position: relative; display: block;">
                 @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
@@ -171,7 +171,7 @@
                 </div>
             </span>
         </div>
-        <div class="span3" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
             <p>Owner <span class="required-asterisk">*</span></p>
             @if (IsTackticAddEdit)
             {
@@ -230,7 +230,7 @@
         </li>
     </ul>
 
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
     </div>   
 

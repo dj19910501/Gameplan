@@ -67,6 +67,9 @@
     <Compile Include="Models\CustomField.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\CustomFieldDependency.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CustomFieldOption.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

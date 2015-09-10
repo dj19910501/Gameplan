@@ -434,12 +434,18 @@ namespace RevenuePlanner.Models
         public string customFieldType { get; set; }
         public string description { get; set; }
         public bool isRequired { get; set; }
+        public bool isChild { get; set; }
+        public int ParentId { get; set; }
+        public bool IsSelected { get; set; }
+       
         public string entityType { get; set; }
         public List<CustomFieldOptionModel> option { get; set; }
+       
         public List<string> value { get; set; }
 
     }
 
+ 
     /// <summary>
     /// Added By : Mitesh Vaishnav for PL ticket #718
     /// Added Date : 15/09/2014
@@ -447,8 +453,11 @@ namespace RevenuePlanner.Models
     /// </summary>
     public class CustomFieldOptionModel
     {
+        public bool ChildOptionId { get; set; }
         public int customFieldOptionId { get; set; }
+        public List<int?> ChildOptionIds { get; set; }
         public string value { get; set; }
+        public int ParentOptionId { get; set; }
     }
 
     /// <summary>

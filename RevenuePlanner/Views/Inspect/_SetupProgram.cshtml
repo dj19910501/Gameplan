@@ -23,7 +23,7 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanProgramId)
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="padding-top:15px;margin-bottom:0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="padding-top:15px;margin-bottom:0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Parent Campaign")</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(program.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.CampaignTitle })
@@ -38,7 +38,7 @@
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
-        <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
+        <div class="span3" id="inspect-modal-left-column2 no_margin_top" style="margin-left:10px;">
             <p>@Html.Raw("Owner")</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = program.Owner })
             <p>Start Date</p>
@@ -49,7 +49,8 @@
             @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
   
         </div>
-        <div class="span3" id="inspect-modal-left-column3">
+
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
              <p>@Html.Raw("Program Budget")</p>
             @Html.TextBox("txtprogramBudget",programBudget, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
            
@@ -82,7 +83,7 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent">
          @HtmlHelpers.GenerateCustomFieldsForInspectPopup(program.PlanProgramId, Enums.EntityType.Program.ToString(), 0)
     </div>     
     //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section                           

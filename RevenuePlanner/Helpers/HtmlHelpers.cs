@@ -4257,6 +4257,11 @@ namespace RevenuePlanner.Helpers
                 //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                 //// User custom Restrictions
                 var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
+                MRPEntities db = new MRPEntities();
+                  List<int> customFieldIds = customFieldList.Select(cs => cs.customFieldId).ToList();
+                  var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
+                  List<string> entityvalues = EntityValue.Select(a => a.Value).ToList();
+                
                 //// Start - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                 List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
                 if (mode != Enums.InspectPopupMode.ReadOnly.ToString() && section == Enums.EntityType.Tactic.ToString())
@@ -4268,7 +4273,7 @@ namespace RevenuePlanner.Helpers
                 //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
                 bool IsDefaultCustomRestrictionsEditable = Common.IsDefaultCustomRestrictionsEditable();
                 string className, inputclassName, customFieldEntityValue, DropDownStyle, divPosition, require, name,
-                        displayCheckbox, selectionMode, footerText, singlehover, trhover, footerclose, enableCheck, inputcolorcss;
+                        displayCheckbox, selectionMode, footerText, singlehover, trhover, footerclose, enableCheck, inputcolorcss, DisplayStyle;
                 bool editableOptions, isEditable;
                 foreach (var item in customFieldList)
                 {
@@ -4280,6 +4285,17 @@ namespace RevenuePlanner.Helpers
                     else
                     {
                         className += "\" style=\"clear:both;";
+                    }	 
+
+ DisplayStyle = " style=\"";
+                    if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !item.IsSelected)
+                    {
+                        DisplayStyle += "display:none;";
+                    }
+                    else
+                    {
+                        DisplayStyle += "display:inline-block;";
+
                     }
 
                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
@@ -4296,9 +4312,9 @@ namespace RevenuePlanner.Helpers
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || editableOptions == true || (mode == Enums.InspectPopupMode.ReadOnly.ToString() && item.option.Count > 0))
                     {
                         if (item.isRequired)
-                            sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
+                            sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
                         else
-                            sb.Append("<div class=\"" + className + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
+                            sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
                     }
 
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
@@ -4395,6 +4411,26 @@ namespace RevenuePlanner.Helpers
 
                                 foreach (var objOption in item.option)
                                 {
+                                     
+                                  
+                                    DisplayStyle = " style=\"";
+                                    if (item.isChild == true)
+                                    {
+                                        if (objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString()))
+                                        {
+                                            DisplayStyle += "display:block;";
+                                        }
+                                        else
+                                        {
+                                            DisplayStyle += "display:none;";
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DisplayStyle += "display:block;";
+
+                                    }
                                     //// Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                                     isEditable = false;
                                     if (userCustomRestrictionList.Count() == 0 && IsDefaultCustomRestrictionsEditable)  //// Added by Sohel Pathan on 02/02/2015 for PL ticket #1156
@@ -4416,12 +4452,25 @@ namespace RevenuePlanner.Helpers
                                         inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
                                         if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
                                         {
+                                            List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
+                                            var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
+                                            if (item.isChild && !IsSelected)
+                                            {
+                                                name += "Please Select" + ", ";
+                                                inputcolorcss = string.Empty;
+
+                                            }
+                                            else
+                                            {
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
                                             inputcolorcss = string.Empty;
+
+
+                                            }
                                         }
 
-                                        sb.Append("<tr class=\"" + trhover + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                        sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                                     }
                                 }
                                 sb.Append("</tbody><tfoot class=\"dropdown-table-footer\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span>" + footerclose + "</a></td></tr></tfoot></table></div></div></div>");
@@ -4450,15 +4499,44 @@ namespace RevenuePlanner.Helpers
 
                                 foreach (var objOption in item.option)
                                 {
+                                    DisplayStyle = " style=\"";
+                                    if (item.isChild == true && entityvalues.Contains(objOption.ParentOptionId.ToString()))
+                                    {
+                                        if (objOption.ChildOptionId == true)
+                                        {
+                                            DisplayStyle += "display:block;";
+                                        }
+                                        else
+                                        {
+                                            DisplayStyle += "display:none;";
+
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DisplayStyle += "display:block;";
+
+                                    }
                                     enableCheck = string.Empty;
 
                                     if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
                                     {
+                                        List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
+                                        var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
+                                        if (item.isChild && !IsSelected)
+                                        {
+                                            name += "Please Select" + ", ";
+
+                                        }
+                                        else
+                                        {
                                         name += objOption.value + ", ";
                                         enableCheck = "checked=\"checked\"";
 
                                     }
-                                    sb.Append("<tr class=\"" + trhover + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
+
+                                    }
+                                    sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
                                 }
                                 sb.Append("</tbody><tfoot class=\"programcampaignborder\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span></a></td></tr></tfoot></table></div></div></div>");
                                 if (name.Length > 0)

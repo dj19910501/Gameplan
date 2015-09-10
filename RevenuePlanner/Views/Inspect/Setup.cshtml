@@ -23,7 +23,7 @@
 {
     @Html.HiddenFor(model => model.PlanTacticId)
     
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom:0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom:0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>Parent Campaign</p>
             @Html.TextBox("txtCampaign", HttpUtility.HtmlDecode(tactic.CampaignTitle), new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.CampaignTitle })
@@ -37,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
+        <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left:10px;">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             @Html.TextBox("txtTacticTypeTitle", TacticTypeTitle, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtTacticTypeTitle", @readonly = "true", @title=TacticTypeTitle })
             <p>Tactic Planned Cost</p>
@@ -47,7 +47,7 @@
             <p>End Date</p>
             @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
         </div>
-        <div class="span3" id="inspect-modal-left-column3">
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
             <p>Owner <span class="required-asterisk">*</span></p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tactic.Owner })
             <p style="width: 110%;">Deployed to Integration</p>
@@ -63,7 +63,6 @@
                           }</label>
                 <input type="text" value="@Model.ProjectedStageValue" readonly="true" id = "txtProjectedStageValue" class="priceValue" />
              </div>
-
              <div class="pull-left" style="width: 47%">
                  <label title="@Html.LabelForMQL("MQLs")" class="inspect-bolder-label">@Html.LabelForMQL("MQLs")</label>
                  <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
@@ -81,7 +80,7 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(tactic.PlanTacticId, Enums.EntityType.Tactic.ToString(),0)
     </div>
    

@@ -22,7 +22,7 @@
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.PlanCampaignId)
-    <div class="inspect-column-parent source-sans-proregular remove-bottom-border" style="margin-bottom:0px;">
+    <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom:0px;">
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
              @*Modified by Viral Kadiya on 11/15/2014 to resolve issue for PL ticket #794*@
@@ -38,7 +38,7 @@
                 <label style="color: #808080" id="last-synced" class="pull-left">@ViewBag.LastSync</label>
             </div>
         </div>
-        <div class="span3" id="inspect-modal-left-column2" style="margin-left:10px;">
+        <div class="span3 no_margin_top " id="inspect-modal-left-column2" style="margin-left:10px;">
             <p>@Html.Raw("Owner")</p>
             @Html.TextBoxFor(model => model.Owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = campaign.Owner })
              <p>Start Date</p>
@@ -46,7 +46,8 @@
             <p>End Date</p>
             @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
         </div>
-        <div class="span3" id="inspect-modal-left-column3">
+
+        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
             <p>@Html.Raw("Campaign Budget")</p>
             @Html.TextBox("txtcampaignBudget",campaignBudget, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
                <div class="content dark inline-ellipsis">
@@ -79,7 +80,7 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(campaign.PlanCampaignId, Enums.EntityType.Campaign.ToString(),0)
     </div>     
     //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section    
