@@ -498,7 +498,7 @@ namespace RevenuePlanner.Controllers
                     foreach (string TId in arrTactictypeIds)
                     {
                         int TacticId;
-                        if (int.TryParse(TId, out TacticId))
+                        if (int.TryParse(TId.Remove(0, 4), out TacticId))
                         {
                             lstTactictypeIds.Add(TacticId);
                         }
@@ -3678,7 +3678,8 @@ namespace RevenuePlanner.Controllers
             string baseUrl = domain + "/Report/Index/";
 
             HtmlToPdfConverter htmlToPdfConverter = new HtmlToPdfConverter();
-            htmlToPdfConverter.LicenseKey = "4W9+bn19bn5ue2B+bn1/YH98YHd3d3c=";
+            //htmlToPdfConverter.LicenseKey = "4W9+bn19bn5ue2B+bn1/YH98YHd3d3c=";
+            htmlToPdfConverter.LicenseKey = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"]);
             //htmlToPdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
             // htmlToPdfConverter.ClipHtmlView = true;
             htmlToPdfConverter.HtmlViewerWidth = 1024;
