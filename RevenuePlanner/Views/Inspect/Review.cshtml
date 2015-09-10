@@ -73,7 +73,7 @@
                 </div>
             }
         </div>
-        <div class="cf margin-top40 width96 textalign-mozcenter border-bottom-div" style="padding-bottom: 5px;">
+        <div class="cf margin-top40 width96 textalign-mozcenter border-bottom-div review_wrapper" style="padding-bottom: 5px;">
 
             <div class="pull-left size65x38">
                 <div class="owner"></div>
@@ -97,15 +97,7 @@
                     }
                 </div>
             }
-
-        </div>
-
-
-        <!--Begin PL#1462 07 Brad Gray, Aug 2015--> 
-        
-        <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
-            <div class="cf textalign-mozcenter" style="padding-bottom: 5px;">
-                <div class="span3">
+            <div class="span3 integration_review_block">
                     <div class="pull-left size65x38">
                         <div class="integration-review"></div>
                         <div>
@@ -114,6 +106,14 @@
                         <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
                     </div>
                 </div>
+        </div>
+
+
+        <!--Begin PL#1462 07 Brad Gray, Aug 2015--> 
+        
+        <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
+            <div class="cf textalign-mozcenter" style="padding-bottom: 5px;">
+              
                 <div class="span9">
                     @{
                         foreach (var item in ViewBag.IntegrationTypeLinks)
