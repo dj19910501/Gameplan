@@ -291,6 +291,7 @@ namespace RevenuePlanner.Helpers
             Boost = 3,
             Report = 4,
             Pref = 5,
+            Finance=6,
             ExternalService,
             Organization,
             None = 999
@@ -340,6 +341,7 @@ namespace RevenuePlanner.Helpers
             {ActiveMenu.Plan.ToString().ToLower(), "plan"},
             {ActiveMenu.Boost.ToString().ToLower(), "boost"},
             {ActiveMenu.Report.ToString().ToLower(), "report"},
+            {ActiveMenu.Finance.ToString().ToLower(), "finance"},
             {ActiveMenu.Pref.ToString().ToLower(), "user"},
             {ActiveMenu.ExternalService.ToString().ToLower(), "externalservice"},
             {ActiveMenu.Organization.ToString().ToLower(), "organization"}

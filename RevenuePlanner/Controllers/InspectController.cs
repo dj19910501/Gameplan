@@ -830,8 +830,9 @@ namespace RevenuePlanner.Controllers
                     ViewBag.IsServiceUnavailable = false;
 
                     string strUserList = string.Join(",", lstClientUsers);
-                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
-                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                    //List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList,Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
+                   // lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
@@ -1494,8 +1495,9 @@ namespace RevenuePlanner.Controllers
 
 
                     string strUserList = string.Join(",", lstClientUsers);
-                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
-                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                    //List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    //lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
@@ -3233,8 +3235,9 @@ namespace RevenuePlanner.Controllers
 
 
                     string strUserList = string.Join(",", lstClientUsers);
-                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
-                    lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                    //List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
+                    //lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();

@@ -108,22 +108,28 @@ namespace Integration.Eloqua
                 
                 Guid _ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == IntegrationInstanceId).ClientId;
 
+                #region "Old Code"
                 //// Get SalesForce integration type Id.
-                string salesforceCode = Enums.IntegrationType.Salesforce.ToString();
+                //string salesforceCode = Enums.IntegrationType.Salesforce.ToString();
                 //var salesforceIntegrationType = db.IntegrationTypes.Where(type => type.Code == salesforceCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).FirstOrDefault();
                 //int SalesForceintegrationTypeId = Convert.ToInt32(salesforceIntegrationType);
 
-                List<int> salesforceIntegrationType = db.IntegrationTypes.Where(type => type.Code == salesforceCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).ToList();
+                //List<int> salesforceIntegrationType = db.IntegrationTypes.Where(type => type.Code == salesforceCode && type.IsDeleted == false).Select(type => type.IntegrationTypeId).ToList();
 
                 //// Get All SalesForceIntegrationTypeIds to retrieve  SalesForcePlanIds.
                 //List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => instance.IntegrationTypeId.Equals(SalesForceintegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
-                List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => salesforceIntegrationType.Contains(instance.IntegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
+                //List<int> lstSalesForceIntegrationTypeIds = db.IntegrationInstances.Where(instance => salesforceIntegrationType.Contains(instance.IntegrationTypeId) && instance.IsDeleted.Equals(false) && instance.ClientId.Equals(_ClientId)).Select(s => s.IntegrationInstanceId).ToList();
 
                 //// Get all PlanIds whose Tactic data PUSH on SalesForce.
-               // List<int> lstSalesForcePlanIds = lstPlans.Where(objplan => lstSalesForceIntegrationTypeIds.Contains(objplan.Model.IntegrationInstanceId.Value)).Select(objplan => objplan.PlanId).ToList();
-
+                // List<int> lstSalesForcePlanIds = lstPlans.Where(objplan => lstSalesForceIntegrationTypeIds.Contains(objplan.Model.IntegrationInstanceId.Value)).Select(objplan => objplan.PlanId).ToList();
+                
+                #endregion
+                
                 //// Get All PlanIds.
                 List<int> AllplanIds = lstPlans.Select(objplan => objplan.PlanId).ToList();
+
+                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull MQL: Total Model(s) - " + lstModels.Count + ", Total Plan(s) - " + AllplanIds.Count + " associated with this Instance.");
+                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "Pull MQL: Total Model(s) - " + lstModels.Count + ", Total Plan(s) - " + AllplanIds.Count + " associated with this Instance.", Enums.SyncStatus.Info, DateTime.Now));
 
                 //// Get Eloqua PlanIds.
                 //List<int> lstEloquaplanIds = lstPlans.Where(objplan => !lstSalesForcePlanIds.Contains(objplan.PlanId)).Select(plan => plan.PlanId).ToList();
@@ -227,6 +233,9 @@ namespace Integration.Eloqua
 
                                         //bool isAllCampaignIdExists = true;
                                         //bool isAllMQLDateExists = true;
+                                        // Log: Add count of contact(s) find from eloqua based on ViewID & ListID.
+                                        Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull MQL: Total contact(s) - " + AllplanIds.Count + " retrieved from Eloqua based on ViewID - " + ViewIdValue.ToString() + " and ListID - " + ListIdValue.ToString() + ".");
+                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "Pull MQL: Total contact(s) - " + AllplanIds.Count + " retrieved from Eloqua based on ViewID - " + ViewIdValue.ToString() + " and ListID - " + ListIdValue.ToString() + ".", Enums.SyncStatus.Info, DateTime.Now));
 
                                         for (int i = 0; i < elementsArray.Count(); i++)
                                         {
@@ -319,7 +328,7 @@ namespace Integration.Eloqua
                                                                                                                            tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false).ToList();
-
+                            // Log: Total No. of Tactics find filter by PlanIds.
                             //// Get MQL Level
                             var MQLLevel = db.Stages.Where(ObjStage => ObjStage.Code == Common.StageMQL && ObjStage.ClientId == _ClientId && ObjStage.IsDeleted == false).Select(ObjStage => ObjStage.Level).FirstOrDefault();
 
@@ -328,6 +337,13 @@ namespace Integration.Eloqua
 
                             if (lstSalesForceIntegrationInstanceTacticIds == null)
                                 lstSalesForceIntegrationInstanceTacticIds = new List<string>();
+
+                            // Log: Add Total no. of Salesforce related Ids.
+                            if (lstSalesForceIntegrationInstanceTacticIds.Count > 0)
+                            {
+                                Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull MQL: System pulling MQLs from Salesforce for number of record(s) - " + lstSalesForceIntegrationInstanceTacticIds.Count + ".");
+                                _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "Pull MQL: System pulling MQLs from Salesforce for number of record(s) - " + lstSalesForceIntegrationInstanceTacticIds.Count + ".", Enums.SyncStatus.Info, DateTime.Now));
+                            }
 
                             //// Get Mapping List of EloquaIntegrationInstanceTactic Ids based on SalesForceIntegrationInstanceTacticID(CRMId).
                             List<CRM_EloquaMapping> lstEloquaIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
@@ -360,6 +376,9 @@ namespace Integration.Eloqua
                             List<Plan_Campaign_Program_Tactic> lstTactic = lstEloquaTactic;
                           //  lstSalesForceTactic.ForEach(_salesTac => lstTactic.Add(_salesTac));
 
+                            // Log: Add count of tactic on which Pulling MQL wil process.
+                            Common.SaveIntegrationInstanceLogDetails(IntegrationInstanceId, IntegrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, "Pull MQL: Total number of Tactic(s) - " + lstTactic.Count + " on which system processed Pull MQLs.");
+                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "Pull MQL: Total number of Tactic(s) - " + lstTactic.Count + " on which system processed Pull MQLs.", Enums.SyncStatus.Info, DateTime.Now));
                             #endregion
 
                         #region Manipulate with Tactic Actual Data
