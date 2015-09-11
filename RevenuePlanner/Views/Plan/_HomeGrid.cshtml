@@ -336,7 +336,7 @@
                     }
                     HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
                     var scrolltop = $(".cellselected").offset().top;
-                    $("html").scrollTop(scrolltop);
+                    $(window).scrollTop(scrolltop-100);
                     ///  HomeGrid.showRow((pid));
                   
                 }
@@ -349,7 +349,8 @@
                 {
                     HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
                     var scrolltop = $(".rowselected").offset().top;
-                    $("html").scrollTop(scrolltop);
+                  
+                    $(window).scrollTop(scrolltop-100);
                 }
             }
         });
