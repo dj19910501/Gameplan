@@ -42,10 +42,10 @@
           <Property Name="ObjectId" Type="int" Nullable="false" />
           <Property Name="ParentObjectId" Type="int" />
           <Property Name="ComponentId" Type="int" Nullable="false" />
-          <Property Name="ComponentTitle" Type="nvarchar" MaxLength="256" />
+          <Property Name="ComponentTitle" Type="nvarchar" MaxLength="1000" />
           <Property Name="ComponentType" Type="nvarchar" MaxLength="50" />
           <Property Name="ActionName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ActionSuffix" Type="nvarchar" MaxLength="50" />
+          <Property Name="ActionSuffix" Type="nvarchar" MaxLength="2500" />
           <Property Name="TimeStamp" Type="datetime" Nullable="false" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
@@ -123,7 +123,7 @@
           <Property Name="CostWeightage" Type="tinyint" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'BulldogGameplanMay2015.dbo.CustomFieldDependency' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="CustomFieldDependency">
           <Key>
             <PropertyRef Name="ParentCustomFieldId" />
@@ -190,15 +190,15 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="TimeUtc" Type="datetime" Nullable="false" />
           <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AllXml" Type="ntext" Nullable="false" />
-          <Property Name="Client" Type="varchar" MaxLength="50" />
+          <Property Name="Client" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="EntityTypeColor">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="EntityType" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ColorCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="EntityType" Type="nvarchar" MaxLength="50" />
+          <Property Name="ColorCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="GameplanDataType">
           <Key>
@@ -232,8 +232,8 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="Cost" Type="float" Nullable="false" />
-          <Property Name="ColorCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ColorCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="IsDeployed" Type="bit" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
@@ -368,6 +368,8 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Key>
             <PropertyRef Name="IntegrationInstancePlanLogEntityId" />
           </Key>
+          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
           <Property Name="EntityId" Type="int" Nullable="false" />
           <Property Name="EntityType" Type="varchar" MaxLength="50" />
@@ -377,8 +379,6 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="ErrorDescription" Type="nvarchar" MaxLength="4000" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
-          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
-          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstanceSection">
           <Key>
@@ -391,7 +391,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="SyncStart" Type="datetime" Nullable="false" />
           <Property Name="SyncEnd" Type="datetime" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreateBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
@@ -488,8 +488,8 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
-          <Property Name="ParentModelId" Type="int" />
           <Property Name="IsBenchmarked" Type="bit" />
+          <Property Name="ParentModelId" Type="int" />
           <Property Name="EffectiveDate" Type="datetime" />
           <Property Name="IntegrationInstanceId" Type="int" />
           <Property Name="IntegrationInstanceIdINQ" Type="int" />
@@ -520,7 +520,6 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             <PropertyRef Name="NotificationId" />
           </Key>
           <Property Name="NotificationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="NotificationInternalUseOnly" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="NotificationType" Type="char" MaxLength="2" Nullable="false" />
@@ -530,6 +529,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="NotificationInternalUseOnly" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Subject" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Plan">
@@ -540,7 +540,6 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="ModelId" Type="int" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Version" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Year" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="Budget" Type="float" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -550,6 +549,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="Year" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="GoalType" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="GoalValue" Type="float" Nullable="false" />
           <Property Name="AllocatedBy" Type="varchar" MaxLength="50" Nullable="false" />
@@ -894,13 +894,13 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="ColorCode" Type="nvarchar" MaxLength="10" Nullable="false" />
-          <Property Name="ModelId" Type="int" Nullable="false" />
-          <Property Name="StageId" Type="int" />
-          <Property Name="ProjectedRevenue" Type="float" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="StageId" Type="int" />
+          <Property Name="ProjectedRevenue" Type="float" />
           <Property Name="PreviousTacticTypeId" Type="int" />
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
@@ -930,7 +930,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
-        <Association Name="FK__Plan_Camp__PlanC__43A1090D">
+        <Association Name="FK__Plan_Camp__PlanC__245D67DE">
           <End Role="Plan_Campaign" Type="Self.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="Self.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -942,7 +942,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Plan_Camp__PlanP__42ACE4D4">
+        <Association Name="FK__Plan_Camp__PlanP__236943A5">
           <End Role="Plan_Campaign_Program" Type="Self.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="Self.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -954,7 +954,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanC__4589517F">
+        <Association Name="FK__Tactic_Sh__PlanC__2645B050">
           <End Role="Plan_Campaign" Type="Self.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="Self.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -966,7 +966,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanP__44952D46">
+        <Association Name="FK__Tactic_Sh__PlanP__25518C17">
           <End Role="Plan_Campaign_Program" Type="Self.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="Self.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1146,14 +1146,14 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImprovementTacticType_Metric_ImprovementTacticType">
+        <Association Name="FK_ImprovementTacticType_ImprovementTacticType">
           <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
-          <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
+          <End Role="ImprovementTacticType1" Type="Self.ImprovementTacticType" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="ImprovementTacticType">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Principal>
-            <Dependent Role="ImprovementTacticType_Metric">
+            <Dependent Role="ImprovementTacticType1">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -1410,18 +1410,6 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Model_IntegrationInstance1">
-          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="0..1" />
-          <End Role="Model" Type="Self.Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="IntegrationInstanceEloquaId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Model_IntegrationInstanceCW">
           <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="0..1" />
           <End Role="Model" Type="Self.Model" Multiplicity="*" />
@@ -1455,6 +1443,18 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Principal>
             <Dependent Role="Model">
               <PropertyRef Name="IntegrationInstanceIdMQL" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Model_IntegrationInstanceProjMgmt">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="0..1" />
+          <End Role="Model" Type="Self.Model" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="Model">
+              <PropertyRef Name="IntegrationInstanceIdProjMgmt" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1806,30 +1806,6 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_TacticType_Model">
-          <End Role="Model" Type="Self.Model" Multiplicity="1" />
-          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
-            </Principal>
-            <Dependent Role="TacticType">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_TacticType_Stage">
-          <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
-          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Stage">
-              <PropertyRef Name="StageId" />
-            </Principal>
-            <Dependent Role="TacticType">
-              <PropertyRef Name="StageId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_User_Notification_Notification">
           <End Role="Notification" Type="Self.Notification" Multiplicity="1" />
           <End Role="User_Notification" Type="Self.User_Notification" Multiplicity="*" />
@@ -1941,19 +1917,19 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
 [CustomFieldDependency].[IsDeleted] AS [IsDeleted]
 FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           </EntitySet>
-          <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="Self.FK__Plan_Camp__PlanC__43A1090D">
+          <AssociationSet Name="FK__Plan_Camp__PlanC__245D67DE" Association="Self.FK__Plan_Camp__PlanC__245D67DE">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanP__42ACE4D4" Association="Self.FK__Plan_Camp__PlanP__42ACE4D4">
+          <AssociationSet Name="FK__Plan_Camp__PlanP__236943A5" Association="Self.FK__Plan_Camp__PlanP__236943A5">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanC__4589517F" Association="Self.FK__Tactic_Sh__PlanC__4589517F">
+          <AssociationSet Name="FK__Tactic_Sh__PlanC__2645B050" Association="Self.FK__Tactic_Sh__PlanC__2645B050">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="Self.FK__Tactic_Sh__PlanP__44952D46">
+          <AssociationSet Name="FK__Tactic_Sh__PlanP__25518C17" Association="Self.FK__Tactic_Sh__PlanP__25518C17">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
@@ -2013,9 +1989,9 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             <End Role="IntegrationType" EntitySet="IntegrationType" />
             <End Role="GameplanDataTypePull" EntitySet="GameplanDataTypePull" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_Metric_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_Metric_ImprovementTacticType">
+          <AssociationSet Name="FK_ImprovementTacticType_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_ImprovementTacticType">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
-            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
+            <End Role="ImprovementTacticType1" EntitySet="ImprovementTacticType" />
           </AssociationSet>
           <AssociationSet Name="FK_ImprovementTacticType_Metric_Stage" Association="Self.FK_ImprovementTacticType_Metric_Stage">
             <End Role="Stage" EntitySet="Stage" />
@@ -2101,10 +2077,6 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="Model" EntitySet="Model" />
           </AssociationSet>
-          <AssociationSet Name="FK_Model_IntegrationInstance1" Association="Self.FK_Model_IntegrationInstance1">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
-            <End Role="Model" EntitySet="Model" />
-          </AssociationSet>
           <AssociationSet Name="FK_Model_IntegrationInstanceCW" Association="Self.FK_Model_IntegrationInstanceCW">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="Model" EntitySet="Model" />
@@ -2114,6 +2086,10 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             <End Role="Model" EntitySet="Model" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_IntegrationInstanceMQL" Association="Self.FK_Model_IntegrationInstanceMQL">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="Model" EntitySet="Model" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Model_IntegrationInstanceProjMgmt" Association="Self.FK_Model_IntegrationInstanceProjMgmt">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="Model" EntitySet="Model" />
           </AssociationSet>
@@ -2232,14 +2208,6 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <AssociationSet Name="FK_Tactic_Share_Plan_Campaign_Program_Tactic1" Association="Self.FK_Tactic_Share_Plan_Campaign_Program_Tactic1">
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
-          </AssociationSet>
-          <AssociationSet Name="fk_TacticType_Model" Association="Self.fk_TacticType_Model">
-            <End Role="Model" EntitySet="Model" />
-            <End Role="TacticType" EntitySet="TacticType" />
-          </AssociationSet>
-          <AssociationSet Name="fk_TacticType_Stage" Association="Self.fk_TacticType_Stage">
-            <End Role="Stage" EntitySet="Stage" />
-            <End Role="TacticType" EntitySet="TacticType" />
           </AssociationSet>
           <AssociationSet Name="FK_User_Notification_Notification" Association="Self.FK_User_Notification_Notification">
             <End Role="Notification" EntitySet="Notification" />
@@ -2663,7 +2631,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             <End Role="CustomFieldOption" EntitySet="CustomFieldOptions" />
             <End Role="CustomFieldDependency" EntitySet="CustomFieldDependencies" />
           </AssociationSet>
-        </EntityContainer>
+          </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
             <PropertyRef Name="BestInClassId" />
@@ -2703,10 +2671,10 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <Property Type="Int32" Name="ObjectId" Nullable="false" />
           <Property Type="Int32" Name="ParentObjectId" />
           <Property Type="Int32" Name="ComponentId" Nullable="false" />
-          <Property Type="String" Name="ComponentTitle" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ComponentTitle" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ComponentType" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ActionName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="ActionSuffix" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ActionSuffix" MaxLength="2500" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="TimeStamp" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="UserId" Nullable="false" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
@@ -2778,7 +2746,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <Property Name="IsGet" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="CustomFieldDependencies" Relationship="MRPModel.FK_CustomFieldDependency_CustomField" FromRole="CustomField" ToRole="CustomFieldDependency" />
           <NavigationProperty Name="CustomFieldDependencies1" Relationship="MRPModel.FK_CustomFieldDependency_CustomField1" FromRole="CustomField" ToRole="CustomFieldDependency" />
-        </EntityType>
+          </EntityType>
         <EntityType Name="CustomFieldOption">
           <Key>
             <PropertyRef Name="CustomFieldOptionId" />
@@ -2796,7 +2764,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
           <NavigationProperty Name="CustomFieldDependencies" Relationship="MRPModel.FK_CustomFieldDependency_CustomFieldOption" FromRole="CustomFieldOption" ToRole="CustomFieldDependency" />
           <NavigationProperty Name="CustomFieldDependencies1" Relationship="MRPModel.FK_CustomFieldDependency_CustomFieldOption1" FromRole="CustomFieldOption" ToRole="CustomFieldDependency" />
-        </EntityType>
+          </EntityType>
         <EntityType Name="CustomFieldType">
           <Key>
             <PropertyRef Name="CustomFieldTypeId" />
@@ -3028,7 +2996,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <Property Type="DateTime" Name="SyncStart" Nullable="false" Precision="3" />
           <Property Type="DateTime" Name="SyncEnd" Precision="3" />
           <Property Type="String" Name="Status" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Description" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreateBy" Nullable="false" />
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" FromRole="IntegrationInstanceSection" ToRole="IntegrationInstance" />
@@ -4452,8 +4420,8 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             <PropertyRef Name="Id" />
           </Key>
           <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="EntityType" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Type="String" Name="ColorCode" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Type="String" Name="EntityType" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ColorCode" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="ELMAH_Error">
           <Key>
@@ -4470,7 +4438,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <Property Name="TimeUtc" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Sequence" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="AllXml" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Client" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Client" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_ImprovementTacticType_ImprovementTacticType">
           <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
@@ -4721,7 +4689,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>

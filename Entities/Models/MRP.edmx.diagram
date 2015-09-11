@@ -146,12 +146,12 @@
         <EntityTypeShape EntityType="MRPModel.IntegrationInstanceLogDetail" Width="1.5" PointX="15.375" PointY="0.75" />
         <AssociationConnector Association="MRPModel.FK_IntegrationInstanceLogID" />
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance1" />
-        <EntityTypeShape EntityType="MRPModel.CustomFieldDependency" Width="1.5" PointX="14.5" PointY="16.125" />
+        <EntityTypeShape EntityType="MRPModel.CustomFieldDependency" Width="1.5" PointX="14.25" PointY="16.125" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField1" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomFieldOption" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomFieldOption1" />
-      </Diagram>
+        </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

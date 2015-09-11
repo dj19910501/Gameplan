@@ -99,7 +99,7 @@
         {
             <label>WorkFront Template</label>
             <span class="simpleSelectBox">
-            @Html.DropDownListFor(m => m.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "TemplateId", "Template_Name"),"Please Select", new { @class = "ddlStyle hide", require = "true" })
+            @Html.DropDownListFor(m => m.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "TemplateId", "Template_Name"), "Please Select", new { @class = "ddlStyle hide", require = "true" })
             </span>
           }
         //End Brad Gray PL # 1374
@@ -392,6 +392,7 @@
                 TemplateId = 'null';
             }
             //End added Brad Gray 07/24/2015 PL # 1374
+            
             /*changed for TFS bug 176 : Model Creation - Tactic Defaults should Allow values of zero changed by Nirav Shah on 7 feb 2014*/
             //changes done by uday for PL #497 changed projectedmlqs to projectedstagevalue
             var ProjectedStageValue = ReplaceCC($("#hdnProjectedStageValue").val());
