@@ -12,7 +12,7 @@
         <li id="MPermission"><a href='@ViewPermissionURL'>My Permissions</a></li>
 
         <li id="OHierarchy"><a href="@Url.Action("OrganizationHierarchy", "Organization")">Organization Hierarchy</a></li>
-        <li id="Muser"><a href="@Url.Action("Index", "User")">Manage User</a></li>         @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
+        <li id="Muser"><a href="@Url.Action("Index", "User")">Manage Users</a></li>         @*Added by Rahul Shah on 03/09/2015 fo PL Ticket #1112*@
         @if ((bool)ViewBag.IsUserAdminAuthorized)   // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         {
 

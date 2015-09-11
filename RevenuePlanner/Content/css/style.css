@@ -5458,7 +5458,7 @@ input::-moz-placeholder {
 .inputs-aligned-horizontal p, .inputs-aligned-horizontal .container-button, .inputs-aligned-horizontal .delete-container {
     float: left;
     margin-left: calc(25% + 20px);
-    width: 253px; /*width: calc(42% - 20px);*/
+    /*width: 253px;*/ /*width: calc(42% - 20px);*//*Commented by Rahul Shah on 11/09/2015 for PL #1112 */
 }
 
 .inputs-aligned-horizontal .check-icon-green, .inputs-aligned-horizontal .check-icon-red {
