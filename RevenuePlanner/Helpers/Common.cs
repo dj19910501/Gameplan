@@ -5019,7 +5019,8 @@ namespace RevenuePlanner.Helpers
         {
             BDSServiceClient bdsservice = new BDSServiceClient();
             List<User> userName = new List<User>();
-            userName = bdsservice.GetMultipleTeamMemberName(UserGuid);
+            //userName = bdsservice.GetMultipleTeamMemberName(UserGuid);
+            userName = bdsservice.GetMultipleTeamMemberNameByApplicationId(UserGuid,Sessions.ApplicationId); 
             if (userName.Count > 0)
             {
                 return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);

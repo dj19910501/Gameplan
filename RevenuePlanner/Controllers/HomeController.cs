@@ -3684,7 +3684,8 @@ namespace RevenuePlanner.Controllers
                 }
 
                 string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
-                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+                //var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+                var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId); //PL 1569 Dashrath Prajapati
 
                 return individuals;
             }
@@ -3707,7 +3708,8 @@ namespace RevenuePlanner.Controllers
                 }
 
                 string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
-                var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+               // var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+                var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId); //PL 1569 Dashrath Prajapati
 
                 return individuals;
             }
