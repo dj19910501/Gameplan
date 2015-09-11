@@ -90,7 +90,7 @@ INNER JOIN Plan_Campaign_Program_Tactic as elq on src.PlanTacticId = elq.PlanTac
 -- Created Date : 09/11/2015
 -- Description : Add new table for custom field dependency feature
 -- ======================================================================================
-
+Go
 IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='CustomFieldDependency')
 BEGIN
         CREATE TABLE [dbo].[CustomFieldDependency](
