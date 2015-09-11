@@ -14,7 +14,6 @@
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable; //Added By Komal Rawal for new homepage UI
     bool IsPlanPublished = (bool)ViewBag.IsPublished;
-    string ActivePlan = ViewBag.ActivePlan;
     var CreatedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()];
     var SubmittedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()];
     var ApprovedStatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()];
@@ -30,6 +29,13 @@
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
     string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
+
+    List<RevenuePlanner.Models.CustomFieldsForFilter> customfiledList = Model.lstCustomFields != null ? Model.lstCustomFields : new List<RevenuePlanner.Models.CustomFieldsForFilter>();
+    List<RevenuePlanner.Models.CustomFieldsForFilter> customfiledOptionList = Model.lstCustomFieldOptions != null ? Model.lstCustomFieldOptions : new List<RevenuePlanner.Models.CustomFieldsForFilter>();
+    List<RevenuePlanner.Models.OwnerModel> ownerList = Model.lstOwner != null ? Model.lstOwner : new List<RevenuePlanner.Models.OwnerModel>();
+    List<RevenuePlanner.Models.TacticTypeModel> tacticTypeList = Model.lstTacticType != null ? Model.lstTacticType : new List<RevenuePlanner.Models.TacticTypeModel>();
+    List<RevenuePlanner.Models.PlanListModel> planList = Model.lstPlan != null ? Model.lstPlan : new List<RevenuePlanner.Models.PlanListModel>();
+    
 }
 
 @Html.Hidden("IsViewOnly")
@@ -95,7 +101,24 @@
         var pageIsScroll = false;
         //Added By komal rawal for #1283
         //  var isTacticExist = false;
+        function LoadTacticTypelist(data) {
 
+            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+                TactictypeCount = data.TacticTypelist.length;
+                if (TactictypeCount > 0) {
+                    $("#TacticTypeAllModule").css("display", "block");
+                    $("#NoTTFound").hide();
+                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                        $('#ulTacticType').append('<li class="accordion-inner" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"></input></li>');
+                    });
+                }
+                else {
+                    $("#TacticTypeAllModule").css("display", "none");
+                    $("#NoTTFound").show();
+                }
+            }
+
+        }
 
         function GetTacticTypelist(Planids) {
 
@@ -123,31 +146,11 @@
                     }
                     else {
                         if (data.isSuccess == true) {
-
-                            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
-                                TactictypeCount = data.TacticTypelist.length;
-                                if (TactictypeCount > 0) {
-                                    $("#TacticTypeAllModule").css("display", "block");
-                                    $("#NoTTFound").hide();
-                                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                                        var checked = "";
-                                        var checkedclass = "";
-                                        if (filters.TacticTypeids.indexOf(TactictypeItem.TacticTypeId.toString()) >= 0) {
-                                            checked = "checked";
-                                            checkedclass = "close-list";
-                                        }
-                                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
-                                    });
-                                }
-                                else {
-                                    $("#TacticTypeAllModule").css("display", "none");
-                                    $("#NoTTFound").show();
-                                }
-                            }
-                            else {
-                                $("#TacticTypeAllModule").css("display", "none");
-                                $("#NoTTFound").show();
-                            }
+                            LoadTacticTypelist(data);
+                        }
+                        else {
+                            $("#TacticTypeAllModule").css("display", "none");
+                            $("#NoTTFound").show();
                         }
                     }
                 }
@@ -608,34 +611,135 @@
                             <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-2" href="#accordion-element-Plan">Plan<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                         </div>
                         <div id="accordion-element-Plan" class="accordion-body collapse">
-                            <ul class="scroll-list" id="ulSelectedPlans"></ul>
+                            <ul class="scroll-list" id="ulSelectedPlans">
+                                @{
+                                    string liPlanid;
+                                    foreach (var objplan in planList)
+                                    {
+                                        liPlanid = "liPlan" + objplan.PlanId;
+                                        if (objplan.PlanId == CurrentPlanId)
+                                        {
+                                                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
+                                        }
+                                        else
+                                        {
+                                                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
+                                        }
+                                    } 
+                                }
+
+                            </ul>
                             <div class="list-tab">
-                                <ul id="PlanAllModule">
-                                    <li><a onclick="BulkPlanOperation(true)">select all</a></li>
-                                    <li>|</li>
-                                    <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
-                                </ul>
-                                <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                                @if (planList != null && planList.Count > 0)
+                                {
+                                    <ul id="PlanAllModule">
+                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                        <li>|</li>
+                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
+                                    </ul>
+                                    <div id="NoPlanFound" class="NoDataFoundFilter" style="display: none;">No Plan Found</div>
+                                }
+                                else
+                                {
+                                    <ul id="PlanAllModule" style="display: none;">
+                                        <li><a onclick="BulkPlanOperation(true)">select all</a></li>
+                                        <li>|</li>
+                                        <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
+                                    </ul>
+                                    <div id="NoPlanFound" class="NoDataFoundFilter">No Plan Found</div>
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             }
-            <div id="divCustomFieldsFilter"></div>
+            <div id="divCustomFieldsFilter">
+                @{
+                    string acordionId, acordionParentId, acordionElementId, acordionElementHref, liCustom, ulCustom, allCustom, noCustom, cutomoptioninputid;
+                    acordionId = acordionParentId = acordionElementId = acordionElementHref = liCustom = ulCustom = allCustom = noCustom = string.Empty;
+                    List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
+                    foreach (var custField in customfiledList)
+                    {
+                        lstCutomFieldOptions = customfiledOptionList.Where(_option => custField.CustomFieldId == _option.CustomFieldId).OrderBy(custfieldoptions => custfieldoptions.Title).ToList().Select(custfieldoptions => new SelectListItem { Text = custfieldoptions.Title, Value = custfieldoptions.CustomFieldOptionId.ToString(), Selected = true }).ToList();
+                        acordionId = "accordion-" + custField.CustomFieldId;
+                        acordionParentId = "#" + acordionId;
+                        acordionElementId = "accordion-element-" + custField.CustomFieldId;
+                        acordionElementHref = "#" + acordionElementId;
+                        ulCustom = "ulSelected" + custField.CustomFieldId;
+                        allCustom = custField.CustomFieldId + "AllModule";
+                        noCustom = "No" + custField.CustomFieldId + "Found";
+                    
+                    <div id="@acordionId" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                            </div>
+                            <div id="@acordionElementId" class="accordion-body collapse">
+                                <ul class="scroll-list" id="@ulCustom">
+                                    @{
+                        foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
+                        {
+                            liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
+                            cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
+                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customFieldTitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
+                        }
+                                    }
+                                </ul>
+                                <div class="list-tab">
+                                    @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                    {
+                                        <ul id="@allCustom">
+                                            <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId')">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId')">deselect all</a></li>
+                                        </ul>
+                                    }
+                                    else
+                                    {
+                                        <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                }
+            </div>
             <div id="accordion-Owner" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
                         <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Owner" href="#accordion-element-Owner">Owner<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-Owner" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulSelectedOwner"></ul>
+                        <ul class="scroll-list" id="ulSelectedOwner">
+                            @{
+                                string liid;
+                                foreach (var owner in ownerList)
+                                {
+                                    liid = "liOwner" + owner.OwnerId;
+                                <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" OwnerTitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
+                                } 
+                            }
+                        </ul>
                         <div class="list-tab">
-                            <ul id="ulOwnerAllModule">
-                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
-                            </ul>
-                            <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
+                            @if (ownerList != null && ownerList.Count > 0)
+                            {
+                                <ul id="ulOwnerAllModule">
+                                    <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoOwnerFound" class="NoDataFoundFilter" style="display: none;">No Owner Found</div>
+                            }
+                            else
+                            {
+                                <ul id="ulOwnerAllModule" style="display: none;">
+                                    <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
+                            }
                         </div>
                     </div>
                 </div>
@@ -647,14 +751,43 @@
                         <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-TacticType" href="#accordion-element-TacticType">Tactic Type<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-TacticType" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulTacticType"></ul>
+                        <ul class="scroll-list" id="ulTacticType">
+                            @{
+                                string litacticid, titielwithbracket, lastbracket, cbttid;
+                                foreach (var tactictype in tacticTypeList)
+                                {
+                                    litacticid = "liTT" + tactictype.TacticTypeId;
+                                    titielwithbracket = tactictype.Title + " (";
+                                    lastbracket = ")";
+                                    cbttid = "CbTT" + tactictype.TacticTypeId;
+                                <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid"><span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" Previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
+                                    <input type="checkbox" class="chkbxfilter" TacticTypeTitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input></li>
+                                } 
+                            }
+
+
+
+                        </ul>
                         <div class="list-tab">
-                            <ul id="TacticTypeAllModule">
-                                <li><a onclick="BulkTTOperation(true)">select all</a></li>
-                                <li>|</li>
-                                <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
-                            </ul>
-                            <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
+                            @if (tacticTypeList != null && tacticTypeList.Count > 0)
+                            {
+                                <ul id="TacticTypeAllModule">
+                                    <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoTTFound" class="NoDataFoundFilter" style="display: none;">No Tactic Type Found</div>
+                            }
+                            else
+                            {
+                                <ul id="TacticTypeAllModule" style="display: none;">
+                                    <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>     
+                            }
+
 
                         </div>
                     </div>
@@ -1026,8 +1159,6 @@
 
     //End
 
-    //Reset all the Filters
-    $("#PlanAllModule").css("display", "none");
 
     function UpdateResult() {
         // added by devanshi for #1431
@@ -1204,14 +1335,12 @@
         if ($(obj).is(':checked')) {
             $("#liPlan" + id).addClass("close-list");
             filters.SelectedPlans.push(id);
-            filters.PlanTitles.push($("#" + id).attr("plantitle"));
             GetOwnerListForFilter(filters.SelectedPlans);
             GetTacticTypelist(filters.SelectedPlans);
         }
         else {
             $("#liPlan" + id).removeClass("close-list");
             removeByValue(filters.SelectedPlans, id);
-            removeByValue(filters.PlanTitles, ($("#" + id).attr("plantitle")));
             GetOwnerListForFilter(filters.SelectedPlans);
             GetTacticTypelist(filters.SelectedPlans);
         }
@@ -1346,77 +1475,8 @@
         }
     }
 
-    function ResetFilterBeforePlan() {
-        $('#ulSelectedPlans').html('');
-        filters.PlanTitles = [];
-        filters.PlanIDs = [];
-        filters.SelectedPlans = [];
-    }
-
     function BindPlans() {
-        ResetFilterBeforePlan();
-        var ActiveMenu = $('#ActiveMenu').val().toLowerCase();
- @*      $.ajax({
-           beforeSend: function (x) {
-               myApp.hidePleaseWait();
-           },
-           type: 'POST',
-           url: '@Url.Content("~/Home/GetPlans/")',
-           dataType: "json",
-           async: false,
-           data: {
-               activeMenu: ActiveMenu
-           },
-           success: function (data) {*@
-        //if (data.isSuccess == true) {
-        var activeplans = {};
-        if ('@ActivePlan' != '') {
-            activeplans = JSON.parse('@Html.Raw(ActivePlan)');
-            if (activeplans.length > 0) {
-                PlanCount = activeplans.length;
-                if (PlanCount > 0) {
-                    $("#PlanAllModule").css("display", "block");
-                    $("#NoPlanFound").hide();
-                    $.each(activeplans, function (i, item) {
-                        if (item.PlanId == CurrentPlanId && isFirstCall) {
-                            //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
-                            $('#ulSelectedPlans').append('<li class="accordion-inner close-list" title="' + item.Title + '" id="liPlan' + item.PlanId + '"> <span class="sidebarliwidth">' + item.Title + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Title + '" onchange="togglePlan(this)" id="' + item.PlanId + '" checked="checked"></input></li>');
-                            filters.SelectedPlans.push(item.PlanId);
-                            filters.PlanTitles.push(item.Title);
-                        }
-                        else {
-                            $('#ulSelectedPlans').append('<li class="accordion-inner" title="' + item.Title + '" id="liPlan' + item.PlanId + '"><span class="sidebarliwidth">' + item.Title + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + item.Title + '" onchange="togglePlan(this)" id="' + item.PlanId + '"></input></li>');
-                        }
-                    });
-                }
-                else {
-                    $("#PlanAllModule").css("display", "none");
-                    $("#NoPlanFound").show();
-                }
-            }
-            else {
-                $("#PlanAllModule").css("display", "none");
-                $("#NoPlanFound").show();
-                $('#ulSelectedOwner').html('');
-                $("#ulOwnerAllModule").css("display", "none");
-                $("#NoOwnerFound").show();
-                filters.OwnerIds = [];
-                filters.TacticTypeids = [];
-                filters.StatusIds = [];
-            }
-        }
-        else {
-            $("#NoPlanFound").show();
-            $("#PlanAllModule").css("display", "none");
-            $('#ulSelectedOwner').html('');
-            $("#ulOwnerAllModule").css("display", "none");
-            $("#NoOwnerFound").show();
-            filters.OwnerIds = [];
-            filters.TacticTypeids = [];
-            filters.StatusIds = [];
-        }
-        // }
-        // });
+        filters.SelectedPlans.push(CurrentPlanId);
     }
 
     function ResetControlsBeforeOtherAttributes() {
@@ -1541,7 +1601,6 @@
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkPlanOperation(selection) {
         filters.SelectedPlans = [];
-        filters.PlanTitles = [];
 
         if (selection) {
             $("#ulSelectedPlans li").each(function (i) {
@@ -1549,7 +1608,6 @@
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).attr("checked", "checked");
                 filters.SelectedPlans.push(chkid);
-                filters.PlanTitles.push($(this).find("input[type=checkbox]").attr("planTitle"));
             });
         }
         else {
@@ -2164,9 +2222,7 @@
             LoadPlan();
         }
         getViewByList = true;
-        BindOtherAttributes();
-        GetOwnerListForFilter(PlanIdsCustom);
-        GetTacticTypelist(PlanIdsCustom);
+      
         $('#hdnSelectedPlanIds').val(PlanIdsCustom);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
 

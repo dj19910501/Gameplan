@@ -71,7 +71,7 @@
             RefreshCurrentTab();
         }
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            debugger;
+            
             GetCollaborators(CurrentPlanId);
             $("#lblMarkringActivitiestitle").show();
            // $("#nl-form2").show();
@@ -82,7 +82,8 @@
         }
         $('.request-icons').show();
         var SelectedPlans = filters.SelectedPlans.toString();
-            GetHealderData(SelectedPlans);
+
+            //GetHealderData(SelectedPlans);
             GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime);
     });
 

@@ -35,6 +35,25 @@ namespace RevenuePlanner.Models
         public DateTime LastUpdatedDate { get; set; }
         public List<CustomFieldsForFilter> lstCustomFields { get; set; }
         public List<CustomFieldsForFilter> lstCustomFieldOptions { get; set; }
+        public List<OwnerModel> lstOwner { get; set; }
+        public List<TacticTypeModel> lstTacticType { get; set; }
+        public List<PlanListModel> lstPlan { get; set; }
+    }
+    public class PlanListModel
+    {
+        public int PlanId { get; set; }
+        public string Title { get; set; }
+    }
+    public class TacticTypeModel
+    {
+        public int TacticTypeId { get; set; }
+        public string Title { get; set; }
+        public int Number { get; set; }
+    }
+    public class OwnerModel
+    {
+        public string OwnerId { get; set; }
+        public string Title { get; set; }
     }
     public class HomePlan
     {

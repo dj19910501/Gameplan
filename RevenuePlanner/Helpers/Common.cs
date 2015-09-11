@@ -1568,8 +1568,8 @@ namespace RevenuePlanner.Helpers
                     planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
                 objHomePlanModelHeader.plans = planList;
           //End
-
-            var objPlan = objDbMrpEntities.Plans.Where(plan => plan.PlanId == planId && plan.IsDeleted == false && plan.IsActive == true).Select(plan => plan).FirstOrDefault();
+                
+                var objPlan = lstPlanAll.Where(plan => plan.PlanId == planId).Select(plan => plan).FirstOrDefault();
             if (objPlan != null)
             {
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList();
@@ -1673,7 +1673,7 @@ namespace RevenuePlanner.Helpers
                     {
                         ////Start Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
                         var tacticIds = planTacticIds.Select(tactic => tactic.PlanTacticId).ToList();
-                        objHomePlanModelHeader.Budget = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList().Sum(lineItem => lineItem.Cost);
+                        objHomePlanModelHeader.Budget = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).Sum(lineItem => lineItem.Cost);
                         ////End Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
                     }
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
@@ -4500,9 +4500,15 @@ namespace RevenuePlanner.Helpers
              List<int> customfieldids = customfieldlist.Select(cfl => cfl.CustomFieldId).ToList();
             // Check tacticid exists or not then use concat
             List<int> allentityids = tacticids.Concat(programids).Concat(campaignids).ToList();
-            var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId) && allentityids.Contains(cfe.EntityId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
-
-
+            
+            var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
+            
+            //var fcustomfieldentity = customfieldentity.Where(cf => allentityids.Contains(cf.EntityId)).ToList();
+            
+            customfieldentity = (from cf in customfieldentity
+                        join ae in allentityids on cf.EntityId equals ae
+                        select cf).Distinct().ToList();
+            
             var campaigncustomids = customfieldentity.Where(cfe => campaignids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
             List<ViewByModel> lstCustomFieldsViewByTabCampaign = customfieldlist.Where(cf => cf.EntityType == CampaignCustomText && campaigncustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = CampaignCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabCampaign = lstCustomFieldsViewByTabCampaign.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
@@ -5509,18 +5515,23 @@ namespace RevenuePlanner.Helpers
                         {
                             return lstTactic;
                         }
-                       // Stopwatch watch = Stopwatch.StartNew();
-                     //   Debug.WriteLine("Step 2.1.0: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+
+
                         var customfieldList = objDbMrpEntities.CustomFields.Where(customField => customField.ClientId == clientId &&
                                                                                                         customField.IsDeleted.Equals(false) &&
                                                                                                         customField.EntityType.Equals(EntityTypeTactic) &&
                                                                                                         customField.CustomFieldType.Name.Equals(DropDownList) &&
                                                                                                         (isDisplayForFilter ? customField.IsDisplayForFilter.Equals(true) : true)).Select(customField => customField.CustomFieldId).ToList();
-                        var tblCustomFieldEntity = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldList.Contains(customFieldEntity.CustomFieldId) && lstTactic.Contains(customFieldEntity.EntityId))
-                                                                                                        .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value } ).Distinct().ToList();
-                       // Debug.WriteLine("Step 2.1.1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
-                        //watch.Stop();
-                        //Debug.WriteLine("time for geting tblCustomFieldEntity : " + watch.ElapsedMilliseconds.ToString());
+
+
+                        
+                        var tblCustomFieldEntity = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldList.Contains(customFieldEntity.CustomFieldId))
+                                                                                                        .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
+                        tblCustomFieldEntity = (from tbl in tblCustomFieldEntity
+                                                join lst in lstTactic on tbl.EntityId equals lst
+                                                select tbl).ToList();
+                        
+
                         if (tblCustomFieldEntity == null || !tblCustomFieldEntity.Any())
                         {
                             return lstTactic;
