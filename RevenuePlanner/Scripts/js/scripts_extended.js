@@ -570,11 +570,11 @@ function modalFullPosition() {
     var winW = $(window).width();
     var winH = $(window).height();
     if ($.browser.msie) {
-        $('#modal-container-186470.modal-full-view').css({ 'height': winH - 170, 'min-height': winH - 170 });
+        $('#modal-container-186470.modal-full-view').css({ 'height':'100%', 'min-height': winH - 170 });
     }
     else
     {
-        $('#modal-container-186470.modal-full-view').css({ 'height': winH - 178, 'min-height': winH - 178 });
+        $('#modal-container-186470.modal-full-view').css({ 'height': '100%', 'min-height': winH - 178 });
     }
 
     $(".modal-backdrop").css({ 'background-color': "transparent"});

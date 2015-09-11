@@ -4278,14 +4278,14 @@ namespace RevenuePlanner.Helpers
                 foreach (var item in customFieldList)
                 {
                    className = "span3 margin-top10";
-                    if (fieldCounter % 4 != 0 && fieldCounter != 0)
-                    {
-                        className += " paddingleft25px";
-                    }
-                    else
-                    {
-                        className += "\" style=\"clear:both;";
-                    }	 
+                    //if (fieldCounter % 4 != 0 && fieldCounter != 0)
+                    //{
+                    //    className += " paddingleft25px";
+                    //}
+                    //else
+                    //{
+                    //    className += "\" style=\"clear:both;";
+                    //}	 
 
  DisplayStyle = " style=\"";
                     if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !item.IsSelected)
