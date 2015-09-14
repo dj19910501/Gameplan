@@ -437,7 +437,7 @@ namespace RevenuePlanner.Models
         public bool isChild { get; set; }
         public int ParentId { get; set; }
         public bool IsSelected { get; set; }
-       
+        public int ParentOptionId { get; set; }
         public string entityType { get; set; }
         public List<CustomFieldOptionModel> option { get; set; }
        

@@ -4364,6 +4364,7 @@ namespace RevenuePlanner.Helpers
                 entityType = a.EntityType,
                 isChild = DependencyList.Select(list => list.ChildCustomFieldId).ToList().Contains(a.CustomFieldId) ? true : false,
                 ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
+                ParentOptionId = DependencyList.Where(list =>list.ChildCustomFieldId == a.CustomFieldId && list.ChildOptionId == null).Select(list => list.ParentOptionId).ToList().FirstOrDefault(),
                 option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
                 {
                     ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
@@ -4377,11 +4378,6 @@ namespace RevenuePlanner.Helpers
             }).OrderBy(a => a.name,new AlphaNumericComparer()).ToList();
             List<int> customFieldIds = lstCustomFields.Select(cs => cs.customFieldId).ToList();
             var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
-            var Parentid = DependencyList.Select(a => a.ParentOptionId).ToList();
-            var childOptionid = DependencyList.Select(a => a.ChildOptionId.ToString()).ToList();
-            var childid = DependencyList.Select(a => a.ChildCustomFieldId).ToList();
-            List<string> ListIDs = Parentid.Select(a => a.ToString()).ToList();
-            List<string> entityvalues = EntityValue.Select(a=>a.Value).ToList();
             foreach (var CustomFieldId in customFieldIds)
             {
                 lstCustomFields.Where(c => c.customFieldId == CustomFieldId).FirstOrDefault().value = EntityValue.Where(ev => ev.CustomFieldId == CustomFieldId).Select(ev => ev.Value).ToList();
@@ -4402,14 +4398,29 @@ namespace RevenuePlanner.Helpers
             foreach (var item in lstCustomFields.Where(cfParent => cfParent.ParentId == 0).ToList())
             {
                 finalList.Add(item);
-                foreach (var childItem in lstCustomFields.Where(cfParent => cfParent.ParentId == item.customFieldId).ToList())
-                {
-                    finalList.Add(childItem);
-                }
+                setCustomFieldHierarchy(item.customFieldId, lstCustomFields, ref finalList);
+                //foreach (var childItem in lstCustomFields.Where(cfParent => cfParent.ParentId == item.customFieldId).ToList())
+                //{
+                //    finalList.Add(childItem);
+                //}
             }
-          
+
             return finalList;
         }
+
+        public static void setCustomFieldHierarchy(int parentId, List<CustomFieldModel> lstCustomField, ref List<CustomFieldModel> finalList)
+        {
+            foreach (var item in lstCustomField.Where(cf => cf.ParentId == parentId).ToList())
+            {
+                finalList.Add(item);
+                var x = lstCustomField.Where(cf => cf.ParentId == item.customFieldId).ToList();
+                if (lstCustomField.Where(cf => cf.ParentId == item.customFieldId).Any())
+                {
+                    setCustomFieldHierarchy(item.customFieldId, lstCustomField, ref finalList);
+                }
+            }
+        }
+
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #718 
         /// Function for truncate length of input string

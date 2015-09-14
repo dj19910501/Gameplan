@@ -4288,11 +4288,19 @@ namespace RevenuePlanner.Helpers
                     //}	 
 
                     DisplayStyle = " style=\"";
-
+                    var IsSelected = false;
                     var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault()!= null ?item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId: new int();
                     var ParentCustomFieldID = item.ParentId;
                     List<string> val = customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
-                    var IsSelected = val.Contains(ParentOptionID.ToString());
+                    if (item.customFieldType == "TextBox" && item.isChild )
+                    {
+                        IsSelected =  val.Contains(item.ParentOptionId.ToString());
+                    }
+                    else
+                    {
+                         IsSelected = val.Contains(ParentOptionID.ToString());
+                    }
+                   
                     if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !IsSelected)
                     {
                         DisplayStyle += "display:none;";
@@ -4319,7 +4327,7 @@ namespace RevenuePlanner.Helpers
                         if (item.isRequired)
                             sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
                         else
-                            sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
+                            sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"ParentId =\"" + item.ParentId  + "\"ParentOptionId =\"" + item.ParentOptionId + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
                     }
 
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
