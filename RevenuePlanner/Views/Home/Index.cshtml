@@ -5087,6 +5087,46 @@ function Quarter() {
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", 0, TacticId, '@RequestedModule');
             $('.taskpopup').css('display', 'none');
         });
+        
+        //Copy Line Item
+        $('#CloneLineItem').click(function () {
+            isCopyTactic = TacticId;
+            var idPlanLineItem = LineId;// $("#hdnPlanTacticId").val();
+            var Title = title;// $("#lblTacticTitle").html();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Inspect/Clone")',
+                data: {
+                    CloneType: '@Enums.DuplicationModule.LineItem',
+                    Id: idPlanLineItem,
+                    title: Title,
+                    CalledFromBudget: '@CalledFromBudget',
+                    RequsetedModule: '@RequestedModule'
+                },
+                success: function (data) {
+                    if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                        window.location = '@Url.Content("~/Login/Index")';
+                    }
+                    else if (data.IsSuccess) {
+                        RefreshCurrentTab();
+                        ShowMessage(isError, data.msg);
+                        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                            if (CurrentPlanId > 0) {
+                                if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                    LoadPlanGrid();
+                                }
+                            }
+                        }
+                        return;
+                    }
+                    else {
+                        isError = true;
+                        ShowMessage(isError, data.msg);
+                        return false;
+                    }
+                }
+            });
+        });
     function displayConfirmCommon(functionName) {
         eval(functionName);
 
