@@ -151,6 +151,8 @@
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField1" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomFieldOption" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomFieldOption1" />
+        <EntityTypeShape EntityType="MRPModel.Budget" Width="1.5" PointX="6.5799510639998839" PointY="7.6337976640247733" />
+        <AssociationConnector Association="MRPModel.FK_Budget_Budget" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

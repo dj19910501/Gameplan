@@ -464,6 +464,9 @@ body {
                 background-position: -136px 0px;
             }
 
+            .main-nav ul li.finance a .icon {  /*finance tab*/
+                background-position: -136px 0px;
+            }
             .main-nav ul li.pref a .icon {
                 background-position: -170px 0px;
             }
@@ -496,6 +499,11 @@ body {
             }
 
             .main-nav ul li.report:hover a .icon, .main-nav ul li.report:focus a .icon, .main-nav ul li.report.active a .icon, .main-nav ul li.report.active:hover a .icon {
+                background-position: -136px -30px;
+            }
+
+               /*Finance Tab Menu*/
+            .main-nav ul li.finance:hover a .icon, .main-nav ul li.finance:focus a .icon, .main-nav ul li.finance.active a .icon, .main-nav ul li.finance.active:hover a .icon {
                 background-position: -136px -30px;
             }
 

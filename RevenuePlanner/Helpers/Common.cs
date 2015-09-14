@@ -4537,6 +4537,18 @@ namespace RevenuePlanner.Helpers
             return lstCustomFieldsViewByTab;
         }
 
+        /// <summary>
+        /// Get the list of budget
+        /// </summary>
+        /// <returns>Return the list of Budget list</returns>
+        public static List<ViewByModel> GetBudgetlist()
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstBudget = new List<ViewByModel>();
+            var customfieldlist = db.Budgets.ToList();
+            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
+            return lstBudget;
+        }
 
         /// <summary>
         /// Get the list of Tactic by passing the multiple Plan Ids
