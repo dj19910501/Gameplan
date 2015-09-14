@@ -3678,8 +3678,8 @@ namespace RevenuePlanner.Controllers
             string baseUrl = domain + "/Report/Index/";
 
             HtmlToPdfConverter htmlToPdfConverter = new HtmlToPdfConverter();
-            htmlToPdfConverter.LicenseKey = "4W9+bn19bn5ue2B+bn1/YH98YHd3d3c=";
-            //htmlToPdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
+            //htmlToPdfConverter.LicenseKey = "4W9+bn19bn5ue2B+bn1/YH98YHd3d3c=";
+            htmlToPdfConverter.LicenseKey = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"]);
             // htmlToPdfConverter.ClipHtmlView = true;
             htmlToPdfConverter.HtmlViewerWidth = 1024;
             htmlToPdfConverter.PdfDocumentOptions.EmbedFonts = true;
