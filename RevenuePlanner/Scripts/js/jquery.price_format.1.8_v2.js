@@ -74,7 +74,7 @@
                 var formatted = '';
                 for (var i = 0; i < (str.length) ; i++) {
                     char_ = str.charAt(i);
-                    if (formatted.length == 0 && char_ == 0) char_ = false;
+                    //if (formatted.length == 0 && char_ == 0) char_ = false;
 
                     if (char_ && char_.match(is_number)) {
                         if (limit) {
@@ -94,6 +94,7 @@
             // don't skip left zeros 
             function to_numbers_keyup(str) {
                 var formatted = '';
+                //debugger;
                 for (var i = 0; i < (str.length) ; i++) {
                     char_ = str.charAt(i);
 
@@ -113,6 +114,7 @@
 
             // format to fill with zeros to complete cents chars
             function fill_with_zeroes(str) {
+                //debugger;
                 while (str.length < (centsLimit + 1)) str = '0' + str;
                 return str;
             }
@@ -120,6 +122,7 @@
             // format as price
             function price_format(str) {
                 // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
+                
                 var iszero = false;
                 if (str == '0' || (prefix != '' && str == prefix + '0') || (suffix && str == '0' + suffix)) {
                     iszero = true;
@@ -190,8 +193,9 @@
                             formatted = '+' + formatted;
                     }
                 }
+                //debugger;
                 // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
-                if (formatted == '0') {
+                if (formatted == '0' && (doubleLast == '' || doubleLast == 'undefined' || doubleLast == null)) { // Made changes by Viral Kadiya on 09/14/2015 for PL ticket #1395.
                     if (isAllowNull) {
                         if (!iszero) formatted = '';
                     }
