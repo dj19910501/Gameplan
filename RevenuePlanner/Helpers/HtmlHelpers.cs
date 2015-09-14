@@ -4250,7 +4250,7 @@ namespace RevenuePlanner.Helpers
             //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
             StringBuilder sb = new StringBuilder(string.Empty);
-           
+
             //fieldCounter variable for defining raw style
             if (customFieldList.Count != 0)
             {
@@ -4258,10 +4258,10 @@ namespace RevenuePlanner.Helpers
                 //// User custom Restrictions
                 var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
                 MRPEntities db = new MRPEntities();
-                  List<int> customFieldIds = customFieldList.Select(cs => cs.customFieldId).ToList();
-                  var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
-                  List<string> entityvalues = EntityValue.Select(a => a.Value).ToList();
-                
+                List<int> customFieldIds = customFieldList.Select(cs => cs.customFieldId).ToList();
+                var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
+                List<string> entityvalues = EntityValue.Select(a => a.Value).ToList();
+
                 //// Start - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                 List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
                 if (mode != Enums.InspectPopupMode.ReadOnly.ToString() && section == Enums.EntityType.Tactic.ToString())
@@ -4277,7 +4277,7 @@ namespace RevenuePlanner.Helpers
                 bool editableOptions, isEditable;
                 foreach (var item in customFieldList)
                 {
-                   className = "span3 margin-top10";
+                    className = "span3 margin-top10";
                     //if (fieldCounter % 4 != 0 && fieldCounter != 0)
                     //{
                     //    className += " paddingleft25px";
@@ -4287,8 +4287,13 @@ namespace RevenuePlanner.Helpers
                     //    className += "\" style=\"clear:both;";
                     //}	 
 
- DisplayStyle = " style=\"";
-                    if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !item.IsSelected)
+                    DisplayStyle = " style=\"";
+
+                    var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault()!= null ?item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId: new int();
+                    var ParentCustomFieldID = item.ParentId;
+                    List<string> val = customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
+                    var IsSelected = val.Contains(ParentOptionID.ToString());
+                    if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !IsSelected)
                     {
                         DisplayStyle += "display:none;";
                     }
@@ -4326,7 +4331,7 @@ namespace RevenuePlanner.Helpers
                         customFieldEntityValue = (item.value != null && item.value.Count > 0) ? item.value.First().Replace("\"", "&quot;") : string.Empty;
                         if (mode != Enums.InspectPopupMode.Edit.ToString())
                         {
-                           // sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
+                            // sb.Append("<input type=\"text\" readonly = \"true\" title=\"" + customFieldEntityValue + "\" value=\"" + customFieldEntityValue + "\" style=\"background:#F2F2F2;\" id=\"cf_" + item.customFieldId + "\" cf_id=\"" + item.customFieldId + "\" class=\"" + inputclassName + "\"");
                             var _editdescription = Common.GenerateHTMLAttribute(customFieldEntityValue);
                             sb.Append("<div class='Attribute-content-text' id=\"cf_" + item.customFieldId + "\">" + WebUtility.HtmlDecode(_editdescription) + " </div>");
                         }
@@ -4352,11 +4357,11 @@ namespace RevenuePlanner.Helpers
                             //Added By komal Rawal
                             int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                             List<int> viewoptionid = userCustomRestrictionList.Where(restriction => restriction.CustomFieldId == item.customFieldId && restriction.Permission == ViewEditPermission).Select(res => res.CustomFieldOptionId).ToList();
-                           List<int> Values = item.value.Select(int.Parse).ToList();
-                        
-                        //   var itemvaluelist = item.value.Where(a => viewoptionid.Contains(int.Parse(a))).Select(a=>a).ToList();
-                           var itemvaluelist = viewoptionid.Where(a => item.value.Contains(Convert.ToString(a))).Select(a => a).ToList();
-                        
+                            List<int> Values = item.value.Select(int.Parse).ToList();
+
+                            //   var itemvaluelist = item.value.Where(a => viewoptionid.Contains(int.Parse(a))).Select(a=>a).ToList();
+                            var itemvaluelist = viewoptionid.Where(a => item.value.Contains(Convert.ToString(a))).Select(a => a).ToList();
+
                             //End
 
 
@@ -4376,13 +4381,13 @@ namespace RevenuePlanner.Helpers
                                 //divPosition = "style=\"position:relative;\"";
                             }
 
-                             displayCheckbox = "";
-                             selectionMode = "Multi";
-                             footerText = "< Single-selection";
-                             singlehover = "";
-                             trhover = "";
-                             footerclose = "";
-                             if ((item.value == null) || (item.value != null && itemvaluelist.Count <= 1))
+                            displayCheckbox = "";
+                            selectionMode = "Multi";
+                            footerText = "< Single-selection";
+                            singlehover = "";
+                            trhover = "";
+                            footerclose = "";
+                            if ((item.value == null) || (item.value != null && itemvaluelist.Count <= 1))
                             {
                                 displayCheckbox = "style=\"display:none;\"";
                                 selectionMode = "Single";
@@ -4411,9 +4416,11 @@ namespace RevenuePlanner.Helpers
 
                                 foreach (var objOption in item.option)
                                 {
-                                     
-                                  
+
+
                                     DisplayStyle = " style=\"";
+
+
                                     if (item.isChild == true)
                                     {
                                         if (objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString()))
@@ -4452,22 +4459,30 @@ namespace RevenuePlanner.Helpers
                                         inputcolorcss = "class=\"multiselect-input-text-color-grey\"";
                                         if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
                                         {
-                                            List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
-                                            var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
-                                            if (item.isChild && !IsSelected)
-                                            {
-                                                name += "Please Select" + ", ";
-                                                inputcolorcss = string.Empty;
 
-                                            }
-                                            else
-                                            {
+                                            //var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString() )).FirstOrDefault().ParentOptionId;
+
+                                            //// var ParentCustomFieldID = customFieldList.Where(a => a.customFieldId == a.option.Where(b => b.ParentOptionId == ParentOptionID).Select(b => b.customFieldId).FirstOrDefault()).Select(a => a.ParentId).Distinct();
+                                            // var ParentCustomFieldID = item.ParentId;
+                                            // List<string> val = customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
+                                            // List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
+                                            // var IsSelected = val.Contains(ParentOptionID.ToString());
+
+                                            //  if (item.isChild && !IsSelected)
+                                            //  {
+                                            //      name += "Please Select" + ", ";
+                                            //      inputcolorcss = string.Empty;
+
+                                            //  }
+                                            //  else
+                                            //  {
+
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
                                             inputcolorcss = string.Empty;
 
 
-                                            }
+                                            // }
                                         }
 
                                         sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
@@ -4521,19 +4536,19 @@ namespace RevenuePlanner.Helpers
 
                                     if ((item.value != null && item.value.Contains(objOption.customFieldOptionId.ToString())) || (item.option.Count == 1 && item.isRequired))
                                     {
-                                        List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
-                                        var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
-                                        if (item.isChild && !IsSelected)
-                                        {
-                                            name += "Please Select" + ", ";
+                                        //List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
+                                        //var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
+                                        //if (item.isChild && !IsSelected)
+                                        //{
+                                        //    name += "Please Select" + ", ";
 
-                                        }
-                                        else
-                                        {
-                                        name += objOption.value + ", ";
-                                        enableCheck = "checked=\"checked\"";
+                                        //}
+                                        //else
+                                        //{
+                                            name += objOption.value + ", ";
+                                            enableCheck = "checked=\"checked\"";
 
-                                    }
+                                       // }
 
                                     }
                                     sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
@@ -4566,7 +4581,7 @@ namespace RevenuePlanner.Helpers
                                 if (section == Enums.EntityType.Tactic.ToString() && item.value != null && item.value.Count > 1)
                                 {
                                     DropDownStyle = " style=\"position:absolute;";
-                                     divPosition = "style=\"position:relative;\"";//modified by mitesh vaishnav for PL ticket 1497
+                                    divPosition = "style=\"position:relative;\"";//modified by mitesh vaishnav for PL ticket 1497
                                     if (fieldCounter % 4 == 3)
                                     {
                                         DropDownStyle = " top:0px;";
