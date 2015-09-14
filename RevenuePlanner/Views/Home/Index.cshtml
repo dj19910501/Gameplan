@@ -4726,6 +4726,7 @@ function Quarter() {
         var ProgramId;
         var TacticId;
         var ImpTacticId;
+        var LineId;
 
         if (name_Id.length == 1) {
             PlanId = name_Id[0].replace("L", "");
@@ -4739,11 +4740,18 @@ function Quarter() {
             CampaignId = name_Id[1].replace("C", "");
             ProgramId = name_Id[2].replace("P", "");
         }
+        else if (name_Id.length == 4) {
+            PlanId = name_Id[0].replace("L", "");
+            CampaignId = name_Id[1].replace("C", "");
+            ProgramId = name_Id[2].replace("P", "");
+            TacticId = name_Id[3].replace("T", "");
+        }
         else {
             PlanId = name_Id[0].replace("L", "");
             CampaignId = name_Id[1].replace("C", "");
             ProgramId = name_Id[2].replace("P", "");
             TacticId = name_Id[3].replace("T", "");
+            LineId = name_Id[4];
         }
 
         var ul;
@@ -4782,7 +4790,14 @@ function Quarter() {
                 $('#popupType').css('display', 'none');
             }
         }
-
+        else if (type == "Line") {
+            if (permission == "true") {
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItem'>New LineItem</li> <li class='new-prog' id='CloneLineItem'>Copy LineItem</li>  </ul>";
+            }
+            else {
+                $('#popupType').css('display', 'none');
+            }
+        }
         else {
             if (permission == "true") {
                 ul = "<ul style='margin: 0;'>  <li class='new-prog' id='ImpsTactic'>New " + type + "</li> </ul>";
@@ -5005,7 +5020,7 @@ function Quarter() {
 
         //Copy Tactic
     $('#CloneTactic1').click(function () {
-            isCopyTactic = TacticId;
+            isCopyTactic = ProgramId;
         var idPlanTactic = TacticId;// $("#hdnPlanTacticId").val();
         var Title = title;// $("#lblTacticTitle").html();
         $.ajax({
@@ -5064,7 +5079,14 @@ function Quarter() {
         displayConfirmCommon('impTacticCommonClick(' + idTactic + ',' + improvementTacticId + ');');
         $('.taskpopup').css('display', 'none');
     });
-
+        // New Line Item
+        //new Campaign
+        $('#NewLineItem').click(function () {
+            isCopyTactic = TacticId;
+            var planId = PlanId; // $("#hdnPlanId").val();
+            ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", 0, TacticId, '@RequestedModule');
+            $('.taskpopup').css('display', 'none');
+        });
     function displayConfirmCommon(functionName) {
         eval(functionName);
 
@@ -5299,6 +5321,9 @@ function DisplayEditablePopup(id, type) {
        }
        else if (type == "TacticPopup") {
            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
+        }
+        else if (type == "LinePopup") {
+            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, 0, '@RequestedModule');
    }
 }
 </script>
