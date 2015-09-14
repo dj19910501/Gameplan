@@ -114,11 +114,8 @@
             var targetHeight = $(this).height();
             var contentHeight = $('#divTacticReqMsg').outerHeight();
             var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-            //var left = $(this).left;
-            //var target = $(this).target;
-            //var top = $(this).top;
+            
             $('#divTacticReqMsg').css({
-                // 'display': 'block',
                 'top': targetBottomOffset,
                 'left': position.left,
             });
@@ -160,9 +157,7 @@
             HomeGrid.setColumnHidden(4, true);
             HomeGrid.insertColumn(5);
             HomeGrid.setColumnHidden(5, true);
-            //  var planname = HomeGrid.cellByIndex(0, 1).getValue();
             for (var i = 0; i < count; i++) {
-                //  HomeGrid.cellByIndex(i, 2).setValue(planname);
                 var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
                 var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
                 if (ActivityTypeName == "Plan") {
@@ -212,11 +207,8 @@
                 var targetHeight = $(this).height();
                 var contentHeight = $('#divTacticReqMsg').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-                //var left = $(this).left;
-                //var target = $(this).target;
-                //var top = $(this).top;
+              
                 $('#divTacticReqMsg').css({
-                    // 'display': 'block',
                     'top': targetBottomOffset,
                     'left': position.left,
                 });
@@ -255,7 +247,59 @@
             $('#errorMessageInspectPopup').css("display", "block");
         }
     }
-
+    function callsearch() {
+        $("#divgridview").find(".grid_Search").each(function () {
+            $(this).click(function (e) {
+                inspectCloseFocus = $(this).position().top;
+                var id = $(this).attr('alt');
+                var type = $(this).attr('id');
+                gridSearchFlag = 1;
+                DisplayEditablePopup(id, type);
+            });
+        });
+        $("#divgridview").find(".grid_add").each(function () {
+            $(this).click(function (e) {
+                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+                gridSearchFlag = 1;
+                var type = $(this).attr('id');
+                var name = $(this).attr('alt');
+                var title = $(this).attr('data-title');
+                var permission = $(this).attr('permission');
+                DisplayPopUpMenu(type, name, title, permission, e);
+            });
+        });
+        $('#gridbox').find('tbody tr').each(function () {
+            var spnerror = $(this).find("#tacticIsRequired");
+            if (typeof spnerror != 'undefined' && spnerror != null) {
+                var div = $(spnerror).parent().parent();
+               
+                if (typeof div != 'undefined') {
+                    $(spnerror).remove();
+                    $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
+                }
+            }
+        });
+        $("#divgridview").find(".orange-corner-grid").each(function () {
+            $(this).hover(function () {
+                $("#divTacticReqMsg").css('display', 'block');
+                var position = $(this).offset();
+                var targetOffset = $(this).offset().top;
+                var targetHeight = $(this).height();
+                var contentHeight = $('#divTacticReqMsg').outerHeight();
+                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+              
+                $('#divTacticReqMsg').css({
+                    'top': targetBottomOffset,
+                    'left': position.left,
+                });
+                $('#popupType').css('display', 'none');
+                $('#dhx_combo_select').css('display', 'none');
+                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+            }, function () {
+                $("#divTacticReqMsg").css('display', 'none');
+            });
+        });
+    }
     $('#errorMessageInspectPopup .close').click(function () {
         $('#errorMessageInspectPopup').css("display", "none");
     });
@@ -282,7 +326,12 @@
             $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
             $("#popupType").css("display", "none");
         });
+        HomeGrid.attachEvent("onOpenEnd", function (rowid) {
 
+            callsearch();
+
+            return true;
+        });
         HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
             var locked = HomeGrid.cells(id, 1).getAttribute("locked");
@@ -318,6 +367,10 @@
                 //    HomeGrid.closeItem(rowid);
                 if (id == isCopyTactic) {
                     var SourcePtype = (rowid).split(".")[0];
+
+                    var subids = HomeGrid.getSubItems(rowid).split(',');
+                    for (var i = 0; i < subids.length; i++)
+                        HomeGrid.openItem(subids[i]);
                     if (SourcePtype == "tact") {
                         HomeGrid.openItem(pid);
                         HomeGrid.openItem(HomeGrid.getParentId(pid));
@@ -366,8 +419,10 @@
                     $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
                 }
             }
-        })
+        });
+      
     }
+  
     function sort_Owner(a, b, ord, a_id, b_id) {
 
         a = HomeGrid.cells(a_id, 8).getText();
