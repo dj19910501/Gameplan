@@ -9,10 +9,11 @@ namespace RevenuePlanner
         public static void RegisterBundles(BundleCollection bundles)
         {
 
-            bundles.Add(new StyleBundle("~/Content/css/GetCSSStyle").Include(
-                  "~/Content/css/style_min_v1.css",
-                  "~/Content/css/style_extended_min_v1.css"
-             ));
+            //bundles.Add(new StyleBundle("~/Content/css/GetCSSStyle").Include(
+            //    "~/Content/css/bootstrap-responsive.css",  
+            //    "~/Content/css/style_min_v1.css",
+            //      "~/Content/css/style_extended_min_v1.css"
+            // ));
 
             bundles.Add(new StyleBundle("~/Content/css/GetCSS").Include(
                  "~/Content/css/font-awesome.css",
