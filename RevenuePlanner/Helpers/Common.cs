@@ -1742,9 +1742,11 @@ namespace RevenuePlanner.Helpers
             double? TotalPercentageMQLImproved = 0;
             int TotalTacticCount = 0;
 
-            var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true).Select(m => m).ToList();
+            var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true && p.Year == year).Select(m => m).ToList();
+            
             if (planList != null && planList.Count > 0)
             {
+                var innerplanids = planList.Select(plan => plan.PlanId).ToList();
                 //Modified By Komal Rawal for #1447
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
@@ -1773,7 +1775,7 @@ namespace RevenuePlanner.Helpers
                 }
 
                
-                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();
+                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();
 
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
@@ -1799,9 +1801,18 @@ namespace RevenuePlanner.Helpers
                 //End
                 
                 
-                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
-                var tacticids = planTacticsList.Select(t => t.objPlanTactic.PlanTacticId).ToList();
-                List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticids.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
+                
+                var impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
+                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
+               
+               
+                var LineItemList = (from li in db.Plan_Campaign_Program_Tactic_LineItem
+                                    where !li.IsDeleted && planIds.Contains(li.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                                    select new
+                                     {
+                                         PlanTacticId = li.PlanTacticId,
+                                         Cost = li.Cost
+                                     }).ToList();
                 Double MQLs = 0;
                 List<Plan_Campaign_Program_Tactic> planTacticIds = new List<Plan_Campaign_Program_Tactic>();
                 List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
@@ -1809,7 +1820,7 @@ namespace RevenuePlanner.Helpers
                 //Added By Bhavesh For Performance Issue #Home
                 List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
                 List<StageList> stageListType = Common.GetStageList();
-                List<Model> ModelList = db.Models.Where(m => m.IsDeleted == false).ToList();
+                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.ClientId).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
 
                 var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
                 List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
@@ -2915,7 +2926,7 @@ namespace RevenuePlanner.Helpers
                 tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.ADSValue = stageRelation.Where(sr => sr.StageType == Size).Sum(sr => sr.Value);
-                tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                
                 if (!isSinglePlan)
                 {
                     tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
@@ -2924,6 +2935,8 @@ namespace RevenuePlanner.Helpers
                 //// If Page request called from Report page then set Stage weightages.
                 if (IsReport)
                 {
+                    tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+
                     #region "Get Tactic Stage-Weightage"
                     tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).Select(_customfield => 
                                                                                                   new TacticCustomFieldStageWeightage() 

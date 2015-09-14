@@ -71,8 +71,9 @@
             RefreshCurrentTab();
         }
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            
-            GetCollaborators(CurrentPlanId);
+            if ($('#IsGridView').val() != "True") {
+                GetCollaborators(CurrentPlanId);
+            }
             $("#lblMarkringActivitiestitle").show();
            // $("#nl-form2").show();
         }
