@@ -4369,8 +4369,9 @@ namespace RevenuePlanner.Helpers
                     ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
                     ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).FirstOrDefault(),
                     customFieldOptionId = o.CustomFieldOptionId,
-                    ChildOptionIds = DependencyList.Select(list => list.ChildOptionId).ToList(),
-                    value = o.Value
+                    ChildOptionIds = DependencyList.Where(Child => Child.ParentOptionId == o.CustomFieldOptionId).Select(list => list.ChildOptionId).ToList(),
+                    value = o.Value,
+                    customFieldId = o.CustomFieldId
                 }).OrderBy(o => o.value).ToList()
 
             }).OrderBy(a => a.name,new AlphaNumericComparer()).ToList();
@@ -4387,16 +4388,16 @@ namespace RevenuePlanner.Helpers
             
             }
 
-            foreach (var item in EntityValue)
-            {
-                bool IsSelected = false;
-                if (ListIDs.Where(v => entityvalues.Contains(v)).Any())
-                {
-                    IsSelected = childid.Contains(item.CustomFieldId) && childOptionid.Contains(item.Value);
-                }
-                lstCustomFields.Where(c => c.customFieldId == item.CustomFieldId).FirstOrDefault().IsSelected = IsSelected;
+            //foreach (var item in EntityValue)
+            //{
+            //    bool IsSelected = false;
+            //    if (ListIDs.Where(v => entityvalues.Contains(v)).Any())
+            //    {
+            //        IsSelected = childid.Contains(item.CustomFieldId) && childOptionid.Contains(item.Value);
+            //    }
+            //    lstCustomFields.Where(c => c.customFieldId == item.CustomFieldId).FirstOrDefault().IsSelected = IsSelected;
 
-            }
+            //}
             List<CustomFieldModel> finalList = new List<CustomFieldModel>();
             foreach (var item in lstCustomFields.Where(cfParent => cfParent.ParentId == 0).ToList())
             {

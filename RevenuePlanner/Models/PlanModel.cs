@@ -458,6 +458,7 @@ namespace RevenuePlanner.Models
         public List<int?> ChildOptionIds { get; set; }
         public string value { get; set; }
         public int ParentOptionId { get; set; }
+        public int customFieldId { get; set; }
     }
 
     /// <summary>
