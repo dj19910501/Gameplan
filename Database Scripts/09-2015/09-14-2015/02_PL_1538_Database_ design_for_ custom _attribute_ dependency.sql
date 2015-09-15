@@ -12,7 +12,7 @@ BEGIN
                FieldType nvarchar(50) NOT NULL 
            END
 
-		    IF  EXISTS(SELECT * FROM sys.columns WHERE [name] = N'Abbreviation' AND [object_id] = OBJECT_ID(N'ParentCustomFieldId'))
+		    IF  EXISTS(SELECT * FROM sys.columns WHERE [name] = N'ParentCustomFieldId' AND [object_id] = OBJECT_ID(N'CustomFieldDependency'))
 			 BEGIN
 		   ALTER TABLE [CustomFieldDependency] ALTER COLUMN [ParentCustomFieldId] INTEGER NULL;
 		    END
