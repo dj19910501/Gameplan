@@ -724,7 +724,7 @@
                     if ((!_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('$', '').match(_intRegex))) {
                         $(this).removeClass("error");
                     }
-                    else if ((_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('.', '').replace('$', '').match(_intRegex))) {
+                    else if ((_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('.', '').replace('$', '').match(_decmlRegex))) {
                         $(this).removeClass("error");
                     }
                     else {
