@@ -399,8 +399,9 @@ body {
 }
 
 .main-nav {
-    width: 400px;
+    width: auto !important;/* by bheru 15-9-2015 for 1464*/
     float: left;
+    padding-right: 12px;/* by bheru 15-9-2015 for 1464*/
 }
 
     .main-nav ul {
@@ -15640,6 +15641,11 @@ div.clue-bottom-default .cluetip-arrows {
 .user_title {
     max-width: 65%;
     padding-top: 14px;
+}
+
+*::-ms-backdrop, .user_title {/*by bheru ticket 1464 15-9-2015 IE hack*/
+display:inline-block;
+float:none;
 }
 
     .user_title .avatar-user {
