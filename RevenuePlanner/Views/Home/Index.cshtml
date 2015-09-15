@@ -2676,7 +2676,7 @@ function AjaxRequest() {
                     //// Hide/Show Tabulated data shown below gantt of request tab.
                     if (isRequest) {
                         requestPlanActiveTab(isRequest);
-                        $(".shadow-scroll-gantt").show();
+                        //$(".shadow-scroll-gantt").hide();   //Commented by Rahul Shah on 14/09/2015 for PL #1582
                         $("#table_activities").show();
                         FillTacticTableForRequest(data);
                         $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");

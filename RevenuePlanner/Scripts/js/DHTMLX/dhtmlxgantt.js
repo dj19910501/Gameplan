@@ -3908,7 +3908,8 @@ gantt._render_tasks_scales = function (val) {
 
 			html.push("<div class=\""+cssClass+"\" style=\"height:"+(cfgs[i].height)+"px;line-height:"+(cfgs[i].height)+"px\">" + this._prepare_scale_html(cfgs[i]) + "</div>");
 		}
-		//gantt._render_data();//modified by Mitesh Vaishnav for merge Old and new version of dhtmlx // this.$task.offsetWidth;
+	    //gantt._render_data();//modified by Mitesh Vaishnav for merge Old and new version of dhtmlx // this.$task.offsetWidth;
+		gantt._render_data(); // Added by Rahul Shah on 14/09/2015 for PL #1594
 		scales_html = html.join("");
 		outer_width = cfg.full_width + this.$scroll_ver.offsetWidth + "px";
 		data_width = cfg.full_width + "px";
