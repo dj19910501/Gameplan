@@ -3590,46 +3590,46 @@ namespace RevenuePlanner.Controllers
             {
                 using (MRPEntities mrp = new MRPEntities())
                 {
-                    using (var scope = new TransactionScope())
+                    //using (var scope = new TransactionScope())
+                    //{
+                    if (ModelState.IsValid)
                     {
-                        if (ModelState.IsValid)
+                        htmlOfCurrentView = HttpUtility.UrlDecode(htmlOfCurrentView, System.Text.Encoding.Default);
+
+                        //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
+                        MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
+
+                        string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
+                        Notification notification = (Notification)mrp.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
+                        //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
+                        optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
+                        ////
+                        string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
+                        //toEmailIds = "nishant.sheth@indusa.com";
+                        foreach (string toEmail in toEmailIds.Split(','))
                         {
-                            htmlOfCurrentView = HttpUtility.UrlDecode(htmlOfCurrentView, System.Text.Encoding.Default);
-
-                            //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
-                            MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
-
-                            string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
-                            Notification notification = (Notification)db.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
-                            //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
-                            optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
+                            Report_Share reportShare = new Report_Share();
+                            reportShare.ReportType = reportType;
+                            reportShare.EmailId = toEmail;
+                            //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
+                            reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
                             ////
-                            string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
-                            //toEmailIds = "nishant.sheth@indusa.com";
-                            foreach (string toEmail in toEmailIds.Split(','))
+                            reportShare.CreatedDate = DateTime.Now;
+                            reportShare.CreatedBy = Sessions.User.UserId;
+                            mrp.Entry(reportShare).State = EntityState.Added;
+                            mrp.Report_Share.Add(reportShare);
+                            result = mrp.SaveChanges();
+                            if (result == 1)
                             {
-                                Report_Share reportShare = new Report_Share();
-                                reportShare.ReportType = reportType;
-                                reportShare.EmailId = toEmail;
-                                //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
-                                reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
-                                ////
-                                reportShare.CreatedDate = DateTime.Now;
-                                reportShare.CreatedBy = Sessions.User.UserId;
-                                db.Entry(reportShare).State = EntityState.Added;
-                                db.Report_Share.Add(reportShare);
-                                result = db.SaveChanges();
-                                if (result == 1)
-                                {
-                                    //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
-                                    Common.sendMail(toEmail, Common.FromMail, emailBody, notification.Subject, new MemoryStream(pdfStream.ToArray()), string.Format("{0}.pdf", reportType));
-                                }
+                                //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
+                                Common.sendMail(toEmail, Common.FromMail, emailBody, notification.Subject, new MemoryStream(pdfStream.ToArray()), string.Format("{0}.pdf", reportType));
                             }
-
-                            scope.Complete();
-                            return Json(true, JsonRequestBehavior.AllowGet);
                         }
+
+                        //scope.Complete();
+                        return Json(true, JsonRequestBehavior.AllowGet);
                     }
+                    //}
                 }
             }
             catch (Exception e)
