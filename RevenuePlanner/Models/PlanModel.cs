@@ -435,7 +435,7 @@ namespace RevenuePlanner.Models
         public string description { get; set; }
         public bool isRequired { get; set; }
         public bool isChild { get; set; }
-        public int ParentId { get; set; }
+        public int? ParentId { get; set; }
         public bool IsSelected { get; set; }
         public int ParentOptionId { get; set; }
         public string entityType { get; set; }

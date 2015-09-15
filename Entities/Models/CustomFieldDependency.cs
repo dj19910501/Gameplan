@@ -14,17 +14,17 @@ namespace RevenuePlanner.Models
     
     public partial class CustomFieldDependency
     {
-        public int ParentCustomFieldId { get; set; }
+        public Nullable<int> ParentCustomFieldId { get; set; }
         public int ParentOptionId { get; set; }
         public int ChildCustomFieldId { get; set; }
         public Nullable<int> ChildOptionId { get; set; }
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public bool IsDeleted { get; set; }
+        public string FieldType { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual CustomField CustomField1 { get; set; }
         public virtual CustomFieldOption CustomFieldOption { get; set; }
-        public virtual CustomFieldOption CustomFieldOption1 { get; set; }
     }
 }

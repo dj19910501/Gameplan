@@ -4278,31 +4278,26 @@ namespace RevenuePlanner.Helpers
                 foreach (var item in customFieldList)
                 {
                     className = "span3 margin-top10";
-                    //if (fieldCounter % 4 != 0 && fieldCounter != 0)
-                    //{
-                    //    className += " paddingleft25px";
-                    //}
-                    //else
-                    //{
-                    //    className += "\" style=\"clear:both;";
-                    //}	 
 
                     DisplayStyle = " style=\"";
                     var IsSelected = false;
                     var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault()!= null ?item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId: new int();
                     var ParentCustomFieldID = item.ParentId;
+                   
                     List<string> val = customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
+                    var IsSelectedParentsChild =  item.option.Where(op => val.Contains(op.ParentOptionId.ToString())).Any();
                     if (item.customFieldType == "TextBox" && item.isChild )
                     {
-                        IsSelected =  val.Contains(item.ParentOptionId.ToString());
+                        IsSelectedParentsChild = val.Contains(item.ParentOptionId.ToString());
                     }
                     else
                     {
                          IsSelected = val.Contains(ParentOptionID.ToString());
                     }
                    
-                    if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !IsSelected)
+                    if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !IsSelectedParentsChild)
                     {
+                        
                         DisplayStyle += "display:none;";
                     }
                     else
@@ -4476,21 +4471,21 @@ namespace RevenuePlanner.Helpers
                                             // List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
                                             // var IsSelected = val.Contains(ParentOptionID.ToString());
 
-                                            //  if (item.isChild && !IsSelected)
-                                            //  {
-                                            //      name += "Please Select" + ", ";
-                                            //      inputcolorcss = string.Empty;
-
-                                            //  }
-                                            //  else
-                                            //  {
+                                              if (item.isChild && !IsSelected)
+                                              {
+                                                  name += "Please Select" + ", ";
+                                                  inputcolorcss = string.Empty;
+                                                  item.value.Clear();
+                                              }
+                                              else
+                                              {
 
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
                                             inputcolorcss = string.Empty;
 
 
-                                            // }
+                                             }
                                         }
 
                                         sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
@@ -4546,17 +4541,17 @@ namespace RevenuePlanner.Helpers
                                     {
                                         //List<string> ListIDs = objOption.ChildOptionIds.Select(a => a.ToString()).Distinct().ToList();
                                         //var IsSelected = item.value.Where(v => ListIDs.Contains(v)).Any();
-                                        //if (item.isChild && !IsSelected)
-                                        //{
-                                        //    name += "Please Select" + ", ";
-
-                                        //}
-                                        //else
-                                        //{
+                                           if (item.isChild && !IsSelected)
+                                              {
+                                                  name += "Please Select" + ", ";
+                                                  item.value.Clear();
+                                              }
+                                              else
+                                              {
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
 
-                                       // }
+                                           }
 
                                     }
                                     sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");

@@ -4352,8 +4352,8 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
-           
-            List<CustomFieldDependency> DependencyList = db.CustomFieldDependencies.Where(a=>a.IsDeleted == false).Select(a => a).ToList();
+
+            List<CustomFieldDependency> DependencyList = db.CustomFieldDependencies.Where(a => a.IsDeleted == false && a.FieldType == "CustomField").Select(a => a).ToList();
             var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true)).ToList().Select(a => new CustomFieldModel
             {
                 customFieldId = a.CustomFieldId,
@@ -4363,7 +4363,7 @@ namespace RevenuePlanner.Helpers
                 isRequired = a.IsRequired,
                 entityType = a.EntityType,
                 isChild = DependencyList.Select(list => list.ChildCustomFieldId).ToList().Contains(a.CustomFieldId) ? true : false,
-                ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
+                ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault() == null ? 0 : DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
                 ParentOptionId = DependencyList.Where(list =>list.ChildCustomFieldId == a.CustomFieldId && list.ChildOptionId == null).Select(list => list.ParentOptionId).ToList().FirstOrDefault(),
                 option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
                 {

@@ -18,7 +18,6 @@ namespace RevenuePlanner.Models
         {
             this.CustomRestrictions = new HashSet<CustomRestriction>();
             this.CustomFieldDependencies = new HashSet<CustomFieldDependency>();
-            this.CustomFieldDependencies1 = new HashSet<CustomFieldDependency>();
         }
     
         public int CustomFieldOptionId { get; set; }
@@ -34,6 +33,5 @@ namespace RevenuePlanner.Models
         public virtual CustomField CustomField { get; set; }
         public virtual ICollection<CustomRestriction> CustomRestrictions { get; set; }
         public virtual ICollection<CustomFieldDependency> CustomFieldDependencies { get; set; }
-        public virtual ICollection<CustomFieldDependency> CustomFieldDependencies1 { get; set; }
     }
 }
