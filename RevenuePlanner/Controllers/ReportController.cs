@@ -6380,6 +6380,7 @@ namespace RevenuePlanner.Controllers
         {
             #region "Declare local Variables"
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
+            List<Plan_Campaign_Program_Tactic_Actual> INQActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             List<string> includeActualMonth = new List<string>();
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             ActualTacticListByStage objActualTacticListByStage = new ActualTacticListByStage();
@@ -6398,14 +6399,32 @@ namespace RevenuePlanner.Controllers
                     //// Get month list of entire year.
                     includeActualMonth = GetMonthListForReport(timeframeOption);
                 }
+
+
+                if (StageCodeList.Contains(Enums.InspectStage.ProjectedStageValue.ToString()))
+                {
+                    string stagecode = Enums.Stage.INQ.ToString();
+                    var stageid = db.Stages.Where(s => s.ClientId == Sessions.User.ClientId && s.IsDeleted == false && s.Code == stagecode).FirstOrDefault().StageId;
+                    TacticData.Where(t => t.TacticObj.StageId == stageid).ToList().ForEach(t => t.ActualTacticList.ForEach(a => INQActualTacticList.Add(a)));
+                }
+
                 TacticData.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
+
 
                 foreach (string stagecode in StageCodeList)
                 {
+
                     objActualTacticListByStage = new ActualTacticListByStage();
                     objActualTacticListByStage.StageCode = stagecode;
                     //// Filter ActualTacticlist by RevenueStageCode & IncludeMonth list till current Month ex.{Jan,Feb,March}.
-                    objActualTacticListByStage.ActualTacticList = ActualTacticList.Where(actual => actual.StageTitle.Equals(stagecode) && includeActualMonth.Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                    if (stagecode == Enums.InspectStage.ProjectedStageValue.ToString())
+                    {
+                        objActualTacticListByStage.ActualTacticList = INQActualTacticList.Where(actual => actual.StageTitle.Equals(stagecode) && includeActualMonth.Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                    }
+                    else
+                    {
+                        objActualTacticListByStage.ActualTacticList = ActualTacticList.Where(actual => actual.StageTitle.Equals(stagecode) && includeActualMonth.Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
+                    }
                     ActualTacticStageList.Add(objActualTacticListByStage);
                 }
             }
