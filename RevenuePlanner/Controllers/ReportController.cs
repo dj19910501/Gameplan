@@ -3605,7 +3605,7 @@ namespace RevenuePlanner.Controllers
                             optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                             ////
                             string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
-                            //toEmailIds = "dashrath.prajapati@indusa.com";
+                            //toEmailIds = "nishant.sheth@indusa.com";
                             foreach (string toEmail in toEmailIds.Split(','))
                             {
                                 Report_Share reportShare = new Report_Share();
@@ -3719,7 +3719,7 @@ namespace RevenuePlanner.Controllers
             //htmlToPdfConverter.PdfDocumentOptions.StretchToFit = false;
             //htmlToPdfConverter.PdfDocumentOptions.AutoSizePdfPage = false;
             //htmlToPdfConverter.PdfDocumentOptions.FitHeight = false;
-            byte[] pdf = htmlToPdfConverter.ConvertHtml(htmlOfCurrentView, baseUrl);
+            byte[] pdf = htmlToPdfConverter.ConvertHtml(htmlOfCurrentView, url);
             return new System.IO.MemoryStream(pdf);
         }
 
