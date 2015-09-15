@@ -3583,7 +3583,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="optionalMessage">Optional message.</param>
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <returns>Returns json result which indicates report is generated and sent sucessfully.</returns>
-        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView)
+        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "")
         {
             int result = 0;
             try
@@ -3597,7 +3597,7 @@ namespace RevenuePlanner.Controllers
                             htmlOfCurrentView = HttpUtility.UrlDecode(htmlOfCurrentView, System.Text.Encoding.Default);
 
                             //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
-                            MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType);
+                            MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
 
                             string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
                             Notification notification = (Notification)db.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
@@ -3649,9 +3649,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <param name="reportType">Type of report.</param>
         /// <returns>Returns stream of PDF report.</returns>
-        private MemoryStream GeneratePDFReport(string htmlOfCurrentView, string reportType)
+        private MemoryStream GeneratePDFReport(string htmlOfCurrentView, string reportType, string url = "")
         {
-            htmlOfCurrentView = AddCSSAndJS(htmlOfCurrentView, reportType);
+            htmlOfCurrentView = AddCSSAndJS(htmlOfCurrentView, reportType, url);
             //// Start - Added Sohel Pathan on 30/12/2014 for and Internal Review Point
             if (reportType.Equals(Enums.ReportType.Summary.ToString()))
             {
@@ -3697,8 +3697,8 @@ namespace RevenuePlanner.Controllers
             }
             else if (reportType == Enums.ReportType.Summary.ToString())
             {
-                htmlToPdfConverter.PdfDocumentOptions.TopMargin = 10;
-                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 55;
+                htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;    //PL 1479 obsevation1- Dashrath Prajapati
+                htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 90; //PL 1479 obsevation1- Dashrath Prajapati
             }
             else
             {
@@ -3720,7 +3720,7 @@ namespace RevenuePlanner.Controllers
             //htmlToPdfConverter.PdfDocumentOptions.StretchToFit = false;
             //htmlToPdfConverter.PdfDocumentOptions.AutoSizePdfPage = false;
             //htmlToPdfConverter.PdfDocumentOptions.FitHeight = false;
-            byte[] pdf = htmlToPdfConverter.ConvertHtml(htmlOfCurrentView, baseUrl);
+            byte[] pdf = htmlToPdfConverter.ConvertHtml(htmlOfCurrentView, url);
             return new System.IO.MemoryStream(pdf);
         }
 
@@ -3731,7 +3731,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <param name="reportType">Report Type.</param>
         /// <returns>Return html string with CSS and Javascript.</returns>
-        private string AddCSSAndJS(string htmlOfCurrentView, string reportType)
+        private string AddCSSAndJS(string htmlOfCurrentView, string reportType, string url = "")
         {
             //  string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
             //string js = ReadJs("");
@@ -3739,7 +3739,7 @@ namespace RevenuePlanner.Controllers
             StringBuilder html = new StringBuilder();
             html.Append("<html>");
             html.Append("<head>");
-            string url = Url.Content("~/Content/css/bootstrap.css");
+            //string url = Url.Content("~/Content/css/bootstrap.css");
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap.css")));
             //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
