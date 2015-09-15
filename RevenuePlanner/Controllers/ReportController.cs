@@ -3869,18 +3869,7 @@ namespace RevenuePlanner.Controllers
             }
 
             returnhtml = Convert.ToString(Convert.ToString(html).Replace("%2B", "+"));
-            try
-            {
-                int i = 1, j = 0;
-                int ans = i / j;
-            }
-            catch (Exception e)
-            {
-                Exception ex = new Exception(returnhtml, e);
-                ErrorSignal.FromCurrentContext().Raise(ex);
-            }
-
-
+            
             return returnhtml;
         }
 
