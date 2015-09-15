@@ -3674,8 +3674,8 @@ namespace RevenuePlanner.Controllers
             //pdfConverter.PdfDocumentOptions.PdfCompressionLevel = PdfCompressionLevel.Normal;
             //pdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
             // byte[] pdf = pdfConverter.GetPdfBytesFromHtmlString(htmlOfCurrentView);
-            string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
-            string baseUrl = domain + "/Report/Index/";
+            //string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
+            //string baseUrl = domain + "/Report/Index/";
 
             HtmlToPdfConverter htmlToPdfConverter = new HtmlToPdfConverter();
             //htmlToPdfConverter.LicenseKey = "4W9+bn19bn5ue2B+bn1/YH98YHd3d3c=";
@@ -3869,7 +3869,7 @@ namespace RevenuePlanner.Controllers
             }
 
             returnhtml = Convert.ToString(Convert.ToString(html).Replace("%2B", "+"));
-            
+
             return returnhtml;
         }
 
