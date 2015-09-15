@@ -15645,7 +15645,7 @@ div.clue-bottom-default .cluetip-arrows {
 
 *::-ms-backdrop, .user_title {/*by bheru ticket 1464 15-9-2015 IE hack*/
 display:inline-block;
-float:none;
+float:right;
 }
 
     .user_title .avatar-user {
