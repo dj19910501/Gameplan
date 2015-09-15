@@ -16,7 +16,7 @@
             <p class="source-sans-prolight user-drop-down">@Sessions.User.FirstName @Sessions.User.LastName@*<span class="divider"> | </span>*@
             </p>
             <img class="avatar-user" src="@Url.Action("UserPhoto", "Home")" alt="User avatar" />
-            <p class="user-drop-down">@Sessions.User.JobTitle</p>
+            <p class="user-drop-down" title="@Sessions.User.JobTitle">@Sessions.User.JobTitle</p>
             @*<img class="avatar-user" src="@Url.Content("~/Content/images/photo-user.jpg")" alt="User avatar" />*@
            
 
