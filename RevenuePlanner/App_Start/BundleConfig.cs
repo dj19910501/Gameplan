@@ -9,36 +9,16 @@ namespace RevenuePlanner
         public static void RegisterBundles(BundleCollection bundles)
         {
 
-            bundles.Add(new StyleBundle("~/Content/cssstyle").Include("~/Content/css/style.css"));
-
-            bundles.Add(new StyleBundle("~/Content/bootstrap").Include(
-                        "~/Content/css/bootstrap.css", 
-                        "~/Content/css/bootstrap-responsive.css"));
-
-            bundles.Add(new ScriptBundle("~/bundles/jsjquery").Include(
-                        "~/Scripts/js/jquery.min.js",
-                        "~/Scripts/js/jquery.slimscroll.min.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/jsbootstrap").Include(
-                        "~/Scripts/js/bootstrap.min.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/jsscript").Include(
-                        "~/Scripts/js/scripts.js"));
-
-            bundles.Add(new ScriptBundle("~/bundles/nFormjs").Include(
-                        "~/Scripts/js/NaturalLanguageForm/modernizr.custom.js",
-                        "~/Scripts/js/NaturalLanguageForm/nlform.js"));
-
-            bundles.Add(new StyleBundle("~/Content/nFormCss").Include(
-                        "~/Content/css/NaturalLanguageForm/default.css",
-                        "~/Content/css/NaturalLanguageForm/component.css"));
+            //bundles.Add(new StyleBundle("~/Content/css/GetCSSStyle").Include(
+            //    "~/Content/css/bootstrap-responsive.css",  
+            //    "~/Content/css/style_min_v1.css",
+            //      "~/Content/css/style_extended_min_v1.css"
+            // ));
 
             bundles.Add(new StyleBundle("~/Content/css/GetCSS").Include(
                  "~/Content/css/font-awesome.css",
                 "~/Content/css/bootstrap.css",
-                //  "~/Content/css/style.css",
                      "~/Content/css/datepicker.css",
-                //  "~/Content/css/style_extended.css",
                      "~/Content/css/dhtmlxgantt.css",
                      "~/Content/css/summernote.css",
                      "~/Content/css/jquery.multiselect.css"
@@ -47,7 +27,10 @@ namespace RevenuePlanner
             bundles.Add(new StyleBundle("~/Content/css/GetCSSForLogin").Include(
                "~/Content/css/font-awesome.css",
               "~/Content/css/bootstrap.css",
-                   "~/Content/css/summernote.css"
+                   "~/Content/css/summernote.css",
+                    "~/Content/css/bootstrap-responsive.min.css",
+                       "~/Content/css/style.css",
+                     "~/Content/css/style_extended.css"
                   ));
 
             bundles.Add(new ScriptBundle("~/bundles/GetJSForLogin").Include(
@@ -55,7 +38,7 @@ namespace RevenuePlanner
                         "~/Scripts/js/bootstrap.js",
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",
-                        //"~/Scripts/js/scripts.js",
+                        "~/Scripts/js/scripts.js",
                         "~/Scripts/summernote_min.js"
                         ));
 
@@ -66,8 +49,6 @@ namespace RevenuePlanner
                         "~/Scripts/js/jquery.slimscroll_min.js",
                         "~/Scripts/js/jquery.slidepanel_min.js",
                         "~/Scripts/js/bootstrap.js",
-                       // "~/Scripts/js/scripts.js",
-                      //  "~/Scripts/js/scripts_extended.js",
                         "~/Scripts/jquery.form.js",
                          "~/Scripts/js/bootstrap-datepicker.js",
                         "~/Scripts/js/jquery.price_format.1.8_v2.js",
@@ -78,7 +59,9 @@ namespace RevenuePlanner
                         "~/Scripts/js/jquery.multiselect_v1.js",
                         "~/Scripts/js/jquery.multiselect.filter.js",
                         "~/Scripts/MultiselectWeight.js",
-                        "~/Scripts/jquery.cluetip.js"
+                        "~/Scripts/jquery.cluetip.js",
+                        "~/Scripts/js/scripts.js",
+                        "~/Scripts/js/scripts_extended.js"
                         ));
 
             BundleTable.EnableOptimizations = true;

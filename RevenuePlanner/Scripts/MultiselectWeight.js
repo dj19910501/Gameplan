@@ -5,7 +5,7 @@
     $.widget("ech.multiselectWeight", {
         options: {
             errorDivId: 'noId',
-            pageErrorDivId:'noPageErrorId'
+            pageErrorDivId: 'noPageErrorId'
         },
         _create: function () {
             this._namespaceID = this.eventNamespace || ('multiselectWeight' + multiselectID);
@@ -80,7 +80,7 @@
                                         $(this).find('p:first').text("Please Select");
                                         menu.find('input:checkbox').removeAttr('checked');
                                         menu.find('input[type=text]').val('');
-                                        menu.find('p').addClass('single-p');  
+                                        menu.find('p').addClass('single-p');
                                         menu.find('tr').addClass('trdropdownhover');
                                         menu.find('#aclose_tag').css('display', 'none');
                                     }
@@ -191,26 +191,41 @@
                         filters.chekboxIds.push(checkbx.val());
 
                     $('#CustomHtmlHelperfield').find('.span3').each(function () {
-                        var cnt = 0;
-                        if ($(this).attr('parentid') == ParentValue) {
-                            var maindiv = $(this);
-                            $(this).css("display", "inline-block");
-                            $(this).find('.trdropdownhover').css("display", "none");
-                            $(this).find('.trdropdownhover').each(function () {
-                                var ParentOptionId = $(this).attr('parentid');
-                                var i;
-                                for (i = 0 ; i < filters.chekboxIds.length; i++) {
-                                    if (ParentOptionId == filters.chekboxIds[i]) {
-                                        if ($(this).css("display") == "none") {
-                                            $(this).css("display", "block");
-                                            cnt++;
-                                        }
+                        var InputType = $(this).find("input").attr('type');
+                        if (InputType == "text" && $(this).attr('parentid') != '0' && $(this).attr('parentid') != 'undefined') {
+                            var ParentOptionID = $(this).find("input").parent().attr('parentoptionid');
+                            var i;
+                            $(this).css("display", "none");
+                            for (i = 0 ; i < filters.chekboxIds.length; i++) {
+                                if (ParentOptionID == filters.chekboxIds[i]) {
+                                    if ($(this).css("display") == "none") {
+                                        $(this).css("display", "inline-block");
                                     }
                                 }
+                            }
+                        }
+                        else {
+                            var cnt = 0;
+                            if ($(this).attr('parentid') == ParentValue) {
+                                var maindiv = $(this);
+                                $(this).css("display", "inline-block");
+                                $(this).find('.trdropdownhover').css("display", "none");
+                                $(this).find('.trdropdownhover').each(function () {
+                                    var ParentOptionId = $(this).attr('parentid');
+                                    var i;
+                                    for (i = 0 ; i < filters.chekboxIds.length; i++) {
+                                        if (ParentOptionId == filters.chekboxIds[i]) {
+                                            if ($(this).css("display") == "none") {
+                                                $(this).css("display", "block");
+                                                cnt++;
+                                            }
+                                        }
+                                    }
 
-                            });
-                            if (cnt == 0)
-                                maindiv.css("display", "none");
+                                });
+                                if (cnt == 0)
+                                    maindiv.css("display", "none");
+                            }
                         }
                     });
                     //End

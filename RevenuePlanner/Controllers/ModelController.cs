@@ -1293,9 +1293,10 @@ namespace RevenuePlanner.Controllers
                      {
                          isIntegratedWithWorkFront = true;
                      }
-                     ViewBag.WorkFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
-                                                                  modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name)
-                                                      .Select(modelTemplate => new { modelTemplate.TemplateId, modelTemplate.Template_Name }).Distinct().ToList();
+                     workFrontTemplates = objDbMrpEntities.IntegrationWorkFrontTemplates.Where(modelTemplate => modelTemplate.IntegrationInstanceId == objModel.IntegrationInstanceIdProjMgmt &&
+                                                                   modelTemplate.IsDeleted == 0).OrderBy(modelTemplate => modelTemplate.Template_Name).ToList();
+
+                     ViewBag.WorkFrontTemplates = workFrontTemplates.Select(modelTemplate => new { modelTemplate.TemplateId, modelTemplate.Template_Name }).Distinct().ToList();
                     ViewBag.isIntegratedWithWorkFront = isIntegratedWithWorkFront;
                     //End addition by Brad Gray for PL#1734
                 }

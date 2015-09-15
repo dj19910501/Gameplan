@@ -205,10 +205,19 @@ namespace Integration
         private void SyncImprovementTactic()//new code added for #532 by uday
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-
+            int? integrationInstanceId = 0;
             Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Get Integration Instance Id based on ImprovementPlanTacticId.");
             /// Write query to get integration instance id and integration type.
-            _integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.Single(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId;
+            /// Get Salesforce InstanceID from Model table based on ImprovementPlanTacticId.
+            integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId;
+
+            // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
+            if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+            {
+                integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceEloquaId;
+            }
+            _integrationInstanceId = integrationInstanceId;
+
             if (_integrationInstanceId.HasValue)
             {
                 _integrationType = db.IntegrationInstances.Single(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
@@ -242,11 +251,20 @@ namespace Integration
         private void SyncTactic()
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            int? integrationInstanceId =0;
             try
             {
                 Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Get Integration Instance Id based on PlanTacticId.");
                 /// Write query to get integration instance id and integration type.
-                int? integrationInstanceId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+                /// Get Salesforce Instance Id from Model table based on TacticID.
+                integrationInstanceId = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+
+                // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
+                if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+                {
+                    integrationInstanceId = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId;
+                }
+
                 int? integrationInstanceProjectManagmentId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
 
 
@@ -305,10 +323,18 @@ namespace Integration
         private void SyncProgram()
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            int? integrationInstanceId = 0;
             try
             {
             /// Write query to get integration instance id and integration type.
-            _integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceId;
+            /// Get Salesforce InstanceID from Model table based on ProgramId.
+                integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceId;
+            // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
+            if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+            {
+                integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(t => t.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId;
+            }
+            _integrationInstanceId = integrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
                 _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;
@@ -348,10 +374,18 @@ namespace Integration
         private void SyncCampaing()
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            int? integrationInstanceId = 0;
             try
             {
             /// Write query to get integration instance id and integration type.
-            _integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceId;
+                integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceId;
+
+            // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
+            if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+            {
+                integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceEloquaId;
+            }
+            _integrationInstanceId = integrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
                 _integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).IntegrationType.Code;

@@ -493,14 +493,27 @@ namespace Integration.WorkFront
                     }
                 }
 
-               //templates in the database that are not in WorkFront need to be set to deleted in 
+               //templates in the database that are not in WorkFront need to be set to deleted in database 
                List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
                List<IntegrationWorkFrontTemplate> templatesToDelete = db.IntegrationWorkFrontTemplates.Where(t => inDatabaseButNotInWorkFront.Contains(t.TemplateId)).ToList();
-               foreach (IntegrationWorkFrontTemplate template in templatesToDelete)
-                 {
-                     template.IsDeleted = 1;
-                     db.Entry(template).State = EntityState.Modified;
-                 }
+               if(templatesToDelete.Count>0)
+               {
+                   MRPEntities mp = new MRPEntities();
+                   DbConnection conn = mp.Database.Connection;
+                   conn.Open();
+                   DbCommand cmd = conn.CreateCommand();
+                   StringBuilder query = new StringBuilder();
+                   foreach (IntegrationWorkFrontTemplate template in templatesToDelete)
+                   {
+                       template.IsDeleted = 1;
+                       db.Entry(template).State = EntityState.Modified;
+                       //Added 11 Sept 2015, Brad Gray, PL#1374 - remove template ID from tactic type when template is set to deleted
+                       query.Append("update [dbo].[TacticType] set [WorkFront Template] = null where [WorkFront Template] = '" + template.TemplateId + "';");
+                   }
+                   cmd.CommandText = query.ToString();
+                   cmd.ExecuteNonQuery();
+               }
+              
             }
             catch (Exception ex)
             {

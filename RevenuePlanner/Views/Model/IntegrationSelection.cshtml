@@ -171,12 +171,12 @@
             /*Modified by Mitesh vaishnav on 13/08/2014 for PL ticket #690*/
             /*Check for Integration instanse of pushing tactic data is changed than confirm process*/
             var iseloqua = true;
-            var issalesforce = false;
+            var issalesforce = true;
             if ('@Model.IntegrationInstanceId.ToString()' == $('#IntegrationInstanceId').val() || '@Model.IntegrationInstanceId' == null || '@Model.IntegrationInstanceId' == '') {
                 issalesforce = false;
             }
             if ('@Model.IntegrationInstanceEloquaId.ToString()' == $('#IntegrationInstanceEloquaId').val() || '@Model.IntegrationInstanceEloquaId' == null || '@Model.IntegrationInstanceEloquaId' == '') {
-                iseloqua = true;
+                iseloqua = false;
             }
             if (!iseloqua && !issalesforce) {
                 SaveIntegration(false,false);
@@ -184,10 +184,9 @@
             else {
                 var confirmMessage = confirm('@Common.objCached.ConfirmationForModifyTargetIntegration');
                 if (confirmMessage == true) {
-                        SaveIntegration(iseloqua, issalesforce);
+                    SaveIntegration(issalesforce, iseloqua);
                 }
             }
-
             return false;
         });
 

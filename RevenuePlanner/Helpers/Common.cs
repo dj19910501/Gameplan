@@ -1742,9 +1742,11 @@ namespace RevenuePlanner.Helpers
             double? TotalPercentageMQLImproved = 0;
             int TotalTacticCount = 0;
 
-            var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true).Select(m => m).ToList();
+            var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true && p.Year == year).Select(m => m).ToList();
+            
             if (planList != null && planList.Count > 0)
             {
+                var innerplanids = planList.Select(plan => plan.PlanId).ToList();
                 //Modified By Komal Rawal for #1447
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
@@ -1773,7 +1775,7 @@ namespace RevenuePlanner.Helpers
                 }
 
                
-                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && planIds.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && t.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();
+                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();
 
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
@@ -1799,9 +1801,18 @@ namespace RevenuePlanner.Helpers
                 //End
                 
                 
-                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => planIds.Contains(imp.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && imp.IsDeleted == false).ToList();
-                var tacticids = planTacticsList.Select(t => t.objPlanTactic.PlanTacticId).ToList();
-                List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => tacticids.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
+                
+                var impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
+                var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
+               
+               
+                var LineItemList = (from li in db.Plan_Campaign_Program_Tactic_LineItem
+                                    where !li.IsDeleted && planIds.Contains(li.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
+                                    select new
+                                     {
+                                         PlanTacticId = li.PlanTacticId,
+                                         Cost = li.Cost
+                                     }).ToList();
                 Double MQLs = 0;
                 List<Plan_Campaign_Program_Tactic> planTacticIds = new List<Plan_Campaign_Program_Tactic>();
                 List<Stage> stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
@@ -1809,7 +1820,7 @@ namespace RevenuePlanner.Helpers
                 //Added By Bhavesh For Performance Issue #Home
                 List<StageRelation> bestInClassStageRelation = Common.GetBestInClassValue();
                 List<StageList> stageListType = Common.GetStageList();
-                List<Model> ModelList = db.Models.Where(m => m.IsDeleted == false).ToList();
+                var ModelList = db.Models.Where(m => m.IsDeleted == false && m.ClientId == Sessions.User.ClientId).Select(m => new { ModelId = m.ModelId, ParentModelId = m.ParentModelId, EffectiveDate = m.EffectiveDate }).ToList();
 
                 var improvementTacticTypeIds = improvementTacticList.Select(imptype => imptype.ImprovementTacticTypeId).ToList();
                 List<ImprovementTacticType_Metric> improvementTacticTypeMetric = db.ImprovementTacticType_Metric.Where(imptype => improvementTacticTypeIds.Contains(imptype.ImprovementTacticTypeId) && imptype.ImprovementTacticType.IsDeployed).Select(imptype => imptype).ToList();
@@ -2915,7 +2926,7 @@ namespace RevenuePlanner.Helpers
                 tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.ADSValue = stageRelation.Where(sr => sr.StageType == Size).Sum(sr => sr.Value);
-                tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+                
                 if (!isSinglePlan)
                 {
                     tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
@@ -2924,6 +2935,8 @@ namespace RevenuePlanner.Helpers
                 //// If Page request called from Report page then set Stage weightages.
                 if (IsReport)
                 {
+                    tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+
                     #region "Get Tactic Stage-Weightage"
                     tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).Select(_customfield => 
                                                                                                   new TacticCustomFieldStageWeightage() 
@@ -4351,51 +4364,63 @@ namespace RevenuePlanner.Helpers
                 entityType = a.EntityType,
                 isChild = DependencyList.Select(list => list.ChildCustomFieldId).ToList().Contains(a.CustomFieldId) ? true : false,
                 ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
+                ParentOptionId = DependencyList.Where(list =>list.ChildCustomFieldId == a.CustomFieldId && list.ChildOptionId == null).Select(list => list.ParentOptionId).ToList().FirstOrDefault(),
                 option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
                 {
                     ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
                     ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).FirstOrDefault(),
                     customFieldOptionId = o.CustomFieldOptionId,
-                    ChildOptionIds = DependencyList.Select(list => list.ChildOptionId).ToList(),
-                    value = o.Value
+                    ChildOptionIds = DependencyList.Where(Child => Child.ParentOptionId == o.CustomFieldOptionId).Select(list => list.ChildOptionId).ToList(),
+                    value = o.Value,
+                    customFieldId = o.CustomFieldId
                 }).OrderBy(o => o.value).ToList()
 
             }).OrderBy(a => a.name,new AlphaNumericComparer()).ToList();
             List<int> customFieldIds = lstCustomFields.Select(cs => cs.customFieldId).ToList();
             var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
-            var Parentid = DependencyList.Select(a => a.ParentOptionId).ToList();
-            var childOptionid = DependencyList.Select(a => a.ChildOptionId.ToString()).ToList();
-            var childid = DependencyList.Select(a => a.ChildCustomFieldId).ToList();
-            List<string> ListIDs = Parentid.Select(a => a.ToString()).ToList();
-            List<string> entityvalues = EntityValue.Select(a=>a.Value).ToList();
             foreach (var CustomFieldId in customFieldIds)
             {
                 lstCustomFields.Where(c => c.customFieldId == CustomFieldId).FirstOrDefault().value = EntityValue.Where(ev => ev.CustomFieldId == CustomFieldId).Select(ev => ev.Value).ToList();
             
             }
 
-            foreach (var item in EntityValue)
-            {
-                bool IsSelected = false;
-                if (ListIDs.Where(v => entityvalues.Contains(v)).Any())
-                {
-                    IsSelected = childid.Contains(item.CustomFieldId) && childOptionid.Contains(item.Value);
-                }
-                lstCustomFields.Where(c => c.customFieldId == item.CustomFieldId).FirstOrDefault().IsSelected = IsSelected;
+            //foreach (var item in EntityValue)
+            //{
+            //    bool IsSelected = false;
+            //    if (ListIDs.Where(v => entityvalues.Contains(v)).Any())
+            //    {
+            //        IsSelected = childid.Contains(item.CustomFieldId) && childOptionid.Contains(item.Value);
+            //    }
+            //    lstCustomFields.Where(c => c.customFieldId == item.CustomFieldId).FirstOrDefault().IsSelected = IsSelected;
 
-            }
+            //}
             List<CustomFieldModel> finalList = new List<CustomFieldModel>();
             foreach (var item in lstCustomFields.Where(cfParent => cfParent.ParentId == 0).ToList())
             {
                 finalList.Add(item);
-                foreach (var childItem in lstCustomFields.Where(cfParent => cfParent.ParentId == item.customFieldId).ToList())
-                {
-                    finalList.Add(childItem);
-                }
+                setCustomFieldHierarchy(item.customFieldId, lstCustomFields, ref finalList);
+                //foreach (var childItem in lstCustomFields.Where(cfParent => cfParent.ParentId == item.customFieldId).ToList())
+                //{
+                //    finalList.Add(childItem);
+                //}
             }
-          
+
             return finalList;
         }
+
+        public static void setCustomFieldHierarchy(int parentId, List<CustomFieldModel> lstCustomField, ref List<CustomFieldModel> finalList)
+        {
+            foreach (var item in lstCustomField.Where(cf => cf.ParentId == parentId).ToList())
+            {
+                finalList.Add(item);
+                var x = lstCustomField.Where(cf => cf.ParentId == item.customFieldId).ToList();
+                if (lstCustomField.Where(cf => cf.ParentId == item.customFieldId).Any())
+                {
+                    setCustomFieldHierarchy(item.customFieldId, lstCustomField, ref finalList);
+                }
+            }
+        }
+
         /// <summary>
         /// Added by Mitesh Vaishnav for PL ticket #718 
         /// Function for truncate length of input string
@@ -4524,6 +4549,18 @@ namespace RevenuePlanner.Helpers
             return lstCustomFieldsViewByTab;
         }
 
+        /// <summary>
+        /// Get the list of budget
+        /// </summary>
+        /// <returns>Return the list of Budget list</returns>
+        public static List<ViewByModel> GetBudgetlist()
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstBudget = new List<ViewByModel>();
+            var customfieldlist = db.Budgets.ToList();
+            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
+            return lstBudget;
+        }
 
         /// <summary>
         /// Get the list of Tactic by passing the multiple Plan Ids

@@ -49,6 +49,9 @@
     <Compile Include="Models\BestInClass.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Budget.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CampaignNameConvention.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

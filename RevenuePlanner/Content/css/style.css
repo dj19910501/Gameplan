@@ -464,6 +464,9 @@ body {
                 background-position: -136px 0px;
             }
 
+            .main-nav ul li.finance a .icon {  /*finance tab*/
+                background-position: -136px 0px;
+            }
             .main-nav ul li.pref a .icon {
                 background-position: -170px 0px;
             }
@@ -496,6 +499,11 @@ body {
             }
 
             .main-nav ul li.report:hover a .icon, .main-nav ul li.report:focus a .icon, .main-nav ul li.report.active a .icon, .main-nav ul li.report.active:hover a .icon {
+                background-position: -136px -30px;
+            }
+
+               /*Finance Tab Menu*/
+            .main-nav ul li.finance:hover a .icon, .main-nav ul li.finance:focus a .icon, .main-nav ul li.finance.active a .icon, .main-nav ul li.finance.active:hover a .icon {
                 background-position: -136px -30px;
             }
 
@@ -5458,7 +5466,7 @@ input::-moz-placeholder {
 .inputs-aligned-horizontal p, .inputs-aligned-horizontal .container-button, .inputs-aligned-horizontal .delete-container {
     float: left;
     margin-left: calc(25% + 20px);
-    width: 253px; /*width: calc(42% - 20px);*/
+    /*width: 253px;*/ /*width: calc(42% - 20px);*//*Commented by Rahul Shah on 11/09/2015 for PL #1112 */
 }
 
 .inputs-aligned-horizontal .check-icon-green, .inputs-aligned-horizontal .check-icon-red {

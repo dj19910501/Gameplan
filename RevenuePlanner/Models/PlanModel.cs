@@ -437,7 +437,7 @@ namespace RevenuePlanner.Models
         public bool isChild { get; set; }
         public int ParentId { get; set; }
         public bool IsSelected { get; set; }
-       
+        public int ParentOptionId { get; set; }
         public string entityType { get; set; }
         public List<CustomFieldOptionModel> option { get; set; }
        
@@ -458,6 +458,7 @@ namespace RevenuePlanner.Models
         public List<int?> ChildOptionIds { get; set; }
         public string value { get; set; }
         public int ParentOptionId { get; set; }
+        public int customFieldId { get; set; }
     }
 
     /// <summary>

@@ -11,13 +11,12 @@
     @RenderSection("nlFormContent", false)
 
     @Styles.Render("~/Content/css/GetCSS")
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style.css?n=")@DateTime.Now" type="text/css" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended.css?n=")@DateTime.Now" type="text/css" />
+     @*@Styles.Render("~/Content/css/GetCSSStyle")*@
+     <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
+     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_v1.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_v1.css")" type="text/css" />
 
     @Scripts.Render("~/bundles/GetJS")
-    <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts.js?n=")@DateTime.Now"></script>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/js/scripts_extended.js?n=")@DateTime.Now"></script>
 
 </head>
 <body>

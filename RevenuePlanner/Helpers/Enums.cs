@@ -1085,8 +1085,8 @@ namespace RevenuePlanner.Helpers
            {"taskname","Task Name"},
            {"startdate","Start Date"},
            {"enddate","End Date"},
-           {"tacticplancost","Tactic Planned Cost"},
-           {"tactictype","Tactic Type"},
+           {"tacticplancost","Planned Cost"},
+           {"tactictype","Type"},
            {"owner","Owner"},
            {"targetstagegoal","Target Stage Goal"}
        };
