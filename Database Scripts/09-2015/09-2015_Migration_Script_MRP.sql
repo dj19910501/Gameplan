@@ -94,7 +94,7 @@ Go
 IF NOT EXISTS(SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='dbo' AND TABLE_NAME='CustomFieldDependency')
 BEGIN
         CREATE TABLE [dbo].[CustomFieldDependency](
-	[ParentCustomFieldId] [int] NOT NULL,
+	[ParentCustomFieldId] [int] NULL,
 	[ParentOptionId] [int] NOT NULL,
 	[ChildCustomFieldId] [int] NOT NULL,
 	[ChildOptionId] [int] NULL,
