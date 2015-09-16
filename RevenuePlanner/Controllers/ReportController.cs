@@ -3590,8 +3590,8 @@ namespace RevenuePlanner.Controllers
             {
                 using (MRPEntities mrp = new MRPEntities())
                 {
-                    using (var scope = new TransactionScope())
-                    {
+                    //using (var scope = new TransactionScope())
+                    //{
                         if (ModelState.IsValid)
                         {
                             htmlOfCurrentView = HttpUtility.UrlDecode(htmlOfCurrentView, System.Text.Encoding.Default);
@@ -3600,7 +3600,7 @@ namespace RevenuePlanner.Controllers
                             MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
 
                             string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
-                            Notification notification = (Notification)db.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
+                        Notification notification = (Notification)mrp.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
                             //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
                             optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
                             ////
@@ -3616,9 +3616,9 @@ namespace RevenuePlanner.Controllers
                                 ////
                                 reportShare.CreatedDate = DateTime.Now;
                                 reportShare.CreatedBy = Sessions.User.UserId;
-                                db.Entry(reportShare).State = EntityState.Added;
-                                db.Report_Share.Add(reportShare);
-                                result = db.SaveChanges();
+                            mrp.Entry(reportShare).State = EntityState.Added;
+                            mrp.Report_Share.Add(reportShare);
+                            result = mrp.SaveChanges();
                                 if (result == 1)
                                 {
                                     //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
@@ -3626,10 +3626,10 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
 
-                            scope.Complete();
+                        //scope.Complete();
                             return Json(true, JsonRequestBehavior.AllowGet);
                         }
-                    }
+                    //}
                 }
             }
             catch (Exception e)
