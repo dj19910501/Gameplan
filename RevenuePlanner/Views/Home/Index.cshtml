@@ -1893,9 +1893,9 @@
         });
 
         var originurl = document.location.origin;
-        var mypathurl = document.location.pathname.split('/')[1];
-        var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
-        //var urlpdf = originurl + "/";// This line uncomment for production version and uncomment above line
+        //var mypathurl = document.location.pathname.split('/')[1];
+        //var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
+        var urlpdf = originurl + "/";// This line uncomment for production version and uncomment above line
         $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
         $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
             $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
