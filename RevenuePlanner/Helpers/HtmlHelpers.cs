@@ -4250,6 +4250,8 @@ namespace RevenuePlanner.Helpers
             //list of custom fields for particular campaign or Program or Tactic
             List<CustomFieldModel> customFieldList = Common.GetCustomFields(id, section);
             StringBuilder sb = new StringBuilder(string.Empty);
+           
+           
 
             //fieldCounter variable for defining raw style
             if (customFieldList.Count != 0)
@@ -4258,6 +4260,13 @@ namespace RevenuePlanner.Helpers
                 //// User custom Restrictions
                 var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
                 MRPEntities db = new MRPEntities();
+                string TacticType = "";
+                if(section == Enums.EntityType.Tactic.ToString())
+                { 
+                Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
+                TacticType = pcpt.TacticTypeId.ToString();
+                }
+
                 List<int> customFieldIds = customFieldList.Select(cs => cs.customFieldId).ToList();
                 var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
                 List<string> entityvalues = EntityValue.Select(a => a.Value).ToList();
@@ -4283,8 +4292,19 @@ namespace RevenuePlanner.Helpers
                     var IsSelected = false;
                     var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault()!= null ?item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId: new int();
                     var ParentCustomFieldID = item.ParentId;
-                   
-                    List<string> val = customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
+                    //List<string> SelectedTacticIds = item.option.Where(a => TacticType.Contains(a.ParentOptionId.ToString())) != null ? item.option.Where(a => TacticType.Contains(a.ParentOptionId.ToString())).Select(a => a.ParentOptionId.ToString()).ToList() : new List<string>();
+                    //bool IsDefaultTacticType = SelectedTacticIds.Contains(TacticType);
+                    List<string> val = new List<string>();
+                    if (item.isChild && item.ParentId == 0 )
+                    {
+                        val.Add(TacticType.ToString());
+                        entityvalues.Add(TacticType.ToString());
+                     //   ParentOptionID = TacticType;
+                    }
+                    else
+                    {
+                     val=   customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
+                    }
                     var IsSelectedParentsChild =  item.option.Where(op => val.Contains(op.ParentOptionId.ToString())).Any();
                     if (item.customFieldType == "TextBox" && item.isChild )
                     {

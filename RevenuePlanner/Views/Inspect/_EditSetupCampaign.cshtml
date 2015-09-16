@@ -585,7 +585,7 @@
            $('#MultiSelectProcced').css("display", "none");
               $('form').find('input[type=text], select, textarea').each(function () {
                   if ($(this).attr('require') == 'true') {
-                      if ($(this).val().toString().trim() == '') {
+                      if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
                           $(this).addClass("error");
                           iserror = true;
                       }
@@ -607,7 +607,7 @@
                   }
               });
               $('.dropdown_new_btn').each(function () {
-                  if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
+                  if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
                       $(this).addClass("error");
                       iserror = true;
                   }

@@ -15,7 +15,7 @@
     {
         resubmission = " resubmission ";
     }
-    
+
 }
 <style type="text/css">
      @@media screen and (-webkit-min-device-pixel-ratio:0) {
@@ -93,12 +93,12 @@
      .margin-top-10{
      margin-top: 10px;
      }
-   </style>
+</style>
 
 @using (Html.BeginForm())
 {
-    <script src="~/Scripts/js/bootstrap-datepicker.js"></script> 
- 
+    <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
+
     bool ExtIntService = (bool)ViewBag.ExtIntService;
     // @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
@@ -110,7 +110,7 @@
     @Html.HiddenFor(model => model.StageId, new { id = "hdnStageId" })
     @Html.HiddenFor(model => model.TacticTitle, new { id = "hdnPlanTacticTitle" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
-     
+
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent" style="margin-bottom: 0px;">
         <div class="span6" id="inspect-modal-left-column1">
 
@@ -119,9 +119,9 @@
                     <label class="stage-title inspect-bolder-label" title="SUS">Parent Campaign &nbsp;</label>
                     @if (IsTackticAddEdit && !isCreated)
                     {
-                       
+
                         @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.PlanCampaignList, "PlanCampaignId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Parent Campaign" })
-                       
+
                     }
                     else
                     {
@@ -159,7 +159,8 @@
                 <div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_start" data-date="@Model.StartDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                     @Html.TextBoxFor(model => model.StartDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_startdate", label = "Start_Date" })
                     <span class="add-on">
-                        <img src="~/Content/images/gray-calendar-icon.png"></span>
+                        <img src="~/Content/images/gray-calendar-icon.png">
+                    </span>
                 </div>
             </span>
             <p class="clear-section" style="margin-top: 2px;">End Date</p>
@@ -167,7 +168,8 @@
                 <div class="dp  input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                     @Html.TextBoxFor(model => model.EndDate, new { @class = "input-small" + resubmission + " input-setup", id = "t_enddate", label = "End_Date" })
                     <span class="add-on">
-                        <img src="~/Content/images/gray-calendar-icon.png"></span>
+                        <img src="~/Content/images/gray-calendar-icon.png">
+                    </span>
                 </div>
             </span>
         </div>
@@ -185,16 +187,16 @@
             }
 
             @if (ExtIntService)
-            {                 
+            {
 
                 <p style="width: 110%;" class="margin-top-10">Deployed to Integration</p>
                 if (Model.IsDeployedToIntegration)
                 {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
+                    <input id="t_integration_status" name="t_status" type="text" class="icon-check-blue margin-top10" placeholder="Sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
                 else
                 {
-                <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
+                    <input id="t_integration_status" name="t_status" type="text" class="icon-check-gray margin-top10" placeholder="Don't sync to integration" style="margin-top: 0px ! important;" maxlength="18" readonly />
                 }
             }
 
@@ -205,15 +207,16 @@
                     @if (ViewBag.IsDiffrentStageType == true)
                     {
                         <span>
-                            <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" /></span>
-                              
+                            <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
+                        </span>
+
                     }
                     @Html.TextBoxFor(model => model.ProjectedStageValue, new { placeholder = "0", id = "txtProjectedStageValue", @class = "priceValue input-setup", label = @Model.StageTitle, maxlength = @RevenuePlanner.Helpers.Common.maxLengthPriceValue })
                 </div>
 
                 <div class="pull-left" style="width: 47%">
                     <label title="@Html.LabelForMQL("MQL")" class="inspect-bolder-label">@Html.LabelForMQL("MQL")</label>
-                    <input type="text" value="@Model.MQLs" readonly="true" id = "txtmql" />
+                    <input type="text" value="@Model.MQLs" readonly="true" id="txtmql" />
                 </div>
 
                 <div class="pull-left" style="width: 47%">
@@ -223,7 +226,7 @@
             </div>
         </div>
     </div>
-    
+
     <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
         <li class="pull-left">
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
@@ -232,16 +235,16 @@
 
     <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanTacticId, Enums.EntityType.Tactic.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
-    </div>   
+    </div>
 
-@*<div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
-        <div class="span2 btn-save" style="width: 80px;">
-            <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
-        </div>
-        <div class="span2">
-            <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
-        </div>
-    </div>*@
+    @*<div style="width: 100%; display: none; clear: both" id="divTacticSaveCancel" class="wraper-btns cf border-top-div ">
+            <div class="span2 btn-save" style="width: 80px;">
+                <button id="btnUploadResult" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save</button>
+            </div>
+            <div class="span2">
+                <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
+            </div>
+        </div>*@
 }
 
 <script type="text/javascript">
@@ -320,10 +323,10 @@
                             //// Compare current "li" anchor text is with previous selected anchor text.
                             if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
                                 $prevtext = _atext; // set previous text variable with selected text.
-                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object. 
+                                $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                 $_prevdata = jQuery(this);
                                 $nextdata = jQuery(this);
-                                $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object.
                                 selectbox_keys = cur_check;
                                 $(this).closest('tr').focus();
                                 cntr = cntr + 1;
@@ -350,7 +353,7 @@
                                     $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                     $_prevdata = jQuery(this);
                                     $nextdata = jQuery(this);
-                                    $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object. 
+                                    $($nextdata).addClass('setfocusTr');   // add class 'setFocusli' to currently selected list object.
                                     selectbox_keys = cur_check;
                                     $(this).closest('tr').focus();
 
@@ -415,6 +418,8 @@
 
     $(document).ready(
       function () {
+
+
           /*Added by Mitesh Vaishnav for PL ticket #1073
           Register events of new multiselect dropdown customfields*/
           $('.dropdown_new_btn').each(function () {
@@ -439,7 +444,7 @@
           $('#txtTacticTitle').css('display', 'block');
           $('#lblTacticTitle').css('display', 'none');
           $('#divTacticSaveCancel').css('display', 'block');
-          // $('#EditForm').css('display', 'none'); 
+          // $('#EditForm').css('display', 'none');
           $('#EditForm').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
           $('#EditForm').addClass('Save-icon-white');
           $('#txtCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
@@ -537,7 +542,7 @@
                   }
               }, 1);
 
-              //// To resolve issue of Ticket #1025, Pratik 
+              //// To resolve issue of Ticket #1025, Pratik
               $(".datepicker.dropdown-menu").last().css("display", "none");
           })
 
@@ -550,22 +555,22 @@
               var scrollTop = $("#modal-container-186470").scrollTop();
               var pos_top = pos.top + height + scrollTop + 10;
               setTimeout(function () {
-                if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
-                     $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
-                     $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
-                       top: pos_top.toString() + 'px',
-                        display: 'block'
-                     });
-                }
-                 else {
-                    $('#dp_end').find('.datepicker.dropdown-menu').css({
-                       top: pos_top.toString() + 'px',
+                  if (!$('#dp_end').find('.datepicker.dropdown-menu').hasClass('dropdown-menu')) {
+                      $("#t_enddate").after($(".datepicker.dropdown-menu").eq(1));
+                      $("#t_enddate").parent().find(".datepicker.dropdown-menu").css({
+                          top: pos_top.toString() + 'px',
                           display: 'block'
-                     });
+                      });
+                  }
+                  else {
+                      $('#dp_end').find('.datepicker.dropdown-menu').css({
+                          top: pos_top.toString() + 'px',
+                          display: 'block'
+                      });
                   }
               }, 1);
 
-              //// To resolve issue of Ticket #1025, Pratik 
+              //// To resolve issue of Ticket #1025, Pratik
               $(".datepicker.dropdown-menu").first().css("display", "none");
           })
 
@@ -667,7 +672,7 @@
           @if (!IsTackticAddEdit)
           {
              @:loadtacticdata($('#ddlTacticType').val());
-             
+
           }
           $('#ddlcampaign').bind('change', function () {
               var selectedOption = $(this).val();
@@ -717,7 +722,6 @@
     function SetupSavetactic() {
         //debugger;
 
-
         $('#MultiSelectProcced').css("display", "none");
         document.getElementById("ddlcampaign").value = htmlEncode($('#ddlcampaign').val());
         document.getElementById("ddlProgram").value = htmlEncode($('#ddlProgram').val());
@@ -732,7 +736,7 @@
         var iserror = false;
         $('form').find('input[type=text], select, textarea').each(function () {
             if ($(this).attr('require') == 'true') {
-                if ($(this).val().toString().trim() == '') {
+                if ($(this).val().toString().trim() == '' && $(this).parent().css("display") != "none") {
                     $(this).addClass("error");
                     iserror = true;
                 }
@@ -742,7 +746,7 @@
             }
         });
         $('.dropdown_new_btn').each(function () {
-            if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select') {
+            if (typeof $(this).attr('require') != 'undefined' && $(this).attr('require') == 'true' && $(this).find('p').text() == 'Please Select' && $(this).parent().parent().css("display") != "none") {
                 $(this).addClass("error");
                 iserror = true;
             }
@@ -1124,6 +1128,27 @@
                     }
                 });
             }
+
+            $('#CustomHtmlHelperfield').find('.span3').each(function () {
+                var maindiv = $(this);
+                var InputType = $(this).find("input").attr('type');
+                if (InputType == "text" ) {
+                    var ParentOptionID = $(this).find("input").parent().attr('parentoptionid');
+                    if (ParentOptionID == tacticTypeId) {
+                        maindiv.css("display", "inline-block");
+                        $(this).css("display", "inline-block");
+                    }
+                }
+                else {
+                    maindiv.find('.trdropdownhover').each(function () {
+                        var ParentOptionId = $(this).attr('parentid');
+                        if (ParentOptionId == tacticTypeId) {
+                            maindiv.css("display", "inline-block");
+                            $(this).css("display", "block");
+                        }
+                    });
+                }
+            });
         }
         else {
             $("#txtProjectedStageValue").val(projectedStageValue);

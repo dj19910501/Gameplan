@@ -148,7 +148,7 @@
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance1" />
         <EntityTypeShape EntityType="MRPModel.Budget" Width="1.5" PointX="6.5799510639998839" PointY="7.6337976640247733" />
         <AssociationConnector Association="MRPModel.FK_Budget_Budget" />
-        <EntityTypeShape EntityType="MRPModel.CustomFieldDependency" Width="1.5" PointX="14.25" PointY="17" />
+        <EntityTypeShape EntityType="MRPModel.CustomFieldDependency" Width="1.5" PointX="14.25" PointY="16.125" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField1" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomFieldOption1" />

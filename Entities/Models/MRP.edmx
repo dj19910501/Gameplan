@@ -143,7 +143,6 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             <PropertyRef Name="CreatedDate" />
             <PropertyRef Name="CreatedBy" />
             <PropertyRef Name="IsDeleted" />
-            <PropertyRef Name="FieldType" />
           </Key>
           <Property Name="ParentCustomFieldId" Type="int" />
           <Property Name="ParentOptionId" Type="int" Nullable="false" />
@@ -152,7 +151,6 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
-          <Property Name="FieldType" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="CustomFieldOption">
           <Key>
@@ -1952,8 +1950,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
 [CustomFieldDependency].[ChildOptionId] AS [ChildOptionId], 
 [CustomFieldDependency].[CreatedDate] AS [CreatedDate], 
 [CustomFieldDependency].[CreatedBy] AS [CreatedBy], 
-[CustomFieldDependency].[IsDeleted] AS [IsDeleted], 
-[CustomFieldDependency].[FieldType] AS [FieldType]
+[CustomFieldDependency].[IsDeleted] AS [IsDeleted]
 FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="Self.FK__Plan_Camp__PlanC__43A1090D">
@@ -4700,7 +4697,6 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             <PropertyRef Name="CreatedDate" />
             <PropertyRef Name="CreatedBy" />
             <PropertyRef Name="IsDeleted" />
-            <PropertyRef Name="FieldType" />
           </Key>
           <Property Name="ParentCustomFieldId" Type="Int32" />
           <Property Name="ParentOptionId" Type="Int32" Nullable="false" />
@@ -4709,7 +4705,6 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreatedBy" Type="Guid" Nullable="false" />
           <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <Property Name="FieldType" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_CustomFieldDependency_CustomField" FromRole="CustomFieldDependency" ToRole="CustomField" />
           <NavigationProperty Name="CustomField1" Relationship="MRPModel.FK_CustomFieldDependency_CustomField1" FromRole="CustomFieldDependency" ToRole="CustomField" />
           <NavigationProperty Name="CustomFieldOption" Relationship="MRPModel.FK_CustomFieldDependency_CustomFieldOption1" FromRole="CustomFieldDependency" ToRole="CustomFieldOption" />
@@ -5737,7 +5732,6 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <EntitySetMapping Name="CustomFieldDependencies">
             <EntityTypeMapping TypeName="MRPModel.CustomFieldDependency">
               <MappingFragment StoreEntitySet="CustomFieldDependency">
-                <ScalarProperty Name="FieldType" ColumnName="FieldType" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />

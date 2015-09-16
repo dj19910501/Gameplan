@@ -57,17 +57,6 @@ REFERENCES [dbo].[CustomField] ([CustomFieldId])
 
 END
 
-IF NOT EXISTS (SELECT * 
-  FROM sys.foreign_keys 
-   WHERE object_id = OBJECT_ID(N'dbo.FK_CustomFieldDependency_CustomFieldOption')
-   AND parent_object_id = OBJECT_ID(N'dbo.CustomFieldDependency')
-)
-BEGIN
-
-ALTER TABLE [dbo].[CustomFieldDependency]  WITH CHECK ADD  CONSTRAINT [FK_CustomFieldDependency_CustomFieldOption] FOREIGN KEY([ParentOptionId])
-REFERENCES [dbo].[CustomFieldOption] ([CustomFieldOptionId])
-
-END
 
 IF NOT EXISTS (SELECT * 
   FROM sys.foreign_keys 
