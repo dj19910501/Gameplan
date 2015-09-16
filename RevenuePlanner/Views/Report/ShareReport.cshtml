@@ -135,13 +135,13 @@
 
         //Start Share Report
         function ShareReport(email, optionalMessage) {
-            
+
             var reportType = '@reportType';
             var htmlOfCurrentView = GetHTML(reportType);
             var originurl = document.location.origin;
             //var mypathurl = document.location.pathname.split('/')[1];
             //var urlpdf = originurl + "/" + mypathurl ; // This line use for stage servers.
-            var urlpdf = originurl;// This line uncomment for production version and uncomment above line
+            var urlpdf = originurl// This line uncomment for production version and uncomment above line
             //// Added by Sohel on 2nd April for PL#398 to encode the text insert in Optional Message Textbox
             optionalMessage = escape(optionalMessage);
             $.ajax({
@@ -435,7 +435,7 @@
 
         /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
         function GetHTMLSummary(){
-            
+
             var filterHTML = $('.report-heder-tab').parent().html();
             var html  = '';
 
@@ -465,11 +465,11 @@
             $html.find('.sbHolder').children('a').removeAttr('href');
             var a =$html.find("#BottomBarchartData").children("tr");
             var TableColumn = a.length;
-            if(TableColumn==12) 
+            if(TableColumn==12)
             {
                 $html.find("td.tdbottomChartData").css("line-height","18px");
             }
-            
+
             //alert($html.html());
             html = $html.html();
             //alert(html);

@@ -3651,10 +3651,11 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns stream of PDF report.</returns>
         private MemoryStream GeneratePDFReport(string htmlOfCurrentView, string reportType, string url = "")
         {
-
+            string appurl = "";
             if (System.Configuration.ConfigurationManager.AppSettings.AllKeys.Contains("ApplicationURL"))
             {
                 url = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ApplicationURL"]);
+                appurl = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ApplicationURL"]);
                 if (!string.IsNullOrEmpty(url))
                 {
                     htmlOfCurrentView = AddCSSAndJS(htmlOfCurrentView, reportType, url);
@@ -3669,7 +3670,7 @@ namespace RevenuePlanner.Controllers
                 htmlOfCurrentView = AddCSSAndJS(htmlOfCurrentView, reportType);
             }
 
-            string baseurl = "";
+            string baseurl = url;
             string IsBaseUrl = "";
             if (System.Configuration.ConfigurationManager.AppSettings.AllKeys.Contains("IsBaseUrl"))
             {
@@ -3684,7 +3685,7 @@ namespace RevenuePlanner.Controllers
                 htmlOfCurrentView = htmlOfCurrentView.Replace("class=\"percentageFormat\"", "");
             }
 
-            Exception ex = new Exception("ApplicationURL=" + url + " IsBaseUrl=" + IsBaseUrl + " " + htmlOfCurrentView, null);
+            Exception ex = new Exception("OriginUrl=" + url + " ApplicationURL=" + appurl + " IsBaseUrl=" + IsBaseUrl + " " + htmlOfCurrentView, null);
             Elmah.ErrorSignal.FromCurrentContext().Raise(ex);
             // Elmah.ErrorLog.GetDefault(null).Log(new Error(ex));
 
