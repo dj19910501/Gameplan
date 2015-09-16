@@ -3583,7 +3583,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="optionalMessage">Optional message.</param>
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <returns>Returns json result which indicates report is generated and sent sucessfully.</returns>
-        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView)
+        public JsonResult ShareReport(string reportType, string toEmailIds, string optionalMessage, string htmlOfCurrentView, string url = "")
         {
             int result = 0;
             try
@@ -3597,7 +3597,7 @@ namespace RevenuePlanner.Controllers
                         htmlOfCurrentView = HttpUtility.UrlDecode(htmlOfCurrentView, System.Text.Encoding.Default);
 
                         //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
-                        MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType);
+                        MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
 
                         string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
                         Notification notification = (Notification)mrp.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
@@ -3649,15 +3649,15 @@ namespace RevenuePlanner.Controllers
         /// <param name="htmlOfCurrentView">Html of current view.</param>
         /// <param name="reportType">Type of report.</param>
         /// <returns>Returns stream of PDF report.</returns>
-        private MemoryStream GeneratePDFReport(string htmlOfCurrentView, string reportType)
+        private MemoryStream GeneratePDFReport(string htmlOfCurrentView, string reportType, string url = "")
         {
-            string url = "";
+
             if (System.Configuration.ConfigurationManager.AppSettings.AllKeys.Contains("ApplicationURL"))
             {
                 url = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["ApplicationURL"]);
                 if (!string.IsNullOrEmpty(url))
-        {
-            htmlOfCurrentView = AddCSSAndJS(htmlOfCurrentView, reportType, url);
+                {
+                    htmlOfCurrentView = AddCSSAndJS(htmlOfCurrentView, reportType, url);
                 }
                 else
                 {

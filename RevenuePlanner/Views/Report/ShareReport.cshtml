@@ -138,7 +138,10 @@
             
             var reportType = '@reportType';
             var htmlOfCurrentView = GetHTML(reportType);
-            
+            var originurl = document.location.origin;
+            //var mypathurl = document.location.pathname.split('/')[1];
+            //var urlpdf = originurl + "/" + mypathurl ; // This line use for stage servers.
+            var urlpdf = originurl;// This line uncomment for production version and uncomment above line
             //// Added by Sohel on 2nd April for PL#398 to encode the text insert in Optional Message Textbox
             optionalMessage = escape(optionalMessage);
             $.ajax({
@@ -149,8 +152,8 @@
                     reportType: reportType,
                     toEmailIds: email,
                     optionalMessage: optionalMessage,
-                    htmlOfCurrentView : htmlOfCurrentView
-                  
+                    htmlOfCurrentView : htmlOfCurrentView,
+                    url:urlpdf
                 },
                 success: function (data) {
                     if (data != 'undefined' && data != false) {
