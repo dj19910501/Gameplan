@@ -5616,7 +5616,14 @@ a.link-gray {
 .treeview li {
   width: 100%;
 }
+
 /*end by bheru 1596 14-9-2015*/
+
+/*start by bheru 15-9-2015 */
+.reset_password.inputs-aligned-horizontal   {
+min-width:350px;
+}
+/*end by bheru 15-9-2015 */
 @media (max-width: 1920px) {
     /*by bheru 21-07-2015*/
     .full-width-header {
@@ -5634,7 +5641,7 @@ a.link-gray {
 
     .row-fluid .hierarchy_wrapper {
         overflow: auto;
-        width: 1064px;
+        width: 1045px;
     }
 
     .treeview {
