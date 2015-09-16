@@ -4261,7 +4261,7 @@ namespace RevenuePlanner.Helpers
                 var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
                 MRPEntities db = new MRPEntities();
                 string TacticType = "";
-                if(section == Enums.EntityType.Tactic.ToString())
+                if (section == Enums.EntityType.Tactic.ToString() && id != 0)
                 { 
                 Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
                 TacticType = pcpt.TacticTypeId.ToString();
