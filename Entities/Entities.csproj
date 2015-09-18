@@ -52,6 +52,9 @@
     <Compile Include="Models\Budget.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Budget_Detail.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\CampaignNameConvention.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
@@ -149,6 +152,9 @@
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\LineItemType.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\LineItem_Budget.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\MasterTacticType.cs">

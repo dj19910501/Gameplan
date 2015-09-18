@@ -31,6 +31,17 @@
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <EntityType Name="Budget_Detail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BudgetId" Type="int" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ParentId" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="CampaignNameConvention">
           <Key>
             <PropertyRef Name="CampaignNameConventionId" />
@@ -458,6 +469,16 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <Property Name="TemplateId" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="Template Name" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="IsDeleted" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="LineItem_Budget">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BudgetDetailId" Type="int" Nullable="false" />
+          <Property Name="PlanLineItemId" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="LineItemType">
           <Key>
@@ -1013,6 +1034,18 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Budget_Detail_Budget1">
+          <End Role="Budget" Type="Self.Budget" Multiplicity="1" />
+          <End Role="Budget_Detail" Type="Self.Budget_Detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Budget_Detail">
+              <PropertyRef Name="BudgetId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CampaignNameConvention_CustomField">
           <End Role="CustomField" Type="Self.CustomField" Multiplicity="0..1" />
           <End Role="CampaignNameConvention" Type="Self.CampaignNameConvention" Multiplicity="*" />
@@ -1382,6 +1415,30 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
             </Principal>
             <Dependent Role="IntegrationTypeAttribute">
               <PropertyRef Name="IntegrationTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LineItem_Budget_Budget_Detail">
+          <End Role="Budget_Detail" Type="Self.Budget_Detail" Multiplicity="1" />
+          <End Role="LineItem_Budget" Type="Self.LineItem_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget_Detail">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="LineItem_Budget">
+              <PropertyRef Name="BudgetDetailId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1">
+          <End Role="Plan_Campaign_Program_Tactic_LineItem" Type="Self.Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
+          <End Role="LineItem_Budget" Type="Self.LineItem_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanLineItemId" />
+            </Principal>
+            <Dependent Role="LineItem_Budget">
+              <PropertyRef Name="PlanLineItemId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1879,6 +1936,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
         <EntityContainer Name="MRPModelStoreContainer">
           <EntitySet Name="BestInClass" EntityType="Self.BestInClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Budget" EntityType="Self.Budget" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Budget_Detail" EntityType="Self.Budget_Detail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CampaignNameConvention" EntityType="Self.CampaignNameConvention" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChangeLog" EntityType="Self.ChangeLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Client_Activity" EntityType="Self.Client_Activity" Schema="dbo" store:Type="Tables" />
@@ -1910,6 +1968,7 @@ warning 6002: The table/view 'MRPDev.dbo.CustomFieldDependency' does not have a 
           <EntitySet Name="IntegrationWorkFrontPortfolio_Mapping" EntityType="Self.IntegrationWorkFrontPortfolio_Mapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontPortfolios" EntityType="Self.IntegrationWorkFrontPortfolios" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontTemplates" EntityType="Self.IntegrationWorkFrontTemplates" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="LineItem_Budget" EntityType="Self.LineItem_Budget" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItemType" EntityType="Self.LineItemType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MasterTacticType" EntityType="Self.MasterTacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Model" EntityType="Self.Model" Schema="dbo" store:Type="Tables" />
@@ -1976,6 +2035,10 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <AssociationSet Name="FK_Budget_Budget" Association="Self.FK_Budget_Budget">
             <End Role="Budget" EntitySet="Budget" />
             <End Role="Budget1" EntitySet="Budget" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Budget_Detail_Budget1" Association="Self.FK_Budget_Detail_Budget1">
+            <End Role="Budget" EntitySet="Budget" />
+            <End Role="Budget_Detail" EntitySet="Budget_Detail" />
           </AssociationSet>
           <AssociationSet Name="FK_CampaignNameConvention_CustomField" Association="Self.FK_CampaignNameConvention_CustomField">
             <End Role="CustomField" EntitySet="CustomField" />
@@ -2100,6 +2163,14 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <AssociationSet Name="FK_IntegrationTypeAttribute_IntegrationType" Association="Self.FK_IntegrationTypeAttribute_IntegrationType">
             <End Role="IntegrationType" EntitySet="IntegrationType" />
             <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttribute" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LineItem_Budget_Budget_Detail" Association="Self.FK_LineItem_Budget_Budget_Detail">
+            <End Role="Budget_Detail" EntitySet="Budget_Detail" />
+            <End Role="LineItem_Budget" EntitySet="LineItem_Budget" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" Association="Self.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1">
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+            <End Role="LineItem_Budget" EntitySet="LineItem_Budget" />
           </AssociationSet>
           <AssociationSet Name="FK_LineItemType_Model" Association="Self.FK_LineItemType_Model">
             <End Role="Model" EntitySet="Model" />
@@ -2675,6 +2746,20 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <AssociationSet Name="FK_CustomFieldDependency_CustomFieldOption1" Association="MRPModel.FK_CustomFieldDependency_CustomFieldOption1">
             <End Role="CustomFieldOption" EntitySet="CustomFieldOptions" />
             <End Role="CustomFieldDependency" EntitySet="CustomFieldDependencies" />
+          </AssociationSet>
+          <EntitySet Name="Budget_Detail" EntityType="MRPModel.Budget_Detail" />
+          <EntitySet Name="LineItem_Budget" EntityType="MRPModel.LineItem_Budget" />
+          <AssociationSet Name="FK_Budget_Detail_Budget1" Association="MRPModel.FK_Budget_Detail_Budget1">
+            <End Role="Budget" EntitySet="Budgets" />
+            <End Role="Budget_Detail" EntitySet="Budget_Detail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LineItem_Budget_Budget_Detail" Association="MRPModel.FK_LineItem_Budget_Budget_Detail">
+            <End Role="Budget_Detail" EntitySet="Budget_Detail" />
+            <End Role="LineItem_Budget" EntitySet="LineItem_Budget" />
+          </AssociationSet>
+          <AssociationSet Name="FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" Association="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1">
+            <End Role="Plan_Campaign_Program_Tactic_LineItem" EntitySet="Plan_Campaign_Program_Tactic_LineItem" />
+            <End Role="LineItem_Budget" EntitySet="LineItem_Budget" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
@@ -3413,6 +3498,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Plan_Campaign_Program_Tactic" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem_Actual" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic_LineItem_Actual" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem_Cost" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic_LineItem_Cost" />
+          <NavigationProperty Name="LineItem_Budget" Relationship="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="LineItem_Budget" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Actual">
           <Key>
@@ -4677,6 +4763,7 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
           <Property Type="Guid" Name="CreatedBy" Nullable="false" />
           <NavigationProperty Name="Budget1" Relationship="MRPModel.FK_Budget_Budget" FromRole="Budget" ToRole="Budget1" />
           <NavigationProperty Name="Budget2" Relationship="MRPModel.FK_Budget_Budget" FromRole="Budget1" ToRole="Budget" />
+          <NavigationProperty Name="Budget_Detail" Relationship="MRPModel.FK_Budget_Detail_Budget1" FromRole="Budget" ToRole="Budget_Detail" />
         </EntityType>
         <Association Name="FK_Budget_Budget">
           <End Type="MRPModel.Budget" Role="Budget" Multiplicity="1" />
@@ -4742,6 +4829,67 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
             </Principal>
             <Dependent Role="CustomFieldDependency">
               <PropertyRef Name="ChildOptionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Budget_Detail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BudgetId" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ParentId" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+          <NavigationProperty Name="Budget" Relationship="MRPModel.FK_Budget_Detail_Budget1" FromRole="Budget_Detail" ToRole="Budget" />
+          <NavigationProperty Name="LineItem_Budget" Relationship="MRPModel.FK_LineItem_Budget_Budget_Detail" FromRole="Budget_Detail" ToRole="LineItem_Budget" />
+        </EntityType>
+        <EntityType Name="LineItem_Budget">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BudgetDetailId" Type="Int32" Nullable="false" />
+          <Property Name="PlanLineItemId" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" />
+          <NavigationProperty Name="Budget_Detail" Relationship="MRPModel.FK_LineItem_Budget_Budget_Detail" FromRole="LineItem_Budget" ToRole="Budget_Detail" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" FromRole="LineItem_Budget" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
+        </EntityType>
+        <Association Name="FK_Budget_Detail_Budget1">
+          <End Type="MRPModel.Budget" Role="Budget" Multiplicity="1" />
+          <End Type="MRPModel.Budget_Detail" Role="Budget_Detail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Budget_Detail">
+              <PropertyRef Name="BudgetId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LineItem_Budget_Budget_Detail">
+          <End Type="MRPModel.Budget_Detail" Role="Budget_Detail" Multiplicity="1" />
+          <End Type="MRPModel.LineItem_Budget" Role="LineItem_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget_Detail">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="LineItem_Budget">
+              <PropertyRef Name="BudgetDetailId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic_LineItem" Role="Plan_Campaign_Program_Tactic_LineItem" Multiplicity="1" />
+          <End Type="MRPModel.LineItem_Budget" Role="LineItem_Budget" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic_LineItem">
+              <PropertyRef Name="PlanLineItemId" />
+            </Principal>
+            <Dependent Role="LineItem_Budget">
+              <PropertyRef Name="PlanLineItemId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -5739,6 +5887,29 @@ FROM [dbo].[CustomFieldDependency] AS [CustomFieldDependency]</DefiningQuery>
                 <ScalarProperty Name="ChildCustomFieldId" ColumnName="ChildCustomFieldId" />
                 <ScalarProperty Name="ParentOptionId" ColumnName="ParentOptionId" />
                 <ScalarProperty Name="ParentCustomFieldId" ColumnName="ParentCustomFieldId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Budget_Detail">
+            <EntityTypeMapping TypeName="MRPModel.Budget_Detail">
+              <MappingFragment StoreEntitySet="Budget_Detail">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="BudgetId" ColumnName="BudgetId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="LineItem_Budget">
+            <EntityTypeMapping TypeName="MRPModel.LineItem_Budget">
+              <MappingFragment StoreEntitySet="LineItem_Budget">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="PlanLineItemId" ColumnName="PlanLineItemId" />
+                <ScalarProperty Name="BudgetDetailId" ColumnName="BudgetDetailId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -14,6 +14,11 @@ namespace RevenuePlanner.Models
     
     public partial class Budget
     {
+        public Budget()
+        {
+            this.Budget_Detail = new HashSet<Budget_Detail>();
+        }
+    
         public int Id { get; set; }
         public System.Guid ClientId { get; set; }
         public string Name { get; set; }
@@ -24,5 +29,6 @@ namespace RevenuePlanner.Models
     
         public virtual Budget Budget1 { get; set; }
         public virtual Budget Budget2 { get; set; }
+        public virtual ICollection<Budget_Detail> Budget_Detail { get; set; }
     }
 }
