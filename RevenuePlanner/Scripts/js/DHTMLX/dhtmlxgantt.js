@@ -4170,7 +4170,10 @@ gantt._task_default_render = function(task){
 
 	var div = document.createElement("div");
 	var width = gantt._get_task_width(task);
-
+    //Added by Rahul Shah on 16/09/2015 for PL #1609
+	if (width == 0) {
+	    width = 2
+	}
 	var type = this._get_safe_type(task.type);
 
 	div.setAttribute(this.config.task_attribute, task.id);

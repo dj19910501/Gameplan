@@ -1546,7 +1546,7 @@ namespace RevenuePlanner.Helpers
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
-            List<string> tacticStatus = GetStatusListAfterApproved();
+            //List<string> tacticStatus = GetStatusListAfterApproved();  // Commented by Rahul Shah on 16/09/2015 for PL #1610
             //Added By Komal Rawal for new UI of homepage
             List<SelectListItem> planList;
 
@@ -1572,7 +1572,8 @@ namespace RevenuePlanner.Helpers
                 var objPlan = lstPlanAll.Where(plan => plan.PlanId == planId).Select(plan => plan).FirstOrDefault();
             if (objPlan != null)
             {
-                List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList();
+                //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
+                List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
 
                 //Modified By Komal Rawal for #1447
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
@@ -1673,8 +1674,16 @@ namespace RevenuePlanner.Helpers
                     {
                         ////Start Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
                         var tacticIds = planTacticIds.Select(tactic => tactic.PlanTacticId).ToList();
-                        objHomePlanModelHeader.Budget = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).Sum(lineItem => lineItem.Cost);
+                        //objHomePlanModelHeader.Budget = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).Sum(lineItem => lineItem.Cost);//Commented by Rahul Shah on 18/09/2015 for PL #1615
                         ////End Modified by Mitesh Vaishnav for PL ticket #736 Budgeting - Changes to plan header to accomodate budgeting changes
+
+                        //Added by Rahul Shah on 18/09/2015 for PL #1615
+                        List<Plan_Campaign_Program_Tactic_LineItem> planTacticLineItemIds = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => tacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList();
+                        if (planTacticLineItemIds.Count() > 0)
+                        {
+                            objHomePlanModelHeader.Budget = planTacticLineItemIds.Sum(lineItem => lineItem.Cost);
+                        }
+					
                     }
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                 }
@@ -1732,7 +1741,7 @@ namespace RevenuePlanner.Helpers
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities db = new MRPEntities();
-            List<string> tacticStatus = GetStatusListAfterApproved();
+            //List<string> tacticStatus = GetStatusListAfterApproved();// Commented By Rahul Shah on 16/09/2015 for PL #1610
             int Year;
             if (!int.TryParse(year, out Year))
             {
@@ -1774,8 +1783,10 @@ namespace RevenuePlanner.Helpers
 
                 }
 
-               
-                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();
+
+                //List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();// Commented By Rahul Shah on 16/09/2015 for PL #1610
+                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+
 
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
