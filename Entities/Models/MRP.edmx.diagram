@@ -157,6 +157,8 @@
         <AssociationConnector Association="MRPModel.FK_Budget_Detail_Budget1" />
         <AssociationConnector Association="MRPModel.FK_LineItem_Budget_Budget_Detail" />
         <AssociationConnector Association="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" />
+        <EntityTypeShape EntityType="MRPModel.Budget_DetailAmount" Width="1.5" PointX="16.5" PointY="22.75" />
+        <AssociationConnector Association="MRPModel.FK_Budget_DetailAmount_Budget_Detail" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
