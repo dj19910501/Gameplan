@@ -4579,7 +4579,6 @@ gantt._task_renderer = function(id, render_one, node, filter){
 				}
 			}
 			var dom = render_one.call(gantt, item);
-			//debugger;
 			if (dom.className.indexOf('gantt_task_line') > -1 )
 			{
 			    if (item.isImprovement != true) {

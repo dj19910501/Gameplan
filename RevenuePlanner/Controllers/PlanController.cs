@@ -9077,13 +9077,13 @@ namespace RevenuePlanner.Controllers
                 int MainPlanID = 0;
 
                 MainPlanID = Convert.ToInt32(planIds[0].ToString());
-                int? modelId = db.Plans.Where(p => p.PlanId == MainPlanID).Select(p => p.ModelId).FirstOrDefault();
+                int modelId = db.Plans.Where(p => p.PlanId == MainPlanID).Select(p => p.ModelId).FirstOrDefault();
 
                 List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
 
-                GridString = GenerateXMHeader(GridString, MQLTitle, MainPlanID, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
+                GridString = GenerateXMHeader(GridString, MQLTitle, modelId, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
 
-                GetGoalValue(lstplandetail, modelId.ToString(), stageList, objplangrid, objimprovement); // for plan grid header to bind goal detail
+                GetGoalValue(lstplandetail, modelId, stageList, objplangrid, objimprovement); // for plan grid header to bind goal detail
 
 
                 var lstcampaigndetail = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && campaign.IsDeleted == false).ToList();
@@ -9100,7 +9100,7 @@ namespace RevenuePlanner.Controllers
                 string section = Enums.Section.Tactic.ToString();
                 lstCustomFieldsRequired = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false
                      && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true) && customField.IsRequired == true).Select(customField => customField.CustomFieldId).ToList();
-                tacticcustomfieldsentity = db.CustomField_Entity.Where(t => lsttacticId.Contains(t.EntityId)).ToList();
+                tacticcustomfieldsentity = db.CustomField_Entity.Where(t => lstCustomFieldsRequired.Contains(t.CustomFieldId) && lsttacticId.Contains(t.EntityId)).ToList();
 
                 if (programtactic != null && programtactic.Count > 0)
                     IsTacticExist = true;
@@ -9619,7 +9619,7 @@ namespace RevenuePlanner.Controllers
                 return true;
             else
             {
-                var tcnt = tacticcustomfieldsentity.Where(t => t.EntityId == tacticObj.PlanTacticId).Select(cust => cust.CustomFieldId).Intersect(lstCustomFieldsRequired).Count();
+                var tcnt = tacticcustomfieldsentity.Where(t => t.EntityId == tacticObj.PlanTacticId && lstCustomFieldsRequired.Contains(t.CustomFieldId)).Count();
                 var trequiredcnt = lstCustomFieldsRequired.Count();
                 if (tcnt != trequiredcnt)
                     return true;
@@ -10440,9 +10440,8 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
         #region method for getting goal value for homegrid
-        protected void GetGoalValue(List<Plan> plandetail, string modelId, List<Stage> stageList, Plangrid objplangrid, PlanImprovement objimprovement)
+        protected void GetGoalValue(List<Plan> plandetail, int modelId, List<Stage> stageList, Plangrid objplangrid, PlanImprovement objimprovement)
         {
-            int ModelID = 0;
             string MQLLable = string.Empty;
             string INQLable = string.Empty;
             string MQLValue = string.Empty;
@@ -10452,8 +10451,6 @@ namespace RevenuePlanner.Controllers
             string CWValue = string.Empty;
             try
             {
-                if (!string.IsNullOrEmpty(modelId))
-                    ModelID = Convert.ToInt32(modelId);
                 if (plandetail != null)
                 {
 
@@ -10462,9 +10459,9 @@ namespace RevenuePlanner.Controllers
 
                     double ADS = 0;
 
-                    if (ModelID != 0)
+                    if (modelId != 0)
                     {
-                        double ADSValue = db.Models.FirstOrDefault(m => m.ModelId == ModelID).AverageDealSize;
+                        double ADSValue = db.Models.FirstOrDefault(m => m.ModelId == modelId).AverageDealSize;
                         ADS = ADSValue;
                     }
 
@@ -10476,7 +10473,7 @@ namespace RevenuePlanner.Controllers
                         if (goalValue != "" && Convert.ToInt64(goalValue) != 0)
                         {
                             isGoalValueExists = true;
-                            objBudgetAllocationModel = Common.CalculateBudgetInputs(ModelID, goalType, goalValue, ADS, true);
+                            objBudgetAllocationModel = Common.CalculateBudgetInputs(modelId, goalType, goalValue, ADS, true);
                         }
 
                         stageList = db.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false).Select(stage => stage).ToList();
@@ -10530,20 +10527,20 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region method to generate grid header
-        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int planid, string PlanYear)
+        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int modelid, string PlanYear)
         {
 
             string xmlUserlist = string.Empty;
             string xmltactictype = string.Empty;
             try
             {
-                List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false).ToList();
+                //List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false).ToList();
                 //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
-                var lstTactic = from tacType in tblTacticTypes
-                                join _plan in db.Plans on tacType.ModelId equals _plan.ModelId
-                                where _plan.PlanId == planid && tacType.IsDeployedToModel == true
-                                orderby tacType.Title
-                                select tacType;
+                var lstTactic = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && tactype.IsDeployedToModel && tactype.ModelId == modelid).Select(tacttype => new { TacticTypeId = tacttype.TacticTypeId, Title = tacttype.Title }).ToList().OrderBy(tactype => tactype.Title).ToList();
+                //var lstTactic = from tacType in tblTacticTypes
+                //                where tacType.IsDeployedToModel == true && tacType.IsDeleted
+                //                orderby tacType.Title
+                //                select tacType;
 
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
@@ -10572,7 +10569,7 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append("<column width='110' type='dhxCalendar' sort='date' align='center' id='startdate' >#cspan</column>");
                 strHeader.Append("<column width='100' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
                 strHeader.Append("<column width='160' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
-                if (tblTacticTypes != null)
+                if (lstTactic != null && lstTactic.Count > 0)
                 {
                     XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "sort_TacticType"), "#cspan",
                         lstTactic.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), HttpUtility.HtmlDecode(i.Title))));
