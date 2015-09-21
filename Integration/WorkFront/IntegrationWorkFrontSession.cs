@@ -212,8 +212,7 @@ namespace Integration.WorkFront
                 {
                     //need to sync the tactic's program first
                     
-                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.Plan_Campaign_Program.IsDeployedToIntegration == true 
-                        && tactic.PlanTacticId == _entityID && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
+                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _entityID && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
                     Plan_Campaign_Program planProgram = db.Plan_Campaign_Program.Where(program => program.PlanProgramId == planTactic.PlanProgramId).FirstOrDefault();
 
                      bool syncError = syncProgram(planProgram, ref SyncErrors);
