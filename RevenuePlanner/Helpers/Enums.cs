@@ -1021,6 +1021,25 @@ namespace RevenuePlanner.Helpers
             Actual = 2
         }
 
+
+        #region Finance Header
+
+        public enum FinanceHeader_Label
+        {
+            Budget,
+            Actual,
+            Forecast,
+            Planned
+        }
+
+        public static Dictionary<string, string> FinanceHeader_LabelValues = new Dictionary<string, string>()
+        {
+            {FinanceHeader_Label.Budget.ToString(), "Budget"},
+            {FinanceHeader_Label.Actual.ToString(), "Actual"},
+            {FinanceHeader_Label.Forecast.ToString(), "Forecast"},
+            {FinanceHeader_Label.Planned.ToString(), "Planned"}
+        };
+        #endregion
         /// <summary>
         /// Get ViewBya
         /// </summary>

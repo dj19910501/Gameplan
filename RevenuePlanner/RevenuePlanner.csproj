@@ -224,6 +224,7 @@
     <Compile Include="Models\ChangeLog_ViewModel.cs" />
     <Compile Include="Models\CustomRestrictionModel.cs" />
     <Compile Include="Models\ExtrenalServiceModel.cs" />
+    <Compile Include="Models\FinanceModel.cs" />
     <Compile Include="Models\ForgotPasswordModel.cs" />
     <Compile Include="Models\GameplanDataTypePullModel.cs" />
     <Compile Include="Models\HomePlanModel.cs" />
@@ -992,6 +993,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Views\Finance\Index.cshtml" />
+    <Content Include="Views\Shared\_financeheader.cshtml" />
     <None Include="Web.BulldogProduction.config" />
     <Content Include="web.config" />
   </ItemGroup>

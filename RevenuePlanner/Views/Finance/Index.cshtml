@@ -1,16 +1,26 @@
-﻿@{
+﻿@model RevenuePlanner.Models.finacemodel
+@{
     ViewBag.Title = "Finance";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div id="headerTab">headerTab</div>
-<h2>Finance</h2>
+
+
+@section PlanHeader{
+    <div>
+        @Html.Partial("~/Views/Shared/_financeheader.cshtml",Model.FinanemodelheaderObj)
+        </div>
+
+}
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid.js")">
+</script>
 
 <div style="width: 100%;" >
-    @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
-                    <div style="float:right">
+@Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
+ <div style="float:right">
                         <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
-                         @*   @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })*@
-                             @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text"))
+@Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
+ @*@Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text"))*@
                         </span>
                     </div>
 </div>           
@@ -23,4 +33,22 @@
               }).multiselectfilter({
             });
     });
+
+    $("#ddlParentFinance").change(function () {
+        var budgetID = $("#ddlParentFinance").val();
+        GetFinanceHeaderValue(budgetID);
+    });
+
+    function GetFinanceHeaderValue(_budgetId) {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Finance/GetFinanceHeaderValue/")',
+            dataType: "json",
+            data: { budgetId: _budgetId, timeFrameOption: "2015", isQuarterly: "monthly" },
+            success: function (data) {
+                alert("hi");
+            }
+        });
+    }
 </script>
