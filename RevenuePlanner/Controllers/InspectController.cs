@@ -2571,10 +2571,11 @@ namespace RevenuePlanner.Controllers
             //provide a list of tactic integration Id and workfront project 
             List<IntegrationInstance> modelIntegrationList = new List<IntegrationInstance>();
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance); }
-            //Add in when we separate tactic integration information
-            //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance1); }
-            //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance2); }
-            //if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance3); }
+            
+            //integrationinstance - Push Tactic Data Salesforce
+            //integrationinstance11 - Push Tactic Data Eloqua
+            //integrationinstance4 - Project Management
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11); }
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null &&  pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
             ViewBag.IntegrationInstances = modelIntegrationList;
 

@@ -97,15 +97,7 @@
                     }
                 </div>
             }
-            <div class="span3 integration_review_block">
-                    <div class="pull-left size65x38">
-                        <div class="integration-review"></div>
-                        <div>
-                            <label class="integrration_label_align" id="integration">Integration</label>
-                        </div>
-                        <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
-                    </div>
-                </div>
+            
         </div>
 
 
@@ -113,12 +105,18 @@
         
         <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
             <div class="cf textalign-mozcenter" style="padding-bottom: 5px;">
+                    <div class="pull-left size65x38">
+                        <div class="integration-review"></div>
+                        <div>
+                            <label class="integrration_label_align" id="integration">Integration</label>
+                        </div>
+                        <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
+                    </div>
               
-                <div class="span9">
                     @{
                         foreach (var item in ViewBag.IntegrationTypeLinks)
                         {
-                            <div class="pull-left margin-right10 integration-review-imglink">
+                            <div class="pull-left margin-left20 integration-review-imglink size135x80" >
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
                                     @{
@@ -139,7 +137,6 @@
                               </div>
                            }
                      }
-                </div>
             </div>
         </div>
         

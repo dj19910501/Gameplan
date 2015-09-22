@@ -8260,7 +8260,7 @@ input.icon-check-blue {
 .integration-review-imglink {
     height: 79px !important;
     text-align: left; /*by bheru 26-8-2015*/
-    width: 106px !important; /*by bheru 26-8-2015*/
+    width: 136px !important; /*by bheru 26-8-2015 -- changed on 22 Sept 2015 by BGray*/
     display: block;
     border: 1px solid;
     border-color: transparent;
