@@ -4590,7 +4590,17 @@ function Quarter() {
     };
 
     gantt.attachEvent("onTaskClick", function (id, e) {
-        flg = false;
+        //Added by Rahul Shah on 22/09/2015 for PL #1613
+        $(".gantt_add").click(function (e) {
+
+            var type = $(this).attr('id');
+            var name = $(this).attr('Name');
+            var title = $(this).attr('aria-label');
+            var permission = $(this).attr('Permission');
+            DisplayPopUpMenu(type, name, title, permission, e);
+
+        });
+        //flg = false;
     });
 
     gantt.attachEvent("onTaskSelected", function (id, item) {

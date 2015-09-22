@@ -1185,9 +1185,10 @@ dhtmlxDnD.prototype = {
         var scroll = dhtmlx.bind(function(e) { return this.dragScroll(obj, e); }, this);
 
         var limited_mousemove = dhtmlx.bind(function(e) {
-            if(dhtmlx.defined(this.config.updates_per_second)){
-                if(!gantt._checkTimeout(this, this.config.updates_per_second))
-                    return true;
+            if (dhtmlx.defined(this.config.updates_per_second)) {
+                //Commented by Rahul Shah on 22/09/2015 for PL #1614
+                //if(!gantt._checkTimeout(this, this.config.updates_per_second))
+                //    return true;
             }
 
 			return mousemove(e);
