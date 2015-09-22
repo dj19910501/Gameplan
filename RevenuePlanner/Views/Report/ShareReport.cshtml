@@ -112,6 +112,7 @@
 
         //// Valdiate and Send mail on click of share button of share report popup.
         $('form[name="share-report"]').on("submit", function (e) {
+          
             if ($("#select2Email").select2("val") == "") {
                 var msgspan = "@RevenuePlanner.Helpers.Common.objCached.ValidateEmailAtleastone";
                 $("#errorMessageShareReportPopup").css("display", "block");
@@ -135,7 +136,7 @@
 
         //Start Share Report
         function ShareReport(email, optionalMessage) {
-            
+           
             var reportType = '@reportType';
             var htmlOfCurrentView = GetHTML(reportType);
             
@@ -145,6 +146,8 @@
             var urlpdf = originurl;// This line uncomment for production version and uncomment above line
             
             //// Added by Sohel on 2nd April for PL#398 to encode the text insert in Optional Message Textbox
+
+            $("#modal-container-sharereport").css('z-index', '2000');
             optionalMessage = escape(optionalMessage);
             $.ajax({
                 type: 'POST',
@@ -159,6 +162,7 @@
                 },
                 success: function (data) {
                     if (data != 'undefined' && data != false) {
+                       
                         ////Added by Sohel on 28th March 2014 for Wrapping the emaild ids.
                         email = email.replace(/,/g, ", ");
                         ////
@@ -167,6 +171,7 @@
                     }
                     else {
                         var msgspan = '@RevenuePlanner.Helpers.Common.objCached.ErrorOccured';
+                        $("#modal-container-sharereport").css('z-index', '2500');
                         $("#errorMessageShareReportPopup").css("display", "block");
                         $("#spanMessageErrorShareReportPopup").text(msgspan);
                     }
