@@ -78,11 +78,22 @@ GO
 Declare @eloquaInstanceType varchar(10) ='Eloqua'
 UPDATE Model set IntegrationInstanceId=null,IntegrationInstanceEloquaId = inst.IntegrationInstanceId FROM Model as mdl
 INNER JOIN IntegrationInstance as inst on mdl.IntegrationInstanceId = inst.IntegrationInstanceId and inst.IntegrationTypeId=(SELECT IntegrationTypeId FROM IntegrationType WHERE Code=@eloquaInstanceType)
-
+	
 -- 3.) Update_Data_Script_Plan_Campaign_Program_Tactic_Table_Move_EloquaID_09-08-2015
+/* ------------- Start: Move EloquaId from IntegrationInstanceTacticId to IntegrationInstanceEloquaID into column Plan_Campaign_Program_Tactic  ------------- */
+GO
 UPDATE src set IntegrationInstanceTacticId=NULL,IntegrationInstanceEloquaId = elq.IntegrationInstanceTacticId FROM Plan_Campaign_Program_Tactic as src
 INNER JOIN Plan_Campaign_Program_Tactic as elq on src.PlanTacticId = elq.PlanTacticId AND ISNUMERIC(elq.IntegrationInstanceTacticId)=1 AND (elq.IntegrationInstanceTacticId  IS NOT NULL)
 
+/* ------------- End: Move EloquaId from IntegrationInstanceTacticId to IntegrationInstanceEloquaID into column Plan_Campaign_Program_Tactic  ------------- */
+
+/* ------------- Start: Move EloquaId from IntegrationInstanceTacticId to IntegrationInstanceEloquaID into column Plan_Improvement_Campaign_Program_Tactic  ------------- */
+GO
+UPDATE src set IntegrationInstanceTacticId=NULL,IntegrationInstanceEloquaId = elq.IntegrationInstanceTacticId FROM Plan_Improvement_Campaign_Program_Tactic as src
+INNER JOIN Plan_Improvement_Campaign_Program_Tactic as elq on src.ImprovementPlanTacticId = elq.ImprovementPlanTacticId AND ISNUMERIC(elq.IntegrationInstanceTacticId)=1 AND (elq.IntegrationInstanceTacticId  IS NOT NULL)
+
+/* ------------- End: Move EloquaId from IntegrationInstanceTacticId to IntegrationInstanceEloquaID into column Plan_Improvement_Campaign_Program_Tactic  ------------- */
+GO
 
 
 -- ======================================================================================
