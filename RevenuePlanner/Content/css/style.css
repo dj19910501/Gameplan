@@ -9237,6 +9237,7 @@ a:hover, a:focus {
     .budget-table table {
         width: 100%;
         border-collapse: collapse;
+        table-layout: fixed; /*PL 1543 Plan Budget & Cost: Table goes out of frame - Dashrath Prajapati */
     }
 
     .budget-table tbody {
