@@ -548,10 +548,10 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
             Notification notification = (Notification)db.Notifications.Single(n => n.NotificationInternalUseOnly.Equals(Action));
-            string emailBody, email, Username;
+            //string emailBody, email, Username; //Commented by Rahul Shah on 24/09/2015 for PL #1620
             for (int i = 0; i <= EmailIds.Count - 1; i++)
             {
-                emailBody = string.Empty;
+                String emailBody = string.Empty, email, Username; //modified by Rahul Shah on 24/09/2015 for PL #1620    line nuumber 554
                 
                 if (Section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
