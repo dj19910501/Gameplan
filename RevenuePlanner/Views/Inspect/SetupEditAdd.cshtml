@@ -1128,15 +1128,16 @@
                     }
                 });
             }
-
             $('#CustomHtmlHelperfield').find('.span3').each(function () {
                 var maindiv = $(this);
                 var InputType = $(this).find("input").attr('type');
+                var Count = 0;
                 if (InputType == "text" ) {
                     var ParentOptionID = $(this).find("input").parent().attr('parentoptionid');
                     if (ParentOptionID == tacticTypeId) {
                         maindiv.css("display", "inline-block");
                         $(this).css("display", "inline-block");
+                        Count++;
                     }
                 }
                 else {
@@ -1145,8 +1146,16 @@
                         if (ParentOptionId == tacticTypeId) {
                             maindiv.css("display", "inline-block");
                             $(this).css("display", "block");
+                            Count++;
                         }
                     });
+                }
+                if(Count == 0)
+                {
+                    if (maindiv.attr('parentfield') == "TacticType")
+                        {
+                        maindiv.css("display", "none");
+                    }
                 }
             });
         }

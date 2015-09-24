@@ -4284,6 +4284,7 @@ namespace RevenuePlanner.Helpers
                 string className, inputclassName, customFieldEntityValue, DropDownStyle, divPosition, require, name,
                         displayCheckbox, selectionMode, footerText, singlehover, trhover, footerclose, enableCheck, inputcolorcss, DisplayStyle;
                 bool editableOptions, isEditable;
+                string ParentField = "CustomField";
                 foreach (var item in customFieldList)
                 {
                     className = "span3 margin-top10";
@@ -4299,10 +4300,12 @@ namespace RevenuePlanner.Helpers
                     {
                         val.Add(TacticType.ToString());
                         entityvalues.Add(TacticType.ToString());
-                     //   ParentOptionID = TacticType;
+                        ParentField = "TacticType";
+                      
                     }
                     else
                     {
+                        ParentField = "CustomField";
                      val=   customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
                     }
                     var IsSelectedParentsChild =  item.option.Where(op => val.Contains(op.ParentOptionId.ToString())).Any();
@@ -4340,9 +4343,9 @@ namespace RevenuePlanner.Helpers
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || editableOptions == true || (mode == Enums.InspectPopupMode.ReadOnly.ToString() && item.option.Count > 0))
                     {
                         if (item.isRequired)
-                            sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + item.ParentOptionId + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
+                            sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + item.ParentOptionId + "\" ParentField =\"" + ParentField + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
                         else
-                            sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"ParentId =\"" + item.ParentId  + "\"ParentOptionId =\"" + item.ParentOptionId + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
+                            sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + item.ParentOptionId + "\" ParentField =\"" + ParentField + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
                     }
 
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
