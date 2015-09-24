@@ -3690,7 +3690,7 @@ namespace RevenuePlanner.Controllers
             htmlToPdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
             htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 0;
             htmlToPdfConverter.PdfDocumentOptions.RightMargin = 0;
-            if (reportType == Enums.ReportType.Conversion.ToString())
+            if (reportType == Enums.ReportType.Waterfall.ToString())
             {
                 htmlToPdfConverter.PdfDocumentOptions.TopMargin = 45;
                 htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 70;

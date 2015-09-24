@@ -889,7 +889,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
                 LoadRevenueData();
             }
                 //PL 1562 Dashrath Prajpati
-            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()') {
+            else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()') {
                 LoadConversionData();
             }
     }
@@ -1087,7 +1087,6 @@ function GetOwnerListForFilter(Planids, ifexists) {
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
                             LoadRevenueData();
                         }
-                            //PL #1562 Share Report: Change Report Name to Waterfall Instead of Conversion - Dashrath
                         else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()') {
                             LoadConversionData();
                         }
@@ -1246,7 +1245,7 @@ $('#liConversion').click(function () {
         document.title = "Waterfall";
         isAllowClick = false;
         if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
-            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Conversion.ToString()';
+            leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()';
             GetOwnerListForFilter(PlanIds, true);
             GetTacticTypelist(PlanIds, true);
         }
