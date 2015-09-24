@@ -199,7 +199,7 @@
             $("#exportcsv").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv')
             $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
 
-            BindHomeGrid();
+            //BindHomeGrid(); ////Commented by Rahul Shah on 23/09/2015 for PL #1618
             $(".orange-corner-grid").hover(function () {
                 $("#divTacticReqMsg").css('display', 'block');
                 var position = $(this).offset();
