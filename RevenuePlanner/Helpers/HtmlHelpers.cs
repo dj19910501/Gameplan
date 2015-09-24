@@ -4340,7 +4340,7 @@ namespace RevenuePlanner.Helpers
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || editableOptions == true || (mode == Enums.InspectPopupMode.ReadOnly.ToString() && item.option.Count > 0))
                     {
                         if (item.isRequired)
-                            sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
+                            sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + item.ParentOptionId + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
                         else
                             sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"ParentId =\"" + item.ParentId  + "\"ParentOptionId =\"" + item.ParentOptionId + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
                     }
@@ -4496,6 +4496,12 @@ namespace RevenuePlanner.Helpers
                                                   name += "Please Select" + ", ";
                                                   inputcolorcss = string.Empty;
                                                   item.value.Clear();
+                                                selectionMode = "Single";
+                                                footerText = "> Multi-selection";
+                                                singlehover = "single-p";
+                                                trhover = "trdropdownhover";
+                                                footerclose = "<a id=\"aclose_tag\" href=\"#\" class=\"close_a\" style=\"display:none;\"><span class=\"swap-text\">X close</span></a>";
+                                             
                                               }
                                               else
                                               {
@@ -4503,7 +4509,6 @@ namespace RevenuePlanner.Helpers
                                             name += objOption.value + ", ";
                                             enableCheck = "checked=\"checked\"";
                                             inputcolorcss = string.Empty;
-
 
                                              }
                                         }
@@ -4538,9 +4543,9 @@ namespace RevenuePlanner.Helpers
                                 foreach (var objOption in item.option)
                                 {
                                     DisplayStyle = " style=\"";
-                                    if (item.isChild == true && entityvalues.Contains(objOption.ParentOptionId.ToString()))
+                                    if (item.isChild == true)
                                     {
-                                        if (objOption.ChildOptionId == true)
+                                        if (objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString()))
                                         {
                                             DisplayStyle += "display:block;";
                                         }

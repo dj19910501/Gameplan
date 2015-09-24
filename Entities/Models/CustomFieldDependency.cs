@@ -21,6 +21,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public System.Guid CreatedBy { get; set; }
         public bool IsDeleted { get; set; }
+        public int DependencyId { get; set; }
     
         public virtual CustomField CustomField { get; set; }
         public virtual CustomField CustomField1 { get; set; }

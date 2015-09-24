@@ -93,10 +93,10 @@ namespace RevenuePlanner.Models
         public DbSet<IntegrationWorkFrontPortfolio> IntegrationWorkFrontPortfolios { get; set; }
         public DbSet<IntegrationInstanceLogDetail> IntegrationInstanceLogDetails { get; set; }
         public DbSet<Budget> Budgets { get; set; }
-        public DbSet<CustomFieldDependency> CustomFieldDependencies { get; set; }
         public DbSet<Budget_Detail> Budget_Detail { get; set; }
-        public DbSet<LineItem_Budget> LineItem_Budget { get; set; }
         public DbSet<Budget_DetailAmount> Budget_DetailAmount { get; set; }
+        public DbSet<CustomFieldDependency> CustomFieldDependencies { get; set; }
+        public DbSet<LineItem_Budget> LineItem_Budget { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

@@ -148,17 +148,17 @@
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance1" />
         <EntityTypeShape EntityType="MRPModel.Budget" Width="1.5" PointX="6.5799510639998839" PointY="7.6337976640247733" />
         <AssociationConnector Association="MRPModel.FK_Budget_Budget" />
-        <EntityTypeShape EntityType="MRPModel.CustomFieldDependency" Width="1.5" PointX="14.25" PointY="16.125" />
+        <EntityTypeShape EntityType="MRPModel.Budget_Detail" Width="1.5" PointX="14.25" PointY="22.5" />
+        <AssociationConnector Association="MRPModel.FK_Budget_Detail_Budget1" />
+        <EntityTypeShape EntityType="MRPModel.Budget_DetailAmount" Width="1.5" PointX="16.5" PointY="22.75" />
+        <AssociationConnector Association="MRPModel.FK_Budget_DetailAmount_Budget_Detail" />
+        <EntityTypeShape EntityType="MRPModel.CustomFieldDependency" Width="1.5" PointX="14.25" PointY="17" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField1" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomFieldOption1" />
-        <EntityTypeShape EntityType="MRPModel.Budget_Detail" Width="1.5" PointX="14.25" PointY="22.5" />
-        <EntityTypeShape EntityType="MRPModel.LineItem_Budget" Width="1.5" PointX="16.5" PointY="9.5" />
-        <AssociationConnector Association="MRPModel.FK_Budget_Detail_Budget1" />
+        <EntityTypeShape EntityType="MRPModel.LineItem_Budget" Width="1.5" PointX="16.5" PointY="17.75" />
         <AssociationConnector Association="MRPModel.FK_LineItem_Budget_Budget_Detail" />
         <AssociationConnector Association="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" />
-        <EntityTypeShape EntityType="MRPModel.Budget_DetailAmount" Width="1.5" PointX="16.5" PointY="22.75" />
-        <AssociationConnector Association="MRPModel.FK_Budget_DetailAmount_Budget_Detail" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
