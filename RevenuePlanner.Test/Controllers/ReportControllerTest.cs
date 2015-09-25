@@ -875,304 +875,304 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region "LoadRevenueContribution with Empty Parameter"
-        /// <summary>
-        /// Get data check with Empty Parameter.
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///LoadRevenueContribution
-        [TestMethod]
-        public void LoadRevenueContribution_Empty_Param()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-           var result= reportController.LoadRevenueContribution("","");
-           Assert.IsNotNull(result.Data);
+        //#region "LoadRevenueContribution with Empty Parameter"
+        ///// <summary>
+        ///// Get data check with Empty Parameter.
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////LoadRevenueContribution
+        //[TestMethod]
+        //public void LoadRevenueContribution_Empty_Param()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //   var result= reportController.LoadRevenueContribution("","");
+        //   Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "LoadRevenueContribution with ParentLabel as TacticCustom"
-        /// <summary>
-        /// Get data check with Parameter ParentLabel as TacticCustom .
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///LoadRevenueContribution
-        [TestMethod]
-        public void LoadRevenueContribution_ParentType_TacticCustom()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "LoadRevenueContribution with ParentLabel as TacticCustom"
+        ///// <summary>
+        ///// Get data check with Parameter ParentLabel as TacticCustom .
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////LoadRevenueContribution
+        //[TestMethod]
+        //public void LoadRevenueContribution_ParentType_TacticCustom()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
           
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.TacticCustomTitle.ToString();
-            var result = reportController.LoadRevenueContribution(Parentlbl,"2015");
-            Assert.IsNotNull(result.Data);
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.TacticCustomTitle.ToString();
+        //    var result = reportController.LoadRevenueContribution(Parentlbl,"2015");
+        //    Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "LoadRevenueContribution with ParentLabel as CampaignCustom"
-        /// <summary>
-        /// Get data check with Parameter ParentLabel as CampaignCustom .
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///LoadRevenueContribution
-        [TestMethod]
-        public void LoadRevenueContribution_ParentType_CampaignCustom()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "LoadRevenueContribution with ParentLabel as CampaignCustom"
+        ///// <summary>
+        ///// Get data check with Parameter ParentLabel as CampaignCustom .
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////LoadRevenueContribution
+        //[TestMethod]
+        //public void LoadRevenueContribution_ParentType_CampaignCustom()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.CampaignCustomTitle.ToString();
-            var result = reportController.LoadRevenueContribution(Parentlbl, "2015");
-            Assert.IsNotNull(result.Data);
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
+        //    var result = reportController.LoadRevenueContribution(Parentlbl, "2015");
+        //    Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "LoadRevenueContribution with ParentLabel as ProgramCustom"
-        /// <summary>
-        /// Get data check with Parameter ParentLabel as ProgramCustom .
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///LoadRevenueContribution
-        [TestMethod]
-        public void LoadRevenueContribution_ParentType_ProgramCustom()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "LoadRevenueContribution with ParentLabel as ProgramCustom"
+        ///// <summary>
+        ///// Get data check with Parameter ParentLabel as ProgramCustom .
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////LoadRevenueContribution
+        //[TestMethod]
+        //public void LoadRevenueContribution_ParentType_ProgramCustom()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.ProgramCustomTitle.ToString();
-            var result = reportController.LoadRevenueContribution(Parentlbl, "2015");
-            Assert.IsNotNull(result.Data);
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.ProgramCustomTitle.ToString();
+        //    var result = reportController.LoadRevenueContribution(Parentlbl, "2015");
+        //    Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "GetRevenueToPlan with Empty"
-        /// <summary>
-        /// Get data check with Empty parameter.
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///GetRevenueToPlan
-        [TestMethod]
-        public void GetRevenueToPlan_empty()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "GetRevenueToPlan with Empty"
+        ///// <summary>
+        ///// Get data check with Empty parameter.
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////GetRevenueToPlan
+        //[TestMethod]
+        //public void GetRevenueToPlan_empty()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.CampaignCustomTitle.ToString();
-           var result= reportController.GetRevenueToPlan(Parentlbl,"0","2015","");
-           Assert.IsNotNull(result.Data);
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
+        //   var result= reportController.GetRevenueToPlan(Parentlbl,"0","2015","");
+        //   Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "GetRevenueToPlan with Parent Label as Campaign Custom"
-        /// <summary>
-        /// Get data check with Parameter ParentLabel as Camapaign Custom.
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///GetRevenueToPlan
-        [TestMethod]
-        public void GetRevenueToPlan_Parent_CamapaignCustom()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "GetRevenueToPlan with Parent Label as Campaign Custom"
+        ///// <summary>
+        ///// Get data check with Parameter ParentLabel as Camapaign Custom.
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////GetRevenueToPlan
+        //[TestMethod]
+        //public void GetRevenueToPlan_Parent_CamapaignCustom()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.CampaignCustomTitle.ToString();
-            var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
-            Assert.IsNotNull(result.Data);
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
+        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
+        //    Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "GetRevenueToPlan with ProgramCustomTitle as Parenet Label"
-        /// <summary>
-        /// Get data check with Parameter ParentLabel as ProgramCustomTitle Custom.
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///GetRevenueToPlan
-        [TestMethod]
-        public void GetRevenueToPlan_Parent_ProgramCustom()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "GetRevenueToPlan with ProgramCustomTitle as Parenet Label"
+        ///// <summary>
+        ///// Get data check with Parameter ParentLabel as ProgramCustomTitle Custom.
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////GetRevenueToPlan
+        //[TestMethod]
+        //public void GetRevenueToPlan_Parent_ProgramCustom()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.ProgramCustomTitle.ToString();
-            var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
-            Assert.IsNotNull(result.Data);
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.ProgramCustomTitle.ToString();
+        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
+        //    Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "GetRevenueToPlan with TacticCustomTitle as Parenet Label"
-        /// <summary>
-        /// Get data check with Parameter ParentLabel as TacticCustomTitle.
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///GetRevenueToPlan
-        [TestMethod]
-        public void GetRevenueToPlan_Parent_TacticCustom()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "GetRevenueToPlan with TacticCustomTitle as Parenet Label"
+        ///// <summary>
+        ///// Get data check with Parameter ParentLabel as TacticCustomTitle.
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////GetRevenueToPlan
+        //[TestMethod]
+        //public void GetRevenueToPlan_Parent_TacticCustom()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.TacticCustomTitle.ToString();
-            var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
-            Assert.IsNotNull(result.Data);
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.TacticCustomTitle.ToString();
+        //    var result = reportController.GetRevenueToPlan(Parentlbl, "0", "2015", "");
+        //    Assert.IsNotNull(result.Data);
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        #region "GetRevenueSummaryDataRevenueReport with empty parameter"
-        /// <summary>
-        /// Get data check with Empty Parameter
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///
-        [TestMethod]
-        public void GetRevenueSummaryDataRevenueReport_Empty_Param()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "GetRevenueSummaryDataRevenueReport with empty parameter"
+        ///// <summary>
+        ///// Get data check with Empty Parameter
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////
+        //[TestMethod]
+        //public void GetRevenueSummaryDataRevenueReport_Empty_Param()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
          
-            var result = reportController.GetRevenueSummaryDataRevenueReport("","","");
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
+        //    var result = reportController.GetRevenueSummaryDataRevenueReport("","","");
+        //    Assert.IsNotNull(result.Data);
+        //}
+        //#endregion
 
-        #region "GetRevenueSummaryDataRevenueReport with CampaignCustom Title"
-        /// <summary>
-        /// Get data check with Parent label as Campaign Custom Title
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///
-        [TestMethod]
-        public void GetRevenueSummaryDataRevenueReport_Parent_CampaignCustom()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+        //#region "GetRevenueSummaryDataRevenueReport with CampaignCustom Title"
+        ///// <summary>
+        ///// Get data check with Parent label as Campaign Custom Title
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>14aug2015</createddate>
+        /////
+        //[TestMethod]
+        //public void GetRevenueSummaryDataRevenueReport_Parent_CampaignCustom()
+        //{
+        //    HttpContext.Current = DataHelper.SetUserAndPermission();
+        //    int planId = DataHelper.GetPlanId();
+        //    List<int> lst = new List<int>();
+        //    lst.Add(14936);
+        //    HttpContext.Current.Session["ReportPlanIds"] = lst;
+        //    ReportController reportController = new ReportController();
+        //    List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
+        //    // Fetch the respectives Campaign Ids and Program Ids from the tactic list
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string Parentlbl = Common.CampaignCustomTitle.ToString();
-            var result = reportController.GetRevenueSummaryDataRevenueReport(Parentlbl,"0","");
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
+        //    //// Calculate Value for ecah tactic
+        //    List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+        //    //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
+        //    //TempData["ReportData"] = tacticStageList;
+        //    reportController.TempData["ReportData"] = tacticStageList;
+        //    string Parentlbl = Common.CampaignCustomTitle.ToString();
+        //    var result = reportController.GetRevenueSummaryDataRevenueReport(Parentlbl,"0","");
+        //    Assert.IsNotNull(result.Data);
+        //}
+        //#endregion
 
         #region "GetChildLabelDataViewByModel with empty parameter"
         /// <summary>
