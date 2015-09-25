@@ -841,25 +841,7 @@ a {
         background-position: -170px 0px !important;
     }
 
-/* CSS for Revenue Report : Added By Maninder*/
-.report-chart-group .report-chart {
-    margin: 8px;
-    min-width: 312px; /* edited by kapil 220414 - to resolve graph issue - #447 */
-    position: relative;
-}
 
-.report-chart-group {
-    margin: 0 auto; /*;width: 997px;*/
-    padding-top: 8px;
-    min-width: 958px;
-}
-    /* Added by kapil - 210414 - #447 */
-    .report-chart-group .dhx_axis_item_y {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 11px;
-    }
 /* */
 /*chart 4*/
 .report-chart4 {
@@ -1312,10 +1294,8 @@ a {
 }
 /* changes ends here */
 
-/* For Report Chart - kapil - 170214 */
-.chart_table_wrapper {
-    width: 100%;
-}
+
+
 
 .report-chart3 {
     width: 93% !important;
@@ -2362,10 +2342,7 @@ label {
 }
 /* */
 @media screen and (max-width:1280px) {
-    .report-chart-group .report-chart {
-        margin: 6px;
-        min-width: 304px;
-    }
+   
 
     .report-chart5 {
         min-width: 310px !important;
@@ -2398,10 +2375,7 @@ label {
 }
 
 @media screen and (min-width:1281px) {
-    .report-chart-group .report-chart {
-        width: auto;
-        padding-right: 5px;
-    }
+   
 }
 
 .shortSelectBox {
