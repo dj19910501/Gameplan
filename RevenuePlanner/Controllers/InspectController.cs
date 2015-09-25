@@ -2583,7 +2583,7 @@ namespace RevenuePlanner.Controllers
             foreach (IntegrationInstance instance in modelIntegrationList)
             {
                 string url = instance.IntegrationType.FrontEndUrl;
-                if (instance.IntegrationType.Title == Enums.IntegrationInstanceType.WorkFront.ToString())
+                if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString())
                {
                    int workFrontCompanyNameAttributeId = db.IntegrationTypeAttributes.Where(att => att.IntegrationTypeId == instance.IntegrationTypeId && att.Attribute=="Company Name").FirstOrDefault().IntegrationTypeAttributeId;
                     string prepend = db.IntegrationInstance_Attribute.Where(inst => inst.IntegrationInstanceId == instance.IntegrationInstanceId &&
@@ -2591,9 +2591,14 @@ namespace RevenuePlanner.Controllers
                     string append = "/project/view?ID=" + pcpt.IntegrationWorkFrontProjectID;
                     url = string.Concat("https://",prepend,url,append);
                 }
-                else 
+                else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
                 {
                     string append = "/" + pcpt.IntegrationInstanceTacticId;
+                    url = string.Concat(url, append);
+                }
+                else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Eloqua.ToString())
+                {
+                    string append = "/" + pcpt.IntegrationInstanceEloquaId;
                     url = string.Concat(url, append);
                 }
                 if(!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code) )
