@@ -8,13 +8,11 @@ using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using System.Transactions;
 using Elmah;
-//using EvoPdf.HtmlToPdf;
 using System.Web;
 using System.IO;
 using System.Web.Script.Serialization;
 using System.Data.Objects.SqlClient;
 using RevenuePlanner.BDSService;
-using RevenuePlanner.Helpers;
 using EvoPdf;
 using System.Text;
 
@@ -33,8 +31,6 @@ namespace RevenuePlanner.Controllers
         private string currentYear = DateTime.Now.Year.ToString();
         private int currentMonth = DateTime.Now.Month;
         bool isPublishedPlanExist = false;
-        private string abovePlan = "Above Plan";
-        private string belowPlan = "Below Plan";
         private string strPercentage = "%";
         private string strCurrency = "$";
         private const string strPlannedCost = "Planned Cost";
@@ -150,272 +146,11 @@ namespace RevenuePlanner.Controllers
                 objYear.Selected = year == selectedYear ? true : false;
                 lstYear.Add(objYear);
             }
-            // SelectListItem thisQuarter = new SelectListItem { Text = Enums.UpcomingActivitiesValues[Enums.UpcomingActivities.thisquarter.ToString()].ToString(), Value = Enums.UpcomingActivities.thisquarter.ToString() };
-            // lstYear.Add(thisQuarter);
-
 
             ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             //End Added by Mitesh Vaishnav for PL ticket #846
-
             return View("Index");
-        }
-
-        #endregion
-
-        #region Summary Report
-
-        /// <summary>
-        /// This action will return the Partial View for Summary data
-        /// </summary>
-        /// <returns>Return Partial View _Summary</returns>
-        [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetSummaryData()
-        {
-            SummaryReportModel objSummaryReportModel = new SummaryReportModel();
-
-            //// get tactic list
-            List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            TempData["ReportData"] = Tacticdata;
-
-            //// Data shows up to current year
-            Tacticdata = Tacticdata.Where(tactic => Convert.ToInt32(tactic.TacticYear) <= DateTime.Now.Year).ToList();
-            List<string> yearList = Tacticdata.Select(tactic => tactic.TacticYear).Distinct().ToList();
-
-            //// Get list of month up to current month based on year list
-            List<string> includeMonth = GetMonthWithYearUptoCurrentMonth(yearList);
-
-            //// Declare variables
-            double overAllMQLProjected = 0;
-            double overAllMQLActual = 0;
-            double overAllRevenueActual = 0;
-            double overAllRevenueProjected = 0;
-            double overAllInqActual = 0;
-            double overAllInqProjected = 0;
-            double overAllCWActual = 0;
-            double overAllCWProjected = 0;
-            string cwSatge = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
-            string mqlstage = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-
-            // Start - Added by Arpita Soni for Ticket #1148 on 01/30/2015
-            // To avoid summary display when no published plan selected (It displays no data found message.)
-            foreach (var planId in Sessions.ReportPlanIds)
-            {
-                if (Common.IsPlanPublished(planId))
-                {
-                    isPublishedPlanExist = true;
-                    break;
-                }
-            }
-            // End - Added by Arpita Soni for Ticket #1148 on 01/30/2015
-
-            //// check planids selected or not
-            if (Sessions.ReportPlanIds != null && Sessions.ReportPlanIds.Count > 0 && isPublishedPlanExist)
-            {
-                //// set viewbag to display plan or msg
-                ViewBag.IsPlanExistToShowReport = true;
-            }
-
-            //// Get Tactic List for actual value
-            List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-            Tacticdata.ForEach(tactic => tactic.ActualTacticList.ForEach(actualtactic => ActualTacticList.Add(actualtactic)));
-
-            //// get MQL Actual value
-
-            var MQLActuallist = ActualTacticList.Where(actualtactic => actualtactic.StageTitle.Equals(mqlstage) && includeMonth.Contains(Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actualtactic.PlanTacticId).TacticYear + actualtactic.Period)).ToList();
-            if (MQLActuallist.Count > 0)
-            {
-                overAllMQLActual = MQLActuallist.Sum(actualtactic => actualtactic.Actualvalue);
-            }
-
-            //// get MQL projected value
-            var MQLProjectedlist = GetProjectedMQLValueDataTableForReport(Tacticdata).Where(tactictable => includeMonth.Contains(tactictable.Month)).ToList();
-            if (MQLProjectedlist.Count > 0)
-            {
-                overAllMQLProjected = MQLProjectedlist.Sum(tactictable => tactictable.Value);
-            }
-
-            //// get Revenue Actual value
-            string revenuestage = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            var RevenueActualllist = ActualTacticList.Where(actualtactic => actualtactic.StageTitle.Equals(revenuestage) && includeMonth.Contains(Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actualtactic.PlanTacticId).TacticYear + actualtactic.Period)).ToList();
-            if (RevenueActualllist.Count > 0)
-            {
-                overAllRevenueActual = RevenueActualllist.Sum(tactic => tactic.Actualvalue);
-            }
-
-            //// get Revenue Projeted Value
-            var RevenueProjectedlist = GetProjectedRevenueValueDataTableForReport(Tacticdata).Where(tactictable => includeMonth.Contains(tactictable.Month)).ToList();
-            if (RevenueProjectedlist.Count > 0)
-            {
-                overAllRevenueProjected = RevenueProjectedlist.Sum(tactictable => tactictable.Value);
-            }
-
-            //// Round Revenue value
-            overAllRevenueProjected = Math.Round(overAllRevenueProjected);
-            overAllRevenueActual = Math.Round(overAllRevenueActual);
-
-            //// Assign it to objSummaryReportModel - MQL
-            objSummaryReportModel.MQLs = overAllMQLActual;
-            objSummaryReportModel.MQLsPercentage = GetPercentageDifference(overAllMQLActual, overAllMQLProjected);
-
-            //// Assign it to objSummaryReportModel - Revenue
-            objSummaryReportModel.Revenue = Convert.ToString(overAllRevenueActual);
-            objSummaryReportModel.RevenuePercentage = GetPercentageDifference(overAllRevenueActual, overAllRevenueProjected);
-
-            //// Declare Text for display in view
-            string abovePlan = "above plan";
-            string belowPlan = "below plan";
-            string at_par = "equal to";
-
-            //// For Revenue Summary
-            objSummaryReportModel.PlanStatus = (overAllRevenueActual < overAllRevenueProjected) ? belowPlan : (overAllRevenueActual > overAllRevenueProjected) ? abovePlan : at_par;
-
-            //// Assign it to objSummaryReportModel - Projected Revenue
-            objSummaryReportModel.ProjectedRevenue = overAllRevenueProjected;
-
-            #region INQ
-            string inq = Enums.Stage.INQ.ToString();
-            int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code == inq && stage.IsDeleted == false).StageId;
-
-            //// Get INQ Actual Value
-            var INQActualList = GetActualValueForINQ(ActualTacticList, INQStageId).Where(tacticactual => includeMonth.Contains(Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == tacticactual.PlanTacticId).TacticYear + tacticactual.Period)).ToList();
-            if (INQActualList.Count > 0)
-            {
-                overAllInqActual = INQActualList.Sum(tacticactual => tacticactual.Actualvalue);
-            }
-
-            //// Get INQ Projected Value
-            var InqProjectedList = GetConversionProjectedINQData(Tacticdata).Where(tactictable => includeMonth.Contains(tactictable.Month)).ToList();
-            if (InqProjectedList.Count > 0)
-            {
-                overAllInqProjected = InqProjectedList.Sum(tactictable => tactictable.Value);
-            }
-
-            //// Get Percentage difference for inq
-            double inqPercentageDifference = WaterfallGetPercentageDifference(overAllMQLActual, overAllMQLProjected, overAllInqActual, overAllInqProjected);
-            objSummaryReportModel.INQPerValue = inqPercentageDifference;
-            if (inqPercentageDifference < 0)
-            {
-                objSummaryReportModel.ISQsStatus = belowPlan;
-            }
-            else
-            {
-                objSummaryReportModel.ISQsStatus = abovePlan;
-            }
-
-            #endregion
-
-            #region MQL
-
-            //// Get CW actual Value
-
-            var CWActualList = ActualTacticList.Where(tacticactual => tacticactual.StageTitle.Equals(cwSatge) && includeMonth.Contains(Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == tacticactual.PlanTacticId).TacticYear + tacticactual.Period)).ToList();
-            if (CWActualList.Count > 0)
-            {
-                overAllCWActual = CWActualList.Sum(tacticactual => tacticactual.Actualvalue);
-            }
-
-            //// Get CW Projected Value
-            var CwProjectedList = GetProjectedCWValueDataTableForReport(Tacticdata).Where(tactictable => includeMonth.Contains(tactictable.Month)).ToList();
-            if (CwProjectedList.Count > 0)
-            {
-                overAllCWProjected = CwProjectedList.Sum(tactictable => tactictable.Value);
-            }
-
-            //// Assign it to objSummaryReportModel - MQl Percentage
-            objSummaryReportModel.MQLPerValue = WaterfallGetPercentageDifference(overAllCWActual, overAllCWProjected, overAllMQLActual, overAllMQLProjected);
-            if (objSummaryReportModel.MQLPerValue < 0)
-            {
-                objSummaryReportModel.MQLsStatus = belowPlan;
-            }
-            else
-            {
-                objSummaryReportModel.MQLsStatus = abovePlan;
-            }
-
-            #endregion
-
-            #region Chart
-            List<WaterfallConversionSummaryChart> chart = new List<WaterfallConversionSummaryChart>();
-
-            WaterfallConversionSummaryChart chartStage = new WaterfallConversionSummaryChart();
-            #region INQ
-            //// Added By: Maninder Singh Wadhva for Bug 295:Waterfall Conversion Summary Graph misleading
-            chartStage.Actual = overAllInqActual.ToString();
-            chartStage.Projected = overAllInqProjected.ToString();
-            string INQStageLabel = Common.GetLabel(Common.StageModeINQ);
-            if (string.IsNullOrEmpty(INQStageLabel))
-            {
-                chartStage.Stage = Enums.InspectStageValues[Enums.InspectStage.INQ.ToString()].ToString();
-            }
-            else
-            {
-                chartStage.Stage = INQStageLabel;
-            }
-
-            chart.Add(chartStage);
-            #endregion
-
-            #region MQL
-            //// Added By: Maninder Singh Wadhva for Bug 295:Waterfall Conversion Summary Graph misleading
-            chartStage = new WaterfallConversionSummaryChart();
-            chartStage.Actual = overAllMQLActual.ToString();
-            chartStage.Projected = overAllMQLProjected.ToString();
-            string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
-            if (string.IsNullOrEmpty(MQLStageLabel))
-            {
-                chartStage.Stage = mqlstage;
-            }
-            else
-            {
-                chartStage.Stage = MQLStageLabel;
-            }
-            chart.Add(chartStage);
-            #endregion
-
-            #region CW
-            //// Bug 295:Waterfall Conversion Summary Graph misleading
-            chartStage = new WaterfallConversionSummaryChart();
-            chartStage.Actual = overAllCWActual.ToString();
-            chartStage.Projected = overAllCWProjected.ToString();
-            string CWStageLabel = Common.GetLabel(Common.StageModeCW);
-            if (string.IsNullOrEmpty(CWStageLabel))
-            {
-                chartStage.Stage = cwSatge;
-            }
-            else
-            {
-                chartStage.Stage = CWStageLabel;
-            }
-            chart.Add(chartStage);
-            #endregion
-
-            objSummaryReportModel.chartData = chart;
-            #endregion
-
-            // return Partial view
-            return PartialView("_Summary", objSummaryReportModel);
-        }
-
-        /// <summary>
-        /// Function to get Percentage difference.
-        /// </summary>
-        /// <param name="firstActualValue">Overall First Actual value like MQL Actual.</param>
-        /// <param name="firstProjectedValue">Overall First Projected Value like MQl Projected.</param>
-        /// <param name="secondActualValue">Overall Second Actual Value like INQ Actual.</param>
-        /// <param name="secondProjectedValue">Overall Second Projected Value like INQ projected.</param>
-        /// <returns>Returns Percentage.</returns>
-        private double WaterfallGetPercentageDifference(double firstActualValue, double firstProjectedValue, double secondActualValue, double secondProjectedValue)
-        {
-            double percentage = 0;
-            if (secondProjectedValue != 0 && secondActualValue != 0 && firstActualValue != 0 && firstProjectedValue != 0)
-            {
-                percentage = ((firstActualValue / secondActualValue) / (firstProjectedValue / secondProjectedValue)) * 100;
-            }
-            return percentage;
         }
 
         #endregion
@@ -735,50 +470,6 @@ namespace RevenuePlanner.Controllers
             return GetMonthWiseValueList(tacticdata);
         }
 
-        /// <summary>
-        /// Get Projected CW Data & Calculation.
-        /// </summary>
-        /// <param name="planTacticList"></param>
-        /// <returns></returns>
-        public List<TacticMonthValue> GetProjectedCWValueDataTableForReport(List<TacticStageValue> planTacticList)
-        {
-            //// Get tactic CW data from planTacticlist.
-            List<TacticDataTable> tacticdata = (from tactic in planTacticList
-                                                select new TacticDataTable
-                                                {
-                                                    TacticId = tactic.TacticObj.PlanTacticId,
-                                                    Value = tactic.CWValue,
-                                                    StartMonth = tactic.TacticObj.StartDate.Month,
-                                                    EndMonth = tactic.TacticObj.EndDate.Month,
-                                                    StartYear = tactic.TacticObj.StartDate.Year,
-                                                    EndYear = tactic.TacticObj.EndDate.Year
-                                                }).ToList();
-
-            return GetMonthWiseValueList(tacticdata);
-        }
-
-        /// <summary>
-        /// Get Projected INQ Data With Month Wise.
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// </summary>
-        /// <param name="TacticList"></param>
-        /// <returns></returns>
-        public List<TacticMonthValue> GetConversionProjectedINQData(List<TacticStageValue> planTacticList)
-        {
-            //// Get tactic INQ data from planTacticlist.
-            List<TacticDataTable> tacticdata = (from tactic in planTacticList
-                                                select new TacticDataTable
-                                                {
-                                                    TacticId = tactic.TacticObj.PlanTacticId,
-                                                    Value = tactic.INQValue,
-                                                    StartMonth = tactic.TacticObj.StartDate.Month,
-                                                    EndMonth = tactic.TacticObj.EndDate.Month,
-                                                    StartYear = tactic.TacticObj.StartDate.Year,
-                                                    EndYear = tactic.TacticObj.EndDate.Year
-                                                }).ToList();
-
-            return GetMonthWiseValueList(tacticdata);
-        }
 
         /// <summary>
         /// Get Projected Stage Data & Monthly Calculation.
@@ -1357,646 +1048,14 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
-
-        #region Conversion Summary
-
-        /// <summary>
-        /// Returns view of Conversion report
-        /// </summary>
-        /// <param name="timeFrameOption"></param>
-        /// <returns>return conversion partial view</returns>
-        [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetConversionData(string timeFrameOption = "thisquarter")
-        {
-            //// Get list of month display in view
-            ViewBag.MonthTitle = GetDisplayMonthListForReport(timeFrameOption);
-            //// get tactic list
-            List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
-
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-            List<int> campaignlist = tacticlist.Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
-            List<int> programlist = tacticlist.Select(tactic => tactic.PlanProgramId).ToList();
-
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            TempData["ReportData"] = tacticStageList;
-
-            // Fetch the Custom field data based upon id's .
-            // Modified by : #960 Kalpesh Sharma : Combine the method by passing one extra parameter.
-
-            //// conversion summary view by dropdown
-            List<ViewByModel> lstParentConversionSummery = new List<ViewByModel>();
-            //Concat the Campaign and Program custom fields data with exsiting one. 
-            var lstCustomFields = Common.GetCustomFields(tacticlist.Select(tactic => tactic.PlanTacticId).ToList(), programlist, campaignlist);
-            lstParentConversionSummery = lstParentConversionSummery.Concat(lstCustomFields).ToList();
-            ViewBag.parentConvertionSummery = lstParentConversionSummery;
-            // Get child tab list
-            if (lstParentConversionSummery.Count > 0)
-                ViewBag.ChildTabListConvertionSummary = GetChildLabelDataViewByModel(lstParentConversionSummery.First().Value, timeFrameOption);
-            else
-                ViewBag.ChildTabListConvertionSummary = "";
-            //// conversion performance view by dropdown
-            List<ViewByModel> lstParentConversionPerformance = new List<ViewByModel>();
-            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Plan, Value = Common.Plan });
-            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Trend, Value = Common.Trend });
-            lstParentConversionPerformance.Add(new ViewByModel { Text = Common.Actuals, Value = Common.Actuals });
-            lstParentConversionPerformance = lstParentConversionPerformance.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
-            ViewBag.parentConvertionPerformance = lstParentConversionPerformance;
-
-            return PartialView("Conversion");
-        }
-
-        #region MQL Conversion Plan Report
-
-        /// <summary>
-        /// This method returns the data for MQL Conversion plan summary report
-        /// </summary>
-        /// <param name="ParentTab"></param>
-        /// <param name="Id"></param>
-        /// <param name="selectOption"></param>
-        /// <returns></returns>
-        public JsonResult GetMQLConversionPlanData(string ParentTab = "", string Id = "", string selectOption = "")
-        {
-            //// get list of include based on option
-            List<string> includeMonth = GetMonthListForReport(selectOption);
-            bool IsTacticCustomField = false;
-            //// get data from tempdata variable
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            //// load tacticdata based on ParentTab.
-            int customfieldId = 0;
-            if (ParentTab.Contains(Common.TacticCustomTitle))
-            {
-                IsTacticCustomField = true;
-                customfieldId = Convert.ToInt32(ParentTab.Replace(Common.TacticCustomTitle, ""));
-            }
-            else if (ParentTab.Contains(Common.CampaignCustomTitle))
-            {
-                customfieldId = Convert.ToInt32(ParentTab.Replace(Common.CampaignCustomTitle, ""));
-            }
-            else if (ParentTab.Contains(Common.ProgramCustomTitle))
-            {
-                customfieldId = Convert.ToInt32(ParentTab.Replace(Common.ProgramCustomTitle, ""));
-            }
-            //// Calculate MQL & INQ data.
-            string inq = Enums.Stage.INQ.ToString();
-            string mql = Enums.Stage.MQL.ToString();
-            string CustomfieldType = string.Empty;
-            int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code == inq && stage.IsDeleted == false).StageId;
-            string strINQStage = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
-            if (Tacticdata.Count() > 0)
-            {
-                CustomfieldType = db.CustomFields.Where(customfield => customfield.CustomFieldId.Equals(customfieldId)).Select(customfield => customfield.CustomFieldType.Name).FirstOrDefault();
-
-                List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
-                Tacticdata.ForEach(tacticactual => tacticactual.ActualTacticList.ForEach(actual => planTacticActual.Add(actual)));
-                planTacticActual = planTacticActual.Where(tacticactual => includeMonth.Contains((Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == tacticactual.PlanTacticId).TacticYear) + tacticactual.Period)).ToList();
-
-                List<TacticMonthValue> ProjectedMQLDataTable = GetProjectedDatabyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.MQL, Tacticdata, IsTacticCustomField);
-                List<TacticMonthValue> ProjectedINQDataTable = GetProjectedDatabyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.INQ, Tacticdata, IsTacticCustomField);
-                List<ActualDataTable> ActualINQDataTable = GetActualTacticDataTablebyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.INQ, planTacticActual.Where(act => act.StageTitle.Equals(strINQStage)).ToList(), Tacticdata, IsTacticCustomField);
-                List<ActualDataTable> ActualMQLDataTable = GetActualTacticDataTablebyStageCode(customfieldId, Id, CustomfieldType, Enums.InspectStage.MQL, planTacticActual.Where(act => act.StageTitle.Equals(mql)).ToList(), Tacticdata, IsTacticCustomField);
-                var rdata = new[] { new { 
-                INQGoal = ProjectedINQDataTable.Where(tactictable => includeMonth.Contains(tactictable.Month)).GroupBy(tactictable => tactictable.Month).Select(tactictable => new
-                {
-                    PKey = tactictable.Key,
-                    PSum = tactictable.Sum(tactic => tactic.Value)
-                }),
-                monthList = includeMonth,
-                INQActual = ActualINQDataTable.GroupBy(tactictable => Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == tactictable.PlanTacticId).TacticYear + tactictable.Period)
-                                             .Select(tactictable => new
-                                              {
-                                                PKey = tactictable.Key,
-                                                PSum = tactictable.Sum(tactic => tactic.ActualValue)
-                                              }),
-                MQLGoal = ProjectedMQLDataTable.Where(tactictable => includeMonth.Contains(tactictable.Month)).GroupBy(tactictable => tactictable.Month).Select(tactictable => new
-                {
-                    PKey = tactictable.Key,
-                    PSum = tactictable.Sum(tactic => tactic.Value)
-                }),
-                MQLActual = ActualMQLDataTable
-                            .GroupBy(pt => Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == pt.PlanTacticId).TacticYear + pt.Period)
-                            .Select(pcptj => new
-                            {
-                                PKey = pcptj.Key,
-                                PSum = pcptj.Sum(pt => pt.ActualValue)
-                            })
-            }  };
-
-                return Json(rdata, JsonRequestBehavior.AllowGet);
-            }
-            return Json(new { }, JsonRequestBehavior.AllowGet);
-        }
-
-        #endregion
-
-        #region MQL Performance Report
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Function to get data for source performance report.
-        /// </summary>
-        /// <param name="filter">Filter to get data for plan/trend or actual.</param>
-        /// <returns>Return json data for source performance report.</returns>
-        public JsonResult GetMQLPerformance(string filter, string selectOption = "")
-        {
-            if (filter.Equals(Common.Plan))
-            {
-                return GetMQLPerformanceProjected(selectOption);
-            }
-            else if (filter.Equals(Common.Trend))
-            {
-                return GetMQLPerformanceTrend(selectOption);
-            }
-            else
-            {
-                return GetMQLPerformanceActual(selectOption);
-            }
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Function to get source perfromance trend.
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// <param name="selectOption">Selection Option</param>
-        /// </summary>
-        /// <returns>Returns json result of source perfromance trend.</returns>
-        private JsonResult GetMQLPerformanceTrend(string selectOption)
-        {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-            List<string> months = GetUpToCurrentMonth();
-
-            int lastMonth = GetLastMonthForTrend(selectOption);
-            List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
-            Tacticdata.ForEach(t => t.ActualTacticList.Where(actual => months.Contains(actual.Period) && actual.StageTitle == mql).ToList().ForEach(a => planTacticActual.Add(a)));
-
-            //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
-            string tactic = Enums.EntityType.Tactic.ToString();
-            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
-            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
-
-            // Get first 3 custom fields
-            var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
-                ).Select(c => new
-                {
-                    CustomFieldId = c.CustomFieldId,
-                    CustomFieldName = c.Name
-                }).Take(3).ToList();
-
-            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
-            List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
-            List<string> lstCustomFieldNames = new List<string>();
-            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId) && co.IsDeleted == false).ToList();
-
-            // Applying custom field filters
-            foreach (var customfield in customFields)
-            {
-                List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
-
-                lstSourcePerformance = tblCustomFieldOption.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
-                {
-                    Title = s.Value,
-                    ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetTrendActualTacticData(lastMonth, planTacticActual, customfield.CustomFieldId, s.CustomFieldOptionId.ToString(), dropdownType, Tacticdata, true) //tacticTrendCustomField.Any(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId) ? tacticTrendCustomField.Where(cf => Convert.ToInt32(cf.CustomFieldOptionId) == s.CustomFieldOptionId).FirstOrDefault().Trend : 0
-                }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
-
-                lstCustomFieldNames.Add(customfield.CustomFieldName);
-                lstListSourcePerformance.Add(new ListSourcePerformanceData
-                {
-                    lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = customfield.CustomFieldName
-                });
-            }
-            //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
-
-            // Modified by Arpita Soni for Ticket #1148 on 01/27/2015 
-            return Json(new
-            {
-                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
-                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
-                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
-                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
-                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
-                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
-
-            }, JsonRequestBehavior.AllowGet);
-
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Function to get source perfromance actual.
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// </summary>
-        /// <returns>Returns json result of source perfromance actual.</returns>
-        private JsonResult GetMQLPerformanceActual(string selectOption)
-        {
-            List<string> includeYearList = GetYearListForReport(selectOption, true);
-            List<string> includeMonth = GetMonthListForReport(selectOption, true);
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-            List<Plan_Campaign_Program_Tactic_Actual> planTacticActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
-            Tacticdata.ForEach(tactic => tactic.ActualTacticList.ForEach(_tac => planTacticActuals.Add(_tac)));
-
-            //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
-            string entityType = Enums.EntityType.Tactic.ToString();
-            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
-            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
-
-            // Get first 3 custom fields
-            var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
-                ).Select(c => new
-                {
-                    CustomFieldId = c.CustomFieldId,
-                    CustomFieldName = c.Name
-                }).Take(3).ToList();
-
-            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
-            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId) && co.IsDeleted == false).ToList();
-            List<CustomField_Entity> tblCustomfieldEntity = db.CustomField_Entity.ToList().Where(ent => customFields.Select(custm => custm.CustomFieldId).Contains(ent.CustomFieldId)).ToList();
-            List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
-            List<string> lstCustomFieldNames = new List<string>();
-            // Applying custom field filters
-            foreach (var customfield in customFields)
-            {
-                List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
-
-                List<string> lstOptionIds = new List<string>();
-                var customFieldOptionsIds = db.CustomFieldOptions.Where(c => c.CustomFieldId == customfield.CustomFieldId && c.IsDeleted == false).Select(c => c.CustomFieldOptionId);
-                foreach (var customOptionId in customFieldOptionsIds)
-                {
-                    lstOptionIds.Add(customOptionId.ToString());
-                }
-
-                var lstCustomFieldEntity = tblCustomfieldEntity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
-                {
-                    EntityId = e.EntityId,
-                    Value = e.Value
-                }).ToList();
-
-                var lstTacticActuals = from entity in lstCustomFieldEntity
-                                       join tacticactual in planTacticActuals
-                                       on entity.EntityId equals tacticactual.PlanTacticId
-                                       where tacticactual.StageTitle == mql
-                                       select new { entity.Value, entity.EntityId, tacticactual.Actualvalue, timeFrameOptions = tacticactual.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + tacticactual.Period, tacticactual };
-
-                lstSourcePerformance = tblCustomFieldOption.Where(cf => cf.CustomFieldId == customfield.CustomFieldId).ToList()
-                                                .Select(cf => new SourcePerformanceData
-                                                {
-                                                    Title = cf.Value,
-                                                    ColorCode = string.Format("#{0}", cf.ColorCode),
-                                                    Value = lstTacticActuals.Any(ta => ta.Value == Convert.ToString(cf.CustomFieldOptionId)) ? GetActualTacticDataTablebyStageCode(customfield.CustomFieldId, cf.CustomFieldOptionId.ToString(), dropdownType, Enums.InspectStage.MQL, lstTacticActuals.Where(t => t.Value == Convert.ToString(cf.CustomFieldOptionId) &&
-                                                        includeMonth.Contains(t.timeFrameOptions)).Select(actTactic => actTactic.tacticactual).ToList(), Tacticdata, true).Sum(t => t.ActualValue) : 0
-                                                }).OrderByDescending(cf => cf.Value).ThenBy(cf => cf.Title).Take(5).ToList();
-
-                lstCustomFieldNames.Add(customfield.CustomFieldName);
-
-                lstListSourcePerformance.Add(new ListSourcePerformanceData
-                {
-                    lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = customfield.CustomFieldName
-                });
-            }
-            //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
-
-            // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
-            return Json(new
-            {
-                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
-                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
-                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
-                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
-                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
-                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
-            }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Function to get source perfromance projected.
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// <param name="selectOption">Selection Option</param>
-        /// </summary>
-        /// <returns>Returns json result of source perfromance projected.</returns>
-        private JsonResult GetMQLPerformanceProjected(string selectOption)
-        {
-            List<string> includeYearList = GetYearListForReport(selectOption, true);
-            List<string> includeMonth = GetMonthListForReport(selectOption, true);
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            //// Start - Added by Arpita Soni for Ticket #1148 on 01/27/2015
-            string entityType = Enums.EntityType.Tactic.ToString();
-            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
-            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
-
-            // Get first 3 custom fields
-            var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == entityType && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
-                ).Select(c => new
-                {
-                    CustomFieldId = c.CustomFieldId,
-                    CustomFieldName = c.Name
-                }).Take(3).ToList();
-
-            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
-            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId) && co.IsDeleted == false).ToList();
-            List<CustomField_Entity> tblCustomfieldEntity = db.CustomField_Entity.ToList().Where(ent => customFields.Select(custm => custm.CustomFieldId).Contains(ent.CustomFieldId)).ToList();
-            List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
-            List<string> lstCustomFieldNames = new List<string>();
-
-            // Applying custom field filters
-            foreach (var customfield in customFields)
-            {
-                List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
-
-                List<string> lstOptionIds = new List<string>();
-                var customFieldOptionsIds = tblCustomFieldOption.Where(c => c.CustomFieldId == customfield.CustomFieldId).Select(c => c.CustomFieldOptionId);
-                foreach (var customfieldOptionId in customFieldOptionsIds)
-                {
-                    lstOptionIds.Add(customfieldOptionId.ToString());
-                }
-
-                var lstCustomFieldEntity = tblCustomfieldEntity.Where(cf => lstOptionIds.Contains(cf.Value)).Select(e => new
-                {
-                    EntityId = e.EntityId,
-                    Value = e.Value
-                }).ToList();
-
-                var lstTacticActuals = from entity in lstCustomFieldEntity
-                                       join tacticactual in Tacticdata
-                                       on entity.EntityId equals tacticactual.TacticObj.PlanTacticId
-                                       select new { entity.Value, entity.EntityId, tacticactual };
-
-
-                lstSourcePerformance = tblCustomFieldOption.Where(b => b.CustomFieldId == customfield.CustomFieldId).ToList()
-                                                .Select(b => new SourcePerformanceData
-                                                {
-                                                    Title = b.Value,
-                                                    ColorCode = string.Format("#{0}", b.ColorCode),
-                                                    Value = lstTacticActuals.Any(t => t.Value == Convert.ToString(b.CustomFieldOptionId)) ?
-                                                    GetProjectedDatabyStageCode(customfield.CustomFieldId, b.CustomFieldOptionId.ToString(), dropdownType, Enums.InspectStage.MQL, lstTacticActuals.Where(lta => lta.Value == Convert.ToString(b.CustomFieldOptionId)).Select(ts => ts.tacticactual)
-                                                                                        .ToList(), true)
-                                                                                        .Where(mr => includeMonth.Contains(mr.Month))
-                                                                                        .Sum(r => r.Value) : 0
-                                                }).OrderByDescending(ta => ta.Value).ThenBy(ta => ta.Title).Take(5).ToList();
-
-                lstCustomFieldNames.Add(customfield.CustomFieldName);
-
-                lstListSourcePerformance.Add(new ListSourcePerformanceData
-                {
-                    lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = customfield.CustomFieldName
-                });
-            }
-            //// End - Added by Arpita Soni for Ticket #1148 on 01/27/2015
-
-            // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
-            return Json(new
-            {
-                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
-                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
-                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
-                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
-                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
-                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
-            }, JsonRequestBehavior.AllowGet);
-        }
-
-        #endregion
-
-        #region Conversion Summary Report
-        /// <summary>
-        /// This will return the data for Conversion Summary report
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// </summary>
-        /// <param name="ParentConversionSummaryTab"></param>
-        /// <param name="Id"></param>
-        /// <returns></returns>
-        public JsonResult GetConversionSummary(string ParentConversionSummaryTab = "", string selectOption = "")
-        {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-            bool IsCampaignCustomField = false;
-            bool IsProgramCustomField = false;
-            bool IsTacticCustomField = false;
-            int customfieldId = 0;
-            string customFieldType = string.Empty;
-            //Custom
-            if (ParentConversionSummaryTab.Contains(Common.TacticCustomTitle))
-            {
-                customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.TacticCustomTitle, ""));
-                IsTacticCustomField = true;
-            }
-            else if (ParentConversionSummaryTab.Contains(Common.CampaignCustomTitle))
-            {
-                customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.CampaignCustomTitle, ""));
-                IsCampaignCustomField = true;
-            }
-            else if (ParentConversionSummaryTab.Contains(Common.ProgramCustomTitle))
-            {
-                customfieldId = Convert.ToInt32(ParentConversionSummaryTab.Replace(Common.ProgramCustomTitle, ""));
-                IsProgramCustomField = true;
-            }
-            else
-            {
-                Tacticdata = Tacticdata.ToList();
-            }
-            var DataTitleList = new List<RevenueContrinutionData>();
-
-            if (ParentConversionSummaryTab.Contains(Common.CampaignCustomTitle) || ParentConversionSummaryTab.Contains(Common.ProgramCustomTitle) || ParentConversionSummaryTab.Contains(Common.TacticCustomTitle))
-            {
-
-                List<int> entityids = new List<int>();
-                if (IsTacticCustomField)
-                {
-                    entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
-                }
-                else if (IsCampaignCustomField)
-                {
-                    entityids = Tacticdata.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
-                }
-                else
-                {
-                    entityids = Tacticdata.Select(t => t.TacticObj.PlanProgramId).ToList();
-                }
-
-                customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                {
-                    var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
-                    DataTitleList = (from cfo in db.CustomFieldOptions
-                                     where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
-                                     select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
-                                  new RevenueContrinutionData
-                                  {
-                                      Title = pc.Key.title,
-                                      CustomFieldOptionid = pc.Key.id,
-                                      // Modified By : Kalpesh Sharma Filter changes for Revenue report - Revenue Report
-                                      // Fetch the filtered list based upon custom fields type
-                                      planTacticList = Tacticdata.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                                          (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                  }).ToList();
-                }
-                else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                {
-                    DataTitleList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
-                                new RevenueContrinutionData
-                                {
-                                    Title = pc.Key.title,
-                                    CustomFieldOptionid = 0,
-                                    planTacticList = pc.Select(c => c.EntityId).ToList()
-                                }).ToList();
-                }
-            }
-
-            List<string> includeMonth = GetMonthListForReport(selectOption, true);
-            string stageTitleMQL = Enums.InspectStage.MQL.ToString();
-            string stageTitleCW = Enums.InspectStage.CW.ToString();
-            string stageTitleRevenue = Enums.InspectStage.Revenue.ToString();
-
-            List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
-            Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => planTacticActual.Add(a)));
-            planTacticActual = planTacticActual.Where(mr => includeMonth.Contains((Tacticdata.FirstOrDefault(_tac => _tac.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();
-            string inq = Enums.Stage.INQ.ToString();
-            int INQStageId = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.Code == inq && stage.IsDeleted == false).StageId;
-
-            var DataListFinal = DataTitleList.Select(p => new
-            {
-                Title = p.Title,
-                INQ = GetActualValuebyWeightageForINQ(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), INQStageId, Tacticdata, IsTacticCustomField),
-                MQL = GetActualValuebyWeightageForConversionSummary(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), Enums.InspectStage.MQL, Tacticdata, IsTacticCustomField),
-                ActualCW = GetActualValuebyWeightageForConversionSummary(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), Enums.InspectStage.CW, Tacticdata, IsTacticCustomField),
-                ActualRevenue = GetActualValuebyWeightageForConversionSummary(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), Enums.InspectStage.Revenue, Tacticdata, IsTacticCustomField),
-                ActualADS = CalculateActualADS(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, planTacticActual.Where(t => p.planTacticList.Contains(t.PlanTacticId)).ToList(), Tacticdata, IsTacticCustomField),
-                ProjectedCW = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.CW, IsTacticCustomField),
-                ProjectedRevenue = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Revenue, IsTacticCustomField),
-                ProjectedADS = p.planTacticList.Any() ? db.Models.Where(m => (db.Plan_Campaign_Program_Tactic.Where(t => p.planTacticList.Contains(t.PlanTacticId)).Select(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId).Distinct()).Contains(m.ModelId)).Sum(mf => mf.AverageDealSize) : 0
-            }).Distinct().OrderBy(p => p.Title, new AlphaNumericComparer());
-
-            return Json(new { data = DataListFinal }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Get Actual value based on stagetitle
-        /// Added by Bhavesh
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// </summary>
-        /// <param name="planTacticActual">Plan tactic actual</param>
-        /// <param name="stagetitle">Stage title.</param>
-        /// <returns>Returns actual value for conversion summary.</returns>
-        private double GetActualValueForConversionSummary(List<Plan_Campaign_Program_Tactic_Actual> planTacticActual, string stagetitle)
-        {
-            double actualValue = planTacticActual.Where(pcpta => pcpta.StageTitle == stagetitle)
-                                                 .Sum(pcpta => pcpta.Actualvalue);
-            return actualValue;
-        }
-
-        /// <summary>
-        /// Get Actual value based on stagetitle & weightage
-        /// Added by Viral Kadiya
-        /// </summary>
-        /// <param name="planTacticActual">Plan tactic actual</param>
-        /// <param name="stagetitle">Stage title.</param>
-        /// <returns>Returns actual value for conversion summary.</returns>
-        private double GetActualValuebyWeightageForConversionSummary(int customfieldId, string CustomFieldOptionId, string customfieldType, List<Plan_Campaign_Program_Tactic_Actual> planTacticActual, Enums.InspectStage stagecode, List<TacticStageValue> TacticData, bool IsTacticCustomField)
-        {
-            string projectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
-            List<Plan_Campaign_Program_Tactic_Actual> lstActualsTactic = new List<Plan_Campaign_Program_Tactic_Actual>();
-
-            lstActualsTactic = planTacticActual.Where(pcpta => pcpta.StageTitle == stagecode.ToString()).ToList();
-            List<ActualDataTable> lstActualData = new List<ActualDataTable>();
-            lstActualData = GetActualTacticDataTablebyStageCode(customfieldId, CustomFieldOptionId, customfieldType, stagecode, lstActualsTactic, TacticData, IsTacticCustomField);
-            double actualValue = lstActualData.Sum(pcpta => pcpta.ActualValue);
-            return actualValue;
-        }
-
-        /// <summary>
-        /// Calculate ADS based on actual value i.e. Revenue / CW
-        /// Added By Bhavesh 
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// </summary>
-        /// <param name="planTacticActual">Plan tactic actual.</param>
-        /// <param name="stagetitleCW">Stage title CW.</param>
-        /// <param name="stagetitleRevenue">Stage title revenue.</param>
-        /// <returns>Returns calculated ADS.</returns>
-        private double CalculateActualADS(int customfieldId, string CustomFieldOptionId, string customfieldType, List<Plan_Campaign_Program_Tactic_Actual> planTacticActual, List<TacticStageValue> TacticData, bool IsTacticCustomField)
-        {
-            double ads = 0;
-            List<ActualDataTable> lstRevenueData = new List<ActualDataTable>();
-            List<ActualDataTable> lstCWData = new List<ActualDataTable>();
-            string strRevenueStageCode = Enums.InspectStage.Revenue.ToString();
-            string strCWStageCode = Enums.InspectStage.CW.ToString();
-            lstRevenueData = GetActualTacticDataTablebyStageCode(customfieldId, CustomFieldOptionId, customfieldType, Enums.InspectStage.Revenue, planTacticActual.Where(act => act.StageTitle.Equals(strRevenueStageCode)).ToList(), TacticData, IsTacticCustomField);
-            lstCWData = GetActualTacticDataTablebyStageCode(customfieldId, CustomFieldOptionId, customfieldType, Enums.InspectStage.CW, planTacticActual.Where(act => act.StageTitle.Equals(strCWStageCode)).ToList(), TacticData, IsTacticCustomField);
-            double actualRevenue = lstRevenueData.Sum(reve => reve.ActualValue);
-            double actualCW = lstCWData.Sum(reve => reve.ActualValue);
-            if (actualCW > 0)
-            {
-                ads = actualRevenue / actualCW;
-            }
-            return ads;
-        }
-
-
-
-        /// <summary>
-        /// Get Actual value based on stagetitle
-        /// Added by Bhavesh
-        /// Modified By: Maninde Singh Wadhva for #426 	Conversion Reporting Page is slow to render.
-        /// </summary>
-        /// <param name="planTacticActual">Plan tactic actual</param>
-        /// <param name="stagetitle">Stage title.</param>
-        /// <returns>Returns actual value for conversion summary.</returns>
-        private List<Plan_Campaign_Program_Tactic_Actual> GetActualValueForINQ(List<Plan_Campaign_Program_Tactic_Actual> planTacticActual, int stageId)
-        {
-            string projectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
-            planTacticActual = planTacticActual.Where(pta => pta.Plan_Campaign_Program_Tactic.StageId == stageId && pta.StageTitle == projectedStageValue).ToList();
-            return planTacticActual;
-        }
-
-        /// <summary>
-        /// Get Actual value based on stagetitle
-        /// Added by Viral Kadiya
-        /// </summary>
-        /// <param name="planTacticActual">Plan tactic actual</param>
-        /// <param name="stagetitle">Stage title.</param>
-        /// <returns>Returns actual value for conversion summary.</returns>
-        private double GetActualValuebyWeightageForINQ(int customfieldId, string CustomFieldOptionId, string customfieldType, List<Plan_Campaign_Program_Tactic_Actual> planTacticActual, int stageId, List<TacticStageValue> TacticData, bool IsTacticCustomField)
-        {
-            string projectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
-            double INQValue = 0;
-            List<Plan_Campaign_Program_Tactic_Actual> lstActualsTactic = new List<Plan_Campaign_Program_Tactic_Actual>();
-            List<ActualDataTable> lstActualDataTable = new List<ActualDataTable>();
-            lstActualsTactic = planTacticActual.Where(pta => pta.Plan_Campaign_Program_Tactic.StageId == stageId && pta.StageTitle == projectedStageValue).ToList();
-            lstActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, CustomFieldOptionId, customfieldType, Enums.InspectStage.INQ, lstActualsTactic, TacticData, IsTacticCustomField);
-
-            INQValue = lstActualDataTable.Where(pta => pta.StageTitle == projectedStageValue).ToList().Sum(act => act.ActualValue);
-            return INQValue;
-        }
-        #endregion
-
-        #endregion
-
         #region Revenue
-
         /// <summary>
         ///  Get Header value for reveneue #1397
         ///  Created By Nishant Sheth
         /// </summary>
         public ReportModel GetRevenueHeaderValue(BasicModel objBasicModel, string timeFrameOption)
         {
-            double _actualval, _actualtotal = 0, _projectedval, _projectedtotal = 0, _goalval, _goaltotal = 0, _goalYTD = 0;
+            double _actualtotal = 0, _projectedtotal = 0, _goalval, _goaltotal = 0, _goalYTD = 0;
             double _ActualPercentage, _ProjectedPercentage;
             string currentyear = DateTime.Now.Year.ToString();
             int currentEndMonth = 12;
@@ -2011,7 +1070,6 @@ namespace RevenuePlanner.Controllers
             List<ProjectedTrendModel> ProjectedTrendModelList = new List<ProjectedTrendModel>();
             if (objBasicModel.IsQuarterly)
             {
-
                 _actualtotal = objBasicModel.ActualList.Sum(actual => actual);
                 _projectedtotal = objBasicModel.ProjectedList.Sum(projected => projected) + _actualtotal; // Change By Nishant #1420
                 _goaltotal = objBasicModel.GoalList.Sum(goal => goal);
@@ -2272,21 +1330,9 @@ namespace RevenuePlanner.Controllers
                     _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
                     _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
                     _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
-                    // Actual_Projected = _Actual + _Projected;
-                    //serData1.Add(Actual_Projected);
                     serData2.Add(_Goal);
                     serData1.Add(_Actual);
                     serData3.Add(_Projected);
-                    //if ((i + 1) < (_compareValue))
-                    //{
-                    //    serData1.Add(Actual_Projected);
-                    //    serData3.Add(0);
-                    //}
-                    //else
-                    //{
-                    //    serData1.Add(0);
-                    //    serData3.Add(Actual_Projected);
-                    //}
                 }
                 List<string> _barChartCategories = new List<string>();
                 if (!IsQuarterly)
@@ -2372,118 +1418,6 @@ namespace RevenuePlanner.Controllers
             return PartialView("_Revenue", objReportModel);
         }
 
-        #region "Revenue Summary"
-
-        /// <summary>
-        /// Declare Class.
-        /// Declare for Campaign and ite tactic id list.
-        /// </summary>
-        public class CampaignData
-        {
-            public int PlanCampaignId { get; set; }
-            public string Title { get; set; }
-            public List<int> planTacticList { get; set; }
-        }
-
-        /// <summary>
-        /// Get Data For Revenue Summary Report.
-        /// </summary>
-        /// <param name="ParentLabel"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public JsonResult GetRevenueSummaryDataRevenueReport(string ParentLabel, string id, string selectOption)
-        {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            List<string> includeYearList = GetYearListForReport(selectOption);
-            List<string> includeMonth = GetMonthListForReport(selectOption);
-            List<int> entityids = new List<int>();
-            int customfieldId = 0;
-            string customFieldType = string.Empty;
-            bool IsTacticCustomField = false;
-            //Check the custom field typa and replace the id with eliminate extra word 
-            // Modified by : #960 Kalpesh Sharma : Filter changes for Revenue report - Revenue Report 
-            if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
-            {
-                if (ParentLabel.Contains(Common.TacticCustomTitle))
-                {
-                    if (int.TryParse(ParentLabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
-                    {
-                        IsTacticCustomField = true;
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
-                    }
-                }
-                else if (ParentLabel.Contains(Common.CampaignCustomTitle))
-                {
-                    if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
-                    {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
-                    }
-                }
-                else if (ParentLabel.Contains(Common.ProgramCustomTitle))
-                {
-                    if (int.TryParse(ParentLabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
-                    {
-                        customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
-                    }
-                }
-
-                customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-            }
-
-            List<int> tacticIdList = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
-
-            List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-            Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
-            ActualTacticList = ActualTacticList.Where(mr => includeMonth.Contains((Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();
-
-            var campaignListobj = Tacticdata.GroupBy(pc => new { PCid = pc.TacticObj.Plan_Campaign_Program.PlanCampaignId, title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
-                        new CampaignData
-                        {
-                            PlanCampaignId = pc.Key.PCid,
-                            Title = pc.Key.title,
-                            planTacticList = pc.Select(tactic => tactic.TacticObj.PlanTacticId).ToList()
-                        }).ToList();
-
-            string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-            List<TacticMonthValue> ProjectedRevenueDatatable = GetProjectedDatabyStageCode(customfieldId, id, customFieldType, Enums.InspectStage.Revenue, Tacticdata, IsTacticCustomField);
-            List<TacticMonthValue> MQLDatatable = GetProjectedDatabyStageCode(customfieldId, id, customFieldType, Enums.InspectStage.MQL, Tacticdata, IsTacticCustomField);
-            List<ActualDataTable> ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(customfieldId, id, customFieldType, Enums.InspectStage.Revenue, ActualTacticList.Where(act => act.StageTitle.Equals(revenue)).ToList(), Tacticdata, IsTacticCustomField);
-            List<ActualDataTable> ActualMQLDataTable = GetActualTacticDataTablebyStageCode(customfieldId, id, customFieldType, Enums.InspectStage.MQL, ActualTacticList.Where(act => act.StageTitle.Equals(mql)).ToList(), Tacticdata, IsTacticCustomField);
-            var campaignList = campaignListobj.Select(campaign => new
-            {
-                id = campaign.PlanCampaignId,
-                title = campaign.Title,
-                monthList = includeMonth,
-                trevenueProjected = ProjectedRevenueDatatable.Where(mr => campaign.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).GroupBy(r => r.Month).Select(g => new
-                {
-                    PKey = g.Key,
-                    PSum = g.Sum(r => r.Value)
-                }),
-                tproject = MQLDatatable.Where(mr => campaign.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).GroupBy(r => r.Month).Select(g => new
-                {
-                    PKey = g.Key,
-                    PSum = g.Sum(r => r.Value)
-                }),
-                tRevenueActual = ActualRevenueDataTable.Where(pcpt => campaign.planTacticList.Contains(pcpt.PlanTacticId)).GroupBy(pt => Tacticdata.FirstOrDefault(_tactic => _tactic.TacticObj.PlanTacticId == pt.PlanTacticId).TacticYear + pt.Period).Select(pcptj => new
-                {
-                    key = pcptj.Key,
-                    ActualValue = pcptj.Sum(pt => pt.ActualValue)
-                }),
-                tacticActual = ActualMQLDataTable.Where(pcpt => campaign.planTacticList.Contains(pcpt.PlanTacticId)).GroupBy(pt => Tacticdata.FirstOrDefault(_tactic => _tactic.TacticObj.PlanTacticId == pt.PlanTacticId).TacticYear + pt.Period).Select(pcptj => new
-                {
-                    key = pcptj.Key,
-                    ActualValue = pcptj.Sum(pt => pt.ActualValue)
-                }).Select(pcptj => pcptj),
-            }).Select(p => p).Distinct().OrderBy(p => p.id).OrderBy(p => p.title, new AlphaNumericComparer());
-
-            return Json(campaignList, JsonRequestBehavior.AllowGet);
-        }
-
-        #endregion
-
         #region Revenue Realization
 
         /// <summary>
@@ -2563,82 +1497,6 @@ namespace RevenuePlanner.Controllers
             }
         }
 
-        /// <summary>
-        /// Load Revenue Realization Grid.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public JsonResult LoadRevenueRealization(string id, string type = "", string selectOption = "")
-        {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            List<string> includeMonth = GetMonthListForReport(selectOption);
-
-            if (type == Common.RevenueCampaign)
-            {
-                int campaignid = Convert.ToInt32(id);
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.Plan_Campaign_Program.PlanCampaignId == campaignid).Select(t => t).ToList();
-            }
-            else if (type == Common.RevenueProgram)
-            {
-                int programid = Convert.ToInt32(id);
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.PlanProgramId == programid).Select(t => t).ToList();
-            }
-            else if (type == Common.RevenueTactic)
-            {
-                int tacticid = Convert.ToInt32(id);
-                Tacticdata = Tacticdata.Where(pcpt => pcpt.TacticObj.PlanTacticId == tacticid).Select(t => t).ToList();
-            }
-            else
-            {
-                Tacticdata = Tacticdata.ToList();
-            }
-
-            if (Tacticdata.Count() > 0)
-            {
-                string inq = Enums.Stage.INQ.ToString();
-                int INQStaged = db.Stages.FirstOrDefault(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code == inq).StageId;
-                List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                Tacticdata.ForEach(tactic => tactic.ActualTacticList.ForEach(_tac => ActualTacticList.Add(_tac)));
-                ActualTacticList = ActualTacticList.Where(mr => includeMonth.Contains((Tacticdata.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();
-
-                //// Set INQ & MQL values.
-                var rdata = new[] { new { 
-                INQGoal = GetProjectedINQDataWithVelocity(Tacticdata).Where(mr => includeMonth.Contains(mr.Month)).GroupBy(r => r.Month).Select(g => new
-                {
-                    PKey = g.Key,
-                    PSum = g.Sum(r => r.Value)
-                }),
-                monthList = includeMonth,
-                INQActual = ActualTacticList.Where(pcpt => pcpt.Plan_Campaign_Program_Tactic.StageId == INQStaged && pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString())).GroupBy(pt => pt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pt.Period).Select(pcptj => new
-                {
-                    PKey = pcptj.Key,
-                    PSum = pcptj.Sum(pt => pt.Actualvalue)
-                }),
-                MQLGoal = GetProjectedMQLDataWithVelocity(Tacticdata).Where(mr => includeMonth.Contains(mr.Month)).GroupBy(r => r.Month).Select(g => new
-                {
-                    PKey = g.Key,
-                    PSum = g.Sum(r => r.Value)
-                }),
-                MQLActual = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString())).GroupBy(pt => pt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pt.Period).Select(pcptj => new
-                {
-                    PKey = pcptj.Key,
-                    PSum = pcptj.Sum(pt => pt.Actualvalue)
-                }),
-                 RevenueGoal = ActualTacticList.Where(pcpt => pcpt.StageTitle.Equals(Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString())).GroupBy(pt => pt.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + pt.Period).Select(pcptj => new
-                {
-                    PKey = pcptj.Key,
-                    PSum = pcptj.Sum(pt => pt.Actualvalue)
-                })
-            }  };
-
-                return Json(rdata, JsonRequestBehavior.AllowGet);
-            }
-
-            return Json(new { }, JsonRequestBehavior.AllowGet);
-        }
 
         #endregion
 
@@ -2655,158 +1513,6 @@ namespace RevenuePlanner.Controllers
             // Add TacticMappingItem By Nishant Sheth For Card Sectinon : 13-Jul-2015
             public List<TacticMappingItem> TacticMappingItem { get; set; }
         }
-
-        /// <summary>
-        /// Load Revenue Contribution.
-        /// </summary>
-        /// <param name="parentlabel"></param>
-        /// <returns></returns>
-        public JsonResult LoadRevenueContribution(string parentlabel, string selectOption)
-        {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            bool IsCampaignCustomField = false;
-            bool IsProgramCustomField = false;
-            bool IsTacticCustomField = false;
-            int customfieldId = 0;
-            string customFieldType = string.Empty;
-            if (!string.IsNullOrEmpty(parentlabel))
-            {
-                //Modified By : Kalpesh Sharma #960 Filter changes for Revenue report - Revenue Report
-                // Check the custom field type and remove extra string for get Custom Field Id
-                if (parentlabel.Contains(Common.TacticCustomTitle))
-                {
-                    if (int.TryParse(parentlabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
-                    {
-                        customfieldId = Convert.ToInt32(parentlabel.Replace(Common.TacticCustomTitle, ""));
-                        IsTacticCustomField = true;
-                    }
-                }
-                else if (parentlabel.Contains(Common.CampaignCustomTitle))
-                    if (int.TryParse(parentlabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
-                    {
-                        {
-                            customfieldId = Convert.ToInt32(parentlabel.Replace(Common.CampaignCustomTitle, ""));
-                            IsCampaignCustomField = true;
-                        }
-                    }
-                    else if (parentlabel.Contains(Common.ProgramCustomTitle))
-                    {
-                        if (int.TryParse(parentlabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
-                        {
-                            customfieldId = Convert.ToInt32(parentlabel.Replace(Common.ProgramCustomTitle, ""));
-                            IsProgramCustomField = true;
-                        }
-                    }
-                    else
-                    {
-                        Tacticdata = Tacticdata.ToList();
-                    }
-                var campaignList = new List<RevenueContrinutionData>();
-
-                if (parentlabel == Common.RevenueCampaign)
-                {
-                    campaignList = Tacticdata.GroupBy(pc => new { title = pc.TacticObj.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pc =>
-                         new RevenueContrinutionData
-                         {
-                             Title = pc.Key.title,
-                             planTacticList = pc.Select(p => p.TacticObj.PlanTacticId).ToList()
-                         }).ToList();
-                }
-
-                //Check the custom field type and filter tactic based on Custom field Id
-                else if (parentlabel.Contains(Common.TacticCustomTitle) || parentlabel.Contains(Common.CampaignCustomTitle) || parentlabel.Contains(Common.ProgramCustomTitle))
-                {
-
-                    List<int> entityids = new List<int>();
-                    if (IsTacticCustomField)
-                    {
-                        entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
-                    }
-                    else if (IsCampaignCustomField)
-                    {
-                        entityids = Tacticdata.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
-                    }
-                    else
-                    {
-                        entityids = Tacticdata.Select(t => t.TacticObj.PlanProgramId).ToList();
-                    }
-
-                    customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                    var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-                    if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                    {
-                        var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
-                        campaignList = (from cfo in db.CustomFieldOptions
-                                        where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
-                                        select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
-                                      new RevenueContrinutionData
-                                      {
-                                          Title = pc.Key.title,
-                                          CustomFieldOptionid = pc.Key.id,
-                                          // Modified By : Kalpesh Sharma Filter changes for Revenue report - Revenue Report
-                                          // Fetch the filtered list based upon custom fields type
-                                          planTacticList = Tacticdata.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                                              (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                      }).ToList();
-
-                    }
-                    else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                    {
-                        campaignList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
-                                    new RevenueContrinutionData
-                                    {
-                                        Title = pc.Key.title,
-                                        planTacticList = pc.Select(c => c.EntityId).ToList()
-                                    }).ToList();
-                    }
-                }
-
-                if (campaignList.Count() > 0)
-                {
-                    string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-
-                    //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                    string cost = Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString();
-
-                    int lastMonth = GetLastMonthForTrend(selectOption);
-                    List<string> includeMonth = GetMonthListForReport(selectOption, true);
-                    List<string> monthList = GetUpToCurrentMonth();
-
-                    List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                    Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
-
-                    List<string> monthWithYearList = GetUpToCurrentMonthWithYearForReport(selectOption, true);
-
-                    List<int> ObjTactic = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem> LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => ObjTactic.Contains(l.PlanTacticId) && l.IsDeleted == false).ToList();
-                    List<int> ObjTacticLineItemList = LineItemList.Select(t => t.PlanLineItemId).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(l => ObjTacticLineItemList.Contains(l.PlanLineItemId)).ToList();
-
-                    var campaignListFinal = campaignList.Select(p => new
-                    {
-                        Title = p.Title,
-                        PlanRevenue = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Revenue, IsTacticCustomField),
-                        ActualRevenue = GetActualRevenueContribution(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata, p.planTacticList, customFieldType, includeMonth, IsTacticCustomField),
-                        TrendRevenue = 0,
-                        PlanCost = GetPlanValue(customfieldId, p.CustomFieldOptionid.ToString(), Tacticdata.Where(t => p.planTacticList.Contains(t.TacticObj.PlanTacticId)).ToList(), customFieldType, includeMonth, Enums.InspectStage.Cost, IsTacticCustomField),
-                        //Added By : Kalpesh Sharma #734 Actual cost - Verify that report section is up to date with actual cost changes
-                        ActualCost = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && includeMonth.Contains(mr.Month)).Sum(r => r.Value),
-                        TrendCost = 0,
-                        RunRate = GetTrendRevenueDataContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, lastMonth, monthList, Tacticdata, IsTacticCustomField).Where(ar => p.planTacticList.Contains(ar.PlanTacticId)).Sum(ar => ar.MQL),
-                        PipelineCoverage = 0,
-                        RevSpend = GetRevenueVSSpendContribution(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthWithYearList, monthList, revenue, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField),
-                        RevenueTotal = GetActualRevenueTotal(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, ActualTacticList, p.planTacticList, monthList, revenue, Tacticdata, IsTacticCustomField),
-                        CostTotal = GetActualCostDataByWeightage(customfieldId, p.CustomFieldOptionid.ToString(), customFieldType, Tacticdata, LineItemList, LineItemActualList, IsTacticCustomField).Where(mr => p.planTacticList.Contains(mr.Id) && monthWithYearList.Contains(mr.Month)).Sum(r => r.Value)
-                    }).Select(p => p).Distinct().OrderBy(p => p.Title);
-
-                    return Json(campaignListFinal, JsonRequestBehavior.AllowGet);
-                }
-            }
-            return Json(new { });
-        }
-
 
         private List<TacticMonthValue> GetActualCostDataByWeightage(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, List<TacticStageValue> Tacticdata, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList, bool IsTacticCustomField)
         {
@@ -2933,598 +1639,10 @@ namespace RevenuePlanner.Controllers
             }
             return listmonthwise;
         }
-
-        /// <summary>
-        /// Get Trend.
-        /// </summary>
-        /// <param name="cl"></param>
-        /// <returns></returns>
-        public List<Plan_Tactic_Values> GetTrendRevenueDataContribution(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, List<Plan_Campaign_Program_Tactic_Actual> planActualTacticList, int lastMonth, List<string> monthList, List<TacticStageValue> TacticData, bool IsTacticCustomField)
-        {
-            string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-            ActualTacticList = planActualTacticList.Where(tactic => monthList.Contains(tactic.Period) && tactic.StageTitle == revenue).ToList();
-            List<ActualDataTable> lstActualDataTable = new List<ActualDataTable>();
-            lstActualDataTable = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, Enums.InspectStage.Revenue, ActualTacticList, TacticData, IsTacticCustomField);
-
-            return lstActualDataTable.GroupBy(_tac => _tac.PlanTacticId).Select(pt => new Plan_Tactic_Values
-            {
-                PlanTacticId = pt.Key,
-                MQL = (pt.Sum(a => a.ActualValue) / currentMonth) * lastMonth
-            }).ToList();
-        }
-
-        /// <summary>
-        /// Get Trend.
-        /// </summary>
-        /// <param name="cl"></param>
-        /// <returns></returns>
-        public double GetRevenueVSSpendContribution(int CustomFieldId, string CustomFieldOptionId, string customFieldType, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthWithYearList, List<string> monthList, string revenue, List<TacticStageValue> TacticData, List<Plan_Campaign_Program_Tactic_LineItem> LineItemList, List<Plan_Campaign_Program_Tactic_LineItem_Actual> LineItemActualList, bool IsTacticCustomField)
-        {
-            List<TacticMonthValue> lstMonthData = new List<TacticMonthValue>();
-            List<Plan_Campaign_Program_Tactic_Actual> lstActualsTacticData = new List<Plan_Campaign_Program_Tactic_Actual>();
-            lstMonthData = GetActualCostDataByWeightage(CustomFieldId, CustomFieldOptionId, customFieldType, TacticData, LineItemList, LineItemActualList, IsTacticCustomField);
-            lstActualsTacticData = ActualTacticList.Where(actualTac => planTacticList.Contains(actualTac.PlanTacticId) && monthList.Contains(actualTac.Period) && actualTac.StageTitle == revenue).ToList();
-            List<ActualDataTable> lstActualDataTable = new List<ActualDataTable>();
-            lstActualDataTable = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, customFieldType, Enums.InspectStage.Revenue, lstActualsTacticData, TacticData, IsTacticCustomField);
-
-            double costTotal = lstMonthData.Where(actual => planTacticList.Contains(actual.Id) && monthWithYearList.Contains(actual.Month)).Sum(actual => actual.Value);
-            double revenueTotal = lstActualDataTable.Sum(actual => actual.ActualValue);
-            double RevenueSpend = 0;
-
-            if (costTotal != 0)
-            {
-                RevenueSpend = ((revenueTotal - costTotal) / costTotal);
-            }
-            else if (revenueTotal != 0)
-            {
-                RevenueSpend = 1;
-            }
-            return RevenueSpend;
-        }
-
-        /// <summary>
-        /// Get Revenue Total.
-        /// </summary>
-        /// <param name="cl"></param>
-        /// <returns></returns>
-        public double GetActualRevenueTotal(int CustomFieldId, string CustomFieldOptionId, string customFieldType, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<int> planTacticList, List<string> monthList, string revenue, List<TacticStageValue> TacticData, bool IsTacticCustomField)
-        {
-            List<Plan_Campaign_Program_Tactic_Actual> lstActualsTacticData = new List<Plan_Campaign_Program_Tactic_Actual>();
-            lstActualsTacticData = ActualTacticList.Where(ta => planTacticList.Contains(ta.PlanTacticId) && monthList.Contains(ta.Period) && ta.StageTitle == revenue).ToList();
-            List<ActualDataTable> lstActualDataTable = new List<ActualDataTable>();
-            lstActualDataTable = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, customFieldType, Enums.InspectStage.Revenue, ActualTacticList, TacticData, IsTacticCustomField);
-            return lstActualDataTable.Where(ta => planTacticList.Contains(ta.PlanTacticId) && monthList.Contains(ta.Period) && ta.StageTitle == revenue).ToList().Sum(a => a.ActualValue);
-        }
-
         #endregion
-
-        #region "Revenue to Plan"
-
-        /// <summary>
-        /// Function to get data for revenue to plan report.
-        /// </summary>
-        /// <param name="ParentLabel">Filter name.</param>
-        /// <param name="id">GUID for filtering data.</param>
-        /// <returns>Returns json data for revenue to plan report.</returns>
-        public JsonResult GetRevenueToPlan(string ParentLabel, string id, string selectOption = "", string originalOption = "")
-        {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-            int customfieldId = 0;
-            bool IsTacticCustomField = false;
-
-            //Custom
-            List<int> entityids = new List<int>();
-            if (ParentLabel.Contains(Common.TacticCustomTitle))
-            {
-                if (int.TryParse(ParentLabel.Replace(Common.TacticCustomTitle, ""), out customfieldId))
-                {
-                    IsTacticCustomField = true;
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.TacticCustomTitle, ""));
-                }
-            }
-            else if (ParentLabel.Contains(Common.CampaignCustomTitle))
-            {
-                if (int.TryParse(ParentLabel.Replace(Common.CampaignCustomTitle, ""), out customfieldId))
-                {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.CampaignCustomTitle, ""));
-                }
-            }
-            else if (ParentLabel.Contains(Common.ProgramCustomTitle))
-            {
-                if (int.TryParse(ParentLabel.Replace(Common.ProgramCustomTitle, ""), out customfieldId))
-                {
-                    customfieldId = Convert.ToInt32(ParentLabel.Replace(Common.ProgramCustomTitle, ""));
-                }
-            }
-
-            if (Tacticdata.Count > 0)
-            {
-                string CustomFieldType = string.Empty;
-                string stageTitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-                List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-                Tacticdata.ForEach(t => t.ActualTacticList.Where(pcpta => pcpta.StageTitle == stageTitleRevenue).ToList().ForEach(a => ActualTacticList.Add(a)));
-                CustomFieldType = db.CustomFields.Where(custm => custm.CustomFieldId.Equals(customfieldId)).Select(custm => custm.CustomFieldType.Name).FirstOrDefault();
-
-                List<string> includeMonth = GetMonthListForReport(selectOption, true);
-                DataTable dtActualRevenue = GetActualRevenue(customfieldId, id, CustomFieldType, Enums.InspectStage.Revenue, ActualTacticList, Tacticdata, IsTacticCustomField);
-                DataTable dtProjectedRevenue = GetProjectedRevenue(customfieldId, id, CustomFieldType, Enums.InspectStage.Revenue, Tacticdata, includeMonth, selectOption, IsTacticCustomField);
-                DataTable dtDifference = GetDifference(dtProjectedRevenue, dtActualRevenue);
-                DataTable dtRevenueTrend = GetRevenueTrend(dtActualRevenue, originalOption);
-                DataTable dtContribution = GetContribution(dtActualRevenue, dtRevenueTrend);
-                DataTable dtTotalRevenue = GetTotalRevenue(dtActualRevenue);
-                DataTable dtChartData = GetChartData(dtActualRevenue, dtProjectedRevenue, dtContribution);
-
-                return Json(new
-                {
-                    projectedRevenue = dtProjectedRevenue.AsEnumerable().Select(pr => new { Month = pr.Field<int>(ColumnMonth), Value = pr.Field<double?>(ColumnValue) }),
-                    actualRevenue = dtActualRevenue.AsEnumerable().Select(ar => new { Month = ar.Field<int>(ColumnMonth), Value = ar.Field<double?>(ColumnValue) }),
-                    difference = dtDifference.AsEnumerable().Select(d => new { Month = d.Field<int>(ColumnMonth), Value = d.Field<double?>(ColumnValue) }),
-                    contribution = dtContribution.AsEnumerable().Select(c => new { Month = c.Field<int>(ColumnMonth), Value = c.Field<double?>(ColumnValue) }),
-                    revenueTrend = dtRevenueTrend.AsEnumerable().Select(rt => new { Month = rt.Field<int>(ColumnMonth), Value = rt.Field<double?>(ColumnValue) }),
-                    totalRevenue = dtTotalRevenue.AsEnumerable().Select(tr => new { Month = tr.Field<int>(ColumnMonth), Value = tr.Field<double?>(ColumnValue) }),
-                    chartData = dtChartData.AsEnumerable().Select(cd => new
-                    {
-                        Month = GetAbbreviatedMonth(cd.Field<int>(ColumnMonth)),
-                        Actual = cd.Field<double?>("Actual"),
-                        Projected = cd.Field<double?>("Projected"),
-                        Contribution = cd.Field<double?>("Contribution"),
-                        ColorActual = "#d4d4d4",
-                        ColorProjected = "#1a638a",
-                        ColorContibution = "#559659"
-                    }),
-                }, JsonRequestBehavior.AllowGet);
-
-            }
-            else
-            {
-                return Json("", JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        /// <summary>
-        /// Function to get abberiviation like Jan, Feb, Mar,....,Dec.
-        /// </summary>
-        /// <param name="month">Numeric Month.</param>
-        /// <returns>Returns abberiviated month.</returns>
-        private string GetAbbreviatedMonth(int month)
-        {
-            DateTimeFormatInfo dtfi = new DateTimeFormatInfo();
-            return dtfi.GetAbbreviatedMonthName(month);
-        }
-
-        /// <summary>
-        /// Function to get data for chart.
-        /// </summary>
-        /// <param name="dtActualRevenue">Datatable containing actual revenue.</param>
-        /// <param name="dtProjectedRevenue">Datatable containing projected revenue.</param>
-        /// <param name="dtContribution">Datatable containing contribution.</param>
-        /// <returns>Returns datatable containing projected/actual/contribution for each month.</returns>
-        private DataTable GetChartData(DataTable dtActualRevenue, DataTable dtProjectedRevenue, DataTable dtContribution)
-        {
-            DataTable dtChartData = new DataTable();
-            dtChartData.Columns.Add(ColumnMonth, typeof(int));
-            dtChartData.Columns.Add("Actual", typeof(double));
-            dtChartData.Columns.Add("Projected", typeof(double));
-            dtChartData.Columns.Add("Contribution", typeof(double));
-
-            //// Set month wise chart data.
-            for (int month = 1; month <= 12; month++)
-            {
-                DataRow drActualRevenue = dtActualRevenue.Select(string.Format("{0}={1}", ColumnMonth, month)).FirstOrDefault();
-                DataRow drProjectedRevenue = dtProjectedRevenue.Select(string.Format("{0}={1}", ColumnMonth, month)).FirstOrDefault();
-                DataRow drContribution = dtContribution.Select(string.Format("{0}={1}", ColumnMonth, month)).FirstOrDefault();
-
-                //// Set Actual Revenue value.
-                double? actualRevenue = 0;
-                if (!string.IsNullOrWhiteSpace(Convert.ToString(drActualRevenue[ColumnValue])))
-                {
-                    actualRevenue = (double)drActualRevenue[ColumnValue];
-                }
-
-                //// Set Projected Revenue value.
-                double? projectedRevenue = 0;
-                if (!string.IsNullOrWhiteSpace(Convert.ToString(drProjectedRevenue[ColumnValue])))
-                {
-                    projectedRevenue = (double)drProjectedRevenue[ColumnValue];
-                }
-
-                //// Set Contribution value.
-                double? contribution = 0;
-                if (!string.IsNullOrWhiteSpace(Convert.ToString(drContribution[ColumnValue])))
-                {
-                    contribution = (double)drContribution["Contribution"];
-                }
-
-                //// Modified By: Maninder Singh Wadhva Bug 298:Revenue to plan graph is incorrect.
-                dtChartData.Rows.Add(month, Math.Round(Convert.ToDouble(actualRevenue), 2), Math.Round(Convert.ToDouble(projectedRevenue), 2), Math.Round(Convert.ToDouble(contribution), 2));
-            }
-
-            return dtChartData;
-        }
-
-        /// <summary>
-        /// Function to get total revenue.
-        /// </summary>
-        /// <param name="dtActualRevenue">Datatable containing actual revenue.</param>
-        /// <returns>Returns datatable containing total revenue for each month.</returns>
-        private DataTable GetTotalRevenue(DataTable dtActualRevenue)
-        {
-            DataTable dtTotalRevenue = GetDataTableMonthValue();
-            foreach (DataRow drTotalRevenue in dtTotalRevenue.Rows)
-            {
-                //// Getting actual revenue of month from datatable.
-                var drActualRevenue = dtActualRevenue.Select(string.Format("{0}<={1}", ColumnMonth, drTotalRevenue[ColumnMonth]));
-
-                //// Setting contribution value.
-                drTotalRevenue[ColumnValue] = drActualRevenue.Sum(ar => ar.Field<double?>(ColumnValue));
-            }
-
-            return dtTotalRevenue;
-        }
-
-        /// <summary>
-        /// Function to get contribution.
-        /// </summary>
-        /// <param name="dtActualRevenue">Datatable containing actual revenue.</param>
-        /// <param name="dtRevenueTrend">Datatable containing revenue trend.</param>
-        /// <returns>Returns datatable containing contribution for each month.</returns>
-        private DataTable GetContribution(DataTable dtActualRevenue, DataTable dtRevenueTrend)
-        {
-            DataTable dtContribution = GetDataTableMonthValue();
-            dtContribution.Columns.Add("Contribution", typeof(double));
-
-            foreach (DataRow drContribution in dtContribution.Rows)
-            {
-                //// Getting actual revenue of month from datatable.
-                var drActualRevenue = dtActualRevenue.Select(string.Format("{0}={1}", ColumnMonth, drContribution[ColumnMonth])).First();
-
-                //// Getting revenue trend of month from datatable.
-                var drRevenueTrend = dtRevenueTrend.Select(string.Format("{0}={1}", ColumnMonth, drContribution[ColumnMonth])).First();
-
-                double? revenueTrend = 0;
-                if (drRevenueTrend.Field<double?>(ColumnValue).HasValue)
-                {
-                    revenueTrend = drRevenueTrend.Field<double>(ColumnValue);
-                }
-
-                double? actualRevenue = 0;
-                if (drActualRevenue.Field<double?>(ColumnValue).HasValue)
-                {
-                    actualRevenue = drActualRevenue.Field<double>(ColumnValue);
-                }
-
-                //// Calculating contribution.
-                double? contributionPercentage = 0;
-                double? contribution = 0;
-                if (actualRevenue != 0 && revenueTrend != 0)
-                {
-                    contribution = (actualRevenue / revenueTrend);
-                    contributionPercentage = contribution * 100;
-                }
-
-                //// Setting contribution value.
-                drContribution[ColumnValue] = contributionPercentage;
-                drContribution["Contribution"] = contribution;
-            }
-
-            return dtContribution;
-        }
-
-        /// <summary>
-        /// Function to get revenue trend
-        /// </summary>
-        /// <param name="dtActualRevenue">Datatable containing actual revenue.</param>
-        /// <returns>Returns datatable containing revenue trend for each month.</returns>
-        private DataTable GetRevenueTrend(DataTable dtActualRevenue, string selectOption)
-        {
-            DataTable dtRevenueTrend = GetDataTableMonthValue();
-            foreach (DataRow drRevenueTrend in dtRevenueTrend.Rows)
-            {
-                int month = Convert.ToInt32(drRevenueTrend[ColumnMonth]);
-
-                //// Getting appropriate month from datatable.
-                var drActualRevenue = dtActualRevenue.Select(string.Format("{0}<={1}", ColumnMonth, month));
-
-                //// Calculating revenue trend.
-                double? sumActualRevenue = drActualRevenue.Sum(ar => ar.Field<double?>(ColumnValue));
-                double? revenueTrend = 0;
-                int EndMonth = 12;
-                if (selectOption == Enums.UpcomingActivities.thisquarter.ToString())
-                {
-                    int currentQuarter = ((month - 1) / 3) + 1;
-                    if (currentQuarter == 1)
-                    {
-                        EndMonth = 3;
-                    }
-                    else if (currentQuarter == 2)
-                    {
-                        EndMonth = 6;
-                    }
-                    else if (currentQuarter == 3)
-                    {
-                        EndMonth = 9;
-                    }
-                    else
-                    {
-                        EndMonth = 12;
-                    }
-                }
-
-                if (sumActualRevenue.HasValue)
-                {
-                    revenueTrend = (sumActualRevenue / month) * EndMonth;
-                }
-
-                //// Setting revenue trend value.
-                drRevenueTrend[ColumnValue] = revenueTrend;
-            }
-
-            return dtRevenueTrend;
-        }
-
-        /// <summary>
-        /// Function to get percentage difference between actual and projected revenue.
-        /// </summary>
-        /// <param name="dtProjectedRevenue">Datatable containing projected revenue.</param>
-        /// <param name="dtActualRevenue">Datatable containing actual revenue.</param>
-        /// <returns>Returns datatable containing percentage difference for each month.</returns>
-        private DataTable GetDifference(DataTable dtProjectedRevenue, DataTable dtActualRevenue)
-        {
-            //// Calcualting percentage difference.
-            var differences = dtActualRevenue.AsEnumerable().Join(dtProjectedRevenue.AsEnumerable(),
-                                                                actual => actual.Field<int>(ColumnMonth), projected => projected.Field<int>(ColumnMonth),
-                                                                (actual, projected) => new
-                                                                {
-                                                                    Month = actual.Field<int>(ColumnMonth),
-                                                                    Value = GetPercentageDifference(actual.Field<double?>(ColumnValue).HasValue ? actual.Field<double>(ColumnValue) : 0,
-                                                                                                    projected.Field<double?>(ColumnValue).HasValue ? projected.Field<double>(ColumnValue) : 0),
-                                                                });
-
-            DataTable dtDifference = GetDataTableMonthValue();
-            foreach (var difference in differences)
-            {
-                //// Getting appropriate month from datatable.
-                DataRow drDifference = dtDifference.Select(string.Format("{0}={1}", ColumnMonth, difference.Month)).FirstOrDefault();
-
-                //// Setting value for period.
-                drDifference[ColumnValue] = difference.Value;
-            }
-
-            return dtDifference;
-        }
-
-        /// <summary>
-        /// Function to get projected revenue.
-        /// </summary>
-        /// <param name="planIds">Plan ids.</param>
-        /// <param name="ParentLabel">Filter Name.</param>
-        /// <param name="id">Filter Id.</param>
-        /// <returns>Return datatable containing projected revenue for each month.</returns>
-        private DataTable GetProjectedRevenue(int CustomFieldId, string CustomFieldOptionId, string CustomFieldType, Enums.InspectStage stagecode, List<TacticStageValue> TacticList, List<string> monthList, string selectOption, bool IsTacticCustomField)
-        {
-            bool IsVelocity = true;
-            List<TacticDataTable> tacticdata = GetTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, stagecode, TacticList, IsTacticCustomField, IsVelocity);
-            var trevenueProjected = GetMonthWiseValueList(tacticdata).Where(mr => monthList.Contains(mr.Month)).GroupBy(r => r.Month).Select(g => new
-            {
-                PKey = g.Key,
-                PSum = g.Sum(r => r.Value)
-            });
-
-
-            DataTable dtProjectedRevenue = GetDataTableMonthValue();
-            foreach (DataRow drProjectedRevenue in dtProjectedRevenue.Rows)
-            {
-                drProjectedRevenue[ColumnValue] = trevenueProjected.Where(tp => tp.PKey == selectOption + PeriodPrefix + drProjectedRevenue[ColumnMonth]).Count() > 0 ? trevenueProjected.Where(tp => tp.PKey == selectOption + PeriodPrefix + drProjectedRevenue[ColumnMonth]).Sum(tp => tp.PSum) : 0;
-            }
-
-            return dtProjectedRevenue;
-        }
-
-        /// <summary>
-        /// Function to get actual revenue.
-        /// </summary>
-        /// <param name="planIds">Plan ids.</param>
-        /// <param name="ParentLabel">Filter Name.</param>
-        /// <param name="id">Filter Id.</param>
-        /// <returns>Return datatable containing actual revenue for each month.</returns>
-        private DataTable GetActualRevenue(int CustomFieldId, string CustomFieldOptionId, string customfieldType, Enums.InspectStage stagecode, List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, List<TacticStageValue> TacticData, bool IsTacticCustomField)
-        {
-            List<ActualDataTable> ActualRevenueDataTable = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, customfieldType, Enums.InspectStage.Revenue, ActualTacticList, TacticData, IsTacticCustomField);
-            //// Getting period wise actual revenue of non-deleted and approved/in-progress/complete tactic of plan present in planids.
-            var planCampaignTacticActualAll = ActualRevenueDataTable.GroupBy(pcpta => pcpta.Period).Select(group => new { Period = group.Key, ActualValue = group.Sum(pcpta => pcpta.ActualValue) }).OrderBy(pcpta => pcpta.Period);
-
-            DataTable dtActualRevenue = GetDataTableMonthValue();
-
-            //// Populating values in data table.
-            foreach (var planCampaignTacticActualMonth in planCampaignTacticActualAll)
-            {
-                //// Getting appropriate period from datatable.
-                DataRow drAactualRevenue = dtActualRevenue.Select(string.Format("{0}={1}", ColumnMonth, Convert.ToInt32(planCampaignTacticActualMonth.Period.Replace(PeriodPrefix, "")))).FirstOrDefault();
-
-                //// Setting value for period.
-                drAactualRevenue[ColumnValue] = planCampaignTacticActualMonth.ActualValue;
-            }
-
-            return dtActualRevenue;
-        }
-
-        /// <summary>
-        /// Function to get data table with month and value column.
-        /// </summary>
-        /// <returns>Return dataable.</returns>
-        private DataTable GetDataTableMonthValue()
-        {
-            DataTable dtMonthValue = new DataTable();
-            dtMonthValue.Columns.Add(ColumnMonth, typeof(int));
-            dtMonthValue.Columns.Add(ColumnValue, typeof(double));
-
-            //// Adding each month.
-            for (int month = 1; month <= 12; month++)
-            {
-                dtMonthValue.Rows.Add(month, null);
-            }
-
-            return dtMonthValue;
-        }
-
-        #endregion
-
-        #region "Source Performance"
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Function to get data for source performance report.
-        /// </summary>
-        /// <param name="filter">Filter to get data for plan/trend or actual.</param>
-        /// <returns>Return json data for source performance report.</returns>
-        public JsonResult GetSourcePerformance(string selectOption = "")
-        {
-            return GetSourcePerformanceActual(selectOption);
-        }
-
-        /// <summary>
-        /// Added By: Maninder Singh Wadhva.
-        /// Function to get source perfromance actual.
-        /// </summary>
-        /// <returns>Returns json result of source perfromance actual.</returns>
-        private JsonResult GetSourcePerformanceActual(string selectOption)
-        {
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            List<string> includeYearList = GetYearListForReport(selectOption, true);
-            List<string> includeMonth = GetMonthListForReport(selectOption, true);
-            List<string> includeMonthUpCurrent = GetUpToCurrentMonthWithYearForReport(selectOption, true);
-
-            string tactic = Enums.EntityType.Tactic.ToString();
-            string dropdownType = Enums.CustomFieldType.DropDownList.ToString();
-            string Revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-
-            List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
-            Tacticdata.ForEach(t => t.ActualTacticList.ForEach(a => ActualTacticList.Add(a)));
-            //Start : Modified by Mitesh Vaishnav on 21/07/2014 for functional review point 71.Add condition for isDeleted flag  
-            ActualTacticList = ActualTacticList.Where(mr => mr.StageTitle == Revenue && includeMonthUpCurrent.Contains((Tacticdata.FirstOrDefault(t => t.TacticObj.PlanTacticId == mr.PlanTacticId).TacticYear) + mr.Period)).ToList();
-
-
-            int dropdwnCustomFieldTypeId = db.CustomFieldTypes.Where(custType => custType.Name.Equals(dropdownType)).Select(custType => custType.CustomFieldTypeId).FirstOrDefault();
-
-            // Get first 3 custom fields
-            var customFields = db.CustomFields.Where(c => c.ClientId.Equals(Sessions.User.ClientId)
-                && c.IsDeleted == false && c.IsRequired == true && c.IsDefault == true && c.EntityType == tactic && c.CustomFieldTypeId == dropdwnCustomFieldTypeId
-                ).Select(c => new
-                {
-                    CustomFieldId = c.CustomFieldId,
-                    CustomFieldName = c.Name
-                }).Take(3).ToList();
-            List<CustomFieldOption> tblCustomFieldOption = db.CustomFieldOptions.ToList().Where(co => customFields.Select(custm => custm.CustomFieldId).Contains(co.CustomFieldId) && co.IsDeleted == false).ToList();
-
-            //// Start - Added by Arpita Soni for Ticket #1148 on 01/23/2015
-
-
-
-            customFields = customFields.Where(sort => !string.IsNullOrEmpty(sort.CustomFieldName)).OrderBy(sort => sort.CustomFieldName, new AlphaNumericComparer()).ToList();
-            List<ListSourcePerformanceData> lstListSourcePerformance = new List<ListSourcePerformanceData>();
-            List<string> lstCustomFieldNames = new List<string>();
-            string dropdwnCustomFieldType = Enums.CustomFieldType.DropDownList.ToString();
-            // Applying custom field filters 
-            foreach (var customfield in customFields)
-            {
-                List<SourcePerformanceData> lstSourcePerformance = new List<SourcePerformanceData>();
-
-                lstSourcePerformance = tblCustomFieldOption.Where(s => s.CustomFieldId == customfield.CustomFieldId).ToList().Select(s => new SourcePerformanceData
-                {
-                    Title = s.Value,
-                    ColorCode = string.Format("#{0}", s.ColorCode),
-                    Value = GetActualVSPlannedRevenue(ActualTacticList, customfield.CustomFieldId, s.CustomFieldOptionId.ToString(), dropdwnCustomFieldType, Tacticdata, Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList(), includeMonthUpCurrent, true)
-                }).OrderByDescending(s => s.Value).ThenBy(s => s.Title).Take(5).ToList();
-
-                lstCustomFieldNames.Add(customfield.CustomFieldName);
-                lstListSourcePerformance.Add(new ListSourcePerformanceData
-                {
-                    lstSourcePerformanceData = lstSourcePerformance,
-                    CustomFieldName = customfield.CustomFieldName
-
-                });
-            }
-            //// End - Added by Arpita Soni for Ticket #1148 on 01/23/2015
-            // Modified by Arpita Soni for Ticket #1148 on 01/27/2015
-            return Json(new
-            {
-                ChartCustomField1 = lstListSourcePerformance.Count > 0 ? lstListSourcePerformance.ElementAt(0).lstSourcePerformanceData : null,
-                ChartCustomField2 = lstListSourcePerformance.Count > 1 ? lstListSourcePerformance.ElementAt(1).lstSourcePerformanceData : null,
-                ChartCustomField3 = lstListSourcePerformance.Count > 2 ? lstListSourcePerformance.ElementAt(2).lstSourcePerformanceData : null,
-                CustomField1 = lstCustomFieldNames.Count > 0 ? lstCustomFieldNames.ElementAt(0) : null,
-                CustomField2 = lstCustomFieldNames.Count > 1 ? lstCustomFieldNames.ElementAt(1) : null,
-                CustomField3 = lstCustomFieldNames.Count > 2 ? lstCustomFieldNames.ElementAt(2) : null
-            }, JsonRequestBehavior.AllowGet);
-        }
-
-        public class ListSourcePerformanceData
-        {
-            public List<SourcePerformanceData> lstSourcePerformanceData { get; set; }
-            public string CustomFieldName { get; set; }
-        }
-
-        public class SourcePerformanceData
-        {
-            public string Title { get; set; }
-            public string ColorCode { get; set; }
-            public double Value { get; set; }
-        }
-
-        public class RevenueContributionModel
-        {
-            public string Title { get; set; }
-            public double PlanRevenue { get; set; }
-            public double ActualRevenue { get; set; }
-            public double TrendRevenue { get; set; }
-            public double PlanCost { get; set; }
-            public double ActualCost { get; set; }
-            public double TrendCost { get; set; }
-            public double RunRate { get; set; }
-            public double PipelineCoverage { get; set; }
-            public double RevSpend { get; set; }
-            public double CostTotal { get; set; }
-            public double RevenueTotal { get; set; }
-        }
-
-        /// <summary>
-        /// Get Actual vs Planned revenue difference %.
-        /// Added By Bhavesh : PL Ticket  #349 - 16/4/2014
-        /// </summary>
-        /// <param name="tacticIds"></param>
-        /// <param name="includeMonthUpCurrent"></param>
-        /// <returns></returns>
-        private double GetActualVSPlannedRevenue(List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList, int CustomFieldId, string CustomFieldOptionId, string customfieldType, List<TacticStageValue> TacticData, List<int> tacticIds, List<string> includeMonthUpCurrent, bool IsTacticCustomField)
-        {
-            double actualRevenueValue = 0, percentageValue = 0;
-            if (tacticIds.Count() == 0)
-                return percentageValue;
-            List<TacticMonthValue> ProjectedRevenueDataTable = GetProjectedDatabyStageCode(CustomFieldId, CustomFieldOptionId, customfieldType, Enums.InspectStage.Revenue, TacticData, IsTacticCustomField);
-            List<Plan_Campaign_Program_Tactic_Actual> lstActualTacticlist = ActualTacticList.Where(pcpt => tacticIds.Contains(pcpt.PlanTacticId)).ToList();
-            List<ActualDataTable> ActualData = new List<ActualDataTable>();
-            ActualData = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, customfieldType, Enums.InspectStage.Revenue, lstActualTacticlist, TacticData, IsTacticCustomField);
-            if (ActualData.Count() > 0)
-            {
-                actualRevenueValue = ActualData.Sum(a => a.ActualValue);
-            }
-            double projectedRevenueValue = ProjectedRevenueDataTable.Where(mr => tacticIds.Contains(mr.Id) && includeMonthUpCurrent.Contains(mr.Month)).Sum(mr => mr.Value);
-            ////Start - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
-            if (projectedRevenueValue != 0)
-            {
-                percentageValue = Math.Round((actualRevenueValue / projectedRevenueValue) * 100, 2);
-            }
-            ////End - Modified by Mitesh Vaishnav for PL ticket #611 Source Performance Graphs dont show anything
-            return percentageValue;
-        }
-
-        #endregion
-
         #endregion
 
         #region "Share Report"
-
         /// <summary>
         /// Added By: Maninder Singh Wadhva.
         /// Function to show share report popup.
@@ -3590,46 +1708,40 @@ namespace RevenuePlanner.Controllers
             {
                 using (MRPEntities mrp = new MRPEntities())
                 {
-                    //using (var scope = new TransactionScope())
-                    //{
-                        if (ModelState.IsValid)
-                        {
-                            htmlOfCurrentView = HttpUtility.UrlDecode(htmlOfCurrentView, System.Text.Encoding.Default);
+                    if (ModelState.IsValid)
+                    {
+                        htmlOfCurrentView = HttpUtility.UrlDecode(htmlOfCurrentView, System.Text.Encoding.Default);
+                        //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
+                        MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
 
-                            //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
-                            MemoryStream pdfStream = GeneratePDFReport(htmlOfCurrentView, reportType, url);
-
-                            string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
+                        string notificationShareReport = Enums.Custom_Notification.ShareReport.ToString();
                         Notification notification = (Notification)mrp.Notifications.FirstOrDefault(notfctn => notfctn.NotificationInternalUseOnly.Equals(notificationShareReport));
-                            //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
-                            optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
+                        //// Added by Sohel on 2nd April for PL#398 to decode the optionalMessage text
+                        optionalMessage = HttpUtility.UrlDecode(optionalMessage, System.Text.Encoding.Default);
+                        ////
+                        string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
+                        foreach (string toEmail in toEmailIds.Split(','))
+                        {
+                            Report_Share reportShare = new Report_Share();
+                            reportShare.ReportType = reportType;
+                            reportShare.EmailId = toEmail;
+                            //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
+                            reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
                             ////
-                            string emailBody = notification.EmailContent.Replace("[AdditionalMessage]", optionalMessage);
-                            //toEmailIds = "nishant.sheth@indusa.com";
-                            foreach (string toEmail in toEmailIds.Split(','))
-                            {
-                                Report_Share reportShare = new Report_Share();
-                                reportShare.ReportType = reportType;
-                                reportShare.EmailId = toEmail;
-                                //// Modified by Sohel on 3rd April for PL#398 to encode the email body while inserting into DB.
-                                reportShare.EmailBody = HttpUtility.HtmlEncode(emailBody);
-                                ////
-                                reportShare.CreatedDate = DateTime.Now;
-                                reportShare.CreatedBy = Sessions.User.UserId;
+                            reportShare.CreatedDate = DateTime.Now;
+                            reportShare.CreatedBy = Sessions.User.UserId;
                             mrp.Entry(reportShare).State = EntityState.Added;
                             mrp.Report_Share.Add(reportShare);
                             result = mrp.SaveChanges();
-                                if (result == 1)
-                                {
-                                    //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
-                                    Common.sendMail(toEmail, Common.FromMail, emailBody, notification.Subject, new MemoryStream(pdfStream.ToArray()), string.Format("{0}.pdf", reportType));
-                                }
+                            if (result == 1)
+                            {
+                                //// Modified By Maninder Singh Wadhva so that mail is sent to multiple user.
+                                Common.sendMail(toEmail, Common.FromMail, emailBody, notification.Subject, new MemoryStream(pdfStream.ToArray()), string.Format("{0}.pdf", reportType));
                             }
-
-                        //scope.Complete();
-                            return Json(true, JsonRequestBehavior.AllowGet);
                         }
-                    //}
+
+                        return Json(true, JsonRequestBehavior.AllowGet);
+                    }
                 }
             }
             catch (Exception e)
@@ -3659,33 +1771,14 @@ namespace RevenuePlanner.Controllers
                 htmlOfCurrentView = htmlOfCurrentView.Replace("class=\"percentageFormat\"", "");
             }
             //// End - Added Sohel Pathan on 30/12/2014 for and Internal Review Point
-            //PdfConverter pdfConverter = new PdfConverter();
-            //pdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
-
-            //pdfConverter.PdfDocumentOptions.PdfPageSize = PdfPageSize.A4;
-            //pdfConverter.PdfDocumentOptions.CustomPdfPageSize = new System.Drawing.SizeF(1024,30000);
-            //pdfConverter.PdfDocumentOptions.EmbedFonts = true;
-
-            ///*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
-            //int marginTopBottom = 50;
-            //pdfConverter.PdfDocumentOptions.TopMargin = marginTopBottom;
-            //pdfConverter.PdfDocumentOptions.BottomMargin = marginTopBottom;
-
-            //pdfConverter.PdfDocumentOptions.PdfCompressionLevel = PdfCompressionLevel.Normal;
-            //pdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
-            // byte[] pdf = pdfConverter.GetPdfBytesFromHtmlString(htmlOfCurrentView);
             string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
             string baseUrl = domain + "/Report/Index/";
 
             HtmlToPdfConverter htmlToPdfConverter = new HtmlToPdfConverter();
-            //htmlToPdfConverter.LicenseKey = "4W9+bn19bn5ue2B+bn1/YH98YHd3d3c=";
             htmlToPdfConverter.LicenseKey = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"]);
-            //htmlToPdfConverter.LicenseKey = System.Configuration.ConfigurationManager.AppSettings["EvoHTMLKey"];
-            // htmlToPdfConverter.ClipHtmlView = true;
             htmlToPdfConverter.HtmlViewerWidth = 1024;
             htmlToPdfConverter.PdfDocumentOptions.EmbedFonts = true;
             htmlToPdfConverter.PdfDocumentOptions.PdfPageSize = PdfPageSize.A4;
-            //htmlToPdfConverter.PdfDocumentOptions.AutoSizePdfPage = true;
             htmlToPdfConverter.PdfDocumentOptions.PdfCompressionLevel = PdfCompressionLevel.Normal;
             htmlToPdfConverter.PdfDocumentOptions.PdfPageOrientation = PdfPageOrientation.Portrait;
             htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 0;
@@ -3706,20 +1799,12 @@ namespace RevenuePlanner.Controllers
                 htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 20;
             }
             htmlToPdfConverter.PdfDocumentOptions.X = 0;
-            //if (yLocationTextBox.Text.Length > 0)
             htmlToPdfConverter.PdfDocumentOptions.Y = 0;
-            //if (contentWidthTextBox.Text.Length > 0)
             htmlToPdfConverter.PdfDocumentOptions.Width = 0;
-            //if (contentHeightTextBox.Text.Length > 0)
             htmlToPdfConverter.PdfDocumentOptions.Height = 0;
-
             // Set HTML content top and bottom spacing or leave them not set to have no spacing for the HTML content
             htmlToPdfConverter.PdfDocumentOptions.TopSpacing = 0;
             htmlToPdfConverter.PdfDocumentOptions.BottomSpacing = 0;
-            // htmlToPdfConverter.PdfDocumentOptions.FitWidth = true;
-            //htmlToPdfConverter.PdfDocumentOptions.StretchToFit = false;
-            //htmlToPdfConverter.PdfDocumentOptions.AutoSizePdfPage = false;
-            //htmlToPdfConverter.PdfDocumentOptions.FitHeight = false;
             byte[] pdf = htmlToPdfConverter.ConvertHtml(htmlOfCurrentView, url);
             return new System.IO.MemoryStream(pdf);
         }
@@ -3733,28 +1818,16 @@ namespace RevenuePlanner.Controllers
         /// <returns>Return html string with CSS and Javascript.</returns>
         private string AddCSSAndJS(string htmlOfCurrentView, string reportType, string url = "")
         {
-            //  string domain = Request.Url.Scheme + System.Uri.SchemeDelimiter + Request.Url.Host + (Request.Url.IsDefaultPort ? "" : ":" + Request.Url.Port);
-            //string js = ReadJs("");
             string returnhtml = "";
             StringBuilder html = new StringBuilder();
             html.Append("<html>");
             html.Append("<head>");
-            //string url = Url.Content("~/Content/css/bootstrap.css");
-            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap.css"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap.css")));
-            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/bootstrap-responsive.css"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/bootstrap-responsive.css")));
-            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style.css"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/style.css")));
-            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/datepicker.css"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/datepicker.css")));
-            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/style_extended.css"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/style_extended.css")));
-            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/DHTMLX/dhtmlxgantt.css"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/DHTMLX/dhtmlxgantt.css")));
-            //html += string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Server.MapPath("~/Content/css/Select2/select2.css"));
-
-            // html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/js/DHTMLX/dhtmlxgantt.js"));
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.min.js")));
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery-migrate-1.2.1.min.js")));
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/bootstrap.min.js")));
@@ -3771,85 +1844,15 @@ namespace RevenuePlanner.Controllers
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.actual.js")));
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/highcharts.js")));
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/jquery.selectbox-0.2.js")));
-
-
             /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.multiselect_v1.js")));
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/js/jquery.multiselect.filter.js")));
-
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/font-awesome.min.css")));
             html.Append(string.Format("<script src='{0}'></script>", Url.Content("~/Scripts/modernizr-2.5.3.js")));
-
-            //html += string.Format("<script src='{0}'></script>", Server.MapPath("~/Scripts/dhtmlxchart.js"));
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/dhtmlxchart.css")));
-
             /*Modified By Maninder Singh Wadhva on  10/17/2014 for ticket #865 	Custom fields & Report filter - Review changes on reports PDF*/
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/jquery.multiselect.css")));
-
             html.Append(string.Format("<link rel='stylesheet' href='{0}' type='text/css' />", Url.Content("~/Content/css/jquery.mCustomScrollbar.css")));
-            //html.Append("<style type='text/css'>");
-            //html.Append("#table-sparkline {");
-            //html.Append("margin: 0 auto;");
-            //html.Append("border-collapse: collapse;");
-            //html.Append("}");
-            //html.Append("th {");
-            //html.Append("font-weight: bold;");
-            //html.Append("text-align: left;");
-            //html.Append("}");
-            //html.Append("td,tbody th {");
-            //html.Append("padding: 5px;");
-            //html.Append("border-top: 1px solid silver;");
-            //html.Append("height: 20px;");
-            //html.Append("}");
-
-            //html.Append(".highcharts-tooltip>span {");
-            //html.Append("background: white;");
-            //html.Append("border: 1px solid silver;");
-            //html.Append("border-radius: 3px;");
-            //html.Append("box-shadow: 1px 1px 2px #888;");
-            //html.Append("padding: 8px;");
-            //html.Append("}");
-            //html.Append(".dvsparkline div {");
-            //html.Append("float:right;");
-            //html.Append("}");
-            //html.Append(".lastraw {");
-            //html.Append("font-size: 15px;");
-            //html.Append("font-weight: bold;");
-            //html.Append("line-height: 25px;");
-            //html.Append("text-align: left;");
-            //html.Append("}");
-            //html.Append(".nobold {");
-            //html.Append("font-weight:inherit !important;");
-            //html.Append("}");
-            //html.Append(".redLabel {");
-            //html.Append("color:#ff0000 !important;");
-            //html.Append("}");
-            //html.Append(".greenLabel {");
-            //html.Append("color:#009E26 !important;");
-            //html.Append("}");
-            //html.Append(".hideReport {");
-            //html.Append("display:none !important;");
-            //html.Append("}");
-            //html.Append(".sbHolder {");
-            //html.Append("z-index: 1499;");
-            //html.Append("}");
-            //html.Append(".nobold {");
-            //html.Append("font-weight:inherit !important;");
-            //html.Append("}");
-            //html.Append("  .redLabel {");
-            //html.Append("color: #ff0000 !important;");
-            //html.Append("}");
-            //html.Append(".greenLabel {");
-            //html.Append("color: #009E26 !important;");
-            //html.Append("}");
-            //html.Append(".revenue-to-plan-graph {");
-            //html.Append("padding: 20px;");
-            //html.Append("}");
-            //html.Append(".carvdval-block");
-            //html.Append("{");
-            //html.Append("display: block;");
-            //html.Append("}");
-            //html.Append("</style>");
             html.Append("</head>");
             html.Append("<body style='background: none repeat scroll 0 0 #FFFFFF; font-size: 14px;'>");
             html.Append(htmlOfCurrentView);
@@ -4828,21 +2831,6 @@ namespace RevenuePlanner.Controllers
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthPlanned;
                         model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ParentMonthActual = model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().MonthActual;
                     }
-                    ////// Set parent monthly allocated line values.
-                    //parentAllocated = new BudgetMonth();
-                    //parentAllocated.Jan = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jan) ?? 0;
-                    //parentAllocated.Feb = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Feb) ?? 0;
-                    //parentAllocated.Mar = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Mar) ?? 0;
-                    //parentAllocated.Apr = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Apr) ?? 0;
-                    //parentAllocated.May = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.May) ?? 0;
-                    //parentAllocated.Jun = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jun) ?? 0;
-                    //parentAllocated.Jul = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Jul) ?? 0;
-                    //parentAllocated.Aug = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Aug) ?? 0;
-                    //parentAllocated.Sep = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Sep) ?? 0;
-                    //parentAllocated.Oct = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Oct) ?? 0;
-                    //parentAllocated.Nov = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Nov) ?? 0;
-                    //parentAllocated.Dec = model.Where(line => line.ParentActivityId == l.ActivityId).Sum(line => (double?)line.MonthAllocated.Dec) ?? 0;
-                    //model.Where(m => m.ActivityId == l.ActivityId).FirstOrDefault().ChildMonthAllocated = parentAllocated;
                 }
             }
             else
@@ -5171,96 +3159,6 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             return Actualtacticdata;
-        }
-
-        /// <summary>
-        /// Get respective Planned value by StageTitle.
-        /// </summary>
-        /// <returns></returns>
-        public double GetPlanValue(int CustomFieldId, string CustomFieldOptionId, List<TacticStageValue> lstTacticData, string CustomFieldType, List<string> includeMonth, Enums.InspectStage stageCode, bool IsTacticCustomField)
-        {
-            double PlanValue = 0;
-            List<TacticMonthValue> ProjectedDatatable = new List<TacticMonthValue>();
-            try
-            {
-                if (stageCode.Equals(Enums.InspectStage.CW))
-                    ProjectedDatatable = GetProjectedDatabyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, stageCode, lstTacticData, IsTacticCustomField);
-                else if (stageCode.Equals(Enums.InspectStage.Revenue))
-                    ProjectedDatatable = GetProjectedDatabyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, stageCode, lstTacticData, IsTacticCustomField);
-                else if (stageCode.Equals(Enums.InspectStage.Cost))
-                    ProjectedDatatable = GetProjectedCostData(CustomFieldId, CustomFieldOptionId, CustomFieldType, lstTacticData, IsTacticCustomField, null, null, null);
-
-                PlanValue = ProjectedDatatable.Where(mr => includeMonth.Contains(mr.Month)).Sum(r => r.Value);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return PlanValue;
-        }
-
-        /// <summary>
-        /// Get ActualRevenue value by weightage.
-        /// </summary>
-        /// <returns></returns>
-        public double GetActualRevenueContribution(int CustomFieldId, string CustomFieldOptionId, List<TacticStageValue> TacticData, List<int> PlanTacticIds, string CustomFieldType, List<string> includeMonth, bool IsTacticCustomField)
-        {
-            double ActualRevenueValue = 0;
-            List<Plan_Campaign_Program_Tactic_Actual> lstActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
-            string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-            List<ActualDataTable> ActualDataTable = new List<ActualDataTable>();
-            try
-            {
-                lstActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => PlanTacticIds.Contains(ta.PlanTacticId) && ta.StageTitle.Equals(revenue) && includeMonth.Contains(ta.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year + ta.Period)).ToList();
-                ActualDataTable = GetActualTacticDataTablebyStageCode(CustomFieldId, CustomFieldOptionId, CustomFieldType, Enums.InspectStage.Revenue, lstActuals, TacticData, IsTacticCustomField);
-                ActualRevenueValue = ActualDataTable.Sum(ta => ta.ActualValue);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return ActualRevenueValue;
-        }
-
-        /// <summary>
-        /// Get list of Actual Tactic data for MQL Performance.
-        /// </summary>
-        /// <param name="Tab"></param>
-        /// <param name="tacticList"> Reference of Tactic list</param>
-        /// <param name="lstArrCustomFieldFilter">list of filtered CustomFields</param>
-        /// <returns></returns>
-        public double GetTrendActualTacticData(int lastMonth, List<Plan_Campaign_Program_Tactic_Actual> lstActual, int CustomFieldID, string CustomFieldOptionID, string customFieldType, List<TacticStageValue> TacticData, bool IsTacticCustomField)
-        {
-            List<ActualDataTable> lstActualsbyWeight = new List<ActualDataTable>();
-            double trendValue = 0;
-            try
-            {
-                lstActualsbyWeight = GetActualTacticDataTablebyStageCode(CustomFieldID, CustomFieldOptionID, customFieldType, Enums.InspectStage.MQL, lstActual, TacticData, IsTacticCustomField);
-                var lstCustomFieldEntity = db.CustomField_Entity.Where(cf => cf.Value.Equals(CustomFieldOptionID)).Select(e => new
-                {
-                    EntityId = e.EntityId,
-                    Value = e.Value
-                }).ToList();
-
-                var lstTacticActuals = (from entity in lstCustomFieldEntity
-                                        join tacticactual in lstActualsbyWeight
-                                        on entity.EntityId equals tacticactual.PlanTacticId
-                                        select new { entity.Value, entity.EntityId, tacticactual.ActualValue });
-
-                var tacticTrendCustomField = lstTacticActuals.GroupBy(ta => ta.Value).Select
-                    (ta => new
-                    {
-                        CustomFieldOptionId = ta.Key,
-                        Trend = ((ta.Sum(actual => actual.ActualValue) / currentMonth) * lastMonth)
-                    }).ToList();
-                if (tacticTrendCustomField != null && tacticTrendCustomField.Count > 0)
-                    trendValue = tacticTrendCustomField.FirstOrDefault().Trend;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            return trendValue;
         }
 
         /// <summary>
@@ -5654,7 +3552,6 @@ namespace RevenuePlanner.Controllers
 
             BDSService.BDSServiceClient bdsUserRepository = new BDSService.BDSServiceClient();
             string strContatedIndividualList = string.Join(",", tacticList.Select(tactic => tactic.CreatedBy.ToString()));
-            //var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
             var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId);
 
             return individuals;
@@ -5818,8 +3715,6 @@ namespace RevenuePlanner.Controllers
                     #region "Revenue related Code"
 
                     #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
-
-                    //ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(revStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(revStageCode)).ToList();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
@@ -5830,7 +3725,6 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     #region "Set Linechart & Revenue Overview data to model"
-                    //objLineChartData = GetLineChartData(ActualTacticTrendList, ProjectedTrendList, timeframeOption, IsQuarterly);
                     objLineChartData = GetLineChartData(objBasicModel);
                     objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
                     objRevenueOverviewModel.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
@@ -5855,7 +3749,6 @@ namespace RevenuePlanner.Controllers
                     OverviewModelList = new List<TacticwiseOverviewModel>();
                     ActualTacticTrendList = new List<ActualTrendModel>();
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList();
-                    //ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(inqStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, inqStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
                     #endregion
@@ -5883,7 +3776,6 @@ namespace RevenuePlanner.Controllers
                     OverviewModelList = new List<TacticwiseOverviewModel>();
                     ActualTacticTrendList = new List<ActualTrendModel>();
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
-                    //ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(mqlStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, mqlStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
                     #endregion
@@ -5904,7 +3796,6 @@ namespace RevenuePlanner.Controllers
                     #region "Conversion : Set Linechart & Revenue Overview data to model"
                     string MQLStageLabel = Common.GetLabel(Common.StageModeMQL);
                     objLineChartData = new lineChartData();
-                    //objLineChartData = GetLineChartData(ActualTacticTrendList, ProjectedTrendList, timeframeOption, IsQuarterly);
                     objLineChartData = GetLineChartData(objBasicModel);
                     objProjectedGoal = new Projected_Goal();
                     objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
@@ -5913,7 +3804,6 @@ namespace RevenuePlanner.Controllers
                     objProjected_Goal_LineChart.linechartdata = objLineChartData != null ? objLineChartData : new lineChartData();
                     objProjected_Goal_LineChart.projected_goal = objProjectedGoal != null ? objProjectedGoal : new Projected_Goal();
                     objProjected_Goal_LineChart.StageCode = mqlStageCode;
-
 
                     #region "MQL: Set Benchmark Model data"
                     _Benchmark = stageVolumePercntg = 0;
@@ -5930,8 +3820,6 @@ namespace RevenuePlanner.Controllers
                     mqlStageBenchmarkmodel.stageVolume = _stageVolumepercentage.ToString();
                     mqlStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? ((_stageVolumepercentage - _Benchmark) / _Benchmark) * 100 : 0; //PL #1483 formula changed ((Actual % number – Goal % number)/Goal % number * 100) -Dashrath Prajapati
-                    // Actual_Benchmark_Percentage = _Benchmark > 0 ? (_stageVomepercentage / _Benchmark) : 0;
-                    // Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
                     mqlStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
                     mqlStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString();
                     #endregion
@@ -5950,7 +3838,6 @@ namespace RevenuePlanner.Controllers
                     OverviewModelList = new List<TacticwiseOverviewModel>();
                     ActualTacticTrendList = new List<ActualTrendModel>();
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(cwStageCode)).ToList();
-                    //ActualList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(cwStageCode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, cwStageCode);
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
                     #endregion
@@ -5964,7 +3851,6 @@ namespace RevenuePlanner.Controllers
                     #region "Conversion : Set Linechart & Revenue Overview data to model"
                     string CWStageLabel = Common.GetLabel(Common.StageModeCW);
                     objLineChartData = new lineChartData();
-                    //objLineChartData = GetLineChartData(ActualTacticTrendList, ProjectedTrendList, timeframeOption, IsQuarterly);
                     objLineChartData = GetLineChartData(objBasicModel);
                     objProjectedGoal = new Projected_Goal();
                     objProjectedGoal = GetRevenueOverviewData(OverviewModelList, timeframeOption);
@@ -5989,8 +3875,6 @@ namespace RevenuePlanner.Controllers
                     cwStageBenchmarkmodel.stageVolume = _stageVolumepercentage.ToString();
                     cwStageBenchmarkmodel.Benchmark = _Benchmark.ToString();
                     Actual_Benchmark_Percentage = _Benchmark > 0 ? ((_stageVolumepercentage - _Benchmark) / _Benchmark) * 100 : 0; //PL #1483 formula changed ((Actual % number – Goal % number)/Goal % number * 100) -Dashrath Prajapati
-                    //Actual_Benchmark_Percentage = _Benchmark > 0 ? (stageVolumePercntg / _Benchmark) : 0;
-                    // Actual_Benchmark_Percentage = Actual_Benchmark_Percentage - 100;
                     cwStageBenchmarkmodel.IsNegativePercentage = Actual_Benchmark_Percentage < 0 ? true : false;
                     cwStageBenchmarkmodel.PercentageDifference = Actual_Benchmark_Percentage.ToString();
                     #endregion
@@ -6031,10 +3915,6 @@ namespace RevenuePlanner.Controllers
                     _TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Sum(budget => budget.Value) : 0;
 
                     _PlanBudget = db.Plans.Where(plan => lstPlanIds.Contains(plan.PlanId)).Sum(plan => plan.Budget);
-                    //List<Plan_Budget> lstPlanBudget = new List<Plan_Budget>();
-                    //lstPlanBudget = db.Plan_Budget.Where(budget => lstPlanIds.Contains(budget.PlanId)).ToList();
-                    //_TotalAllocatedBudget = lstPlanBudget != null && lstPlanBudget.Count > 0 ? lstPlanBudget.Sum(budget => budget.Value) : 0;
-
                     objFinanceModel.TotalBudgetAllocated = _TacticTotalBudget;
                     objFinanceModel.TotalBudgetUnAllocated = _PlanBudget - _TacticTotalBudget;
 
@@ -6059,51 +3939,6 @@ namespace RevenuePlanner.Controllers
                     List<BarChartSeries> lstSeries = new List<BarChartSeries>();
                     BarChartSeries objSeries = new BarChartSeries();
                     List<double> serData = new List<double>();
-
-                    #region "Old PlannedCost vs Budget , ActualCost vs Budget  Barchart Code"
-                    #region "Planned_Cost vs Budget Barchart Data"
-                    //BarChartModel objPlannedCostModel = new BarChartModel();
-                    //objSeries.name = "Planned Cost";
-                    //serData.Add(objFinanceModel.PlannedCostvsBudget);
-                    //objSeries.data = serData;
-                    //lstSeries.Add(objSeries);
-
-                    //objSeries = new BarChartSeries();
-                    //serData = new List<double>();
-                    //objSeries.name = "Budget";
-                    //serData.Add(_TacticTotalBudget);
-                    //objSeries.data = serData;
-                    //lstSeries.Add(objSeries);
-
-                    //objPlannedCostModel.series = lstSeries;
-                    //objPlannedCostModel.categories = new List<string>();
-
-                    #endregion
-
-                    #region "Actual_Cost vs Budget Barchart Data"
-                    //BarChartModel objActualCostModel = new BarChartModel();
-                    //objSeries = new BarChartSeries();
-                    //lstSeries = new List<BarChartSeries>();
-                    //serData = new List<double>();
-
-                    //objSeries.name = "Actual Cost";
-                    //serData.Add(objFinanceModel.ActualCostvsBudet);
-                    //objSeries.data = serData;
-                    //lstSeries.Add(objSeries);
-
-                    //objSeries = new BarChartSeries();
-                    //serData = new List<double>();
-                    //objSeries.name = "Budget";
-                    //serData.Add(_TacticTotalBudget);
-                    //objSeries.data = serData;
-                    //lstSeries.Add(objSeries);
-
-                    //objActualCostModel.series = lstSeries;
-                    //objActualCostModel.categories = new List<string>();
-
-                    #endregion
-                    #endregion
-
 
                     #region "Get Categories based on selected Filter value like {'Monthly','Quarterly'}"
                     if (IsQuarterly)
@@ -6265,18 +4100,11 @@ namespace RevenuePlanner.Controllers
 
                             _PlannedCostValue = _tacCostList.Where(plancost => plancost.Period.Equals(curntPeriod)).Select(plancost => plancost.Value).FirstOrDefault();
                             TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Value));
-                            //ActualCostList = _tacActualList.Where(actualcost => actualcost.Period.Equals(curntPeriod)).Select(actualcost => actualcost.Actualvalue).FirstOrDefault();
                             _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod)).Select(budgtcost => budgtcost.Value).FirstOrDefault();
 
-                            //serPlannedData = new List<double>();
                             serPlannedData.Add(_PlannedCostValue);
-
-                            //serBudgetData = new List<double>();
                             serBudgetData.Add(_BudgetCostValue);
-
-                            //scatterData = new List<double>();
                             scatterData.Add(_ActualCostValue);
-
 
                             btmPlannedCostList.Add(_PlannedCostValue);
                             btmActualCostList.Add(_ActualCostValue);
@@ -6295,9 +4123,6 @@ namespace RevenuePlanner.Controllers
                     objMainModel.series = lstSeries;
                     objMainModel.categories = categories;
                     #endregion
-
-                    //objFinanceModel.PlannedCostBarChartModel = objPlannedCostModel;
-                    //objFinanceModel.ActualCostBarChartModel = objActualCostModel;
                     objFinanceModel.MainBarChartModel = objMainModel;
                     objFinanceModel.MainPlannedCostList = btmPlannedCostList;
                     objFinanceModel.MainActualCostList = btmActualCostList;
@@ -6354,8 +4179,6 @@ namespace RevenuePlanner.Controllers
                 Percentage = ProjvsGoal * 100; // Calculate Percentage based on Actual_Projected & Goal value.
                 if (Percentage > 0)
                     objProjGoal.IsnegativePercentage = false;
-                //if(Percentage.Equals())
-
                 objProjGoal.year = "FY " + timeframeOption; // set selected year to Model.
                 objProjGoal.Actual_Projected = Actual_Projected.ToString(); // set Actual_Projected to Model.
                 objProjGoal.Goal = Goal.ToString(); // set Goal to Model.
@@ -6399,7 +4222,6 @@ namespace RevenuePlanner.Controllers
                     //// Get month list of entire year.
                     includeActualMonth = GetMonthListForReport(timeframeOption);
                 }
-
 
                 if (StageCodeList.Contains(Enums.InspectStage.ProjectedStageValue.ToString()))
                 {
@@ -6470,15 +4292,10 @@ namespace RevenuePlanner.Controllers
                     ActualTacticList = ActualTacticStageList.Where(actual => actual.StageCode.Equals(stagecode)).Select(actual => actual.ActualTacticList).FirstOrDefault();
                     TacticIds = ActualTacticList.Select(actual => actual.PlanTacticId).ToList();
                     TacticList = TacticData.Where(tac => TacticIds.Contains(tac.TacticObj.PlanTacticId)).Select(tac => tac.TacticObj).ToList();
-                    int _TacEndMonth = 0, _planTacticId = 0, _TacStartMonth = 0;
+                    int _TacEndMonth = 0, _planTacticId = 0;
 
                     foreach (var tactic in TacticList)
                     {
-                        //if (_currentYear <= tactic.StartDate.Year)
-                        //{
-                        //    _TacEndMonth = tactic.EndDate.Month;
-                        //}
-                        //else
                         {
                             _TacEndMonth = 12;
                         }
@@ -6490,10 +4307,8 @@ namespace RevenuePlanner.Controllers
                             ActualTacticListbyTactic = new List<Plan_Campaign_Program_Tactic_Actual>();
                             //// Filter CurrentMonthActualTacticList by current PlanTacticId.
                             ActualTacticListbyTactic = ActualTacticList.Where(actual => actual.PlanTacticId.Equals(_planTacticId)).ToList();
-
                             //// Get ActualValue sum.
                             TotalActualUpToCurrentMonth = ActualTacticListbyTactic.Sum(actual => actual.Actualvalue);
-
                             //// Get No. of involved month till current month.
                             involveMonthTillCurrentMonth = ActualTacticListbyTactic.Where(actual => actual.Actualvalue > 0).Count();
                         }
@@ -6560,11 +4375,6 @@ namespace RevenuePlanner.Controllers
 
                 foreach (var tactic in TacticList)
                 {
-                    //if (_currentYear <= tactic.StartDate.Year)
-                    //{
-                    //    _TacEndMonth = tactic.EndDate.Month;
-                    //}
-                    //else
                     {
                         _TacEndMonth = 12;
                     }
@@ -6842,7 +4652,6 @@ namespace RevenuePlanner.Controllers
             {
                 throw ex;
             }
-            //return PartialView("_SparkLineChart", SparkLineCharts);
             return SparkLineCharts;
         }
 
@@ -6857,16 +4666,11 @@ namespace RevenuePlanner.Controllers
         public List<sparklineData> GetActualRevenueTrendData(int customfieldId, string customFieldType, bool IsTacticCustomField, List<TacticStageValue> Tacticdata, Enums.TOPRevenueType RevenueType, string timeFrameOption, List<RevenueContrinutionData> CustomFieldOptionList, List<string> IncludeCurrentMonth)
         {
             #region "Declare local variables"
-            //bool IsTacticCustomField = false, IsProgramCustomField = false, IsCampaignCustomField = false;
-            //string customFieldType = string.Empty;
-            //int customfieldId = 0;
-            //List<RevenueContrinutionData> CustomFieldOptionList = new List<RevenueContrinutionData>();
             List<sparkLineCharts> ListSparkLineChartsData = new List<sparkLineCharts>();
             sparklineData _sparklinedata = new sparklineData();
             List<sparklineData> lstSparklineData = new List<sparklineData>();
             List<sparklineData> resultSparklineData = new List<sparklineData>();
             bool IsQuarterly = true;
-            //strCustomField = !string.IsNullOrEmpty(strCustomField) ? strCustomField : string.Empty;
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             string revStageCode = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
             List<string> revStageCodeList = new List<string> { revStageCode };
@@ -6885,82 +4689,6 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                #region " Old Code "
-                //#region "Get CustomField Id & set IsTacticCustomField,IsCampaignCustomField,IsProgramCustomField by selecte CustomField label"
-                //if (strCustomField.Contains(Common.TacticCustomTitle))
-                //{
-                //    customfieldId = Convert.ToInt32(strCustomField.Replace(Common.TacticCustomTitle, ""));
-                //    IsTacticCustomField = true;
-                //}
-                //else if (strCustomField.Contains(Common.CampaignCustomTitle))
-                //{
-                //    customfieldId = Convert.ToInt32(strCustomField.Replace(Common.CampaignCustomTitle, ""));
-                //    IsCampaignCustomField = true;
-                //}
-                //else if (strCustomField.Contains(Common.ProgramCustomTitle))
-                //{
-                //    customfieldId = Convert.ToInt32(strCustomField.Replace(Common.ProgramCustomTitle, ""));
-                //    IsProgramCustomField = true;
-                //}
-                //#endregion 
-                #endregion
-
-                //if (strCustomField.Contains(Common.TacticCustomTitle) || strCustomField.Contains(Common.CampaignCustomTitle) || strCustomField.Contains(Common.ProgramCustomTitle))
-                //{
-                #region "Old Code"
-                //#region "Entity list based on CustomFieldId"
-                //List<int> entityids = new List<int>();
-                //if (IsTacticCustomField)
-                //{
-                //    entityids = Tacticdata.Select(t => t.TacticObj.PlanTacticId).ToList();
-                //}
-                //else if (IsCampaignCustomField)
-                //{
-                //    entityids = Tacticdata.Select(t => t.TacticObj.Plan_Campaign_Program.PlanCampaignId).ToList();
-                //}
-                //else
-                //{
-                //    entityids = Tacticdata.Select(t => t.TacticObj.PlanProgramId).ToList();
-                //}
-                //#endregion
-
-                //customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
-                //var cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && entityids.Contains(c.EntityId)).ToList();
-
-                //#region " Get CustomField Option list based on CustomFieldType"
-                //if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
-                //{
-                //    var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
-                //    CustomFieldOptionList = (from cfo in db.CustomFieldOptions
-                //                             where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId)
-                //                             select cfo).ToList().GroupBy(pc => new { id = pc.CustomFieldOptionId, title = pc.Value }).Select(pc =>
-                //                  new RevenueContrinutionData
-                //                  {
-                //                      Title = pc.Key.title,
-                //                      CustomFieldOptionid = pc.Key.id,
-                //                      // Modified By : Kalpesh Sharma Filter changes for Revenue report - Revenue Report
-                //                      // Fetch the filtered list based upon custom fields type
-                //                      planTacticList = Tacticdata.Where(t => cusomfieldEntity.Where(c => c.Value == pc.Key.id.ToString()).Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
-                //                          (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
-                //                  }).ToList();
-
-                //}
-                //else if (customFieldType == Enums.CustomFieldType.TextBox.ToString())
-                //{
-                //    CustomFieldOptionList = cusomfieldEntity.GroupBy(pc => new { title = pc.Value }).Select(pc =>
-                //                new RevenueContrinutionData
-                //                {
-                //                    Title = pc.Key.title,
-                //                    planTacticList = pc.Select(c => c.EntityId).ToList()
-                //                }).ToList();
-                //}
-                //#endregion
-
-                //List<string> yearlist = new List<string>();
-                //yearlist.Add(timeFrameOption);
-                //List<string> IncludeCurrentMonth = GetMonthWithYearUptoCurrentMonth(yearlist); 
-                #endregion
-
                 if (RevenueType.Equals(Enums.TOPRevenueType.Revenue))
                 {
                     #region "Code for TOPRevenue"
@@ -7016,22 +4744,10 @@ namespace RevenuePlanner.Controllers
                             ActualQ3 = ActualQ2 + (CurrentMonthActualTacticList.Where(actual => Q3.Contains(actual.Period)).Sum(actual => actual.ActualValue));
                             ActualQ4 = ActualQ3 + (CurrentMonthActualTacticList.Where(actual => Q4.Contains(actual.Period)).Sum(actual => actual.ActualValue));
 
-                            #region "Old Code"
-                            //TrendQ1 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TrendQ2 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TrendQ3 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TrendQ4 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TotalTrendQ1 = TotalTrendQ1 + (ActualQ1 + TrendQ1);
-                            //TotalTrendQ2 = TotalTrendQ2 + (ActualQ2 + TrendQ2);
-                            //TotalTrendQ3 = TotalTrendQ3 + (ActualQ3 + TrendQ3);
-                            //TotalTrendQ4 = TotalTrendQ4 + (ActualQ4 + TrendQ4); 
-                            #endregion
-
                             TotalTrendQ1 = TotalTrendQ1 + (ActualQ1);
                             TotalTrendQ2 = TotalTrendQ2 + (ActualQ2);
                             TotalTrendQ3 = TotalTrendQ3 + (ActualQ3);
                             TotalTrendQ4 = TotalTrendQ4 + (ActualQ4);
-                            //strTrendValue = string.Join(", ", new List<string> { (ActualQ1 + TrendQ1).ToString(), (ActualQ2 + TrendQ2).ToString(), (ActualQ3 + TrendQ3).ToString(), (ActualQ4 + TrendQ4).ToString() });
                             strTrendValue = string.Join(", ", new List<string> { (ActualQ1).ToString(), (ActualQ2).ToString(), (ActualQ3).ToString(), (ActualQ4).ToString() });
                             _sparklinedata.Trend = strTrendValue;
                         }
@@ -7059,8 +4775,6 @@ namespace RevenuePlanner.Controllers
                 {
                     #region "Declare Local Variables"
                     double Proj_Goal = 0, Actual_Projected = 0, Goal = 0;
-                    //List<Plan_Campaign_Program_Tactic_Actual> lstActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
-                    //string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
                     List<ActualDataTable> ActualDataTable = new List<ActualDataTable>();
                     List<TacticDataTable> TacticDataTable = new List<TacticDataTable>();
                     List<ProjectedTrendModel> ProjectedRevenueTrendList = new List<ProjectedTrendModel>();
@@ -7145,7 +4859,6 @@ namespace RevenuePlanner.Controllers
                         #region "Calculate Proj.Vs Goal"
                         Actual_Projected = ActualDataTable.Sum(actual => actual.ActualValue);// +ProjectedRevenueTrendList.Sum(proj => proj.TrendValue);
                         Goal = ProjectedRevenueTrendList.Sum(proj => proj.Value);
-                        //Proj_Goal = Actual_Projected > 0 ? ((Actual_Projected - Goal) / Actual_Projected) : 0; // Commneted By Nishant Sheth :#1424
                         Proj_Goal = Goal > 0 ? (((Actual_Projected - Goal) / Goal) * 100) : 0;// Change By Nishant Sheth :#1424 // 
                         TotalRevenueTypeCol = TotalRevenueTypeCol + Proj_Goal;
                         #endregion
@@ -7153,8 +4866,6 @@ namespace RevenuePlanner.Controllers
                         #endregion
 
                         #region "Calculate Trend"
-                        //fltrTrendActualTacticList = TrendActualTacticList.Where(ta => _obj.planTacticList.Contains(ta.PlanTacticId)).ToList();
-                        //ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, fltrTrendActualTacticList, fltrTacticData, IsTacticCustomField);
                         #endregion
 
                         #region "Set Sparkline chart Data"
@@ -7188,10 +4899,10 @@ namespace RevenuePlanner.Controllers
                             TrendQ4 = ProjectedRevenueTrendList.Where(_projTrend => Q1.Contains(_projTrend.Month) || Q2.Contains(_projTrend.Month) || Q3.Contains(_projTrend.Month) || Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
 
                             #region "Newly Added Code"
-                            Act_ProjQ1 = ActualQ1;// +TrendQ1;
-                            Act_ProjQ2 = ActualQ2;// +TrendQ2;
-                            Act_ProjQ3 = ActualQ3;// +TrendQ3;
-                            Act_ProjQ4 = ActualQ4;// +TrendQ4;
+                            Act_ProjQ1 = ActualQ1;
+                            Act_ProjQ2 = ActualQ2;
+                            Act_ProjQ3 = ActualQ3;
+                            Act_ProjQ4 = ActualQ4;
 
                             GoalQ1 = ProjectedRevenueTrendList.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                             GoalQ2 = ProjectedRevenueTrendList.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -7200,26 +4911,14 @@ namespace RevenuePlanner.Controllers
 
                             ///Comment By Nishant Sheth For #1424
 
-                            //Proj_GoalQ1 = Act_ProjQ1 > 0 ? ((Act_ProjQ1 - GoalQ1) / Act_ProjQ1) : 0;
-                            //Proj_GoalQ2 = Act_ProjQ2 > 0 ? ((Act_ProjQ2 - GoalQ2) / Act_ProjQ2) : 0;
-                            //Proj_GoalQ3 = Act_ProjQ3 > 0 ? ((Act_ProjQ3 - GoalQ3) / Act_ProjQ3) : 0;
-                            //Proj_GoalQ4 = Act_ProjQ4 > 0 ? ((Act_ProjQ4 - GoalQ4) / Act_ProjQ4) : 0;
-
                             /// End By Nishant Sheth
                             Proj_GoalQ1 = GoalQ1 > 0 ? (((Act_ProjQ1 - GoalQ1) / GoalQ1) * 100) : 0;// Change By Nishant #1424
                             Proj_GoalQ2 = GoalQ2 > 0 ? (((Act_ProjQ2 - GoalQ2) / GoalQ2) * 100) : 0;// Change By Nishant #1424
                             Proj_GoalQ3 = GoalQ3 > 0 ? (((Act_ProjQ3 - GoalQ3) / GoalQ3) * 100) : 0;// Change By Nishant #1424
                             Proj_GoalQ4 = GoalQ4 > 0 ? (((Act_ProjQ4 - GoalQ4) / GoalQ4) * 100) : 0;// Change By Nishant #1424
 
-
-
                             #endregion
 
-                            //TotalTrendQ1 = TotalTrendQ1 + (ActualQ1 + TrendQ1);
-                            //TotalTrendQ2 = TotalTrendQ2 + (ActualQ2 + TrendQ2);
-                            //TotalTrendQ3 = TotalTrendQ3 + (ActualQ3 + TrendQ3);
-                            //TotalTrendQ4 = TotalTrendQ4 + (ActualQ4 + TrendQ4);
-                            //strTrendValue = string.Join(", ", new List<string> { (ActualQ1 + TrendQ1).ToString(), (ActualQ2 + TrendQ2).ToString(), (ActualQ3 + TrendQ3).ToString(), (ActualQ4 + TrendQ4).ToString() });
                             strTrendValue = string.Join(", ", new List<string> { (Proj_GoalQ1).ToString(), (Proj_GoalQ2).ToString(), (Proj_GoalQ3).ToString(), (Proj_GoalQ4).ToString() });
                             _sparklinedata.Trend = strTrendValue;
                         }
@@ -7258,9 +4957,8 @@ namespace RevenuePlanner.Controllers
                                                        TrendValue = tac.Key.TrendValue
                                                    }).Distinct().ToList();
 
-                    double TotalActual_Projected = ActualTacticList.Sum(actual => actual.Actualvalue);// +lstTotalProjectedTrendModel.Sum(proj => proj.TrendValue);
+                    double TotalActual_Projected = ActualTacticList.Sum(actual => actual.Actualvalue);
                     double TotalGoal = lstTotalProjectedTrendModel.Sum(proj => proj.Value);
-                    //double TotalProj_Goal = TotalActual_Projected > 0 ? ((TotalActual_Projected - TotalGoal) / TotalActual_Projected) : 0; // Comment By Nishant Sheth for #1424
                     double TotalProj_Goal = TotalGoal > 0 ? (((TotalActual_Projected - TotalGoal) / TotalGoal) * 100) : 0;// Change By Nishant #1424
                     double _totalTrendQ1 = 0, _totalTrendQ2 = 0, _totalTrendQ3 = 0, _totalTrendQ4 = 0, _totalActualQ1 = 0, _totalActualQ2 = 0, _totalActualQ3 = 0, _totalActualQ4 = 0;
                     Act_ProjQ1 = Act_ProjQ2 = Act_ProjQ3 = Act_ProjQ4 = GoalQ1 = GoalQ2 = GoalQ3 = GoalQ4 = Proj_GoalQ1 = Proj_GoalQ2 = Proj_GoalQ3 = Proj_GoalQ4 = 0;
@@ -7275,18 +4973,11 @@ namespace RevenuePlanner.Controllers
                     _totalTrendQ3 = lstTotalProjectedTrendModel.Where(_projTrend => Q1.Contains(_projTrend.Month) || Q2.Contains(_projTrend.Month) || Q3.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
                     _totalTrendQ4 = lstTotalProjectedTrendModel.Where(_projTrend => Q1.Contains(_projTrend.Month) || Q2.Contains(_projTrend.Month) || Q3.Contains(_projTrend.Month) || Q4.Contains(_projTrend.Month)).Sum(_projTrend => _projTrend.TrendValue);
 
-                    #region "Old Code"
-                    //TotalTrendQ1 = (_totalActualQ1 + _totalTrendQ1);
-                    //TotalTrendQ2 = (_totalActualQ2 + _totalTrendQ2);
-                    //TotalTrendQ3 = (_totalActualQ3 + _totalTrendQ3);
-                    //TotalTrendQ4 = (_totalActualQ4 + _totalTrendQ4); 
-                    #endregion
-
                     #region "Newly added Code"
-                    Act_ProjQ1 = _totalActualQ1;// +_totalTrendQ1;
-                    Act_ProjQ2 = _totalActualQ2;// +_totalTrendQ2;
-                    Act_ProjQ3 = _totalActualQ3;// +_totalTrendQ3;
-                    Act_ProjQ4 = _totalActualQ4;// +_totalTrendQ4;
+                    Act_ProjQ1 = _totalActualQ1;
+                    Act_ProjQ2 = _totalActualQ2;
+                    Act_ProjQ3 = _totalActualQ3;
+                    Act_ProjQ4 = _totalActualQ4;
 
                     GoalQ1 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month)).Sum(_proj => _proj.Value);
                     GoalQ2 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month)).Sum(_proj => _proj.Value);
@@ -7294,11 +4985,6 @@ namespace RevenuePlanner.Controllers
                     GoalQ4 = lstTotalProjectedTrendModel.Where(_proj => Q1.Contains(_proj.Month) || Q2.Contains(_proj.Month) || Q3.Contains(_proj.Month) || Q4.Contains(_proj.Month)).Sum(_proj => _proj.Value);
 
                     /// Commented By Nishant Sheth for #1424
-
-                    //TotalTrendQ1 = Act_ProjQ1 > 0 ? ((Act_ProjQ1 - GoalQ1) / Act_ProjQ1) : 0;
-                    //TotalTrendQ2 = Act_ProjQ2 > 0 ? ((Act_ProjQ2 - GoalQ2) / Act_ProjQ2) : 0;
-                    //TotalTrendQ3 = Act_ProjQ3 > 0 ? ((Act_ProjQ3 - GoalQ3) / Act_ProjQ3) : 0;
-                    //TotalTrendQ4 = Act_ProjQ4 > 0 ? ((Act_ProjQ4 - GoalQ4) / Act_ProjQ4) : 0;
 
                     /// End By Nishant Sheth
 
@@ -7400,23 +5086,10 @@ namespace RevenuePlanner.Controllers
                             // return record from list which contains Q1,Q2, Q3 or Q4 months : Summed Up (Q1 + Q2 + Q3 + Q4) Actuals Value
                             ActualQ4 = ActualQ3 + CurrentMonthCostList.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
-                            #region "Old Code"
-                            //TrendQ1 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TrendQ2 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TrendQ3 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TrendQ4 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //TotalTrendQ1 = TotalTrendQ1 + (ActualQ1 + TrendQ1);
-                            //TotalTrendQ2 = TotalTrendQ2 + (ActualQ2 + TrendQ2);
-                            //TotalTrendQ3 = TotalTrendQ3 + (ActualQ3 + TrendQ3);
-                            //TotalTrendQ4 = TotalTrendQ4 + (ActualQ4 + TrendQ4); 
-                            #endregion
-
                             TotalTrendQ1 = TotalTrendQ1 + (ActualQ1);
                             TotalTrendQ2 = TotalTrendQ2 + (ActualQ2);
                             TotalTrendQ3 = TotalTrendQ3 + (ActualQ3);
                             TotalTrendQ4 = TotalTrendQ4 + (ActualQ4);
-
-                            //strTrendValue = string.Join(", ", new List<string> { (ActualQ1 + TrendQ1).ToString(), (ActualQ2 + TrendQ2).ToString(), (ActualQ3 + TrendQ3).ToString(), (ActualQ4 + TrendQ4).ToString() });
                             strTrendValue = string.Join(", ", new List<string> { (ActualQ1).ToString(), (ActualQ2).ToString(), (ActualQ3).ToString(), (ActualQ4).ToString() });
                             _sparklinedata.Trend = strTrendValue;
                         }
@@ -7485,13 +5158,9 @@ namespace RevenuePlanner.Controllers
                         revFltrActuals = revActualTacticList.Where(ta => _obj.planTacticList.Contains(ta.PlanTacticId)).ToList();
                         //// Get Actuals Tactic list by weightage for Revenue.
                         ActualDataTable = GetActualTacticDataTablebyStageCode(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, Enums.InspectStage.Revenue, revFltrActuals, Tacticdata, IsTacticCustomField);
-
                         //// Get ActualList upto CurrentMonth.
                         revCurrentMonthList = ActualDataTable.Where(actual => IncludeCurrentMonth.Contains(Tacticdata.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
                         TotalRevenueValueCurrentMonth = revCurrentMonthList.Sum(ta => ta.ActualValue); // Get Total of Actual Revenue value. 
-                        //TotalRevenueTypeCol = TotalRevenueTypeCol + TotalRevenueValueCurrentMonth;
-
-
                         #endregion
 
                         #region " Get Cost Actuals List "
@@ -7502,7 +5171,6 @@ namespace RevenuePlanner.Controllers
                         TacticCostData = GetActualCostDataByWeightage(customfieldId, _obj.CustomFieldOptionid.ToString(), customFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, IsTacticCustomField);
                         CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
                         TotalCostValueCurrentMonth = CurrentMonthCostList.Sum(tac => tac.Value);
-                        //TotalRevenueTypeCol = TotalRevenueTypeCol + TotalCostValueCurrentMonth;
                         #endregion
 
                         #region "Get Actuals Cost Trend Model List"
@@ -7513,7 +5181,6 @@ namespace RevenuePlanner.Controllers
                         #region "Calculate ROI"
                         if (TotalCostValueCurrentMonth != 0)
                         {
-                            //TotalROIValueCurrentMonth = (TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth; // Commented BY Nishant Sheth : #1423
                             TotalROIValueCurrentMonth = (((TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth) * 100); // Add By Nishant Sheth : #1423
                         }
                         else
@@ -7527,7 +5194,6 @@ namespace RevenuePlanner.Controllers
                         #region "Set Sparkline chart Data"
                         _sparklinedata = new sparklineData();
                         _sparklinedata.Name = _obj.Title;
-                        //strRevenueTypeColumn = Math.Round(TotalROIValueCurrentMonth, 1).ToString(); // Commented By Nishant Sheth : #1423
                         strRevenueTypeColumn = TotalROIValueCurrentMonth > 0 ? ("+" + Math.Round(TotalROIValueCurrentMonth, 1).ToString() + "%") : (TotalROIValueCurrentMonth.Equals(0) ? "0%" : Math.Round(TotalROIValueCurrentMonth, 1).ToString() + "%");// Change By Nishant Sheth #1423 (Display in %)
                         _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
                         _sparklinedata.IsPercentage = true; // Add BY Nishant Sheth : #1423
@@ -7535,7 +5201,6 @@ namespace RevenuePlanner.Controllers
                         _sparklinedata.Is_Pos_Neg_Status = true;
                         _sparklinedata.IsTotal = false;
                         _sparklinedata.Value = TotalROIValueCurrentMonth;
-                        //_sparklinedata.Tooltip_Prefix = strCurrency.ToString();
                         _sparklinedata.Tooltip_Prefix = _sparklinedata.Tooltip_Suffix = string.Empty;
                         _sparklinedata.Tooltip_Suffix = strPercentage.ToString();// Add BY Nishant Sheth : #1423
                         #endregion
@@ -7558,43 +5223,6 @@ namespace RevenuePlanner.Controllers
                             costActualQ2 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                             costActualQ3 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                             costActualQ4 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-
-                            #region "Old Code"
-                            ////// Calculate Trend for Actual: Revenue.
-                            //revTrendQ1 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //revTrendQ2 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //revTrendQ3 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //revTrendQ4 = ActualTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-
-                            ////// Calculate Trend for Actual: Cost.
-                            //costTrendQ1 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //costTrendQ2 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //costTrendQ3 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                            //costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => _obj.planTacticList.Contains(_actTrend.PlanTacticId) && Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-
-                            ////// Calculate ROI Trend
-                            //TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
-                            //TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
-                            //TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
-                            //TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0; 
-                            #endregion
-
-                            /// Commented By Nishant Sheth for #1423
-
-                            //TrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
-                            //TrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
-                            //TrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
-                            //TrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0;
-
-                            /// End By Nishant Sheth 
-
-
-
-
-
-
-
-
 
                             TrendQ1 = (costActualQ1) != 0 ? ((((revActualQ1) - (costActualQ1)) / (costActualQ1)) * 100) : 0; // Change By Nishant #1423
                             TrendQ2 = (costActualQ2) != 0 ? ((((revActualQ2) - (costActualQ2)) / (costActualQ2)) * 100) : 0; // Change By Nishant #1423
@@ -7635,7 +5263,6 @@ namespace RevenuePlanner.Controllers
                     #region "Calculate ROI"
                     if (TotalCostValueCurrentMonth != 0)
                     {
-                        //TotalRevenueTypeCol = (TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth; // Commented BY Nishant Sheth : #1423
                         TotalRevenueTypeCol = (((TotalRevenueValueCurrentMonth - TotalCostValueCurrentMonth) / TotalCostValueCurrentMonth) * 100); // Add By Nishant Sheth : #1423
                     }
                     else
@@ -7663,43 +5290,10 @@ namespace RevenuePlanner.Controllers
                         costActualQ3 = TacticCostData.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                         costActualQ4 = TacticCostData.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty) || Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
-                        #region " Old Code "
-                        ////// Calculate Trend for Actual: Revenue.
-                        //revTrendQ1 = ActualTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                        //revTrendQ2 = ActualTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                        //revTrendQ3 = ActualTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                        //revTrendQ4 = ActualTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-
-                        ////// Calculate Trend for Actual: Cost.
-                        //costTrendQ1 = ActualCostTrendModelList.Where(_actTrend => Q1.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                        //costTrendQ2 = ActualCostTrendModelList.Where(_actTrend => Q2.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                        //costTrendQ3 = ActualCostTrendModelList.Where(_actTrend => Q3.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-                        //costTrendQ4 = ActualCostTrendModelList.Where(_actTrend => Q4.Contains(_actTrend.Month)).Sum(_actTrend => _actTrend.TrendValue);
-
-                        ////// Calculate ROI Trend
-                        //TrendQ1 = (costActualQ1 + costTrendQ1) != 0 ? (((revActualQ1 + revTrendQ1) - (costActualQ1 + costTrendQ1)) / (costActualQ1 + costTrendQ1)) : 0;
-                        //TrendQ2 = (costActualQ2 + costTrendQ2) != 0 ? (((revActualQ2 + revTrendQ2) - (costActualQ2 + costTrendQ2)) / (costActualQ2 + costTrendQ2)) : 0;
-                        //TrendQ3 = (costActualQ3 + costTrendQ3) != 0 ? (((revActualQ3 + revTrendQ3) - (costActualQ3 + costTrendQ3)) / (costActualQ3 + costTrendQ3)) : 0;
-                        //TrendQ4 = (costActualQ4 + costTrendQ4) != 0 ? (((revActualQ4 + revTrendQ4) - (costActualQ4 + costTrendQ4)) / (costActualQ4 + costTrendQ4)) : 0; 
-                        #endregion
-
-                        /// Commented By Nishant Sheth for #1423
-
-                        //TotalTrendQ1 = (costActualQ1) != 0 ? (((revActualQ1) - (costActualQ1)) / (costActualQ1)) : 0;
-                        //TotalTrendQ2 = (costActualQ2) != 0 ? (((revActualQ2) - (costActualQ2)) / (costActualQ2)) : 0;
-                        //TotalTrendQ3 = (costActualQ3) != 0 ? (((revActualQ3) - (costActualQ3)) / (costActualQ3)) : 0;
-                        //TotalTrendQ4 = (costActualQ4) != 0 ? (((revActualQ4) - (costActualQ4)) / (costActualQ4)) : 0;
-
-                        /// End By Nishant Sheth
                         TotalTrendQ1 = (costActualQ1) != 0 ? ((((revActualQ1) - (costActualQ1)) / (costActualQ1)) * 100) : 0; // Change By Nishant #1423
                         TotalTrendQ2 = (costActualQ2) != 0 ? ((((revActualQ2) - (costActualQ2)) / (costActualQ2)) * 100) : 0; // Change By Nishant #1423
                         TotalTrendQ3 = (costActualQ3) != 0 ? ((((revActualQ3) - (costActualQ3)) / (costActualQ3)) * 100) : 0; // Change By Nishant #1423
                         TotalTrendQ4 = (costActualQ4) != 0 ? ((((revActualQ4) - (costActualQ4)) / (costActualQ4)) * 100) : 0; // Change By Nishant #1423
-
-                        //TotalTrendQ1 = TrendQ1;//(ActualQ1 + TrendQ1);
-                        //TotalTrendQ2 = TrendQ2;//(ActualQ2 + TrendQ2);
-                        //TotalTrendQ3 = TrendQ3;//(ActualQ3 + TrendQ3);
-                        //TotalTrendQ4 = TrendQ4;//(ActualQ4 + TrendQ4);
 
                     }
                     #endregion
@@ -7712,7 +5306,6 @@ namespace RevenuePlanner.Controllers
                     _sparklinedata = new sparklineData();
                     _sparklinedata.Name = "Total";
                     strRevenueTypeColumn = string.Empty;
-                    //strRevenueTypeColumn = Math.Round(TotalRevenueTypeCol, 1).ToString(); // Commented BY Nishant Sheth : #1423
                     strRevenueTypeColumn = TotalRevenueTypeCol > 0 ? ("+" + Math.Round(TotalRevenueTypeCol, 1).ToString() + "%") : (TotalRevenueTypeCol.Equals(0) ? "0%" : Math.Round(TotalRevenueTypeCol, 1).ToString() + "%"); // Change By Nishant Sheth #1423 (Display in %)
                     _sparklinedata.RevenueTypeValue = strRevenueTypeColumn;
                     _sparklinedata.IsPercentage = true; // Add BY Nishant Sheth : #1423
@@ -7728,7 +5321,6 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                 }
-                //}
             }
             catch (Exception ex)
             {
@@ -7799,7 +5391,6 @@ namespace RevenuePlanner.Controllers
                     tacticPlanList = Common.GetTacticPlanRelationList(TacticList);
                     tacticModelList = Common.GetTacticModelRelationList(TacticList, tacticPlanList);
                     ModelList = tacticModelList.Select(tacModel => tacModel.ModelId).Distinct().ToList();
-                    //_StageWiselist = stageList.Where(s => s.Level >= levelINQ && s.Level < levelMQL).Select(s => s.StageId).ToList();
                     _StageWiselist = stageList.Where(s => s.Level >= levelMQL && s.Level < levelCW).Select(s => s.StageId).ToList();
                     List<Model_Stage> tblModelStage = db.Model_Stage.Where(_mdlStg => _mdlStg.StageType == CR && ModelList.Contains(_mdlStg.ModelId)).Select(stage => stage).ToList();
 
@@ -7862,19 +5453,7 @@ namespace RevenuePlanner.Controllers
             try
             {
                 lstTacticMonths = GetTacticMonthInterval(TacticData);
-                //bool IsTillCurrentMonth = false;
                 ActualTacticStageList = GetActualListUpToCurrentMonthByStageCode(TacticData, timeframeOption, StageCodeList, IsTillCurrentMonth);
-
-                //// Filter ActualTacticList by Total month included in Tactic.
-                // Comment By Bhavesh inner logic was commented don't require to foreach loop
-                //foreach (ActualTacticListByStage objActualStage in ActualTacticStageList)
-                //{
-                //    if (objActualStage.ActualTacticList != null)
-                //    {
-                //        //objActualStage.ActualTacticList = objActualStage.ActualTacticList.Where(actual => lstTacticMonths.Where(tac => tac.PlanTacticId.Equals(actual.PlanTacticId)).Select(tac => tac.Month).Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
-                //        //objActualStage.ActualTacticList = objActualStage.ActualTacticList.Where(actual => lstTacticMonths.Where(tac => tac.PlanTacticId.Equals(actual.PlanTacticId)).Select(tac => tac.Month).Contains((TacticData.FirstOrDefault(tactic => tactic.TacticObj.PlanTacticId == actual.PlanTacticId).TacticYear) + actual.Period)).ToList();
-                //    }
-                //}
             }
             catch (Exception ex)
             {
@@ -7983,153 +5562,6 @@ namespace RevenuePlanner.Controllers
             return OverviewModelList;
         }
 
-        #region "Old Commented Code GetLineChartData"
-        ///// <summary>
-        ///// This action will return the data of Revenue Line chart
-        ///// </summary>
-        ///// <param name="ActualTacticList"> List of Actulals Tactic</param>
-        ///// <param name="ProjectedTrendModelList"> Trend Model list of Projected</param>
-        ///// <param name="timeframeOption">Selected Year from left Filter</param>
-        ///// <returns>Return LineChart Model</returns>
-        //public lineChartData GetLineChartData(List<ActualTrendModel> ActualTrendList, List<ProjectedTrendModel> ProjectedTrendModelList, string timeframeOption, bool IsQuarterly)
-        //{
-        //    #region "Declare Local Varialbles"
-        //    List<string> categories = new List<string>();
-        //    List<series> lstseries = new List<series>();
-        //    lineChartData LineChartData = new lineChartData();
-        //    bool IsDisplay = false;
-        //    List<double> serData1 = new List<double>();
-        //    List<double> serData2 = new List<double>();
-        //    //double monthlyActualTotal = 0, monthlyProjectedTotal = 0, monthlyGoalTotal = 0, TodayValue=0;
-        //    double TodayValue = 0;
-        //    string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString();
-        //    //int catLength = 12;
-        //    #endregion
-
-        //    try
-        //    {
-        //        #region "Get Today Plot Value"
-        //        if (currentYear == timeframeOption)
-        //        {
-        //            IsDisplay = true;
-        //            TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly);
-        //        }
-        //        #endregion
-
-        //        #region "Get Categories based on selected Filter value like {'Monthly','Quarterly'}"
-        //        if (IsQuarterly)
-        //        {
-        //            categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
-        //        }
-        //        else
-        //        {
-        //            categories = GetDisplayMonthListForReport(timeframeOption); // Get Categories list for Yearly Filter value like {Jan,Feb..}.
-        //        }
-        //        #endregion
-
-        //        #region "Old Code Get Categories & Series data"
-        //        //#region "Get Categories based on selected Filter value like {'Monthly','Quarterly'}"
-        //        //if (IsQuarterly)
-        //        //{
-        //        //    categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
-        //        //}
-        //        //else
-        //        //{
-        //        //    categories = GetDisplayMonthListForReport(timeframeOption); // Get Categories list for Yearly Filter value like {Jan,Feb..}.
-        //        //}
-        //        //#endregion
-
-        //        //#region "Monthly/Quarterly Calculate Actual, Projected & Goal Total"
-        //        //if (IsQuarterly)
-        //        //{
-        //        //    //curntPeriod = PeriodPrefix + i;
-        //        //    List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
-        //        //    List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
-        //        //    List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
-        //        //    List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-        //        //    double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, ProjectedQ1 = 0, ProjectedQ2 = 0, ProjectedQ3 = 0, ProjectedQ4 = 0, GoalQ1 = 0, GoalQ2 = 0, GoalQ3 = 0, GoalQ4 = 0, Actual_ProjectedQ1 = 0, Actual_ProjectedQ2 = 0, Actual_ProjectedQ3 = 0, Actual_ProjectedQ4 = 0;
-
-        //        //    ActualQ1 = ActualTrendList.Where(actual => Q1.Contains(actual.Month)).Sum(actual => actual.TrendValue);
-        //        //    ProjectedQ1 = ProjectedTrendModelList.Where(_projected => Q1.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
-        //        //    GoalQ1 = ProjectedTrendModelList.Where(_projected => Q1.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-        //        //    Actual_ProjectedQ1 = ActualQ1 + ProjectedQ1;
-        //        //    serData1.Add(Actual_ProjectedQ1);
-        //        //    serData2.Add(GoalQ1);
-
-        //        //    ActualQ2 = ActualTrendList.Where(actual => Q2.Contains(actual.Month)).Sum(actual => actual.TrendValue);
-        //        //    ProjectedQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
-        //        //    GoalQ2 = ProjectedTrendModelList.Where(_projected => Q2.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-
-        //        //    Actual_ProjectedQ2 = Actual_ProjectedQ1 + (ActualQ2 + ProjectedQ2);
-        //        //    serData2.Add(GoalQ1 + GoalQ2);
-        //        //    serData1.Add(Actual_ProjectedQ2);
-        //        //    //serData2.Add(GoalQ1 + GoalQ2);
-
-        //        //    ActualQ3 = ActualTrendList.Where(actual => Q3.Contains(actual.Month)).Sum(actual => actual.TrendValue);
-        //        //    ProjectedQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
-        //        //    GoalQ3 = ProjectedTrendModelList.Where(_projected => Q3.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-
-        //        //    Actual_ProjectedQ3 = Actual_ProjectedQ2 + (ActualQ3 + ProjectedQ3);
-        //        //    serData2.Add(GoalQ1 + GoalQ2 + GoalQ3);
-        //        //    serData1.Add(Actual_ProjectedQ3);
-        //        //    //serData2.Add(GoalQ1 + GoalQ2 + GoalQ3);
-
-        //        //    ActualQ4 = ActualTrendList.Where(actual => Q4.Contains(actual.Month)).Sum(actual => actual.TrendValue);
-        //        //    ProjectedQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
-        //        //    GoalQ4 = ProjectedTrendModelList.Where(_projected => Q4.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-
-        //        //    Actual_ProjectedQ4 = Actual_ProjectedQ3 + (ActualQ4 + ProjectedQ4);
-        //        //    serData2.Add(GoalQ1 + GoalQ2 + GoalQ3 + GoalQ4);
-        //        //    serData1.Add(Actual_ProjectedQ4);
-        //        //    //serData2.Add(GoalQ1 + GoalQ2 + GoalQ3 + GoalQ4);
-        //        //}
-        //        //else
-        //        //{
-        //        //    double Actual_Projected = 0, Goal = 0;
-        //        //    for (int i = 1; i <= catLength; i++)
-        //        //    {
-        //        //        curntPeriod = PeriodPrefix + i;
-        //        //        monthlyActualTotal = ActualTrendList.Where(actual => actual.Month.Equals(curntPeriod)).Sum(actual => actual.TrendValue);
-        //        //        monthlyProjectedTotal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.TrendValue);
-        //        //        monthlyGoalTotal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
-
-        //        //        Actual_Projected = Actual_Projected + (monthlyActualTotal + monthlyProjectedTotal);
-        //        //        Goal = Goal + monthlyGoalTotal;
-
-        //        //        serData1.Add(Actual_Projected);
-        //        //        serData2.Add(Goal);
-        //        //    }
-        //        //}
-        //        //#endregion 
-        //        #endregion
-
-        //        //lstseries = GetSeriesListByTimeFrame(ActualTrendList, ProjectedTrendModelList, timeframeOption, IsQuarterly);
-
-        //        #region "Set Series, Categories & Marker data to Model"
-
-        //        foreach (series _ser in lstseries)
-        //        {
-        //            marker objMarker1 = new marker();
-        //            objMarker1.symbol = "square";
-        //            _ser.marker = objMarker1;
-        //        }
-
-        //        LineChartData.categories = categories;
-        //        LineChartData.series = lstseries;
-
-        //        // Set IsDisplay & TodayValue to Plot line on Linechart graph.
-        //        LineChartData.isDisplay = IsDisplay.ToString();
-        //        LineChartData.todayValue = TodayValue.ToString();
-        //        #endregion
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //    return LineChartData;
-        //    //return Json(RevenueLineChartData, JsonRequestBehavior.AllowGet);
-        //} 
-        #endregion
 
         /// <summary>
         /// This action will return the data of Revenue Line chart
@@ -8222,7 +5654,6 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             return LineChartData;
-            //return Json(RevenueLineChartData, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -8242,12 +5673,9 @@ namespace RevenuePlanner.Controllers
             List<double?> serData3 = new List<double?>();
             double TodayValue = 0, catLength = 0, _PointLabelWidth = 20;
             string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
-            //int catLength = 12;
             #endregion
-
             try
             {
-
                 #region "Get Today Plot Value"
                 if (currentYear == timeframeOption)
                 {
@@ -8372,7 +5800,6 @@ namespace RevenuePlanner.Controllers
             #region "Declare local Variables"
             List<ProjectedTrendModel> ProjectedTrendModelList = new List<ProjectedTrendModel>();
             int TotalTacticMonths = 0, _InvolvedTacticMonths = 0;
-            //double TotalRevenue = 0;
             ProjectedTrendModel objProjectedTrendModel = new ProjectedTrendModel();
             int _currentYear = Convert.ToInt32(currentYear);
             #endregion
@@ -8418,7 +5845,6 @@ namespace RevenuePlanner.Controllers
                 string year = currentDate.Year.ToString();
                 if (year == timeframeOption)
                 {
-                    //LineChartData.isDisplay = "1";
                     int currentmonth = currentDate.Month;
                     int currentdatedays = currentDate.Day;
                     double _paddingval = 0;
@@ -8426,10 +5852,8 @@ namespace RevenuePlanner.Controllers
                     {
                         int currentmonthdays = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
                         _paddingval = IsPadding ? 2 : 0;
-                        //resultTodayValue = _paddingval + (currentmonth - 1) + (Convert.ToDouble(currentdatedays) / Convert.ToDouble(currentmonthdays));
                         resultTodayValue = _paddingval + (currentmonth - 1);
                     }
-                    // LineChartData.TodayValue = todayindex.ToString();
                     else
                     {
                         int currentQuarter = ((currentMonth - 1) / 3);
@@ -8485,16 +5909,10 @@ namespace RevenuePlanner.Controllers
                             currentdays += currentdatedays;
                         }
 
-                        //resultTodayValue = _paddingval + (currentQuarter) + (Convert.ToDouble(currentdays) / Convert.ToDouble(totaldays));
                         resultTodayValue = _paddingval + (currentQuarter);
                     }
 
                 }
-                //else
-                //{
-                //    LineChartData.isDisplay = "0";
-                //    LineChartData.TodayValue = "0";
-                //}
                 #endregion
             }
             catch (Exception ex)
@@ -8513,7 +5931,7 @@ namespace RevenuePlanner.Controllers
             List<double> _projectedlist = new List<double>();
             List<double> _goallist = new List<double>();
             List<double> _goalYTDList = new List<double>();
-            double _Actual = 0, _Projected = 0, _Goal = 0, _prevActual = 0, _prevProjected = 0, _prevGoal = 0, _GoalYTD = 0;
+            double _Actual = 0, _Projected = 0, _Goal = 0, _GoalYTD = 0;
             List<string> categories = new List<string>();
             // Add By Nishant Sheth
             string currentyear = DateTime.Now.Year.ToString();
@@ -8600,7 +6018,6 @@ namespace RevenuePlanner.Controllers
                     for (int i = 1; i <= categorieslength; i++)
                     {
                         curntPeriod = PeriodPrefix + i;
-                        //_Actual = ActualTrendList.Where(actual => actual.Month.Equals(curntPeriod)).Sum(actual => actual.TrendValue);
                         _Actual = ActualTrendList.Where(actual => Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= currentEndMonth ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.Value);
                         _Projected = ProjectedTrendModelList.Where(_projected => Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) > currentEndMonth ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue);
                         _Goal = ProjectedTrendModelList.Where(_projected => _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
@@ -8609,9 +6026,6 @@ namespace RevenuePlanner.Controllers
                         _projectedlist.Add(_Projected);
                         _goallist.Add(_Goal);
                     }
-
-                    //_Actual = ActualTrendList.Where(actual => Convert.ToDateTime(DateTime.Now.Date.ToString("dd") + "-" + actual.Month + "-" + DateTime.Now.Year).Month <= currentEndMonth).Sum(actual => actual.TrendValue);
-                    //_actuallist.Add(_Actual);
                 }
 
                 #endregion
@@ -8932,7 +6346,6 @@ namespace RevenuePlanner.Controllers
                                 Title = pc.Key.title,
                                 CustomFieldOptionid = pc.Key.id,
                                 planTacticList = TacticData.Where(t => pc.Select(c => c.TacticTypeId).ToList().Contains(t.TacticObj.TacticTypeId)).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                //planTacticList = TacticData.Where(t => pc.Select(c => c.TacticTypeId).ToList().Contains((Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.TacticObj.TacticTypeId))).Select(t => t.TacticObj.PlanTacticId).ToList()
                             }).ToList();
                             isTacticCustomFieldCardSection = false;
 
@@ -8946,7 +6359,6 @@ namespace RevenuePlanner.Controllers
                                              CustomFieldOptionid = pc.Key.id,
                                              planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(IsCampaignCustomField ? t.TacticObj.Plan_Campaign_Program.PlanCampaignId :
                                                    (IsProgramCustomField ? t.TacticObj.PlanProgramId : t.TacticObj.PlanTacticId))).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                             // planTacticList = TacticData.Where(t => pc.Select(c => c.EntityId).ToList().Contains(t.TacticObj.TacticTypeId)).Select(t => t.TacticObj.PlanTacticId).ToList()
 
                                          }).ToList();
                         }
@@ -9085,7 +6497,6 @@ namespace RevenuePlanner.Controllers
 
                 CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection);
                 objCardSectionModel.CardSectionListModel = CardSectionListModel;
-                //objRevenueToPlanModel.CardSectionModel = objCardSectionModel;
                 TempData["RevenueCardList"] = null;
                 TempData["RevenueCardList"] = CardSectionListModel;// For Pagination Sorting and searching
 
@@ -9125,7 +6536,7 @@ namespace RevenuePlanner.Controllers
                 List<double> serData1 = new List<double>();
                 List<double> serData2 = new List<double>();
                 List<double> serData3 = new List<double>();
-                double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0;
+                double _Actual = 0, _Projected = 0, _Goal = 0;
                 bool _IsQuarterly = objBasicModel.IsQuarterly;
                 int _compareValue = 0;
                 _compareValue = _IsQuarterly ? GetCurrentQuarterNumber() : currentMonth;
@@ -9145,21 +6556,9 @@ namespace RevenuePlanner.Controllers
                     _Actual = objBasicModel.ActualList[i];
                     _Projected = objBasicModel.ProjectedList[i];
                     _Goal = objBasicModel.GoalList[i];
-                    //Actual_Projected = _Actual + _Projected;
-                    //serData1.Add(Actual_Projected);
                     serData2.Add(_Goal);
                     serData1.Add(_Actual);
                     serData3.Add(_Projected);
-                    //if ((i + 1) < (_compareValue))
-                    //{
-                    //    serData1.Add(Actual_Projected);
-                    //    serData3.Add(0);
-                    //}
-                    //else
-                    //{
-                    //    serData1.Add(0);
-                    //    serData3.Add(Actual_Projected);
-                    //}
                 }
 
                 BarChartSeries _chartSeries1 = new BarChartSeries();
@@ -9442,11 +6841,8 @@ namespace RevenuePlanner.Controllers
                     ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = 0;
 
                     ActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                    // return record from list which contains Q1 or Q2 months : Summed Up (Q1 + Q2) Actuals Value
                     ActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                    // return record from list which contains Q1,Q2 or Q3 months : Summed Up (Q1 + Q2 + Q3) Actuals Value
                     ActualQ3 = CurrentMonthCostList.Where(actual => Q3.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
-                    // return record from list which contains Q1,Q2, Q3 or Q4 months : Summed Up (Q1 + Q2 + Q3 + Q4) Actuals Value
                     ActualQ4 = CurrentMonthCostList.Where(actual => Q4.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
 
                     TotalTrendQ1 = TotalTrendQ1 + (ActualQ1);
@@ -9806,8 +7202,6 @@ namespace RevenuePlanner.Controllers
                     TotalTrendQ1 = TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
 
                     //// Get Actual Revenue value upto currentmonth by Quarterly.
-
-
                     //// Get Actual Cost value upto currentmonth by Quarterly.
                     costActualQ1 = CurrentMonthCostList.Where(actual => Q1.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
                     costActualQ2 = CurrentMonthCostList.Where(actual => Q2.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month.Substring(actual.Month.Length - 2) : string.Empty)).Sum(actual => actual.Value);
@@ -9874,7 +7268,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.option = option;
             CardSectionModel cardModel = new CardSectionModel();
             cardModel = RevenueCardSectionModelWithFilter(PageNo, PageSize, SearchString, SortBy);
-            //cardModel.TotalRecords = cardModel.TotalRecords;
             return PartialView("_ReportCardSection", cardModel);
         }
         /// <summary>
@@ -9910,7 +7303,6 @@ namespace RevenuePlanner.Controllers
             else
             {
                 objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
-                //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
             cardModel.CardSectionListModel = objCardSectionList;
 
@@ -9926,7 +7318,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public ReportModel GetConverstionHeaderValue(BasicModel objBasicModel, string timeFrameOption)
         {
-            double _actualval, _actualtotal = 0, _projectedval, _projectedtotal = 0, _goalval, _goaltotal = 0, _goalYTD = 0;
+            double _actualtotal = 0, _projectedtotal = 0, _goalval, _goaltotal = 0, _goalYTD = 0;
             double _ActualPercentage, _ProjectedPercentage;
             string currentyear = DateTime.Now.Year.ToString();
             int currentEndMonth = 12;
@@ -9969,7 +7361,6 @@ namespace RevenuePlanner.Controllers
                     {
                         _goalYTD += 0;
                     }
-                    //_monthTrendList.Add(_actualtotal);
                 }
                 #endregion
 
@@ -10235,7 +7626,7 @@ namespace RevenuePlanner.Controllers
                 List<double> serData1 = new List<double>();
                 List<double> serData2 = new List<double>();
                 List<double> serData3 = new List<double>();
-                double _Actual = 0, _Projected = 0, _Goal = 0, Actual_Projected = 0, _plotBandFromValue = 0;//, _plotBandToValue = 0, _PlotBandFromValue = 0;
+                double _Actual = 0, _Projected = 0, _Goal = 0, _plotBandFromValue = 0;
                 bool _IsQuarterly = objBasicModelDataTable.IsQuarterly;
                 int _compareValue = 0;
                 serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
@@ -10261,21 +7652,9 @@ namespace RevenuePlanner.Controllers
                     _Actual = objBasicModelDataTable.ActualList[i] != null ? objBasicModelDataTable.ActualList[i] : 0;
                     _Projected = objBasicModelDataTable.ProjectedList[i] != null ? objBasicModelDataTable.ProjectedList[i] : 0;
                     _Goal = objBasicModelDataTable.GoalList[i] != null ? objBasicModelDataTable.GoalList[i] : 0;
-                    //Actual_Projected = _Actual + _Projected;
-                    //serData1.Add(Actual_Projected);
                     serData2.Add(_Goal);
                     serData1.Add(_Actual);
                     serData3.Add(_Projected);
-                    //if ((i + 1) < (_compareValue))
-                    //{
-                    //    serData1.Add(Actual_Projected);
-                    //    serData3.Add(0);
-                    //}
-                    //else
-                    //{
-                    //    serData1.Add(0);
-                    //    serData3.Add(Actual_Projected);
-                    //}
                 }
                 List<string> _barChartCategories = new List<string>();
                 if (!IsQuarterly)
@@ -10744,7 +8123,6 @@ namespace RevenuePlanner.Controllers
                 bool IsCampaignCustomField = false, IsProgramCustomField = false, IsTacticCustomField = false;
                 List<TacticStageValue> _tacticdata = new List<TacticStageValue>();
                 List<int> PlanTacticIdsList = new List<int>();
-                // RevenueToPlanModel objRevenueToPlanModel = new RevenueToPlanModel();
                 ConversionToPlanModel objConversionToPlanModel = new ConversionToPlanModel();
                 int _customfieldOptionId = 0;
                 List<RevenueContrinutionData> _TacticOptionList = new List<RevenueContrinutionData>();
@@ -10754,15 +8132,12 @@ namespace RevenuePlanner.Controllers
                 List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
                 List<int> campaignlist = new List<int>();
                 List<int> programlist = new List<int>();
-                //List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
                 List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
                 List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
                 CardSectionModel objCardSectionModel = new CardSectionModel();
                 List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
 
-
                 tacticlist = GetTacticForReporting();
-                // Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
                 // End By Nishant Sheth
             #endregion
                 /// Declarion For Card Section 
@@ -11021,7 +8396,6 @@ namespace RevenuePlanner.Controllers
                                     Title = pc.Key.title,
                                     CustomFieldOptionid = pc.Key.id,
                                     planTacticList = TacticData.Where(t => pc.Select(c => c.TacticTypeId).ToList().Contains(t.TacticObj.TacticTypeId)).Select(t => t.TacticObj.PlanTacticId).ToList()
-                                    //planTacticList = TacticData.Where(t => pc.Select(c => c.TacticTypeId).ToList().Contains((Convert.ToInt32(childId) > 0 ? Convert.ToInt32(childId) : t.TacticObj.TacticTypeId))).Select(t => t.TacticObj.PlanTacticId).ToList()
                                 }).ToList();
                                 isTacticCustomFieldCardSection = false;
                             }
@@ -11159,7 +8533,6 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
-                            //MqlActual = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList).Where(act => act.StageCode.Equals(Enums.Stage.MQL.ToString())).ToList();
                             List<string> MqlStageList = new List<string>();
                             MqlStageList.Add(Enums.Stage.MQL.ToString());
 
@@ -11259,8 +8632,6 @@ namespace RevenuePlanner.Controllers
 
                     #region Set Header Value
                     BasicModel objBasicConverstionHeader = new BasicModel();
-                    //List<ActualTrendModel> MqlActual = ActualTacticTrendList.Where(act => act.StageCode.Equals(Enums.Stage.MQL)).ToList();
-
                     objBasicConverstionHeader = GetValuesListByTimeFrame(MqlActual, MqlProjected, option, (IsQuarterly.ToLower() == "quarterly" ? true : false));
                     Projected_Goal objHeaderProjected = new Projected_Goal();
                     objHeaderProjected = GetConverstionHeaderValue(objBasicConverstionHeader, option).RevenueHeaderModel;
@@ -11273,7 +8644,6 @@ namespace RevenuePlanner.Controllers
                     CardSectionListModel = new List<CardSectionListModel>();
 
                     CardSectionListModel = GetConversionCardSectionList(_tacticdata, _cmpgnMappingList, option, (IsQuarterly.ToLower() == "quarterly" ? true : false), ParentLabel, isTacticCustomFieldCardSection, customFieldTypeCardSection, customFieldIdCardSection, customFieldOptionIdCardSection);
-                    //CardSectionListModel = GetCardSectionDefaultData(_tacticdata, ActualTacticTrendList, ProjectedTrendList, OverviewModelList, _cmpgnMappingList.ToList(), option, (IsQuarterly.ToLower() == "quarterly" ? true : false), "", "", IsTacticCustomField, customFieldType, customfieldId);
                     objCardSectionModel.CardSectionListModel = CardSectionListModel;
                     TempData["ConverstionCardList"] = null;
                     TempData["ConverstionCardList"] = CardSectionListModel;// For Pagination Sorting and searching
@@ -11376,20 +8746,9 @@ namespace RevenuePlanner.Controllers
                         _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
                         _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
                         _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
-                        //Actual_Projected = _Actual + _Projected;
                         serData2.Add(_Goal);
                         serData1.Add(_Actual);
                         serData3.Add(_Projected);
-                        //if ((i + 1) < (_compareValue))
-                        //{
-                        //    serData1.Add(Actual_Projected);
-                        //    serData3.Add(0);
-                        //}
-                        //else
-                        //{
-                        //    serData1.Add(0);
-                        //    serData3.Add(Actual_Projected);
-                        //}
                     }
 
                     BarChartSeries _chartSeries1 = new BarChartSeries();
@@ -11434,7 +8793,6 @@ namespace RevenuePlanner.Controllers
                     throw ex;
                 }
             }
-            //return Json(objReportModel, JsonRequestBehavior.AllowGet);
             return PartialView("_ConversionToPlan", objReportModel.ConversionToPlanModel);
         }
         #endregion
@@ -11456,7 +8814,6 @@ namespace RevenuePlanner.Controllers
             ViewBag.Convoption = option;
             CardSectionModel cardModel = new CardSectionModel();
             cardModel = ConverstionCardSectionModelWithFilter(PageNo, PageSize, SearchString, SortBy);
-            //cardModel.TotalRecords = cardModel.TotalRecords;
             return PartialView("_ConversionCardSection", cardModel);
         }
         public CardSectionModel ConverstionCardSectionModelWithFilter(int PageNo = 0, int PageSize = 5, string SearchString = "", string SortBy = "")
@@ -11472,10 +8829,6 @@ namespace RevenuePlanner.Controllers
             {
                 cardModel.TotalRecords = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).Count();
             }
-            //if (SortBy == Enums.SortByWaterFall.ADS.ToString())
-            //{
-            //    objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.ADSCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
-            //}
             if (SortBy == Enums.SortByWaterFall.CW.ToString())
             {
                 objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.CWCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
@@ -11483,12 +8836,10 @@ namespace RevenuePlanner.Controllers
             else if ((SortBy == Enums.SortByWaterFall.MQL.ToString()))
             {
                 objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.TQLCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
-                //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
             else
             {
                 objCardSectionList = objCardSectionList.Where(x => x.title.ToLower().Contains((!string.IsNullOrEmpty(SearchString) ? SearchString.ToLower().Trim() : x.title.ToLower()))).OrderByDescending(x => x.INQCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
-                //objCardSectionList = objCardSectionList.OrderByDescending(x => x.RevenueCardValues.Actual_Projected).Skip(PageNo * PageSize).Take(PageSize).ToList();
             }
             cardModel.CardSectionListModel = objCardSectionList;
 
@@ -11542,16 +8893,8 @@ namespace RevenuePlanner.Controllers
 
 
             List<string> includeMonth = GetMonthListForReport(timeframeOption);
-            //List<TacticStageValue> Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-
-
-
-
-            // string strMQLStageCode = Enums.InspectStage.MQL.ToString();
-            // string strCWStageCode = Enums.InspectStage.CW.ToString();
-            double _inqActual = 0, _mqlActual = 0, _cwActual = 0;// stageVolumePercntg = 0;
+            double _inqActual = 0, _mqlActual = 0, _cwActual = 0;
             string revStageCode = Enums.InspectStage.Revenue.ToString();
-            //string inqStageCode = Enums.InspectStage.INQ.ToString();
             string mqlStageCode = Enums.InspectStage.MQL.ToString();
             string cwStageCode = Enums.InspectStage.CW.ToString();
             string projectedStageCode = Enums.InspectStage.ProjectedStageValue.ToString();
@@ -11574,13 +8917,7 @@ namespace RevenuePlanner.Controllers
 
             ParentIdsList = TacticMappingList.Select(card => card.ParentId).Distinct().ToList();
             List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
-
-            //double _stagevolumeMQL = 0;
-            //double _stagebenchmarkMQL = 0;
-            //double restpercentageMQL = 0;
-            //double _stagevolumeCW = 0;
-            //double _stagebenchmarkCW = 0;
-            //double restpercentageCW = 0;
+           
             try
             {
                 if (ParentLabel != Common.RevenueCampaign)
@@ -11726,11 +9063,8 @@ namespace RevenuePlanner.Controllers
                                                   TrendValue = tac.Key.TrendValue
                                               }).Distinct().ToList();
 
-
-
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        //objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString();
                         objCardSectionSubModel.CardType = MQLStageLabel;
                         _mqlActual = 0;
                         _mqlActual = ActualTacticTrendList.Sum(actual => actual.Value); ;
@@ -11743,7 +9077,6 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageMQL);
                         #region  "ConversePercentage Added by dashrath prajapati"
                         _value = 0;
                         _value = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
@@ -11796,7 +9129,6 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        //objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
                         objCardSectionSubModel.CardType = CWStageLabel;
                         cwActualvalue = 0;
                         cwActualvalue = ActualTacticTrendList.Sum(actual => actual.Value);
@@ -11809,7 +9141,6 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageCW);
                         #region  "ConversePercentage Added by dashrath prajapati"
                         _value = 0;
                         _value = _mqlActual > 0 ? (cwActualvalue / _mqlActual) : 0;
@@ -11828,7 +9159,6 @@ namespace RevenuePlanner.Controllers
                         _inqActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == projectedStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.Value);
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        //objCardSectionSubModel.CardType = Enums.InspectStage.INQ.ToString();
                         objCardSectionSubModel.CardType = INQStageLabel;
                         objCardSectionSubModel.Actual_Projected = _inqActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
@@ -11850,8 +9180,6 @@ namespace RevenuePlanner.Controllers
 
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        //objCardSectionSubModel.CardType = Enums.InspectStage.TQL.ToString();
-                        //objCardSectionSubModel.CardType = Enums.InspectStage.MQL.ToString(); // Change By Nishat Sheth
                         objCardSectionSubModel.CardType = MQLStageLabel;
                         objCardSectionSubModel.Actual_Projected = _mqlActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
@@ -11862,7 +9190,6 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageMQL);
                         #region  "ConversePercentage Added by dashrath prajapati"
                         _value = 0;
                         _value = _inqActual > 0 ? (_mqlActual / _inqActual) : 0;
@@ -11877,12 +9204,8 @@ namespace RevenuePlanner.Controllers
                         _cwActual = ActualTacticTrendListOverall.Where(actual => actual.StageCode == cwStageCode && _ChildIdsList.Contains(actual.PlanTacticId)).Sum(actual => actual.Value);
 
                         ProjectedTrendList = CalculateProjectedTrend(fltrTacticData, includeMonth, Enums.InspectStage.CW.ToString());
-
-
-
                         // Start convertion CardSection SubModel Data
                         objCardSectionSubModel = new CardSectionListSubModel();
-                        //objCardSectionSubModel.CardType = Enums.InspectStage.CW.ToString();
                         objCardSectionSubModel.CardType = CWStageLabel;
                         objCardSectionSubModel.Actual_Projected = _cwActual;
                         objCardSectionSubModel.Goal = ProjectedTrendList.Sum(goal => goal.Value);
@@ -11893,7 +9216,6 @@ namespace RevenuePlanner.Controllers
                         else
                             objCardSectionSubModel.IsNegative = true;
                         objCardSectionSubModel.Percentage = Percentage;
-                        //objCardSectionSubModel.RestPercentage = Convert.ToDouble(restpercentageCW);
                         #region  "ConversePercentage Added by dashrath prajapati"
                         _value = 0;
                         _value = _mqlActual > 0 ? (_cwActual / _mqlActual) : 0;
@@ -11902,9 +9224,6 @@ namespace RevenuePlanner.Controllers
                         #endregion
                         objCardSection.CWCardValues = objCardSectionSubModel;
                         // End convertion CardSection SubModel Data
-
-
-
                     }
 
                     #endregion
@@ -11949,21 +9268,8 @@ namespace RevenuePlanner.Controllers
             List<TacticwiseOverviewModel> _fltrTacticwiseData = new List<TacticwiseOverviewModel>();
             double ProjvsGoal = 0, Percentage = 0;
             lineChartData objLineChartData = new lineChartData();
-            #region "Quarterly Trend Varaibles"
-            //List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
-            //List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
-            //List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
-            //List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-            //string strActual, strProjected, strTrendValue;
-            //double ActualQ1 = 0, ActualQ2 = 0, ActualQ3 = 0, ActualQ4 = 0, TotalRevenueTypeCol = 0, TotalTrendQ1 = 0, TotalTrendQ2 = 0, TotalTrendQ3 = 0, TotalTrendQ4 = 0;
-
-
             #endregion
-
-            #endregion
-
             ParentIdsList = TacticMappingList.Select(card => card.ParentId).Distinct().ToList();
-
             try
             {
 
@@ -12080,7 +9386,6 @@ namespace RevenuePlanner.Controllers
                         lstActuals = _revActualTacticList.Where(ta => _ChildIdsList.Contains(ta.PlanTacticId)).ToList();
                         //// Get Actuals Tactic list by weightage for Revenue.
                         _revActualDataTable = GetActualTacticDataTablebyStageCode(customFieldId, innercustomfieldOptionid, CustomFieldType, Enums.InspectStage.Revenue, lstActuals, fltrTacticData, IsTacticCustomField);
-
                         //// Get ActualList upto CurrentMonth.
                         CurrentMonthActualTacticList = _revActualDataTable.Where(actual => IncludeCurrentMonth.Contains(_TacticData.Where(tac => tac.TacticObj.PlanTacticId.Equals(actual.PlanTacticId)).FirstOrDefault().TacticYear + actual.Period)).ToList();
 
@@ -12369,7 +9674,6 @@ namespace RevenuePlanner.Controllers
                 throw ex;
             }
             return LineChartData;
-            //return Json(RevenueLineChartData, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

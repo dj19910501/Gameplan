@@ -1283,29 +1283,6 @@ $("#BtnShareReport").click(function () {
     ShowShareReport();
 });
 
-///Added by Mitesh Vaishnav for generate multiselect dropdownlist with no filter or no custom border
-function GenerateCustomizeMultiselect(id, isFilterApply, isCustomBorderApply, isMultiple) {
-    var custom = "";
-    if (isCustomBorderApply) {
-        custom = '@Common.CustomTitle';
-            }
-
-            if (isFilterApply) {
-                $("#" + id).multiselect({
-                    multiple: isMultiple,
-                    CustomName: custom,
-                    selectedList: 1
-                }).multiselectfilter();
-            }
-            else {
-                $("#" + id).multiselect({
-                    multiple: isMultiple,
-                    selectedList: 1,
-                    CustomName: custom
-                });
-            }
-        }
-
         // Start:- Linchart script 
         function BindLineChart(_categories, _plotlineVal, _isshowPlotLine, _series, _linechartDivId, _chartHeight, _plotOptions) {
             Highcharts.setOptions({

@@ -786,12 +786,7 @@
     <Content Include="Views\Plan\_ApplytoCalendarPlanList.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Views\Report\Conversion.cshtml" />
-    <Content Include="Views\Report\ConversionReportHeader.cshtml" />
-    <Content Include="Views\Report\ReportHeader.cshtml" />
-    <Content Include="Views\Report\Revenue.cshtml" />
     <Content Include="Views\Report\ShareReport.cshtml" />
-    <Content Include="Views\Report\_Summary.cshtml" />
     <Content Include="Views\Plan\_DeleteImprovementTactic.cshtml" />
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <Content Include="Content\Site.css" />
@@ -1040,7 +1035,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>57725</DevelopmentServerPort>
+          <DevelopmentServerPort>57760</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
