@@ -234,7 +234,7 @@
 
                                 });
                                 if (!isSelected) {
-                                    $(this).find('.trdropdownhover').find('input:checkbox').removeAttr('checked');
+                                    $(this).find('tbody tr').find('input:checkbox').removeAttr('checked');
                                     $(this).find('.dropdown_new_btn p:first').text('Please Select');
 
                                 }
@@ -246,7 +246,19 @@
                                     $(this).find('.dropdown_new_btn p:first').text(Selectedvalue);
                                 }
                                 if (cnt == 0)
+                                {
                                     maindiv.css("display", "none");
+                                    $(this).find('.dropdown_new_btn p:first').text('Please Select');
+                                    $(this).find('tbody tr').find('input:checkbox').removeAttr('checked');
+                                    $(this).find('input[type=checkbox]').css("display","none");
+                                    $(this).find('.advance_a').text("> Multi-selection");
+                                    $(this).find('.advance_a').attr('mode', singleMode);
+                                    $(this).find('input[type=text]').val('');
+                                    $(this).find('p').addClass('single-p');
+                                    $(this).find('tr').addClass('trdropdownhover');
+                                    $(this).find('#aclose_tag').css('display', 'none');
+                                
+                                }
                             }
                         }
                     });

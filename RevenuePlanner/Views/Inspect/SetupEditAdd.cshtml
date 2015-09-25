@@ -1141,7 +1141,7 @@
                     }
                 }
                 else {
-                    maindiv.find('.trdropdownhover').each(function () {
+                    maindiv.find('tbody tr').each(function () {
                         var ParentOptionId = $(this).attr('parentid');
                         if (ParentOptionId == tacticTypeId) {
                             maindiv.css("display", "inline-block");
