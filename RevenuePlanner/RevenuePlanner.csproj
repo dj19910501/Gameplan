@@ -215,6 +215,7 @@
     <Compile Include="Helpers\Common.cs" />
     <Compile Include="Helpers\Enums.cs" />
     <Compile Include="Helpers\HtmlHelpers.cs" />
+    <Compile Include="Helpers\JavaScriptException.cs" />
     <Compile Include="Helpers\Message.cs" />
     <Compile Include="Helpers\Sessions.cs" />
     <Compile Include="Models\AudiencePlanModel.cs" />
@@ -744,6 +745,7 @@
     <Content Include="Scripts\js\DHTMLX\dhtmlXGrid_excell_combo.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgrid_split.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid.js" />
+    <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Scripts\js\ganttExportapi.js" />
     <Content Include="Scripts\js\highcharts.js" />
     <Content Include="Scripts\js\html5shiv.js" />

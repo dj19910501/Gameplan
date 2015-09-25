@@ -340,7 +340,8 @@
     });
     function ExpandItems() {
         expand = $("#hdnBudgetingExpandId").val();
-        try {
+        //modified by Rahul Shah on 25/09/2015 for PL #900.. remove try..catch for handle elmah log
+        //try {
             if (CurrentView != "0") {
 
                 $(".column1").find(".firstLevel").each(function () {
@@ -460,9 +461,9 @@
                 $('#hdnBudgetingExpandId').val('');
        // } removed by mitesh vaishnav for make expand functionality working in planned and actual tab
     }
-} catch (e) {
+//} catch (e) {
 
-}
+//}
         //Added By : Kalpesh Sharma : #739 Adding additional views to Budget Planning screen
     var data = $(".column1").get(0);
     $(".budget-table .column1 > tr").each(function () {

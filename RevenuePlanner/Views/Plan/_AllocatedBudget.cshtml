@@ -166,7 +166,8 @@
             //var maxHeight = Math.max.apply(Math, heights);
             //var column1Width = $('.column1 div').css('width');
             //column1Width = column1Width.replace('px', '');
-            try {
+            //modified by Rahul Shah on 25/09/2015 for PL #900.. remove try..catch for handle elmah log
+            //try {
                 $('.display-table-row').removeClass('display-table-row');
                 //if (parseInt(column1Width) < maxHeight) {
                 //    //$('#divPlanDetails').css('width', parseInt(maxHeight) - 15);
@@ -182,9 +183,9 @@
                 //else {
                 //    $('.display-table-row').removeClass('display-table-row');
                 //}
-            } catch (e) {
+            //} catch (e) {
 
-            }
+            //}
         }
     });
     function SetHeader() {

@@ -61,5 +61,20 @@ namespace RevenuePlanner.Controllers
 
             return View("PageNotFound");
         }
+        //Added by Rahul Shah on 25/09/2015 for PL#900
+        /// <summary>
+        /// Function to handle exeption to ELMAH.
+        /// Added By: Maninder Singh Wadhva on 12/10/2014 to address ticket #900 Exception handling in client side scripting
+        /// </summary>
+        /// <param name="message">Error message.</param>
+        public void LogJavaScriptError(string message)
+        {
+            if (message != null)
+            {
+                Elmah.ErrorSignal
+                    .FromCurrentContext()
+                    .Raise(new RevenuePlanner.Helpers.JavaScriptException(message));
+            }
+        }
     }
 }

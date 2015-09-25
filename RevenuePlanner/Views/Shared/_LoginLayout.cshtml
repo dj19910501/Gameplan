@@ -27,7 +27,12 @@
 
 
     @Scripts.Render("~/bundles/GetJSForLogin")
-    
+    <script type="text/javascript">
+    //Added By: Rahul Shah on 25/09/2015 to address ticket PL #900 Exception handling in client side scripting
+    //Summary: Added reference of script file and also initialize the javaScript variable 'logErrorUrl' so that errorhandler.js knows
+    var logErrorUrl = '@Url.Action("LogJavaScriptError", "Error")';
+    </script>
+    <script src="@Url.Content("~/Scripts/js/errorhandler.js")" type="text/javascript"></script>
 </head>
 <body class="gradient">
     @* Start - Added by :- Sohel Pathan on 22/05/2014 for PL #469 *@
