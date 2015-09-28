@@ -104,29 +104,30 @@
         <!--Begin PL#1462 07 Brad Gray, Aug 2015--> 
         
         <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
-            <div class="cf textalign-mozcenter" style="padding-bottom: 5px;">
-                    <div class="pull-left size65x38">
-                        <div class="integration-review"></div>
-                        <div>
-                            <label class="integrration_label_align" id="integration">Integration</label>
-                        </div>
-                        <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
+            <div class="span2" style="width: 80px">
+                <div class="pull-left size65x38">
+                    <div class="integration-review"></div>
+                    <div>
+                        <label class="integrration_label_align" id="integration">Integration</label>
                     </div>
-              
+                    <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
+                </div>
+            </div>
+            <div class="span9" style="border-left: 1px solid #b2afaf">
                     @{
                         foreach (var item in ViewBag.IntegrationTypeLinks)
                         {
-                            <div class="pull-left margin-left20 integration-review-imglink size135x80" >
+                            <div class="pull-left margin-left20 integration-review-imglink" >
                                 <a href=@item.Value onclick="window.open(this.href); return false;">
                                     <div class="link_popup pull-right margin-bottom10"></div>
                                     @{
                                         if (item.Key == Enums.IntegrationType.Eloqua.ToString())
                                         {
-                                                <div class="eloqua-img margin-top18"></div>
+                                                <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
                                         }
                                         else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
                                         {
-                                            <div class="salesforce-img margin-top10"></div>
+                                            <div class="margin-left20 salesforce-img margin-top10"></div>
                                         }
                                         else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
                                         {
@@ -143,7 +144,7 @@
         <!--End PL#1462 07 Brad Gray, Aug 2015--> 
 
             @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
-            <div style="margin-bottom: 0px; width: 93%;margin-top:33px;">
+            <div style="margin-bottom: 0px; width: 93%;margin-top:10px;">
                 @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance !=null)
                 {
                     if (INQLastSync != null)
