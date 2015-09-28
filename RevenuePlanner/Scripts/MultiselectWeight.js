@@ -197,16 +197,21 @@
 
                     $('#CustomHtmlHelperfield').find('.span3').each(function () {
                         var InputType = $(this).find("input").attr('type');
+                        var cnt = 0;
                         if (InputType == "text" && $(this).attr('parentid') != 'undefined' && $(this).attr('parentid') != '0' && $(this).attr('parentid') == ParentValue) {
                             var ParentOptionID = $(this).find("input").parent().attr('parentoptionid');
                             var i;
                             $(this).css("display", "none");
                             if ($.inArray(ParentOptionID, filters.chekboxIds) > -1 && $(this).css("display") == "none") {
                                 $(this).css("display", "inline-block");
+                                cnt++;
+                            }
+                            if (cnt == 0) {
+                                $(this).find('input[type=text]').val('');
                             }
                         }
                         else {
-                            var cnt = 0;
+                            
                             if ($(this).attr('parentid') == ParentValue) {
                                 var maindiv = $(this);
                                 var isSelected = false;
