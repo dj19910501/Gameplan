@@ -775,7 +775,7 @@
         $("#cSuccessDuplicatePlan").text(htmlDecode(value));
         $("#successMessageDuplicatePlan").removeClass("message-position");
         $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-        RefreshCurrentTab();
+       
     }
 
     $("#deleteTactic").click(function () {
@@ -806,16 +806,18 @@
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                 SaveMessageOnParent(data.msg);
+                                SaveMessageOnParent(data.msg);
+                                RefershPlanHeaderCalc();
                                 //Added By : Kalpesh Sharma Internal review points 18/11/2014
                                  if (document.getElementById("liGrid") != null && document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                      LoadPlanGrid();
                                      gridSearchFlag = 0;
                                  }
                                  else {
-                                     RefershPlanHeaderCalc();
+                                     RefreshCurrentTab();
+                                     
                                  }
-                                 $('body').removeClass('bodyOverflow');
+                                // $('body').removeClass('bodyOverflow');
                              }
                              else {
 

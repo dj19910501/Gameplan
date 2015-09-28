@@ -23,7 +23,7 @@
 
     var Successmsgduplicate = (string)ViewBag.SuccessMessageDuplicatePlan;
     var errormsgduplicate = (string)ViewBag.ErrorMessageDuplicatePlan;
-    var ListBudgetingPlan = Model.objplanhomemodelheader.plans; //Added By Komal Rawal for new homepage UI
+    var ListBudgetingPlan = Model.objplanhomemodelheader != null ? Model.objplanhomemodelheader.plans : new List<SelectListItem>(); //Added By Komal Rawal for new homepage UI
     var IsGridView = (bool)ViewBag.GridView;
 
     //Added by Ravindra for  PL Ticket #1411 date 07/07/2015
@@ -289,38 +289,7 @@
                     }
                 }
                 
-                @*BindUpcomingActivites(CurrentPlanId);
-                Currenttime = $('#ddlUpComingActivites').val();
-                isQuater = Currenttime;
-
-                //// Modified By Maninder Singh Wadhva to Address PL#203
-                if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                    if (CurrentPlanId > 0) {
-                        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                            LoadPlanGrid();
-                            GetTacticTypelist(CurrentPlanId);
-                            GetOwnerListForFilter(CurrentPlanId);
-                            // LoadImprovementGrid(CurrentPlanId);
-                            return true;
-                        }
-                        else {
-                            GetCollaborators(CurrentPlanId);
-                            GetTacticTypelist(CurrentPlanId);
-                            GetOwnerListForFilter(CurrentPlanId);
-                        }
-                    }
-                }
-                PagePostRequest = false;
-                getViewByList = true;
-                RefreshCurrentTab();
-                if (CurrentPlanId > 0) {
-                    GetHealderData(CurrentPlanId);
-                    GetNumberOfActivityPerMonByPlanId(CurrentPlanId, isQuater);
-                }
-                arrClosedTask = []; // addded by dharmraj for ticket #485 to clear closed task veriable on plan change.
-                // $('#cSuccessDuplicatePlan').empty();
-                $('#successMessage').slideUp(1);
-                $('#content_wraper').removeClass('padding-top40');*@
+                
             });
         }
 
@@ -2229,6 +2198,8 @@
             $("#CalenderView").hide();
             $("#liGrid").click();
         }
+        GetTacticTypelist(CurrentPlanId);
+        GetOwnerListForFilter(CurrentPlanId);
     });
 
     function LoadPlan() {
@@ -3782,139 +3753,7 @@ function Quarter() {
 
                   /// Ended Script Of Inspect Popup
                   //Commented by komal Rawal for new homepage UI
-    @*function GetHealderData(selectedPlanIds) {
-    alert(1);
-                  var newUrl = '';
-                  if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                      newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
-                  }
-                  else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                      newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
-                      selectedPlanIds = parseInt(CurrentPlanId);
-                  }
-              $.ajax(
-              {
-                  type: "GET",
-                  cache: false,
-                  url: newUrl,
-                  data: {
-                      planid: selectedPlanIds,
-                      activeMenu: activeMenu,
-                      year: isQuater
-                  },
-                  dataType: "json",
-                  success: function (data) {
-                      if (data != null) {
-
-                          $.each(data.lstHomePlanModelHeader, function (index, obj) {
-                              if (index == "MQLs") {
-                                  $("#pMQLs").html(obj);
-                                  SetPriceValue("#pMQLs");
-                              }
-                              else if (index == "Budget") {
-                                  $("#pbudget").html(obj);
-                                  SetBudget("#pbudget");
-                              }
-                              else if (index == "TacticCount") {
-                                  $("#ptacticcount").html(obj);
-                              }
-                              else if (index == "mqlLabel") {
-                                  $("#pmqlLabel").html(obj);
-                              }
-                              else if (index == "costLabel") {
-                                  $("#pcostLabel").html(obj);
-                              }
-                              else if (index == "PercentageMQLImproved") {
-                                  /// Added By: Maninder Singh Wadhva
-                                  /// Addressed PL Ticket: 37,38,47,49
-
-                                  var pMQLImproved = $("#pMQLImproved");
-                                  pMQLImproved.removeClass("greenfont");
-                                  pMQLImproved.removeClass("redfont");
-
-                                  var divBullhornbg = $('#DivBullhornbg');
-                                  divBullhornbg.removeClass("bullhorn-bg-disabled");
-                                  divBullhornbg.removeClass("bullhorn-bg");
-                                  if (obj != null) {
-                                      divBullhornbg.addClass("bullhorn-bg");
-                                      if (obj < 0) {
-                                          pMQLImproved.html(FormatNumber(obj, true))
-                                          pMQLImproved.addClass("redfont");
-                                      }
-                                      else {
-                                          pMQLImproved.html("+" + FormatNumber(obj, true))
-                                          pMQLImproved.addClass("greenfont");
-                                      }
-                                  }
-                                  else {
-                                      divBullhornbg.addClass("bullhorn-bg-disabled");
-                                      pMQLImproved.html('---');
-                                  }
-                              }
-
-                          });
-
-                      }
-                  }
-              });
-          }
-          function GetNumberOfActivityPerMonByPlanId(selectedPlanIds, strParam) {
-              var newUrl = '';
-              var isMultiple = false;
-              newUrl = '@Url.Action("GetNumberOfActivityPerMonth", "Home")';
-              if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                  isMultiple = true;
-              }
-              else if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-                  if (CurrentPlanId > 0) {
-                      selectedPlanIds = CurrentPlanId.toString();
-                  }
-              }
-              $.ajax(
-              {
-                  type: "GET",
-                  cache: false,
-                  url: newUrl,
-                  data: {
-                      planid: selectedPlanIds,
-                      strparam: strParam,
-                      isMultiplePlan: isMultiple
-                  },
-                  dataType: "json",
-                  success: function (data) {
-                      if (data != null) {
-                          $(".dhx_canvas_text").remove();
-                          $("canvas").remove();
-                          setgraphdata(data);
-
-                      }
-                  }
-              });
-          }
-          function setgraphdata(data) {
-
-              var barChart2 = new dhtmlXChart({
-                  view: "bar",
-                  container: "chart2",
-                  value: "#NoOfActivity#",
-                  label: "#NoOfActivity#",
-                  color: "#Color#",
-                  radius: 3,
-                  padding: {
-                      top: 25,
-                      bottom: 16,
-                      right: 00,
-                      left: 00
-
-                  },
-                  xAxis: {
-
-                      template: "#Month#"
-                  },
-              });
-              barChart2.parse(data.lstchart, "json");
-    }*@
-    //End
+   
 
     //// Modified By Maninder Singh Wadhva PL Ticket#47
     gantt.attachEvent("onTaskOpened", function (id) {

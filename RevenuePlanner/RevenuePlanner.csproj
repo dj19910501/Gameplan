@@ -749,6 +749,7 @@
     <Content Include="Scripts\js\DHTMLX\dhtmlXGrid_excell_combo.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgrid_split.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid.js" />
+    <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid_min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Scripts\js\ganttExportapi.js" />
     <Content Include="Scripts\js\highcharts.js" />

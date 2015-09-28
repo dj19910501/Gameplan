@@ -16,6 +16,7 @@ using System.Diagnostics;
 using RestSharp.Contrib;
 using System.Xml.Linq;
 using System.Xml;
+using System.Threading.Tasks;
 
 /*
  * Added By :
@@ -25,6 +26,7 @@ using System.Xml;
 
 namespace RevenuePlanner.Controllers
 {
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class PlanController : CommonController
     {
         #region Variables
@@ -1152,10 +1154,11 @@ namespace RevenuePlanner.Controllers
         /// Get plan by plan id
         /// </summary>
         /// <param name="planid"></param>
-        public JsonResult GetPlanByPlanID(int planid, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetPlanByPlanID(int planid, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
             try
             {
+                await Task.Delay(1);
                 return Json(new
                 {
                     lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid,CustomFieldId,OwnerIds,TacticTypeids,StatusIds),
@@ -9025,7 +9028,7 @@ namespace RevenuePlanner.Controllers
         /// <CreatedDate>10/7/2015</CreatedDate>
         /// <param name="planId">plan Id</param>
         /// <returns>returns partial view HomeGrid</returns>
-        public ActionResult LoadHomeGrid(string PlanId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
+        public async Task<ActionResult> LoadHomeGrid(string PlanId, string ownerIds, string TacticTypeid, string StatusIds, string customFieldIds)
         {
             bool IsPlanCreateAll = false;
             bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -9098,10 +9101,24 @@ namespace RevenuePlanner.Controllers
                 List<int> lsttacticId = programtactic.Select(tactic => tactic.PlanTacticId).ToList();
                 string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
                 string section = Enums.Section.Tactic.ToString();
-                lstCustomFieldsRequired = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false
-                     && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true) && customField.IsRequired == true).Select(customField => customField.CustomFieldId).ToList();
-                tacticcustomfieldsentity = db.CustomField_Entity.Where(t => lstCustomFieldsRequired.Contains(t.CustomFieldId) && lsttacticId.Contains(t.EntityId)).ToList();
+                var cusomfield = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false).ToList();
+                var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
+                lstCustomFieldsRequired = cusomfield.Where(customField => (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true) && customField.IsRequired == true).Select(customField => customField.CustomFieldId).ToList();
+                
+                var lstAllTacticCustomFieldEntitiesanony = db.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
+                                                                                                       .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
 
+                List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                       join lst in lsttacticId on tbl.EntityId equals lst
+                                                       select new CustomField_Entity
+                                                       {
+                                                           EntityId = tbl.EntityId,
+                                                           CustomFieldId = tbl.CustomFieldId,
+                                                           Value = tbl.Value
+                                                       }).ToList();
+                
+                tacticcustomfieldsentity = customfieldlist;
+                
                 if (programtactic != null && programtactic.Count > 0)
                     IsTacticExist = true;
                 objimprovement.IsTacticExists = IsTacticExist;
@@ -9150,7 +9167,7 @@ namespace RevenuePlanner.Controllers
 
                         if (filteredCustomFields.Count > 0)
                         {
-                            lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                            lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds, customfieldlist);
                             //// get Allowed Entity Ids
                             TacticfilterList = TacticfilterList.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
                         }
@@ -9158,14 +9175,14 @@ namespace RevenuePlanner.Controllers
                     }
                 }
                 int intmodelId = (int)modelId;
-                List<LineItemType> lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == intmodelId).ToList();
+                var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == intmodelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                 string strLineType = string.Empty;
                 foreach (var typelist in lstLineItemType)
                 {
-                    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + typelist.Title + "</option>";
+                    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
                 }
-                List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                        lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
+                lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
                 TempData["TacticfilterList"] = TacticfilterList;
                 TempData["lsteditableEntityIds"] = lsteditableEntityIds;
@@ -9603,6 +9620,7 @@ namespace RevenuePlanner.Controllers
             }
             objplangrid.xmlstring = GridString.ToString();
             objplangrid.ImprovementObj = objimprovement;
+            await Task.Delay(1);
             return PartialView("_HomeGrid", objplangrid);
         }
         #endregion

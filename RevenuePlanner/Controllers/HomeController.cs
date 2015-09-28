@@ -13,6 +13,7 @@ using System.Web;
 using System.Xml;
 using System.Data;
 using Integration;
+using System.Threading.Tasks;
 
 /*
  *  Author: Manoj Limbachiya
@@ -22,6 +23,7 @@ using Integration;
   */
 namespace RevenuePlanner.Controllers
 {
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class HomeController : CommonController
     {
         #region Variables
@@ -241,21 +243,22 @@ namespace RevenuePlanner.Controllers
                     //// added by Nirav for plan consistency on 14 apr 2014
                     planmodel.PlanTitle = currentPlan.Title;
                     planmodel.PlanId = currentPlan.PlanId;
-                    planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId);
+                   // planmodel.objplanhomemodelheader = new HomePlanModelHeader();
+                    planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId,onlyplan:true);
 
                     Sessions.PlanId = planmodel.PlanId;
                     GetCustomAttributesIndex(ref planmodel);
 
 
                     //// Select Tactics of selected plans
-                    var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && planmodel.PlanId == campaign.PlanId).Select(campaign => campaign.PlanCampaignId).ToList();
-                    var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
-                    var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic).ToList();
-                    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                    planmodel.lstOwner = GetOwnerList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
+                //    var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && planmodel.PlanId == campaign.PlanId).Select(campaign => campaign.PlanCampaignId).ToList();
+               //     var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
+               //     var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic).ToList();
+                //    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                //    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                //    planmodel.lstOwner = GetOwnerList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
                    
-                    planmodel.lstTacticType = GetTacticTypeList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
+                //    planmodel.lstTacticType = GetTacticTypeList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
                    
                     // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
                     if (ViewBag.ShowInspectPopup != null)
@@ -406,7 +409,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="activeMenu">current/selected active menu</param>
         /// <param name="getViewByList">flag to retrieve viewby list</param>
         /// <returns>Returns json result object of tactic type and plan campaign program tactic.</returns>
-        public JsonResult GetViewControlDetail(string viewBy, string planId, string timeFrame, string customFieldIds, string ownerIds, string activeMenu, bool getViewByList, string TacticTypeid, string StatusIds)
+        public async Task<JsonResult> GetViewControlDetail(string viewBy, string planId, string timeFrame, string customFieldIds, string ownerIds, string activeMenu, bool getViewByList, string TacticTypeid, string StatusIds)
         {
             //// Create plan list based on PlanIds of search filter
 
@@ -648,7 +651,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //// End - Added by Sohel Pathan on 28/10/2014 for PL ticket #885
-
+            await Task.Delay(1);
             try
             {
                 if (viewBy.Equals(PlanGanttTypes.Tactic.ToString(), StringComparison.OrdinalIgnoreCase) || viewBy.Equals(PlanGanttTypes.Request.ToString(), StringComparison.OrdinalIgnoreCase))
@@ -2956,7 +2959,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="strPlanIds">Comma separated string of Plan Ids</param>
         /// <param name="strparam">Upcoming Activity dropdown selected option e.g. planyear, thisyear</param>
         /// <returns>returns Activity Chart object as jsonresult</returns>
-        public JsonResult GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetNumberOfActivityPerMonth(string planid, string strparam, bool isMultiplePlan, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
             List<int> filteredPlanIds = new List<int>();
             string planYear = string.Empty;
@@ -2999,33 +3002,27 @@ namespace RevenuePlanner.Controllers
 
             //Start Maninder Singh Wadhva : 11/15/2013 - Getting list of tactic for view control for plan version id.
             //// Select campaign(s) of plan whose IsDelete=false.
-            var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(campaign => filteredPlanIds.Contains(campaign.PlanId) && campaign.IsDeleted.Equals(false)).ToList()
-                                                            .Where(campaign => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, campaign.StartDate, campaign.EndDate).Equals(false));
+            //var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(campaign => filteredPlanIds.Contains(campaign.PlanId) && campaign.IsDeleted.Equals(false)).ToList()
+            //                                                .Where(campaign => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, campaign.StartDate, campaign.EndDate).Equals(false));
 
-            //// Select campaignIds.
-            List<int> lstCampaignId = lstCampaign.Select(campaign => campaign.PlanCampaignId).ToList<int>();
+            ////// Select campaignIds.
+            //List<int> lstCampaignId = lstCampaign.Select(campaign => campaign.PlanCampaignId).ToList<int>();
 
             //// Select program(s) of campaignIds whose IsDelete=false.
-            var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false))
-                                                                      .Select(program => program)
-                                                                      .ToList()
-                                                                      .Where(program => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-                                                                                                            CalendarEndDate,
-                                                                                                            program.StartDate,
-                                                                                                            program.EndDate).Equals(false));
+            //var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(program => lstCampaignId.Contains(program.PlanCampaignId) && program.IsDeleted.Equals(false))
+            //                                                          .Select(program => program)
+            //                                                          .ToList()
+            //                                                          .Where(program => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
+            //                                                                                                CalendarEndDate,
+            //                                                                                                program.StartDate,
+            //                                                                                                program.EndDate).Equals(false));
 
             //// Select programIds.
-            List<int> lstProgramId = lstProgram.Select(program => program.PlanProgramId).ToList<int>();
+            //List<int> lstProgramId = lstProgram.Select(program => program.PlanProgramId).ToList<int>();
 
             //// Selecte tactic(s) from selected programs
-            List<Plan_Campaign_Program_Tactic> objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
-                                                                                                                                    lstProgramId.Contains(tactic.PlanProgramId)).ToList()
-                                                                                                                                .Where(tactic =>
-                                                                                                                                    //// Checking start and end date
-                                                                                                                                        Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate,
-                                                                                                                                        CalendarEndDate,
-                                                                                                                                        tactic.StartDate,
-                                                                                                                                        tactic.EndDate).Equals(false)).ToList();
+            var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
+                                                                                                                                    filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.StartDate >= CalendarStartDate && tactic.EndDate <= CalendarEndDate).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
 
             //Modified By Komal Rawal for #1447
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
@@ -3058,7 +3055,7 @@ namespace RevenuePlanner.Controllers
             {
                 lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
-                                         (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
+                                         (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
                                          (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
 
                 //// Apply Custom restriction for None type
@@ -3092,7 +3089,7 @@ namespace RevenuePlanner.Controllers
 
                 int currentMonth = DateTime.Now.Month, monthNo = 0;
                 DateTime startDate, endDate;
-                foreach (Plan_Campaign_Program_Tactic tactic in objPlan_Campaign_Program_Tactic)
+                foreach (var tactic in objPlan_Campaign_Program_Tactic)
                 {
                     startDate = endDate = new DateTime();
                     startDate = Convert.ToDateTime(tactic.StartDate);
@@ -3239,7 +3236,7 @@ namespace RevenuePlanner.Controllers
                 objActivityChart.Color = Common.ActivityChartColor;
                 lstActivityChart.Add(objActivityChart);
             }
-
+            await Task.Delay(1);
             //// return Activity Chart list as Json Result object
             return Json(new { lstchart = lstActivityChart.ToList() }, JsonRequestBehavior.AllowGet);
         }
@@ -3623,7 +3620,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ViewBy">ViewBy option selected from dropdown</param>
         /// <param name="ActiveMenu">current active menu</param>
         /// <returns>returns list of owners in json format</returns>
-        public JsonResult GetOwnerListForFilter(string PlanId, string ViewBy, string ActiveMenu)
+        public async Task<JsonResult> GetOwnerListForFilter(string PlanId, string ViewBy, string ActiveMenu)
         {
             try
             {
@@ -3635,6 +3632,7 @@ namespace RevenuePlanner.Controllers
                 var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic).ToList();
                 List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
                 List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                await Task.Delay(1);
                 return Json(new { isSuccess = true, AllowedOwner = GetOwnerList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds) }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
@@ -4307,7 +4305,7 @@ namespace RevenuePlanner.Controllers
 
 
         //Added by Komal rawal for #1283
-        public JsonResult GetTacticTypeListForFilter(string PlanId, string ViewBy, string ActiveMenu)
+        public async Task<JsonResult> GetTacticTypeListForFilter(string PlanId, string ViewBy, string ActiveMenu)
         {
             try
             {
@@ -4316,7 +4314,8 @@ namespace RevenuePlanner.Controllers
                 var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && lstPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).ToList();
                    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                    return Json(new { isSuccess = true, TacticTypelist = GetTacticTypeList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds) }, JsonRequestBehavior.AllowGet);
+                    await Task.Delay(1);    
+                return Json(new { isSuccess = true, TacticTypelist = GetTacticTypeList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds) }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
             {
