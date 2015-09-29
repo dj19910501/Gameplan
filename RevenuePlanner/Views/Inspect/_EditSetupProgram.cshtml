@@ -841,4 +841,18 @@
             $('#CustomAttributeheading').show();
 
         }
+
+        $(".table_drpdwn").each(function () {
+            var chekcedCount = $(this).find('input:checked').length;
+            if (chekcedCount > 1) {
+                var menu = $(this).parents('.dropdown-wrapper');
+                menu.toggleClass('dropdown-block minimum-width215');
+                menu.find('.text_ellipsis').toggleClass('minmax-width200');
+                menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
+                menu.find('.advance_a').text("< Single-selection");
+                menu.find('.advance_a').attr('mode', 'Multi');
+                menu.find('input[type=checkbox]').toggle();
+                menu.find('p').removeClass('single-p');
+            }
+        });
 </script>
