@@ -787,7 +787,6 @@
     <Content Include="Views\Plan\_ApplytoCalendarPlanList.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Views\Report\Conversion.cshtml" />
     <Content Include="Views\Report\ConversionReportHeader.cshtml" />
     <Content Include="Views\Report\ReportHeader.cshtml" />
     <Content Include="Views\Report\Revenue.cshtml" />
