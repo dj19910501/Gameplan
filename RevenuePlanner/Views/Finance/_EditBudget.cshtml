@@ -14,8 +14,14 @@
 
         //ShowHideColumns($("#chkPlan"));
         var GridData = "";
-
-        LoadBudgetGrid(true);
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
+        if (AllocatedBy == 'Quarterly') {
+            AllocatedBy = true;
+        }
+        else {
+            AllocatedBy = false;
+        }
+        LoadBudgetGrid(AllocatedBy);
         BindSelectDropdowns();
         myApp.hidePleaseWait();
     });
