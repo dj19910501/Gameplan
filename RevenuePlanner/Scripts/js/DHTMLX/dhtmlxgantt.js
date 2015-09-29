@@ -245,9 +245,17 @@ if (typeof(window.dhx4.ajax) == "undefined") {
 		xmltop: function(tagname, xhr, obj) {
 			if (typeof xhr.status == "undefined" || xhr.status < 400) {
 				var xml = (!xhr.responseXML) ? dhx4.ajax.parse(xhr.responseText || xhr) : (xhr.responseXML || xhr);
-				if (xml && xml.documentElement !== null && !xml.getElementsByTagName("parsererror").length) {
-					return xml.getElementsByTagName(tagname)[0];
+				//if (xml && xml.documentElement !== null && !xml.getElementsByTagName("parsererror").length) {
+				//	return xml.getElementsByTagName(tagname)[0];
+			    //}
+				if (xml && xml.documentElement !== null) {
+				    try {
+				        if (!xml.getElementsByTagName("parsererror").length) {
+				            return xml.getElementsByTagName(tagname)[0]
+				        }
+				    } catch (b) { }
 				}
+
 			}
 			if (obj !== -1) dhx4.callEvent("onLoadXMLError",["Incorrect XML", arguments[1], obj]);
 			return document.createElement("DIV");

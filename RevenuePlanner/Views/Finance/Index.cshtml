@@ -1,53 +1,363 @@
-﻿@model RevenuePlanner.Models.finacemodel
+﻿@model RevenuePlanner.Models.FinanceModel
+@using RevenuePlanner.Helpers;
 @{
     ViewBag.Title = "Finance";
     Layout = "~/Views/Shared/_Layout.cshtml";
-}
-
-
-@section PlanHeader{
-    <div>
-        @Html.Partial("~/Views/Shared/_financeheader.cshtml",Model.FinanemodelheaderObj)
-        </div>
+    var MainGridData = Model.DhtmlXGridRowModelObj != null ? Model.DhtmlXGridRowModelObj : new RevenuePlanner.Models.DhtmlXGridRowModel();
 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid.js")">
-</script>
+@*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid.js")">*@
+<script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid.js")"></script>
 
-<div style="width: 100%;" >
-@Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
- <div style="float:right">
-                        <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
-@Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
- @*@Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text"))*@
-                        </span>
-                    </div>
-</div>           
+<style>
+    /*.grid_add:hover:after {
+        background: #333;
+        background: rgba(0,0,0,.8);
+        border-radius: 5px;
+        bottom: 0px;
+        color: #fff;
+        content: attr(data-title);
+        
+        position: relative;
+        cursor: pointer;
+        z-index: 98;
+        width: 30px;
+    }*/
+</style>
+@section PlanHeader{
+    <div id="headerValue">
+        @Html.Partial("~/Views/Shared/_financeheader.cshtml", Model.FinanemodelheaderObj)
+    </div>
+
+}
+
+@Html.Hidden("hdn_row_parentId", "", new { id = "hdn_row_parentId", name = "hdn_row_parentId", value = "" })
+@*<div style="width: 100%;">*@
+<div style="width: 97.05%; padding:20px;">
+    <div style="width:auto;height:50px;display:block;">
+        <div style="float:left;margin-top:10px;margin-bottom:10px;margin-left:0px;width:auto;">
+            <div style="float:left;" id="drpParentMain">
+                @Html.DropDownList("ddlParentFinanceMain", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
+            </div>
+            <div style="float:left;" id="divAddnew">
+                <input type="button" id="btnAddNewBudget" name="btnAddNewBudget" value="Add New Budget" class="btn btn-blue text-shadow-blue source-sans-proregular" style="height: 30px !important;" />
+            </div>
+            <div style="float:left;" id="drpParent">
+                @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.parentbudgetlist, "Value", "Text"))
+            </div>
+            <div style="float:left;" id="drpChild">
+                @Html.DropDownList("ddlChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
+            </div>
+            <div id="divExpandCollapse" style="width:120px;float:left;">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:100%;height: 30px !important;" id="btnExpandCollapse" onclick="javasript: ExpanCollapse();">
+                    Collapse/Expand All
+                </button>
+            </div>
+        </div>
+
+        <div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
+            <div id="divCheckbox" style="width:300px;float:left;line-height: 22px;">
+                <div id="divBudget" style="float:left;margin-right:10px;"><input type="checkbox" value="Budget" id="chkBudget" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Budget</label></div>
+                <div id="divforecast" style="float:left;margin-right:10px;"><input type="checkbox" value="ForeCast" id="chkForeCast" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Forecast</label></div>
+                <div id="divPlan" style="float:left;margin-right:10px;"><input type="checkbox" value="Plan" id="chkPlan" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Planned</label></div>
+                <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
+            </div>
+            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;margin-right:0px">
+                @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
+            </span>
+        </div>
+    </div>
+    @*<input type="button" id="btnRefreshMainGrid" name="btnRefreshMainGrid" value="Refresh MainGrid" />*@
+    @*<div id="divGridView" style="width:98%;display:block;margin-left:10px;margin-right:10px;">*@
+    <div id="divGridView" style="width: 100%; clear: both;">
+        @Html.Partial("_MainGrid", MainGridData);
+    </div>
+
+</div>
 <script type="text/javascript">
+    var pageName = "MainGrid";
+    var GlobalLevel = "";
+    var CollapseExpand = true;
+    var backBudgetid = '';
     $(document).ready(function () {
-        $("#ddlParentFinance,#ddlRevenueTimeFrame").multiselect({
+        $("#sidebar").css("display", "none");
+        $("#content_wraper").css("width", "100%");
+        $("#ddlParentFinance,#ddlRevenueTimeFrame,#ddlChildFinance,#ddlParentFinanceMain").multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1
-              }).multiselectfilter({
-            });
+        }).multiselectfilter({
+        });
+
+        var _budgetId = $('#ddlParentFinance').val();
+        var _budgetIdMain = $('#ddlParentFinanceMain').val();
+        @*$("#btnRefreshMainGrid").click(function () {
+            var _budgetId = $('#ddlParentFinance').val();
+            var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
+            $('#divGridView').load(url + '?budgetId=' + _budgetId);
+        });*@
+        @*$("#ddlParentFinance").change(function () {
+            var budgetId = $('#ddlParentFinance').val();
+            var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
+            $('#divGridView').load(url + '?budgetId=' + budgetId);
+        });*@
+        $("#btnAddNewBudget").click(function () {
+            var url = '@Url.Content("~/Finance/LoadnewBudget/")';
+            $('#divGridView').load(url);
+        });
+        //var testitem = "option[text=Budget3]";
+        //$("#ddlParentFinance").find(testitem).attr("selected", "selected");
+        //var budgetID = $("#ddlParentFinance").val();
+        RefreshMainGridData(_budgetIdMain);
+
+        GetFinanceHeaderValue(_budgetId);
+        BindChildBudgetDrp(_budgetId);
+        // EditBudget(21);
+        ShowHideControls("MainGrid");
     });
 
+    function RefreshMainGridData(BudgetId) {
+        debugger;
+        //var budgetID = $("#ddlParentFinance").val();
+        var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
+        $('#divGridView').load(url + '?budgetId=' + BudgetId);
+    }
     $("#ddlParentFinance").change(function () {
+        debugger;
         var budgetID = $("#ddlParentFinance").val();
-        GetFinanceHeaderValue(budgetID);
+        //RefreshMainGridData(budgetID);
+        if (pageName == "EditBudget") {
+            GetFinanceHeaderValue(budgetID);
+            EditBudget(budgetID, false);
+        }
+        myApp.hidePleaseWait();
+    });
+    $("#ddlParentFinanceMain").change(function () {
+        debugger;
+        var budgetIDMain = $("#ddlParentFinanceMain").val();
+        RefreshMainGridData(budgetIDMain);
+        //if (pageName == "EditBudget") {
+        //    GetFinanceHeaderValue(budgetID);
+        //    EditBudget(budgetID, false);
+        //}
+        myApp.hidePleaseWait();
+    });
+    $("#ddlChildFinance").change(function () {
+        var budgetID = $("#ddlChildFinance").val();
+        var parentid = $("#ddlParentFinance").val();
+        if (pageName == "EditBudget") {
+            GetFinanceHeaderValue(budgetID);
+            EditBudget(budgetID, true);
+        }
+        myApp.hidePleaseWait();
     });
 
     function GetFinanceHeaderValue(_budgetId) {
         debugger;
+        var url = '@Url.Content("~/Finance/GetFinanceHeaderValue/")';
+        $('#headerValue').load(url + '?budgetId=' + _budgetId + '&isQuarterly=monthly&timeFrameOption=2015');
+
+    }
+    function BindChildBudgetDrp(_budgetId) {
+        debugger;
         $.ajax({
             type: 'POST',
-            url: '@Url.Content("~/Finance/GetFinanceHeaderValue/")',
+            url: '@Url.Content("~/Finance/GetChildBudget/")',
             dataType: "json",
-            data: { budgetId: _budgetId, timeFrameOption: "2015", isQuarterly: "monthly" },
+            async: false,
+            data: { budgetId: _budgetId },
             success: function (data) {
-              
+                $("#ddlChildFinance").html("");
+                for (var i = 0; i < data.length; i++) {
+
+                    var opt = new Option(data[i].Text, data[i].Value);
+                    $('#ddlChildFinance').append(opt);
+                }
+
+            }
+        });
+        $("#ddlChildFinance").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        }).multiselectfilter({
+        });
+    }
+    function BindParentBudgetDrp(_budgetId) {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Finance/GetParentBudget/")',
+            dataType: "json",
+            async: false,
+            data: { budgetId: _budgetId },
+            success: function (data) {
+                $("#ddlParentFinance").html("");
+                for (var i = 0; i < data.length; i++) {
+
+                    var opt = new Option(data[i].Text, data[i].Value);
+                    $('#ddlParentFinance').append(opt);
+                }
+
+            }
+        });
+        $("#ddlParentFinance").val(_budgetId);
+        $("#ddlParentFinance").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        }).multiselectfilter({
+        });
+
+    }
+    function EditBudget(BudgetId, childChange, level) {
+        debugger;
+        //backBudgetid = BudgetId;
+        var budgetIDMain = $("#ddlParentFinanceMain").val();
+        backBudgetid = budgetIDMain;
+        if (level != undefined && level != '') {
+            GlobalLevel = level;
+        }
+        debugger;
+        myApp.showPleaseWait();
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
+        if (AllocatedBy == 'Quarterly') {
+            AllocatedBy = true;
+        }
+        else {
+            AllocatedBy = false;
+        }
+        if (BudgetId == null || BudgetId == '') {
+            BudgetId = 0;
+        }
+
+        if (childChange == false) {
+            BindParentBudgetDrp(parseInt(BudgetId));
+            BindChildBudgetDrp(parseInt(BudgetId));
+        }
+        var url = '@Url.Content("~/Finance/EditBudget/")';
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel);
+    }
+
+    function ExpanCollapse() {
+        if (CollapseExpand) {
+            CollapseExpand = false;
+            myTreeGrid.collapseAll();
+        }
+        else {
+            CollapseExpand = true;
+            myTreeGrid.expandAll();
+        }
+        var tableheight = $(".objbox").find("table").height();
+
+        $("#gridbox").css("height", tableheight + 100);
+        myTreeGrid.setSizes();
+
+        var GridWidth = $("#gridbox").width();
+
+        $("#gridbox").find("table").css("width", GridWidth);
+    }
+    function ShowHideColumns(chekbox) {
+        var GridWidth = $("#gridbox").width();
+        var checkName = chekbox.value;
+        var IsChecked = chekbox.checked;
+        var Count = 0;
+        var LoopLength = 0;
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
+        if (AllocatedBy == 'Quarterly') {
+            LoopLength = 5;
+        }
+        else {
+            LoopLength = 13;
+        }
+
+        if (checkName == "Budget") {
+            Count = 3;
+        }
+        else if (checkName == "ForeCast") {
+            Count = 4;
+        }
+        else if (checkName == "Plan") {
+            Count = 5;
+        }
+        else if (checkName == "Actual") {
+            Count = 6;
+        }
+        var visibility = "false,";
+        //mygrid.setColumnsVisibility("true,false,false,false,false");
+        if (IsChecked) {
+            for (var i = 0; i < LoopLength; i++) {
+
+                myTreeGrid.setColumnHidden(Count, false);
+                Count = Count + 4;
+
+            }
+
+        }
+
+
+        if (!IsChecked) {
+
+            for (var i = 0; i < LoopLength; i++) {
+                myTreeGrid.setColumnHidden(Count, true);
+                Count = Count + 4;
+
+            }
+        }
+        //visibility += visibility.slice(0, -1);
+        // myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
+        $("#gridbox").find("table").css("width", "100%");
+        //myTreeGrid.setColumnsVisibility(visibility);
+        //myTreeGrid.init();
+    }
+    function ShowHideControls(Page) {
+        if (Page == "MainGrid") {
+            $("#drpParentMain").css("display", "block");
+            $("#drpParent").css("display", "none");
+            $("#divExpandCollapse").css("display", "none");
+            $("#divCheckbox").css("display", "none");
+            $("#ddlTimeFrameSelectBox").css("display", "none");
+            $("#drpChild").css("display", "none");
+            $("#divFinanceBack").css("display", "none");
+            $("#divAddnew").css("display", "block");
+        }
+        if (Page == "EditBudget") {
+            $("#drpParentMain").css("display", "none");
+            $("#drpParent").css("display", "block");
+            $("#divExpandCollapse").css("display", "");
+            $("#divCheckbox").css("display", "");
+            $("#ddlTimeFrameSelectBox").css("display", "");
+            $("#drpChild").css("display", "block");
+            $("#divFinanceBack").css("display", "block");
+            $("#divAddnew").css("display", "none");
+        }
+    }
+
+    window.onload = function () {
+        ShowHideControls('MainGrid');
+    }
+
+    function RefreshBudgetDropdown() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Finance/RefreshBudgetList/")',
+            data: {},
+            success: function (result) {
+                var $dropdown = $("#ddlParentFinanceMain");
+                $dropdown.empty();
+                //var $html = '<option value="">Please Select</option>';
+                var $html = '';
+                if (result.length > 0) {
+                    $.each(result, function (index, item) {
+
+                        $html += '<option value="' + item.Value + '">' + item.Text + '</option>';
+
+                    });
+                }
+                $dropdown.append($html);
+
+                $dropdown.multiselect("refresh");
             }
         });
     }

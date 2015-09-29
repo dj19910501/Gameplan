@@ -4566,6 +4566,27 @@ namespace RevenuePlanner.Helpers
         /// Get the list of budget
         /// </summary>
         /// <returns>Return the list of Budget list</returns>
+        public static List<ViewByModel> GetParentBudgetlist(int BudgetId = 0)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstBudget = new List<ViewByModel>();
+            //var customfieldlist = (from parent in db.Budgets
+            //                       join child in db.Budget_Detail on parent.Id equals child.ParentId
+            //                       orderby parent.Name
+            //                       select new { child.Name, child.Id }).Distinct().ToList();
+            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.Id).ToList();
+            int? ParentId = 0;
+            var checkParent = db.Budget_Detail.Where(a => a.Id == BudgetId).Select(a => a.ParentId).ToList();
+            ParentId = checkParent.Count > 0 ? checkParent[0] : 0;
+
+            var customfieldlist = db.Budget_Detail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && budgeparentids.Contains(a.BudgetId)).Select(a => new { a.Id, a.Name }).ToList();
+            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
+            return lstBudget;
+        }
+        /// <summary>
+        /// Get the list of budget
+        /// </summary>
+        /// <returns>Return the list of Budget list</returns>
         public static List<ViewByModel> GetBudgetlist()
         {
             MRPEntities db = new MRPEntities();
@@ -4574,7 +4595,19 @@ namespace RevenuePlanner.Helpers
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
             return lstBudget;
         }
+        public static List<ViewByModel> GetChildBudgetlist(int ParentId)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstBudget = new List<ViewByModel>();
+            //var customfieldlist = (from parent in db.Budgets
+            //                       join child in db.Budget_Detail on parent.Id equals child.ParentId
+            //                       orderby parent.Name
+            //                       select new { child.Name, child.Id }).Distinct().ToList();
 
+            var customfieldlist = db.Budget_Detail.Where(a => a.ParentId == ParentId).Select(a => new { a.Id, a.Name }).ToList();
+            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
+            return lstBudget;
+        }
         /// <summary>
         /// Get the list of Tactic by passing the multiple Plan Ids
         /// </summary>
@@ -6127,19 +6160,20 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #region "Get Finance Header Value"
-        public static FinanceModelHeaders GetFinanceHeaderValue(int budgetId = 2, string timeFrameOption = "", string isQuarterly = "Quarterly")
+        public static FinanceModelHeaders GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly")
         {
             FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
             List<Plan_Campaign_Program_Tactic_LineItem_Cost> plannedCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
             List<string> lstMonthly = Common.lstMonthly;
             MRPEntities db = new MRPEntities();
+            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.Id).ToList();
+            var varBudgetDetails = db.Budget_Detail.Where(a => a.Id == (budgetId > 0 ? budgetId : a.BudgetId) && budgeparentids.Contains(a.BudgetId)).Select(a => a.Id).ToList();
 
-            var budgetids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.Id).ToList();
-            var budgetdetailid = db.Budget_Detail.Where(i => budgetids.Contains(i.BudgetId) & i.BudgetId == budgetId).Select(o => o.Id).ToList();
-            var budgetamout = db.Budget_DetailAmount.Where(amt => budgetdetailid.Contains(amt.BudgetDetailId)).ToList();
+            //var budgetdetailid = varBudgetDetails.Where(i => i. == budgetId).Select(o => o.Id).ToList();
+            var budgetamout = db.Budget_DetailAmount.Where(amt => varBudgetDetails.Contains(amt.BudgetDetailId)).ToList();
 
-            var budgetlineit = db.LineItem_Budget.Where(itemid => budgetdetailid.Contains(itemid.BudgetDetailId)).Select(i => i.PlanLineItemId).ToList();
+            var budgetlineit = db.LineItem_Budget.Where(itemid => varBudgetDetails.Contains(itemid.BudgetDetailId)).Select(i => i.PlanLineItemId).ToList();
             var planlineitemid = db.Plan_Campaign_Program_Tactic_LineItem.Where(i => budgetlineit.Contains(i.PlanLineItemId)).Select(l => l.PlanLineItemId).ToList();
 
             var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => planlineitemid.Contains(al.PlanLineItemId)).ToList();
@@ -6179,9 +6213,11 @@ namespace RevenuePlanner.Helpers
             objfinanceheader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
             objfinanceheader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
             objfinanceheader.Budget = Convert.ToDouble(budgetamout.Sum(t => t.Budget));
-            objfinanceheader.Actual = actualCostAllocationData.Sum(s => s.Value);
+            //objfinanceheader.Actual = actualCostAllocationData.Sum(s => s.Value);
+            objfinanceheader.Actual = actualLineItem.Sum(a => a.Value);
             objfinanceheader.Forecast = Convert.ToDouble(budgetamout.Sum(t => t.Forecast));
-            objfinanceheader.Planned = plannedCostAllocationData.Sum(t => t.Value);
+            //objfinanceheader.Planned = plannedCostAllocationData.Sum(t => t.Value);
+            objfinanceheader.Planned = planneditem.Sum(a => a.Value);
             return objfinanceheader;
         }
         #endregion

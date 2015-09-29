@@ -310,7 +310,6 @@
     <Content Include="Content\css\bootstrap-responsive.min.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
-    <Content Include="Content\css\style_extended_min_Sep2.css" />
     <Content Include="Content\css\datepicker.css" />
     <Content Include="Content\css\dhtmlxchart.css" />
     <Content Include="Content\css\dhtmlxchart_1.css" />
@@ -318,7 +317,6 @@
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgrid.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxtreegrid1.css" />
-    <Content Include="Content\css\DHTMLX\dhtmlxtreegrid1_min.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
@@ -331,7 +329,8 @@
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
-    <Content Include="Content\css\style_min_Sep2.css" />
+    <Content Include="Content\css\style_extended_min_Sep2.css" />
+    <Content Include="Content\css\style_min_Sep3.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -449,10 +448,6 @@
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxmenu_subar.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxtoolbar_arrow.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxtoolbar_arrow_dis.gif" />
-    <Content Include="Content\images\dl_eloqua.png" />
-    <Content Include="Content\images\dl_link.png" />
-    <Content Include="Content\images\dl_salesforce.png" />
-    <Content Include="Content\images\dl_workfront.png" />
     <Content Include="Content\images\double-arow-icon.png" />
     <Content Include="Content\images\drop-down-logo.png" />
     <Content Include="Content\images\drpdown.png" />
@@ -707,6 +702,7 @@
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="RevenuePlanner.wpp.targets" />
     <None Include="Service References\BDSService\BDSService1.disco" />
+    <Content Include="Web.config" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">
@@ -749,8 +745,6 @@
     <Content Include="Scripts\js\DHTMLX\dhtmlXGrid_excell_combo.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxgrid_split.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid.js" />
-    <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid_min.js" />
-    <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Scripts\js\ganttExportapi.js" />
     <Content Include="Scripts\js\highcharts.js" />
     <Content Include="Scripts\js\html5shiv.js" />
@@ -793,7 +787,12 @@
     <Content Include="Views\Plan\_ApplytoCalendarPlanList.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\Report\Conversion.cshtml" />
+    <Content Include="Views\Report\ConversionReportHeader.cshtml" />
+    <Content Include="Views\Report\ReportHeader.cshtml" />
+    <Content Include="Views\Report\Revenue.cshtml" />
     <Content Include="Views\Report\ShareReport.cshtml" />
+    <Content Include="Views\Report\_Summary.cshtml" />
     <Content Include="Views\Plan\_DeleteImprovementTactic.cshtml" />
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <Content Include="Content\Site.css" />
@@ -813,6 +812,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Login\Index.cshtml" />
@@ -832,13 +832,16 @@
     <Content Include="Views\Plan\Assortment.cshtml" />
     <Content Include="Views\Plan\Create.cshtml" />
     <Content Include="Views\Plan\NoModel.cshtml" />
+    <Content Include="Views\Plan\PlanZero.cshtml" />
     <Content Include="Views\Home\Homezero.cshtml" />
     <Content Include="Views\User\Notifications.cshtml" />
+    <Content Include="Views\Home\AddActual.cshtml" />
     <Content Include="Views\Model\CreateTactic.cshtml" />
     <Content Include="Views\Model\Tactics.cshtml" />
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
     <Content Include="Views\Boost\BestInClass.cshtml" />
+    <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
     <Content Include="Views\Boost\Index.cshtml" />
     <Content Include="Views\Login\ForgotPassword.cshtml" />
     <Content Include="Views\Login\ResetPassword.cshtml" />
@@ -861,6 +864,7 @@
     <Content Include="Views\ExternalService\_integration.cshtml" />
     <Content Include="Views\Organization\_organization.cshtml" />
     <Content Include="Views\User\_myprofile.cshtml" />
+    <Content Include="Views\Shared\_Sidebar.cshtml" />
     <Content Include="Views\Boost\_boost.cshtml" />
     <Content Include="Views\Model\_model.cshtml" />
     <Content Include="Views\Plan\_plan.cshtml" />
@@ -990,9 +994,11 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Content>
     <Content Include="Views\Finance\Index.cshtml" />
+    <Content Include="Views\Finance\_EditBudget.cshtml" />
+    <Content Include="Views\Finance\_MainGrid.cshtml" />
+    <Content Include="Views\Finance\_newBudget.cshtml" />
     <Content Include="Views\Shared\_financeheader.cshtml" />
     <None Include="Web.BulldogProduction.config" />
-    <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1037,7 +1043,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>57760</DevelopmentServerPort>
+          <DevelopmentServerPort>57725</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

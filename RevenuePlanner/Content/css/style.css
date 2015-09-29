@@ -15494,6 +15494,18 @@ div.clue-bottom-default .cluetip-arrows {
     float: right;
 }
 
+.finance_grid_add {
+    background-image: url("../../Content/images/icon-plus_in_circle.png");
+    opacity: 1;
+    background-position: center center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    height: 22px;
+    position: relative;
+    width: 22px;
+    margin: 6px auto 0px;
+}
+
 .btn-blue-grid {
     background: url('../images/btn-bg-35h.jpg') repeat-x !important;
     display: initial;
@@ -15752,4 +15764,12 @@ float:left;
 
 .no_margin_top {
     margin-top: 0px !important;
+}
+.finance_link {
+    cursor:pointer;
+    color: #005580;
+}
+.quarterly_btn
+{
+    margin-right:0px;
 }

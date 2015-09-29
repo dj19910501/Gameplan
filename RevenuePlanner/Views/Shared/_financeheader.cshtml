@@ -3,55 +3,69 @@
     ViewBag.Title = "Finance";
     Layout = "";
 }
- 
-   
-      <div class="light-blue-chart cf full-width-header" id="planHeader">
-     <div class="white-chart">
+
+
+<div class="light-blue-chart cf full-width-header" id="planHeader">
+    <div class="white-chart">
         <p class="source-sans-probold" id="actualLabel" title="@Html.DisplayFor(model => model.ActualTitle)">@Html.DisplayFor(model => model.ActualTitle)</p>
         <p class="value source-sans-prolight" id="ActualID">$ @Html.DisplayFor(model => model.Actual)</p>
         @*<a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
     </div>
- <div class="white-chart">
+    <div class="white-chart">
         <p class="source-sans-probold" id="plannedLabel" title="@Html.DisplayFor(model => model.PlannedTitle)">@Html.DisplayFor(model => model.PlannedTitle)</p>
         <p class="value source-sans-prolight" id="PlannedID">$ @Html.DisplayFor(model => model.Planned)</p>
         @*<a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
     </div>
- <div class="white-chart">
+    <div class="white-chart">
         <p class="source-sans-probold" id="forecastLabel" title="@Html.DisplayFor(model => model.ForecastTitle)">@Html.DisplayFor(model => model.ForecastTitle)</p>
         <p class="value source-sans-prolight" id="ForecastID">$ @Html.DisplayFor(model => model.Forecast)</p>
         @*<a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
     </div>
-   <div class="white-chart">
+    <div class="white-chart">
         <p class="source-sans-probold" id="budgetLabel" title="@Html.DisplayFor(model => model.BudgetTitle)">@Html.DisplayFor(model => model.BudgetTitle)</p>
         <p class="value source-sans-prolight" id="budgetID">$ @Html.DisplayFor(model => model.Budget)</p>
         @* <a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
     </div>
-<div  style="margin-top: 27px; width:30%">
-     <h2 id="lblfinanceTitle" style="display:block;">Finance</h2>
+    <div style="margin-top: 27px; width:30%">
+        <h2 id="lblfinanceTitle" style="display:block;">Finance</h2>
+        <div id="divFinanceBack" style="width:120px;float:left;display:none;">
+            <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:50%;height: 30px !important;" id="btnFinanceback" onclick="javascript:FinanceBack()">
+                < Back
+            </button>
+        </div>
     </div>
 
-          </div>
+</div>
 
 @*<div style="width: 100%;" >
- @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
+     @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
 
 
- <div style="float:right">
-                        <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
-        @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
-        
-                        </span>
-                    </div>
-</div> *@    
+     <div style="float:right">
+                            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;">
+            @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide" })
+
+                            </span>
+                        </div>
+    </div> *@
 
 
-<script type="text/javascript">
-    $(document).ready(function () {
-        $("#ddlParentFinance,#ddlRevenueTimeFrame").multiselect({
-            multiple: false,
-            noneSelectedText: "Please Select",
-            selectedList: 1
-        }).multiselectfilter({
+@*<script type="text/javascript">
+        $(document).ready(function () {
+            $("#ddlParentFinance,#ddlRevenueTimeFrame").multiselect({
+                multiple: false,
+                noneSelectedText: "Please Select",
+                selectedList: 1
+            }).multiselectfilter({
+            });
         });
-    });
+    </script>*@
+<script type="text/javascript">
+    function FinanceBack() {
+        var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
+        $('#divGridView').load(url + '?budgetId=' + backBudgetid);
+        ShowHideControls("MainGrid");
+        myApp.hidePleaseWait();
+    }
+
 </script>

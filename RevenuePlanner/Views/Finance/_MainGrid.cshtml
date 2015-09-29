@@ -1,0 +1,297 @@
+﻿@model RevenuePlanner.Models.DhtmlXGridRowModel
+@using Newtonsoft.Json;
+@{
+    var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
+}
+@*<style>
+        div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
+            text-align: center;
+            padding-left: 0px !important;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+            width: 100% !important;
+        }
+
+        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+            width: 100% !important;
+        }
+    </style>*@
+<div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
+
+<script type="text/javascript">
+    var myGrid;
+    var data = {
+        rows: [
+			{
+			    id: 1001,
+			    data: [
+                     "100",
+                     "A Time to Kill",
+                     "John Grisham",
+                     "12.99",
+                     "1",
+                     "05/01/1998"]
+			},
+		   {
+		       id: 1002,
+		       data: [
+                    "1000",
+                    "Blood and Smoke",
+                    "Stephen King",
+                    "0",
+                    "1",
+                    "01/01/2000"]
+		   },
+		   {
+		       id: 1003,
+		       data: [
+                    "-200",
+                    "The Rainmaker",
+                    "John Grisham",
+                    "7.99",
+                    "0",
+                    "12/01/2001"]
+		   },
+		   {
+		       id: 1004,
+		       data: [
+                    "350",
+                    "The Green Mile",
+                    "Stephen King",
+                    "11.10",
+                    "1",
+                    "01/01/1992"]
+		   },
+		   {
+		       id: 1005,
+		       data: [
+                    "700",
+                    "Misery",
+                    "Stephen King",
+                    "7.70",
+                    "0",
+                    "01/01/2003"]
+		   }
+        ]
+    };
+    var myTreeGrid;
+    var data2 = {
+        rows: [
+            {
+                id: '1001',
+                data: [
+                 "row A",
+                 '<div id="Plan2" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
+                 //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' alt='Add Row' class='add_row' title='Add Row' />",
+                 "John Grisham",
+                 "John Grisham1",
+                 "12.99",
+                 "0",
+                 "05/01/1998"],
+                rows: [
+                    {
+                        id: 'sub_1001',
+                        data: [
+                             "subrowA",
+                             '<div id="Plan3" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
+                             //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' class='add_row' alt='Add Row' title='Add Row' />",
+                             "Blood and Smoke",
+                             "Stephen King",
+                             "0",
+                             "1",
+                             "01/01/2000"
+                        ]
+                    },
+                    {
+                        id: 'sub_1002',
+                        data: [
+                             "subrowB",
+                             '<div id="Plan4" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
+                             //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' class='add_row' alt='Add Row' title='Add Row' />",
+                             "Blood and Smoke",
+                             "Stephen King",
+                             "0",
+                             "1",
+                             "01/01/2000"]
+                    }
+                ]
+            },
+           {
+               id: '1002',
+               data: [
+                    "row B",
+                    '<div id="Plan5" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
+                    //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' class='add_row' alt='Add Row' title='Add Row' />",
+                    "Stephen King",
+                    "Stephen King",
+                    "11.10",
+                    "1",
+                    "01/01/1992"]
+           }
+        ]
+    };
+    var _isNewRowAdd = false;
+    var _newrowid = '';
+    var _newParentId = '';
+    var _parentRowId = '';
+    var _row_parentId = '';
+    var gridWidth = $("#divGridView").width();
+    $(document).ready(function () {
+        ShowHideControls('MainGrid');
+        //myGrid = new dhtmlXGridObject('gridbox');
+        //myGrid.setImagePath("../../codebase/imgs/");
+        //myGrid.setHeader("Sales, Book Title, Author");
+        //myGrid.setInitWidths("70,250,*");
+        //myGrid.setColAlign("right,left,left");
+        //myGrid.setColTypes("dyn,ed,ro");
+        //myGrid.setColSorting("int,str,str");
+        //myGrid.init();
+        //myGrid.parse(data, "json");
+
+        myTreeGrid = new dhtmlXGridObject('gridbox');
+        myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+        //myTreeGrid.enableTreeCellEdit(false);
+        myTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:left;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
+        myTreeGrid.setInitWidths("100,20,100,100,100,100,100,100");
+        myTreeGrid.setColAlign("left,center,center,center,center,center,center,center");
+        myTreeGrid.setColTypes("tree,ro,ron,ron,ron,ron,ro,ro");
+        //myTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
+        myTreeGrid.setColValidators("NotEmpty");
+        myTreeGrid.setColumnIds("title,addrow,budget,forecast,planned,actual,action,lineitems");
+        //myTreeGrid.setColSorting("str,na,str,str,na,str");
+        myTreeGrid.attachEvent("onEditCell", OnEditCell);
+        myTreeGrid.attachEvent("onOpenEnd", function () {
+            var tableheight = $(".objbox").find("table").height();
+            $("#gridbox").css("height", tableheight + 100);
+            myTreeGrid.setSizes();
+            $("#gridbox").find("table").css("width", gridWidth);
+            return true;
+        });
+        myTreeGrid.init();
+
+        //myTreeGrid.setSkin("dhx_skyblue");
+        //myTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
+        var mainGridData = "@_mainGridData";
+        //mainGridData = "@HttpUtility.HtmlDecode(_mainGridData)"
+        mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
+        var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+
+       // GridData = JSON.parse(GridData);
+        myTreeGrid.parse(GridData, "json");
+        myTreeGrid.expandAll();
+        //myTreeGrid.parse(data2, "json");
+        //myTreeGrid.selectRow(0, false, false, true);
+        var tableheight = $(".objbox").find("table").height();
+        $("#gridbox").css("height", tableheight + 100);
+        myTreeGrid.setSizes();
+        debugger;
+        $("#gridbox").find('table').css('width', gridWidth);
+    });
+    function AddRow(cntrl) {
+        var row_id = $(cntrl).attr('row-id');
+        //debugger;
+        //var rowId = myTreeGrid.getSelectedId();
+        //var rowindex = myTreeGrid.getRowIndex(row_id.toString());
+
+        var childrencount = myTreeGrid.hasChildren(row_id); // Get Current Row Children count.
+        var insertrowindex = childrencount + 1;
+        /*Start: Get ParentId and BudgetDetailId from RowId */
+        var budgetDetailId = 0;
+        if (row_id !== null && row_id !== 'undefined' && row_id !== '') {
+            var arr = row_id.split('_');
+            if (arr !== null && arr !== 'undefined' && arr.length > 0 ) {
+                if (arr[1] != null && arr[1] != 'undefined') {
+                    _newParentId = budgetDetailId = arr[1];
+                }
+            }
+        }
+        // Create RowId for newRecord.
+        _newrowid = "new" + insertrowindex.toString() +"_0_"+_newParentId;  // RowId format: NameofItem_BudgetDetailId_ParentId.
+        _isNewRowAdd = true;
+        _parentRowId = row_id;
+        _row_parentId = _row_parentId + "," + _newrowid + "~" + _newParentId + "~" + row_id; // Store NewRowId & ParentRowId in global variable This variable use to save data in OnEditCell event.
+        $("#hdn_row_parentId").val(_row_parentId);
+        /*End: Get ParentId and BudgetDetailId from RowId */
+
+        myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />", "0", "0", "0", "0", "Edit Forecast", "0"], -1, row_id);
+        myTreeGrid.openItem(row_id);
+        $("#gridbox").find("table").css("width", gridWidth);
+        //myTreeGrid.enableValidation(true);
+        var titleIndex = myTreeGrid.getColIndexById('title');
+        //myTreeGrid.cells(_newrowid, titleIndex).setAttribute("validate", "NotEmpty");
+
+        //myTreeGrid.setItemText(_newrowid, 'new text')
+        //var sdateindex = myTreeGrid.getColIndexById('Tree');
+        //debugger;
+        if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
+            UpdateActionColumn(budgetDetailId);
+        }
+
+        var _newRowIndex = myTreeGrid.getRowIndex(_newrowid.toString());
+        //myTreeGrid.cells(_newrowid, titleIndex).edit();
+        //myTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
+       // return false;
+        //myTreeGrid.editCell();
+    }
+
+    function OnEditCell(stage, id, index,newVal,oldVal) {
+        //debugger;
+        var _val = $("#hdn_row_parentId").val();
+        var splitRowParentIds = '';
+        var rowId = '', parentId = '',parentRowID='';
+        var itemIndex=-1;
+        if (_row_parentId != null && _row_parentId.length > 0) {
+            splitRowParentIds = _row_parentId.split(',');
+            $.each(splitRowParentIds, function (key, val) {
+                rowId = val.split('~')[0];
+                parentId = val.split('~')[1];
+                parentRowID = val.split('~')[2];
+                itemIndex = key;
+                if (rowId == id) {
+                    return false;
+                }
+            });
+        }
+        if (rowId == id) {
+
+            if (stage.toString() == '0' || stage.toString() == '1') {
+                return true;
+            }
+            if (stage.toString() == '2') {
+                //debugger;
+                var _budgetIdVal = $('#ddlParentFinanceMain').val();
+                if (newVal == null || newVal == '') {
+                    return false;
+                }
+                else {
+                    SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID);
+                    //myTreeGrid.openItem(parentId);
+                    _newrowid = "";
+                    _isNewRowAdd = false;
+                    _newParentId = 0;
+                    _parentRowId = "";
+                    return true;
+                }
+            }
+        }
+        else {
+            return false;
+        }
+        //alert(id);
+        return true;
+    };
+
+    function UpdateActionColumn(budgetDetailId) {
+        var actionIndex = myTreeGrid.getColIndexById('action');
+        var newAction = "<a href='#' onclick='EditBudget(" + budgetDetailId.toString() + ")'>Edit Budget</a>"
+        myTreeGrid.cells(rowid, actionIndex).setValue(newAction);
+    }
+    function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId, parentRowID) {
+        //budgetId = 8;
+        var url = "@Url.Content("~/Finance/SaveNewBudgetDetail")";
+        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId, function () {
+            myTreeGrid.openItem(parentRowID);
+        });
+    }
+</script> 

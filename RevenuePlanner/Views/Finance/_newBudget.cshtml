@@ -1,0 +1,124 @@
+﻿
+<div id="newGridbox" style="width:100%; height:100px; background-color:white;"></div>
+
+<script type="text/javascript">
+    
+    var newTreeGrid;
+    
+    var gridWidth = $("#divGridView").width();
+    $(document).ready(function () {
+        newTreeGrid = new dhtmlXGridObject('newGridbox');
+        newTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+        //newTreeGrid.enableTreeCellEdit(false);
+        newTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:left;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
+        newTreeGrid.setInitWidths("100,20,100,100,100,100,100,100");
+        newTreeGrid.setColAlign("left,center,center,center,center,center,center,center");
+        newTreeGrid.setColTypes("tree,ro,ron,ron,ron,ron,ro,ro");
+        //newTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
+        newTreeGrid.setColValidators("NotEmpty");
+        newTreeGrid.setColumnIds("title,addrow,budget,forecast,planned,actual,action,lineitems");
+        //newTreeGrid.setColSorting("str,na,str,str,na,str");
+        newTreeGrid.attachEvent("onEditCell", OnEditCell);
+        //newTreeGrid.attachEvent("onOpenEnd", function () {
+        //    $("#gridbox").find("table").css("width", gridWidth);
+        //    return true;
+        //});
+
+        newTreeGrid.init();
+        
+        //newTreeGrid.setSkin("dhx_skyblue");
+        //newTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
+        
+        //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
+        //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+        
+       // GridData = JSON.parse(GridData);
+        //newTreeGrid.parse(GridData, "json");
+        
+        //newTreeGrid.parse(data2, "json");
+        //newTreeGrid.selectRow(0, false, false, true);
+        var newBudget = "newBudget";
+        newTreeGrid.addRow("newBudget", ["", "<div id='dv" + newBudget + "' class='finance_grid_add' row-id='" + newBudget + "' />", "0", "0", "0", "0", "Edit Forecast", "0"], 0);
+        
+        $("#newGridbox").find('table').css('width', gridWidth);
+    });
+    function AddRow(cntrl) {
+        var row_id = $(cntrl).attr('row-id');
+        //debugger;
+        //var rowId = newTreeGrid.getSelectedId();
+        //var rowindex = newTreeGrid.getRowIndex(row_id.toString());
+        
+        var childrencount = newTreeGrid.hasChildren(row_id); // Get Current Row Children count.
+        var insertrowindex = childrencount + 1;
+        /*Start: Get ParentId and BudgetDetailId from RowId */
+        var budgetDetailId = 0;
+        if (row_id !== null && row_id !== 'undefined' && row_id !== '') {
+            var arr = row_id.split('_');
+            if (arr !== null && arr !== 'undefined' && arr.length > 0 ) {
+                if (arr[1] != null && arr[1] != 'undefined') {
+                    _newParentId = budgetDetailId = arr[1];
+                }
+            }
+        }
+        // Create RowId for newRecord.
+        _newrowid = "new" + insertrowindex.toString() +"_0_"+_newParentId;  // RowId format: NameofItem_BudgetDetailId_ParentId.
+        _isNewRowAdd = true;
+        _parentRowId = row_id;
+        _row_parentId = _row_parentId + "," + _newrowid + "~" + _newParentId + "~" + row_id; // Store NewRowId & ParentRowId in global variable This variable use to save data in OnEditCell event.
+        $("#hdn_row_parentId").val(_row_parentId);
+        /*End: Get ParentId and BudgetDetailId from RowId */
+
+        newTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' />", "0", "0", "0", "0", "Edit Forecast","0"], -1, row_id);
+        newTreeGrid.openItem(row_id);
+        $("#gridbox").find("table").css("width", gridWidth);
+        //newTreeGrid.enableValidation(true);
+        var titleIndex = newTreeGrid.getColIndexById('title');
+        //newTreeGrid.cells(_newrowid, titleIndex).setAttribute("validate", "NotEmpty");
+        
+        //newTreeGrid.setItemText(_newrowid, 'new text')
+        //var sdateindex = newTreeGrid.getColIndexById('Tree');
+        //debugger;
+        if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
+            UpdateActionColumn(budgetDetailId);
+        }
+        
+        var _newRowIndex = newTreeGrid.getRowIndex(_newrowid.toString());
+        //newTreeGrid.cells(_newrowid, titleIndex).edit();
+        //newTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
+       // return false;
+        //newTreeGrid.editCell();
+    }
+
+    function OnEditCell(stage, id, index,newVal,oldVal) {
+        //debugger;
+        //var _val = $("#hdn_row_parentId").val();
+        //var splitRowParentIds = '';
+        //var rowId = '', parentId = '',parentRowID='';
+        //var itemIndex=-1;
+       
+            if (stage.toString() == '0' || stage.toString() == '1') {
+                return true;
+            }
+            if (stage.toString() == '2') {
+                debugger;
+                //var _budgetIdVal = $('#ddlParentFinance').val();
+                if (newVal == null || newVal == '') {
+                    return false;
+                }
+                else {
+                    SaveNewBudgetDetail(newVal);
+                    //newTreeGrid.openItem(parentId);
+                    //_newrowid = "";
+                    //_isNewRowAdd = false;
+                    //_newParentId = 0;
+                    //_parentRowId = "";
+                    return true;
+                }
+            }
+    };
+    function SaveNewBudgetDetail(budgetName) {
+        //budgetId = 8;
+        var url = "@Url.Content("~/Finance/CreateNewBudget")";
+        $("#divGridView").load(url + '?budgetName=' + escape(budgetName), function () { RefreshBudgetDropdown(); });
+    }
+</script> 

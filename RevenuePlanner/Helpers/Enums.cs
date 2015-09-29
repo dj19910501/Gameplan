@@ -711,6 +711,26 @@ namespace RevenuePlanner.Helpers
             {ReportMonthDisplay.Dec.ToString(), "Dec"}
         };
 
+
+        /// <summary>
+        /// Data Dictionary to hold Month values.
+        /// Added By: Nishant Sheth.
+        /// </summary>
+        public static Dictionary<string, string> ReportMonthDisplayValuesWithPeriod = new Dictionary<string, string>()
+        {
+            {ReportMonthDisplay.Jan.ToString(), "Y1"},
+            {ReportMonthDisplay.Feb.ToString(), "Y2"},
+            {ReportMonthDisplay.Mar.ToString(), "Y3"},
+            {ReportMonthDisplay.April.ToString(), "Y4"},
+            {ReportMonthDisplay.May.ToString(), "Y5"},
+            {ReportMonthDisplay.Jun.ToString(), "Y6"},
+            {ReportMonthDisplay.July.ToString(), "Y7"},
+            {ReportMonthDisplay.Aug.ToString(), "Y8"},
+            {ReportMonthDisplay.Sep.ToString(), "Y9"},
+            {ReportMonthDisplay.Oct.ToString(), "Y10"},
+            {ReportMonthDisplay.Nov.ToString(), "Y11"},
+            {ReportMonthDisplay.Dec.ToString(), "Y12"}
+        };
         #endregion
 
         #region Improvement
