@@ -448,6 +448,10 @@
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxmenu_subar.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxtoolbar_arrow.gif" />
     <Content Include="Content\images\dhxgrid_skyblue_Images\dhxtoolbar_arrow_dis.gif" />
+    <Content Include="Content\images\dl_eloqua.png" />
+    <Content Include="Content\images\dl_link.png" />
+    <Content Include="Content\images\dl_salesforce.png" />
+    <Content Include="Content\images\dl_workfront.png" />
     <Content Include="Content\images\double-arow-icon.png" />
     <Content Include="Content\images\drop-down-logo.png" />
     <Content Include="Content\images\drpdown.png" />
@@ -787,11 +791,7 @@
     <Content Include="Views\Plan\_ApplytoCalendarPlanList.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Views\Report\ConversionReportHeader.cshtml" />
-    <Content Include="Views\Report\ReportHeader.cshtml" />
-    <Content Include="Views\Report\Revenue.cshtml" />
     <Content Include="Views\Report\ShareReport.cshtml" />
-    <Content Include="Views\Report\_Summary.cshtml" />
     <Content Include="Views\Plan\_DeleteImprovementTactic.cshtml" />
     <None Include="Properties\PublishProfiles\MRP-Dev.pubxml" />
     <Content Include="Content\Site.css" />
@@ -811,7 +811,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Login\Index.cshtml" />
@@ -831,16 +830,13 @@
     <Content Include="Views\Plan\Assortment.cshtml" />
     <Content Include="Views\Plan\Create.cshtml" />
     <Content Include="Views\Plan\NoModel.cshtml" />
-    <Content Include="Views\Plan\PlanZero.cshtml" />
     <Content Include="Views\Home\Homezero.cshtml" />
     <Content Include="Views\User\Notifications.cshtml" />
-    <Content Include="Views\Home\AddActual.cshtml" />
     <Content Include="Views\Model\CreateTactic.cshtml" />
     <Content Include="Views\Model\Tactics.cshtml" />
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
     <Content Include="Views\Boost\BestInClass.cshtml" />
-    <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
     <Content Include="Views\Boost\Index.cshtml" />
     <Content Include="Views\Login\ForgotPassword.cshtml" />
     <Content Include="Views\Login\ResetPassword.cshtml" />
@@ -863,7 +859,6 @@
     <Content Include="Views\ExternalService\_integration.cshtml" />
     <Content Include="Views\Organization\_organization.cshtml" />
     <Content Include="Views\User\_myprofile.cshtml" />
-    <Content Include="Views\Shared\_Sidebar.cshtml" />
     <Content Include="Views\Boost\_boost.cshtml" />
     <Content Include="Views\Model\_model.cshtml" />
     <Content Include="Views\Plan\_plan.cshtml" />
