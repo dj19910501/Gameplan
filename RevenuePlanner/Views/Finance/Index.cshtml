@@ -18,7 +18,7 @@
         bottom: 0px;
         color: #fff;
         content: attr(data-title);
-        
+
         position: relative;
         cursor: pointer;
         z-index: 98;
@@ -110,21 +110,21 @@
         //$("#ddlParentFinance").find(testitem).attr("selected", "selected");
         //var budgetID = $("#ddlParentFinance").val();
         RefreshMainGridData(_budgetIdMain);
-
-        GetFinanceHeaderValue(_budgetId);
-        BindChildBudgetDrp(_budgetId);
+        GetFinanceHeaderValue(_budgetIdMain, true);
+        // GetFinanceHeaderValue(_budgetId);
+        //BindChildBudgetDrp(_budgetId);
         // EditBudget(21);
         ShowHideControls("MainGrid");
     });
 
     function RefreshMainGridData(BudgetId) {
-        debugger;
+
         //var budgetID = $("#ddlParentFinance").val();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + BudgetId);
     }
     $("#ddlParentFinance").change(function () {
-        debugger;
+
         var budgetID = $("#ddlParentFinance").val();
         //RefreshMainGridData(budgetID);
         if (pageName == "EditBudget") {
@@ -134,9 +134,10 @@
         myApp.hidePleaseWait();
     });
     $("#ddlParentFinanceMain").change(function () {
-        debugger;
+
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         RefreshMainGridData(budgetIDMain);
+        GetFinanceHeaderValue(budgetIDMain, true);
         //if (pageName == "EditBudget") {
         //    GetFinanceHeaderValue(budgetID);
         //    EditBudget(budgetID, false);
@@ -153,14 +154,17 @@
         myApp.hidePleaseWait();
     });
 
-    function GetFinanceHeaderValue(_budgetId) {
-        debugger;
+    function GetFinanceHeaderValue(_budgetId, Ismain) {
+        var ismainGird = false;
+        if (Ismain != null && Ismain != undefined) {
+            ismainGird = Ismain
+        }
         var url = '@Url.Content("~/Finance/GetFinanceHeaderValue/")';
-        $('#headerValue').load(url + '?budgetId=' + _budgetId + '&isQuarterly=monthly&timeFrameOption=2015');
+        $('#headerValue').load(url + '?budgetId=' + _budgetId + '&isQuarterly=monthly&timeFrameOption=2015&IsMain=' + ismainGird);
 
     }
     function BindChildBudgetDrp(_budgetId) {
-        debugger;
+
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Finance/GetChildBudget/")',
@@ -185,7 +189,7 @@
         });
     }
     function BindParentBudgetDrp(_budgetId) {
-        debugger;
+
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Finance/GetParentBudget/")',
@@ -212,14 +216,14 @@
 
     }
     function EditBudget(BudgetId, childChange, level) {
-        debugger;
+
         //backBudgetid = BudgetId;
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         backBudgetid = budgetIDMain;
         if (level != undefined && level != '') {
             GlobalLevel = level;
         }
-        debugger;
+
         myApp.showPleaseWait();
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         if (AllocatedBy == 'Quarterly') {

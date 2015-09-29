@@ -161,7 +161,7 @@ namespace RevenuePlanner.Helpers
         public static List<string> lstMonthly = new List<string>() { "Y1", "Y2", "Y3", "Y4", "Y5", "Y6", "Y7", "Y8", "Y9", "Y10", "Y11", "Y12" };
         public static string[] quarterPeriods = new string[] { "Y1", "Y2", "Y3" };
 
-        #region Constant Month declaration 
+        #region Constant Month declaration
         public const string Jan = "Y1";
         public const string Feb = "Y2";
         public const string Mar = "Y3";
@@ -175,20 +175,20 @@ namespace RevenuePlanner.Helpers
         public const string Nov = "Y11";
         public const string Dec = "Y12";
         #endregion
-        public static string labelThisYear = "(this year)";	 
+        public static string labelThisYear = "(this year)";
         public const string MonthlyBudgetForEntity = "BudgetMonth";
         public const string YearlyBudgetForEntity = "BudgetYear";
         public const string MonthlyCostForEntity = "CostMonth";
         public const string YearlyCostForEntity = "CostYear";
-	    
-        public static List<string> TOPRevenueColumnList = new List<string>() { "Name", "Revenue", "Trend"};
+
+        public static List<string> TOPRevenueColumnList = new List<string>() { "Name", "Revenue", "Trend" };
         public static List<string> TOPPerformanceColumnList = new List<string>() { "Name", "Proj. vs Goal", "Trend" };
         public static List<string> TOPCostColumnList = new List<string>() { "Name", "Cost", "Trend" };
         public static List<string> TOPROIColumnList = new List<string>() { "Name", "ROI", "Trend" };
 
         #region "Eloqua ClientID & ClientSecret"
         public static string eloquaClientIdLabel = "ClientId";
-        public static string eloquaClientSecretLabel = "ClientSecret"; 
+        public static string eloquaClientSecretLabel = "ClientSecret";
         #endregion
 
         #endregion
@@ -552,7 +552,7 @@ namespace RevenuePlanner.Helpers
             for (int i = 0; i <= EmailIds.Count - 1; i++)
             {
                 String emailBody = string.Empty, email, Username; //modified by Rahul Shah on 24/09/2015 for PL #1620    line nuumber 554
-                
+
                 if (Section == Convert.ToString(Enums.Section.Tactic).ToLower())
                 {
                     emailBody = notification.EmailContent.Replace("[NameToBeReplaced]", CollaboratorUserName.ElementAt(i)).Replace("[TacticNameToBeReplaced]", TacticName).Replace("[PlanNameToBeReplaced]", PlanName).Replace("[UserNameToBeReplaced]", Sessions.User.FirstName + " " + Sessions.User.LastName).Replace("[CommentToBeReplaced]", Comment);
@@ -624,14 +624,14 @@ namespace RevenuePlanner.Helpers
 
                 if (Enums.Section.Program.ToString().ToLower() == Section || Enums.Section.Tactic.ToString().ToLower() == Section)
                 {
-                    emailBody = emailBody.Replace("[programname]", ProgramName);    
+                    emailBody = emailBody.Replace("[programname]", ProgramName);
                 }
 
                 if (Enums.Section.Tactic.ToString().ToLower() == Section)
                 {
                     emailBody = emailBody.Replace("[tacticname]", TacticName);
                 }
-                
+
                 email = EmailIds.ElementAt(i);
                 ThreadStart threadStart = delegate() { Common.SendMailToMultipleUser(email, Common.FromMail, emailBody, notification.Subject, Convert.ToString(System.Net.Mail.MailPriority.High)); };
                 Thread thread = new Thread(threadStart);
@@ -1317,7 +1317,7 @@ namespace RevenuePlanner.Helpers
                 collaboratorId.Add(plan.CreatedBy.ToString());
             }
 
-            List<Plan_Campaign_Program_Tactic> planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) && t.IsDeleted.Equals(false)).Select(t => t).ToList() ;
+            List<Plan_Campaign_Program_Tactic> planTactic = db.Plan_Campaign_Program_Tactic.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanId.Equals(plan.PlanId) && t.IsDeleted.Equals(false)).Select(t => t).ToList();
 
             if (planTactic != null && planTactic.Any())
             {
@@ -1380,7 +1380,7 @@ namespace RevenuePlanner.Helpers
                 }
 
                 byte[] imageBytesUserImageNotFound = Common.ReadFile(HttpContext.Current.Server.MapPath("~") + "/content/images/user_image_not_found.png");
-            
+
                 List<User> users = objBDSUserRepository.GetMultipleTeamMemberDetails(string.Join(",", newCollaboratorId), Sessions.ApplicationId);
 
                 foreach (User user in users)
@@ -1542,7 +1542,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId,string CustomFieldId="",string OwnerIds="",string TacticTypeids="",string StatusIds="", bool onlyplan = false)
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false)
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -1550,29 +1550,29 @@ namespace RevenuePlanner.Helpers
             //Added By Komal Rawal for new UI of homepage
             List<SelectListItem> planList;
 
-                var lstPlanAll = Common.GetPlan();
-                planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+            var lstPlanAll = Common.GetPlan();
+            planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
 
-                var objexists = planList.Where(plan => plan.Value == planId.ToString()).ToList();
-                if (objexists.Count != 0)
-                {
-                    planList.Single(plan => plan.Value.Equals(planId.ToString())).Selected = true;
-                }
-                else
-                {
-                    planList.FirstOrDefault().Selected = true;
-                }
+            var objexists = planList.Where(plan => plan.Value == planId.ToString()).ToList();
+            if (objexists.Count != 0)
+            {
+                planList.Single(plan => plan.Value.Equals(planId.ToString())).Selected = true;
+            }
+            else
+            {
+                planList.FirstOrDefault().Selected = true;
+            }
 
-                //// Set Plan dropdown values
-                if (planList != null)
-                    planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
-                objHomePlanModelHeader.plans = planList;
-          //End
-                if (onlyplan)
-                {
-                    return objHomePlanModelHeader;
-                }
-                var objPlan = lstPlanAll.Where(plan => plan.PlanId == planId).Select(plan => plan).FirstOrDefault();
+            //// Set Plan dropdown values
+            if (planList != null)
+                planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+            objHomePlanModelHeader.plans = planList;
+            //End
+            if (onlyplan)
+            {
+                return objHomePlanModelHeader;
+            }
+            var objPlan = lstPlanAll.Where(plan => plan.PlanId == planId).Select(plan => plan).FirstOrDefault();
             if (objPlan != null)
             {
                 //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
@@ -1686,7 +1686,7 @@ namespace RevenuePlanner.Helpers
                         {
                             objHomePlanModelHeader.Budget = planTacticLineItemIds.Sum(lineItem => lineItem.Cost);
                         }
-					
+
                     }
                     objHomePlanModelHeader.costLabel = Enums.PlanHeader_LabelValues[Enums.PlanHeader_Label.Cost.ToString()].ToString();
                 }
@@ -1740,7 +1740,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planIds">list plan ids</param>
         /// <returns></returns>
-        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu, string year,string CustomFieldId,string OwnerIds,string TacticTypeids,string StatusIds)
+        public static HomePlanModelHeader GetPlanHeaderValueForMultiplePlans(List<int> planIds, string activeMenu, string year, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds)
         {
             HomePlanModelHeader newHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities db = new MRPEntities();
@@ -1755,7 +1755,7 @@ namespace RevenuePlanner.Helpers
             int TotalTacticCount = 0;
 
             var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true && p.Year == year).Select(m => m).ToList();
-            
+
             if (planList != null && planList.Count > 0)
             {
                 var innerplanids = planList.Select(plan => plan.PlanId).ToList();
@@ -1766,10 +1766,10 @@ namespace RevenuePlanner.Helpers
 
                 //// Owner filter criteria.
                 List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
-               
+
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
-                
+
                 //Status filter criteria
                 List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
 
@@ -1813,13 +1813,13 @@ namespace RevenuePlanner.Helpers
                 }
 
                 //End
-                
-                
-                
+
+
+
                 var impprogramlist = db.Plan_Improvement_Campaign_Program.Where(imp => innerplanids.Contains(imp.Plan_Improvement_Campaign.ImprovePlanId)).Select(imp => imp.ImprovementPlanProgramId).ToList();
                 var improvementTacticList = db.Plan_Improvement_Campaign_Program_Tactic.Where(imp => impprogramlist.Contains(imp.ImprovementPlanProgramId) && imp.IsDeleted == false).ToList();
-               
-               
+
+
                 var LineItemList = (from li in db.Plan_Campaign_Program_Tactic_LineItem
                                     where !li.IsDeleted && planIds.Contains(li.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)
                                     select new
@@ -1850,8 +1850,8 @@ namespace RevenuePlanner.Helpers
 
                     planTacticIds = planTacticsList.Where(t => t.PlanId == plan.PlanId).Select(tactic => tactic.objPlanTactic).ToList();
 
-                   ModelId = plan.ModelId;
-                   modelDateList = new List<ModelDateList>();
+                    ModelId = plan.ModelId;
+                    modelDateList = new List<ModelDateList>();
 
                     MainModelId = (int)ModelId;
                     while (ModelId != null)
@@ -1968,7 +1968,7 @@ namespace RevenuePlanner.Helpers
 
                     var publishedModelIds = models.Where(m => m.Status.Equals(modelPublished)).Select(m => m.ModelId).ToList();
                     var draftModelIds = models.Where(m => m.Status.Equals(modelDraft)).Select(m => m.ModelId).ToList();
-                    
+
                     var tblPlan = db.Plans.Where(p => (publishedModelIds.Contains(p.Model.ModelId) || draftModelIds.Contains(p.Model.ModelId)) && p.IsDeleted.Equals(false));
                     var draftPlan = tblPlan.Where(p => p.Status.Equals(planDraft));
                     var publishedPlan = tblPlan.Where(p => p.Status.Equals(planPublished));
@@ -2346,7 +2346,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else
                             {
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                             }
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
@@ -2365,7 +2365,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else
                             {
-                            Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                             }
 
                             var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId == integrationInstanceId &&
@@ -2403,7 +2403,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else
                             {
-                            Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                             }
 
                             var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) &&
@@ -2424,7 +2424,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else
                             {
-                            Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+                                Plan_Improvement_Campaign_Program_TacticList.ForEach(a => { a.IntegrationInstanceTacticId = null; a.LastSyncDate = null; a.ModifiedDate = DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
                             }
 
                             var Plan_Improvement_Campaign_ProgramList = db.Plan_Improvement_Campaign_Program.Where(a => a.Plan_Improvement_Campaign.Plan.ModelId == modelId
@@ -2502,7 +2502,7 @@ namespace RevenuePlanner.Helpers
                             db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
                         }
                         db.SaveChanges();
-                       
+
                     }
                 }
             }
@@ -2514,7 +2514,7 @@ namespace RevenuePlanner.Helpers
         /// <CreatedBy>Sohel Pathan</CreatedBy>
         /// <CreatedDate>26/05/201</CreatedDate>
         /// <param name="PlanCampaignId"></param>
-        public static void ChangeCampaignStatus(int PlanCampaignId,bool AddComment)
+        public static void ChangeCampaignStatus(int PlanCampaignId, bool AddComment)
         {
             using (MRPEntities db = new MRPEntities())
             {
@@ -2542,7 +2542,7 @@ namespace RevenuePlanner.Helpers
                             db.Plan_Campaign_Program_Tactic_Comment.Add(pcptc);
                         }
                         db.SaveChanges();
-                       
+
                     }
                 }
             }
@@ -2565,7 +2565,7 @@ namespace RevenuePlanner.Helpers
                 string statuscomplete = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString();
                 string statusdecline = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Decline.ToString()].ToString();
                 string statussubmit = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Submitted.ToString()].ToString();
-                string statusCreated=RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
+                string statusCreated = RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Created.ToString()].ToString();
                 try
                 {
                     using (MRPEntities db = new MRPEntities())
@@ -2687,7 +2687,7 @@ namespace RevenuePlanner.Helpers
                             List<string> lstPStatus = new List<string>();
                             string tmpStatus;
                             foreach (var p in lstProgram)
-                            { 
+                            {
                                 tmpStatus = GetProgramStatus(p);
                                 if (!string.IsNullOrEmpty(tmpStatus))
                                     lstPStatus.Add(tmpStatus);
@@ -2717,7 +2717,7 @@ namespace RevenuePlanner.Helpers
                             }
                             else if (cntCreatedProgramStatus == 0 && cntCreatedTacticStatus == 0)
                             {
-                                
+
                             }
                             else if (!flag)
                             {
@@ -2910,7 +2910,7 @@ namespace RevenuePlanner.Helpers
             {
                 actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
             }
-            
+
             if (IsReport)
             {
                 string EntTacticType = Enums.EntityType.Tactic.ToString();
@@ -2940,7 +2940,7 @@ namespace RevenuePlanner.Helpers
                 tacticStageValueObj.MQLVelocity = stageRelation.Where(sr => mqlVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.CWVelocity = stageRelation.Where(sr => cwVelocityStagelist.Contains(sr.StageId) && sr.StageType == SV).Sum(sr => sr.Value);
                 tacticStageValueObj.ADSValue = stageRelation.Where(sr => sr.StageType == Size).Sum(sr => sr.Value);
-                
+
                 if (!isSinglePlan)
                 {
                     tacticStageValueObj.ActualTacticList = actualTacticList.Where(a => a.PlanTacticId == tactic.PlanTacticId).ToList();
@@ -2952,13 +2952,13 @@ namespace RevenuePlanner.Helpers
                     tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
 
                     #region "Get Tactic Stage-Weightage"
-                    tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).Select(_customfield => 
-                                                                                                  new TacticCustomFieldStageWeightage() 
-                                                                                                  { 
-                                                                                                    CustomFieldId = _customfield.CustomFieldId, 
-                                                                                                    Value = _customfield.Value, 
-                                                                                                    CostWeightage = _customfield.CostWeightage != null && _customfield.CostWeightage.Value != null ? _customfield.CostWeightage.Value : 0,
-                                                                                                    CVRWeightage = _customfield.Weightage != null && _customfield.Weightage.Value != null ? _customfield.Weightage.Value : 0 
+                    tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).Select(_customfield =>
+                                                                                                  new TacticCustomFieldStageWeightage()
+                                                                                                  {
+                                                                                                      CustomFieldId = _customfield.CustomFieldId,
+                                                                                                      Value = _customfield.Value,
+                                                                                                      CostWeightage = _customfield.CostWeightage != null && _customfield.CostWeightage.Value != null ? _customfield.CostWeightage.Value : 0,
+                                                                                                      CVRWeightage = _customfield.Weightage != null && _customfield.Weightage.Value != null ? _customfield.Weightage.Value : 0
                                                                                                   }).ToList();
                     #endregion
                 }
@@ -3007,9 +3007,9 @@ namespace RevenuePlanner.Helpers
             List<ImprovementTacticType_Metric> improvementIdsWeighList;
             StageRelation stageRelationObj;
             List<ImprovementTacticType_Metric> stageimplist;
-            double impcount = 0, impWeight = 0, improvementValue = 0; 
+            double impcount = 0, impWeight = 0, improvementValue = 0;
             #endregion
-            
+
             foreach (Plan_Campaign_Program_Tactic tactic in tlist)
             {
                 modelId = GetModelIdFromList(modelDateList, tactic.StartDate, ModelId);
@@ -3091,7 +3091,7 @@ namespace RevenuePlanner.Helpers
 
             #region "Declare Local Variables"
             int planId = 0, modelId = 0;
-            List<StageRelation> stageModelRelation ;
+            List<StageRelation> stageModelRelation;
             List<Plan_Improvement_Campaign_Program_Tactic> improvementList;
             TacticStageValueRelation tacticStageObj;
             List<int> improvementTypeList;
@@ -3180,9 +3180,9 @@ namespace RevenuePlanner.Helpers
             MRPEntities dbStage = new MRPEntities();
             List<PlanIMPTacticListRelation> planIMPTacticList = new List<PlanIMPTacticListRelation>();
             PlanIMPTacticListRelation planTacticIMP;
-            
+
             var implist = dbStage.Plan_Improvement_Campaign_Program_Tactic.Where(imptactic => planIds.Contains(imptactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) && !imptactic.IsDeleted).ToList();
-            
+
             foreach (int planId in planIds)
             {
                 planTacticIMP = new PlanIMPTacticListRelation();
@@ -3232,13 +3232,13 @@ namespace RevenuePlanner.Helpers
             double ads = 0;
             ModelStageRelationList modelStageObj;
             List<Model> tblModels = new List<Model>();
-            List<Stage> stagelist = new List<Stage>(); 
+            List<Stage> stagelist = new List<Stage>();
             #endregion
 
             stagelist = dbStage.Stages.Where(stage => stage.ClientId == Sessions.User.ClientId && stage.IsDeleted == false && stage.Code.Equals(ADS)).ToList();
             int adsStageId = stagelist.Select(stage => stage.StageId).FirstOrDefault();
             var ModelFunnelList = dbStage.Model_Stage.Where(m => modleIds.Contains(m.ModelId)).ToList();
-           
+
             tblModels = dbStage.Models.Where(m => modleIds.Contains(m.ModelId)).ToList();
             foreach (int modelId in modleIds)
             {
@@ -3469,11 +3469,11 @@ namespace RevenuePlanner.Helpers
             List<PlanADSRelation> planADSList = new List<PlanADSRelation>();
             List<int> planIds = planIMPList.Select(p => p.PlanId).ToList();
             List<PlanModelRelation> planModelRelation = dbStage.Plans.Where(p => planIds.Contains(p.PlanId)).Select(p => new PlanModelRelation { PlanId = p.PlanId, ModelId = p.ModelId }).ToList();
-            List<int> modelIds = planModelRelation.Select(mdl =>mdl.ModelId).ToList();
+            List<int> modelIds = planModelRelation.Select(mdl => mdl.ModelId).ToList();
             List<Model> tblModel = new List<Model>();
             bool isImprovementExits = false;
             int modelId = 0;
-            double ADSValue = 0,impcount = 0,impWeight = 0;
+            double ADSValue = 0, impcount = 0, impWeight = 0;
             tblModel = dbStage.Models.Where(mf => modelIds.Contains(mf.ModelId)).ToList();
             List<int> improvementTypeList;
             List<ImprovementTypeWeightList> improvementIdsWeighList;
@@ -3573,8 +3573,8 @@ namespace RevenuePlanner.Helpers
             _mdlData = mdbt.Models.Where(m => m.ModelId == ModelId).FirstOrDefault();
             DateTime? effectiveDate = _mdlData.EffectiveDate;
             if (effectiveDate == null || StartDate >= effectiveDate)
-             return ModelId;
-            
+                return ModelId;
+
             int? ParentModelId = _mdlData.ParentModelId;
             if (ParentModelId != null)
             {
@@ -4153,7 +4153,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="goalType">goal type of selected plan</param>
         /// <param name="goalValue">goal value for goal type of selected plan</param>
         /// <returns>return BudgetAllocationModel object</returns>
-        public static BudgetAllocationModel CalculateBudgetInputs(int modelId, string goalType, string goalValue, double averageDealSize, bool IsCw=false)
+        public static BudgetAllocationModel CalculateBudgetInputs(int modelId, string goalType, string goalValue, double averageDealSize, bool IsCw = false)
         {
             BudgetAllocationModel objBudgetAllocationModel = new BudgetAllocationModel();
             try
@@ -4247,7 +4247,7 @@ namespace RevenuePlanner.Helpers
                         // Calculate CW   -- Added by devanshi gandhi for pl #1430
                         if (IsCw == true)
                         {
-                            double CWValue = (inputValue) /averageDealSize;
+                            double CWValue = (inputValue) / averageDealSize;
                             CWValue = (CWValue.Equals(double.NaN) || CWValue.Equals(double.NegativeInfinity) || CWValue.Equals(double.PositiveInfinity)) ? 0 : CWValue;
                             objBudgetAllocationModel.CWValue = CWValue;
                         }
@@ -4297,7 +4297,7 @@ namespace RevenuePlanner.Helpers
                         //// Calculate MQL
                         int projectedStageLevel = levelINQ;
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListMQL = modelFunnelStageList.Where(mfs => mfs.ModelId==modelId && mqlStagelist.Contains(mfs.StageId)).ToList();
+                        var modelFunnelStageListMQL = modelFunnelStageList.Where(mfs => mfs.ModelId == modelId && mqlStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (inputValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
@@ -4310,12 +4310,12 @@ namespace RevenuePlanner.Helpers
                         int projectedStageLevel = levelINQ;
                         mqlStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level < levelMQL).Select(s => s.StageId).ToList();
                         cwStagelist = stageList.Where(s => s.Level >= projectedStageLevel && s.Level <= levelCW).Select(s => s.StageId).ToList();
-                        var modelFunnelStageListCW = modelFunnelStageList.Where(mfs => mfs.ModelId==modelId && cwStagelist.Contains(mfs.StageId)).ToList();
+                        var modelFunnelStageListCW = modelFunnelStageList.Where(mfs => mfs.ModelId == modelId && cwStagelist.Contains(mfs.StageId)).ToList();
                         double INQValue = (inputValue) / ((modelFunnelStageListCW.Aggregate(1.0, (x, y) => x * (y.Value / 100))) * averageDealSize);
                         INQValue = (INQValue.Equals(double.NaN) || INQValue.Equals(double.NegativeInfinity) || INQValue.Equals(double.PositiveInfinity)) ? 0 : INQValue;    // Added by Sohel Pathan on 12/12/2014 for PL ticket #975
 
                         // Calculate MQL
-                        var modelFunnelStageListMQL = modelFunnelStageList.Where(mfs => mfs.ModelId==modelId && mqlStagelist.Contains(mfs.StageId)).ToList();
+                        var modelFunnelStageListMQL = modelFunnelStageList.Where(mfs => mfs.ModelId == modelId && mqlStagelist.Contains(mfs.StageId)).ToList();
                         double MQLValue = (INQValue) * (modelFunnelStageListMQL.Aggregate(1.0, (x, y) => x * (y.Value / 100)));
                         // Start - Modified by Sohel Pathan on 12/12/2014 for PL ticket #975, NegativeInfinity and PositiveInfinity check has been added
                         MQLValue = (MQLValue.Equals(double.NaN) || MQLValue.Equals(double.NegativeInfinity) || MQLValue.Equals(double.PositiveInfinity)) ? 0 : MQLValue;  // Added by Viral Kadiya on 11/24/2014 to resolve PL ticket #990.
@@ -4377,7 +4377,7 @@ namespace RevenuePlanner.Helpers
                 entityType = a.EntityType,
                 isChild = DependencyList.Select(list => list.ChildCustomFieldId).ToList().Contains(a.CustomFieldId) ? true : false,
                 ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault() == null ? 0 : DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
-                ParentOptionId = DependencyList.Where(list =>list.ChildCustomFieldId == a.CustomFieldId && list.ChildOptionId == null).Select(list => list.ParentOptionId).ToList().FirstOrDefault(),
+                ParentOptionId = DependencyList.Where(list => list.ChildCustomFieldId == a.CustomFieldId && list.ChildOptionId == null).Select(list => list.ParentOptionId).ToList().FirstOrDefault(),
                 option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
                 {
                     ChildOptionId = DependencyList.Select(list => list.ChildOptionId).ToList().Contains(o.CustomFieldOptionId) ? true : false,
@@ -4388,13 +4388,13 @@ namespace RevenuePlanner.Helpers
                     customFieldId = o.CustomFieldId
                 }).OrderBy(o => o.value).ToList()
 
-            }).OrderBy(a => a.name,new AlphaNumericComparer()).ToList();
+            }).OrderBy(a => a.name, new AlphaNumericComparer()).ToList();
             List<int> customFieldIds = lstCustomFields.Select(cs => cs.customFieldId).ToList();
             var EntityValue = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
             foreach (var CustomFieldId in customFieldIds)
             {
                 lstCustomFields.Where(c => c.customFieldId == CustomFieldId).FirstOrDefault().value = EntityValue.Where(ev => ev.CustomFieldId == CustomFieldId).Select(ev => ev.Value).ToList();
-            
+
             }
 
             //foreach (var item in EntityValue)
@@ -4468,7 +4468,7 @@ namespace RevenuePlanner.Helpers
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Tactic.ToString(), Value = PlanGanttTypes.Tactic.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Stage.ToString(), Value = PlanGanttTypes.Stage.ToString() });
             lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Status.ToString(), Value = PlanGanttTypes.Status.ToString() });
-           // lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Request.ToString(), Value = PlanGanttTypes.Request.ToString() });
+            // lstViewByTab.Add(new ViewByModel { Text = PlanGanttTypes.Request.ToString(), Value = PlanGanttTypes.Request.ToString() });
             //lstViewByTab = lstViewByTab.Where(viewBy => !string.IsNullOrEmpty(viewBy.Text)).OrderBy(viewBy => viewBy.Text, new AlphaNumericComparer()).ToList();
 
             //// Check that if list of PlanTactic is not null then we are going to fetch the Custom Fields
@@ -4535,18 +4535,18 @@ namespace RevenuePlanner.Helpers
                 && customfield.IsDisplayForFilter == true //Modified by Mitesh for PL ticket 1020 (add filter of IsDisplayForFilter)
                 && customfield.CustomFieldType.Name == DropDownList).ToList(); //Modified by Arpita Soni for PL ticket 1148 (added filter of CustomFieldTypeId)
 
-             List<int> customfieldids = customfieldlist.Select(cfl => cfl.CustomFieldId).ToList();
+            List<int> customfieldids = customfieldlist.Select(cfl => cfl.CustomFieldId).ToList();
             // Check tacticid exists or not then use concat
             List<int> allentityids = tacticids.Concat(programids).Concat(campaignids).ToList();
-            
+
             var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
-            
+
             //var fcustomfieldentity = customfieldentity.Where(cf => allentityids.Contains(cf.EntityId)).ToList();
-            
+
             customfieldentity = (from cf in customfieldentity
-                        join ae in allentityids on cf.EntityId equals ae
-                        select cf).Distinct().ToList();
-            
+                                 join ae in allentityids on cf.EntityId equals ae
+                                 select cf).Distinct().ToList();
+
             var campaigncustomids = customfieldentity.Where(cfe => campaignids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
             List<ViewByModel> lstCustomFieldsViewByTabCampaign = customfieldlist.Where(cf => cf.EntityType == CampaignCustomText && campaigncustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = CampaignCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabCampaign = lstCustomFieldsViewByTabCampaign.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
@@ -4694,7 +4694,7 @@ namespace RevenuePlanner.Helpers
                                 string entityTypeProgram = Enums.EntityType.Program.ToString();
                                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
                                 //List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
-                                
+
                                 var lineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false) && lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
                                 lineItemList.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
                                 List<int> lineItemsIds = lineItemList.Select(lineItem => lineItem.PlanLineItemId).ToList();
@@ -4775,7 +4775,7 @@ namespace RevenuePlanner.Helpers
                                 var program_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
                                 program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
-                                
+
                                 //var tactic_customFieldList = tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic).ToList();
                                 //tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #719 Custom fields for programs
@@ -5103,7 +5103,7 @@ namespace RevenuePlanner.Helpers
             BDSServiceClient bdsservice = new BDSServiceClient();
             List<User> userName = new List<User>();
             //userName = bdsservice.GetMultipleTeamMemberName(UserGuid);
-            userName = bdsservice.GetMultipleTeamMemberNameByApplicationId(UserGuid,Sessions.ApplicationId); 
+            userName = bdsservice.GetMultipleTeamMemberNameByApplicationId(UserGuid, Sessions.ApplicationId);
             if (userName.Count > 0)
             {
                 return string.Concat(userName.FirstOrDefault().FirstName, " ", userName.FirstOrDefault().LastName);
@@ -5379,7 +5379,7 @@ namespace RevenuePlanner.Helpers
             List<Guid> lstClientUsers = new List<Guid>();
             List<Guid> lstClient = new List<Guid>();
             List<Guid> lstClientWithoutAnyPermissios = new List<Guid>();
-          
+
             try
             {
                 using (MRPEntities objDB = new MRPEntities())
@@ -5403,8 +5403,8 @@ namespace RevenuePlanner.Helpers
 
                         lstClient = lstcustomrestriction.Where(customRestriction => (customRestriction.Permission == NoPermission))
                                                                        .Select(customRestriction => customRestriction.UserId).Distinct().ToList();
-                        lstClientWithoutAnyPermissios =lstUsers.Where(user => !lstClient.Contains(user.UserId) && !lstClientUsers.Contains(user.UserId)).Select(user => user.UserId).ToList().Distinct().ToList();
-                       
+                        lstClientWithoutAnyPermissios = lstUsers.Where(user => !lstClient.Contains(user.UserId) && !lstClientUsers.Contains(user.UserId)).Select(user => user.UserId).ToList().Distinct().ToList();
+
                         //// Get default custom restriction is viewable or not
                         bool isDefaultRestrictionsViewable = IsDefaultCustomRestrictionsViewable();
 
@@ -5413,7 +5413,7 @@ namespace RevenuePlanner.Helpers
                             return lstClientUsers.Concat(lstClientWithoutAnyPermissios).ToList();
 
                         }
-                      
+
                     }
                 }
             }
@@ -5613,12 +5613,12 @@ namespace RevenuePlanner.Helpers
                         tblCustomFieldEntity = (from tbl in tblCustomFieldEntity
                                                 join lst in lstTactic on tbl.EntityId equals lst
                                                 select tbl).ToList();
-                        
+
 
                         if (tblCustomFieldEntity == null || !tblCustomFieldEntity.Any())
                         {
                             return lstTactic;
-                       
+
                         }
                         //End
 
@@ -5646,15 +5646,15 @@ namespace RevenuePlanner.Helpers
                                 int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                                 int NonePermission = (int)Enums.CustomRestrictionPermission.None;
                                 //List<int> currentTacticCustomFields = new List<int>();
-                               // List<string> AllowedRightsForCurrentCustomField = new List<string>();
-                               // List<int> lstRestrictedCustomFieldOptionIds = new List<int>();
-                               // List<Models.CustomRestriction> fltrCustomRestriction = new List<Models.CustomRestriction>();
-                                
+                                // List<string> AllowedRightsForCurrentCustomField = new List<string>();
+                                // List<int> lstRestrictedCustomFieldOptionIds = new List<int>();
+                                // List<Models.CustomRestriction> fltrCustomRestriction = new List<Models.CustomRestriction>();
+
 
                                 var vieweditoptionid = userCustomRestrictionList.Where(restriction => restriction.Permission == ViewOnlyPermission || restriction.Permission == ViewEditPermission).Select(res => res.CustomFieldOptionId).ToList();
                                 var noneoptionid = userCustomRestrictionList.Where(restriction => restriction.Permission == NonePermission).Select(res => res.CustomFieldOptionId).ToList();
 
-                                
+
                                 if (isDefaultRestrictionsViewable)
                                 {
                                     var onlyviewtacticids = tblCustomFieldEntity.Where(tac => vieweditoptionid.Contains(int.Parse(tac.Value)) && !noneoptionid.Contains(int.Parse(tac.Value))).Select(tac => tac.EntityId).Distinct().ToList();
@@ -5667,7 +5667,7 @@ namespace RevenuePlanner.Helpers
                                     lstAllowedEntityIds = onlyviewtacticids;
                                 }
 
-                                
+
                                 //foreach (int tacticId in lstTactic)
                                 //{
                                 //    isViewableEntity = true;
@@ -5713,9 +5713,9 @@ namespace RevenuePlanner.Helpers
                                 //        lstAllowedEntityIds.Add(tacticId);
                                 //    }
 
-                                    
+
                                 //}
-                                
+
                             }
                             else
                             {
@@ -5824,13 +5824,13 @@ namespace RevenuePlanner.Helpers
             {
                 using (MRPEntities objDbMrpEntities = new MRPEntities())
                 {
-                   
+
                     bool isCustomFieldExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), clientId);
                     string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
                     string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
                     if (isCustomFieldExist)
                     {
-                        var customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic) 
+                        var customfieldlist = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic)
                                                                                     && customfield.IsDeleted.Equals(false)).ToList();
                         var CustomFieldexists = customfieldlist.Where(customfield => (customfield.IsRequired && !isDisplayForFilter)).Any();
                         if (CustomFieldexists)
@@ -5842,26 +5842,26 @@ namespace RevenuePlanner.Helpers
                             //                                                                            customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
                             //                                                                            (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true))
                             //                                                                    .Select(customFieldEntity => customFieldEntity).Distinct().ToList();
-                            
+
                             var customfieldList = customfieldlist.Where(customField => customField.CustomFieldType.Name.Equals(DropDownList) &&
                                                                                                       (isDisplayForFilter ? customField.IsDisplayForFilter.Equals(true) : true)).Select(customField => customField.CustomFieldId).ToList();
-                          //  List<CustomField_Entity> tblCustomfieldEntity = objDbMrpEntities.CustomField_Entity.Where(entityid => lstTactic.Contains(entityid.EntityId)).ToList();
+                            //  List<CustomField_Entity> tblCustomfieldEntity = objDbMrpEntities.CustomField_Entity.Where(entityid => lstTactic.Contains(entityid.EntityId)).ToList();
 
 
-                            
+
                             var lstAllTacticCustomFieldEntitiesanony = customfieldEntitylist != null && customfieldEntitylist.Count() > 0 ? customfieldEntitylist.Where(customFieldEntity => customfieldList.Contains(customFieldEntity.CustomFieldId))
                                                                                                        .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList()
                                                                                                        : objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldList.Contains(customFieldEntity.CustomFieldId))
                                                                                                        .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
                             var lstAllTacticCustomFieldEntities = (from tbl in lstAllTacticCustomFieldEntitiesanony
-                                                                join lst in lstTactic on tbl.EntityId equals lst
-                                                                select new CustomField_Entity
-                                                                {
-                                                                    EntityId = tbl.EntityId,
-                                                                    CustomFieldId = tbl.CustomFieldId,
-                                                                    Value = tbl.Value
-                                                                }).ToList();
-                            
+                                                                   join lst in lstTactic on tbl.EntityId equals lst
+                                                                   select new CustomField_Entity
+                                                                   {
+                                                                       EntityId = tbl.EntityId,
+                                                                       CustomFieldId = tbl.CustomFieldId,
+                                                                       Value = tbl.Value
+                                                                   }).ToList();
+
                             //// Get Custom Restrictions
                             var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);
                             return GetEditableTacticListPO(userId, clientId, lstTactic, isCustomFieldExist, CustomFieldexists, lstAllTacticCustomFieldEntities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, isDisplayForFilter);
@@ -5890,32 +5890,32 @@ namespace RevenuePlanner.Helpers
                 //using (MRPEntities objDbMrpEntities = new MRPEntities())
                 //{
                 if (lstTactic.Count() > 0 && IsCustomFeildExist) //todo : able to move up
-                    {
-                        //// Get list customFieldEntity List for given tactic list
-                        string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
-                        string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
+                {
+                    //// Get list customFieldEntity List for given tactic list
+                    string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
+                    string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
 
-                        //Added by Komal Rawal
+                    //Added by Komal Rawal
                     //var CustomFieldexists = objDbMrpEntities.CustomFields.Where(customfield => customfield.ClientId == clientId && customfield.EntityType.Equals(EntityTypeTactic) &&
                     //                                                            (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
                     //                                                             ).Any(); //todo : able to move up
                     if (!CustomFieldexists)
-                        {
-                            return lstTactic;
-                        }
+                    {
+                        return lstTactic;
+                    }
 
-                        //For #774
+                    //For #774
                     bool Entityid = Entities.Where(entityid => lstTactic.Contains(entityid.EntityId)).Select(entityid => entityid).Any();
                     //todo : able to move up
 
                     if (!Entityid)
-                        {
-                            return lstTactic;
-                        }
-                       
+                    {
+                        return lstTactic;
+                    }
 
-                    
-                        //End
+
+
+                    //End
                     //var lstAllTacticCustomFieldEntities = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == clientId &&
                     //                                                                                customFieldEntity.CustomField.IsDeleted.Equals(false) &&
                     //                                                                                customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
@@ -5924,22 +5924,22 @@ namespace RevenuePlanner.Helpers
                     //                                                                                lstTactic.Contains(customFieldEntity.EntityId))
                     //                                                                        .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
                     lstAllTacticCustomFieldEntities = lstAllTacticCustomFieldEntities.Where(customFieldEntity => lstTactic.Contains(customFieldEntity.EntityId)).ToList();
-                    var entityids= lstAllTacticCustomFieldEntities.Select(entity =>entity.EntityId).ToList();
+                    var entityids = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).ToList();
                     List<int> othertacticIds = lstTactic.Where(tac => !entityids.Contains(tac)).Select(tac => tac).ToList();
-                        if (lstAllTacticCustomFieldEntities.Count > 0)
-                        {
-                            //// Get Custom Restrictions
+                    if (lstAllTacticCustomFieldEntities.Count > 0)
+                    {
+                        //// Get Custom Restrictions
                         //var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(userId, true);//todo : able to move up
 
-                            //// Check default custom restriction is editable or not
-                            bool isDefaultRestrictionsEditable = IsDefaultCustomRestrictionsEditable();
-                            if (userCustomRestrictionList.Count() > 0)
-                            {
-                            
+                        //// Check default custom restriction is editable or not
+                        bool isDefaultRestrictionsEditable = IsDefaultCustomRestrictionsEditable();
+                        if (userCustomRestrictionList.Count() > 0)
+                        {
+
                             //var df = from lst in lstAllTacticCustomFieldEntities
                             //         join uc in userCustomRestrictionList on int.Parse(lst.Value) equals uc.CustomFieldOptionId
                             //         where 
-                           // int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
+                            // int ViewEditPermission = (int)Enums.CustomRestrictionPermission.ViewEdit;
                             int ViewOnlyPermission = (int)Enums.CustomRestrictionPermission.ViewOnly;
                             int NonePermission = (int)Enums.CustomRestrictionPermission.None;
                             var viewnoneoptionid = userCustomRestrictionList.Where(restriction => restriction.Permission == ViewOnlyPermission || restriction.Permission == NonePermission).Select(res => res.CustomFieldOptionId).ToList();
@@ -5957,66 +5957,66 @@ namespace RevenuePlanner.Helpers
                                 lstEditableEntityIds = onlyedittactic;
                             }
                             // Get list of tactic Ids
-                         //   List<int> lstTacticIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
+                            //   List<int> lstTacticIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
 
-                         //   bool isEditableEntity = true, IsEditable;
-                         //   List<CustomField_Entity> currentTacticEntities;
-                         //   List<Models.CustomRestriction> _CustomRestriction;
+                            //   bool isEditableEntity = true, IsEditable;
+                            //   List<CustomField_Entity> currentTacticEntities;
+                            //   List<Models.CustomRestriction> _CustomRestriction;
 
-                         //   foreach (int tacticId in lstTactic)
-                         //   {
-                         //       isEditableEntity = true;
-                         //       currentTacticEntities = new List<CustomField_Entity>();
-                         //       //// Get list of CustomFieldEntities for current selected tactic
-                         //       currentTacticEntities = lstAllTacticCustomFieldEntities.Where(entity => entity.EntityId == tacticId).ToList();
+                            //   foreach (int tacticId in lstTactic)
+                            //   {
+                            //       isEditableEntity = true;
+                            //       currentTacticEntities = new List<CustomField_Entity>();
+                            //       //// Get list of CustomFieldEntities for current selected tactic
+                            //       currentTacticEntities = lstAllTacticCustomFieldEntities.Where(entity => entity.EntityId == tacticId).ToList();
 
-                         //       foreach (CustomField_Entity entity in currentTacticEntities)
-                         //       {
-                         //           _CustomRestriction = new List<Models.CustomRestriction>();
-                         //           _CustomRestriction = userCustomRestrictionList.Where(option => option.CustomFieldOptionId == int.Parse(entity.Value)).ToList();
-                         //           if (_CustomRestriction != null && _CustomRestriction.Any())
-                         //           {
-                         //               IsEditable = _CustomRestriction.Where(restriction => restriction.Permission == ViewEditPermission).Any();
-                         //               if (IsEditable == false)
-                         //               {
-                         //                   isEditableEntity = false;
-                         //                   break;
-                         //               }
-                         //           }
-                         //           else if (!isDefaultRestrictionsEditable)
-                         //           {
-                         //               isEditableEntity = false;
-                         //               break;
-                         //           }
-                         //       }
+                            //       foreach (CustomField_Entity entity in currentTacticEntities)
+                            //       {
+                            //           _CustomRestriction = new List<Models.CustomRestriction>();
+                            //           _CustomRestriction = userCustomRestrictionList.Where(option => option.CustomFieldOptionId == int.Parse(entity.Value)).ToList();
+                            //           if (_CustomRestriction != null && _CustomRestriction.Any())
+                            //           {
+                            //               IsEditable = _CustomRestriction.Where(restriction => restriction.Permission == ViewEditPermission).Any();
+                            //               if (IsEditable == false)
+                            //               {
+                            //                   isEditableEntity = false;
+                            //                   break;
+                            //               }
+                            //           }
+                            //           else if (!isDefaultRestrictionsEditable)
+                            //           {
+                            //               isEditableEntity = false;
+                            //               break;
+                            //           }
+                            //       }
 
-                         //       //// If tactic is viewable then add it into final Entity list
-                         //       if (isEditableEntity)
-                         //       {
-                         //           lstEditableEntityIds.Add(tacticId);
-                         //       }
-
-
-                         //   }
-                            
+                            //       //// If tactic is viewable then add it into final Entity list
+                            //       if (isEditableEntity)
+                            //       {
+                            //           lstEditableEntityIds.Add(tacticId);
+                            //       }
 
 
-                            }
-                            else if (isDefaultRestrictionsEditable)
-                            {
-                                //// Check default custom restrictions is set to editable
-                                //// set list of editable tactic Ids
-                                lstEditableEntityIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
-                            }
+                            //   }
+
+
+
                         }
-                        lstEditableEntityIds = lstEditableEntityIds.Concat(othertacticIds).ToList();
+                        else if (isDefaultRestrictionsEditable)
+                        {
+                            //// Check default custom restrictions is set to editable
+                            //// set list of editable tactic Ids
+                            lstEditableEntityIds = lstAllTacticCustomFieldEntities.Select(entity => entity.EntityId).Distinct().ToList();
+                        }
                     }
-                    else
-                    {
-                        return lstTactic;
-                    }
-
+                    lstEditableEntityIds = lstEditableEntityIds.Concat(othertacticIds).ToList();
                 }
+                else
+                {
+                    return lstTactic;
+                }
+
+            }
             //}
             catch (Exception ex)
             {
@@ -6160,7 +6160,7 @@ namespace RevenuePlanner.Helpers
         #endregion
 
         #region "Get Finance Header Value"
-        public static FinanceModelHeaders GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly")
+        public static FinanceModelHeaders GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly", bool isMain = false)
         {
             FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
@@ -6168,7 +6168,8 @@ namespace RevenuePlanner.Helpers
             List<string> lstMonthly = Common.lstMonthly;
             MRPEntities db = new MRPEntities();
             var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.Id).ToList();
-            var varBudgetDetails = db.Budget_Detail.Where(a => a.Id == (budgetId > 0 ? budgetId : a.BudgetId) && budgeparentids.Contains(a.BudgetId)).Select(a => a.Id).ToList();
+            var MainBudgetid = isMain == true ? db.Budget_Detail.Where(a => a.BudgetId == budgetId && budgeparentids.Contains(a.BudgetId) && a.ParentId == null).Select(a => a.Id).FirstOrDefault() : 0;
+            var varBudgetDetails = db.Budget_Detail.Where(a => a.Id == (isMain == true ? MainBudgetid : (budgetId > 0 ? budgetId : a.BudgetId)) && budgeparentids.Contains(a.BudgetId)).Select(a => a.Id).ToList();
 
             //var budgetdetailid = varBudgetDetails.Where(i => i. == budgetId).Select(o => o.Id).ToList();
             var budgetamout = db.Budget_DetailAmount.Where(amt => varBudgetDetails.Contains(amt.BudgetDetailId)).ToList();

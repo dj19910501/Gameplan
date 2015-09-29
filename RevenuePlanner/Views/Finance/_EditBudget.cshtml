@@ -9,7 +9,7 @@
         GlobalBudgetId = '@ViewBag.BudgetId';
         GlobalEditLevel = '@ViewBag.EditLevel';
         pageName = "EditBudget";
-        //debugger;
+        
         ShowHideControls("EditBudget");
 
         //ShowHideColumns($("#chkPlan"));
@@ -48,7 +48,7 @@
                 IsQuaterly: AllocatedBy
             },
             success: function (data) {
-                debugger;
+                
                 GridData = data;
                 //alert(GridData);
                 //alert(Data1);
@@ -120,7 +120,7 @@
         });
         //myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
-            debugger;
+            
             if (IsValid) {
                 var Period = myTreeGrid.getColLabel(cInd, 0);
                 var ColumnName = myTreeGrid.getColLabel(cInd, 1);
@@ -141,7 +141,7 @@
                         dataType: 'json',
                         success: function (states) {
                             var cellObj = myTreeGrid.cells(rId, cInd);
-                            debugger;
+                            
                             if (states.errormsg != null && states.errormsg.trim() != "") {
                                 alert(states.errormsg.trim());
                                 myTreeGrid.cells(rId, cInd).setValue(oValue);
@@ -149,10 +149,10 @@
                             }
                             myTreeGrid.cells(rId, cInd).setValue(nValue);
                             if (ColumnName == "Budget") {
-                                //debugger;
+                                
                                 if (AllocatedBy) {
                                     $.each(BudgetQuartelyColIndex, function () {
-                                        //debugger;
+                                        
                                         var ColValue = myTreeGrid.cells(rId, this).getValue();
                                         BudgetRowTotal += parseFloat(ColValue);
                                     });
@@ -166,10 +166,10 @@
 
                             }
                             else if (ColumnName == "ForeCast") {
-                                //debugger;
+                                
                                 if (AllocatedBy) {
                                     $.each(ForeCastQuartelyColIndex, function () {
-                                        //debugger;
+                                        
                                         var ColValue = myTreeGrid.cells(rId, this).getValue();
                                         ForCastRowTotal += parseFloat(ColValue);
                                     });
@@ -193,7 +193,7 @@
         //    $("#gridbox").find("table").css("width", GridWidth);
         //});
         //myTreeGrid.attachEvent("onSelect", function (id) {
-        //    debugger;
+        
         //    $("#gridbox").find("table").css("width", GridWidth);
         //});
         myTreeGrid.attachEvent("onOpenEnd", function () {
@@ -223,7 +223,7 @@
         myTreeGrid.setSizes();
 
         $("#gridbox").find("table").css("width", GridWidth);
-        debugger;
+        
         $(".grid_add").attr("data-title", "Add Row");
         CollapseExpand = true;
         //alert($("#gridbox").find("table").width());
@@ -264,7 +264,7 @@
     var _parentRowId = '';
     var _row_parentId = '';
     function AddRow(cntrl) {
-        debugger;
+        
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         if (AllocatedBy == 'Quarterly') {
             AllocatedBy = true;
@@ -273,7 +273,7 @@
             AllocatedBy = false;
         }
         var row_id = $(cntrl).attr('row-id');
-        //debugger;
+        
         //var rowId = myTreeGrid.getSelectedId();
         //var rowindex = myTreeGrid.getRowIndex(row_id.toString());
 
@@ -321,7 +321,7 @@
 
         //myTreeGrid.setItemText(_newrowid, 'new text')
         //var sdateindex = myTreeGrid.getColIndexById('Tree');
-        //debugger;
+        
         if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
             //UpdateActionColumn(budgetDetailId);
         }

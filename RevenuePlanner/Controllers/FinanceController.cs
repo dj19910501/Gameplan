@@ -298,9 +298,9 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Methods for Get Header Value
-        public ActionResult GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly")
+        public ActionResult GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly", bool IsMain = false)
         {
-            FinanceModelHeaders objfinanceheader = Common.GetFinanceHeaderValue(budgetId, timeFrameOption, isQuarterly);
+            FinanceModelHeaders objfinanceheader = Common.GetFinanceHeaderValue(budgetId, timeFrameOption, isQuarterly, IsMain);
             return PartialView("_financeheader", objfinanceheader);
         }
         #endregion

@@ -44,7 +44,7 @@
     });
     function AddRow(cntrl) {
         var row_id = $(cntrl).attr('row-id');
-        //debugger;
+        
         //var rowId = newTreeGrid.getSelectedId();
         //var rowindex = newTreeGrid.getRowIndex(row_id.toString());
         
@@ -77,7 +77,7 @@
         
         //newTreeGrid.setItemText(_newrowid, 'new text')
         //var sdateindex = newTreeGrid.getColIndexById('Tree');
-        //debugger;
+        
         if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
             UpdateActionColumn(budgetDetailId);
         }
@@ -90,7 +90,7 @@
     }
 
     function OnEditCell(stage, id, index,newVal,oldVal) {
-        //debugger;
+        
         //var _val = $("#hdn_row_parentId").val();
         //var splitRowParentIds = '';
         //var rowId = '', parentId = '',parentRowID='';
@@ -100,7 +100,7 @@
                 return true;
             }
             if (stage.toString() == '2') {
-                debugger;
+                
                 //var _budgetIdVal = $('#ddlParentFinance').val();
                 if (newVal == null || newVal == '') {
                     return false;
