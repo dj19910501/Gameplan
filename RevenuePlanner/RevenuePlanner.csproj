@@ -706,6 +706,7 @@
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="RevenuePlanner.wpp.targets" />
     <None Include="Service References\BDSService\BDSService1.disco" />
+    <Content Include="Scripts\js\errorhandler.js" />
     <Content Include="Web.config" />
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
