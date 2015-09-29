@@ -813,7 +813,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Login\Index.cshtml" />
@@ -833,16 +832,13 @@
     <Content Include="Views\Plan\Assortment.cshtml" />
     <Content Include="Views\Plan\Create.cshtml" />
     <Content Include="Views\Plan\NoModel.cshtml" />
-    <Content Include="Views\Plan\PlanZero.cshtml" />
     <Content Include="Views\Home\Homezero.cshtml" />
     <Content Include="Views\User\Notifications.cshtml" />
-    <Content Include="Views\Home\AddActual.cshtml" />
     <Content Include="Views\Model\CreateTactic.cshtml" />
     <Content Include="Views\Model\Tactics.cshtml" />
     <Content Include="Views\Model\_modeloverview.cshtml" />
     <Content Include="Views\Model\_contactinquiry.cshtml" />
     <Content Include="Views\Boost\BestInClass.cshtml" />
-    <Content Include="Views\Boost\CreateImprovementTactic.cshtml" />
     <Content Include="Views\Boost\Index.cshtml" />
     <Content Include="Views\Login\ForgotPassword.cshtml" />
     <Content Include="Views\Login\ResetPassword.cshtml" />
@@ -865,7 +861,6 @@
     <Content Include="Views\ExternalService\_integration.cshtml" />
     <Content Include="Views\Organization\_organization.cshtml" />
     <Content Include="Views\User\_myprofile.cshtml" />
-    <Content Include="Views\Shared\_Sidebar.cshtml" />
     <Content Include="Views\Boost\_boost.cshtml" />
     <Content Include="Views\Model\_model.cshtml" />
     <Content Include="Views\Plan\_plan.cshtml" />
