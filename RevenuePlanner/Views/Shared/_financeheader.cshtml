@@ -65,6 +65,7 @@
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + backBudgetid);
         ShowHideControls("MainGrid");
+        GetFinanceHeaderValue(backBudgetid, true);
         myApp.hidePleaseWait();
     }
 
