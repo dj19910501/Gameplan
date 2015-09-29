@@ -13,6 +13,10 @@ using System.Web;
 using Integration;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.IO;
+using System.Web.Script.Serialization;
+
+
 
 namespace RevenuePlanner.Controllers
 {
@@ -5489,7 +5493,8 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <returns>Returns Partial View Of edit Setup Tab.</returns>
         [HttpPost]
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string UserId = "", int tacticId = 0)
+
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues,string UserId = "", int tacticId = 0)
         {
             //// Check whether current user is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -5561,6 +5566,21 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(objLineitem).State = EntityState.Added;
                                 int result = db.SaveChanges();
                                 lineItemId = objLineitem.PlanLineItemId;
+                                #endregion
+
+                                #region Save Field Mapping Details
+                                var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
+                                LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
+                                foreach (var item in MappingFields)
+                                {
+                                    LineitemBudgetMapping.BudgetDetailId = item.Id;
+                                    LineitemBudgetMapping.PlanLineItemId = lineItemId;
+                                    LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
+                                    LineitemBudgetMapping.CreatedDate = DateTime.Now;
+                                    db.Entry(LineitemBudgetMapping).State = EntityState.Added;
+                                }
+                                db.SaveChanges();
+
                                 #endregion
 
                                 //// Calculate TotalLineItemCost.
@@ -5782,6 +5802,25 @@ namespace RevenuePlanner.Controllers
                                 objLineitem.ModifiedBy = Sessions.User.UserId;
                                 objLineitem.ModifiedDate = DateTime.Now;
                                 db.Entry(objLineitem).State = EntityState.Modified;
+                                #endregion
+
+                                #region Save Field Mapping Details
+                                List<LineItem_Budget> ExistingValues = db.LineItem_Budget.Where(a => a.PlanLineItemId == form.PlanLineItemId).ToList();
+                                ExistingValues.ForEach(Field => db.Entry(Field).State = EntityState.Deleted);
+                                var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
+
+                                LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
+                                foreach (var item in MappingFields)
+                                {
+                                    LineitemBudgetMapping.BudgetDetailId = item.Id;
+                                    LineitemBudgetMapping.PlanLineItemId = form.PlanLineItemId;
+                                    LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
+                                    LineitemBudgetMapping.CreatedDate = DateTime.Now;
+                                    db.Entry(LineitemBudgetMapping).State = EntityState.Added;
+                                    db.SaveChanges();
+                                }
+
+
                                 #endregion
 
                                 int result;
@@ -8979,6 +9018,94 @@ namespace RevenuePlanner.Controllers
 
 
             }
+
+        }
+
+        #endregion
+
+        #region TreeGridView for dropdown
+        //Added By Komal Rawal for #1617
+        public JsonResult LoadBudgetDropdown(int BudgetId = 0, int PlanLineItemID = 0)
+        {
+            MRPEntities db = new MRPEntities();
+            DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
+            var MinParentid = 0;
+
+            var dataTableMain = new DataTable();
+            dataTableMain.Columns.Add("Id", typeof(Int32));
+            dataTableMain.Columns.Add("ParentId", typeof(Int32));
+            dataTableMain.Columns.Add("Name", typeof(String));
+         //   dataTableMain.Columns.Add("Weightage", typeof(String));
+
+            List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId)).Select(a => a).ToList();
+
+            List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
+            List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
+            List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+
+            var Query = BudgetDetailList.Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
+
+            foreach (var item in Query)
+            {
+
+                BudgetAmount objBudgetAmount = new BudgetAmount();
+                List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
+                dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name });
+            }
+
+            var items = GetTopLevelRows(dataTableMain, MinParentid)
+                        .Select(row => CreateItem(dataTableMain, row,PlanLineItemID))
+                        .ToList();
+
+            budgetMain.rows = items;
+
+
+            return Json(new { data = budgetMain }, JsonRequestBehavior.AllowGet);
+        }
+
+        IEnumerable<DataRow> GetTopLevelRows(DataTable dataTable, int minParentId = 0)
+        {
+            return dataTable
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<Int32>("ParentId") == minParentId);
+        }
+        IEnumerable<DataRow> GetChildren(DataTable dataTable, Int32 parentId)
+        {
+            return dataTable
+              .Rows
+              .Cast<DataRow>()
+              .Where(row => row.Field<Int32>("ParentId") == parentId);
+        }
+        DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row, int PlanLineItemID)
+        {
+            var enableCheck = string.Empty;
+            var id = row.Field<Int32>("Id");
+            var name = row.Field<String>("Name");
+          //  var weightage = row.Field<String>("Weightage");
+            int Selectedid = db.LineItem_Budget.Where(a =>a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a.BudgetDetailId).FirstOrDefault();
+            if(id == Selectedid)
+            {
+                enableCheck = "checked=\"checked\"";
+            }
+            else
+            {
+                enableCheck = string.Empty;
+            }
+            var temp = "<input id=" + id + " title=" + name + " " + enableCheck + "  onclick='ddlcheckboxclick(this)' type=checkbox />" + name;
+           // var AddWeightage = "<input type='textbox'/>";
+
+            List<string> datalist = new List<string>();
+
+            var children = GetChildren(dataTable, id)
+              .Select(r => CreateItem(dataTable, r, PlanLineItemID))
+              .ToList();
+
+            var item = children.Count > 0 ? name : temp;
+         //   var Weightageitem = children.Count > 0 ? "" : AddWeightage;
+            datalist.Add("<input  type=checkbox /><span>" + item != null ? Convert.ToString(item) : "No" + "</span>" + name);
+          //  datalist.Add(Weightageitem);
+            return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = datalist, rows = children };
 
         }
 

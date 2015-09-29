@@ -529,4 +529,10 @@ namespace RevenuePlanner.Models
         public double TotalCost { get; set; }
         public double TotalMqls { get; set; }
     }
+
+    public class BudgetAccountMapping
+    {
+        public int Id { get; set; }
+
+    }
 }

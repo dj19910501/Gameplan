@@ -708,7 +708,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.MaxValue;
 
 
-            var result = objInspectController.SaveLineitem(Form, Title,UserID,PlanTacticId) as JsonResult;
+            var result = objInspectController.SaveLineitem(Form, Title,"",UserID,PlanTacticId) as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -749,7 +749,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.MaxValue;
 
 
-            var result = objInspectController.SaveLineitem(Form, Title, UserID, PlanTacticId) as JsonResult;
+            var result = objInspectController.SaveLineitem(Form, Title,"", UserID, PlanTacticId) as JsonResult;
 
             if (result != null)
             {
@@ -792,7 +792,7 @@ namespace RevenuePlanner.Test.Controllers
             Form.EndDate = DateTime.MaxValue;
 
 
-            var result = objInspectController.SaveLineitem(Form, Title, UserID, PlanTacticId) as JsonResult;
+            var result = objInspectController.SaveLineitem(Form, Title,"", UserID, PlanTacticId) as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName

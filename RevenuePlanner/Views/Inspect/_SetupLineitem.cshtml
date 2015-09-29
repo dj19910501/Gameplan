@@ -53,6 +53,16 @@
     <span class="flag-icon"></span>
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
         id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;" />
+
+    <ul id="FinanceMappingHeading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+        <li class="pull-left">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Finance Mapping</h3>
+        </li>
+    </ul>
+
+    <div id="CustomHtmlHelperfieldforMapping" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
+        @HtmlHelpers.GenerateMappingFieldsForInspectPopup(Model.PlanLineItemId)
+    </div>
 }
 <script type="text/javascript">
     $(document).ready(

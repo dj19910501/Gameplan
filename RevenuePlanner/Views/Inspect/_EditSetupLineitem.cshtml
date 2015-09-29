@@ -17,7 +17,9 @@
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
 }
-
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid1_min.css")" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxTreeGrid.js")">
+</script>
 <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
 <style type="text/css">
     #btnCancel {
@@ -44,6 +46,10 @@
         left: 0 !important;
         top: 20px !important;
         min-width:205px;
+    }
+    .objbox
+    {
+    overflow:hidden !important;
     }
 </style>
 @using (Html.BeginForm())
@@ -89,6 +95,15 @@
         </div>
     </div>
           
+    <ul id="FinanceMappingHeading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+        <li class="pull-left">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Finance Mapping</h3>
+        </li>
+    </ul>
+
+    <div id="CustomHtmlHelperfieldforMapping" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
+        @HtmlHelpers.GenerateMappingFieldsForInspectPopup(Model.PlanLineItemId, Enums.InspectPopupMode.Edit.ToString())
+    </div>
     @*<div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
         <div class="span2 btn-save" style="width: 80px;">
             <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
@@ -100,6 +115,8 @@
     
 }
 <script type="text/javascript">
+    var TreeViewDdl;
+
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -109,6 +126,96 @@
         }
     }
    
+    //Added BY Komal Rawal for #1617
+    $('.dropdown_new_btn').click(function () {
+        if($(this).next().css("display") == "none")
+        {
+            $(this).next().css("display","block");
+            LoadBudgetDropdown();
+        }
+        else
+        {
+            $(this).next().css("display","none");
+        }
+    });
+
+    function LoadBudgetDropdown()
+    {
+        var GridData;
+        TreeViewDdl = new dhtmlXGridObject('treeviewddl');
+        $.ajax({
+            dataType: 'json',
+            url: '@Url.Content("~/Inspect/LoadBudgetDropdown/")',
+            data: {
+                PlanLineItemID : @Model.PlanLineItemId,
+            },
+            async:false,
+            success: function (data) {
+                GridData=data.data;
+                var imgpath = '@Url.Content("~/codebase/imgs/")';
+                TreeViewDdl.setImagePath(imgpath);
+                TreeViewDdl.setHeader("--Select a Budget--");
+                TreeViewDdl.enableAutoHeight(true);
+                TreeViewDdl.enableAutoWidth(true);
+                TreeViewDdl.enableTreeCellEdit(false)
+                TreeViewDdl.setImageSize(1, 1);
+                TreeViewDdl.setColTypes("tree");
+                TreeViewDdl.init();
+
+                //  TreeViewDdl.insertColumn(2, 'Weightage', 'ro');
+                //TreeViewDdl.setSkin("");
+                TreeViewDdl.parse(GridData, "json");
+
+            }
+        });
+        TreeViewDdl.expandAll();
+        $('#treeviewddl').find('input:checkbox:checked').each(function () {
+            ListOfItmeCheck.Ids.push($(this).attr('id'));
+            ListOfItmeCheck.values.push($(this).attr('title'));
+        });
+        TreeViewDdl.collapseAll();
+
+    }
+
+    var ListOfItmeCheck= {
+        Ids: [],
+        values:[]
+    };
+    function ddlcheckboxclick(items)
+    {
+        $('.span3').find('.dropdown_new_btn p:first').text("");
+        if(items.checked)
+        {
+            ListOfItmeCheck.Ids.push(items.id);
+            ListOfItmeCheck.values.push(items.title);
+        }
+        else{
+
+            var index = ListOfItmeCheck.Ids.indexOf(items.id);
+            if (index >= 0) {
+                ListOfItmeCheck.Ids.splice( index, 1 );
+                ListOfItmeCheck.values.splice( index, 1 );
+            }
+        }
+        var Selectedvalue = "";
+        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+        {
+            Selectedvalue += ListOfItmeCheck.values[i]+', ';
+        }
+
+        if (Selectedvalue.indexOf(',') > 0) {
+            Selectedvalue = Selectedvalue.slice(0, -2);
+            $('.span3').find('.dropdown_new_btn p:first').text(Selectedvalue);
+            $('.span3').find('.dropdown_new_btn p:first').attr('title', Selectedvalue);
+        }
+        else {
+            $('.span3').find('.dropdown_new_btn p:first').text('Please Select');
+        }
+
+    }
+    
+    //End
+
     $(document).ready(function () {
         //// Call function to redirect on service unavailibility.
         //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -125,6 +232,8 @@
             selectedList: 1,
             CustomName: '@Common.CustomTitle'
          }).multiselectfilter();
+
+
 
         $('#LineItemTypeId').next().css('width', '95%');
         $('#LineItemTypeId').next().css('min-height', '30px');
@@ -242,6 +351,18 @@
             return false;
         }
 
+        //Added BY Komal Rawal for #1617
+        _FieldMappingValues = [];
+        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+        {
+            _FieldMappingValues.push({
+                             Id: ListOfItmeCheck.Ids[i],
+                             Name: ListOfItmeCheck.values[i],
+                            //  Weightage: $('#' + Id + '_wt').val() != '' ? $('#' + Id + '_wt').val() : '100',
+                        });
+        }
+        _FieldMappingValues = JSON.stringify(_FieldMappingValues);
+        //End
         var regex = /(>|<)/m;
 
         var descriptionvalue = $("#txtDescription").val();
@@ -260,7 +381,7 @@
             type: 'POST',
                 async: false,
             url: '@Url.Content("~/Inspect/SaveLineitem")',
-            data: $("form").serialize() + '&title='+escape(lineItemTitle)+'&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
+            data: $("form").serialize() + '&title='+escape(lineItemTitle)+ '&FieldMappingValues=' + escape(_FieldMappingValues) + '&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';

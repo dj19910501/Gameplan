@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using System.Linq;
 using System;
 using System.Net;
+
 namespace RevenuePlanner.Helpers
 {
     public static class HtmlHelpers
@@ -6112,6 +6113,74 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion //Budgeting Report
+
+        #region Field Mapping for LineItem Popup
+        //Added By Komal Rawal for #1617.
+        public static MvcHtmlString GenerateMappingFieldsForInspectPopup(int Id, string mode = "ReadOnly")
+        {
+            MRPEntities db = new MRPEntities();
+            List<Budget_Detail> BudgetDetails = db.Budget_Detail.Select(a => a).ToList();
+            List<int> SelectedOptionIDs = db.LineItem_Budget.Where(list => list.PlanLineItemId == Id).Select(list => list.BudgetDetailId).ToList();
+            List<string> SelectedOptionValues = BudgetDetails.Where(Detaillist => SelectedOptionIDs.Contains(Detaillist.Id)).Select(Detaillist => Detaillist.Name).ToList();
+
+            StringBuilder sb = new StringBuilder(string.Empty);
+            string DropDownStyle, divPosition, require, name, customFieldEntityValue;
+
+            string className = "span3 margin-top10";
+            sb.Append("<div class=\"" + className + "\" ><p title=\"" + "Budget Account" + "\" class=\"ellipsis\">" + "Budget Account" + "</p>");
+
+
+            DropDownStyle = " style=\"width:200px;display:none";
+            divPosition = "style=\"position:relative;\"";
+            require = "";
+            name = "";
+
+            if (mode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn" + "" + "\"" + require + "  label=\"" + "" + "\"><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
+                if (SelectedOptionIDs.Count() == 0 || SelectedOptionIDs == null)
+                {
+                    name += "Please Select" + ", ";
+                }
+                else
+                {
+
+                    name += string.Join(",", SelectedOptionValues) + ", ";
+
+                }
+                sb.Append("<div id=\"treeviewddl\"" + DropDownStyle + "\"></div>");
+                if (name.Length > 0)
+                {
+                    name = name.Remove(name.Length - 2, 2);
+                }
+                else
+                {
+                    name = "Please Select";
+                }
+                sb.Replace("#HEADER_OF_DROPDOWN#", name);
+                sb.Append("</div></div>");
+
+            }
+            else if (mode == Enums.InspectPopupMode.ReadOnly.ToString())
+            {
+
+                sb.Append("<input type=\"text\" readonly = \"true\" value=\"#CUSTOMFEILD_VALUE#\" title=\"#CUSTOMFEILD_VALUE#\" style=\"background:#F2F2F2;\" class=\"span12 input-small\"/>");
+
+
+                customFieldEntityValue = "";
+
+                customFieldEntityValue += string.Join(",", SelectedOptionValues);
+
+                sb = sb.Replace("#CUSTOMFEILD_VALUE#", customFieldEntityValue);
+                sb.Append("</div>");
+
+            }
+
+            return new MvcHtmlString(sb.ToString());
+        }
+        #endregion
+
+
     }
 
 
