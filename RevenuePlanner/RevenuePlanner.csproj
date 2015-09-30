@@ -317,6 +317,7 @@
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgrid.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxtreegrid1.css" />
+    <Content Include="Content\css\DHTMLX\dhtmlxtreegrid1_min.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
