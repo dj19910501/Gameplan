@@ -5596,6 +5596,9 @@ min-width:350px;
     .treeview {
         margin-left: 55px;
     }
+      .pop-body-wraper {
+    height:90%;/*by bheru 29-9-2015*/
+}
     /*end  by bheru on 14/09/2015 for PL #1596*/
 }
 
@@ -5607,6 +5610,9 @@ min-width:350px;
         overflow: auto;
         width: 887px;
     }
+      .pop-body-wraper {
+    height:82%;/*by bheru 29-9-2015*/
+}
     /*end by bheru on 14/09/2015 for PL #1596*/
 }
 
@@ -10632,7 +10638,7 @@ li.close-list {
 .messagewidth {
     max-width: 68%;
     min-width: 68%;
-    margin: 0 auto !important;
+    margin:31px auto 0 !important;/*by bheru 29-9-2015*/
 }
 
 .modal-inspect-review.modal-full-view .icon-flag {
@@ -14294,7 +14300,7 @@ div.clue-bottom-default .cluetip-arrows {
     }
 }
 
-/*Added for #1318*/
+/*by bheru 29-9-2015*/
 .headerfix-wraper {
     top: 0;
     left: 0;
@@ -14316,24 +14322,23 @@ div.clue-bottom-default .cluetip-arrows {
     right: 6px;
     top: 6px;
 }
-/*Modified by Mitesh vaishnav for PL ticket #1391*/
+
 .pop-body-wraper {
     float: left;
-    /*max-height: 700px;*/
     overflow: auto;
     width: 100%;
     min-width: 800px;
-    /*overflow:visible;*/ /*Added by Mitesh Vaishnav for PL ticket #1391*/
+    margin-top: 26px;/*by bheru 29-9-2015*/
+    /*height:92%;/*by bheru 29-9-2015*/
 }
-/*Modified by Mitesh Vaishnav for PL ticket #1391*/
+
 .PopupDiv {
-    width: 78%;
-    /*min-height: 800px;*/
     margin: 0 auto;
     min-width: 800px;
     max-width: 1050px;
     width: 70%;
 }
+/*by bheru 29-9-2015*/
 
 @media (max-width:1024px) {
     .headerfix {
