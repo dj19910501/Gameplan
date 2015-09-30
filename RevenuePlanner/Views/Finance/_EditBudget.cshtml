@@ -23,7 +23,15 @@
         }
         LoadBudgetGrid(AllocatedBy);
         BindSelectDropdowns();
-        //ShowHideColumns($("#chkPlan"));
+        
+        var ChkPlan = $("#chkPlan");
+        var ChkBudget = $("#chkBudget");
+        var ChkForeCast = $("#chkForeCast");
+        var ChkActual = $("#chkActual");
+        ShowHideColumns(ChkPlan[0]);
+        ShowHideColumns(ChkBudget[0]);
+        ShowHideColumns(ChkForeCast[0]);
+        ShowHideColumns(ChkActual[0]);
         //ShowHideColumns($("#chkBudget"));
         //ShowHideColumns($("#chkForeCast"));
         //ShowHideColumns($("#chkActual"));
@@ -31,7 +39,7 @@
     });
 
     function LoadBudgetGrid(AllocatedBy) {
-
+        myApp.showPleaseWait();
         var GridWidth = $("#gridbox").width();
 
         var Jan = "@RevenuePlanner.Helpers.Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Jan.ToString()]";

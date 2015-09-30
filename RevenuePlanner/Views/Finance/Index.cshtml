@@ -148,6 +148,7 @@
         myApp.hidePleaseWait();
     });
     $("#ddlChildFinance").change(function () {
+        myApp.showPleaseWait();
         var budgetID = $("#ddlChildFinance").val();
         var parentid = $("#ddlParentFinance").val();
         if (pageName == "EditBudget") {
