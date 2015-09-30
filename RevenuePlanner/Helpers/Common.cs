@@ -1548,24 +1548,27 @@ namespace RevenuePlanner.Helpers
             MRPEntities objDbMrpEntities = new MRPEntities();
             //List<string> tacticStatus = GetStatusListAfterApproved();  // Commented by Rahul Shah on 16/09/2015 for PL #1610
             //Added By Komal Rawal for new UI of homepage
-            List<SelectListItem> planList;
+            List<SelectListItem> planList = new List<SelectListItem>();
 
             var lstPlanAll = Common.GetPlan();
-            planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-
-            var objexists = planList.Where(plan => plan.Value == planId.ToString()).ToList();
-            if (objexists.Count != 0)
+            if (lstPlanAll.Count > 0)
             {
-                planList.Single(plan => plan.Value.Equals(planId.ToString())).Selected = true;
-            }
-            else
-            {
-                planList.FirstOrDefault().Selected = true;
-            }
+                planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
 
-            //// Set Plan dropdown values
-            if (planList != null)
-                planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+                var objexists = planList.Where(plan => plan.Value == planId.ToString()).ToList();
+                if (objexists.Count != 0)
+                {
+                    planList.Single(plan => plan.Value.Equals(planId.ToString())).Selected = true;
+                }
+                else
+                {
+                    planList.FirstOrDefault().Selected = true;
+                }
+
+                //// Set Plan dropdown values
+                if (planList != null)
+                    planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+            }
             objHomePlanModelHeader.plans = planList;
             //End
             if (onlyplan)
