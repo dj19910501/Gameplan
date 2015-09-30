@@ -4591,7 +4591,7 @@ namespace RevenuePlanner.Helpers
         {
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstBudget = new List<ViewByModel>();
-            var customfieldlist = db.Budgets.ToList();
+            var customfieldlist = db.Budgets.Where(bdgt => bdgt.ClientId == Sessions.User.ClientId && bdgt.IsDeleted == false).ToList();
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
             return lstBudget;
         }

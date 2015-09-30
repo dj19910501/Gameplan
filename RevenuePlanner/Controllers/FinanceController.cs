@@ -139,9 +139,8 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("Actual", typeof(String));
                 dataTable.Columns.Add("Action", typeof(String));
                 dataTable.Columns.Add("LineItemCount", typeof(Int32));
-
                 //budgetId = 8;
-                var lstBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.BudgetId.Equals(budgetId)).Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
+                var lstBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId)).Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
 
                 List<int> lstBudgetDetailsIds = lstBudgetDetails.Select(bdgtdtls => bdgtdtls.Id).ToList();
                 List<Budget_DetailAmount> BudgetDetailAmount = new List<Budget_DetailAmount>();
