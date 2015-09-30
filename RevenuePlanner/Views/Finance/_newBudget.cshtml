@@ -9,6 +9,7 @@
     $(document).ready(function () {
         newTreeGrid = new dhtmlXGridObject('newGridbox');
         newTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+        newTreeGrid.setImageSize(1, 1);
         //newTreeGrid.enableTreeCellEdit(false);
         newTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:left;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
         newTreeGrid.setInitWidths("100,20,100,100,100,100,100,100");
@@ -19,24 +20,9 @@
         newTreeGrid.setColumnIds("title,addrow,budget,forecast,planned,actual,action,lineitems");
         //newTreeGrid.setColSorting("str,na,str,str,na,str");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);
-        //newTreeGrid.attachEvent("onOpenEnd", function () {
-        //    $("#gridbox").find("table").css("width", gridWidth);
-        //    return true;
-        //});
-
+        
         newTreeGrid.init();
         
-        //newTreeGrid.setSkin("dhx_skyblue");
-        //newTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
-        
-        //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
-        //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
-        
-       // GridData = JSON.parse(GridData);
-        //newTreeGrid.parse(GridData, "json");
-        
-        //newTreeGrid.parse(data2, "json");
-        //newTreeGrid.selectRow(0, false, false, true);
         var newBudget = "newBudget";
         newTreeGrid.addRow("newBudget", ["", "<div id='dv" + newBudget + "' class='finance_grid_add' row-id='" + newBudget + "' />", "0", "0", "0", "0", "Edit Budget", "0"], 0);
         

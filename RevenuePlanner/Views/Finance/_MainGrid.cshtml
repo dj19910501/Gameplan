@@ -137,7 +137,7 @@
     var _newParentId = '';
     var _parentRowId = '';
     var _row_parentId = '';
-    var gridWidth = $("#divGridView").width();
+    var gridWidth = $("#divGridView").width() - 3;
     $(document).ready(function () {
         ShowHideControls('MainGrid');
         //myGrid = new dhtmlXGridObject('gridbox');
@@ -152,6 +152,7 @@
 
         myTreeGrid = new dhtmlXGridObject('gridbox');
         myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+        myTreeGrid.setImageSize(1, 1);
         //myTreeGrid.enableTreeCellEdit(false);
         myTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:left;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
         myTreeGrid.setInitWidths("100,20,100,100,100,100,100,100");
