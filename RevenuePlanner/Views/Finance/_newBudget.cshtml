@@ -38,56 +38,10 @@
         //newTreeGrid.parse(data2, "json");
         //newTreeGrid.selectRow(0, false, false, true);
         var newBudget = "newBudget";
-        newTreeGrid.addRow("newBudget", ["", "<div id='dv" + newBudget + "' class='finance_grid_add' row-id='" + newBudget + "' />", "0", "0", "0", "0", "Edit Forecast", "0"], 0);
+        newTreeGrid.addRow("newBudget", ["", "<div id='dv" + newBudget + "' class='finance_grid_add' row-id='" + newBudget + "' />", "0", "0", "0", "0", "Edit Budget", "0"], 0);
         
         $("#newGridbox").find('table').css('width', gridWidth);
     });
-    function AddRow(cntrl) {
-        var row_id = $(cntrl).attr('row-id');
-        
-        //var rowId = newTreeGrid.getSelectedId();
-        //var rowindex = newTreeGrid.getRowIndex(row_id.toString());
-        
-        var childrencount = newTreeGrid.hasChildren(row_id); // Get Current Row Children count.
-        var insertrowindex = childrencount + 1;
-        /*Start: Get ParentId and BudgetDetailId from RowId */
-        var budgetDetailId = 0;
-        if (row_id !== null && row_id !== 'undefined' && row_id !== '') {
-            var arr = row_id.split('_');
-            if (arr !== null && arr !== 'undefined' && arr.length > 0 ) {
-                if (arr[1] != null && arr[1] != 'undefined') {
-                    _newParentId = budgetDetailId = arr[1];
-                }
-            }
-        }
-        // Create RowId for newRecord.
-        _newrowid = "new" + insertrowindex.toString() +"_0_"+_newParentId;  // RowId format: NameofItem_BudgetDetailId_ParentId.
-        _isNewRowAdd = true;
-        _parentRowId = row_id;
-        _row_parentId = _row_parentId + "," + _newrowid + "~" + _newParentId + "~" + row_id; // Store NewRowId & ParentRowId in global variable This variable use to save data in OnEditCell event.
-        $("#hdn_row_parentId").val(_row_parentId);
-        /*End: Get ParentId and BudgetDetailId from RowId */
-
-        newTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' />", "0", "0", "0", "0", "Edit Forecast","0"], -1, row_id);
-        newTreeGrid.openItem(row_id);
-        $("#gridbox").find("table").css("width", gridWidth);
-        //newTreeGrid.enableValidation(true);
-        var titleIndex = newTreeGrid.getColIndexById('title');
-        //newTreeGrid.cells(_newrowid, titleIndex).setAttribute("validate", "NotEmpty");
-        
-        //newTreeGrid.setItemText(_newrowid, 'new text')
-        //var sdateindex = newTreeGrid.getColIndexById('Tree');
-        
-        if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
-            UpdateActionColumn(budgetDetailId);
-        }
-        
-        var _newRowIndex = newTreeGrid.getRowIndex(_newrowid.toString());
-        //newTreeGrid.cells(_newrowid, titleIndex).edit();
-        //newTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
-       // return false;
-        //newTreeGrid.editCell();
-    }
 
     function OnEditCell(stage, id, index,newVal,oldVal) {
         

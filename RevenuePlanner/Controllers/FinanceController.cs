@@ -94,6 +94,7 @@ namespace RevenuePlanner.Controllers
         {
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
             gridRowModel = GetFinanceMainGridData(budgetId);
+            ViewBag.BudgetId = (Int32)budgetId;
             return PartialView("_MainGrid", gridRowModel);
         }
         public ActionResult SaveNewBudgetDetail(string BudgetId, string BudgetDetailName, string ParentId)
@@ -275,7 +276,8 @@ namespace RevenuePlanner.Controllers
             ParentData.Add(actual);
             #region "Add Action column link"
             string strAction = string.Empty;
-            if (lstChildren != null && lstChildren.Count() > 0)
+            int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
+            if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
                 strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
                 lineItemCount = dataTable

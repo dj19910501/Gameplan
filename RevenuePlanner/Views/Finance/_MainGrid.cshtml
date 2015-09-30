@@ -2,6 +2,7 @@
 @using Newtonsoft.Json;
 @{
     var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
+    var BudgetId = ViewBag.BudgetId != null ? (Int32)ViewBag.BudgetId : 0;
 }
 @*<style>
         div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
@@ -18,7 +19,7 @@
         }
     </style>*@
 <div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
-
+@Html.Hidden("hdnBudgetId", BudgetId, new  {id="hdnBudgetId",name="hdnBudgetId",value=BudgetId })
 <script type="text/javascript">
     var myGrid;
     var data = {
@@ -169,7 +170,8 @@
             return true;
         });
         myTreeGrid.init();
-
+        var _budgetIdVal = $("#hdnBudgetId").val();
+        $("#hdn_BudgetId").val(_budgetIdVal);
         //myTreeGrid.setSkin("dhx_skyblue");
         //myTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
         var mainGridData = "@_mainGridData";
@@ -224,9 +226,9 @@
         //myTreeGrid.setItemText(_newrowid, 'new text')
         //var sdateindex = myTreeGrid.getColIndexById('Tree');
         
-        if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
-            UpdateActionColumn(budgetDetailId);
-        }
+        //if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
+        //    UpdateActionColumn(budgetDetailId);
+        //}
 
         var _newRowIndex = myTreeGrid.getRowIndex(_newrowid.toString());
         //myTreeGrid.cells(_newrowid, titleIndex).edit();
@@ -236,7 +238,7 @@
     }
 
     function OnEditCell(stage, id, index,newVal,oldVal) {
-        
+        //debugger;
         var _val = $("#hdn_row_parentId").val();
         var splitRowParentIds = '';
         var rowId = '', parentId = '',parentRowID='';
@@ -253,6 +255,7 @@
                 }
             });
         }
+        
         if (rowId == id) {
 
             if (stage.toString() == '0' || stage.toString() == '1') {
@@ -260,7 +263,8 @@
             }
             if (stage.toString() == '2') {
                 
-                var _budgetIdVal = $('#ddlParentFinanceMain').val();
+                //var _budgetIdVal = $('#ddlParentFinanceMain').val();
+                var _budgetIdVal = $("#hdnBudgetId").val();
                 if (newVal == null || newVal == '') {
                     return false;
                 }
@@ -282,11 +286,11 @@
         return true;
     };
 
-    function UpdateActionColumn(budgetDetailId) {
-        var actionIndex = myTreeGrid.getColIndexById('action');
-        var newAction = "<a href='#' onclick='EditBudget(" + budgetDetailId.toString() + ")'>Edit Budget</a>"
-        myTreeGrid.cells(rowid, actionIndex).setValue(newAction);
-    }
+    //function UpdateActionColumn(budgetDetailId) {
+    //    var actionIndex = myTreeGrid.getColIndexById('action');
+    //    var newAction = "<a href='#' onclick='EditBudget(" + budgetDetailId.toString() + ")'>Edit Budget</a>"
+    //    myTreeGrid.cells(actionIndex).setValue(newAction);
+    //}
     function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId, parentRowID) {
         //budgetId = 8;
         var url = "@Url.Content("~/Finance/SaveNewBudgetDetail")";

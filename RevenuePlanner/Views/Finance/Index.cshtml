@@ -33,6 +33,7 @@
 }
 
 @Html.Hidden("hdn_row_parentId", "", new { id = "hdn_row_parentId", name = "hdn_row_parentId", value = "" })
+@Html.Hidden("hdn_BudgetId","",new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
 @*<div style="width: 100%;">*@
 <div style="width: 97.05%; padding:20px;">
     <div style="width:auto;height:50px;display:block;">
@@ -40,7 +41,7 @@
             <div style="float:left;" id="drpParentMain">
                 @Html.DropDownList("ddlParentFinanceMain", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
             </div>
-            <div style="float:left;" id="divAddnew">
+            <div style="float:left; margin-right:15px;" id="divAddnew">
                 <input type="button" id="btnAddNewBudget" name="btnAddNewBudget" value="Add New Budget" class="btn btn-blue text-shadow-blue source-sans-proregular" style="height: 30px !important;" />
             </div>
             <div style="float:left;" id="drpParent">
@@ -92,6 +93,7 @@
 
         var _budgetId = $('#ddlParentFinance').val();
         var _budgetIdMain = $('#ddlParentFinanceMain').val();
+        $('#hdn_BudgetId').val(_budgetIdMain);
         @*$("#btnRefreshMainGrid").click(function () {
             var _budgetId = $('#ddlParentFinance').val();
             var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
@@ -136,6 +138,7 @@
     $("#ddlParentFinanceMain").change(function () {
 
         var budgetIDMain = $("#ddlParentFinanceMain").val();
+        $('#hdn_BudgetId').val(budgetIDMain);
         RefreshMainGridData(budgetIDMain);
         GetFinanceHeaderValue(budgetIDMain, true);
         //if (pageName == "EditBudget") {
@@ -320,7 +323,7 @@
         if (Page == "MainGrid") {
             $("#drpParentMain").css("display", "block");
             $("#drpParent").css("display", "none");
-            $("#divExpandCollapse").css("display", "none");
+            //$("#divExpandCollapse").css("display", "none");
             $("#divCheckbox").css("display", "none");
             $("#ddlTimeFrameSelectBox").css("display", "none");
             $("#drpChild").css("display", "none");
@@ -344,6 +347,8 @@
     }
 
     function RefreshBudgetDropdown() {
+        
+        var _budgetId = $("#hdn_BudgetId").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Finance/RefreshBudgetList/")',
@@ -363,6 +368,10 @@
                 $dropdown.append($html);
 
                 $dropdown.multiselect("refresh");
+                $dropdown.val(_budgetId);
+                $dropdown.find("input[type='search']").val(_budgetId);
+                var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + _budgetId + "']").next('span').html();
+                $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
             }
         });
     }
