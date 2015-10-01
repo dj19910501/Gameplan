@@ -1477,14 +1477,7 @@ span.requests-logo-icon {
     width: 96px;
 }
 
-.drop-down-logo-icon {
-    background: url('../images/drop-down-logo.png') no-repeat;
-    width: 13px;
-    height: 13px;
-    float: right;
-    margin-left: 1px;
-    margin-top: 4px;
-}
+
 
 .width100px {
     width: 100px !important;
@@ -2980,11 +2973,7 @@ ul.welcome-sprite {
     padding-left: 21px;
 }
 
-.support-icon-dark {
-    background: url("../images/support-icon-dark.png") no-repeat right;
-    display: block;
-    float: center;
-}
+
 
 .support-icon-dark2 {
     background: url("../images/support-icon-dark.png") no-repeat right;
@@ -3841,9 +3830,7 @@ table.light-blue-background form {
         border-bottom: 1px solid #c7ced1;
     }
 
-.green-row {
-    background: url('../images/green-row.png') repeat;
-}
+
 
 .green-background {
     background-color: #dcebcf !important;
@@ -3857,10 +3844,6 @@ table.light-blue-background form {
 
 .table-results th.border-r-red, .table-results td.border-r-red {
     border-right: 2px solid #ed1c24 !important;
-}
-
-.red-row {
-    background: url('../images/red-row.png') repeat;
 }
 
 .red-background {
@@ -4519,14 +4502,6 @@ span.link-blue, a.link-blue {
     line-height: 25px;
 }
 
-.button-share-icon {
-    background: url("../images/share-report-icon.png") no-repeat;
-    width: 25px;
-    height: 25px;
-    display: block;
-    float: left;
-    margin-left: 5px;
-}
 
 
 .white-chart a {
@@ -4643,14 +4618,7 @@ span.link-blue, a.link-blue {
     width: 65px !important;
 }
 
-.customfield-review1 {
-    background: url("../images/busunit.png") no-repeat;
-    margin: 0 0 3px;
-    width: 33px;
-    cursor: pointer;
-    height: 29px;
-    display: block;
-}
+
 
 .blue-text {
     color: #5693B3;
@@ -4664,22 +4632,6 @@ span.link-blue, a.link-blue {
     display: block;
 }
 
-.customfield-review2 {
-    background: url("../images/vertical.png") no-repeat;
-    margin: 0 0 -2px;
-    width: 35px;
-    cursor: pointer;
-    height: 33px;
-    display: block;
-}
-
-.customfield-review3 {
-    background: url("../images/audience.png") no-repeat;
-    width: 37px;
-    cursor: pointer;
-    height: 31px;
-    display: block;
-}
 
 .chat-div {
     border-top: 5px solid #ccc;
