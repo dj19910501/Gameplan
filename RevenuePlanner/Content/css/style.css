@@ -1138,7 +1138,11 @@ body {
     width: 100%;
 }
 /**/
-
+#sidebar p a.link-alone {
+    color: #808080;
+    font-size: 13px;
+    font-weight: bold;
+}
 
 /*--------------------------------------------
         Sidebar Simple Accordion
@@ -1885,7 +1889,13 @@ span.requests-logo-icon {
     border-bottom: 1px solid #cccccc;
 }
 
-
+.link-alone label {
+    font-family: 'source_sans_proregular', Arial, "sans-serif" !important;
+    font-size: 13px !important;
+    color: #808080 !important;
+    margin-left: 15px;
+    margin-bottom: 40px;
+}
 
 
 /*---------------------------
@@ -6360,9 +6370,17 @@ h2.title-header {
     margin-bottom: 15px !important;
     background: url(../images/left-nav-border.png) right top repeat-y;
 }
+    
+    .left-nav .link-alone {
+        margin-left: 20px;
+        display: block;
+        border-bottom: 1px solid #d1d1d1;
+        padding: 5px 15px;
+    }
 
-
-
+     .left-nav .link-alone label {
+            margin: 0;
+        }
 
     .left-nav .accordion-toggle > div { /*width:calc(100% - 10px);*/
         border-top: 1px solid #d1d1d1;
@@ -7406,6 +7424,13 @@ span.circle-check-icon-gray {
     padding-left: 20px !important;
 }
 
+.link-alone-margin-left label {
+    font-family: 'source_sans_proregular', Arial, "sans-serif" !important;
+    font-size: 13px !important;
+    color: #808080 !important;
+    padding: 5px 15px;
+    margin: 0;
+}
 
 /* End - Added by Sohel Pathan on 28/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */
 
