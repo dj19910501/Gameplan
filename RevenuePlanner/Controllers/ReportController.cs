@@ -955,51 +955,7 @@ namespace RevenuePlanner.Controllers
             return returnData;
         }
 
-        /// <summary>
-        /// Get Report Header Data for revenue & conversion.
-        /// </summary>
-        /// <param name="option"></param>
-        /// <param name="isRevenue"></param>
-        /// <returns></returns>
-        public JsonResult GetReportHeader(string option, bool isRevenue = true)
-        {
-            //// get month list
-            List<string> includeMonth = GetMonthListForReport(option, true);
-
-            //// get tactic data from tempdata variable
-            List<TacticStageValue> Tacticdata = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
-
-            double projectedRevenue = 0;
-            double actualRevenue = 0;
-            double projectedMQL = 0;
-            double actualMQL = 0;
-            if (Tacticdata.Count > 0)
-            {
-                string revenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
-                string mql = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
-
-                //// get actual list of tactic from tactic data
-                List<Plan_Campaign_Program_Tactic_Actual> planTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
-                Tacticdata.ForEach(tactic => tactic.ActualTacticList.Where(tacticactual => includeMonth.Contains(tactic.TacticYear + tacticactual.Period) && (tacticactual.StageTitle == mql || tacticactual.StageTitle == revenue)).ToList().ForEach(actual => planTacticActual.Add(actual)));
-
-                //// chech it from revenue or conversion
-                if (isRevenue)
-                {
-                    projectedRevenue = GetProjectedRevenueValueDataTableForReport(Tacticdata).Where(mr => includeMonth.Contains(mr.Month)).Sum(r => r.Value);
-                    actualRevenue = planTacticActual.Where(ta => ta.StageTitle.Equals(revenue))
-                                                    .Sum(ta => ta.Actualvalue);
-                }
-                else
-                {
-                    projectedMQL = GetProjectedMQLValueDataTableForReport(Tacticdata).Where(mr => includeMonth.Contains(mr.Month)).Sum(r => r.Value);
-                    actualMQL = planTacticActual.Where(ta => ta.StageTitle.Equals(mql))
-                                                .Sum(ta => ta.Actualvalue);
-                }
-            }
-
-            return Json(new { ProjectedRevenueValue = projectedRevenue, ActualRevenueValue = actualRevenue, ProjectedMQLValue = Math.Round((double)projectedMQL, 0, MidpointRounding.AwayFromZero), ActualMQLValue = Math.Round(actualMQL) });
-        }
+      
 
         /// <summary>
         /// Get Last month of current quarter.

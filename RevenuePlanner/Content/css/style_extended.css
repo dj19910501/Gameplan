@@ -95,21 +95,8 @@
     width: 3%;
 }
 
-.width240 {
-    width: 240px;
-}
 
-.width53 {
-    width: 53px;
-}
-/* Report Revenue*/
-#table_reports tr td:nth-child(2) {
-    font-size: 20px;
-}
 
-#table_reports3 {
-    margin-top: 0px;
-}
 
 .title-header-reports {
     margin-bottom: 0px;
@@ -144,16 +131,7 @@
     cursor: pointer;
 }
 
-span.green-arrow-up-icon, span.red-arrow-down-icon {
-    margin-right: 5px;
-    float: none;
-    display: inline-block;
-}
 
-#table_reports tr td:first-child {
-    padding: 13px 0 0 10px!important;
-    width: 15px;
-}
 
 .paddingleft20 {
     padding-left: 20px;
@@ -172,10 +150,6 @@ span.green-arrow-up-icon, span.red-arrow-down-icon {
     text-align: right !important;
 }
 
-/* Report Cursor TFS BUG 235*/
-.report-chart label {
-    cursor: default;
-}
 
 /* End Added by Bhavesh */
 
@@ -842,86 +816,6 @@ a {
     }
 
 
-/* */
-/*chart 4*/
-.report-chart4 {
-    width: 295px !important; /* edited by kapil - 210414 - #447 */
-    height: 220px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 0 0!important;
-    float: left;
-}
-
-    .report-chart4 .dhx_axis_item_x {
-        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
-    }
-
-    .report-chart4 .dhx_axis_item_y {
-        /*font-size: 12px;*/ /* edited by kapil - 210414 - #447 */
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: 65px !important; /* edited by kapil - 210414 - #447 */
-        margin-left: 5px;
-        margin-top: 0;
-    }
-
-    .report-chart4 canvas {
-        /*margin-left: 35px;
-        height: 150px;*/
-    }
-/*chart 5*/
-.report-chart5 {
-    width: 318px !important;
-    height: 220px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 0 0!important;
-    float: left;
-}
-
-    .report-chart5 .dhx_axis_item_x {
-        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
-    }
-
-    .report-chart5 .dhx_axis_item_y {
-        /*font-size: 12px;*/ /* edited by kapil - 210414 - #447 */
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: 60px !important; /* edited by kapil - 210414 - #447 */
-        margin-left: 10px; /* edited by kapil - 210414 - #447 */
-        margin-top: 0; /* Added by kapil - 210414 - #447 */
-    }
-
-    .report-chart5 canvas {
-        /*margin-left: 25px;*/ /* edited by kapil - 210414 - #447 */
-    }
-/*chart 6*/
-.report-chart6 {
-    float: left;
-    width: 320px !important;
-    height: 220px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 0 8px!important; /* edited by kapil - 210414 - #447 */
-}
-
-    .report-chart6 canvas {
-        /*margin-left: 33px;*/ /* edited by kapil - 210414 - #447 */
-    }
-
-    .report-chart6 .dhx_axis_item_x {
-        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
-    }
-
-    .report-chart6 .dhx_axis_item_y {
-        /*font-size: 12px;*/ /* edited by kapil - 210414 - #447 */
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: 76px !important;
-        margin-left: 0px;
-        margin-top: 0px; /* Added by kapil - 210414 - #447 */
-    }
 
 /*Added to show pointer on hover of report navigation pannel*/
 .nav-gray-reports > li > a {
@@ -933,9 +827,7 @@ a {
 }
 /*End Manoj Limbachiy Date: 05Feb2014 Bug 167:Incorrect Color on Model editing screen*/
 /*Start Manoj Limbachiy Date: 05Feb2014 Bug 155:Incorrect cursor over portion of Waterfall Conversion Report*/
-#table_reports tbody tr {
-    cursor: default !important;
-}
+
 /*End Manoj Limbachiy Date: 05Feb2014 Bug 155:Incorrect cursor over portion of Waterfall Conversion Report*/
 /*Start Manoj Limbachiy Date: 05Feb2014 Bug 154 - Extra space between tabs and header row on Waterfall Conversion Report*/
 #DivHtmlContent {
@@ -943,9 +835,6 @@ a {
 }
 /*End Manoj Limbachiy Date: 05Feb2014 Bug 154 - Extra space between tabs and header row on Waterfall Conversion Report*/
 /*Added By: Maninder Singh to resolve TFS backlog 142*/
-.report-chart .info h6 {
-    font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-}
 
 /* Added by Kapil to customize drop down list*/
 .selectBox {
@@ -1041,15 +930,6 @@ a {
     box-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05);
 }
 
-#table_reports4 .sbHolder a {
-    color: #444;
-    font-family: 'source_sans_proregular',Arial,"sans-serif" !important;
-}
-
-#table_reports4 ul li a:hover {
-    color: #fff;
-    text-shadow: none;
-}
 
 .sbHolder a {
     margin-right: 0px;
@@ -1205,9 +1085,7 @@ a {
         text-decoration: none;
     }
 
-#table_reports4 .sbSelector {
-    font-size: 11.9px;
-}
+
 
 .simpleSelectBox .selectBox {
     margin-right: 10px;
@@ -1296,16 +1174,6 @@ a {
 
 
 
-
-.report-chart3 {
-    width: 93% !important;
-    margin-left: 70px;
-}
-
-#table_reports2 {
-    width: 100%;
-}
-/* */
 
 .collapse {
     width: 100%;
@@ -1867,16 +1735,7 @@ a {
     background: url(../images/left-nav-border.png) right top repeat-y;
 }
 
-    .left-nav .link-alone {
-        margin-left: 20px;
-        display: block;
-        border-bottom: 1px solid #d1d1d1;
-        padding: 5px 15px;
-    }
 
-        .left-nav .link-alone label {
-            margin: 0;
-        }
 
     .left-nav .accordion-toggle > div { /*width:calc(100% - 10px);*/
         border-top: 1px solid #d1d1d1;
@@ -2344,34 +2203,6 @@ label {
 @media screen and (max-width:1280px) {
    
 
-    .report-chart5 {
-        min-width: 310px !important;
-        width: auto !important;
-    }
-
-        .report-chart5 canvas {
-            margin-left: 8px;
-        }
-
-        .report-chart5 .dhx_axis_item_y {
-            width: 67px !important;
-            margin-left: 9px;
-        }
-
-
-    .report-chart6 {
-        min-width: 300px !important;
-        width: auto !important;
-        margin: 0 0 0 8px !important;
-    }
-
-        .report-chart6 canvas {
-            margin-left: 8px;
-        }
-
-        .report-chart6 .dhx_axis_item_y {
-            width: 85px !important;
-        }
 }
 
 @media screen and (min-width:1281px) {

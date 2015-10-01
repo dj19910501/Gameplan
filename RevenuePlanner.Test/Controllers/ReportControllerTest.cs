@@ -1192,64 +1192,8 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        #region "GetReportHeader with empty parameter"
-        /// <summary>
-        /// Get data check with Empty Parameter
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///
-        [TestMethod]
-        public void GetReportHeader_empty()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
+       
 
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-           var result= reportController.GetReportHeader("", false);
-           Assert.IsNotNull(result.Data);
-        }
-        #endregion
-
-        #region "GetReportHeader with Invalid Parameter"
-        /// <summary>
-        /// Get data check with Empty Parameter
-        /// </summary>
-        /// <auther>Dashrath Prajapati</auther>
-        /// <createddate>14aug2015</createddate>
-        ///
-        [TestMethod]
-        public void GetReportHeader_Invalid_param()
-        {
-            HttpContext.Current = DataHelper.SetUserAndPermission();
-            int planId = DataHelper.GetPlanId();
-            List<int> lst = new List<int>();
-            lst.Add(14936);
-            HttpContext.Current.Session["ReportPlanIds"] = lst;
-            ReportController reportController = new ReportController();
-            List<Plan_Campaign_Program_Tactic> tacticlist = DataHelper.GetTacticForReporting();
-            // Fetch the respectives Campaign Ids and Program Ids from the tactic list
-
-            //// Calculate Value for ecah tactic
-            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
-            //// Store Tactic Data into TempData for future used i.e. not calculate value each time when it called
-            //TempData["ReportData"] = tacticStageList;
-            reportController.TempData["ReportData"] = tacticStageList;
-            string _invalidparam = "invalid";
-            var result = reportController.GetReportHeader(_invalidparam, false);
-            Assert.IsNotNull(result.Data);
-        }
-        #endregion
 
         #endregion
         #endregion

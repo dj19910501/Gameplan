@@ -1138,11 +1138,7 @@ body {
     width: 100%;
 }
 /**/
-#sidebar p a.link-alone {
-    color: #808080;
-    font-size: 13px;
-    font-weight: bold;
-}
+
 
 /*--------------------------------------------
         Sidebar Simple Accordion
@@ -1896,13 +1892,7 @@ span.requests-logo-icon {
     border-bottom: 1px solid #cccccc;
 }
 
-.link-alone label {
-    font-family: 'source_sans_proregular', Arial, "sans-serif" !important;
-    font-size: 13px !important;
-    color: #808080 !important;
-    margin-left: 15px;
-    margin-bottom: 40px;
-}
+
 
 
 /*---------------------------
@@ -4511,22 +4501,6 @@ span.link-blue, a.link-blue {
 }
 
 
-span.green-arrow-up-icon {
-    background: url('../images/green-arrow-up.png') no-repeat;
-    width: 11px;
-    height: 8px;
-    float: left;
-    margin-top: 5px;
-}
-
-span.red-arrow-down-icon {
-    background: url('../images/red-arrow-down.png') no-repeat;
-    width: 11px;
-    height: 8px;
-    float: left;
-    margin-top: 5px;
-}
-
 
 
     .title-header-reports h4 {
@@ -4554,74 +4528,6 @@ span.red-arrow-down-icon {
     margin-left: 5px;
 }
 
-.report-gray-container {
-    margin-bottom: 40px !important;
-    width: auto;
-    height: 301px;
-    background-color: #f2f2f2;
-    margin-top: 21px;
-    border: 1px solid #e6e6e6;
-}
-
-.report-chart {
-    width: 350px;
-    height: 261px;
-    background-color: #ffffff;
-    border: 1px solid #e6e6e6;
-    margin: 20px 33px 15px 15px;
-    box-shadow: 1px 1px 1px #888888;
-    float: left;
-}
-
-    .report-chart label {
-        font-family: 'source_sans_prolight', Arial, "sans-serif";
-        font-size: 18px;
-        color: #6b6c6e;
-        margin-top: 25px;
-        text-align: center;
-    }
-
-.report-info {
-    width: calc(100% - 417px); /* edited by kapil - 061214 - #506 */
-    height: 226px;
-    margin: 20px 15px 15px 0px;
-    text-align: left;
-    float: left;
-    color: #6b6c6e;
-    font-family: 'source_sans_prolight', Arial, "sans-serif";
-    color: #6b6c6e;
-    font-size: 30px;
-    line-height: 35px;
-}
-
-    .report-info h4 {
-        font-weight: normal;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        font-size: 22px;
-        border-bottom: 1.5px solid #a8a8a8;
-        margin-bottom: 40px;
-        line-height: 25px;
-        margin-top: 0px !important;
-    }
-
-    .report-info strong {
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-    }
-
-    .report-info a {
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        font-size: 18px;
-        color: #5693b3;
-        float: left;
-    }
-
-    .report-info span {
-        width: 8px;
-        height: 8px;
-        float: right;
-        background: url("../images/double-arow-icon.png") no-repeat;
-        margin: 13px 0 0 5px;
-    }
 
 .white-chart a {
     color: #4d4d4d;
@@ -4698,182 +4604,8 @@ span.red-arrow-down-icon {
     float: left;
 }
 /*chart 1*/
-.report-chart .info {
-    float: left;
-    margin: 40px 0 0 0px;
-    text-align: center;
-    width: 162px;
-}
-
-    .report-chart .info h6 {
-        font-family: 'source_sans_probold', Arial, "sans-serif";
-        font-size: 14px;
-        color: #908d88;
-    }
-
-    .report-chart .info h3 {
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        font-size: 48px;
-        color: #908d88;
-    }
-
-    .report-chart .info h4 {
-        font-family: 'source_sans_probold', Arial, "sans-serif";
-        font-size: 21px;
-        color: #c6605a;
-    }
 
 
-/*chart 2*/
-.report-chart2 {
-    position: relative;
-    width: 280px !important;
-    height: 180px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 0 0 !important;
-    background-color: #ffffff;
-}
-
-    .report-chart2 .dhx_axis_item_y {
-        font-size: 13px !important;
-        float: left;
-        width: auto !important;
-        margin-left: 65px;
-    }
-
-    .report-chart2 canvas {
-        margin-left: 80px !important;
-    }
-
-    .report-chart2 .dhx_axis_item_x {
-        color: #ffffff !important;
-    }
-/*Reports table*/
-.width275 {
-    min-width: 275px;
-}
-
-.width83 {
-    min-width: 63px;
-}
-
-#table_reports {
-    color: #908d88 !important;
-    border-top: 1px solid #a8a8a8;
-    margin-bottom: 40px !important;
-}
-
-    #table_reports th {
-        text-align: center;
-        font-size: 14px;
-        font-family: 'source_sans_prosbold', Arial, "sans-serif";
-        color: #908D88;
-    }
-
-    #table_reports td {
-        border-top-width: 2px;
-        border-top-color: #a8a8a8;
-        text-align: center;
-        padding: 5px 0 5px 0 !important;
-    }
-
-    #table_reports tr th:nth-child(2) {
-        text-align: left;
-        padding: 5px 0 5px !important;
-    }
-
-    #table_reports tr td:nth-child(2) {
-        padding: 5px 0 5px !important;
-        background-color: #ffffff;
-        text-align: left;
-        font-size: 24px;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        vertical-align: middle !important;
-    }
-
-    #table_reports th.border-r, #table_reports td.border-r {
-        background-color: #ffffff;
-        border-right: 1px solid #c7ced1 !important;
-        text-align: center;
-    }
-
-    #table_reports .border-shadow {
-        box-shadow: -5px 0 7px -2px #d1d1d1;
-    }
-
-    #table_reports tbody tr {
-        cursor: pointer;
-    }
-
-    #table_reports tbody {
-        border-top: 1px solid #a8a8a8 !important;
-        border-bottom: 2px solid #a8a8a8;
-    }
-
-    #table_reports input {
-        margin-right: 10px;
-        vertical-align: top !important;
-    }
-
-    #table_reports .report-gray-row {
-        background-color: #e9e9e9 !important;
-        margin-left: 5px;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-    }
-
-    #table_reports .red-value {
-        color: #c6605a;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        font-size: 14px;
-        font-style: bold;
-    }
-
-    #table_reports .green-value {
-        color: #559659;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        font-size: 14px;
-        font-style: bold;
-    }
-
-    #table_reports .light-blue-row {
-        background-color: #dff0f8 !important;
-    }
-
-    #table_reports .div-line {
-        border-bottom: 1px solid #a8a8a8;
-        width: 45px;
-        text-align: center !important;
-        height: 18px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    #table_reports .div-below-line {
-        width: 45px;
-        text-align: center !important;
-        height: 18px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-/*chart 3*/
-.report-chart3 {
-    width: 925px !important;
-    height: 240px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin-left: 23px;
-}
-
-    .report-chart3 .dhx_axis_item_y {
-        color: #ffffff !important;
-    }
-
-    .report-chart3 .dhx_axis_item_x {
-        color: #ffffff !important;
-    }
 /*Reports table 2*/
 .width96px {
     width: 96px !important;
@@ -4885,243 +4617,24 @@ span.red-arrow-down-icon {
 
 
 
-#table_reports2 {
-    color: #908d88;
-    width: 928px;
-    float: left;
-}
-
-    #table_reports2 td {
-        text-align: center;
-        font-size: 14px;
-        font-family: 'source_sans_prolight', Arial, "sans-serif";
-        padding: 5px 0px 5px 0px;
-    }
-
-    #table_reports2 th {
-        text-align: center;
-        font-size: 14px;
-        font-family: 'source_sans_prosbold', Arial, "sans-serif";
-        color: #908D88;
-        padding: 5px 0px 5px 0px;
-    }
-
-    #table_reports2 tr td:first-child {
-        text-align: left;
-        font-size: 14px;
-        font-family: 'source_sans_prolight', Arial, "sans-serif";
-        padding: 5px 0px 5px 0px;
-    }
-
-
-.width49 {
-    min-width: 49px !important;
-}
-
-#table_reports3 {
-    color: #908d88;
-    margin-top: 15px;
-    margin-bottom: 40px !important;
-}
-
-    #table_reports3 td {
-        text-align: center;
-        font-size: 14px;
-        padding: 5px 0px 5px 0px;
-    }
-
-    #table_reports3 th {
-        text-align: center;
-        font-size: 14px;
-        font-family: 'source_sans_probold', Arial, "sans-serif";
-        padding: 5px 0px 5px 0px;
-    }
-
-    #table_reports3 tr th:first-child {
-        text-align: left;
-        padding: 5px 0px 5px 10px;
-    }
-
-    #table_reports3 tr td:first-child {
-        text-align: left;
-        padding: 5px 0px 5px 10px;
-    }
-
-    #table_reports3 tr th {
-        border-bottom: 2px solid #a8a8a8;
-    }
 
 
 
-
-/*chart 4*/
-.report-chart4 {
-    width: 250px !important;
-    height: 220px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 0 0 !important;
-    float: right;
-}
-
-    .report-chart4 .dhx_axis_item_x {
-        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
-    }
-
-    .report-chart4 .dhx_axis_item_y {
-        font-size: 12px;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: auto !important;
-        margin-left: 20px;
-    }
-
-    .report-chart4 canvas {
-        /*margin-left: 35px;
-        height: 150px;*/
-    }
-/*chart 5*/
-.report-chart5 {
-    width: 290px !important;
-    height: 220px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 0 0 !important;
-    float: right;
-}
-
-    .report-chart5 .dhx_axis_item_x {
-        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
-    }
-
-    .report-chart5 .dhx_axis_item_y {
-        font-size: 12px;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: auto !important;
-        margin-left: 55px;
-    }
-
-    .report-chart5 canvas {
-        /*margin-left: 70px;*/
-    }
-/*chart 6*/
-.report-chart6 {
-    width: 290px !important;
-    height: 220px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 0 16px !important;
-}
-
-    .report-chart6 canvas {
-        /*margin-left: 50px;*/
-    }
-
-    .report-chart6 .dhx_axis_item_x {
-        /*color: #ffffff!important;*/ /* edited by Dharmraj - #348 */
-    }
-
-    .report-chart6 .dhx_axis_item_y {
-        font-size: 12px;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        width: auto !important;
-        margin-left: 35px;
-    }
 /*reports table4*/
 .pull-left {
     float: left;
 }
 
-.width53 {
-    max-width: 53px !important;
-}
 
-#table_reports4 {
-    color: #908d88;
-    margin-top: -20px;
-}
 
-    #table_reports4 a {
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        color: #5693B3;
-        font-size: 14px;
-        text-decoration: underline;
-    }
 
-    #table_reports4 .dropdown-menu a {
-        text-decoration: none;
-    }
 
-    #table_reports4 th.border-r, #table_reports4 td.border-r {
-        border-right: 1px solid #a8a8a8 !important;
-    }
-
-    #table_reports4 th, #table_reports4 td {
-        text-align: center;
-        font-size: 14px;
-        font-family: 'source_sans_prolight', Arial, "sans-serif";
-        padding: 4px 4px 4px 4px !important;
-    }
-
-    #table_reports4 tr th:first-child {
-        text-align: left;
-        padding: 5px 0px 5px 10px !important;
-    }
-
-    #table_reports4 tr td:first-child {
-        text-align: left;
-        padding: 5px 0px 5px 10px !important;
-    }
-
-    #table_reports4 .main_table_header {
-        font-family: 'source_sans_probold', Arial, "sans-serif";
-    }
-
-    #table_reports4 .table_header {
-        background-color: #ffffff;
-        border-bottom: 2px solid #a8a8a8 !important;
-        border-top: 1px solid #ffffff;
-        font-family: 'source_sans_prosemibold', Arial, "sans-serif";
-        font-size: 14px;
-    }
 
 .padding-bottom14 {
     padding-bottom: 14px !important;
 }
-/*reports table4*/
-#table_reports5 {
-    color: #908d88;
-    margin-bottom: 40px !important;
-}
 
-    #table_reports5 td {
-        text-align: center;
-        font-size: 14px;
-        font-family: 'source_sans_prolight', Arial, "sans-serif";
-        padding: 5px 0px 5px 0px;
-    }
 
-    #table_reports5 th {
-        text-align: center;
-        font-size: 14px;
-        font-family: 'source_sans_prosbold', Arial, "sans-serif";
-        color: #908D88;
-        padding: 5px 0px 5px 0px;
-    }
-
-    #table_reports5 tr td:first-child {
-        text-align: left;
-        font-size: 14px;
-        font-family: 'source_sans_prolight', Arial, "sans-serif";
-        padding: 5px 0px 5px 10px;
-    }
-
-    #table_reports5 tr th:first-child {
-        text-align: left;
-        padding: 5px 0px 5px 10px;
-    }
 /*---------------------------
           Review modal
 -----------------------------*/
@@ -6016,18 +5529,7 @@ span.left-arrow {
     z-index: 2001;
 }
 
-.report-chartAD {
-    width: 150px !important;
-    height: 92px !important;
-    font-family: 'source_sans_prolight', Arial, "sans-serif" !important;
-    font-size: 10px !important;
-    color: #b3b3b3 !important;
-    margin: 0 0 15px -75px !important;
-}
 
-    .report-chartAD .dhx_axis_item_x {
-        font-size: 16px !important;
-    }
 
 .dhx_chart_final {
     color: #000000;
@@ -6795,10 +6297,6 @@ span.left-arrow {
 
 
 
-/*Added By Kapil to resolve design issue mentioned in Bug 148:Incorrect Height on Realized Difference row in Revenue Summary Report*/
-#table_reports tbody tr[index="Realized"] td {
-    padding: 13px 0 !important;
-}
 /* 
     TFS Bug 255 : Plan Campaign screen - Add delete icon for tactic and campaign in the grid
     CSS changes provide by Kapil and add by Nirav shah on 13 feb 2014
@@ -6911,16 +6409,8 @@ h2.title-header {
     background: url(../images/left-nav-border.png) right top repeat-y;
 }
 
-    .left-nav .link-alone {
-        margin-left: 20px;
-        display: block;
-        border-bottom: 1px solid #d1d1d1;
-        padding: 5px 15px;
-    }
 
-        .left-nav .link-alone label {
-            margin: 0;
-        }
+
 
     .left-nav .accordion-toggle > div { /*width:calc(100% - 10px);*/
         border-top: 1px solid #d1d1d1;
@@ -7964,13 +7454,7 @@ span.circle-check-icon-gray {
     padding-left: 20px !important;
 }
 
-.link-alone-margin-left label {
-    font-family: 'source_sans_proregular', Arial, "sans-serif" !important;
-    font-size: 13px !important;
-    color: #808080 !important;
-    padding: 5px 15px;
-    margin: 0;
-}
+
 /* End - Added by Sohel Pathan on 28/04/2014 for Internal Review Points #7 to set styling for Show on my tactic link */
 
 #inspect-modal-right-div .cf span {
@@ -10975,15 +10459,11 @@ li.close-list {
     margin-bottom: 50px;
 }
 
-*/ .ui-multiselect-single ul li:hover {
+.ui-multiselect-single ul li:hover {
     background-color: #0081c2 !important;
     color: #fff;
 }
 
-.margin-left20px {
-    margin-left: 20px;
-    float: left;
-}
 
 
 
@@ -11017,9 +10497,6 @@ li.close-list {
     border-bottom: 2px solid #d3d3d3;
 }
 
-.report-gray-container {
-    clear: both;
-}
 
 #chartDiv3 {
     float: left;

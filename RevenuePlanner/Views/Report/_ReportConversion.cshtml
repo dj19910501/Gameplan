@@ -223,21 +223,7 @@
 
     // Load header data
     //LoadHeaderData();
-    function LoadHeaderData() {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Report/GetReportHeader/")',
-            data: {
-                option: OptionMain,////This variable globally declare in parent view "Index"
-                isRevenue: false
-            },
-            success: function (data) {
-                if (data != undefined) {
-                    setLabel(data);
-                }
-            }
-        });
-    }
+ 
     var _campaignLabel = '@Common.RevenueCampaign';
 
     $('#ddlParentConversionSummery').bind('change', function () {
