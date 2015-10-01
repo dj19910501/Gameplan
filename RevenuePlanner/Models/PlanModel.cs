@@ -533,6 +533,7 @@ namespace RevenuePlanner.Models
     public class BudgetAccountMapping
     {
         public int Id { get; set; }
+        public int Weightage { get; set; }
 
     }
 }

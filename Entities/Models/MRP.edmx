@@ -484,6 +484,7 @@
           <Property Name="PlanLineItemId" Type="int" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
+          <Property Name="Weightage" Type="tinyint" />
         </EntityType>
         <EntityType Name="LineItemType">
           <Key>
@@ -4906,6 +4907,7 @@
           <Property Name="CreatedBy" Type="Guid" />
           <NavigationProperty Name="Budget_Detail" Relationship="MRPModel.FK_LineItem_Budget_Budget_Detail" FromRole="LineItem_Budget" ToRole="Budget_Detail" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem" Relationship="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" FromRole="LineItem_Budget" ToRole="Plan_Campaign_Program_Tactic_LineItem" />
+          <Property Name="Weightage" Type="Byte" />
         </EntityType>
         <Association Name="FK_LineItem_Budget_Budget_Detail">
           <End Type="MRPModel.Budget_Detail" Role="Budget_Detail" Multiplicity="1" />
@@ -5955,6 +5957,7 @@
           <EntitySetMapping Name="LineItem_Budget">
             <EntityTypeMapping TypeName="MRPModel.LineItem_Budget">
               <MappingFragment StoreEntitySet="LineItem_Budget">
+                <ScalarProperty Name="Weightage" ColumnName="Weightage" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="PlanLineItemId" ColumnName="PlanLineItemId" />

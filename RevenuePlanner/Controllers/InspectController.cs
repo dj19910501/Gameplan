@@ -5577,6 +5577,7 @@ namespace RevenuePlanner.Controllers
                                     LineitemBudgetMapping.PlanLineItemId = lineItemId;
                                     LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
                                     LineitemBudgetMapping.CreatedDate = DateTime.Now;
+                                    LineitemBudgetMapping.Weightage = (byte)item.Weightage;
                                     db.Entry(LineitemBudgetMapping).State = EntityState.Added;
                                 }
                                 db.SaveChanges();
@@ -5817,6 +5818,7 @@ namespace RevenuePlanner.Controllers
                                     LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
                                     LineitemBudgetMapping.CreatedDate = DateTime.Now;
                                     db.Entry(LineitemBudgetMapping).State = EntityState.Added;
+                                    LineitemBudgetMapping.Weightage = (byte)item.Weightage;
                                     db.SaveChanges();
                                 }
 
@@ -9035,7 +9037,7 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("Id", typeof(Int32));
             dataTableMain.Columns.Add("ParentId", typeof(Int32));
             dataTableMain.Columns.Add("Name", typeof(String));
-         //   dataTableMain.Columns.Add("Weightage", typeof(String));
+            dataTableMain.Columns.Add("Weightage", typeof(String));
 
             List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId)).Select(a => a).ToList();
 
@@ -9080,20 +9082,25 @@ namespace RevenuePlanner.Controllers
         DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row, int PlanLineItemID)
         {
             var enableCheck = string.Empty;
+            var value = string.Empty;
             var id = row.Field<Int32>("Id");
             var name = row.Field<String>("Name");
-          //  var weightage = row.Field<String>("Weightage");
-            int Selectedid = db.LineItem_Budget.Where(a =>a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a.BudgetDetailId).FirstOrDefault();
-            if(id == Selectedid)
+            var weightage = row.Field<String>("Weightage");
+            List<LineItem_Budget> SelectedLineItemBudget = db.LineItem_Budget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
+            int SelectedID = SelectedLineItemBudget.Select(a=>a.BudgetDetailId).FirstOrDefault();
+            var SelectedWeightage = SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
+            if (id == SelectedID)
             {
                 enableCheck = "checked=\"checked\"";
+                value = SelectedWeightage.ToString();
             }
             else
             {
                 enableCheck = string.Empty;
+                value = string.Empty;
             }
-            var temp = "<input id=" + id + " title=" + name + " " + enableCheck + "  onclick='ddlcheckboxclick(this)' type=checkbox />" + name;
-           // var AddWeightage = "<input type='textbox'/>";
+            var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  onclick='ddlcheckboxclick(this)' type=checkbox />" + name;
+            var AddWeightage = " <input value='"+ value +"' type='text'  id= wt_" + id + ">";
 
             List<string> datalist = new List<string>();
 
@@ -9102,9 +9109,9 @@ namespace RevenuePlanner.Controllers
               .ToList();
 
             var item = children.Count > 0 ? name : temp;
-         //   var Weightageitem = children.Count > 0 ? "" : AddWeightage;
+            var Weightageitem = children.Count > 0 ? "" : AddWeightage;
             datalist.Add("<input  type=checkbox /><span>" + item != null ? Convert.ToString(item) : "No" + "</span>" + name);
-          //  datalist.Add(Weightageitem);
+            datalist.Add(Weightageitem);
             return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = datalist, rows = children };
 
         }

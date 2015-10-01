@@ -1,13 +1,13 @@
 ﻿@model RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItemModel
 @using RevenuePlanner.Helpers
 @{
-    
+
     string campaignTitle = Convert.ToString(ViewBag.CampaignTitle);
     string programTitle = Convert.ToString(ViewBag.ProgramTitle);
     string tacticTitle = Convert.ToString(ViewBag.TacticTitle);
     string owner = Convert.ToString(ViewBag.Owner);
     bool isOtherLineitem = false;
-    if (Model!=null)
+    if (Model != null)
     {
         isOtherLineitem = Model.IsOtherLineItem;
     }
@@ -54,10 +54,10 @@
 </style>
 @using (Html.BeginForm())
 {
-    
+
     @Html.HiddenFor(model => model.PlanLineItemId, new { id = "PlanLineItemId" })
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "PlanTacticId" })
-     @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
+    @Html.HiddenFor(model => model.IsOtherLineItem, new { id = "hdnIsOtherLineItem" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })
     <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom:0px;">
 
@@ -76,13 +76,13 @@
         <div class="span3 no_margin_top" id="inspect-modal-left-column2" style="margin-left: 10px;">
             <p>@Html.Raw("Parent Tactic")</p>
             @Html.TextBox("txtTacticTitle", HttpUtility.HtmlDecode(tacticTitle), new { @class = "input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticTitle })
-              @if (!isOtherLineitem)
-                    {
-              <p id="lblType">Type <span class="required-asterisk">*</span></p>
-            <span style="min-width: 100%; position: relative;display:block;">
-                @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission hide", require = "true", label = "Type" })
-            </span>
-              }
+            @if (!isOtherLineitem)
+            {
+                <p id="lblType">Type <span class="required-asterisk">*</span></p>
+                <span style="min-width: 100%; position: relative;display:block;">
+                    @Html.DropDownListFor(model => model.LineItemTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.lineItemTypes, "LineItemTypeId", "Title"), "Please Select", new { @class = "ddlStyle resubmission hide", require = "true", label = "Type" })
+                </span>
+            }
 
 
         </div>
@@ -94,7 +94,7 @@
 
         </div>
     </div>
-          
+
     <ul id="FinanceMappingHeading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
         <li class="pull-left">
             <h3 class="modal-popup-innertitle source-sans-proregular">Finance Mapping</h3>
@@ -105,17 +105,28 @@
         @HtmlHelpers.GenerateMappingFieldsForInspectPopup(Model.PlanLineItemId, Enums.InspectPopupMode.Edit.ToString())
     </div>
     @*<div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
-        <div class="span2 btn-save" style="width: 80px;">
-            <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
-        </div>
-        <div class="span2">
-            <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
-        </div>
-    </div>*@
-    
+            <div class="span2 btn-save" style="width: 80px;">
+                <button id="save_LineItem" class="btn btn-blue text-shadow-blue source-sans-proregular margin-top23 popup_button_save" type="button">Save </button>
+            </div>
+            <div class="span2">
+                <button id="btnCancel" class="close-form btn-link source-sans-proregular popup_button_cancel" style="float: left; margin-top: 30px !important" type="button">Cancel</button>
+            </div>
+        </div>*@
+
 }
 <script type="text/javascript">
     var TreeViewDdl;
+    var ListOfItmeCheck= {
+        Ids: [],
+        values:[]
+    };
+
+    var Weights= {
+        ChkId: [],
+        txtId: [],
+        values:[]
+    };
+    var totalWeightage = 0;
 
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -125,7 +136,7 @@
             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
         }
     }
-   
+
     //Added BY Komal Rawal for #1617
     $('.dropdown_new_btn').click(function () {
         if($(this).next().css("display") == "none")
@@ -162,25 +173,49 @@
                 TreeViewDdl.setColTypes("tree");
                 TreeViewDdl.init();
 
-                //  TreeViewDdl.insertColumn(2, 'Weightage', 'ro');
+                TreeViewDdl.insertColumn(2, 'Weightage', 'ro');
                 //TreeViewDdl.setSkin("");
                 TreeViewDdl.parse(GridData, "json");
+                TreeViewDdl.attachEvent("onOpenEnd", function () {
+                    for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+                    {
+                        $('#'+Weights.txtId[i]).val(Weights.values[i]);
+                        var optionId = ListOfItmeCheck.Ids[i];
+                        if (totalWeightage != 100) {
+                            $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).addClass('error');
+                        }
+                        else {
+                            if ($('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).hasClass('error')) {
+                                $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).removeClass('error')
+                            }
+                        }
+                    }
+
+                });
 
             }
         });
+
         TreeViewDdl.expandAll();
         $('#treeviewddl').find('input:checkbox:checked').each(function () {
             ListOfItmeCheck.Ids.push($(this).attr('id'));
             ListOfItmeCheck.values.push($(this).attr('title'));
+            totalWeightage += parseInt($('#'+ 'wt_'+ $(this).attr('id')).val());
+            Weights.values.push($('#'+ 'wt_'+ $(this).attr('id')).val());
+            Weights.ChkId.push($(this).attr('id'));
+            Weights.txtId.push('wt_'+ $(this).attr('id'));
         });
+        if(totalWeightage != 100)
+        {
+            DivideEqualInputValue();
+        }
         TreeViewDdl.collapseAll();
+
+
 
     }
 
-    var ListOfItmeCheck= {
-        Ids: [],
-        values:[]
-    };
+
     function ddlcheckboxclick(items)
     {
         $('.span3').find('.dropdown_new_btn p:first').text("");
@@ -188,13 +223,18 @@
         {
             ListOfItmeCheck.Ids.push(items.id);
             ListOfItmeCheck.values.push(items.title);
+            DivideEqualInputValue();
         }
         else{
-
             var index = ListOfItmeCheck.Ids.indexOf(items.id);
             if (index >= 0) {
                 ListOfItmeCheck.Ids.splice( index, 1 );
                 ListOfItmeCheck.values.splice( index, 1 );
+                $('#'+ 'wt_'+ items.id).val("");
+                if ($('#'+ 'wt_'+ items.id).hasClass('error')) {
+                    $('#'+ 'wt_'+ items.id).removeClass('error')
+                }
+                DivideEqualInputValue();
             }
         }
         var Selectedvalue = "";
@@ -213,10 +253,90 @@
         }
 
     }
-    
+
+    $('#treeviewddl').find('input[type=text]').live("keyup", function(event) {
+        totalWeightage=0;
+        var inputText = $(this);
+        var Code = inputText.attr('id').toString().split('_')[1].toString();
+        var isAllColumnInputBlank = true;
+
+        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+        {
+            var optionId = ListOfItmeCheck.Ids[i];
+            isAllColumnInputBlank = false;
+            var index=Weights.ChkId.indexOf(Code);
+            if(index>=0)
+            {
+                Weights.values[index]= parseFloat(inputText.val());
+            }
+
+            totalWeightage += parseFloat(Weights.values[i]);
+        }
+
+        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+        {
+            var optionId = ListOfItmeCheck.Ids[i];
+            if (totalWeightage != 100 && !isAllColumnInputBlank) {
+                $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).addClass('error');
+            }
+            else {
+                if ($('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).hasClass('error')) {
+                    $('#'+ 'wt_'+ ListOfItmeCheck.Ids[i]).removeClass('error')
+                }
+            }
+        }
+
+    });
+
+
+    function DivideEqualInputValue() {
+        Weights= {
+            ChkId: [],
+            txtId: [],
+            values:[]
+        };
+        totalWeightage=0;
+        var checkedCheckbox = ListOfItmeCheck.Ids.length;
+        var inputValues = parseInt(100 / checkedCheckbox);
+        var residual = parseInt(100 % checkedCheckbox);
+        var checkedResidualDiff = checkedCheckbox - residual;
+        var res_counter = 0;
+        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+        {
+            res_counter += 1;
+            var index = ListOfItmeCheck.Ids.indexOf(ListOfItmeCheck.Ids[i]);
+            if (index >= 0) {
+                Weights.ChkId.push(ListOfItmeCheck.Ids[i]);
+                Weights.txtId.push('wt_'+ ListOfItmeCheck.Ids[i]);
+                if (res_counter <= checkedResidualDiff) {
+                    Weights.values[i]=(inputValues.toString());
+                    $("#"+Weights.txtId[i]).val((inputValues.toString()));
+                    $("#"+Weights.txtId[i]).removeClass('error');
+                }else{
+                    Weights.values[i]=((inputValues + 1).toString());
+                    $("#"+Weights.txtId[i]).val(((inputValues + 1).toString()));
+                    $("#"+Weights.txtId[i]).removeClass('error');
+                }
+            }
+            else{
+                Weights.ChkId.splice( index, 1 );
+                Weights.txtId.splice( index, 1 );
+                Weights.values.splice( index, 1 );
+            }
+            totalWeightage += parseFloat(Weights.values[i]);
+        };
+
+    }
     //End
 
     $(document).ready(function () {
+
+        $(document).click(function(){
+            $("#treeviewddl").css("display","none");
+        });
+        $('.dropdown_new_btn').on('click', function (e) {
+            e.stopPropagation();
+        });
         //// Call function to redirect on service unavailibility.
         //// Added By: Maninder Singh Wadhva on 11/24/2014.
         //// Ticket: 942 Exception handeling in Gameplan.
@@ -231,7 +351,7 @@
             noneSelectedText: "Please Select",
             selectedList: 1,
             CustomName: '@Common.CustomTitle'
-         }).multiselectfilter();
+        }).multiselectfilter();
 
 
 
@@ -240,7 +360,7 @@
 
         var spanLineItemType = $('#multipleselect_LineItemTypeId');
         $('#btnMultiselect_LineItemTypeId').after(spanLineItemType);
-       
+
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
             $("#lblType").css("display", "none");
             $("#ddlTypeArea").css("display", "none");
@@ -300,9 +420,9 @@
         }
     });
     function SetupSaveLineitem() {
-       
+
         var returnparameter = false;
-      //  $("#save_LineItem").click(function () {
+        //  $("#save_LineItem").click(function () {
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());
 
@@ -312,38 +432,38 @@
             return false;
         }
         if ($('#txtTitle').val().toString().toLowerCase().trim() != '@Common.DefaultLineItemTitle.ToLower()') {
-        $('form').find('input[type=text], select, textarea').each(function () {
-            if ($(this).attr('require') == 'true') {
-                if ($(this).val() == '') {
-                    $(this).addClass("error");
-                    iserror = true;
+            $('form').find('input[type=text], select, textarea').each(function () {
+                if ($(this).attr('require') == 'true') {
+                    if ($(this).val() == '') {
+                        $(this).addClass("error");
+                        iserror = true;
+                    }
+                    else {
+                        $(this).removeClass("error");
+                    }
+                }
+            });
+
+            //$('form').find('.sbSelector').each(function () {
+            //    if ($(this).parent().prev().attr('require') == 'true') {
+            //        if ($(this).text() == 'Please Select') {
+            //            $(this).addClass("error");
+            //            iserror = true;
+            //        }
+            //        else {
+            //            $(this).removeClass("error");
+            //        }
+            //    }
+            //});
+            if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+                var LineItemTypeValue = $('#LineItemTypeId').val();
+                if (LineItemTypeValue == "") {
+                    $('#btnMultiselect_LineItemTypeId').addClass("error");
                 }
                 else {
-                    $(this).removeClass("error");
+                    $('#btnMultiselect_LineItemTypeId').removeClass("error");
                 }
             }
-        });
-
-        //$('form').find('.sbSelector').each(function () {
-        //    if ($(this).parent().prev().attr('require') == 'true') {
-        //        if ($(this).text() == 'Please Select') {
-        //            $(this).addClass("error");
-        //            iserror = true;
-        //        }
-        //        else {
-        //            $(this).removeClass("error");
-        //        }
-        //    }
-            //});
-        if (!($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
-            var LineItemTypeValue = $('#LineItemTypeId').val();
-            if (LineItemTypeValue == "") {
-                $('#btnMultiselect_LineItemTypeId').addClass("error");
-            }
-            else {
-                $('#btnMultiselect_LineItemTypeId').removeClass("error");
-            }
-        }
         }
 
         if (iserror) {
@@ -356,10 +476,17 @@
         for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
         {
             _FieldMappingValues.push({
-                             Id: ListOfItmeCheck.Ids[i],
-                             Name: ListOfItmeCheck.values[i],
-                            //  Weightage: $('#' + Id + '_wt').val() != '' ? $('#' + Id + '_wt').val() : '100',
-                        });
+                Id: ListOfItmeCheck.Ids[i],
+                Name: ListOfItmeCheck.values[i],
+                Weightage: Weights.values[i] != '' ?  Weights.values[i] : '100',
+            });
+            //  var IsWeightError = $('#'+ Weights.txtId[i]).hasClass('error');
+
+        }
+        if(totalWeightage != 100)
+        {
+            ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', "Budget Account"));
+            return false;
         }
         _FieldMappingValues = JSON.stringify(_FieldMappingValues);
         //End
@@ -379,7 +506,7 @@
         document.getElementById("hdnDescription").value = htmlEncode($('#txtDescription').val());
         $.ajax({
             type: 'POST',
-                async: false,
+            async: false,
             url: '@Url.Content("~/Inspect/SaveLineitem")',
             data: $("form").serialize() + '&title='+escape(lineItemTitle)+ '&FieldMappingValues=' + escape(_FieldMappingValues) + '&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
             success: function (data) {
@@ -407,33 +534,33 @@
                         planTacticId = data.planTacticID;
                         $('#lblLineitemTitle').text(lineItemTitle);
                         if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
-                                var ChangedTab = "Setup";
-                                if (tabtext != "") {
-                                    ChangedTab = tabtext;
-                                }
-                                var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
-                                if (ChangedTab == "Setup") {
-                                    inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
-                                }
+                            var ChangedTab = "Setup";
+                            if (tabtext != "") {
+                                ChangedTab = tabtext;
+                            }
+                            var inspectPopupMode = '@Enums.InspectPopupMode.Edit.ToString()';
+                            if (ChangedTab == "Setup") {
+                                inspectPopupMode = '@Enums.InspectPopupMode.ReadOnly.ToString()';
+                            }
                             loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                             //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);
-                            }
-                            else{
-                        //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
+                        }
+                        else{
+                            //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
 
-                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
-                            $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
-                            $("#hdnBudgetingIsSave").val("true");
+                            if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
+                                $("#hdnBudgetingExpandId").val("lineitem" + planLineItemId);
+                                $("#hdnBudgetingIsSave").val("true");
+                            }
+                            else {
+                                //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
+                            }
+                            returnparameter = true;
                         }
-                        else {
-                            //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
-                        }
-                        returnparameter = true;
-                    }
                     }
                     else {
                         ShowError(data.msg);
-                            returnparameter = false;
+                        returnparameter = false;
                     }
                 }
             }
