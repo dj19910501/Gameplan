@@ -33,7 +33,7 @@
 }
 
 @Html.Hidden("hdn_row_parentId", "", new { id = "hdn_row_parentId", name = "hdn_row_parentId", value = "" })
-@Html.Hidden("hdn_BudgetId","",new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
+@Html.Hidden("hdn_BudgetId", "", new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
 @*<div style="width: 100%;">*@
 <div style="width: 97.05%; padding:20px;">
     <div style="width:auto;height:50px;display:block;">
@@ -119,6 +119,9 @@
         //BindChildBudgetDrp(_budgetId);
         // EditBudget(21);
         ShowHideControls("MainGrid");
+        var txtval = $("#btnMultiselect_ddlParentFinanceMain").find("span").text();
+        $("#btnMultiselect_ddlParentFinanceMain").find("span").text('');
+        $("#btnMultiselect_ddlParentFinanceMain").find("span").text(htmlDecode(txtval));
     });
 
     function RefreshMainGridData(BudgetId) {
@@ -136,6 +139,10 @@
             EditBudget(budgetID, false);
         }
         //myApp.hidePleaseWait();
+        
+        var txtval = $("#btnMultiselect_ddlParentFinance").find("span").text();
+        $("#btnMultiselect_ddlParentFinance").find("span").text('');
+        $("#btnMultiselect_ddlParentFinance").find("span").text(htmlDecode(txtval));
     });
     $("#ddlParentFinanceMain").change(function () {
 
@@ -148,6 +155,10 @@
         //    EditBudget(budgetID, false);
         //}
         //myApp.hidePleaseWait();
+        
+        var txtval = $("#btnMultiselect_ddlParentFinanceMain").find("span").text();
+        $("#btnMultiselect_ddlParentFinanceMain").find("span").text('');
+        $("#btnMultiselect_ddlParentFinanceMain").find("span").text(htmlDecode(txtval));
     });
     $("#ddlChildFinance").change(function () {
         myApp.showPleaseWait();
@@ -155,14 +166,18 @@
         var parentid = $("#ddlParentFinance").val();
         if (pageName == "EditBudget") {
             if (budgetID > 0) {
-            GetFinanceHeaderValue(budgetID);
-            EditBudget(budgetID, true);
+                GetFinanceHeaderValue(budgetID);
+                EditBudget(budgetID, true);
             } else {
                 GetFinanceHeaderValue(parentid);
                 EditBudget(parentid, true);
             }
         }
         //myApp.hidePleaseWait();
+        // $("#btnMultiselect_ddlChildFinance").find("span").text(htmlDecode($("#btnMultiselect_ddlChildFinance").find("span").text()));
+        var txtval = $("#btnMultiselect_ddlChildFinance").find("span").text();
+        $("#btnMultiselect_ddlChildFinance").find("span").text('');
+        $("#btnMultiselect_ddlChildFinance").find("span").text(htmlDecode(txtval));
     });
 
     function GetFinanceHeaderValue(_budgetId, Ismain) {
@@ -361,7 +376,7 @@
 
     function RefreshBudgetDropdown(IsAddNew) {
         //debugger;
-        
+
         var _budgetId = $("#hdn_BudgetId").val();
         var $dropdown = $("#ddlParentFinanceMain");
         $dropdown.empty();
@@ -372,30 +387,30 @@
             }
         }
         else {
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Finance/RefreshBudgetList/")',
-            data: {},
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Finance/RefreshBudgetList/")',
+                data: {},
                 async: false,
-            success: function (result) {
+                success: function (result) {
 
-                if (result.length > 0) {
-                    $.each(result, function (index, item) {
+                    if (result.length > 0) {
+                        $.each(result, function (index, item) {
 
-                        $html += '<option value="' + item.Value + '">' + item.Text + '</option>';
+                            $html += '<option value="' + item.Value + '">' + item.Text + '</option>';
 
-                    });
-                }
+                        });
+                    }
                 }
             });
         }
-                $dropdown.append($html);
+        $dropdown.append($html);
 
-                $dropdown.multiselect("refresh");
-                $dropdown.val(_budgetId);
-                $dropdown.find("input[type='search']").val(_budgetId);
-                var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + _budgetId + "']").next('span').html();
-                $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
+        $dropdown.multiselect("refresh");
+        $dropdown.val(_budgetId);
+        $dropdown.find("input[type='search']").val(_budgetId);
+        var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + _budgetId + "']").next('span').html();
+        $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
     }
 
     //$.ajaxSetup({

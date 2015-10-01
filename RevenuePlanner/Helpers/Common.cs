@@ -4583,7 +4583,7 @@ namespace RevenuePlanner.Helpers
             ParentId = checkParent.Count > 0 ? checkParent[0] : 0;
 
             var customfieldlist = db.Budget_Detail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && budgeparentids.Contains(a.BudgetId)).Select(a => new { a.Id, a.Name }).ToList();
-            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
+            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).ToList();
             return lstBudget;
         }
         /// <summary>
@@ -4595,7 +4595,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             List<ViewByModel> lstBudget = new List<ViewByModel>();
             var customfieldlist = db.Budgets.Where(bdgt => bdgt.ClientId == Sessions.User.ClientId && bdgt.IsDeleted == false).ToList();
-            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
+            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).ToList();
             return lstBudget;
         }
         public static List<ViewByModel> GetChildBudgetlist(int ParentId)
@@ -4608,7 +4608,7 @@ namespace RevenuePlanner.Helpers
             //                       select new { child.Name, child.Id }).Distinct().ToList();
 
             var customfieldlist = db.Budget_Detail.Where(a => a.ParentId == ParentId).Select(a => new { a.Id, a.Name }).ToList();
-            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = budget.Name, Value = budget.Id.ToString() }).ToList();
+            lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).ToList();
             return lstBudget;
         }
         /// <summary>
