@@ -122,7 +122,7 @@
     });
 
     function RefreshMainGridData(BudgetId) {
-
+        //debugger;
         //var budgetID = $("#ddlParentFinance").val();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + BudgetId);
@@ -135,7 +135,7 @@
             GetFinanceHeaderValue(budgetID);
             EditBudget(budgetID, false);
         }
-        myApp.hidePleaseWait();
+        //myApp.hidePleaseWait();
     });
     $("#ddlParentFinanceMain").change(function () {
 
@@ -147,7 +147,7 @@
         //    GetFinanceHeaderValue(budgetID);
         //    EditBudget(budgetID, false);
         //}
-        myApp.hidePleaseWait();
+        //myApp.hidePleaseWait();
     });
     $("#ddlChildFinance").change(function () {
         myApp.showPleaseWait();
@@ -162,7 +162,7 @@
                 EditBudget(parentid, true);
             }
         }
-        myApp.hidePleaseWait();
+        //myApp.hidePleaseWait();
     });
 
     function GetFinanceHeaderValue(_budgetId, Ismain) {
@@ -175,7 +175,8 @@
 
     }
     function BindChildBudgetDrp(_budgetId) {
-
+        //debugger;
+        var ChildID = $("#ddlChildFinance").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Finance/GetChildBudget/")',
@@ -190,7 +191,9 @@
                     var opt = new Option(data[i].Text, data[i].Value);
                     $('#ddlChildFinance').append(opt);
                 }
-
+                if (ChildID > 0) {
+                    $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
+                }
             }
         });
         $("#ddlChildFinance").multiselect({
@@ -357,7 +360,7 @@
     }
 
     function RefreshBudgetDropdown(IsAddNew) {
-        debugger;
+        //debugger;
         
         var _budgetId = $("#hdn_BudgetId").val();
         var $dropdown = $("#ddlParentFinanceMain");
@@ -394,4 +397,36 @@
                 var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + _budgetId + "']").next('span').html();
                 $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
     }
+
+    //$.ajaxSetup({
+    //    beforeSend: function () {
+    //        //console.log('test');
+    //        myApp.showPleaseWait();
+    //    },
+    //    complete: function () {
+    //        //            myApp.hidePleaseWait();
+    //    }
+    //});
+
+    $("#ddlRevenueTimeFrame").change(function () {
+        //debugger;
+        myApp.showPleaseWait();
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
+        if (AllocatedBy == 'Quarterly') {
+            AllocatedBy = true;
+        }
+        else {
+            AllocatedBy = false;
+        }
+        LoadBudgetGrid(AllocatedBy);
+        var BudgetColumns = $("#chkBudget");
+        var ForeCastColumns = $("#chkForeCast");
+        var PlanColumns = $("#chkPlan");
+        var ActualColumns = $("#chkActual");
+        BudgetColumns.change();
+        ForeCastColumns.change();
+        PlanColumns.change();
+        ActualColumns.change();
+        //myApp.hidePleaseWait();
+    });
 </script>

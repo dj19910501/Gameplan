@@ -36,7 +36,7 @@
         //ShowHideColumns($("#chkBudget"));
         //ShowHideColumns($("#chkForeCast"));
         //ShowHideColumns($("#chkActual"));
-        myApp.hidePleaseWait();
+        //myApp.hidePleaseWait();
     });
 
     function LoadBudgetGrid(AllocatedBy) {
@@ -150,7 +150,8 @@
         });
         //myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
-            debugger;
+            var ParentID = $("#ddlParentFinance").val();
+            var ChildID = $("#ddlChildFinance").val();
             if (IsValid) {
                 //if (IsAddNew == true) {
                 //    _parentRowId = $("#hdn_row_parentId").val();
@@ -161,7 +162,7 @@
                 if (_row_parentId != null && _row_parentId.length > 0) {
                     splitRowParentIds = _row_parentId.split(',');
                     $.each(splitRowParentIds, function (key, val) {
-                        debugger;
+                        //debugger;
                         rowId = val.split('~')[0];
                         parentId = val.split('~')[1];
                         parentRowID = val.split('~')[2];
@@ -233,16 +234,17 @@
                                 }
                             }
                             LoadBudgetGrid(AllocatedBy);
-                            var rowIndex = myTreeGrid.getRowIndex(rId);
-                            debugger;
-                            if (rowIndex == 0)
-                            {
+                            //var rowIndex = myTreeGrid.getRowIndex(rId);
+                            //debugger;
+                            //if (rowIndex == 0) {
                                 GetFinanceHeaderValue(rId, false);
-                            }
-                            BindParentBudgetDrp(rId);
-                            BindChildBudgetDrp(rId);
+                            //}
+                            BindParentBudgetDrp(ParentID);
+
+                            BindChildBudgetDrp(ParentID);
+
                             _isNewRowAdd = false;
-                            myApp.hidePleaseWait();
+                            //myApp.hidePleaseWait();
                         }
                     });
                 }
@@ -306,7 +308,7 @@
         ForeCastColumns.change();
         PlanColumns.change();
         ActualColumns.change();
-        myApp.hidePleaseWait();
+        //myApp.hidePleaseWait();
     });
 
     function BindSelectDropdowns() {
@@ -324,7 +326,7 @@
     var _parentRowId = '';
     var _row_parentId = '';
     function AddRow(cntrl) {
-        debugger;
+       // debugger;
         if (_isNewRowAdd == false) {
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         if (AllocatedBy == 'Quarterly') {
@@ -387,7 +389,7 @@
             //if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
             //    //UpdateActionColumn(budgetDetailId);
             //}
-            debugger;
+           // debugger;
         var _newRowIndex = myTreeGrid.getRowIndex(_newrowid.toString());
             IsAddNew = true;
             //myTreeGrid.selectCell(myTreeGrid.getRowIndex(_newRowIndex), 0, false, false, true);

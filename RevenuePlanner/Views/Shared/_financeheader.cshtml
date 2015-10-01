@@ -62,12 +62,13 @@
     </script>*@
 <script type="text/javascript">
     function FinanceBack() {
-        myApp.showPleaseWait();
+        //debugger;
+        
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + backBudgetid);
         ShowHideControls("MainGrid");
         GetFinanceHeaderValue(backBudgetid, true);
-        myApp.hidePleaseWait();
+        //myApp.hidePleaseWait();
     }
 
 </script>

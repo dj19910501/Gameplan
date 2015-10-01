@@ -90,7 +90,7 @@ namespace RevenuePlanner.Controllers
 
 
         #region  Main Grid Realted Methods
-        public ActionResult RefreshMainGridData(int budgetId)
+        public ActionResult RefreshMainGridData(int budgetId = 0)
         {
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
             gridRowModel = GetFinanceMainGridData(budgetId);
@@ -270,12 +270,27 @@ namespace RevenuePlanner.Controllers
             ParentData.Add(name);
             ParentData.Add(addRow);
             ParentData.Add(budget);
+            int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
+            // Change By Nishant Sheth
+            if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
+            {
+                forecast = dataTable
+                            .Rows
+                            .Cast<DataRow>()
+                            .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString();
             ParentData.Add(forecast);
+            }
+            else
+            {
+                ParentData.Add(forecast);
+            }
+            // End by Nishant Sheth
+
             ParentData.Add(planned);
             ParentData.Add(actual);
             #region "Add Action column link"
             string strAction = string.Empty;
-            int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
+
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
                 strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
@@ -421,27 +436,70 @@ namespace RevenuePlanner.Controllers
             var forcastTotal = row.Field<Double>("ForeCastTotal");
             var plantotal = row.Field<Double?>("PlanTotal");
             var actualtotal = row.Field<Double?>("ActualTotal");
-            var children = GetChildren(dataTable, id)
+            var lstChildren = GetChildren(dataTable, id);
+            var children = lstChildren
               .Select(r => CreateItem(dataTable, r))
               .ToList();
             List<string> ParentData = new List<string>();
             ParentData.Add(name);
             ParentData.Add(addRow);
+            int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
+            if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
+            {
+                lineitemcount = dataTable
+                 .Rows
+                 .Cast<DataRow>()
+                 .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Int32>("LineItemCount"));
+                row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
             ParentData.Add(Convert.ToString(lineitemcount));
+            }
+            else
+            {
+                ParentData.Add(Convert.ToString(lineitemcount));
+            }
+
+
             //ParentData.Add(string.Join(",", budget));
             //ParentData.Add(string.Join(",", forcast));
 
             int i = 0;
+
             for (i = 0; i < budget.Count; i++)
             {
                 ParentData.Add(Convert.ToString(budget[i]));
+                if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
+                {
+                    var tempforcast = dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<List<Double?>>("ForeCast")[i]);
+
+                    ParentData.Add(Convert.ToString(tempforcast));
+                    //ParentData.Add(Convert.ToString(forcast[i]));
+                }
+                else
+                {
                 ParentData.Add(Convert.ToString(forcast[i]));
+                }
+
                 ParentData.Add(Convert.ToString(plan[i]));
                 ParentData.Add(Convert.ToString(actual[i]));
             }
 
             ParentData.Add(Convert.ToString(budgetTotal));
+            if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
+            {
+                var tempforcastTotal = dataTable
+                           .Rows
+                           .Cast<DataRow>()
+                           .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Double>("ForeCastTotal"));
+
+                ParentData.Add(Convert.ToString(tempforcastTotal));
+            }
+            else
+            {
             ParentData.Add(Convert.ToString(forcastTotal));
+            }
             ParentData.Add(Convert.ToString(plantotal));
             ParentData.Add(Convert.ToString(actualtotal));
             List<userdata> objuserData = new List<userdata>();
