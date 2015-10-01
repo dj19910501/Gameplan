@@ -141,11 +141,13 @@
     $('.dropdown_new_btn').click(function () {
         if($(this).next().css("display") == "none")
         {
+            $(this).next().css("width","auto");
             $(this).next().css("display","block");
             LoadBudgetDropdown();
         }
         else
         {
+            $(this).next().css("width","0px");
             $(this).next().css("display","none");
         }
     });
@@ -197,6 +199,16 @@
         });
 
         TreeViewDdl.expandAll();
+         ListOfItmeCheck= {
+            Ids: [],
+            values:[]
+        };
+         Weights= {
+            ChkId: [],
+            txtId: [],
+            values:[]
+        };
+        totalWeightage = 0;
         $('#treeviewddl').find('input:checkbox:checked').each(function () {
             ListOfItmeCheck.Ids.push($(this).attr('id'));
             ListOfItmeCheck.values.push($(this).attr('title'));

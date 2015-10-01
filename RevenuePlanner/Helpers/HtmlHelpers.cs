@@ -6130,7 +6130,7 @@ namespace RevenuePlanner.Helpers
             sb.Append("<div class=\"" + className + "\" ><p title=\"" + "Budget Account" + "\" class=\"ellipsis\">" + "Budget Account" + "</p>");
 
 
-            DropDownStyle = " style=\"width:200px;display:none";
+            DropDownStyle = "style=\"display:none";
             divPosition = "style=\"position:relative;\"";
             require = "";
             name = "";
