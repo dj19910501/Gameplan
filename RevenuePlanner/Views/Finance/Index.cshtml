@@ -11,19 +11,19 @@
 <script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid.js")"></script>
 
 <style>
-    /*.grid_add:hover:after {
+    .grid_add:hover:after {
         background: #333;
         background: rgba(0,0,0,.8);
         border-radius: 5px;
         bottom: 0px;
         color: #fff;
         content: attr(data-title);
-
+        left: 10px;
         position: relative;
         cursor: pointer;
         z-index: 98;
-        width: 30px;
-    }*/
+        width: 55px;
+    }
 </style>
 @section PlanHeader{
     <div id="headerValue">
@@ -61,7 +61,7 @@
             <div id="divCheckbox" style="width:300px;float:left;line-height: 22px;">
                 <div id="divBudget" style="float:left;margin-right:10px;"><input type="checkbox" value="Budget" id="chkBudget" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Budget</label></div>
                 <div id="divforecast" style="float:left;margin-right:10px;"><input type="checkbox" value="ForeCast" id="chkForeCast" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Forecast</label></div>
-                <div id="divPlan" style="float:left;margin-right:10px;"><input type="checkbox" value="Plan" id="chkPlan" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Planned</label></div>
+                <div id="divPlan" style="float:left;margin-right:10px;"><input type="checkbox" value="Plan" id="chkPlan" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Plan</label></div>
                 <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
             </div>
             <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;margin-right:0px">
@@ -107,6 +107,8 @@
         $("#btnAddNewBudget").click(function () {
             var url = '@Url.Content("~/Finance/LoadnewBudget/")';
             $('#divGridView').load(url);
+            RefreshBudgetDropdown(true);
+            GetFinanceHeaderValue(0,true);
         });
         //var testitem = "option[text=Budget3]";
         //$("#ddlParentFinance").find(testitem).attr("selected", "selected");
@@ -152,8 +154,13 @@
         var budgetID = $("#ddlChildFinance").val();
         var parentid = $("#ddlParentFinance").val();
         if (pageName == "EditBudget") {
+            if (budgetID > 0) {
             GetFinanceHeaderValue(budgetID);
             EditBudget(budgetID, true);
+            } else {
+                GetFinanceHeaderValue(parentid);
+                EditBudget(parentid, true);
+            }
         }
         myApp.hidePleaseWait();
     });
@@ -177,6 +184,7 @@
             data: { budgetId: _budgetId },
             success: function (data) {
                 $("#ddlChildFinance").html("");
+                $('#ddlChildFinance').append($('<option></option>').attr('value', '0').text('Please Select'));
                 for (var i = 0; i < data.length; i++) {
 
                     var opt = new Option(data[i].Text, data[i].Value);
@@ -187,7 +195,7 @@
         });
         $("#ddlChildFinance").multiselect({
             multiple: false,
-            noneSelectedText: "Please Select",
+            //noneSelectedText: "Please Select",
             selectedList: 1
         }).multiselectfilter({
         });
@@ -225,6 +233,7 @@
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         backBudgetid = budgetIDMain;
 
+        GetFinanceHeaderValue(BudgetId);
         if (level != undefined && level != '') {
             GlobalLevel = level;
         }
@@ -347,18 +356,26 @@
         ShowHideControls('MainGrid');
     }
 
-    function RefreshBudgetDropdown() {
+    function RefreshBudgetDropdown(IsAddNew) {
+        debugger;
         
         var _budgetId = $("#hdn_BudgetId").val();
+        var $dropdown = $("#ddlParentFinanceMain");
+        $dropdown.empty();
+        var $html = '';
+        if (IsAddNew != undefined && IsAddNew != null) {
+            if (IsAddNew == true) {
+                $html = '<option value="">Please Select</option>';
+            }
+        }
+        else {
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Finance/RefreshBudgetList/")',
             data: {},
+                async: false,
             success: function (result) {
-                var $dropdown = $("#ddlParentFinanceMain");
-                $dropdown.empty();
-                //var $html = '<option value="">Please Select</option>';
-                var $html = '';
+
                 if (result.length > 0) {
                     $.each(result, function (index, item) {
 
@@ -366,6 +383,9 @@
 
                     });
                 }
+                }
+            });
+        }
                 $dropdown.append($html);
 
                 $dropdown.multiselect("refresh");
@@ -373,7 +393,5 @@
                 $dropdown.find("input[type='search']").val(_budgetId);
                 var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + _budgetId + "']").next('span').html();
                 $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
-            }
-        });
     }
 </script>

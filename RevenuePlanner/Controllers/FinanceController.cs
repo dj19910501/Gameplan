@@ -678,7 +678,7 @@ namespace RevenuePlanner.Controllers
                     {
                         objBudAmount.Budget = Convert.ToDouble(nValue);
                     }
-                    else if (ColumnName == "ForeCast")
+                    else if (ColumnName == "Forecast")
                     {
                         objBudAmount.Forecast = Convert.ToDouble(nValue);
                     }
@@ -791,21 +791,21 @@ namespace RevenuePlanner.Controllers
                         {
                             if (ColumnName == "Budget")
                             { objBudAmountUpdate.Budget = FirstNew; }
-                            else if (ColumnName == "ForeCast")
+                            else if (ColumnName == "Forecast")
                             { objBudAmountUpdate.Forecast = FirstNew; }
                         }
                         if (Count == 2)
                         {
                             if (ColumnName == "Budget")
                             { objBudAmountUpdate.Budget = SecondNew; }
-                            else if (ColumnName == "ForeCast")
+                            else if (ColumnName == "Forecast")
                             { objBudAmountUpdate.Forecast = SecondNew; }
                         }
                         if (Count == 3)
                         {
                             if (ColumnName == "Budget")
                             { objBudAmountUpdate.Budget = ThirdNew; }
-                            else if (ColumnName == "ForeCast")
+                            else if (ColumnName == "Forecast")
                             { objBudAmountUpdate.Forecast = ThirdNew; }
                         }
                         db.Entry(objBudAmountUpdate).State = EntityState.Modified;
@@ -823,7 +823,7 @@ namespace RevenuePlanner.Controllers
                         {
                             if (ColumnName == "Budget")
                             { objBudAmountUpdate.Budget = Convert.ToDouble(nValue); }
-                            else if (ColumnName == "ForeCast")
+                            else if (ColumnName == "Forecast")
                             { objBudAmountUpdate.Forecast = Convert.ToDouble(nValue); }
                             db.Entry(objBudAmountUpdate).State = EntityState.Modified;
                             db.SaveChanges();
