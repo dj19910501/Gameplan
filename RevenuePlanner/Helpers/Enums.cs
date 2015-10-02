@@ -325,7 +325,12 @@ namespace RevenuePlanner.Helpers
             ReportView = 1 << 16,
             Comments = 1 << 17,
             CommentsViewEdit = 1 << 18,
-            TacticApproveOwn = 1 << 19
+            TacticApproveOwn = 1 << 19,
+            Finance = 1 << 20,
+            BudgetViewEdit = 1 << 21,
+            BudgetView = 1 << 22,
+            ForecastViewEdit = 1 << 23,
+            ForecastView = 1 << 24
         }
 
 
