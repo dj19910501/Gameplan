@@ -276,7 +276,9 @@
                 if ($.isFunction(o.selectedText)) {
                     value = o.selectedText.call(this, numChecked, $inputs.length, $checked.get());
                 } else if (/\d/.test(o.selectedList) && o.selectedList > 0 && numChecked <= o.selectedList) {
-                    value = $checked.map(function () { return $(this).next().html(); }).get().join(', ');
+                    //value = $checked.map(function () { return $(this).next().html(); }).get().join(', ');
+                    value = $checked.map(function () { return $(this).next().text(); }).get().join(', ');
+                    // Change By Rahul Shah Desc: Reg issue on budget dropdown encode.
                 } else {
                     ////Modified by Mitesh for PL ticket #727
                     if (typeof o.selectedText != 'undefined') {
