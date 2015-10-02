@@ -2497,7 +2497,8 @@ namespace RevenuePlanner.Controllers
             {
                 List<int> lstAllowedPermissionids = new List<int>();
                 List<int> planTacticIds = new List<int>();
-                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic => tactic.PlanTacticId).ToList();
+                //planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic => tactic.PlanTacticId).ToList();
+                planTacticIds.Add(pcpt.PlanTacticId);
                 lstAllowedPermissionids = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
                 if (lstAllowedPermissionids.Count != planTacticIds.Count)
                 {
@@ -2541,7 +2542,8 @@ namespace RevenuePlanner.Controllers
                 List<int> planTacticIds = new List<int>();
                 List<int> lstAllowedEntityIds = new List<int>();
 
-                planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic => tactic.PlanTacticId).ToList();
+                //planTacticIds = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == id).Select(tactic => tactic.PlanTacticId).ToList();
+                planTacticIds.Add(pcpt.PlanTacticId);
                 lstAllowedEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
                 if (lstAllowedEntityIds.Count != planTacticIds.Count)
                 {
@@ -2614,8 +2616,9 @@ namespace RevenuePlanner.Controllers
             ///End Added by Brad Gray 08-10-2015 for PL#1462
             
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
-            ViewBag.TacticIntegrationInstance = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == _inspectmodel.PlanTacticId).FirstOrDefault().IntegrationInstanceTacticId;
-            ViewBag.TacticIntegrationProjMgmtInstance = db.Plan_Campaign_Program_Tactic.Where(_tactic => _tactic.PlanTacticId == _inspectmodel.PlanTacticId).FirstOrDefault().IntegrationWorkFrontProjectID;
+            ViewBag.TacticIntegrationInstance = pcpt.IntegrationInstanceTacticId;
+            ViewBag.TacticEloquaInstance = pcpt.IntegrationInstanceEloquaId;
+            ViewBag.TacticIntegrationProjMgmtInstance = pcpt.IntegrationWorkFrontProjectID;
             string pullResponses = Operation.Pull_Responses.ToString();
             string pullClosedWon = Operation.Pull_ClosedWon.ToString();
             string pullQualifiedLeads = Operation.Pull_QualifiedLeads.ToString();

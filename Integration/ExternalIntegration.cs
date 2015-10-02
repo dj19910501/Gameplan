@@ -114,14 +114,39 @@ namespace Integration
         {
 
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+            
             try
             {
             Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Check entity type");
             if (EntityType.Tactic.Equals(_entityType))
             {
-                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance started - Initiated by Approved Flow");
-                SyncTactic();
-                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance ended - Initiated by Approved Flow");
+                
+                int? sfdcInstanceId = 0, eloquaInstanceId = 0;
+                Model objModel = new Model();
+                objModel = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model;
+                #region "Get Salesforce & Eloqua InstanceId from Plan_Campaign_Program_Tactic table"
+                /// Get Salesforce Instance Id from Model table based on TacticID.
+                if (objModel != null)
+                {
+                    sfdcInstanceId = objModel.IntegrationInstanceId;
+                    eloquaInstanceId = objModel.IntegrationInstanceEloquaId;
+                }
+                #endregion
+
+                #region "Execute Syncing process for Salesforce & Eloqua"
+                if (sfdcInstanceId.HasValue && sfdcInstanceId.Value > 0)
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Salesforce started - Initiated by Approved Flow");
+                    SyncTactic(sfdcInstanceId.Value);
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Salesforce started - Initiated by Approved Flow");
+                }
+                if (eloquaInstanceId.HasValue && eloquaInstanceId.Value > 0)
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
+                    SyncTactic(eloquaInstanceId.Value);
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
+                } 
+                #endregion
             }
             // Start : These below functions(i.e For Program & Campaign) not call in current functiopnality - To be used in future
             else if (EntityType.Program.Equals(_entityType))
@@ -139,9 +164,33 @@ namespace Integration
             // End : These below functions(i.e For Program & Campaign) not call in current functiopnality - To be used in future
             else if (EntityType.ImprovementTactic.Equals(_entityType))//new code added for #532 by uday
             {
-                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementTactic Instance started - Initiated by Approved Flow");
-                SyncImprovementTactic();
-                Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementTactic Instance ended - Initiated by Approved Flow");
+                //SyncImprovementTactic();
+                int? sfdcInstanceId = 0, eloquaInstanceId = 0;
+                Model objModel = new Model();
+                objModel = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model;
+                #region "Get Salesforce & Eloqua InstanceId from Plan_Improvement_Campaign_Program_Tactic table"
+                /// Get Salesforce Instance Id from Model table based on TacticID.
+                if (objModel != null)
+                {
+                    sfdcInstanceId = objModel.IntegrationInstanceId;
+                    eloquaInstanceId = objModel.IntegrationInstanceEloquaId;
+                }
+                #endregion
+
+                #region "Execute Syncing process for Salesforce & Eloqua"
+                if (sfdcInstanceId.HasValue && sfdcInstanceId.Value > 0)
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementPlanTactic Instance with Salesforce started - Initiated by Approved Flow");
+                    SyncImprovementTactic(sfdcInstanceId.Value);
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementPlanTactic Instance with Salesforce started - Initiated by Approved Flow");
+                }
+                if (eloquaInstanceId.HasValue && eloquaInstanceId.Value > 0)
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementPlanTactic Instance with Eloqua started - Initiated by Approved Flow");
+                    SyncImprovementTactic(eloquaInstanceId.Value);
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync ImprovementPlanTactic Instance with Eloqua started - Initiated by Approved Flow");
+                }
+                #endregion
             }
             else
             {
@@ -202,21 +251,21 @@ namespace Integration
         /// <summary>
         /// ImprovementTactic synchronization
         /// </summary>
-        private void SyncImprovementTactic()//new code added for #532 by uday
+        private void SyncImprovementTactic(int instanceId)//new code added for #532 by uday
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-            int? integrationInstanceId = 0;
+            //int? integrationInstanceId = 0;
             Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Get Integration Instance Id based on ImprovementPlanTacticId.");
             /// Write query to get integration instance id and integration type.
             /// Get Salesforce InstanceID from Model table based on ImprovementPlanTacticId.
-            integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId;
+            //integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceId;
 
             // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
-            if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
-            {
-                integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceEloquaId;
-            }
-            _integrationInstanceId = integrationInstanceId;
+            //if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+            //{
+            //    integrationInstanceId = db.Plan_Improvement_Campaign_Program_Tactic.FirstOrDefault(t => t.ImprovementPlanTacticId == _id).Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Model.IntegrationInstanceEloquaId;
+            //}
+            _integrationInstanceId = instanceId;
 
             if (_integrationInstanceId.HasValue)
             {
@@ -248,7 +297,7 @@ namespace Integration
         /// <summary>
         /// Tactic synchronization
         /// </summary>
-        private void SyncTactic()
+        private void SyncTactic(int instanceId)
         {
             string currentMethodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
             int? integrationInstanceId =0;
@@ -257,13 +306,15 @@ namespace Integration
                 Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Get Integration Instance Id based on PlanTacticId.");
                 /// Write query to get integration instance id and integration type.
                 /// Get Salesforce Instance Id from Model table based on TacticID.
-                integrationInstanceId = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
+                //integrationInstanceId = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceId;
 
                 // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
-                if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
-                {
-                    integrationInstanceId = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId;
-                }
+                //if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+                //{
+                //    integrationInstanceId = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId;
+                //}
+
+                integrationInstanceId = instanceId;
 
                 int? integrationInstanceProjectManagmentId = db.Plan_Campaign_Program_Tactic.Single(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt;
 
@@ -330,10 +381,10 @@ namespace Integration
             /// Get Salesforce InstanceID from Model table based on ProgramId.
                 integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceId;
             // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
-            if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
-            {
-                integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(t => t.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId;
-            }
+            //if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+            //{
+            //    integrationInstanceId = db.Plan_Campaign_Program.FirstOrDefault(t => t.PlanProgramId == _id).Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId;
+            //}
             _integrationInstanceId = integrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {
@@ -381,10 +432,10 @@ namespace Integration
                 integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceId;
 
             // if Salesforce InstanceID is null or 0 then retreive EloquaID from Model table.
-            if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
-            {
-                integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceEloquaId;
-            }
+            //if (!integrationInstanceId.HasValue || integrationInstanceId <= 0)
+            //{
+            //    integrationInstanceId = db.Plan_Campaign.FirstOrDefault(c => c.PlanCampaignId == _id).Plan.Model.IntegrationInstanceEloquaId;
+            //}
             _integrationInstanceId = integrationInstanceId;
             if (_integrationInstanceId.HasValue)
             {

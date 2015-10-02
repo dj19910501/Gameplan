@@ -757,7 +757,8 @@ namespace Integration.Eloqua
             if (response != null && response.ResponseStatus == ResponseStatus.Completed && response.StatusCode == HttpStatusCode.Created)
             {
                 tactidId = response.Data.id;
-                _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(response.Data.id), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Create.ToString(), Enums.SyncStatus.Success, DateTime.Now));
+                int entityid = EntityType.Tactic.Equals(_entityType) || EntityType.ImprovementTactic.Equals(_entityType) ? _id : Convert.ToInt32(tactidId); // if single Tactic syncing process call then Insert PlanTacticId to Log list and if Instance syncing process call then insert EloquaId to log list. 
+                _lstSyncError.Add(Common.PrepareSyncErrorList(entityid, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Create.ToString(), Enums.SyncStatus.Success, DateTime.Now));
             }
             else
             {
@@ -826,7 +827,8 @@ namespace Integration.Eloqua
 
             if (response.Data != null)
             {
-                _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(id), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Update.ToString(), Enums.SyncStatus.Success, DateTime.Now));
+                int entityid = EntityType.Tactic.Equals(_entityType) || EntityType.ImprovementTactic.Equals(_entityType) ? _id : Convert.ToInt32(id); // if single Tactic syncing process call then Insert PlanTacticId to Log list and if Instance syncing process call then insert EloquaId to log list. 
+                _lstSyncError.Add(Common.PrepareSyncErrorList(entityid, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Update.ToString(), Enums.SyncStatus.Success, DateTime.Now));
                 return response.Data.id.Equals(id);
             }
             else
