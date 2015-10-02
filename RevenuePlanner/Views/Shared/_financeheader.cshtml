@@ -28,7 +28,7 @@
     </div>
     <div style="margin-top: 27px; width:30%">
         <h2 id="lblfinanceTitle" style="display:block;">Finance</h2>
-        <div id="divFinanceBack" style="width:120px;float:left;display:none;">
+        <div id="divFinanceBack" style="width:120px;float:left;display:block;">
             <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:50%;height: 30px !important;" id="btnFinanceback" onclick="javascript:FinanceBack()">
                 < Back
             </button>
@@ -61,14 +61,22 @@
         });
     </script>*@
 <script type="text/javascript">
+   // var pageName = "MainGrid";
     function FinanceBack() {
-        //debugger;
-        
+        pageName = "MainGrid";
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + backBudgetid);
         ShowHideControls("MainGrid");
         GetFinanceHeaderValue(backBudgetid, true);
         //myApp.hidePleaseWait();
     }
-
+    $(document).ready(function () {
+        if (pageName == "MainGrid") {
+            $("#divFinanceBack").css("display", "none");
+        }
+        else if (pageName == "EditBudget")
+        {
+            $("#divFinanceBack").css("display", "block");
+        }
+    });
 </script>
