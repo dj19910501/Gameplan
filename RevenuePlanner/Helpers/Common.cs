@@ -2911,13 +2911,19 @@ namespace RevenuePlanner.Helpers
             TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
             if (!isSinglePlan)
             {
-                actualTacticList = dbStage.Plan_Campaign_Program_Tactic_Actual.Where(a => TacticIds.Contains(a.PlanTacticId)).ToList();
+                
+                actualTacticList = (from t in TacticIds
+                                    join ta in dbStage.Plan_Campaign_Program_Tactic_Actual on t equals ta.PlanTacticId
+                                    select ta).ToList();
             }
 
             if (IsReport)
             {
                 string EntTacticType = Enums.EntityType.Tactic.ToString();
-                tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && CustEnt.CustomField.EntityType.Equals(EntTacticType)).ToList();
+                
+                var customfiedlids = dbStage.CustomFields.Where(c => c.ClientId == Sessions.User.ClientId && c.EntityType == EntTacticType && c.IsDeleted == false).Select(c => c.CustomFieldId).ToList();
+                
+                tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && customfiedlids.Contains(CustEnt.CustomFieldId)).Select(c => c).ToList();
             }
             List<StageRelation> stageRelation;
             TacticStageValue tacticStageValueObj;
@@ -2955,13 +2961,13 @@ namespace RevenuePlanner.Helpers
                     tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
 
                     #region "Get Tactic Stage-Weightage"
-                    tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId.Equals(tactic.PlanTacticId)).Select(_customfield =>
-                                                                                                  new TacticCustomFieldStageWeightage()
-                                                                                                  {
-                                                                                                      CustomFieldId = _customfield.CustomFieldId,
-                                                                                                      Value = _customfield.Value,
-                                                                                                      CostWeightage = _customfield.CostWeightage != null && _customfield.CostWeightage.Value != null ? _customfield.CostWeightage.Value : 0,
-                                                                                                      CVRWeightage = _customfield.Weightage != null && _customfield.Weightage.Value != null ? _customfield.Weightage.Value : 0
+                    tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId == tactic.PlanTacticId).Select(_customfield => 
+                                                                                                  new TacticCustomFieldStageWeightage() 
+                                                                                                  { 
+                                                                                                    CustomFieldId = _customfield.CustomFieldId, 
+                                                                                                    Value = _customfield.Value, 
+                                                                                                    CostWeightage = _customfield.CostWeightage != null ? _customfield.CostWeightage.Value : 0,
+                                                                                                    CVRWeightage = _customfield.Weightage != null ? _customfield.Weightage.Value : 0 
                                                                                                   }).ToList();
                     #endregion
                 }
@@ -3622,7 +3628,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities dbStage = new MRPEntities();
             var planids = tacticPlanList.Select(t => t.PlanId).Distinct().ToList();
             var modelids = dbStage.Plans.Where(p => planids.Contains(p.PlanId)).Select(p => p.ModelId).Distinct();
-            var ModelList = dbStage.Models.Where(m => m.IsDeleted == false);
+            var ModelList = dbStage.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => new { m.ModelId, m.ParentModelId, m.EffectiveDate}).ToList();
             List<ModelDateList> modelDateList = new List<ModelDateList>();
             foreach (var modelid in modelids)
             {
@@ -6103,14 +6109,14 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="PlanTacticId"></param>
         /// <returns>Actual cost of a Tactic</returns>
-        public static List<TacticActualCostModel> CalculateActualCostTacticslist(List<int> PlanTacticIds)
+        public static List<TacticActualCostModel> CalculateActualCostTacticslist(List<int> PlanTacticIds, List<TacticStageValue> Tacticdata)
         {
             string cost = "Cost";
             //string strActualCost = "0";
             Dictionary<int, string> dicTactic_ActualCost = new Dictionary<int, string>();
             List<int> lstLineItems = new List<int>();
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-            List<Plan_Campaign_Program_Tactic_Actual> lstPlanTacticsActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
+            
 
             List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
             try
@@ -6118,8 +6124,9 @@ namespace RevenuePlanner.Helpers
                 using (MRPEntities db = new MRPEntities())
                 {
                     List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
-                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().Where(lia => tblLineItems.Select(line => line.PlanLineItemId).Contains(lia.PlanLineItemId)).ToList();
-                    List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticsActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(pta => PlanTacticIds.Contains(pta.PlanTacticId) && pta.StageTitle.Equals(cost)).ToList();
+                    var lineitemids = tblLineItems.Select(line => line.PlanLineItemId).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lineitemids.Contains(lia.PlanLineItemId)).ToList();
+                 
                     TacticActualCostModel objTacticActualCost;
                     List<BudgetedValue> lstActulalValue;
                     foreach (int keyTactic in PlanTacticIds)
@@ -6141,8 +6148,8 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            lstPlanTacticsActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
-                            lstPlanTacticsActuals = tblPlanTacticsActuals.Where(pta => pta.PlanTacticId.Equals(keyTactic)).ToList();
+                            
+                            var lstPlanTacticsActuals = Tacticdata.Where(pta => pta.TacticObj.PlanTacticId.Equals(keyTactic)).Select(pta => pta.ActualTacticList).FirstOrDefault();
                             lstActulalValue = new List<BudgetedValue>();
                             if (lstPlanTacticsActuals.Any())
                             {
