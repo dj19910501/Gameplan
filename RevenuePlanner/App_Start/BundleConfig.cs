@@ -63,7 +63,13 @@ namespace RevenuePlanner
                         "~/Scripts/js/scripts.js",
                         "~/Scripts/js/scripts_extended.js"
                         ));
-
+            bundles.Add(new ScriptBundle("~/bundles/GetJSReport").Include(
+                       "~/Scripts/js/jquery.slimscroll.js",
+                       "~/Scripts/js/slimScrollHorizontal.js",
+                       "~/Scripts/js/jquery.mCustomScrollbar.concat.min.js",
+                       "~/Scripts/js/jquery.actual.js",
+                       "~/Scripts/js/highcharts.js"
+                       ));
             BundleTable.EnableOptimizations = true;
             
         }

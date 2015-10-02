@@ -55,9 +55,9 @@ namespace RevenuePlanner.Test.Controllers
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
             
-            var result = ReportController.GetOverviewData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
+            var result = ReportController.GetOverviewData(string.Empty, Enums.ViewByAllocated.Quarterly.ToString()) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
-            Assert.AreEqual("_Overview", result.ViewName);
+            Assert.AreEqual("_Overview", result);
         }
         #endregion
 
@@ -84,9 +84,9 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetOverviewData(_InvalidTimeFrame, Enums.ViewByAllocated.Quarterly.ToString()) as PartialViewResult;
+            var result = ReportController.GetOverviewData(_InvalidTimeFrame, Enums.ViewByAllocated.Quarterly.ToString()) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
-            Assert.AreEqual("_Overview", result.ViewName);
+            Assert.AreEqual("_Overview", result);
         }
         #endregion
 
@@ -109,9 +109,9 @@ namespace RevenuePlanner.Test.Controllers
             ///Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetOverviewData("2015", string.Empty) as PartialViewResult;
+            var result = ReportController.GetOverviewData("2015", string.Empty) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
-            Assert.AreEqual("_Overview", result.ViewName);
+            Assert.AreEqual("_Overview", result);
         }
         #endregion
 
@@ -135,9 +135,9 @@ namespace RevenuePlanner.Test.Controllers
             ///Common.objCached.RevenueSparklineChartHeader = "Top {0} by";
             //// Call GetOverviewData() function
             ReportController ReportController = new ReportController();
-            var result = ReportController.GetOverviewData("2015", _InValidIsQuarterly) as PartialViewResult;
+            var result = ReportController.GetOverviewData("2015", _InValidIsQuarterly) as Task<ActionResult>;
             //// PartialViewResult shoud not be null and should match with Partial viewName
-            Assert.AreEqual("_Overview", result.ViewName);
+            Assert.AreEqual("_Overview", result);
         }
         #endregion
         #endregion

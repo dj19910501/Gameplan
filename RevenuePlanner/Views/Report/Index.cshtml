@@ -14,13 +14,7 @@
     ViewBag.Title = "Summary";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.slimscroll.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/slimScrollHorizontal.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.mCustomScrollbar.concat.min.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/jquery.actual.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/highcharts.js")"></script>
-<link href="@Url.Content("~/Content/css/dhtmlxchart.css")" rel="stylesheet" type="text/css" />
+@Scripts.Render("~/bundles/GetJSReport")
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <style type="text/css">
     .simpleSelectBox .sbHolder {

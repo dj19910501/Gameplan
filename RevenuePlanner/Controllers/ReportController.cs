@@ -15,9 +15,11 @@ using System.Data.Objects.SqlClient;
 using RevenuePlanner.BDSService;
 using EvoPdf;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace RevenuePlanner.Controllers
 {
+    [SessionState(System.Web.SessionState.SessionStateBehavior.ReadOnly)]
     public class ReportController : CommonController
     {
         #region Variables
@@ -3435,7 +3437,7 @@ namespace RevenuePlanner.Controllers
 
         #region Get Owners by planID Method
         //Added By komal Rawal
-        public JsonResult GetOwnerListForFilter(string PlanId, string leftPaneOption)
+        public async Task<JsonResult> GetOwnerListForFilter(string PlanId, string leftPaneOption)
         {
             try
             {
@@ -3447,7 +3449,7 @@ namespace RevenuePlanner.Controllers
                 }).Distinct().ToList().OrderBy(owner => owner.Title).ToList();
 
                 lstAllowedOwners = lstAllowedOwners.Where(owner => !string.IsNullOrEmpty(owner.Title)).OrderBy(owner => owner.Title, new AlphaNumericComparer()).ToList();
-
+                await Task.Delay(1);
                 return Json(new { isSuccess = true, AllowedOwner = lstAllowedOwners }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
@@ -3517,11 +3519,12 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Tactic type list
-        public JsonResult GetTacticTypeListForFilter(string PlanId, string leftPaneOption)
+        public async Task<JsonResult> GetTacticTypeListForFilter(string PlanId, string leftPaneOption)
         {
 
             try
             {
+                await Task.Delay(1);
                 List<int> lstPlanIds = new List<int>();
                 if (PlanId != string.Empty)
                 {
@@ -3579,7 +3582,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <returns>Return Partial View _Summary</returns>
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
-        public ActionResult GetOverviewData(string timeframeOption, string isQuarterly = "Quarterly")
+        public async Task<ActionResult> GetOverviewData(string timeframeOption, string isQuarterly = "Quarterly")
         {
             // Add BY Nishant Sheth 
             // Desc : Handle timeframeOption is undefined for #1409
@@ -4109,6 +4112,7 @@ namespace RevenuePlanner.Controllers
             {
                 throw ex;
             }
+            await Task.Delay(1);
             return PartialView("_Overview", objReportOverviewModel);
         }
 
