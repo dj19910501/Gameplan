@@ -288,17 +288,47 @@ namespace RevenuePlanner.Controllers
                 forecast = dataTable
                             .Rows
                             .Cast<DataRow>()
-                            .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString();
+                            .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                            dataTable
+                            .Rows
+                            .Cast<DataRow>()
+                            .Where(rw => rw.Field<Int32>("ParentId") == id)
+                            .Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString() :
+                            dataTable
+                            .Rows
+                            .Cast<DataRow>()
+                            .Where(rw => rw.Field<Int32>("Id") == id)
+                            .Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString();
 
                 planned = dataTable
                          .Rows
                          .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Planned"))).ToString();
+                         .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                         dataTable
+                         .Rows
+                         .Cast<DataRow>()
+                         .Where(rw => rw.Field<Int32>("ParentId") == id)
+                         .Sum(chld => Convert.ToDouble(chld.Field<String>("Planned"))).ToString() :
+                         dataTable
+                         .Rows
+                         .Cast<DataRow>()
+                         .Where(rw => rw.Field<Int32>("Id") == id)
+                         .Sum(chld => Convert.ToDouble(chld.Field<String>("Planned"))).ToString();
 
                 actual = dataTable
                           .Rows
                           .Cast<DataRow>()
-                          .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Actual"))).ToString();
+                          .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                          dataTable
+                          .Rows
+                          .Cast<DataRow>()
+                          .Where(rw => rw.Field<Int32>("ParentId") == id)
+                          .Sum(chld => Convert.ToDouble(chld.Field<String>("Actual"))).ToString() :
+                          dataTable
+                          .Rows
+                          .Cast<DataRow>()
+                          .Where(rw => rw.Field<Int32>("Id") == id)
+                          .Sum(chld => Convert.ToDouble(chld.Field<String>("Actual"))).ToString();
 
                 ParentData.Add(forecast);
                 ParentData.Add(planned);
@@ -496,19 +526,49 @@ namespace RevenuePlanner.Controllers
                     var tempforcast = dataTable
                         .Rows
                         .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<List<Double?>>("ForeCast")[i]);
+                        .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ? dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("ParentId") == id)
+                        .Sum(chld => chld.Field<List<Double?>>("ForeCast")[i]) :
+                         dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("Id") == id)
+                        .Sum(chld => chld.Field<List<Double?>>("ForeCast")[i])
+                        ;
 
                     ParentData.Add(Convert.ToString(tempforcast));
 
                     var tempPlan = dataTable
                         .Rows
                         .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<List<Double?>>("Plan")[i]);
+                        .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                        dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("ParentId") == id)
+                        .Sum(chld => chld.Field<List<Double?>>("Plan")[i]) :
+                        dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("Id") == id)
+                        .Sum(chld => chld.Field<List<Double?>>("Plan")[i]);
 
                     var tempActual = dataTable
                         .Rows
                         .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<List<Double?>>("Actual")[i]);
+                        .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                        dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("ParentId") == id)
+                        .Sum(chld => chld.Field<List<Double?>>("Actual")[i]) :
+                        dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("Id") == id)
+                        .Sum(chld => chld.Field<List<Double?>>("Actual")[i]);
 
                     ParentData.Add(Convert.ToString(tempforcast));
                     ParentData.Add(Convert.ToString(tempPlan));
@@ -530,17 +590,47 @@ namespace RevenuePlanner.Controllers
                 var tempforcastTotal = dataTable
                            .Rows
                            .Cast<DataRow>()
-                           .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Double>("ForeCastTotal"));
+                           .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                           dataTable
+                           .Rows
+                           .Cast<DataRow>()
+                           .Where(rw => rw.Field<Int32>("ParentId") == id)
+                           .Sum(chld => chld.Field<Double>("ForeCastTotal")) :
+                            dataTable
+                           .Rows
+                           .Cast<DataRow>()
+                           .Where(rw => rw.Field<Int32>("Id") == id)
+                           .Sum(chld => chld.Field<Double>("ForeCastTotal"));
 
                 var tempPlanTotal = dataTable
                              .Rows
                              .Cast<DataRow>()
-                             .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Double>("PlanTotal"));
+                             .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                              dataTable
+                             .Rows
+                             .Cast<DataRow>()
+                             .Where(rw => rw.Field<Int32>("ParentId") == id)
+                             .Sum(chld => chld.Field<Double>("PlanTotal")) :
+                             dataTable
+                             .Rows
+                             .Cast<DataRow>()
+                             .Where(rw => rw.Field<Int32>("Id") == id)
+                             .Sum(chld => chld.Field<Double>("PlanTotal"));
 
                 var tempActualTotal = dataTable
                          .Rows
                          .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Double>("ActualTotal"));
+                         .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
+                         dataTable
+                         .Rows
+                         .Cast<DataRow>()
+                         .Where(rw => rw.Field<Int32>("ParentId") == id)
+                         .Sum(chld => chld.Field<Double>("ActualTotal")) :
+                          dataTable
+                         .Rows
+                         .Cast<DataRow>()
+                         .Where(rw => rw.Field<Int32>("Id") == id)
+                         .Sum(chld => chld.Field<Double>("ActualTotal"));
 
                 ParentData.Add(Convert.ToString(tempforcastTotal));
                 ParentData.Add(Convert.ToString(tempPlanTotal));
@@ -552,8 +642,7 @@ namespace RevenuePlanner.Controllers
                 ParentData.Add(Convert.ToString(plantotal));
                 ParentData.Add(Convert.ToString(actualtotal));
             }
-            ParentData.Add(Convert.ToString(plantotal));
-            ParentData.Add(Convert.ToString(actualtotal));
+
             List<userdata> objuserData = new List<userdata>();
             List<row_attrs> rows_attrData = new List<row_attrs>();
             objuserData.Add(new userdata { id = Convert.ToString(id) });
