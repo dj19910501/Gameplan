@@ -653,6 +653,7 @@ namespace Integration.Helper
     {
         public string EloquaIntegrationInstanceTacticId { get; set; }
         public int ModelIntegrationInstanceId { get; set; }
+        public int PlanTacticId { get; set; }
     }
 
     public class SyncError

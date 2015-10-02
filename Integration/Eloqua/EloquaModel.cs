@@ -57,7 +57,7 @@ namespace Integration.Eloqua
     public class EloquaResponseModel
     {
         public string eloquaTacticId { get; set; }
-        public string externalTacticId { get; set; }
+        //public string externalTacticId { get; set; }
         public DateTime peroid { get; set; }
         public int responseCount { get; set; }
     }

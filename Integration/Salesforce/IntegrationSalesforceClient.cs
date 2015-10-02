@@ -899,6 +899,14 @@ namespace Integration.Salesforce
                 // Get List of status after Approved Status
                 List<string> statusList = Common.GetStatusListAfterApproved();
 
+                #region "Testing purpose code"
+                //Plan_Campaign_Program_Tactic objTact = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId.Equals(44494)).FirstOrDefault();
+                //objTact.IntegrationInstanceTacticId = string.Empty;
+                //objTact.IntegrationInstanceEloquaId = "53180";
+                //db.Entry(objTact).State = EntityState.Modified;
+                //db.SaveChanges(); 
+                #endregion
+
                 //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
                 List<Plan_Campaign_Program_Tactic> lstAllTactics = db.Plan_Campaign_Program_Tactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                tactic.IsDeployedToIntegration == true &&
@@ -910,7 +918,8 @@ namespace Integration.Salesforce
                 List<EloquaIntegrationInstanceTactic_Model_Mapping> lstEloquaIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).Select(_tac => new EloquaIntegrationInstanceTactic_Model_Mapping
                                                                                                                                                                                                                                                                                          {
                                                                                                                                                                                                                                                                                              EloquaIntegrationInstanceTacticId = _tac.IntegrationInstanceEloquaId,
-                                                                                                                                                                                                                                                                                             ModelIntegrationInstanceId = _tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId.Value
+                                                                                                                                                                                                                                                                                             ModelIntegrationInstanceId = _tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId.Value,
+                                                                                                                                                                                                                                                                                             PlanTacticId = _tac.PlanTacticId
                                                                                                                                                                                                                                                                                          }).ToList();
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Creating Eloqua & Model IntegrationInstanceId mapping list end.");
 
@@ -919,13 +928,17 @@ namespace Integration.Salesforce
 
                 //// Add IntegrationEloquaClient object to Mapping list for distinct ModelIntegrationInstanceId.
                 //// Get Mapping List of SalesForceIntegrationInstanceTactic Ids(CRMIds) based on EloquaIntegrationInstanceTacticID(EloquaId).
-                List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
+                //List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
+                Integration.Eloqua.EloquaCampaign objEloqua;
+                Plan_Campaign_Program_Tactic objUpdTactic;
+                int cntrUpdate = 0;
+                Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient;
                 foreach (int _ModelIntegrationInstanceId in lstEloquaIntegrationInstanceTacticIds.Select(tac => tac.ModelIntegrationInstanceId).Distinct())
                 {
                     try
                     {
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Authenticate Eloqua Instance for mapping Salesforce & Eloqua.");
-                        Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+                        integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
                         Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Authenticate Eloqua Instance for mapping Salesforce & Eloqua.");
                         foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds.Where(_eloqua => _eloqua.ModelIntegrationInstanceId.Equals(_ModelIntegrationInstanceId)))
                         {
@@ -933,21 +946,28 @@ namespace Integration.Salesforce
                             if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
                             {
 
-                                Integration.Eloqua.EloquaCampaign objEloqua = new Integration.Eloqua.EloquaCampaign();
+                                objEloqua = new Integration.Eloqua.EloquaCampaign();
 
                                 ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
                                 objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
-                                if (objEloqua != null)
+                                if (objEloqua != null && !string.IsNullOrEmpty(objEloqua.crmId))
                                 {
-                                    var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceEloquaId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
-                                    lstSalesForceIntegrationInstanceTacticIds.Add(
-                                                                              new CRM_EloquaMapping
-                                                                              {
-                                                                                  CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
-                                                                                  EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
-                                                                                  PlanTacticId = _Tactic != null ? _Tactic.PlanTacticId : 0,
-                                                                                  StartDate = _Tactic != null ? _Tactic.StartDate : (new DateTime()),
-                                                                              });
+                                    objUpdTactic = new Plan_Campaign_Program_Tactic();
+                                    objUpdTactic = lstAllTactics.Where(s => s.PlanTacticId == _EloquaTac.PlanTacticId).FirstOrDefault();
+                                    if(objUpdTactic != null)
+                                    {
+                                        objUpdTactic.IntegrationInstanceTacticId = objEloqua.crmId;
+                                        db.Entry(objUpdTactic).State = EntityState.Modified;
+                                        cntrUpdate++;
+                                    }
+                                    //lstSalesForceIntegrationInstanceTacticIds.Add(
+                                    //                                          new CRM_EloquaMapping
+                                    //                                          {
+                                    //                                              CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
+                                    //                                              EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
+                                    //                                              PlanTacticId = _Tactic != null ? _Tactic.PlanTacticId : 0,
+                                    //                                              StartDate = _Tactic != null ? _Tactic.StartDate : (new DateTime()),
+                                    //                                          });
                                 }
                             }
                         }
@@ -961,19 +981,21 @@ namespace Integration.Salesforce
                         continue;
                     }
                 }
+                if (cntrUpdate > 0)
+                    db.SaveChanges();
 
                 //// Get SalesForce tactic list
                 List<Plan_Campaign_Program_Tactic> lstSalesForceTactic = lstAllTactics.Where(_tac => _tac.IntegrationInstanceTacticId != null).ToList();
-                string SalesForceintegrationTacticIds = String.Join("','", (from tactic in lstSalesForceTactic select tactic.IntegrationInstanceTacticId));
+                string AllIntegrationTacticIds = String.Join("','", (from tactic in lstSalesForceTactic select tactic.IntegrationInstanceTacticId));
 
                 //// Get Eloqua tactic list
-                List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).ToList();
-                string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
-                                                                                     join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
-                                                                                     select _ElqTactic.CRMId);
+                //List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).ToList();
+                //string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
+                //                                                                     join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
+                //                                                                     select _ElqTactic.CRMId);
 
                 //// Merge SalesForce & Eloqua IntegrationTacticIds by comma(',').
-                string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
+                //string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
                 AllIntegrationTacticIds = AllIntegrationTacticIds.Trim(new char[] { ',' });
                 //For Testing
                 //integrationTacticIds = "'701f00000003S9R','701f00000002cGG','701f00000002cGL'";
@@ -1010,16 +1032,28 @@ namespace Integration.Salesforce
 
                                 List<CampaignMember> CampaignMemberList = new List<CampaignMember>();
                                 var responsePull = _client.Query<object>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + AllIntegrationTacticIds + "') AND " + Status + "= '" + Common.Responded + "'");
-
+                                
+                                #region "Declare local variables"
+                                int _PlanTacticId = 0;
+                                CampaignMember objCampaign;
+                                JObject jobj;
+                                string TacticResult = string.Empty, campaignid = string.Empty; 
+                                #endregion
+                                
                                 foreach (var resultin in responsePull)
                                 {
-                                    string TacticResult = resultin.ToString();
-                                    JObject jobj = JObject.Parse(TacticResult);
-                                    CampaignMember objCampaign = new CampaignMember();
-                                    int _PlanTacticId = 0;
+                                    #region "Initialize local variables"
+                                    TacticResult = resultin.ToString();
+                                    jobj = JObject.Parse(TacticResult);
+                                    objCampaign = new CampaignMember();
+                                    _PlanTacticId = 0;
+                                    campaignid = string.Empty; 
+                                    #endregion
+
                                     try
                                     {
-                                        string campaignid = Convert.ToString(jobj[CampaignId]);
+                                        
+                                        campaignid = Convert.ToString(jobj[CampaignId]);
                                         if (!AllIntegrationTacticIds.Contains(campaignid))
                                         {
                                             campaignid = campaignid.Substring(0, 15);
@@ -1039,8 +1073,8 @@ namespace Integration.Salesforce
                                         var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                         if (tactic != null)
                                             _PlanTacticId = tactic.PlanTacticId;
-                                        else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
-                                            _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
+                                        //else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
+                                        //    _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
 
                                         IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                                         instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
@@ -1069,8 +1103,8 @@ namespace Integration.Salesforce
                                         var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                         if (tactic != null)
                                             _PlanTacticId = tactic.PlanTacticId;
-                                        else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
-                                            _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
+                                        //else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
+                                        //    _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
 
                                         IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                                         instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
@@ -1090,13 +1124,13 @@ namespace Integration.Salesforce
                                     }
 
                                 }
-                                List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
-                                                                                           join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
-                                                                                           where _ElqTactic.CRMId != null
-                                                                                           select _Tactic).ToList();
+                                //List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
+                                //                                                           join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
+                                //                                                           where _ElqTactic.CRMId != null
+                                //                                                           select _Tactic).ToList();
 
                                 List<Plan_Campaign_Program_Tactic> lstMergedTactics = lstSalesForceTactic;
-                                lstCRM_EloquaTactics.ForEach(_elqTactic => lstMergedTactics.Add(_elqTactic));
+                                //lstCRM_EloquaTactics.ForEach(_elqTactic => lstMergedTactics.Add(_elqTactic));
 
                                 lstMergedTactics = lstMergedTactics.Distinct().ToList();
                                 List<int> OuterTacticIds = lstMergedTactics.Select(t => t.PlanTacticId).ToList();
@@ -1113,9 +1147,9 @@ namespace Integration.Salesforce
                                         new
                                         {
                                             CampaignId = cl.Key.CampaignId,
-                                            TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(s => s.PlanTacticId).FirstOrDefault()),
+                                            TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : 0,
                                             Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
-                                            IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) || ((lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate) != null) && (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate.Value).FirstOrDefault().Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
+                                            IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
                                             Count = cl.Count()
                                         }).Where(cm => cm.IsYear).ToList();
 
@@ -1482,6 +1516,14 @@ namespace Integration.Salesforce
                 // Get List of status after Approved Status
                 List<string> statusList = Common.GetStatusListAfterApproved();
 
+                #region "Testing purpose code"
+                //Plan_Campaign_Program_Tactic objTact = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId.Equals(44494)).FirstOrDefault();
+                //objTact.IntegrationInstanceTacticId = string.Empty;
+                //objTact.IntegrationInstanceEloquaId = "53180";
+                //db.Entry(objTact).State = EntityState.Modified;
+                //db.SaveChanges(); 
+                #endregion
+
                 //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
                 List<Plan_Campaign_Program_Tactic> lstAllTactics = db.Plan_Campaign_Program_Tactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                tactic.IsDeployedToIntegration == true &&
@@ -1492,7 +1534,8 @@ namespace Integration.Salesforce
                 List<EloquaIntegrationInstanceTactic_Model_Mapping> lstEloquaIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).Select(_tac => new EloquaIntegrationInstanceTactic_Model_Mapping
                 {
                     EloquaIntegrationInstanceTacticId = _tac.IntegrationInstanceEloquaId,
-                    ModelIntegrationInstanceId = _tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId.Value
+                    ModelIntegrationInstanceId = _tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceEloquaId.Value,
+                    PlanTacticId = _tac.PlanTacticId
                 }).ToList();
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Creating Eloqua & Model IntegrationInstanceId mapping list end.");
 
@@ -1501,12 +1544,15 @@ namespace Integration.Salesforce
 
                 //// Add IntegrationEloquaClient object to Mapping list for distinct ModelIntegrationInstanceId.
                 //// Get Mapping List of SalesForceIntegrationInstanceTactic Ids(CRMIds) based on EloquaIntegrationInstanceTacticID(EloquaId).
-                List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
+                //List<CRM_EloquaMapping> lstSalesForceIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
+                Plan_Campaign_Program_Tactic objUpdTactic;
+                Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient;
+                int cntrUpdate =0;
                 foreach (int _ModelIntegrationInstanceId in lstEloquaIntegrationInstanceTacticIds.Select(tac => tac.ModelIntegrationInstanceId).Distinct())
                 {
                     try
                     {
-                        Integration.Eloqua.IntegrationEloquaClient integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
+                        integrationEloquaClient = new Integration.Eloqua.IntegrationEloquaClient(_ModelIntegrationInstanceId, 0, _entityType, _userId, _integrationInstanceLogId, _applicationId);
                         foreach (EloquaIntegrationInstanceTactic_Model_Mapping _EloquaTac in lstEloquaIntegrationInstanceTacticIds.Where(_eloqua => _eloqua.ModelIntegrationInstanceId.Equals(_ModelIntegrationInstanceId)))
                         {
                             if (!string.IsNullOrEmpty(_EloquaTac.EloquaIntegrationInstanceTacticId))
@@ -1516,17 +1562,25 @@ namespace Integration.Salesforce
 
                                 ////Get SalesForceIntegrationTacticId based on EloquaIntegrationTacticId.
                                 objEloqua = integrationEloquaClient.GetEloquaCampaign(_EloquaTac.EloquaIntegrationInstanceTacticId);
-                                if (objEloqua != null)
+                                if (objEloqua != null && !string.IsNullOrEmpty(objEloqua.crmId))
                                 {
-                                    var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceEloquaId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
-                                    lstSalesForceIntegrationInstanceTacticIds.Add(
-                                                                              new CRM_EloquaMapping
-                                                                              {
-                                                                                  CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
-                                                                                  EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
-                                                                                  PlanTacticId = _Tactic != null ? _Tactic.PlanTacticId : 0,
-                                                                                  StartDate = _Tactic != null ? _Tactic.StartDate : (new DateTime()),
-                                                                              });
+                                    objUpdTactic = new Plan_Campaign_Program_Tactic();
+                                    objUpdTactic = lstAllTactics.Where(s => s.PlanTacticId == _EloquaTac.PlanTacticId).FirstOrDefault();
+                                    if(objUpdTactic != null)
+                                    {
+                                        objUpdTactic.IntegrationInstanceTacticId = objEloqua.crmId;
+                                        db.Entry(objUpdTactic).State = EntityState.Modified;
+                                        cntrUpdate++;
+                                    }
+                                    //var _Tactic = lstAllTactics.Where(s => s.IntegrationInstanceEloquaId == _EloquaTac.EloquaIntegrationInstanceTacticId).Select(_tac => _tac).FirstOrDefault();
+                                    //lstSalesForceIntegrationInstanceTacticIds.Add(
+                                    //                                          new CRM_EloquaMapping
+                                    //                                          {
+                                    //                                              CRMId = !string.IsNullOrEmpty(objEloqua.crmId) ? objEloqua.crmId : string.Empty,
+                                    //                                              EloquaId = _EloquaTac.EloquaIntegrationInstanceTacticId,
+                                    //                                              PlanTacticId = _Tactic != null ? _Tactic.PlanTacticId : 0,
+                                    //                                              StartDate = _Tactic != null ? _Tactic.StartDate : (new DateTime()),
+                                    //                                          });
                                 }
                             }
                         }
@@ -1540,19 +1594,21 @@ namespace Integration.Salesforce
                         continue;
                     }
                 }
+                if(cntrUpdate>0)
+                    db.SaveChanges();
 
                 //// Get SalesForce tactic list
                 List<Plan_Campaign_Program_Tactic> lstSalesForceTactic = lstAllTactics.Where(_tac => _tac.IntegrationInstanceTacticId != null).ToList();
-                string SalesForceintegrationTacticIds = String.Join("','", (from tactic in lstSalesForceTactic select tactic.IntegrationInstanceTacticId));
+                string AllIntegrationTacticIds = String.Join("','", (from tactic in lstSalesForceTactic select tactic.IntegrationInstanceTacticId));
 
                 //// Get Eloqua tactic list
-                List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).ToList();
-                string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
-                                                                                     join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
-                                                                                     select _ElqTactic.CRMId);
+                //List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).ToList();
+                //string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
+                //                                                                     join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
+                //                                                                     select _ElqTactic.CRMId);
 
                 //// Merge SalesForce & Eloqua IntegrationTacticIds by comma(',').
-                string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
+                //string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
                 AllIntegrationTacticIds = AllIntegrationTacticIds.Trim(new char[] { ',' });
 
                 if (AllIntegrationTacticIds != string.Empty)
@@ -1743,8 +1799,8 @@ namespace Integration.Salesforce
                                                 var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                                 if (tactic != null)
                                                     _PlanTacticId = tactic.PlanTacticId;
-                                                else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
-                                                    _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && (_SalTac.CRMId == TacticId || _SalTac.CRMId == TacticId.Substring(0, 15))).Select(s => s.PlanTacticId).FirstOrDefault();
+                                                //else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
+                                                //    _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && (_SalTac.CRMId == TacticId || _SalTac.CRMId == TacticId.Substring(0, 15))).Select(s => s.PlanTacticId).FirstOrDefault();
                                                 if (_PlanTacticId != 0)
                                                 {
                                                     ErrorFlag = true;
@@ -1780,8 +1836,8 @@ namespace Integration.Salesforce
                                                 var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
                                                 if (tactic != null)
                                                     _PlanTacticId = tactic.PlanTacticId;
-                                                else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
-                                                    _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && (_SalTac.CRMId == TacticId || _SalTac.CRMId == TacticId.Substring(0, 15))).Select(s => s.PlanTacticId).FirstOrDefault();
+                                                //else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
+                                                //    _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && (_SalTac.CRMId == TacticId || _SalTac.CRMId == TacticId.Substring(0, 15))).Select(s => s.PlanTacticId).FirstOrDefault();
                                                 if (_PlanTacticId != 0)
                                                 {
                                                     ErrorFlag = true;
@@ -1830,14 +1886,14 @@ namespace Integration.Salesforce
                                                                  }).ToList();
 
                                         //// Get Tactics from Eloqualist those CRMID value does not null.
-                                        List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
-                                                                                                   join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
-                                                                                                   where _ElqTactic.CRMId != null
-                                                                                                   select _Tactic).ToList();
+                                        //List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
+                                        //                                                           join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceEloquaId equals _ElqTactic.EloquaId
+                                        //                                                           where _ElqTactic.CRMId != null
+                                        //                                                           select _Tactic).ToList();
 
                                         //// Merge SalesForce & Eloqua Tactic list.
                                         List<Plan_Campaign_Program_Tactic> lstMergedTactics = lstSalesForceTactic;
-                                        lstCRM_EloquaTactics.ForEach(_elqTactic => lstMergedTactics.Add(_elqTactic));
+                                        //lstCRM_EloquaTactics.ForEach(_elqTactic => lstMergedTactics.Add(_elqTactic));
                                         lstMergedTactics = lstMergedTactics.Distinct().ToList();
 
                                         if (OpportunityMemberList.Count > 0)
@@ -1846,9 +1902,9 @@ namespace Integration.Salesforce
                                                 new
                                                 {
                                                     CampaignId = cl.Key.CampaignId,
-                                                    TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(s => s.PlanTacticId).FirstOrDefault()),
+                                                    TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : 0,
                                                     Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
-                                                    IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) || ((lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate) != null) && (lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(cl.Key.CampaignId)).Select(_SalTac => _SalTac.StartDate.Value).FirstOrDefault().Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
+                                                    IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
                                                     Count = cl.Count(),
                                                     Revenue = cl.Sum(c => c.Amount)
                                                 }).Where(om => om.IsYear).ToList();

@@ -714,7 +714,7 @@ namespace Integration.Eloqua
                 Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "pulling response from Eloqua");
                 EloquaResponse objEloquaResponse = new EloquaResponse();
                 List<SyncError> lstSyncError = new List<SyncError>();
-                bool isError = objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, out lstSyncError);
+                bool isError = objEloquaResponse.GetTacticResponse(_integrationInstanceId, _userId, _integrationInstanceLogId, _applicationId, out lstSyncError);
                 _lstSyncError.AddRange(lstSyncError);
                 if (isError)
                 {
