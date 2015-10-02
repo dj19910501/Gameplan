@@ -131,7 +131,7 @@
         $('#divGridView').load(url + '?budgetId=' + BudgetId);
     }
     $("#ddlParentFinance").change(function () {
-
+        
         var budgetID = $("#ddlParentFinance").val();
         //RefreshMainGridData(budgetID);
         if (pageName == "EditBudget") {
@@ -181,6 +181,7 @@
     });
 
     function GetFinanceHeaderValue(_budgetId, Ismain) {
+        
         var ismainGird = false;
         if (Ismain != null && Ismain != undefined) {
             ismainGird = Ismain

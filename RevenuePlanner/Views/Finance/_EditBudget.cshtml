@@ -58,6 +58,7 @@
     });
 
     function LoadBudgetGrid(AllocatedBy) {
+        
         myApp.showPleaseWait();
         var GridWidth = $("#gridbox").width();
 
@@ -252,11 +253,13 @@
                                     myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(BudgetRowTotal);
                                 }
                             }
+                            GetFinanceHeaderValue(rId, false);
                             LoadBudgetGrid(AllocatedBy);
                             //var rowIndex = myTreeGrid.getRowIndex(rId);
                             //debugger;
                             //if (rowIndex == 0) {
-                            GetFinanceHeaderValue(rId, false);
+                            
+                            $("#divFinanceBack").css("display", "block");
                             //}
                             BindParentBudgetDrp(ParentID);
 

@@ -278,16 +278,29 @@ namespace RevenuePlanner.Controllers
                             .Rows
                             .Cast<DataRow>()
                             .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString();
+
+                planned = dataTable
+                         .Rows
+                         .Cast<DataRow>()
+                         .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Planned"))).ToString();
+
+                actual = dataTable
+                          .Rows
+                          .Cast<DataRow>()
+                          .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Actual"))).ToString();
+
                 ParentData.Add(forecast);
+                ParentData.Add(planned);
+                ParentData.Add(actual);
             }
             else
             {
                 ParentData.Add(forecast);
+                ParentData.Add(planned);
+                ParentData.Add(actual);
             }
             // End by Nishant Sheth
 
-            ParentData.Add(planned);
-            ParentData.Add(actual);
             #region "Add Action column link"
             string strAction = string.Empty;
 
@@ -475,15 +488,29 @@ namespace RevenuePlanner.Controllers
                         .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<List<Double?>>("ForeCast")[i]);
 
                     ParentData.Add(Convert.ToString(tempforcast));
+
+                    var tempPlan = dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<List<Double?>>("Plan")[i]);
+
+                    var tempActual = dataTable
+                        .Rows
+                        .Cast<DataRow>()
+                        .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<List<Double?>>("Actual")[i]);
+
+                    ParentData.Add(Convert.ToString(tempforcast));
+                    ParentData.Add(Convert.ToString(tempPlan));
+                    ParentData.Add(Convert.ToString(tempActual));
                     //ParentData.Add(Convert.ToString(forcast[i]));
                 }
                 else
                 {
                     ParentData.Add(Convert.ToString(forcast[i]));
+                    ParentData.Add(Convert.ToString(plan[i]));
+                    ParentData.Add(Convert.ToString(actual[i]));
                 }
 
-                ParentData.Add(Convert.ToString(plan[i]));
-                ParentData.Add(Convert.ToString(actual[i]));
             }
 
             ParentData.Add(Convert.ToString(budgetTotal));
@@ -494,11 +521,25 @@ namespace RevenuePlanner.Controllers
                            .Cast<DataRow>()
                            .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Double>("ForeCastTotal"));
 
+                var tempPlanTotal = dataTable
+                             .Rows
+                             .Cast<DataRow>()
+                             .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Double>("PlanTotal"));
+
+                var tempActualTotal = dataTable
+                         .Rows
+                         .Cast<DataRow>()
+                         .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Double>("ActualTotal"));
+
                 ParentData.Add(Convert.ToString(tempforcastTotal));
+                ParentData.Add(Convert.ToString(tempPlanTotal));
+                ParentData.Add(Convert.ToString(tempActualTotal));
             }
             else
             {
                 ParentData.Add(Convert.ToString(forcastTotal));
+                ParentData.Add(Convert.ToString(plantotal));
+                ParentData.Add(Convert.ToString(actualtotal));
             }
             ParentData.Add(Convert.ToString(plantotal));
             ParentData.Add(Convert.ToString(actualtotal));
