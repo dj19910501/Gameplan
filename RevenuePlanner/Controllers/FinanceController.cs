@@ -21,6 +21,17 @@ namespace RevenuePlanner.Controllers
         private const string formatThousand = "#,#0.##";
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
+            //Added by Rahul Shah on 02/10/2015 for PL #1650
+            var IsBudgetViewEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetViewEdit);
+            var IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
+            var IsForecastViewEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastViewEdit);
+            var IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
+            //// if BestInClass editing rights then redirect to "BestInClass" else "NoAccess" action of Index View.
+            if (IsBudgetViewEdit == false && IsBudgetView == false && IsForecastViewEdit == false && IsForecastView == false)
+            {
+
+                return RedirectToAction("Index", "NoAccess");
+            }
             FinanceModel financeObj = new FinanceModel();
             //FinanceModelHeaders financeObj = new FinanceModelHeaders();
             StringBuilder GridString = new StringBuilder();

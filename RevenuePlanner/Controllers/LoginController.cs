@@ -180,6 +180,18 @@ namespace RevenuePlanner.Controllers
                         {
                             Sessions.AppMenus.Remove(item);
                         }
+
+                        //Added by Rahul Shah on 02/10/2015 for PL #1650
+                        isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetViewEdit) ||
+                              AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
+                              AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastViewEdit) ||
+                              AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
+                        item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
+                        if (item != null && !isAuthorized)
+                        {
+                            Sessions.AppMenus.Remove(item);
+                        }
+
                     }
                     // End - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
 
