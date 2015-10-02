@@ -4,20 +4,15 @@
     var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
     var BudgetId = ViewBag.BudgetId != null ? (Int32)ViewBag.BudgetId : 0;
 }
-@*<style>
-        div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
-            text-align: center;
-            padding-left: 0px !important;
-        }
+<style>
+        div.xhdr {
+        width: 100.7% !important;
+    }
 
-        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
-            width: 100% !important;
-        }
-
-        div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
-            width: 100% !important;
-        }
-    </style>*@
+       div.objbox {
+        width: 100.7% !important;
+    }
+    </style>
 <div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
 @Html.Hidden("hdnBudgetId", BudgetId, new  {id="hdnBudgetId",name="hdnBudgetId",value=BudgetId })
 <script type="text/javascript">

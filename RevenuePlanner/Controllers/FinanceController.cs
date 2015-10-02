@@ -278,7 +278,7 @@ namespace RevenuePlanner.Controllers
                             .Rows
                             .Cast<DataRow>()
                             .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString();
-            ParentData.Add(forecast);
+                ParentData.Add(forecast);
             }
             else
             {
@@ -451,7 +451,7 @@ namespace RevenuePlanner.Controllers
                  .Cast<DataRow>()
                  .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Int32>("LineItemCount"));
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
-            ParentData.Add(Convert.ToString(lineitemcount));
+                ParentData.Add(Convert.ToString(lineitemcount));
             }
             else
             {
@@ -479,7 +479,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                ParentData.Add(Convert.ToString(forcast[i]));
+                    ParentData.Add(Convert.ToString(forcast[i]));
                 }
 
                 ParentData.Add(Convert.ToString(plan[i]));
@@ -498,7 +498,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-            ParentData.Add(Convert.ToString(forcastTotal));
+                ParentData.Add(Convert.ToString(forcastTotal));
             }
             ParentData.Add(Convert.ToString(plantotal));
             ParentData.Add(Convert.ToString(actualtotal));
@@ -783,11 +783,12 @@ namespace RevenuePlanner.Controllers
                                 else if (Maindiff >= ThirdOld)
                                 {
                                     //SecondOld = Convert.ToDouble(ColumnName == "Budget" ? BudgetAmountList[1].Budget : BudgetAmountList[1].Forecast);
+                                    ThirdNew = 0;
                                     double? SecondDiff = Maindiff - ThirdOld;
                                     if (SecondDiff >= SecondOld)
                                     {
                                         SecondNew = SecondDiff - SecondOld;
-                                        if (SecondNew <= SecondOld)
+                                        if (SecondNew >= SecondOld)
                                         {
                                             SecondNew = 0;
                                         }
@@ -799,8 +800,19 @@ namespace RevenuePlanner.Controllers
 
                                     if (SecondNew <= 0)
                                     {
+                                        //double? FirstDiff = 0;
+                                        //if (FirstOld >= SecondDiff)
+                                        //{
+                                        //    FirstDiff = FirstOld - SecondDiff;
+                                        //}
+                                        //else
+                                        //{
+                                        //    FirstDiff = SecondDiff - FirstOld;
+                                        //}
+
                                         FirstNew = Convert.ToDouble(nValue);
                                     }
+
                                 }
                             }
                             else if (BudgetAmountList.Count >= 2)
@@ -813,6 +825,7 @@ namespace RevenuePlanner.Controllers
                                 else if (Maindiff >= SecondOld)
                                 {
                                     //FirstOld = Convert.ToDouble(ColumnName == "Budget" ? BudgetAmountList[0].Budget : BudgetAmountList[0].Forecast);
+                                    SecondNew = 0;
                                     double? FirstDiff = Maindiff - SecondOld;
                                     if (FirstDiff >= FirstOld)
                                     {
@@ -825,6 +838,7 @@ namespace RevenuePlanner.Controllers
                                     else if (FirstOld >= FirstDiff)
                                     {
                                         FirstNew = FirstOld - FirstDiff;
+
                                     }
 
                                     if (FirstNew <= 0)

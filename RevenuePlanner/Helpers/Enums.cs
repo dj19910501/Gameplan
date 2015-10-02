@@ -721,20 +721,36 @@ namespace RevenuePlanner.Helpers
         /// Data Dictionary to hold Month values.
         /// Added By: Nishant Sheth.
         /// </summary>
+        /// 
+        public enum ReportMonthDisplayFinance
+        {
+            Jan = 0,
+            Feb = 1,
+            Mar = 2,
+            Apr = 3,
+            May = 4,
+            Jun = 5,
+            Jul = 6,
+            Aug = 7,
+            Sep = 8,
+            Oct = 9,
+            Nov = 10,
+            Dec = 11
+        }
         public static Dictionary<string, string> ReportMonthDisplayValuesWithPeriod = new Dictionary<string, string>()
         {
-            {ReportMonthDisplay.Jan.ToString(), "Y1"},
-            {ReportMonthDisplay.Feb.ToString(), "Y2"},
-            {ReportMonthDisplay.Mar.ToString(), "Y3"},
-            {ReportMonthDisplay.April.ToString(), "Y4"},
-            {ReportMonthDisplay.May.ToString(), "Y5"},
-            {ReportMonthDisplay.Jun.ToString(), "Y6"},
-            {ReportMonthDisplay.July.ToString(), "Y7"},
-            {ReportMonthDisplay.Aug.ToString(), "Y8"},
-            {ReportMonthDisplay.Sep.ToString(), "Y9"},
-            {ReportMonthDisplay.Oct.ToString(), "Y10"},
-            {ReportMonthDisplay.Nov.ToString(), "Y11"},
-            {ReportMonthDisplay.Dec.ToString(), "Y12"}
+            {ReportMonthDisplayFinance.Jan.ToString(), "Y1"},
+            {ReportMonthDisplayFinance.Feb.ToString(), "Y2"},
+            {ReportMonthDisplayFinance.Mar.ToString(), "Y3"},
+            {ReportMonthDisplayFinance.Apr.ToString(), "Y4"},
+            {ReportMonthDisplayFinance.May.ToString(), "Y5"},
+            {ReportMonthDisplayFinance.Jun.ToString(), "Y6"},
+            {ReportMonthDisplayFinance.Jul.ToString(), "Y7"},
+            {ReportMonthDisplayFinance.Aug.ToString(), "Y8"},
+            {ReportMonthDisplayFinance.Sep.ToString(), "Y9"},
+            {ReportMonthDisplayFinance.Oct.ToString(), "Y10"},
+            {ReportMonthDisplayFinance.Nov.ToString(), "Y11"},
+            {ReportMonthDisplayFinance.Dec.ToString(), "Y12"}
         };
         #endregion
 

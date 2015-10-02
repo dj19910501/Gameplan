@@ -251,7 +251,7 @@
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         backBudgetid = budgetIDMain;
 
-        GetFinanceHeaderValue(BudgetId);
+      //  GetFinanceHeaderValue(BudgetId);
         if (level != undefined && level != '') {
             GlobalLevel = level;
         }
@@ -424,8 +424,8 @@
     //});
 
     $("#ddlRevenueTimeFrame").change(function () {
-        //debugger;
-        myApp.showPleaseWait();
+       // debugger;
+       // myApp.showPleaseWait();
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
         if (AllocatedBy == 'Quarterly') {
             AllocatedBy = true;
@@ -442,6 +442,6 @@
         ForeCastColumns.change();
         PlanColumns.change();
         ActualColumns.change();
-        //myApp.hidePleaseWait();
+       // myApp.showPleaseWait();
     });
 </script>

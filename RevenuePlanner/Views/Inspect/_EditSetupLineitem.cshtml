@@ -51,6 +51,17 @@
     {
     overflow:hidden !important;
     }
+    div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue
+    {
+    background: #fff !important;
+    }
+    div.gridbox_dhx_skyblue.gridbox table.obj tr td.cellselected, div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected {
+     background: #fff !important;
+    }
+  div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td {
+     background: #fff !important;
+    }
+
 </style>
 @using (Html.BeginForm())
 {
@@ -199,11 +210,11 @@
         });
 
         TreeViewDdl.expandAll();
-         ListOfItmeCheck= {
+        ListOfItmeCheck= {
             Ids: [],
             values:[]
         };
-         Weights= {
+        Weights= {
             ChkId: [],
             txtId: [],
             values:[]
