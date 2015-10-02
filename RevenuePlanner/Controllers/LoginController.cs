@@ -182,9 +182,9 @@ namespace RevenuePlanner.Controllers
                         }
 
                         //Added by Rahul Shah on 02/10/2015 for PL #1650
-                        isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetViewEdit) ||
+                        isAuthorized = (AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView) ||
-                              AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastViewEdit) ||
+                              AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit) ||
                               AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView));
                         item = Sessions.AppMenus.Find(a => a.Code.ToString().ToUpper() == Enums.ActiveMenu.Finance.ToString().ToUpper());
                         if (item != null && !isAuthorized)

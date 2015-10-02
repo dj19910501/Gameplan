@@ -22,12 +22,12 @@ namespace RevenuePlanner.Controllers
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
             //Added by Rahul Shah on 02/10/2015 for PL #1650
-            var IsBudgetViewEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetViewEdit);
+            var IsBudgetCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
             var IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
-            var IsForecastViewEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastViewEdit);
+            var IsForecastCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
             var IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
             //// if BestInClass editing rights then redirect to "BestInClass" else "NoAccess" action of Index View.
-            if (IsBudgetViewEdit == false && IsBudgetView == false && IsForecastViewEdit == false && IsForecastView == false)
+            if (IsBudgetCreateEdit == false && IsBudgetView == false && IsForecastCreateEdit == false && IsForecastView == false)
             {
 
                 return RedirectToAction("Index", "NoAccess");
