@@ -587,7 +587,8 @@ namespace Integration.WorkFront
                 //program portfolio information -- all programs should be linked to a portfolio in WorkFront
                 IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
                     port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
-                if (portfolioInfo == null) 
+                JToken existingInWorkFront = client.Search(ObjCode.PORTFOLIO, new { ID = portfolioInfo.PortfolioId });
+                if (portfolioInfo == null || existingInWorkFront == null || !existingInWorkFront["data"].HasValues || portfolioInfo.PortfolioId != existingInWorkFront["data"][0]["ID"].ToString())
                 {
                     bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
                     if (programError) { throw new ClientException("Cannot Sync the Program associated with Tactic. Tactic: " + tactic.Title + "; Program: " + tactic.Plan_Campaign_Program.Title); }
@@ -598,8 +599,7 @@ namespace Integration.WorkFront
                     {
                         throw new ClientException("Cannot determine portfolio for tactic " + tactic.Title); //it didn't work - throw excecption
                     }
-                } 
-
+                }
 
                 if (currentMode.Equals(Enums.Mode.Create))
                 {
