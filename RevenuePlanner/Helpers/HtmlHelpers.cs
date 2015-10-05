@@ -4319,7 +4319,7 @@ namespace RevenuePlanner.Helpers
                          IsSelected = val.Contains(ParentOptionID.ToString());
                     }
                    
-                    if (item.isChild == true && mode == Enums.InspectPopupMode.Edit.ToString() && !IsSelectedParentsChild)
+                    if (item.isChild == true  && !IsSelectedParentsChild)
                     {
                         
                         DisplayStyle += "display:none;";
