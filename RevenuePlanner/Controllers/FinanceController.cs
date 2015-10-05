@@ -8,7 +8,7 @@ using RevenuePlanner.Models;
 using System.Text;
 using System.Data;
 using System.Text.RegularExpressions;
-
+using RevenuePlanner.Helpers;
 
 namespace RevenuePlanner.Controllers
 {
@@ -46,10 +46,11 @@ namespace RevenuePlanner.Controllers
             lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
             lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
-            financeObj.FinanemodelheaderObj = Common.GetFinanceHeaderValue();
+            //financeObj.FinanemodelheaderObj = Common.GetFinanceHeaderValue();
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
             string strbudgetId = lstparnetbudget != null && lstparnetbudget.Count > 0 ? lstparnetbudget.Select(budgt => budgt.Value).FirstOrDefault() : "0";
             gridRowModel = GetFinanceMainGridData(int.Parse(strbudgetId));
+            financeObj.FinanemodelheaderObj = gridRowModel.FinanemodelheaderObj;
             financeObj.DhtmlXGridRowModelObj = gridRowModel;
             //GridString = GenerateFinaceXMHeader(GridString);
 
@@ -104,7 +105,24 @@ namespace RevenuePlanner.Controllers
         public ActionResult RefreshMainGridData(int budgetId = 0)
         {
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
+            FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
+
             gridRowModel = GetFinanceMainGridData(budgetId);
+            var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null).Select(a => a.Id).FirstOrDefault();
+            if (DetailId != null)
+            {
+                var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
+                objFinanceHeader.Budget = Convert.ToDouble(temp[2]);
+                objFinanceHeader.Forecast = Convert.ToDouble(temp[3]);
+                objFinanceHeader.Planned = Convert.ToDouble(temp[4]);
+                objFinanceHeader.Actual = Convert.ToDouble(temp[5]);
+                objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+                objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+                objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+                objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+                TempData["FinanceHeader"] = objFinanceHeader;
+                gridRowModel.FinanemodelheaderObj = Common.CommonGetFinanceHeaderValue(objFinanceHeader);
+            }
             ViewBag.BudgetId = (Int32)budgetId;
             return PartialView("_MainGrid", gridRowModel);
         }
@@ -285,50 +303,11 @@ namespace RevenuePlanner.Controllers
             // Change By Nishant Sheth
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
-                forecast = dataTable
-                            .Rows
-                            .Cast<DataRow>()
-                            .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                            dataTable
-                            .Rows
-                            .Cast<DataRow>()
-                            .Where(rw => rw.Field<Int32>("ParentId") == id)
-                            .Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString() :
-                            dataTable
-                            .Rows
-                            .Cast<DataRow>()
-                            .Where(rw => rw.Field<Int32>("Id") == id)
-                            .Sum(chld => Convert.ToDouble(chld.Field<String>("Forecast"))).ToString();
+                forecast = Convert.ToString(GetSumofValueMainGrid(dataTable, id, "Forecast"));
 
-                planned = dataTable
-                         .Rows
-                         .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                         dataTable
-                         .Rows
-                         .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("ParentId") == id)
-                         .Sum(chld => Convert.ToDouble(chld.Field<String>("Planned"))).ToString() :
-                         dataTable
-                         .Rows
-                         .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("Id") == id)
-                         .Sum(chld => Convert.ToDouble(chld.Field<String>("Planned"))).ToString();
+                planned = Convert.ToString(GetSumofValueMainGrid(dataTable, id, "Planned"));
 
-                actual = dataTable
-                          .Rows
-                          .Cast<DataRow>()
-                          .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                          dataTable
-                          .Rows
-                          .Cast<DataRow>()
-                          .Where(rw => rw.Field<Int32>("ParentId") == id)
-                          .Sum(chld => Convert.ToDouble(chld.Field<String>("Actual"))).ToString() :
-                          dataTable
-                          .Rows
-                          .Cast<DataRow>()
-                          .Where(rw => rw.Field<Int32>("Id") == id)
-                          .Sum(chld => Convert.ToDouble(chld.Field<String>("Actual"))).ToString();
+                actual = Convert.ToString(GetSumofValueMainGrid(dataTable, id, "Actual"));
 
                 ParentData.Add(forecast);
                 ParentData.Add(planned);
@@ -363,14 +342,23 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             //return new FinanceParentChildModel { Id = id, Name = name, Children = children, Budget = budget, ForeCast = forcast, BudgetTotal = budgetTotal, ForeCastTotal = forcastTotal };
-            return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children };
+            return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, Detailid = Convert.ToString(id) };
         }
         #endregion
 
         #region Methods for Get Header Value
         public ActionResult GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly", bool IsMain = false)
         {
-            FinanceModelHeaders objfinanceheader = Common.GetFinanceHeaderValue(budgetId, timeFrameOption, isQuarterly, IsMain);
+            FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
+            if (TempData["FinanceHeader"] != null)
+            {
+                objfinanceheader = TempData["FinanceHeader"] as FinanceModelHeaders;
+            }
+            objfinanceheader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+            objfinanceheader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objfinanceheader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objfinanceheader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+
             return PartialView("_financeheader", objfinanceheader);
         }
         #endregion
@@ -453,6 +441,18 @@ namespace RevenuePlanner.Controllers
                         .Select(row => CreateItem(dataTableMain, row))
                         .ToList();
 
+            var temp = items.Where(a => a.id == Convert.ToString(BudgetId)).Select(a => a.data).FirstOrDefault();
+            FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
+            objFinanceHeader.Budget = Convert.ToDouble(temp[temp.Count - 4]);
+            objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
+            objFinanceHeader.Planned = Convert.ToDouble(temp[temp.Count - 2]);
+            objFinanceHeader.Actual = Convert.ToDouble(temp[temp.Count - 1]);
+            objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+            objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+            TempData["FinanceHeader"] = objFinanceHeader;
+
             budgetMain.rows = items;
 
             return Json(budgetMain, JsonRequestBehavior.AllowGet);
@@ -475,6 +475,90 @@ namespace RevenuePlanner.Controllers
               .Rows
               .Cast<DataRow>()
               .Where(row => row.Field<Int32>("ParentId") == parentId);
+        }
+
+        double? GetSumofPeriodValue(DataTable datatable, Int32 Id, int index = 0, string ColumnName = "")
+        {
+            double? Sum = 0;
+            var ChildList = datatable
+                 .Rows
+                 .Cast<DataRow>()
+                 .Where(rw => rw.Field<Int32>("ParentId") == Id)
+                 .Select(chld => new { Id = chld.Field<Int32>("Id"), Value = chld.Field<List<Double?>>(ColumnName)[index] }).ToList();
+            if (ChildList.Count > 0)
+            {
+                foreach (var Child in ChildList)
+                {
+                    Sum += GetSumofPeriodValue(datatable, Child.Id, index, ColumnName);
+                }
+            }
+            else
+            {
+                Sum += datatable
+                 .Rows
+                 .Cast<DataRow>()
+                 .Where(rw => rw.Field<Int32>("Id") == Id)
+                 .Sum(chld => chld.Field<List<Double?>>(ColumnName)[index]);
+            }
+
+            return Sum;
+        }
+
+        double? GetSumofValue(DataTable datatable, Int32 Id, string ColumnName = "")
+        {
+            double? Sum = 0;
+            var ChildList = datatable
+                 .Rows
+                 .Cast<DataRow>()
+                 .Where(rw => rw.Field<Int32>("ParentId") == Id)
+                 .Select(chld => new { Id = chld.Field<Int32>("Id"), Value = chld.Field<Double>(ColumnName) }).ToList();
+
+            if (ChildList.Count > 0)
+            {
+                foreach (var Child in ChildList)
+                {
+                    Sum += GetSumofValue(datatable, Child.Id, ColumnName);
+                }
+            }
+            else
+            {
+                Sum += datatable
+                 .Rows
+                 .Cast<DataRow>()
+                 .Where(rw => rw.Field<Int32>("Id") == Id)
+                 .Sum(chld => chld.Field<Double>(ColumnName));
+            }
+
+            return Sum;
+        }
+        double? GetSumofValueMainGrid(DataTable datatable, Int32 Id, string ColumnName = "")
+        {
+            double? Sum = 0;
+            var ChildList = datatable
+                 .Rows
+                 .Cast<DataRow>()
+                 .Where(rw => rw.Field<Int32>("ParentId") == Id)
+                 .Select(chld => new { Id = chld.Field<Int32>("Id"), Value = chld.Field<String>(ColumnName) }).ToList();
+
+            if (ChildList.Count > 0)
+            {
+                foreach (var Child in ChildList)
+                {
+                    Sum += Convert.ToDouble(GetSumofValueMainGrid(datatable, Child.Id, ColumnName));
+                }
+            }
+            else
+            {
+                var SumofParent = datatable
+                            .Rows
+                            .Cast<DataRow>()
+                            .Where(rw => rw.Field<Int32>("Id") == Id)
+                            .Sum(chld => Convert.ToDouble(chld.Field<String>(ColumnName))).ToString();
+
+                Sum += Convert.ToDouble(SumofParent);
+            }
+
+            return Sum;
         }
         DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row)
         {
@@ -523,52 +607,16 @@ namespace RevenuePlanner.Controllers
                 ParentData.Add(Convert.ToString(budget[i]));
                 if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
                 {
-                    var tempforcast = dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ? dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id)
-                        .Sum(chld => chld.Field<List<Double?>>("ForeCast")[i]) :
-                         dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("Id") == id)
-                        .Sum(chld => chld.Field<List<Double?>>("ForeCast")[i])
-                        ;
+                    //var CheckIsparentZero=dataTable
+                    //    .Rows
+                    //    .Cast<DataRow>()
+                    //    .Where(rw => rw.Field<Int32>("Id") == id).Select(a=>a.Field<List<Int32?>>)
 
-                    ParentData.Add(Convert.ToString(tempforcast));
+                    var tempforcast = GetSumofPeriodValue(dataTable, id, i, "ForeCast");
 
-                    var tempPlan = dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                        dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id)
-                        .Sum(chld => chld.Field<List<Double?>>("Plan")[i]) :
-                        dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("Id") == id)
-                        .Sum(chld => chld.Field<List<Double?>>("Plan")[i]);
+                    var tempPlan = GetSumofPeriodValue(dataTable, id, i, "Plan");
 
-                    var tempActual = dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                        dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("ParentId") == id)
-                        .Sum(chld => chld.Field<List<Double?>>("Actual")[i]) :
-                        dataTable
-                        .Rows
-                        .Cast<DataRow>()
-                        .Where(rw => rw.Field<Int32>("Id") == id)
-                        .Sum(chld => chld.Field<List<Double?>>("Actual")[i]);
+                    var tempActual = GetSumofPeriodValue(dataTable, id, i, "Actual");
 
                     ParentData.Add(Convert.ToString(tempforcast));
                     ParentData.Add(Convert.ToString(tempPlan));
@@ -585,52 +633,13 @@ namespace RevenuePlanner.Controllers
             }
 
             ParentData.Add(Convert.ToString(budgetTotal));
-            if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
+            if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))
             {
-                var tempforcastTotal = dataTable
-                           .Rows
-                           .Cast<DataRow>()
-                           .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                           dataTable
-                           .Rows
-                           .Cast<DataRow>()
-                           .Where(rw => rw.Field<Int32>("ParentId") == id)
-                           .Sum(chld => chld.Field<Double>("ForeCastTotal")) :
-                            dataTable
-                           .Rows
-                           .Cast<DataRow>()
-                           .Where(rw => rw.Field<Int32>("Id") == id)
-                           .Sum(chld => chld.Field<Double>("ForeCastTotal"));
+                var tempforcastTotal = GetSumofValue(dataTable, id, "ForeCastTotal");
 
-                var tempPlanTotal = dataTable
-                             .Rows
-                             .Cast<DataRow>()
-                             .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                              dataTable
-                             .Rows
-                             .Cast<DataRow>()
-                             .Where(rw => rw.Field<Int32>("ParentId") == id)
-                             .Sum(chld => chld.Field<Double>("PlanTotal")) :
-                             dataTable
-                             .Rows
-                             .Cast<DataRow>()
-                             .Where(rw => rw.Field<Int32>("Id") == id)
-                             .Sum(chld => chld.Field<Double>("PlanTotal"));
+                var tempPlanTotal = GetSumofValue(dataTable, id, "PlanTotal");
 
-                var tempActualTotal = dataTable
-                         .Rows
-                         .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("ParentId") == id).Any() ?
-                         dataTable
-                         .Rows
-                         .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("ParentId") == id)
-                         .Sum(chld => chld.Field<Double>("ActualTotal")) :
-                          dataTable
-                         .Rows
-                         .Cast<DataRow>()
-                         .Where(rw => rw.Field<Int32>("Id") == id)
-                         .Sum(chld => chld.Field<Double>("ActualTotal"));
+                var tempActualTotal = GetSumofValue(dataTable, id, "ActualTotal");
 
                 ParentData.Add(Convert.ToString(tempforcastTotal));
                 ParentData.Add(Convert.ToString(tempPlanTotal));
@@ -805,6 +814,7 @@ namespace RevenuePlanner.Controllers
             List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
             List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
             string dataPeriod = "";
+            var ParentDetails = db.Budget_Detail.Where(a => a.Id == BudgetId).Select(a => new { a.Id, a.ParentId }).FirstOrDefault();
             if (IsQuaterly)
             {
                 if (Period == "Q1")
@@ -886,6 +896,7 @@ namespace RevenuePlanner.Controllers
                     objBudAmount.BudgetDetailId = BudgetId;
                     db.Entry(objBudAmount).State = EntityState.Added;
                     db.SaveChanges();
+
                 }
             }
             else

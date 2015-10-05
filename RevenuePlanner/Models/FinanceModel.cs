@@ -43,6 +43,7 @@ namespace RevenuePlanner.Models
     public class DhtmlXGridRowModel
     {
         public List<DhtmlxGridRowDataModel> rows { get; set; }
+        public FinanceModelHeaders FinanemodelheaderObj { get; set; }// Add By Nishant Sheth
     }
     public class DhtmlxGridRowDataModel
     {
@@ -51,7 +52,9 @@ namespace RevenuePlanner.Models
         public List<userdata> userdata { get; set; }
         public List<row_attrs> row_attrs { get; set; }
         public List<DhtmlxGridRowDataModel> rows { get; set; }
+        public string Detailid { get; set; }
     }
+   
     public class userdata
     {
         public string id { get; set; }

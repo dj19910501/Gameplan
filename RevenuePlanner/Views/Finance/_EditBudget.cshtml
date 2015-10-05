@@ -48,6 +48,7 @@
         ShowHideColumns(ChkBudget[0]);
         ShowHideColumns(ChkForeCast[0]);
         ShowHideColumns(ChkActual[0]);
+        GetFinanceHeaderValue(0, false);
         //ShowHideColumns($("#chkBudget"));
         //ShowHideColumns($("#chkForeCast"));
         //ShowHideColumns($("#chkActual"));
@@ -253,8 +254,9 @@
                                     myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(BudgetRowTotal);
                                 }
                             }
-                            GetFinanceHeaderValue(rId, false);
+                            
                             LoadBudgetGrid(AllocatedBy);
+                            GetFinanceHeaderValue(rId, false);
                             //var rowIndex = myTreeGrid.getRowIndex(rId);
                             //debugger;
                             //if (rowIndex == 0) {

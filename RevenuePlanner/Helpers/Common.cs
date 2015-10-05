@@ -6172,63 +6172,82 @@ namespace RevenuePlanner.Helpers
         #region "Get Finance Header Value"
         public static FinanceModelHeaders GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly", bool isMain = false)
         {
+            //FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
             FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
-            List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-            List<Plan_Campaign_Program_Tactic_LineItem_Cost> plannedCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
-            List<string> lstMonthly = Common.lstMonthly;
-            MRPEntities db = new MRPEntities();
-            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.Id).ToList();
-            var MainBudgetid = isMain == true ? db.Budget_Detail.Where(a => a.BudgetId == budgetId && budgeparentids.Contains(a.BudgetId) && a.ParentId == null).Select(a => a.Id).FirstOrDefault() : 0;
-            var varBudgetDetails = db.Budget_Detail.Where(a => a.Id == (isMain == true ? MainBudgetid : (budgetId > 0 ? budgetId : a.BudgetId)) && budgeparentids.Contains(a.BudgetId)).Select(a => a.Id).ToList();
+            //List<Plan_Campaign_Program_Tactic_LineItem_Actual> actualCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+            //List<Plan_Campaign_Program_Tactic_LineItem_Cost> plannedCostAllocationData = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
+            //List<string> lstMonthly = Common.lstMonthly;
+            //MRPEntities db = new MRPEntities();
+            //var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => m.Id).ToList();
+            //var MainBudgetid = isMain == true ? db.Budget_Detail.Where(a => a.BudgetId == budgetId && budgeparentids.Contains(a.BudgetId) && a.ParentId == null).Select(a => a.Id).FirstOrDefault() : 0;
+            //var varBudgetDetails = db.Budget_Detail.Where(a => a.Id == (isMain == true ? MainBudgetid : (budgetId > 0 ? budgetId : a.BudgetId)) && budgeparentids.Contains(a.BudgetId)).Select(a => a.Id).ToList();
 
-            //var budgetdetailid = varBudgetDetails.Where(i => i. == budgetId).Select(o => o.Id).ToList();
-            var budgetamout = db.Budget_DetailAmount.Where(amt => varBudgetDetails.Contains(amt.BudgetDetailId)).ToList();
+            ////var budgetdetailid = varBudgetDetails.Where(i => i. == budgetId).Select(o => o.Id).ToList();
+            //var budgetamout = db.Budget_DetailAmount.Where(amt => varBudgetDetails.Contains(amt.BudgetDetailId)).ToList();
 
-            var budgetlineit = db.LineItem_Budget.Where(itemid => varBudgetDetails.Contains(itemid.BudgetDetailId)).Select(i => i.PlanLineItemId).ToList();
-            var planlineitemid = db.Plan_Campaign_Program_Tactic_LineItem.Where(i => budgetlineit.Contains(i.PlanLineItemId)).Select(l => l.PlanLineItemId).ToList();
+            //var budgetlineit = db.LineItem_Budget.Where(itemid => varBudgetDetails.Contains(itemid.BudgetDetailId)).Select(i => i.PlanLineItemId).ToList();
+            //var planlineitemid = db.Plan_Campaign_Program_Tactic_LineItem.Where(i => budgetlineit.Contains(i.PlanLineItemId)).Select(l => l.PlanLineItemId).ToList();
 
-            var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => planlineitemid.Contains(al.PlanLineItemId)).ToList();
+            //var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => planlineitemid.Contains(al.PlanLineItemId)).ToList();
 
-            //bool IsQuarterly = true;
-            //if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
-            //    IsQuarterly = false;
+            ////bool IsQuarterly = true;
+            ////if (!string.IsNullOrEmpty(isQuarterly) && isQuarterly.Equals(Enums.ViewByAllocated.Monthly.ToString()))
+            ////    IsQuarterly = false;
 
-            //if (IsQuarterly)
+            ////if (IsQuarterly)
+            ////{
+            ////    List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
+            ////    List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
+            ////    List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
+            ////    List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
+            ////}
+            ////double actulaTotal= actualLineItem.Sum(tot => tot.Value);
+
+            
+            //actualCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
             //{
-            //    List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
-            //    List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
-            //    List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
-            //    List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
-            //}
-            //double actulaTotal= actualLineItem.Sum(tot => tot.Value);
+            //    Period = m,
+            //    Value = actualLineItem.Where(al => al.Period == m).Sum(al => al.Value)
+            //}).ToList();
 
+            //var planneditem = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(al => planlineitemid.Contains(al.PlanLineItemId)).ToList();
 
-            actualCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
-            {
-                Period = m,
-                Value = actualLineItem.Where(al => al.Period == m).Sum(al => al.Value)
-            }).ToList();
+            ////double plantotal = planneditem.Sum(tot => tot.Value);
 
-            var planneditem = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(al => planlineitemid.Contains(al.PlanLineItemId)).ToList();
+            //plannedCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Cost
+            //{
+            //    Period = m,
+            //    Value = planneditem.Where(al => al.Period == m).Sum(al => al.Value)
+            //}).ToList();
 
-            //double plantotal = planneditem.Sum(tot => tot.Value);
+            //objfinanceheader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+            //objfinanceheader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            //objfinanceheader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            //objfinanceheader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+            //objfinanceheader.Budget = Convert.ToDouble(budgetamout.Sum(t => t.Budget));
+            ////objfinanceheader.Actual = actualCostAllocationData.Sum(s => s.Value);
+            //objfinanceheader.Actual = actualLineItem.Sum(a => a.Value);
+            //objfinanceheader.Forecast = Convert.ToDouble(budgetamout.Sum(t => t.Forecast));
+            ////objfinanceheader.Planned = plannedCostAllocationData.Sum(t => t.Value);
+            //objfinanceheader.Planned = planneditem.Sum(a => a.Value);
+            return objfinanceheader;
+        }
 
-            plannedCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Cost
-            {
-                Period = m,
-                Value = planneditem.Where(al => al.Period == m).Sum(al => al.Value)
-            }).ToList();
+        public static FinanceModelHeaders CommonGetFinanceHeaderValue(FinanceModelHeaders objFinaceHeaderValue)
+        {
+            FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
 
             objfinanceheader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
             objfinanceheader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
             objfinanceheader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
             objfinanceheader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
-            objfinanceheader.Budget = Convert.ToDouble(budgetamout.Sum(t => t.Budget));
-            //objfinanceheader.Actual = actualCostAllocationData.Sum(s => s.Value);
-            objfinanceheader.Actual = actualLineItem.Sum(a => a.Value);
-            objfinanceheader.Forecast = Convert.ToDouble(budgetamout.Sum(t => t.Forecast));
-            //objfinanceheader.Planned = plannedCostAllocationData.Sum(t => t.Value);
-            objfinanceheader.Planned = planneditem.Sum(a => a.Value);
+            if (objFinaceHeaderValue != null)
+            {
+                objfinanceheader.Budget = objFinaceHeaderValue.Budget;
+                objfinanceheader.Actual = objFinaceHeaderValue.Actual;
+                objfinanceheader.Forecast = objFinaceHeaderValue.Forecast;
+                objfinanceheader.Planned = objFinaceHeaderValue.Planned;
+            }
             return objfinanceheader;
         }
         #endregion

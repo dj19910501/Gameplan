@@ -4,6 +4,7 @@
     ViewBag.Title = "Finance";
     Layout = "~/Views/Shared/_Layout.cshtml";
     var MainGridData = Model.DhtmlXGridRowModelObj != null ? Model.DhtmlXGridRowModelObj : new RevenuePlanner.Models.DhtmlXGridRowModel();
+    var HeaderDataModel = Model.DhtmlXGridRowModelObj.FinanemodelheaderObj != null ? Model.DhtmlXGridRowModelObj.FinanemodelheaderObj : new RevenuePlanner.Models.FinanceModelHeaders();
 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
@@ -27,7 +28,7 @@
 </style>
 @section PlanHeader{
     <div id="headerValue">
-        @Html.Partial("~/Views/Shared/_financeheader.cshtml", Model.FinanemodelheaderObj)
+        @Html.Partial("~/Views/Shared/_financeheader.cshtml", HeaderDataModel)
     </div>
 
 }
@@ -323,6 +324,34 @@
         }
         var visibility = "false,";
         //mygrid.setColumnsVisibility("true,false,false,false,false");
+        debugger;
+        var BorderLength = 4;
+        var ChkPlan = $("#chkPlan");
+        var ChkBudget = $("#chkBudget");
+        var ChkForeCast = $("#chkForeCast");
+        var ChkActual = $("#chkActual");
+        if (!ChkPlan[0].checked) {
+            BorderLength = BorderLength - 1;
+        }
+        if (!ChkBudget[0].checked) {
+            BorderLength = BorderLength - 1;
+        }
+        if (!ChkForeCast[0].checked) {
+            BorderLength = BorderLength - 1;
+        }
+        if (!ChkActual[0].checked) {
+            BorderLength = BorderLength - 1;
+        }
+
+        var BorderCount = 2;
+        for (var j = 0; j < BorderLength; j++) {
+
+            $('.gridbox .xhdr .hdr td:nth-child(' + BorderCount + ')').css("border-right", "2px Solid #808080");
+            $('.gridbox .objbox td:nth-child(' + BorderCount + ')').css("border-right", "2px Solid #808080");
+            BorderCount += BorderLength;
+        }
+
+
         if (IsChecked) {
             for (var i = 0; i < LoopLength; i++) {
 
