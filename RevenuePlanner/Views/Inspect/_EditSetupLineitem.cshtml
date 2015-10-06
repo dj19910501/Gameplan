@@ -138,6 +138,7 @@
         values:[]
     };
     var totalWeightage = 0;
+    var ValueChanged = false;
 
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -210,37 +211,45 @@
         });
 
         TreeViewDdl.expandAll();
-        ListOfItmeCheck= {
-            Ids: [],
-            values:[]
-        };
-        Weights= {
-            ChkId: [],
-            txtId: [],
-            values:[]
-        };
-        totalWeightage = 0;
-        $('#treeviewddl').find('input:checkbox:checked').each(function () {
-            ListOfItmeCheck.Ids.push($(this).attr('id'));
-            ListOfItmeCheck.values.push($(this).attr('title'));
-            totalWeightage += parseInt($('#'+ 'wt_'+ $(this).attr('id')).val());
-            Weights.values.push($('#'+ 'wt_'+ $(this).attr('id')).val());
-            Weights.ChkId.push($(this).attr('id'));
-            Weights.txtId.push('wt_'+ $(this).attr('id'));
-        });
-        if(totalWeightage != 100)
+        if(@Model.PlanLineItemId != 0 && !ValueChanged)
         {
-            DivideEqualInputValue();
+            ListOfItmeCheck= {
+                Ids: [],
+                values:[]
+            };
+            Weights= {
+                ChkId: [],
+                txtId: [],
+                values:[]
+            };
+            totalWeightage = 0;
+            $('#treeviewddl').find('input:checkbox:checked').each(function () {
+                ListOfItmeCheck.Ids.push($(this).attr('id'));
+                ListOfItmeCheck.values.push($(this).attr('title'));
+                totalWeightage += parseInt($('#'+ 'wt_'+ $(this).attr('id')).val());
+                Weights.values.push($('#'+ 'wt_'+ $(this).attr('id')).val());
+                Weights.ChkId.push($(this).attr('id'));
+                Weights.txtId.push('wt_'+ $(this).attr('id'));
+            });
+            if(totalWeightage != 100)
+            {
+                DivideEqualInputValue();
+            }
+
+        }
+        for(var i=0;i<Weights.txtId.length;i++)
+        {
+            $("#"+Weights.txtId[i]).val(Weights.values[i]);
+            $("#"+Weights.ChkId[i]).attr('checked','checked');
         }
         TreeViewDdl.collapseAll();
-
-
 
     }
 
 
     function ddlcheckboxclick(items)
     {
+        ValueChanged = true;
         $('.span3').find('.dropdown_new_btn p:first').text("");
         if(items.checked)
         {
@@ -278,6 +287,7 @@
     }
 
     $('#treeviewddl').find('input[type=text]').live("keyup", function(event) {
+        ValueChanged = true;
         totalWeightage=0;
         var inputText = $(this);
         var Code = inputText.attr('id').toString().split('_')[1].toString();
@@ -313,6 +323,7 @@
 
 
     function DivideEqualInputValue() {
+        ValueChanged = true;
         Weights= {
             ChkId: [],
             txtId: [],
@@ -350,10 +361,12 @@
         };
 
     }
+
+
+
     //End
 
     $(document).ready(function () {
-
         $(document).click(function(){
             $("#treeviewddl").css("display","none");
         });
@@ -395,6 +408,10 @@
         $('.input-setup').addClass('light-blue-background');
         $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
         //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
+        //  LoadBudgetDropdown();
+        $('.dropdown_new_btn').click();
+        $("#treeviewddl").css("width","0px");
+        $("#treeviewddl").css("display","none");
 
     });
 
@@ -496,20 +513,23 @@
 
         //Added BY Komal Rawal for #1617
         _FieldMappingValues = [];
-        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+        if(ListOfItmeCheck.Ids.length != 0)
         {
-            _FieldMappingValues.push({
-                Id: ListOfItmeCheck.Ids[i],
-                Name: ListOfItmeCheck.values[i],
-                Weightage: Weights.values[i] != '' ?  Weights.values[i] : '100',
-            });
-            //  var IsWeightError = $('#'+ Weights.txtId[i]).hasClass('error');
+            for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+            {
+                _FieldMappingValues.push({
+                    Id: ListOfItmeCheck.Ids[i],
+                    Name: ListOfItmeCheck.values[i],
+                    Weightage: Weights.values[i] != '' ?  Weights.values[i] : '100',
+                });
+                //   var IsWeightError = $('#'+ Weights.txtId[i]).hasClass('error');
+            }
 
-        }
-        if(totalWeightage != 100)
-        {
-            ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', "Budget Account"));
-            return false;
+            if(totalWeightage != 100)
+            {
+                ShowError('@Common.objCached.ValidateAttributeWeightSum'.replace('{0}', "Budget Account"));
+                return false;
+            }
         }
         _FieldMappingValues = JSON.stringify(_FieldMappingValues);
         //End

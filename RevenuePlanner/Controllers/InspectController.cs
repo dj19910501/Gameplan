@@ -670,7 +670,7 @@ namespace RevenuePlanner.Controllers
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == planId);
 
             #region "Set values in ViewBag"
-           
+
             ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
             ViewBag.IsDeployedToIntegration = false;
             ViewBag.IsCreated = true;
@@ -680,9 +680,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.PlanTitle = objPlan.Title;
             #endregion
 
-           
 
-            ViewBag.OwnerName =  Sessions.User.FirstName + " " + Sessions.User.LastName;//Common.GetUserName(Sessions.User.UserId.ToString());
+
+            ViewBag.OwnerName = Sessions.User.FirstName + " " + Sessions.User.LastName;//Common.GetUserName(Sessions.User.UserId.ToString());
 
             //// Set Plan_CampaignModel data to pass into partialview.
             Plan_CampaignModel pc = new Plan_CampaignModel();
@@ -699,7 +699,7 @@ namespace RevenuePlanner.Controllers
             double planRemainingBudget = planBudget - allCampaignBudget;
             ViewBag.planRemainingBudget = planRemainingBudget;
             #endregion
-          
+
             return PartialView("_EditSetupCampaign", pc);
         }
 
@@ -827,7 +827,7 @@ namespace RevenuePlanner.Controllers
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
-                lstUsers = lstUsers.Where(i=>!i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
@@ -836,8 +836,8 @@ namespace RevenuePlanner.Controllers
 
                     string strUserList = string.Join(",", lstClientUsers);
                     //List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
-                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList,Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
-                   // lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
+                    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
+                    // lstUserDetails = lstUserDetails.Where(i => !i.IsDeleted).ToList();
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
@@ -1488,9 +1488,9 @@ namespace RevenuePlanner.Controllers
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
-              
+
                 List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
-                lstUsers = lstUsers.Where(i=>!i.IsDeleted).ToList(); //PL #1532 Dashrath Prajapati
+                lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); //PL #1532 Dashrath Prajapati
                 List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
                 if (lstClientUsers.Count() > 0)
                 {
@@ -1988,9 +1988,9 @@ namespace RevenuePlanner.Controllers
                     #endregion
                 }
             }
-            ViewBag.IsInstanceSalesfore = isInstanceSalesforce; 
+            ViewBag.IsInstanceSalesfore = isInstanceSalesforce;
             #endregion
-            
+
             return PartialView("_ReviewProgram");
         }
 
@@ -2256,7 +2256,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.IsCreated = true;
             ViewBag.CampaignTitle = pcp.Title;
-            
+
             ViewBag.OwnerName = Sessions.User.FirstName + " " + Sessions.User.LastName;
 
             #region "Set Plan_Campaign_ProgramModel to pass into Partialview"
@@ -2484,11 +2484,11 @@ namespace RevenuePlanner.Controllers
             if (lstSubOrdinatesPeers.Contains(_inspectmodel.OwnerId))
             {
                 isValidManagerUser = true;
-              
+
             }
             ViewBag.IsValidManagerUser = isValidManagerUser;
 
-          
+
 
             // Modified by komal Rawal for #1158
             bool IsCommentsViewEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.CommentsViewEdit);
@@ -2520,7 +2520,7 @@ namespace RevenuePlanner.Controllers
                 lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
                 if (lstSubOrdinates.Contains(_inspectmodel.OwnerId))
                 {
-                isEditable = true;
+                    isEditable = true;
                 }
             }
             catch (Exception e)
@@ -2573,16 +2573,16 @@ namespace RevenuePlanner.Controllers
             ViewBag.IsDeployToIntegrationVisible = IsDeployToIntegrationVisible;
             ///Begin Added by Brad Gray 08-10-2015 for PL#1462
             Dictionary<string, string> IntegrationLinkDictionary = new Dictionary<string, string>();
-            
+
             //provide a list of tactic integration Id and workfront project 
             List<IntegrationInstance> modelIntegrationList = new List<IntegrationInstance>();
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance); }
-            
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance); }
+
             //integrationinstance - Push Tactic Data Salesforce
             //integrationinstance11 - Push Tactic Data Eloqua
             //integrationinstance4 - Project Management
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted ==false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11); }
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null &&  pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
             ViewBag.IntegrationInstances = modelIntegrationList;
 
             //create a dictionary of each instance type name ("Salesforce", "WorkFront", etc) and the front end urls)
@@ -2590,12 +2590,12 @@ namespace RevenuePlanner.Controllers
             {
                 string url = instance.IntegrationType.FrontEndUrl;
                 if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.WorkFront.ToString())
-               {
-                   int workFrontCompanyNameAttributeId = db.IntegrationTypeAttributes.Where(att => att.IntegrationTypeId == instance.IntegrationTypeId && att.Attribute=="Company Name").FirstOrDefault().IntegrationTypeAttributeId;
+                {
+                    int workFrontCompanyNameAttributeId = db.IntegrationTypeAttributes.Where(att => att.IntegrationTypeId == instance.IntegrationTypeId && att.Attribute == "Company Name").FirstOrDefault().IntegrationTypeAttributeId;
                     string prepend = db.IntegrationInstance_Attribute.Where(inst => inst.IntegrationInstanceId == instance.IntegrationInstanceId &&
                        inst.IntegrationTypeAttributeId == workFrontCompanyNameAttributeId).FirstOrDefault().Value;
                     string append = "/project/view?ID=" + pcpt.IntegrationWorkFrontProjectID;
-                    url = string.Concat("https://",prepend,url,append);
+                    url = string.Concat("https://", prepend, url, append);
                 }
                 else if (instance.IntegrationType.Code == Enums.IntegrationInstanceType.Salesforce.ToString())
                 {
@@ -2607,14 +2607,14 @@ namespace RevenuePlanner.Controllers
                     string append = "/" + pcpt.IntegrationInstanceEloquaId;
                     url = string.Concat(url, append);
                 }
-                if(!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code) )
+                if (!IntegrationLinkDictionary.ContainsKey(instance.IntegrationType.Code))
                 {
                     IntegrationLinkDictionary.Add(instance.IntegrationType.Code, url);
                 }
             }
             ViewBag.IntegrationTypeLinks = IntegrationLinkDictionary;
             ///End Added by Brad Gray 08-10-2015 for PL#1462
-            
+
             ////Start : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             ViewBag.TacticIntegrationInstance = pcpt.IntegrationInstanceTacticId;
             ViewBag.TacticEloquaInstance = pcpt.IntegrationInstanceEloquaId;
@@ -2647,27 +2647,27 @@ namespace RevenuePlanner.Controllers
 
             ////End : Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
             string entityType = Enums.EntityType.Tactic.ToString();
-           
+
             var topThreeCustomFields = db.CustomFields.Where(cf => cf.IsDefault == true && cf.IsDeleted == false && cf.IsRequired == true && cf.ClientId == Sessions.User.ClientId && cf.EntityType == entityType).Take(3).ToList().Select((cf, Index) => new CustomFieldReviewTab()
             {
-                CustomFieldId=cf.CustomFieldId,
+                CustomFieldId = cf.CustomFieldId,
                 Name = cf.Name,
                 Class = "customfield-review" + (Index + 1).ToString()
-               // cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).Any() ? string.Join(",", cf.CustomFieldOptions.Where(a => a.IsDeleted == false && cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList()) : "N/A"
+                // cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).Any() ? string.Join(",", cf.CustomFieldOptions.Where(a => a.IsDeleted == false && cf.CustomField_Entity.Where(ct => ct.EntityId == id).Select(ct => ct.Value).ToList().Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList()) : "N/A"
             }).ToList();
             var customFieldIds = topThreeCustomFields.Select(Tcf => Tcf.CustomFieldId).ToList();
             var customFieldValues = db.CustomField_Entity.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
             var customFieldOption = db.CustomFieldOptions.Where(co => co.IsDeleted.Equals(false) && customFieldIds.Contains(co.CustomFieldId)).Select(co => new { co.Value, co.CustomFieldOptionId }).ToList();
             foreach (var customField in topThreeCustomFields)
             {
-                if (customFieldValues.Where(ct=>ct.CustomFieldId==customField.CustomFieldId).Any())
+                if (customFieldValues.Where(ct => ct.CustomFieldId == customField.CustomFieldId).Any())
                 {
                     var ExistingCustomFieldValues = customFieldValues.Where(ct => ct.CustomFieldId == customField.CustomFieldId).Select(ct => ct.Value).ToList();
                     customField.Value = string.Join(",", customFieldOption.Where(a => ExistingCustomFieldValues.Contains(a.CustomFieldOptionId.ToString())).Select(a => a.Value).ToList());
                 }
                 else
                 {
-                    customField.Value="N/A";
+                    customField.Value = "N/A";
                 }
             }
             ViewBag.TopThreeCustomFields = topThreeCustomFields;
@@ -3902,7 +3902,7 @@ namespace RevenuePlanner.Controllers
                 return null;
             }
 
-            
+
 
             #region "Set Inspect_Popup_Plan_Campaign_Program_TacticModel to pass into Partialview"
             Inspect_Popup_Plan_Campaign_Program_TacticModel pcptm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
@@ -3920,7 +3920,7 @@ namespace RevenuePlanner.Controllers
             pcptm.TacticCost = 0;
             pcptm.AllocatedBy = objPlan.AllocatedBy;
 
-           
+
             pcptm.Owner = (Sessions.User.FirstName + " " + Sessions.User.LastName).ToString();
             #endregion
 
@@ -3928,7 +3928,7 @@ namespace RevenuePlanner.Controllers
             {
                 pcptm.TacticTypeId = tactics.FirstOrDefault().TacticTypeId;
             }
-          
+
             return PartialView("SetupEditAdd", pcptm);
         }
 
@@ -4750,9 +4750,9 @@ namespace RevenuePlanner.Controllers
                         using (var scope = new TransactionScope())
                         {
 
-                            int planId = (from p in db.Plan_Improvement_Campaign_Program 
+                            int planId = (from p in db.Plan_Improvement_Campaign_Program
                                           join c in db.Plan_Improvement_Campaign on p.ImprovementPlanCampaignId equals c.ImprovementPlanCampaignId
-                                          where p.ImprovementPlanProgramId == form.ImprovementPlanProgramId 
+                                          where p.ImprovementPlanProgramId == form.ImprovementPlanProgramId
                                           select c.ImprovePlanId).FirstOrDefault();
 
                             //// Check for Duplicate or not.
@@ -5178,7 +5178,7 @@ namespace RevenuePlanner.Controllers
                 {
                     ViewBag.ImprovementTacticLastSync = planEntityLogList.OrderByDescending(log => log.IntegrationInstancePlanLogEntityId).FirstOrDefault().SyncTimeStamp;
                 }
-            } 
+            }
             #endregion
 
             return PartialView("_ReviewImprovementTactic");
@@ -5497,7 +5497,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of edit Setup Tab.</returns>
         [HttpPost]
 
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues,string UserId = "", int tacticId = 0)
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string UserId = "", int tacticId = 0)
         {
             //// Check whether current user is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -6574,7 +6574,7 @@ namespace RevenuePlanner.Controllers
                 item.Title = HttpUtility.HtmlDecode(item.Title);
             }
             ViewBag.lineItemTypes = lineItemTypes;
-            
+
             ViewBag.Owner = Sessions.User.FirstName + " " + Sessions.User.LastName;
 
             #region "Set data to Plan_Campaign_Program_Tactic_LineItemModel to pass into PartialView"
@@ -7354,10 +7354,10 @@ namespace RevenuePlanner.Controllers
                     //objTactic.IsDeployedToIntegration = IsDeployedToIntegration;
                     //db.Entry(objTactic).State = EntityState.Modified;
 
-                        #region "Sync Tactic to respective Integration Instance"
-                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
-                        externalIntegration.Sync();
-                        #endregion
+                    #region "Sync Tactic to respective Integration Instance"
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                    externalIntegration.Sync();
+                    #endregion
                     returnValue = true;
                     strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]; // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                 }
@@ -7383,10 +7383,10 @@ namespace RevenuePlanner.Controllers
                     //db.Entry(objCampaign).State = EntityState.Modified;
                     //db.SaveChanges();
 
-                        #region "Sync Tactic to respective Integration Instance"
-                        ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Campaign);
-                        externalIntegration.Sync();
-                        #endregion
+                    #region "Sync Tactic to respective Integration Instance"
+                    ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.Campaign);
+                    externalIntegration.Sync();
+                    #endregion
 
                     returnValue = true;
                     strPlanEntity = Enums.PlanEntityValues[Enums.PlanEntity.Campaign.ToString()];   // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
@@ -7397,7 +7397,7 @@ namespace RevenuePlanner.Controllers
                     //objITactic.IsDeployedToIntegration = IsDeployedToIntegration;
                     //db.Entry(objITactic).State = EntityState.Modified;
                     //db.SaveChanges();
-                   
+
                     #region "Sync Tactic to respective Integration Instance"
                     ExternalIntegration externalIntegration = new ExternalIntegration(id, Sessions.ApplicationId, new Guid(), EntityType.ImprovementTactic);
                     externalIntegration.Sync();
@@ -7429,7 +7429,7 @@ namespace RevenuePlanner.Controllers
 
                     //// Save Comment for Tactic,Program,Campaign.
                     Plan_Campaign_Program_Tactic_Comment pcptc = new Plan_Campaign_Program_Tactic_Comment();
-                   
+
                     if (section == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         pcptc.PlanTacticId = id;
@@ -8008,10 +8008,10 @@ namespace RevenuePlanner.Controllers
                                     result = db.SaveChanges();
 
                                     planid = (from t in db.Plan_Improvement_Campaign_Program_Tactic
-                                                  join p in db.Plan_Improvement_Campaign_Program on t.ImprovementPlanProgramId equals p.ImprovementPlanProgramId
-                                                  join c in db.Plan_Improvement_Campaign on p.ImprovementPlanCampaignId equals c.ImprovementPlanCampaignId
-                                               where t.ImprovementPlanTacticId == planTacticId && t.IsDeleted == false
-                                                  select c.ImprovePlanId).FirstOrDefault();
+                                              join p in db.Plan_Improvement_Campaign_Program on t.ImprovementPlanProgramId equals p.ImprovementPlanProgramId
+                                              join c in db.Plan_Improvement_Campaign on p.ImprovementPlanCampaignId equals c.ImprovementPlanCampaignId
+                                              where t.ImprovementPlanTacticId == planTacticId && t.IsDeleted == false
+                                              select c.ImprovePlanId).FirstOrDefault();
 
                                     if (result == 1)
                                     {
@@ -8048,7 +8048,7 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (section == Convert.ToString(Enums.Section.Program).ToLower())
                                 {
-                                   // Plan_Campaign_Program program = db.Plan_Campaign_Program.Where(pt => pt.PlanProgramId == planTacticId).FirstOrDefault();
+                                    // Plan_Campaign_Program program = db.Plan_Campaign_Program.Where(pt => pt.PlanProgramId == planTacticId).FirstOrDefault();
                                     program.Status = status;
                                     program.ModifiedBy = Sessions.User.UserId;
                                     program.ModifiedDate = DateTime.Now;
@@ -8062,7 +8062,7 @@ namespace RevenuePlanner.Controllers
                                             string strstatus = Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString();
                                             db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
-                                              AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
+                                            AddComment(strstatus, planTacticId, Enums.Section.Program.ToString().ToLower(), planid);
                                             result = Common.InsertChangeLog(planid, null, planTacticId, program.Title.ToString(), Enums.ChangeLog_ComponentType.program, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
 
                                             if (program.IsDeployedToIntegration == true)
@@ -8127,7 +8127,7 @@ namespace RevenuePlanner.Controllers
                                             db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId == planTacticId).ToList().ForEach(pcp => pcp.Status = strstatus);
                                             db.Plan_Campaign_Program_Tactic.Where(pcp => pcp.Plan_Campaign_Program.PlanCampaignId == planTacticId).ToList().ForEach(pcpt => pcpt.Status = strstatus);
                                             db.SaveChanges();
-                                                   AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
+                                            AddComment(strstatus, planTacticId, Enums.Section.Campaign.ToString().ToLower(), campaign.PlanId);
                                             result = Common.InsertChangeLog(campaign.PlanId, null, planTacticId, campaign.Title.ToString(), Enums.ChangeLog_ComponentType.campaign, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.approved, null);
                                             if (campaign.IsDeployedToIntegration == true)
                                             {
@@ -8210,7 +8210,7 @@ namespace RevenuePlanner.Controllers
             int diffYear = Convert.ToInt32(Year) - CurrentYear;
             DateTime returnDate = DateTime.Now;
             if (isEndDate && diffYear == 0)
-            {                
+            {
                 DateTime lastEndDate = new DateTime(CurrentDate.AddYears(diffYear).Year, 12, 31);
                 DateTime endDate = CurrentDate.AddYears(diffYear).AddMonths(1);
                 returnDate = endDate > lastEndDate ? lastEndDate : endDate;
@@ -8626,7 +8626,7 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.PlanTaskDelete(Enums.Section.Plan.ToString(), id);
                             if (returnValue != 0)
                             {
-                                
+
                                 var planTitle = db.Plans.Where(p => p.PlanId == id).ToList().Select(p => p.Title).FirstOrDefault();
                                 returnValue = Common.InsertChangeLog(id, null, id, planTitle, Enums.ChangeLog_ComponentType.plan, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.removed);
                                 strMessage = string.Format(Common.objCached.PlanEntityDeleted, Enums.PlanEntityValues[Enums.PlanEntity.Plan.ToString()]);    // Modified by Viral Kadiya on 11/17/2014 to resolve issue for PL ticket #947.
@@ -9042,8 +9042,8 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("Name", typeof(String));
             dataTableMain.Columns.Add("Weightage", typeof(String));
 
-            List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId)).Select(a => a).ToList();
-
+            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
+            List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId)).Select(a => a).ToList();
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
             List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
@@ -9059,7 +9059,7 @@ namespace RevenuePlanner.Controllers
             }
 
             var items = GetTopLevelRows(dataTableMain, MinParentid)
-                        .Select(row => CreateItem(dataTableMain, row,PlanLineItemID))
+                        .Select(row => CreateItem(dataTableMain, row, PlanLineItemID))
                         .ToList();
 
             budgetMain.rows = items;
@@ -9090,7 +9090,7 @@ namespace RevenuePlanner.Controllers
             var name = row.Field<String>("Name");
             var weightage = row.Field<String>("Weightage");
             List<LineItem_Budget> SelectedLineItemBudget = db.LineItem_Budget.Where(a => a.BudgetDetailId == id && a.PlanLineItemId == PlanLineItemID).Select(a => a).ToList();
-            int SelectedID = SelectedLineItemBudget.Select(a=>a.BudgetDetailId).FirstOrDefault();
+            int SelectedID = SelectedLineItemBudget.Select(a => a.BudgetDetailId).FirstOrDefault();
             var SelectedWeightage = SelectedLineItemBudget.Select(a => a.Weightage).FirstOrDefault();
             if (id == SelectedID)
             {
@@ -9102,8 +9102,8 @@ namespace RevenuePlanner.Controllers
                 enableCheck = string.Empty;
                 value = string.Empty;
             }
-            var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  onclick='ddlcheckboxclick(this)' type=checkbox />" + name;
-            var AddWeightage = " <input value='"+ value +"' type='text'  id= wt_" + id + ">";
+            var temp = "<input id=" + id + " title='" + name + "' " + enableCheck + "  onclick='ddlcheckboxclick(this)' type=checkbox  />" + name;
+            var AddWeightage = " <input value='" + value + "' type='text'  id= wt_" + id + " align='center' style='margin-top:9px; padding-right:4px;'>";
 
             List<string> datalist = new List<string>();
 

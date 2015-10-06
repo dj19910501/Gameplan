@@ -6118,8 +6118,10 @@ namespace RevenuePlanner.Helpers
         //Added By Komal Rawal for #1617.
         public static MvcHtmlString GenerateMappingFieldsForInspectPopup(int Id, string mode = "ReadOnly")
         {
+            
             MRPEntities db = new MRPEntities();
-            List<Budget_Detail> BudgetDetails = db.Budget_Detail.Select(a => a).ToList();
+            List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
+            List<Budget_Detail> BudgetDetails = db.Budget_Detail.Where(a=>BudgetDetailsIds.Contains(a.BudgetId)).Select(a => a).ToList();
             List<int> SelectedOptionIDs = db.LineItem_Budget.Where(list => list.PlanLineItemId == Id).Select(list => list.BudgetDetailId).ToList();
             List<string> SelectedOptionValues = BudgetDetails.Where(Detaillist => SelectedOptionIDs.Contains(Detaillist.Id)).Select(Detaillist => Detaillist.Name).ToList();
 
