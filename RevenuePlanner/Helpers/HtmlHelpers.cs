@@ -6140,7 +6140,7 @@ namespace RevenuePlanner.Helpers
             if (mode == Enums.InspectPopupMode.Edit.ToString())
             {
                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn" + "" + "\"" + require + "  label=\"" + "" + "\"><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
-                if (SelectedOptionIDs.Count() == 0 || SelectedOptionIDs == null)
+                if (SelectedOptionIDs.Count() == 0 || SelectedOptionIDs == null || SelectedOptionValues.Count() == 0)
                 {
                     name += "Please Select" + ", ";
                 }
