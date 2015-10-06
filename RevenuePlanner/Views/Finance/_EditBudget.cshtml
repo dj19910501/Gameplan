@@ -111,9 +111,9 @@
                 myTreeGrid.setNumberFormat("0,000.00", i, ".", ",");
             }
 
-            myTreeGrid.setColValidators("NotEmpty,,,ValidInteger,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
+            myTreeGrid.setColValidators("NotEmpty,,,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
             myTreeGrid.setInitWidths("200,30,65,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60");
-            myTreeGrid.setColAlign("left,center,center,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left");
+            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
             if (GlobalEditLevel == 'Budget') {
                 if (_isBudgetCreateEdit != null && _isBudgetCreateEdit != 'undefined' && _isBudgetCreateEdit.toLowerCase() == 'true') {
                 myTreeGrid.setColTypes("tree,ro,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,ron,ron,ron,ron");
@@ -145,9 +145,9 @@
                 myTreeGrid.setNumberFormat("0,000.00", i, ".", ",");
             }
             //myTreeGrid.setInitWidths("150,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65");
-            myTreeGrid.setColValidators("NotEmpty,,,ValidInteger,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
+            myTreeGrid.setColValidators("NotEmpty,,,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
             myTreeGrid.setInitWidths("200,30,65,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60");
-            myTreeGrid.setColAlign("left,center,center,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left,left");
+            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
             if (GlobalEditLevel == 'Budget') {
                 if (_isBudgetCreateEdit != null && _isBudgetCreateEdit != 'undefined' && _isBudgetCreateEdit.toLowerCase() == 'true') {
                 myTreeGrid.setColTypes("tree,ro,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,edn,ron,ron,ron,ron,ron,ron,ron");
@@ -193,11 +193,35 @@
 
         myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
             IsValid = false;
-            return false;
+            return true;
         });
         myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
             IsValid = true;
         });
+        myTreeGrid.attachEvent("onEditCancel", function (id, value) {
+            //debugger;
+            //myTreeGrid.cells(id, 0).setCValue("invalid");
+            //alert('');
+        });
+        myTreeGrid.attachEvent("onCellChanged", function (id, ind, value) {
+
+            //if (!myTreeGrid._ignore_next) {
+            //    myTreeGrid._ignore_next = true;
+            if (parseInt(value) == 0) {
+               // myTreeGrid.cells(id, ind).setValue("0");
+            }
+            //    myTreeGrid._ignore_next = false;
+            //}
+        });
+
+        myTreeGrid.attachEvent("onResizeEnd", function (obj) {
+            $("#gridbox").find("table").css("width", GridWidth);
+        });
+
+        myTreeGrid.attachEvent("onResizeEnd", function (cInd, cWidth, obj) {
+            $("#gridbox").find("table").css("width", GridWidth);
+        });
+        //IsValid = true;
         //myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
          //   debugger;
@@ -239,7 +263,7 @@
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Action("UpdateBudgetGridData")',
-                        data: { BudgetId: rId, IsQuaterly: AllocatedBy, nValue: nValue, oValue: oValue, ColumnName: ColumnName, Period: Period, ParentRowId: _parentRowId },
+                        data: { BudgetId: rId, IsQuaterly: AllocatedBy, nValue: htmlDecode(nValue), oValue: oValue, ColumnName: ColumnName, Period: Period, ParentRowId: _parentRowId },
                         dataType: 'json',
                         success: function (states) {
                             var cellObj = myTreeGrid.cells(rId, cInd);
@@ -287,6 +311,14 @@
                             
                             LoadBudgetGrid(AllocatedBy);
                             GetFinanceHeaderValue(rId, false);
+                            var ChkPlan = $("#chkPlan");
+                            var ChkBudget = $("#chkBudget");
+                            var ChkForeCast = $("#chkForeCast");
+                            var ChkActual = $("#chkActual");
+                            ShowHideColumns(ChkPlan[0]);
+                            ShowHideColumns(ChkBudget[0]);
+                            ShowHideColumns(ChkForeCast[0]);
+                            ShowHideColumns(ChkActual[0]);
                             //var rowIndex = myTreeGrid.getRowIndex(rId);
                             //debugger;
                             //if (rowIndex == 0) {

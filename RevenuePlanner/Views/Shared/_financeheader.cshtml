@@ -69,6 +69,7 @@
         $('#divGridView').load(url + '?budgetId=' + backBudgetid);
         ShowHideControls("MainGrid");
         GetFinanceHeaderValue(backBudgetid, true);
+        RefreshBudgetDropdown();
         //myApp.hidePleaseWait();
     }
     $(document).ready(function () {

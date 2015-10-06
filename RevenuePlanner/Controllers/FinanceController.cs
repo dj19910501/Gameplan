@@ -116,14 +116,25 @@ namespace RevenuePlanner.Controllers
             if (DetailId != null)
             {
                 var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
-                objFinanceHeader.Budget = Convert.ToDouble(temp[2]);
-                objFinanceHeader.Forecast = Convert.ToDouble(temp[3]);
-                objFinanceHeader.Planned = Convert.ToDouble(temp[4]);
-                objFinanceHeader.Actual = Convert.ToDouble(temp[5]);
+                if (temp != null)
+                {
+                    objFinanceHeader.Budget = Math.Round(Convert.ToDouble(temp[2]), 2);
+                    objFinanceHeader.Forecast = Math.Round(Convert.ToDouble(temp[3]), 2);
+                    objFinanceHeader.Planned = Math.Round(Convert.ToDouble(temp[4]), 2);
+                    objFinanceHeader.Actual = Math.Round(Convert.ToDouble(temp[5]), 2);
+                }
+                else
+                {
+                    objFinanceHeader.Budget = 0;
+                    objFinanceHeader.Forecast = 0;
+                    objFinanceHeader.Planned = 0;
+                    objFinanceHeader.Actual = 0;
+                }
                 objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
                 objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
                 objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
                 objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+
                 TempData["FinanceHeader"] = objFinanceHeader;
                 gridRowModel.FinanemodelheaderObj = Common.CommonGetFinanceHeaderValue(objFinanceHeader);
             }
@@ -157,7 +168,7 @@ namespace RevenuePlanner.Controllers
             List<DhtmlxGridRowDataModel> gridRowData = new List<DhtmlxGridRowDataModel>();
             try
             {
-                 _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+                _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
                 //IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
                 _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
                 //IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
@@ -305,8 +316,8 @@ namespace RevenuePlanner.Controllers
               .Select(r => CreateMainGridItem(dataTable, r))
               .ToList();
             List<string> ParentData = new List<string>();
-            
-            
+
+
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             // Change By Nishant Sheth
             //if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
@@ -340,10 +351,10 @@ namespace RevenuePlanner.Controllers
 
                 actual = Convert.ToString(GetSumofValueMainGrid(dataTable, id, "Actual"));
 
-				 if (_IsBudgetCreate_Edit)
+                if (_IsBudgetCreate_Edit)
                 {
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />";
-                strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
+                    strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
                 }
                 else
                 {
@@ -360,7 +371,7 @@ namespace RevenuePlanner.Controllers
                 if (_IsForecastCreate_Edit)
                 {
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />";
-                strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
+                    strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
                 }
                 else
                 {
@@ -385,17 +396,53 @@ namespace RevenuePlanner.Controllers
         #region Methods for Get Header Value
         public ActionResult GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly", bool IsMain = false)
         {
-            FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
-            if (TempData["FinanceHeader"] != null)
+            //FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
+            //if (TempData["FinanceHeader"] != null)
+            //{
+            //    objfinanceheader = TempData["FinanceHeader"] as FinanceModelHeaders;
+            //}
+            //objfinanceheader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+            //objfinanceheader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            //objfinanceheader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            //objfinanceheader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+            DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
+            FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
+            if (IsMain)
             {
-                objfinanceheader = TempData["FinanceHeader"] as FinanceModelHeaders;
-            }
-            objfinanceheader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
-            objfinanceheader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
-            objfinanceheader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
-            objfinanceheader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+                gridRowModel = GetFinanceMainGridData(budgetId);
+                var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null).Select(a => a.Id).FirstOrDefault();
+                if (DetailId != null)
+                {
+                    var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
+                    if (temp != null)
+                    {
+                        objFinanceHeader.Budget = Math.Round(Convert.ToDouble(temp[2]), 2);
+                        objFinanceHeader.Forecast = Math.Round(Convert.ToDouble(temp[3]), 2);
+                        objFinanceHeader.Planned = Math.Round(Convert.ToDouble(temp[4]), 2);
+                        objFinanceHeader.Actual = Math.Round(Convert.ToDouble(temp[5]), 2);
+                    }
+                    else
+                    {
+                        objFinanceHeader.Budget = 0;
+                        objFinanceHeader.Forecast = 0;
+                        objFinanceHeader.Planned = 0;
+                        objFinanceHeader.Actual = 0;
+                    }
+                    objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+                    objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+                    objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+                    objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
 
-            return PartialView("_financeheader", objfinanceheader);
+                    TempData["FinanceHeader"] = objFinanceHeader;
+                    gridRowModel.FinanemodelheaderObj = Common.CommonGetFinanceHeaderValue(objFinanceHeader);
+                }
+            }
+            else
+            {
+                objFinanceHeader = TempData["FinanceHeader"] as FinanceModelHeaders;
+            }
+
+            return PartialView("_financeheader", objFinanceHeader);
         }
         #endregion
 
@@ -486,10 +533,20 @@ namespace RevenuePlanner.Controllers
 
             var temp = items.Where(a => a.id == Convert.ToString(BudgetId)).Select(a => a.data).FirstOrDefault();
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
-            objFinanceHeader.Budget = Convert.ToDouble(temp[temp.Count - 4]);
-            objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
-            objFinanceHeader.Planned = Convert.ToDouble(temp[temp.Count - 2]);
-            objFinanceHeader.Actual = Convert.ToDouble(temp[temp.Count - 1]);
+            if (temp != null)
+            {
+                objFinanceHeader.Budget = Math.Round(Convert.ToDouble(temp[temp.Count - 4]), 2);
+                objFinanceHeader.Forecast = Math.Round(Convert.ToDouble(temp[temp.Count - 3]), 2);
+                objFinanceHeader.Planned = Math.Round(Convert.ToDouble(temp[temp.Count - 2]), 2);
+                objFinanceHeader.Actual = Math.Round(Convert.ToDouble(temp[temp.Count - 1]), 2);
+            }
+            else
+            {
+                objFinanceHeader.Budget = 0;
+                objFinanceHeader.Forecast = 0;
+                objFinanceHeader.Planned = 0;
+                objFinanceHeader.Actual = 0;
+            }
             objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
             objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
             objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
@@ -632,8 +689,8 @@ namespace RevenuePlanner.Controllers
               .Select(r => CreateItem(dataTable, r))
               .ToList();
             List<string> ParentData = new List<string>();
-            ParentData.Add(name);
-            string strAddRow=string.Empty;
+            ParentData.Add(HttpUtility.HtmlDecode(name));
+            string strAddRow = string.Empty;
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
@@ -643,7 +700,7 @@ namespace RevenuePlanner.Controllers
                 lineitemcount = dataTable
                  .Rows
                  .Cast<DataRow>()
-                 .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Int32>("LineItemCount"));
+                 .Where(rw => rw.Field<Int32>("Id") == id).Sum(chld => chld.Field<Int32>("LineItemCount"));
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
                 //ParentData.Add(Convert.ToString(lineitemcount));
             }
@@ -830,6 +887,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult UpdateBudgetGridData(int BudgetId = 0, bool IsQuaterly = true, string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0)
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
+            nValue = HttpUtility.HtmlDecode(nValue);
             if (ColumnName == "Task Name")
             {
                 Budget objBudget = new Budget();

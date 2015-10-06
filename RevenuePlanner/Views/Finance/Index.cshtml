@@ -12,7 +12,7 @@
 <script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid.js")"></script>
 
 <style>
-    .grid_add:hover:after {
+    /*.grid_add:hover:after {
         background: #333;
         background: rgba(0,0,0,.8);
         border-radius: 5px;
@@ -24,7 +24,7 @@
         cursor: pointer;
         z-index: 98;
         width: 55px;
-    }
+    }*/
 </style>
 @section PlanHeader{
     <div id="headerValue">
@@ -338,55 +338,91 @@
         }
         var visibility = "false,";
         //mygrid.setColumnsVisibility("true,false,false,false,false");
-        var BorderLength = 4;
-        var ChkPlan = $("#chkPlan");
-        var ChkBudget = $("#chkBudget");
-        var ChkForeCast = $("#chkForeCast");
-        var ChkActual = $("#chkActual");
-        if (!ChkPlan[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
-        if (!ChkBudget[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
-        if (!ChkForeCast[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
-        if (!ChkActual[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
+        //for (var s = 1; s <= 24; s++) {
+        //    myTreeGrid.setColumnHidden(s, false);
+        //}
 
-        var BorderCount = 2;
-        for (var j = 0; j < BorderLength; j++) {
+        //debugger;
 
-            $('.gridbox .xhdr .hdr td:nth-child(' + BorderCount + ')').css("border-right", "2px Solid #808080");
-            $('.gridbox .objbox td:nth-child(' + BorderCount + ')').css("border-right", "2px Solid #808080");
-            BorderCount += BorderLength;
-        }
 
 
         if (IsChecked) {
             for (var i = 0; i < LoopLength; i++) {
-
                 myTreeGrid.setColumnHidden(Count, false);
                 Count = Count + 4;
-
             }
-
         }
 
-
         if (!IsChecked) {
-
             for (var i = 0; i < LoopLength; i++) {
                 myTreeGrid.setColumnHidden(Count, true);
                 Count = Count + 4;
-
             }
         }
         //visibility += visibility.slice(0, -1);
         // myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         $("#gridbox").find("table").css("width", "100%");
+
+        //var BorderLength = 4;
+        //var ChkPlan = $("#chkPlan");
+        //var ChkBudget = $("#chkBudget");
+        //var ChkForeCast = $("#chkForeCast");
+        //var ChkActual = $("#chkActual");
+        
+        //if (!ChkBudget[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        //if (!ChkForeCast[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        //if (!ChkPlan[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        //if (!ChkActual[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        ////$('.gridbox .xhdr .hdr td').css('border-color', '#e7f1ff #a4bed4 #a4bed4 #e7f1ff');
+        ////$('.gridbox .xhdr .hdr td').css('border-width', '1px 1px 1px 1px');
+
+        //var BorderCount = 3;
+        //var loopChange = 0;
+        //$('.gridbox .xhdr .hdr td').css("border-right", "");
+        //$('.gridbox .objbox td').css("border-right", "");
+        //for (var j = 1; j <= 23; j++) {
+        //    //debugger;
+        //    if (BorderCount == j) {
+        //        var check = $('.gridbox .xhdr .hdr td:nth-child(' + j + ')').css("display");
+        //        if (check == "none") {
+        //            if (BorderLength == 2) {
+        //                if (ChkBudget[0].checked && ChkActual[0].checked) {
+        //                    BorderCount = BorderCount + 2;
+        //                }
+        //                else {
+        //                    BorderCount = BorderCount + 1;
+        //                }
+        //            }
+        //            else {
+        //                BorderCount = BorderCount + 1;
+        //            }
+        //        }
+        //        $('.gridbox .xhdr .hdr td:nth-child(' + parseInt(BorderCount) + ')').css("border-right", "2px Solid #808080");
+        //        $('.gridbox .objbox td:nth-child(' + parseInt(BorderCount) + ')').css("border-right", "2px Solid #808080");
+        //    BorderCount += BorderLength;
+
+        //    } else {
+        //        var check = $('.gridbox .xhdr .hdr td:nth-child(' + j + ')').css("display");
+        //        if (check == "none") {
+        //            if (BorderLength == 2) {
+        //                if (ChkBudget[0].checked && ChkActual[0].checked) {
+        //                } else {
+        //                    BorderCount = BorderCount + 1;
+        //                }
+        //            } else {
+        //                BorderCount = BorderCount + 1;
+        //            }
+        //        }
+        //    }
+        //}
         //myTreeGrid.setColumnsVisibility(visibility);
         //myTreeGrid.init();
     }
