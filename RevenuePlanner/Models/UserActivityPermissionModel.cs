@@ -23,6 +23,8 @@ namespace RevenuePlanner.Models
 
         public string Title { get; set; }
 
+        public string ItemCode { get; set; } //Added by Rahul Shah on 06/10/2015 for PL#1638
+
         public DateTime? CreatedDate { get; set; }
 
         public Guid UserId { get; set; }

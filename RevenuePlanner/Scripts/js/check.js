@@ -70,7 +70,33 @@ jQuery.fn.extend({
     dgCheck: function (div) {
 	$(this).attr("checked",true);
 	$(div).data('checked',true).css({backgroundPosition:"left -"+(elmHeight*2)+"px"});
+        //Added by Rahul Shah on 06/10/2015 for PL#1638
+	if ($('.Yes_BudgetCreateEdit').attr('checked') == 'checked') {
+	    $('.Yes_BudgetView').attr("checked", true);
+	    $('.Yes_BudgetView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.No_BudgetView').attr("checked", false);
+	    $('.No_BudgetView').parent().data('checked', false).css({ backgroundPosition: "left 0" });
 
+	}
+
+	if ($('.Yes_ForecastCreateEdit').attr('checked') == 'checked') {
+	    $('.Yes_ForecastView').attr("checked", true);
+	    $('.Yes_ForecastView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.No_ForecastView').attr("checked", false);
+	    $('.No_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0" });
+	}
+	if ($('.No_BudgetCreateEdit').attr('checked') == 'checked' && $('.No_BudgetView').attr('checked') == 'checked') {
+	    $('.No_ForecastCreateEdit').attr("checked", true);
+	    $('.No_ForecastCreateEdit').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.Yes_ForecastCreateEdit').attr("checked", false);
+	    $('.Yes_ForecastCreateEdit').parent().data('checked', false).css({ backgroundPosition: "left 0" });
+
+	    $('.No_ForecastView').attr("checked", true);
+	    $('.No_ForecastView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.Yes_ForecastView').attr("checked", false);
+	    $('.Yes_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0" });
+
+	}
 },
     dgUncheck: function (div) {
 	$(this).attr("checked",false);
@@ -78,6 +104,32 @@ jQuery.fn.extend({
 		$(div).data('checked',false).css({backgroundPosition:"left 0"});
 	else
 		$(this).parent().data("checked",false).css({backgroundPosition:"left 0"});
+        //Added by Rahul Shah on 06/10/2015 for PL#1638
+	if ($('.Yes_BudgetCreateEdit').attr('checked') == 'checked') {
+	    $('.Yes_BudgetView').attr("checked", true);
+	    $('.Yes_BudgetView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.No_BudgetView').attr("checked", false);
+	    $('.No_BudgetView').parent().data('checked', false).css({ backgroundPosition: "left 0" });
 
+	}
+
+	if ($('.Yes_ForecastCreateEdit').attr('checked') == 'checked') {
+	    $('.Yes_ForecastView').attr("checked", true);
+	    $('.Yes_ForecastView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.No_ForecastView').attr("checked", false);
+	    $('.No_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0" });
+	}
+	if ($('.No_BudgetCreateEdit').attr('checked') == 'checked' && $('.No_BudgetView').attr('checked') == 'checked') {
+	    $('.No_ForecastCreateEdit').attr("checked", true);
+	    $('.No_ForecastCreateEdit').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.Yes_ForecastCreateEdit').attr("checked", false);
+	    $('.Yes_ForecastCreateEdit').parent().data('checked', false).css({ backgroundPosition: "left 0" });
+
+	    $('.No_ForecastView').attr("checked", true);
+	    $('.No_ForecastView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px" });
+	    $('.Yes_ForecastView').attr("checked", false);
+	    $('.Yes_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0" });
+
+	}
 }
 });
