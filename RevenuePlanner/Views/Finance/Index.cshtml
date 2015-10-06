@@ -75,6 +75,9 @@
     <div id="divGridView" style="width: 100%; clear: both;">
         @Html.Partial("_MainGrid", MainGridData)
     </div>
+    <div id="dvNoData" style="width: 100%; clear: both; display:none; font-weight:bold;">
+        No data found.
+    </div>
 
 </div>
 <script type="text/javascript">
@@ -106,6 +109,8 @@
             $('#divGridView').load(url + '?budgetId=' + budgetId);
         });*@
         $("#btnAddNewBudget").click(function () {
+            $("#divGridView").show();
+            $("#dvNoData").hide();
             var url = '@Url.Content("~/Finance/LoadnewBudget/")';
             $('#divGridView').load(url);
             RefreshBudgetDropdown(true);
@@ -114,7 +119,7 @@
         //var testitem = "option[text=Budget3]";
         //$("#ddlParentFinance").find(testitem).attr("selected", "selected");
         //var budgetID = $("#ddlParentFinance").val();
-        RefreshMainGridData(_budgetIdMain);
+        //RefreshMainGridData(_budgetIdMain);
         GetFinanceHeaderValue(_budgetIdMain, true);
         // GetFinanceHeaderValue(_budgetId);
         //BindChildBudgetDrp(_budgetId);
@@ -126,6 +131,8 @@
     });
 
     function RefreshMainGridData(BudgetId) {
+        $("#divGridView").show();
+        $("#dvNoData").hide();
         //debugger;
         //var budgetID = $("#ddlParentFinance").val();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
@@ -146,11 +153,18 @@
         $("#btnMultiselect_ddlParentFinance").find("span").text(htmlDecode(txtval));
     });
     $("#ddlParentFinanceMain").change(function () {
-
+        $("#divGridView").show();
+        $("#dvNoData").hide();
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         $('#hdn_BudgetId').val(budgetIDMain);
+        if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
         RefreshMainGridData(budgetIDMain);
         GetFinanceHeaderValue(budgetIDMain, true);
+        }
+        else {
+            $("#divGridView").hide();
+            $("#dvNoData").show();
+        }
         //if (pageName == "EditBudget") {
         //    GetFinanceHeaderValue(budgetID);
         //    EditBudget(budgetID, false);
@@ -324,7 +338,6 @@
         }
         var visibility = "false,";
         //mygrid.setColumnsVisibility("true,false,false,false,false");
-        debugger;
         var BorderLength = 4;
         var ChkPlan = $("#chkPlan");
         var ChkBudget = $("#chkBudget");
@@ -413,10 +426,10 @@
         var $html = '';
         if (IsAddNew != undefined && IsAddNew != null) {
             if (IsAddNew == true) {
-                $html = '<option value="">Please Select</option>';
+                $html = '<option value="0">Please Select</option>';
             }
         }
-        else {
+        //else {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Finance/RefreshBudgetList/")',
@@ -433,14 +446,22 @@
                     }
                 }
             });
-        }
+        //}
         $dropdown.append($html);
 
         $dropdown.multiselect("refresh");
+        if (IsAddNew != undefined && IsAddNew != null && IsAddNew == true) {
+            $dropdown.val(0);
+            $dropdown.find("input[type='search']").val(0);
+            var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + 0 + "']").next('span').html();
+            $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
+        }
+        else {
         $dropdown.val(_budgetId);
         $dropdown.find("input[type='search']").val(_budgetId);
         var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + _budgetId + "']").next('span').html();
         $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
+        }
     }
 
     //$.ajaxSetup({

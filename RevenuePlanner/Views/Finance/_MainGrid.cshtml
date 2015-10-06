@@ -3,6 +3,7 @@
 @{
     var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
     var BudgetId = ViewBag.BudgetId != null ? (Int32)ViewBag.BudgetId : 0;
+    var isViewPermission = false;
 }
 <style>
         div.xhdr {
@@ -144,7 +145,7 @@
         //myGrid.setColSorting("int,str,str");
         //myGrid.init();
         //myGrid.parse(data, "json");
-
+        
         myTreeGrid = new dhtmlXGridObject('gridbox');
         myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         myTreeGrid.setImageSize(1, 1);
@@ -158,6 +159,10 @@
         myTreeGrid.setColumnIds("title,addrow,budget,forecast,planned,actual,action,lineitems");
         //myTreeGrid.setColSorting("str,na,str,str,na,str");
         myTreeGrid.attachEvent("onEditCell", OnEditCell);
+        //myTreeGrid.attachEvent("onXLE", function () {
+        //    if (!myTreeGrid.getRowsNum())
+        //        myTreeGrid.addRow(myTreeGrid.uid(), "no data");
+        //})
         myTreeGrid.attachEvent("onOpenEnd", function () {
             var tableheight = $(".objbox").find("table").height();
             $("#gridbox").css("height", tableheight + 100);
@@ -165,6 +170,11 @@
             $("#gridbox").find("table").css("width", gridWidth);
             return true;
         });
+        @*var isview = '@isViewPermission';
+        if (isview.toLowerCase() == 'true')
+        {
+            myTreeGrid.setColumnHidden(1, true);
+        }*@
         myTreeGrid.init();
         var _budgetIdVal = $("#hdnBudgetId").val();
         $("#hdn_BudgetId").val(_budgetIdVal);
@@ -237,7 +247,8 @@
         }
     }
 
-    function OnEditCell(stage, id, index,newVal,oldVal) {
+    function OnEditCell(stage, id, index, newVal, oldVal) {
+        //alert(stage);
         //debugger;
         var _val = $("#hdn_row_parentId").val();
         var splitRowParentIds = '';
@@ -270,7 +281,7 @@
                 }
                 else {
                     SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID);
-                    RefreshBudgetDropdown();
+                    RefreshBudgetDropdown(false);
                     //myTreeGrid.openItem(parentId);
                     _newrowid = "";
                     _isNewRowAdd = false;
