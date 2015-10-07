@@ -135,35 +135,71 @@ else
                             <dd>
                                 @foreach (var item in Model.Where(act => act.ParentId == headerItem.ApplicationActivityId))
                                 {
-                                    <div class="dd-row">
-                                        <label title="@Html.Raw(item.Title)">@Html.Raw(item.Title)</label>
-                                        @if (item.Permission == "Yes")
-                                        {
-                                            <span class="radioGrp">
-                                                <span class="check_signup">
-                                                    <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
-                                                    Yes
+                                    if (headerItem.Title.ToUpper() == Enums.ApplicationActivity.Finance.ToString().ToUpper())
+                                    {
+                                        <div class="dd-row">
+                                            <label title="@Html.Raw(item.Title)">@Html.Raw(item.Title)</label>
+                                            @if (item.Permission == "Yes")
+                                            {
+                                                <span class="radioGrp">
+                                                    <span class="check_signup">
+                                                        <input class="Yes_@item.ItemCode" type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
+                                                        Yes
+                                                    </span>
+                                                    <span class="check_signup">
+                                                        <input class="No_@item.ItemCode" type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
+                                                        No
+                                                    </span>
                                                 </span>
-                                                <span class="check_signup">
-                                                    <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
-                                                    No
+                                            }
+                                            else
+                                            {
+                                                <span class="radioGrp">
+                                                    <span class="check_signup">
+                                                        <input class="Yes_@item.ItemCode" type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
+                                                        Yes
+                                                    </span>
+                                                    <span class="check_signup">
+                                                        <input class="No_@item.ItemCode" type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
+                                                        No
+                                                    </span>
                                                 </span>
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="radioGrp">
-                                                <span class="check_signup">
-                                                    <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
-                                                    Yes
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="dd-row">
+                                            <label title="@Html.Raw(item.Title)">@Html.Raw(item.Title)</label>
+                                            @if (item.Permission == "Yes")
+                                            {
+                                                <span class="radioGrp">
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
+                                                        Yes
+                                                    </span>
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
+                                                        No
+                                                    </span>
                                                 </span>
-                                                <span class="check_signup">
-                                                    <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
-                                                    No
+                                            }
+                                            else
+                                            {
+                                                <span class="radioGrp">
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_Yes_@item.ApplicationActivityId" style="background-position: left 0px;" autocomplete="off" />
+                                                        Yes
+                                                    </span>
+                                                    <span class="check_signup">
+                                                        <input type="radio" name="radio_permission_@item.ApplicationActivityId" id="radio_No_@item.ApplicationActivityId" checked="checked" style="background-position: left -34px;" autocomplete="off" />
+                                                        No
+                                                    </span>
                                                 </span>
-                                            </span>
-                                        }
-                                    </div>
+                                            }
+                                        </div>
+                                    }
+
                                 }
                             </dd>
                         </dl>

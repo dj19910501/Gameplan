@@ -12,7 +12,7 @@
 <script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid.js")"></script>
 
 <style>
-    .grid_add:hover:after {
+    /*.grid_add:hover:after {
         background: #333;
         background: rgba(0,0,0,.8);
         border-radius: 5px;
@@ -24,7 +24,7 @@
         cursor: pointer;
         z-index: 98;
         width: 55px;
-    }
+    }*/
 </style>
 @section PlanHeader{
     <div id="headerValue">
@@ -75,6 +75,9 @@
     <div id="divGridView" style="width: 100%; clear: both;">
         @Html.Partial("_MainGrid", MainGridData)
     </div>
+    <div id="dvNoData" style="width: 100%; clear: both; display:none; font-weight:bold;">
+        No data found.
+    </div>
 
 </div>
 <script type="text/javascript">
@@ -106,6 +109,8 @@
             $('#divGridView').load(url + '?budgetId=' + budgetId);
         });*@
         $("#btnAddNewBudget").click(function () {
+            $("#divGridView").show();
+            $("#dvNoData").hide();
             var url = '@Url.Content("~/Finance/LoadnewBudget/")';
             $('#divGridView').load(url);
             RefreshBudgetDropdown(true);
@@ -126,6 +131,8 @@
     });
 
     function RefreshMainGridData(BudgetId) {
+        $("#divGridView").show();
+        $("#dvNoData").hide();
         //debugger;
         //var budgetID = $("#ddlParentFinance").val();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
@@ -146,11 +153,18 @@
         $("#btnMultiselect_ddlParentFinance").find("span").text(htmlDecode(txtval));
     });
     $("#ddlParentFinanceMain").change(function () {
-
+        $("#divGridView").show();
+        $("#dvNoData").hide();
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         $('#hdn_BudgetId').val(budgetIDMain);
+        if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
         RefreshMainGridData(budgetIDMain);
         GetFinanceHeaderValue(budgetIDMain, true);
+        }
+        else {
+            $("#divGridView").hide();
+            $("#dvNoData").show();
+        }
         //if (pageName == "EditBudget") {
         //    GetFinanceHeaderValue(budgetID);
         //    EditBudget(budgetID, false);
@@ -324,56 +338,91 @@
         }
         var visibility = "false,";
         //mygrid.setColumnsVisibility("true,false,false,false,false");
-        debugger;
-        var BorderLength = 4;
-        var ChkPlan = $("#chkPlan");
-        var ChkBudget = $("#chkBudget");
-        var ChkForeCast = $("#chkForeCast");
-        var ChkActual = $("#chkActual");
-        if (!ChkPlan[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
-        if (!ChkBudget[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
-        if (!ChkForeCast[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
-        if (!ChkActual[0].checked) {
-            BorderLength = BorderLength - 1;
-        }
+        //for (var s = 1; s <= 24; s++) {
+        //    myTreeGrid.setColumnHidden(s, false);
+        //}
 
-        var BorderCount = 2;
-        for (var j = 0; j < BorderLength; j++) {
+        //debugger;
 
-            $('.gridbox .xhdr .hdr td:nth-child(' + BorderCount + ')').css("border-right", "2px Solid #808080");
-            $('.gridbox .objbox td:nth-child(' + BorderCount + ')').css("border-right", "2px Solid #808080");
-            BorderCount += BorderLength;
-        }
 
 
         if (IsChecked) {
             for (var i = 0; i < LoopLength; i++) {
-
                 myTreeGrid.setColumnHidden(Count, false);
                 Count = Count + 4;
-
             }
-
         }
 
-
         if (!IsChecked) {
-
             for (var i = 0; i < LoopLength; i++) {
                 myTreeGrid.setColumnHidden(Count, true);
                 Count = Count + 4;
-
             }
         }
         //visibility += visibility.slice(0, -1);
         // myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         $("#gridbox").find("table").css("width", "100%");
+
+        //var BorderLength = 4;
+        //var ChkPlan = $("#chkPlan");
+        //var ChkBudget = $("#chkBudget");
+        //var ChkForeCast = $("#chkForeCast");
+        //var ChkActual = $("#chkActual");
+        
+        //if (!ChkBudget[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        //if (!ChkForeCast[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        //if (!ChkPlan[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        //if (!ChkActual[0].checked) {
+        //    BorderLength = BorderLength - 1;
+        //}
+        ////$('.gridbox .xhdr .hdr td').css('border-color', '#e7f1ff #a4bed4 #a4bed4 #e7f1ff');
+        ////$('.gridbox .xhdr .hdr td').css('border-width', '1px 1px 1px 1px');
+
+        //var BorderCount = 3;
+        //var loopChange = 0;
+        //$('.gridbox .xhdr .hdr td').css("border-right", "");
+        //$('.gridbox .objbox td').css("border-right", "");
+        //for (var j = 1; j <= 23; j++) {
+        //    //debugger;
+        //    if (BorderCount == j) {
+        //        var check = $('.gridbox .xhdr .hdr td:nth-child(' + j + ')').css("display");
+        //        if (check == "none") {
+        //            if (BorderLength == 2) {
+        //                if (ChkBudget[0].checked && ChkActual[0].checked) {
+        //                    BorderCount = BorderCount + 2;
+        //                }
+        //                else {
+        //                    BorderCount = BorderCount + 1;
+        //                }
+        //            }
+        //            else {
+        //                BorderCount = BorderCount + 1;
+        //            }
+        //        }
+        //        $('.gridbox .xhdr .hdr td:nth-child(' + parseInt(BorderCount) + ')').css("border-right", "2px Solid #808080");
+        //        $('.gridbox .objbox td:nth-child(' + parseInt(BorderCount) + ')').css("border-right", "2px Solid #808080");
+        //    BorderCount += BorderLength;
+
+        //    } else {
+        //        var check = $('.gridbox .xhdr .hdr td:nth-child(' + j + ')').css("display");
+        //        if (check == "none") {
+        //            if (BorderLength == 2) {
+        //                if (ChkBudget[0].checked && ChkActual[0].checked) {
+        //                } else {
+        //                    BorderCount = BorderCount + 1;
+        //                }
+        //            } else {
+        //                BorderCount = BorderCount + 1;
+        //            }
+        //        }
+        //    }
+        //}
         //myTreeGrid.setColumnsVisibility(visibility);
         //myTreeGrid.init();
     }
@@ -413,10 +462,10 @@
         var $html = '';
         if (IsAddNew != undefined && IsAddNew != null) {
             if (IsAddNew == true) {
-                $html = '<option value="">Please Select</option>';
+                $html = '<option value="0">Please Select</option>';
             }
         }
-        else {
+        //else {
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Finance/RefreshBudgetList/")',
@@ -433,14 +482,22 @@
                     }
                 }
             });
-        }
+        //}
         $dropdown.append($html);
 
         $dropdown.multiselect("refresh");
+        if (IsAddNew != undefined && IsAddNew != null && IsAddNew == true) {
+            $dropdown.val(0);
+            $dropdown.find("input[type='search']").val(0);
+            var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + 0 + "']").next('span').html();
+            $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
+        }
+        else {
         $dropdown.val(_budgetId);
         $dropdown.find("input[type='search']").val(_budgetId);
         var spanSelectedItem = $("#multipleselect_ddlParentFinanceMain").find("input[value='" + _budgetId + "']").next('span').html();
         $('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
+        }
     }
 
     //$.ajaxSetup({

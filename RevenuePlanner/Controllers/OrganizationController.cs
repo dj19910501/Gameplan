@@ -158,7 +158,7 @@ namespace RevenuePlanner.Controllers
                 List<RoleModel> listrolemodel = new List<RoleModel>();
                 IList<SelectListItem> RoleList = new List<SelectListItem>();
                 RoleList = rolelist.Select(role => new SelectListItem() { Text = role.Title, Value = role.RoleId.ToString(), Selected = false })
-                                .OrderBy(it => it.Text,new AlphaNumericComparer()).ToList();
+                                .OrderBy(it => it.Text, new AlphaNumericComparer()).ToList();
 
                 //// Get Application Activity.
                 var activitylist = bdsuserrepository.GetUserApplicationactivitylist(Sessions.ApplicationId);
@@ -215,7 +215,7 @@ namespace RevenuePlanner.Controllers
                 {
                     Text = role.Title,
                     Value = Convert.ToString(role.RoleId),
-                }).OrderBy(role => role.Text , new AlphaNumericComparer());
+                }).OrderBy(role => role.Text, new AlphaNumericComparer());
 
                 ViewData["roles"] = rolelistData;
                 ViewData["roleselected"] = selectedrole;
@@ -623,6 +623,7 @@ namespace RevenuePlanner.Controllers
                         uapobj.CreatedDate = item.CreatedDate;
                         uapobj.ParentId = item.ParentId;
                         uapobj.Title = item.ActivityTitle;
+                        uapobj.ItemCode = item.Code;    //Added by Rahul Shah on 06/10/2015 for PL#1638
                         uapobj.Permission = Enums.UserActivityPermissionType.No.ToString();
                         if (userActivity != null)
                         {

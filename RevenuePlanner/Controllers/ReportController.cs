@@ -100,7 +100,7 @@ namespace RevenuePlanner.Controllers
 
             lstCustomFields = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId &&
                 customfield.EntityType == tactic &&
-                customfield.IsRequired == true &&
+                //customfield.IsRequired == true && // Comment due to ticket #1652
                 customfield.CustomFieldTypeId == customFieldTypeId &&
                 customfield.IsDisplayForFilter == true &&
                 customfield.IsDeleted == false).ToList();
