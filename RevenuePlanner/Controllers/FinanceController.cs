@@ -46,8 +46,8 @@ namespace RevenuePlanner.Controllers
             ViewBag.childbudgetlist = lstchildbudget;
             ViewBag.ActiveMenu = activeMenu;
             List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
-            lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.months.ToString() });
-            lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Quarterly", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
             lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
             //financeObj.FinanemodelheaderObj = Common.GetFinanceHeaderValue();
@@ -210,7 +210,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = new BudgetAmount();
                         PlanLineItemsId = new List<int>();
                         PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == i.Id).Select(a => a.PlanLineItemId).ToList();
-                        objBudgetAmount = GetAmountValue(false, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
+                        objBudgetAmount = GetAmountValue("quarters", BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
                         //rowId = Regex.Replace(i.Name.Trim(), @"\s+", "") + i.Id.ToString() + (i.ParentId == null ? "0" : i.ParentId.ToString());
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />", objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
                         dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
@@ -449,7 +449,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region Get parent Child dropdown value
+        #region Get parent Child dropdown value and bind other dropdowns
         public JsonResult GetChildBudget(int BudgetId = 0)
         {
             var lstchildbudget = Common.GetChildBudgetlist(BudgetId);
@@ -461,10 +461,23 @@ namespace RevenuePlanner.Controllers
             var lstparnetbudget = Common.GetParentBudgetlist(BudgetId);
             return Json(lstparnetbudget, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetChildTimeFrame()
+        {
+            List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
+            lstViewByAllocated.Add(new ViewByModel { Text = "This Year (Quarterly)", Value = Enums.PlanAllocatedBy.quarters.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 1", Value = Enums.QuarterWithSpace.Quarter1.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 2", Value = Enums.QuarterWithSpace.Quarter2.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 3", Value = Enums.QuarterWithSpace.Quarter3.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 4", Value = Enums.QuarterWithSpace.Quarter4.ToString() });
+
+            return Json(lstViewByAllocated, JsonRequestBehavior.AllowGet);
+        }
         #endregion
 
         #region Get Budget/Forecast Grid Data
-        public JsonResult EditBudgetGridData(int BudgetId = 0, bool IsQuaterly = true)
+        public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
             var MinBudgetid = 0; var MinParentid = 0;
@@ -519,13 +532,13 @@ namespace RevenuePlanner.Controllers
                         if (item.Id != varBudgetIds.ParentId && item.ParentId != null)
                         {
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
-                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
+                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                         }
                     }
                     else
                     {
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
-                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
+                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                     }
                 });
 
@@ -791,7 +804,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Get Budget/ForeCast/Plan/Actual Value
-        public BudgetAmount GetAmountValue(bool isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount)
+        public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount)
         {
             #region Declartion
             BudgetAmount objbudget = new BudgetAmount();
@@ -802,9 +815,6 @@ namespace RevenuePlanner.Controllers
             int currentEndMonth = 12;
             double? _Budget = 0, _ForeCast = 0, _Plan = 0, _Actual = 0;
             #endregion
-
-            if (isQuaterly)
-            {
                 List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
                 List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
                 List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
@@ -815,6 +825,10 @@ namespace RevenuePlanner.Controllers
                 List<string> _curentPlan = new List<string>();
                 List<string> _curentActual = new List<string>();
 
+            List<string> _commonQuarters = new List<string>();
+
+            if (isQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
+            {
                 #region "Get Quarter list based on loop value"
                 for (int i = 1; i <= 4; i++)
                 {
@@ -860,7 +874,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
             }
-            else
+            else if (isQuaterly == Enums.PlanAllocatedBy.months.ToString())
             {
                 for (int i = 1; i <= 12; i++)
                 {
@@ -874,6 +888,55 @@ namespace RevenuePlanner.Controllers
                     _planlist.Add(_Plan);
 
                     _Actual = ActualDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
+                    _actuallist.Add(_Actual);
+                }
+            }
+            else
+            {
+                if (isQuaterly == Enums.QuarterWithSpace.Quarter1.ToString())
+                {
+                    //_curentBudget = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentForeCast = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentPlan = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentActual = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    _commonQuarters = Q1;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter2.ToString())
+                {
+                    //_curentBudget = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentForeCast = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentPlan = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentActual = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    _commonQuarters = Q2;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter3.ToString())
+                {
+                    //_curentBudget = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentForeCast = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentPlan = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentActual = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    _commonQuarters = Q3;
+                }
+                else if (isQuaterly == Enums.QuarterWithSpace.Quarter4.ToString())
+                {
+                    //_curentBudget = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentForeCast = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentPlan = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    //_curentActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
+                    _commonQuarters = Q4;
+                }
+                foreach (var item in _commonQuarters)
+                {
+                    _Budget = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Budget);
+                    _budgetlist.Add(_Budget);
+
+                    _ForeCast = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Forecast);
+                    _forecastlist.Add(_ForeCast);
+
+                    _Plan = PlanDetailAmount.Where(a => a.Period == item).Sum(a => a.Value);
+                    _planlist.Add(_Plan);
+
+                    _Actual = ActualDetailAmount.Where(a => a.Period == item).Sum(a => a.Value);
                     _actuallist.Add(_Actual);
                 }
             }

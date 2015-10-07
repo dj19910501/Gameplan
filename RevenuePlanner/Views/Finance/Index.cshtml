@@ -138,6 +138,37 @@
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + BudgetId);
     }
+
+    function BindTimeFrameForChild(Period) {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Finance/GetChildTimeFrame/")',
+            dataType: "json",
+            async: false,
+            success: function (data) {
+
+                $("#ddlRevenueTimeFrame").html("");
+
+                for (var i = 0; i < data.length; i++) {
+
+                    var opt = new Option(data[i].Text, data[i].Value);
+                    $('#ddlRevenueTimeFrame').append(opt);
+                }
+                debugger;
+                if (Period != null && Period != '') {
+                    $("#ddlRevenueTimeFrame option[value='" + Period + "']").attr("selected", "selected");
+                }
+            }
+        });
+        $("#ddlRevenueTimeFrame").multiselect({
+            multiple: false,
+            //noneSelectedText: "Please Select",
+            selectedList: 1
+        }).multiselectfilter({
+        });
+    }
+
     $("#ddlParentFinance").change(function () {
         
         var budgetID = $("#ddlParentFinance").val();
@@ -273,13 +304,13 @@
         }
 
         myApp.showPleaseWait();
-        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
-        if (AllocatedBy == 'Quarterly') {
-            AllocatedBy = true;
-        }
-        else {
-            AllocatedBy = false;
-        }
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        //if (AllocatedBy == 'quarters') {
+        //    AllocatedBy = true;
+        //}
+        //else {
+        //    AllocatedBy = false;
+        //}
         if (BudgetId == null || BudgetId == '') {
             BudgetId = 0;
         }
@@ -288,8 +319,10 @@
             BindParentBudgetDrp(parseInt(BudgetId));
             BindChildBudgetDrp(parseInt(BudgetId));
         }
+        BindTimeFrameForChild();
         var url = '@Url.Content("~/Finance/EditBudget/")';
         $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel);
+
     }
 
     function ExpanCollapse() {
@@ -316,12 +349,15 @@
         var IsChecked = chekbox.checked;
         var Count = 0;
         var LoopLength = 0;
-        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
-        if (AllocatedBy == 'Quarterly') {
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
             LoopLength = 5;
         }
-        else {
+        else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
             LoopLength = 13;
+        }
+        else {
+            LoopLength = 4;
         }
 
         if (checkName == "Budget") {
@@ -513,13 +549,13 @@
     $("#ddlRevenueTimeFrame").change(function () {
        // debugger;
        // myApp.showPleaseWait();
-        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').text();
-        if (AllocatedBy == 'Quarterly') {
-            AllocatedBy = true;
-        }
-        else {
-            AllocatedBy = false;
-        }
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        //if (AllocatedBy == 'quarters') {
+        //    AllocatedBy = true;
+        //}
+        //else {
+        //    AllocatedBy = false;
+        //}
         LoadBudgetGrid(AllocatedBy);
         var BudgetColumns = $("#chkBudget");
         var ForeCastColumns = $("#chkForeCast");
