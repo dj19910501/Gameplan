@@ -25,6 +25,8 @@
     <div class="white-chart">
         <p class="source-sans-probold" id="budgetLabel" title="@Html.DisplayFor(model => model.BudgetTitle)">@Html.DisplayFor(model => model.BudgetTitle)</p>
         <p class="value source-sans-prolight" id="budgetID">$ @Html.DisplayFor(model => model.Budget)</p>
+
+      
         @* <a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
     </div>
     <div style="margin-top: 27px; width:30%">
@@ -63,6 +65,12 @@
     </script>*@
 <script type="text/javascript">
     // var pageName = "MainGrid";
+   
+    formatBudgetValues("#budgetID");
+    formatForecastValues("#ForecastID");
+    formatPlannedValues("#PlannedID");
+    formatActualValues("#ActualID");
+    //setBootstrapTooltip("#budgetID", 45144, 4, false);
     function FinanceBack() {
         pageName = "MainGrid";
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
@@ -72,6 +80,9 @@
         RefreshBudgetDropdown();
         //myApp.hidePleaseWait();
     }
+
+   
+  
     $(document).ready(function () {
         if (pageName == "MainGrid") {
             $("#divFinanceBack").css("display", "none");
@@ -80,4 +91,31 @@
             $("#divFinanceBack").css("display", "block");
         }
     });
+
+    function formatBudgetValues(idName) {
+        var budgetValue = $(idName).html();
+        if (typeof (maxsize) === 'undefined') maxsize = 5;
+        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+    }
+
+    function formatForecastValues(idName) {
+        var budgetValue = $(idName).html();
+        if (typeof (maxsize) === 'undefined') maxsize = 5;
+        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+    }
+
+    function formatPlannedValues(idName) {
+        var budgetValue = $(idName).html();
+        if (typeof (maxsize) === 'undefined') maxsize = 5;
+        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+    }
+
+    function formatActualValues(idName) {
+        var budgetValue = $(idName).html();
+        if (typeof (maxsize) === 'undefined') maxsize = 5;
+        setBootstrapTooltip(idName, budgetValue, maxsize, true);
+    }
+
+
+  
 </script>
