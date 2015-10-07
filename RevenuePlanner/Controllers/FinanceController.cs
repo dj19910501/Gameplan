@@ -53,7 +53,7 @@ namespace RevenuePlanner.Controllers
             //financeObj.FinanemodelheaderObj = Common.GetFinanceHeaderValue();
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
             string strbudgetId = lstMainBudget != null && lstMainBudget.Count > 0 ? lstMainBudget.Select(budgt => budgt.Value).FirstOrDefault() : "0";
-            gridRowModel = GetFinanceMainGridData(int.Parse(strbudgetId));
+            //gridRowModel = GetFinanceMainGridData(int.Parse(strbudgetId));
             financeObj.FinanemodelheaderObj = gridRowModel.FinanemodelheaderObj;
             financeObj.DhtmlXGridRowModelObj = gridRowModel;
             //GridString = GenerateFinaceXMHeader(GridString);
@@ -360,11 +360,14 @@ namespace RevenuePlanner.Controllers
                 {
                     strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
                 }
-                lineItemCount = dataTable
-              .Rows
-              .Cast<DataRow>()
-              .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Int32>("LineItemCount"));
-                row.SetField<Int32>("LineItemCount", lineItemCount); // Update LineItemCount in DataTable.
+                if ((lstChildren != null && lstChildren.Count() > 0))
+                {
+                   lineItemCount = dataTable
+                                       .Rows
+                                       .Cast<DataRow>()
+                                       .Where(rw => rw.Field<Int32>("ParentId") == id).Sum(chld => chld.Field<Int32>("LineItemCount"));
+                                       row.SetField<Int32>("LineItemCount", lineItemCount); // Update LineItemCount in DataTable.
+                }
             }
             else
             {
@@ -880,6 +883,7 @@ namespace RevenuePlanner.Controllers
             objbudget.Actual = _actuallist;
             return objbudget;
         }
+        
         #endregion
 
         #region Update Forecast/Budget Data
