@@ -411,12 +411,12 @@
 	</Field>
 	<Field>
 		<Name>DataTypeMappingNotConfigured</Name>
-		<value>Gameplan source data types or Integration instance not configured.</value>
+		<value>plan source data types or Integration instance not configured.</value>
 	</Field>
 	<!--Start - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
 	<Field>
 		<Name>TargetFieldInvalidMsg</Name>
-		<value>Please ensure that a target field is not mapped to more than one Gameplan data type under same plan entity.</value>
+		<value>Please ensure that a target field is not mapped to more than one Plan data type under same plan entity.</value>
 	</Field>
 	<!--End - Added by :- Sohel Pathan on 28/05/2014 for PL #494 filter gameplan datatype by client id-->
 	<Field>
@@ -879,7 +879,7 @@
 	<!--Start - Added by :- Sohel Pathan on 23/12/2014 for PL #1061 -->
 	<Field>
 		<Name>PullingTargetFieldInvalidMsg</Name>
-		<value>Please ensure that a target field is not mapped to more than one Gameplan pull data type.</value>
+		<value>Please ensure that a target field is not mapped to more than one Plan pull data type.</value>
 	</Field>
 	<Field>
 		<Name>DataTypeMappingPullMQLSaveSuccess</Name>

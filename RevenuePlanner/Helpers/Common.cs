@@ -134,7 +134,7 @@ namespace RevenuePlanner.Helpers
         public static string TextForModelIntegrationInstanceNull = "None";
         public static string TextForModelIntegrationInstanceTypeOrLastSyncNull = "---";
         public static string DateFormatForModelIntegrationLastSync = "MM/dd/yyyy hh:mm tt";
-        public const string GameplanIntegrationService = "Gameplan Integration Service";
+        public const string GameplanIntegrationService = "Plan Integration Service";
         public static string DateFormateForInspectPopupDescription = "MMMM dd";
 
         //Added By Kalpesh Sharma

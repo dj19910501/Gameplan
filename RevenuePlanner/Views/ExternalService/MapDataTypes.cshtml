@@ -43,11 +43,11 @@
         <div class="row">
            @Html.Partial("~/Views/ExternalService/_integration.cshtml")
             <div class="span9 content-colum-mapDataTypes">
-                <p>@Html.Raw("Please indicate which variables in Gameplan sync to the respective counterpart in " + Convert.ToString(ViewBag.IntegrationTypeName) + ". Changing these variables can significantly impact the utility of your Gameplan integration.")</p>
+                <p>@Html.Raw("Please indicate which variables in Plan sync to the respective counterpart in " + Convert.ToString(ViewBag.IntegrationTypeName) + ". Changing these variables can significantly impact the utility of your Plan integration.")</p>
                 <table id="table_integrations" class="table table-striped table-hover">
                     <thead>
                         <tr>
-                            <th class="source-sans-prosemibold">Gameplan Source Data Type</th>
+                            <th class="source-sans-prosemibold">Plan Source Data Type</th>
                             <th class="source-sans-prosemibold" style="text-align: left;">@Convert.ToString(ViewBag.IntegrationTypeName) Target Data Type</th>
                         </tr>
                     </thead>

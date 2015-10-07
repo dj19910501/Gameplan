@@ -62,7 +62,7 @@ namespace IntegrationWinService
         protected override void OnStop()
         {
             objTimer.Enabled = false;
-            WriteLog("Gameplan integration service has stoped working");
+            WriteLog("Plan integration service has stoped working");
 
             try
             {

@@ -359,3 +359,11 @@ BEGIN
 END
 
 Go
+
+-- ======================================================================================
+-- Created By : Dashrath Prajapati
+-- Created Date : 07/10/2015
+-- Description : Change Gameplan text to Plan related to PL #1645
+-- ======================================================================================
+UPDATE [dbo].[Notification] SET [EmailContent] = REPLACE([EmailContent], N'GamePlan', 'Plan') 
+Go

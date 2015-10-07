@@ -1,0 +1,1 @@
+UPDATE [Notification] SET [EmailContent] = REPLACE([EmailContent], N'GamePlan', 'Plan') 
