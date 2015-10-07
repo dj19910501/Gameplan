@@ -651,7 +651,7 @@ namespace RevenuePlanner.Controllers
             var plan = row.Field<List<Double?>>("Plan");
             var actual = row.Field<List<Double?>>("Actual");
             var budgetTotal = row.Field<Double>("BudgetTotal");
-            var forcastTotal = row.Field<Double>("ForeCastTotal");
+            var forcastTotal = row.Field<Double?>("ForeCastTotal");
             var plantotal = row.Field<Double?>("PlanTotal");
             var actualtotal = row.Field<Double?>("ActualTotal");
             var lstChildren = GetChildren(dataTable, id);
@@ -702,16 +702,16 @@ namespace RevenuePlanner.Controllers
 
                     var tempActual = GetSumofPeriodValue(dataTable, id, i, "Actual");
 
-                    ParentData.Add(Convert.ToString(tempforcast));
-                    ParentData.Add(Convert.ToString(tempPlan));
-                    ParentData.Add(Convert.ToString(tempActual));
+                    ParentData.Add(Convert.ToString(tempforcast.Value.ToString(formatThousand)));
+                    ParentData.Add(Convert.ToString(tempPlan.Value.ToString(formatThousand)));
+                    ParentData.Add(Convert.ToString(tempActual.Value.ToString(formatThousand)));
                     //ParentData.Add(Convert.ToString(forcast[i]));
                 }
                 else
                 {
-                    ParentData.Add(Convert.ToString(forcast[i]));
-                    ParentData.Add(Convert.ToString(plan[i]));
-                    ParentData.Add(Convert.ToString(actual[i]));
+                    ParentData.Add(Convert.ToString(forcast[i].Value.ToString(formatThousand)));
+                    ParentData.Add(Convert.ToString(plan[i].Value.ToString(formatThousand)));
+                    ParentData.Add(Convert.ToString(actual[i].Value.ToString(formatThousand)));
                 }
 
             }
@@ -725,15 +725,15 @@ namespace RevenuePlanner.Controllers
 
                 var tempActualTotal = GetSumofValue(dataTable, id, "ActualTotal");
 
-                ParentData.Add(Convert.ToString(tempforcastTotal));
-                ParentData.Add(Convert.ToString(tempPlanTotal));
-                ParentData.Add(Convert.ToString(tempActualTotal));
+                ParentData.Add(Convert.ToString(tempforcastTotal.Value.ToString(formatThousand)));
+                ParentData.Add(Convert.ToString(tempPlanTotal.Value.ToString(formatThousand)));
+                ParentData.Add(Convert.ToString(tempActualTotal.Value.ToString(formatThousand)));
             }
             else
             {
-                ParentData.Add(Convert.ToString(forcastTotal));
-                ParentData.Add(Convert.ToString(plantotal));
-                ParentData.Add(Convert.ToString(actualtotal));
+                ParentData.Add(Convert.ToString(forcastTotal.Value.ToString(formatThousand)));
+                ParentData.Add(Convert.ToString(plantotal.Value.ToString(formatThousand)));
+                ParentData.Add(Convert.ToString(actualtotal.Value.ToString(formatThousand)));
             }
 
             List<userdata> objuserData = new List<userdata>();
@@ -849,34 +849,18 @@ namespace RevenuePlanner.Controllers
             {
                 if (isQuaterly == Enums.QuarterWithSpace.Quarter1.ToString())
                 {
-                    //_curentBudget = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentForeCast = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentPlan = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentActual = Q1.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                     _commonQuarters = Q1;
                 }
                 else if (isQuaterly == Enums.QuarterWithSpace.Quarter2.ToString())
                 {
-                    //_curentBudget = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentForeCast = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentPlan = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentActual = Q2.Where(q2 => Convert.ToInt32(q2.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                     _commonQuarters = Q2;
                 }
                 else if (isQuaterly == Enums.QuarterWithSpace.Quarter3.ToString())
                 {
-                    //_curentBudget = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentForeCast = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentPlan = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentActual = Q3.Where(q3 => Convert.ToInt32(q3.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                     _commonQuarters = Q3;
                 }
                 else if (isQuaterly == Enums.QuarterWithSpace.Quarter4.ToString())
                 {
-                    //_curentBudget = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentForeCast = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentPlan = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                    //_curentActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                     _commonQuarters = Q4;
                 }
                 foreach (var item in _commonQuarters)
@@ -1010,7 +994,7 @@ namespace RevenuePlanner.Controllers
 
         #region Update Forecast/Budget Data
         [HttpPost]
-        public ActionResult UpdateBudgetGridData(int BudgetId = 0, bool IsQuaterly = true, string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0)
+        public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0)
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             nValue = HttpUtility.HtmlDecode(nValue);
@@ -1056,7 +1040,7 @@ namespace RevenuePlanner.Controllers
             List<string> Q4 = new List<string>() { "Y10", "Y11", "Y12" };
             string dataPeriod = "";
             var ParentDetails = db.Budget_Detail.Where(a => a.Id == BudgetId).Select(a => new { a.Id, a.ParentId }).FirstOrDefault();
-            if (IsQuaterly)
+            if (IsQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
             {
                 if (Period == "Q1")
                 {
@@ -1142,7 +1126,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                if (IsQuaterly)
+                if (IsQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
                 {
                     List<Budget_DetailAmount> BudgetAmountList = new List<Budget_DetailAmount>();
                     BudgetAmountList = db.Budget_DetailAmount.Where(a => a.BudgetDetailId == BudgetId && QuaterPeriod.Contains(a.Period)).OrderBy(a => a.Period).ToList();

@@ -311,6 +311,13 @@
 
         myApp.showPleaseWait();
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        var mainTimeFrame = $('#ddlMainGridTimeFrame option:selected').val();
+        debugger;
+        if (mainTimeFrame.toLowerCase() == "yearly") {
+            AllocatedBy = "@Enums.PlanAllocatedBy.quarters.ToString()";
+        } else {
+            AllocatedBy = mainTimeFrame;
+        }
         //if (AllocatedBy == 'quarters') {
         //    AllocatedBy = true;
         //}
@@ -325,7 +332,7 @@
             BindParentBudgetDrp(parseInt(BudgetId));
             BindChildBudgetDrp(parseInt(BudgetId));
         }
-        BindTimeFrameForChild();
+        BindTimeFrameForChild(AllocatedBy);
         var url = '@Url.Content("~/Finance/EditBudget/")';
         $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel);
 
@@ -569,6 +576,7 @@
         //    AllocatedBy = false;
         //}
         LoadBudgetGrid(AllocatedBy);
+        GetFinanceHeaderValue(0, false);
         var BudgetColumns = $("#chkBudget");
         var ForeCastColumns = $("#chkForeCast");
         var PlanColumns = $("#chkPlan");
