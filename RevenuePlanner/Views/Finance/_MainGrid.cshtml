@@ -3,7 +3,6 @@
 @{
     var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
     var BudgetId = ViewBag.BudgetId != null ? (Int32)ViewBag.BudgetId : 0;
-    var isViewPermission = false;
 }
 <style>
         div.xhdr {
@@ -17,117 +16,7 @@
 <div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
 @Html.Hidden("hdnBudgetId", BudgetId, new  {id="hdnBudgetId",name="hdnBudgetId",value=BudgetId })
 <script type="text/javascript">
-    var myGrid;
-    var data = {
-        rows: [
-			{
-			    id: 1001,
-			    data: [
-                     "100",
-                     "A Time to Kill",
-                     "John Grisham",
-                     "12.99",
-                     "1",
-                     "05/01/1998"]
-			},
-		   {
-		       id: 1002,
-		       data: [
-                    "1000",
-                    "Blood and Smoke",
-                    "Stephen King",
-                    "0",
-                    "1",
-                    "01/01/2000"]
-		   },
-		   {
-		       id: 1003,
-		       data: [
-                    "-200",
-                    "The Rainmaker",
-                    "John Grisham",
-                    "7.99",
-                    "0",
-                    "12/01/2001"]
-		   },
-		   {
-		       id: 1004,
-		       data: [
-                    "350",
-                    "The Green Mile",
-                    "Stephen King",
-                    "11.10",
-                    "1",
-                    "01/01/1992"]
-		   },
-		   {
-		       id: 1005,
-		       data: [
-                    "700",
-                    "Misery",
-                    "Stephen King",
-                    "7.70",
-                    "0",
-                    "01/01/2003"]
-		   }
-        ]
-    };
     var myTreeGrid;
-    var data2 = {
-        rows: [
-            {
-                id: '1001',
-                data: [
-                 "row A",
-                 '<div id="Plan2" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
-                 //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' alt='Add Row' class='add_row' title='Add Row' />",
-                 "John Grisham",
-                 "John Grisham1",
-                 "12.99",
-                 "0",
-                 "05/01/1998"],
-                rows: [
-                    {
-                        id: 'sub_1001',
-                        data: [
-                             "subrowA",
-                             '<div id="Plan3" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
-                             //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' class='add_row' alt='Add Row' title='Add Row' />",
-                             "Blood and Smoke",
-                             "Stephen King",
-                             "0",
-                             "1",
-                             "01/01/2000"
-                        ]
-                    },
-                    {
-                        id: 'sub_1002',
-                        data: [
-                             "subrowB",
-                             '<div id="Plan4" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
-                             //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' class='add_row' alt='Add Row' title='Add Row' />",
-                             "Blood and Smoke",
-                             "Stephen King",
-                             "0",
-                             "1",
-                             "01/01/2000"]
-                    }
-                ]
-            },
-           {
-               id: '1002',
-               data: [
-                    "row B",
-                    '<div id="Plan5" class="finance_grid_add" permission="true" data-title="###1 Mitesh Plan" alt="13820" title=" ">',
-                    //"<img src='@Url.Content("~/codebase/imgs/dhxgrid_skyblue/tree/plus1.gif")' class='add_row' alt='Add Row' title='Add Row' />",
-                    "Stephen King",
-                    "Stephen King",
-                    "11.10",
-                    "1",
-                    "01/01/1992"]
-           }
-        ]
-    };
     var _isNewRowAdd = false;
     var _newrowid = '';
     var _newParentId = '';
@@ -170,11 +59,7 @@
             $("#gridbox").find("table").css("width", gridWidth);
             return true;
         });
-        @*var isview = '@isViewPermission';
-        if (isview.toLowerCase() == 'true')
-        {
-            myTreeGrid.setColumnHidden(1, true);
-        }*@
+        
         myTreeGrid.init();
         var _budgetIdVal = $("#hdnBudgetId").val();
         $("#hdn_BudgetId").val(_budgetIdVal);
@@ -305,8 +190,9 @@
     //}
     function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId, parentRowID) {
         //budgetId = 8;
+        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var url = "@Url.Content("~/Finance/SaveNewBudgetDetail")";
-        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId, function () {
+        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame, function () {
             myTreeGrid.openItem(parentRowID);
         });
     }

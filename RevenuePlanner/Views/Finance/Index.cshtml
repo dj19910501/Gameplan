@@ -68,6 +68,9 @@
             <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;margin-right:0px">
                 @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
             </span>
+            <span class="selectBox" id="ddlMainTimeFrameSelectBox" style="width: 158px; line-height: 1.1;margin-right:0px">
+                @Html.DropDownList("ddlMainGridTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByMainGridAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
+            </span>
         </div>
     </div>
     @*<input type="button" id="btnRefreshMainGrid" name="btnRefreshMainGrid" value="Refresh MainGrid" />*@
@@ -85,10 +88,11 @@
     var GlobalLevel = "";
     var CollapseExpand = true;
     var backBudgetid = '';
+    var _mainTimeFrame = '';
     $(document).ready(function () {
         $("#sidebar").css("display", "none");
         $("#content_wraper").css("width", "100%");
-        $("#ddlParentFinance,#ddlRevenueTimeFrame,#ddlChildFinance,#ddlParentFinanceMain").multiselect({
+        $("#ddlParentFinance,#ddlRevenueTimeFrame,#ddlChildFinance,#ddlParentFinanceMain,#ddlMainGridTimeFrame").multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1
@@ -97,6 +101,8 @@
 
         var _budgetId = $('#ddlParentFinance').val();
         var _budgetIdMain = $('#ddlParentFinanceMain').val();
+        _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+
         $('#hdn_BudgetId').val(_budgetIdMain);
         @*$("#btnRefreshMainGrid").click(function () {
             var _budgetId = $('#ddlParentFinance').val();
@@ -136,7 +142,7 @@
         //debugger;
         //var budgetID = $("#ddlParentFinance").val();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
-        $('#divGridView').load(url + '?budgetId=' + BudgetId);
+        $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame);
     }
 
     function BindTimeFrameForChild(Period) {
@@ -469,6 +475,7 @@
             //$("#divExpandCollapse").css("display", "none");
             $("#divCheckbox").css("display", "none");
             $("#ddlTimeFrameSelectBox").css("display", "none");
+            $("#ddlMainTimeFrameSelectBox").css("display", "block");
             $("#drpChild").css("display", "none");
             $("#divFinanceBack").css("display", "none");
             $("#divAddnew").css("display", "block");
@@ -479,6 +486,7 @@
             $("#divExpandCollapse").css("display", "");
             $("#divCheckbox").css("display", "");
             $("#ddlTimeFrameSelectBox").css("display", "");
+            $("#ddlMainTimeFrameSelectBox").css("display", "none");
             $("#drpChild").css("display", "block");
             $("#divFinanceBack").css("display", "block");
             $("#divAddnew").css("display", "none");
@@ -545,7 +553,11 @@
     //        //            myApp.hidePleaseWait();
     //    }
     //});
-
+    $("#ddlMainGridTimeFrame").change(function () {
+        _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+        var _budgetIdMain = $('#ddlParentFinanceMain').val();
+        RefreshMainGridData(_budgetIdMain);
+    });
     $("#ddlRevenueTimeFrame").change(function () {
        // debugger;
        // myApp.showPleaseWait();

@@ -1152,6 +1152,25 @@ namespace RevenuePlanner.Helpers
        };
      
         #endregion
+
+        #region "Finance MainGrid"
+        public enum QuarterFinance
+        {
+            Yearly,
+            Quarter1,
+            Quarter2,
+            Quarter3,
+            Quarter4,
+        }
+        public static Dictionary<string, string> QuartersFinance = new Dictionary<string, string>()
+        {
+           {"This Year",Enums.QuarterFinance.Yearly.ToString()},
+           {"Quarter 1",Enums.QuarterFinance.Quarter1.ToString()},
+           {"Quarter 2",Enums.QuarterFinance.Quarter2.ToString()},
+           {"Quarter 3",Enums.QuarterFinance.Quarter3.ToString()},
+           {"Quarter 4",Enums.QuarterFinance.Quarter4.ToString()}
+        };
+        #endregion
     }
 
     #region Authorization
