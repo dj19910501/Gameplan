@@ -769,7 +769,7 @@ namespace Integration.Eloqua
                                 if(objEloqua != null && !string.IsNullOrEmpty(objEloqua.crmId))
                                 {
                                     objUpdateTactic = new Plan_Campaign_Program_Tactic();
-                                    objUpdateTactic = tblTactic.Where(tac => (tac.IntegrationInstanceTacticId.Equals(objEloqua.crmId) || tac.IntegrationInstanceTacticId.Equals(objEloqua.crmId.Substring(0, 15)))).FirstOrDefault();
+                                    objUpdateTactic = tblTactic.Where(tac => (tac.IntegrationInstanceTacticId == objEloqua.crmId || tac.IntegrationInstanceTacticId == objEloqua.crmId.Substring(0, 15))).FirstOrDefault();
                                     if (objUpdateTactic != null && objUpdateTactic.PlanTacticId > 0)
                                     {
                                         objUpdateTactic.IntegrationInstanceEloquaId = eloquaId;
