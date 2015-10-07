@@ -147,6 +147,7 @@ namespace RevenuePlanner.Helpers
                                     //// End - Added by Arpita Soni on 01/13/2015 for PL ticket #1128
                                     ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                                     pcpt.IntegrationInstanceTacticId = null;
+                                    pcpt.IntegrationInstanceEloquaId = null;
                                     pcpt.LastSyncDate = null;
                                     ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                     //// Start - Added by Sohel Pathan on 08/01/2015 for PL ticket #1102
@@ -306,6 +307,7 @@ namespace RevenuePlanner.Helpers
                                 //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                                 ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                                 pcpt.IntegrationInstanceTacticId = null;
+                                pcpt.IntegrationInstanceEloquaId = null;
                                 pcpt.LastSyncDate = null;
                                 ////End- Added by Mitesh Vaishnav for PL ticket #1129
                                 pcpt.Status = TacticStatus;
@@ -433,6 +435,7 @@ namespace RevenuePlanner.Helpers
                             //// End - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
                             ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                             t.IntegrationInstanceTacticId = null;
+                            t.IntegrationInstanceEloquaId = null;
                             t.LastSyncDate = null;
                             ////End- Added by Mitesh Vaishnav for PL ticket #1129
                             t.Plan_Campaign_Program_Tactic_Cost = t.Plan_Campaign_Program_Tactic_Cost.ToList();
@@ -522,6 +525,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Tactic_Share = null;
                     objPlanCampaignProgramTactic.TacticCustomName = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
+                    objPlanCampaignProgramTactic.IntegrationInstanceEloquaId = null;
                     ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                     objPlanCampaignProgramTactic.LastSyncDate = null;
                     ////End- Added by Mitesh Vaishnav for PL ticket #1129

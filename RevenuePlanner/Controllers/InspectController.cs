@@ -7957,7 +7957,7 @@ namespace RevenuePlanner.Controllers
                                             //added by uday for #532 
                                             if (tactic.IsDeployedToIntegration == true)
                                             {
-                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, new Guid(), EntityType.Tactic);
+                                                ExternalIntegration externalIntegration = new ExternalIntegration(planTacticId, Sessions.ApplicationId, Sessions.User.UserId, EntityType.Tactic);
                                                 externalIntegration.Sync();
                                             }
                                             //end
