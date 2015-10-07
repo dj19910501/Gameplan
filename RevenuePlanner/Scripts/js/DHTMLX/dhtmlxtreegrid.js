@@ -4,6 +4,7 @@ Version: 4.3
 Edition: Professional 
 License: content of this file is covered by DHTMLX Commercial or Enterprise license. Usage without proper license is prohibited. To obtain it contact sales@dhtmlx.com
 Copyright UAB Dinamenta http://www.dhtmlx.com
+Modified : modified by Rahul Shah on 07/10/2015 for display extra character in case of finance grid's cell editable
 */
 if (typeof(window.dhx4) == "undefined") {
     window.dhx4 = {
@@ -28418,7 +28419,8 @@ function eXcell_tree(a) {
             return
         }
         this.er = this.cell.parentNode.valTag;
-        this.val = this.getLabel();
+        //this.val = this.getLabel(); //Commented by Rahul Shah on 07/10/2015 its display extra character with special character when grid cell is in edit mode
+        this.val = htmlDecode(this.getLabel()); //Added by Rahul Shah on 07/10/2015 for remove extra character when in case of special character is used
         this.cell.atag = ((!this.grid.multiLine) && (_isKHTML || _isMacOS || _isFF)) ? "INPUT" : "TEXTAREA";
         this.er.innerHTML = "<" + this.cell.atag + " class='dhx_combo_edit' type='text' style='height:" + (this.cell.offsetHeight - 4) + "px;line-height:" + (this.cell.offsetHeight - 6) + "px; width:100%; border:0px; margin:0px; padding:0px; overflow:hidden;'></" + this.cell.atag + ">";
         this.er.childNodes[0].onmousedown = function(b) {
