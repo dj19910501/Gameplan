@@ -72,5 +72,9 @@ namespace RevenuePlanner.Models
         public List<double?> Plan { get; set; }
         public List<double?> Actual { get; set; }
     }
+    public class DeleteRowID
+    {
+        public int Id { get; set; }
 
+    }
 }

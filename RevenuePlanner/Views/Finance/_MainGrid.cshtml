@@ -16,6 +16,9 @@
 <div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
 @Html.Hidden("hdnBudgetId", BudgetId, new  {id="hdnBudgetId",name="hdnBudgetId",value=BudgetId })
 <script type="text/javascript">
+    var RowIDs = {
+        IDs: []
+    }
     var myTreeGrid;
     var _isNewRowAdd = false;
     var _newrowid = '';
@@ -39,13 +42,13 @@
         myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         myTreeGrid.setImageSize(1, 1);
         //myTreeGrid.enableTreeCellEdit(false);
-        myTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:center;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
-        myTreeGrid.setInitWidths("200,20,100,100,100,100,100,100");
-        myTreeGrid.setColAlign("left,center,center,center,center,center,center,center");
-        myTreeGrid.setColTypes("tree,ro,ron,ron,ron,ron,ro,ro");
+        myTreeGrid.setHeader("Task Name,,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:center;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
+        myTreeGrid.setInitWidths("200,20,30,100,100,100,100,100,100");
+        myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center");
+        myTreeGrid.setColTypes("tree,ro,ch,ron,ron,ron,ron,ro,ro");
         //myTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
         myTreeGrid.setColValidators("NotEmpty");
-        myTreeGrid.setColumnIds("title,addrow,budget,forecast,planned,actual,action,lineitems");
+        myTreeGrid.setColumnIds("title,addrow,SelectBox,budget,forecast,planned,actual,action,lineitems");
         //myTreeGrid.setColSorting("str,na,str,str,na,str");
         myTreeGrid.attachEvent("onEditCell", OnEditCell);
         //myTreeGrid.attachEvent("onXLE", function () {
@@ -80,6 +83,80 @@
         myTreeGrid.setSizes();
         
         $("#gridbox").find('table').css('width', gridWidth);
+
+        RowIDs = {
+            IDs: []
+        }
+        myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
+            //debugger;
+         
+            var val = rId.split('_')[1];
+          
+            alert(state);
+            if (state == true) {
+                RowIDs.IDs.push(val);
+            }
+            else
+            {
+                var index = RowIDs.IDs.indexOf(val);
+                RowIDs.IDs.splice(index, 1);
+            }
+            //var ids = [];
+            //    ids = myTreeGrid.getAllSubItems(rId).split(',');
+            //    alert(ids.length);
+            //    alert(ids);
+            //for (var i = 0; i < ids.length; i++)
+            //{
+               
+            //    myTreeGrid.cells(ids[i], cInd).setValue(state);
+            //}
+
+            //    var parentid = myTreeGrid.getParentId(rId);
+            //    SetParentCheckbox(parentid, cInd);
+            
+            //if (parentid != 0)
+            //{
+            //    var ids1 = [];
+            //    ids1 = myTreeGrid.getAllSubItems(parentid).split(',');
+
+            //    for (var i = 0; i < ids1.length; i++) {
+            //        if (!myTreeGrid.cells(ids1[i], cInd).getValue()) {
+            //            break;
+            //        }
+            //    }
+            //}
+
+            //myTreeGrid.forEachRow(function (rowid) {
+            //    var state = myTreeGrid.cells(rId, cInd).getValue();
+            //    if (state == true)
+            //    {
+            //        RowIDs.IDs.push(rowid.split('_')[1]);
+            //    }
+            //});
+
+           
+    });
+
+        //function SetParentCheckbox(parentid, cInd)
+        //{
+        //    alert(parentid);
+        //    if (parentid != 0) {
+        //        var ids1 = [];
+        //        ids1 = myTreeGrid.getAllSubItems(parentid).split(',');
+        //        var flag = true;
+        //        for (var i = 0; i < ids1.length; i++) {
+        //            if (myTreeGrid.cells(ids1[i], cInd).getValue() == 0) {
+        //                flag = false;
+        //                break;
+        //            }
+        //        }
+        //        myTreeGrid.cells(parentid, cInd).setValue(flag);
+        //        var parentid = myTreeGrid.getParentId(parentid);
+        //        SetParentCheckbox(parentid, cInd);
+        //    }
+        //    return;
+        //}
+
     });
     function AddRow(cntrl) {
        // debugger;
@@ -109,7 +186,7 @@
         $("#hdn_row_parentId").val(_row_parentId);
         /*End: Get ParentId and BudgetDetailId from RowId */
 
-        myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />", "0", "0", "0", "0", "Edit Forecast", "0"], -1, row_id);
+        myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />","0" ,"0", "0", "0", "0", "Edit Forecast", "0"], -1, row_id);
         myTreeGrid.openItem(row_id);
         $("#gridbox").find("table").css("width", gridWidth);
         //myTreeGrid.enableValidation(true);
@@ -133,8 +210,7 @@
     }
 
     function OnEditCell(stage, id, index, newVal, oldVal) {
-        //alert(stage);
-        //debugger;
+        if (stage == 0 && index == 2) return true;
         var _val = $("#hdn_row_parentId").val();
         var splitRowParentIds = '';
         var rowId = '', parentId = '',parentRowID='';

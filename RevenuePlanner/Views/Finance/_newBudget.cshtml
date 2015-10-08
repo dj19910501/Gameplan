@@ -11,20 +11,20 @@
         newTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         newTreeGrid.setImageSize(1, 1);
         //newTreeGrid.enableTreeCellEdit(false);
-        newTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:center;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
-        newTreeGrid.setInitWidths("100,20,100,100,100,100,100,100");
-        newTreeGrid.setColAlign("left,center,center,center,center,center,center,center");
-        newTreeGrid.setColTypes("tree,ro,ron,ron,ron,ron,ro,ro");
+        newTreeGrid.setHeader("Task Name,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:center;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
+        newTreeGrid.setInitWidths("100,100,100,100,100,100,100");
+        newTreeGrid.setColAlign("left,center,center,center,center,center,center");
+        newTreeGrid.setColTypes("tree,ron,ron,ron,ron,ro,ro");
         //newTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
         newTreeGrid.setColValidators("NotEmpty");
-        newTreeGrid.setColumnIds("title,addrow,budget,forecast,planned,actual,action,lineitems");
+        newTreeGrid.setColumnIds("title,budget,forecast,planned,actual,action,lineitems");
         //newTreeGrid.setColSorting("str,na,str,str,na,str");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);
         
         newTreeGrid.init();
         
         var newBudget = "newBudget";
-        newTreeGrid.addRow("newBudget", ["", "<div id='dv" + newBudget + "' class='finance_grid_add' row-id='" + newBudget + "' />", "0", "0", "0", "0", "Edit Budget", "0"], 0);
+        newTreeGrid.addRow("newBudget", ["", "0", "0", "0", "0", "Edit Budget", "0"], 0);
         
         $("#newGridbox").find('table').css('width', gridWidth);
     });

@@ -15232,3 +15232,23 @@ float:left;
 {
     margin-right:0px;
 }
+
+/*Added ruby Komal Rawal form #1639*/
+.btn-Settings {
+    padding-left: 2px;
+    width: 10px;
+    float: right;
+}
+
+
+    .btn-Settings:after {
+        background-image: url(../images/setting.png);
+        background-position: left 4px top 5px;
+        background-repeat: no-repeat;
+        content: "";
+        display: block;
+        height: 24px;
+        margin: 0;
+        padding: 0;
+        width: 24px;
+    }

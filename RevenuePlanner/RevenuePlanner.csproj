@@ -511,6 +511,7 @@
     <Content Include="Content\images\select2.png" />
     <Content Include="Content\images\select2x2.png" />
     <Content Include="Content\images\setting-icon.png" />
+    <Content Include="Content\images\setting.png" />
     <Content Include="Content\images\shadow-sidebar-horizontal.png" />
     <Content Include="Content\images\share-tactic-icon.png" />
     <Content Include="Content\images\share-tactic-white.png" />
@@ -615,7 +616,9 @@
     <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid_min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Service References\BDSService\BDSService.disco" />
     <None Include="Service References\BDSService\BDSService1.wsdl" />
     <None Include="Service References\BDSService\BDSService4.xsd">

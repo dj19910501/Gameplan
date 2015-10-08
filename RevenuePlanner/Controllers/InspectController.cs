@@ -9043,7 +9043,7 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("Weightage", typeof(String));
 
             List<int> BudgetDetailsIds = db.Budgets.Where(a => a.ClientId == Sessions.User.ClientId).Select(a => a.Id).ToList();
-            List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId)).Select(a => a).ToList();
+            List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId) && BudgetDetailsIds.Contains(a.BudgetId) && a.IsDeleted == false).Select(a => a).ToList();
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
             List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
