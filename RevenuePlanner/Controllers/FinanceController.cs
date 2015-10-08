@@ -304,7 +304,7 @@ namespace RevenuePlanner.Controllers
                             cntlineitem = PlanLineItemsId.Count;
                         else
                             cntlineitem = LineItemids.Count;
-                        objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
+                        objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList);
                         //rowId = Regex.Replace(i.Name.Trim(), @"\s+", "") + i.Id.ToString() + (i.ParentId == null ? "0" : i.ParentId.ToString());
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />", objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
                         dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem });
@@ -663,17 +663,18 @@ namespace RevenuePlanner.Controllers
                 {
                     BudgetAmount objBudgetAmount = new BudgetAmount();
                     List<int> PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == item.Id).Select(a => a.PlanLineItemId).ToList();
+
                     if (varBudgetIds.ParentId != null)
                     {
                         if (item.Id != varBudgetIds.ParentId && item.ParentId != null)
                         {
-                            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
+                            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList);
                             dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", "<input id='dv" + item.Id + "_" + item.ParentId + "' row-id='" + item.Id + "_" + item.ParentId + "' onclick='CheckboxClick(this)' type='checkbox' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                         }
                     }
                     else
                     {
-                        objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
+                        objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList);
                         dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", "<input id='dv" + item.Id + "_" + item.ParentId + "' row-id='" + item.Id + "_" + item.ParentId + "' onclick='CheckboxClick(this)' type='checkbox' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                     }
                 });
@@ -952,9 +953,10 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Get Budget/ForeCast/Plan/Actual Value
-        public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount)
+        public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList)
         {
             #region Declartion
+            int? weightage = 0;
             BudgetAmount objbudget = new BudgetAmount();
             List<double?> _budgetlist = new List<double?>();
             List<double?> _forecastlist = new List<double?>();
@@ -963,6 +965,7 @@ namespace RevenuePlanner.Controllers
             int currentEndMonth = 12;
             double? _Budget = 0, _ForeCast = 0, _Plan = 0, _Actual = 0;
             #endregion
+
                 List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
                 List<string> Q2 = new List<string>() { "Y4", "Y5", "Y6" };
                 List<string> Q3 = new List<string>() { "Y7", "Y8", "Y9" };
@@ -974,6 +977,8 @@ namespace RevenuePlanner.Controllers
                 List<string> _curentActual = new List<string>();
 
             List<string> _commonQuarters = new List<string>();
+
+            List<int> LineItemIds = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
 
             if (isQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
             {
@@ -1008,16 +1013,34 @@ namespace RevenuePlanner.Controllers
                         _curentPlan = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                         _curentActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                     }
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where _curentPlan.Contains(plandetail.Period)
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where _curentActual.Contains(actualdetail.Period)
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+
                     _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
                     _budgetlist.Add(_Budget);
 
                     _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
                     _forecastlist.Add(_ForeCast);
 
-                    _Plan = PlanDetailAmount.Where(a => _curentPlan.Contains(a.Period)).Sum(a => a.Value);
+                    //_Plan = (PlanDetailAmount.Where(a => _curentPlan.Contains(a.Period)).Sum(a => a.Value) * weightage.Value) / 100;
                     _planlist.Add(_Plan);
 
-                    _Actual = ActualDetailAmount.Where(a => _curentActual.Contains(a.Period)).Sum(a => a.Value);
+                    //_Actual = (ActualDetailAmount.Where(a => _curentActual.Contains(a.Period)).Sum(a => a.Value) * weightage.Value) / 100;
                     _actuallist.Add(_Actual);
                 }
                 #endregion
@@ -1026,16 +1049,34 @@ namespace RevenuePlanner.Controllers
             {
                 for (int i = 1; i <= 12; i++)
                 {
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where plandetail.Period == PeriodPrefix + i.ToString()
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where actualdetail.Period == PeriodPrefix + i.ToString()
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+
                     _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
                     _budgetlist.Add(_Budget);
 
                     _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
                     _forecastlist.Add(_ForeCast);
 
-                    _Plan = PlanDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
+                    //_Plan = (PlanDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value) * weightage.Value) / 100;
                     _planlist.Add(_Plan);
 
-                    _Actual = ActualDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
+                    //_Actual = (ActualDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value) * weightage.Value) / 100;
                     _actuallist.Add(_Actual);
                 }
             }
@@ -1059,16 +1100,34 @@ namespace RevenuePlanner.Controllers
                 }
                 foreach (var item in _commonQuarters)
                 {
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where plandetail.Period == item
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where actualdetail.Period == item
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+
                     _Budget = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Budget);
                     _budgetlist.Add(_Budget);
 
                     _ForeCast = Budget_DetailAmountList.Where(a => a.Period == item).Sum(a => a.Forecast);
                     _forecastlist.Add(_ForeCast);
 
-                    _Plan = PlanDetailAmount.Where(a => a.Period == item).Sum(a => a.Value);
+                    //_Plan = (PlanDetailAmount.Where(a => a.Period == item).Sum(a => a.Value) * weightage.Value) / 100;
                     _planlist.Add(_Plan);
 
-                    _Actual = ActualDetailAmount.Where(a => a.Period == item).Sum(a => a.Value);
+                    //_Actual = (ActualDetailAmount.Where(a => a.Period == item).Sum(a => a.Value) * weightage.Value) / 100;
                     _actuallist.Add(_Actual);
                 }
             }
@@ -1078,7 +1137,7 @@ namespace RevenuePlanner.Controllers
             objbudget.Actual = _actuallist;
             return objbudget;
         }
-        public BudgetAmount GetMainGridAmountValue(bool isQuaterly, string strTimeFrame, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount)
+        public BudgetAmount GetMainGridAmountValue(bool isQuaterly, string strTimeFrame, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList)
         {
             #region Declartion
             BudgetAmount objbudget = new BudgetAmount();
@@ -1153,10 +1212,28 @@ namespace RevenuePlanner.Controllers
                     _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
                     _forecastlist.Add(_ForeCast);
 
-                    _Plan = PlanDetailAmount.Where(a => _curentPlan.Contains(a.Period)).Sum(a => a.Value);
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where _curentPlan.Contains(plandetail.Period)
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where _curentActual.Contains(actualdetail.Period)
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+
+                    //_Plan = PlanDetailAmount.Where(a => _curentPlan.Contains(a.Period)).Sum(a => a.Value);
                     _planlist.Add(_Plan);
 
-                    _Actual = ActualDetailAmount.Where(a => _curentActual.Contains(a.Period)).Sum(a => a.Value);
+                    //_Actual = ActualDetailAmount.Where(a => _curentActual.Contains(a.Period)).Sum(a => a.Value);
                     _actuallist.Add(_Actual);
                 }
                 #endregion
@@ -1171,10 +1248,28 @@ namespace RevenuePlanner.Controllers
                     _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
                     _forecastlist.Add(_ForeCast);
 
-                    _Plan = PlanDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
+                    _Plan = (from plandetail in PlanDetailAmount
+                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                             where plandetail.Period == PeriodPrefix + i.ToString()
+                             from leftplanweightage in leftplan.DefaultIfEmpty()
+                             select new
+                             {
+                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                             }).ToList().Sum(a => a.Value);
+
+                    _Actual = (from actualdetail in ActualDetailAmount
+                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                               where actualdetail.Period == PeriodPrefix + i.ToString()
+                               from leftactualweightage in leftactual.DefaultIfEmpty()
+                               select new
+                               {
+                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                               }).ToList().Sum(a => a.Value);
+
+                    //_Plan = PlanDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
                     _planlist.Add(_Plan);
 
-                    _Actual = ActualDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
+                    //_Actual = ActualDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
                     _actuallist.Add(_Actual);
                 }
             }
