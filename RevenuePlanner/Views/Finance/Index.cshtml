@@ -161,7 +161,6 @@
 
 
 
-
     function DeleteSelected() {
         for (var i = 0; i < RowIDs.IDs.length; i++) {
             myTreeGrid.deleteRow(RowIDs.IDs[i]);
@@ -183,6 +182,8 @@
             var budgetIDMain = $("#ddlParentFinanceMain").val();
             RefreshMainGridData(budgetIDMain);
         }
+
+        ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
     }
 
     function RefreshMainGridData(BudgetId) {
