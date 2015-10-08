@@ -3,6 +3,10 @@
 @{
     var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
     var BudgetId = ViewBag.BudgetId != null ? (Int32)ViewBag.BudgetId : 0;
+    var IsBudgetCreateEdit = ViewBag.IsBudgetCreateEdit;
+    var IsBudgetView = ViewBag.IsBudgetView;
+    var IsForecastView = ViewBag.IsForecastView;
+    var IsForecastCreateEdit = ViewBag.IsForecastCreateEditView;
 }
 <style>
         div.xhdr {
@@ -25,6 +29,8 @@
     var _newParentId = '';
     var _parentRowId = '';
     var _row_parentId = '';
+    var IsBudgetCreateEdit = '@IsBudgetCreateEdit';
+    var IsForecastCreateEdit = '@IsForecastCreateEdit';
     var gridWidth = $("#divGridView").width() - 3;
     $(document).ready(function () {
         ShowHideControls('MainGrid');
@@ -45,11 +51,27 @@
         myTreeGrid.setHeader("Task Name,,,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:center;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
         myTreeGrid.setInitWidths("200,20,30,100,100,100,100,100,100");
         myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center");
-        myTreeGrid.setColTypes("tree,ro,ch,ron,ron,ron,ron,ro,ro");
+        myTreeGrid.setColTypes("tree,ro,ro,ron,ron,ron,ron,ro,ro");
         //myTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
         myTreeGrid.setColValidators("NotEmpty");
         myTreeGrid.setColumnIds("title,addrow,SelectBox,budget,forecast,planned,actual,action,lineitems");
         //myTreeGrid.setColSorting("str,na,str,str,na,str");
+      
+        if (IsBudgetCreateEdit == "False" && IsForecastCreateEdit == "False") {
+            myTreeGrid.setColumnsVisibility("false,true,true,false,false,false,false,false,false");
+            $('#btnAddNewBudget').css("display", "none");
+
+        }
+        else {
+            myTreeGrid.setColumnsVisibility("false,false,false,false,false,false,false,false,false");
+
+        }
+       
+        if (IsBudgetCreateEdit == "False")
+        {
+            $('#btnAddNewBudget').css("display", "none");
+
+        }
         myTreeGrid.attachEvent("onEditCell", OnEditCell);
         //myTreeGrid.attachEvent("onXLE", function () {
         //    if (!myTreeGrid.getRowsNum())
@@ -88,19 +110,18 @@
         RowIDs = {
             IDs: []
         }
-        myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
-            //debugger;
-         
-            var val = rId.split('_')[1];
-          
-            if (state == true) {
-                RowIDs.IDs.push(val);
-            }
-            else
-            {
-                var index = RowIDs.IDs.indexOf(val);
-                RowIDs.IDs.splice(index, 1);
-            }
+        //myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
+        //    //debugger;
+
+        //    var val = rId.split('_')[1];
+
+        //    if (state == true) {
+        //        RowIDs.IDs.push(val);
+        //    }
+        //    else {
+        //        var index = RowIDs.IDs.indexOf(val);
+        //        RowIDs.IDs.splice(index, 1);
+        //    }
             //var ids = [];
             //    ids = myTreeGrid.getAllSubItems(rId).split(',');
             //    alert(ids.length);
@@ -135,7 +156,7 @@
             //});
 
            
-    });
+       // });
 
         //function SetParentCheckbox(parentid, cInd)
         //{
@@ -158,6 +179,24 @@
         //}
 
     });
+    RowIDs = {
+        IDs: []
+    }
+    function CheckboxClick(checkbox)
+    {
+       
+        var val = $(checkbox).attr('row-id').split('_')[1];
+        var state = $(checkbox).attr("checked");
+        if (state == "checked") {
+            RowIDs.IDs.push(val);
+        }
+        else {
+            var index = RowIDs.IDs.indexOf(val);
+            RowIDs.IDs.splice(index, 1);
+        }
+
+
+    }
     function AddRow(cntrl) {
        // debugger;
         if (_isNewRowAdd == false) {
@@ -186,7 +225,7 @@
         $("#hdn_row_parentId").val(_row_parentId);
         /*End: Get ParentId and BudgetDetailId from RowId */
 
-        myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />","0" ,"0", "0", "0", "0", "Edit Forecast", "0"], -1, row_id);
+            myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />", "<input id='dv" + _newrowid + "'  row-id='" + _newrowid + "' type='checkbox' />", "0", "0", "0", "0", "Edit Forecast", "0"], -1, row_id);
         myTreeGrid.openItem(row_id);
         $("#gridbox").find("table").css("width", gridWidth);
         //myTreeGrid.enableValidation(true);
