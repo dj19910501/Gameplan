@@ -359,6 +359,43 @@
         myTreeGrid.setImageSize(1, 1);
         myTreeGrid.setSkin("dhx_skyblue");
         myTreeGrid.parse(GridData, "json");
+
+        myTreeGrid.forEachRow(function (rowid) {
+            if (GlobalEditLevel != 'Budget') {
+                var locked = myTreeGrid.getUserData(rowid, "row_locked");
+               
+
+                    myTreeGrid.forEachCell(rowid, function (cellObj, ind) {
+                        //execute code for each cell in a row with the id "row1"
+                        //cellObj - related cell object
+                        //ind - column index
+                        if (locked == 1) {
+                            myTreeGrid.cells(rowid, ind).setDisabled(true);
+                            myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
+                        }
+                        else {
+                            var headerLable = myTreeGrid.getColLabel(ind, 1);
+                            if (headerLable.toLowerCase() != GlobalEditLevel.toLowerCase()) {
+                                myTreeGrid.cells(rowid, ind).setDisabled(true);
+                                myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
+                            }
+                        }
+                    });
+               
+            }
+            else {
+                myTreeGrid.forEachCell(rowid, function (cellObj, ind) {
+                    //execute code for each cell in a row with the id "row1"
+                    //cellObj - related cell object
+                    //ind - column index
+                    var headerLable = myTreeGrid.getColLabel(ind, 1);
+                    if (headerLable.toLowerCase() != GlobalEditLevel.toLowerCase()) {
+                        myTreeGrid.cells(rowid, ind).setDisabled(true);
+                        myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
+                    }
+                });
+            }
+        });
         //myTreeGrid.setUserData("id");
         $("#gridbox").find("table").first().find("tr").next().last().find("td").first().css("text-align", "center");
 
@@ -687,6 +724,13 @@
             myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
             //myTreeGrid.cells(_newrowid, titleIndex).edit();
             //myTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
+            myTreeGrid.forEachCell(row_id, function (cellObj, ind) {
+                //execute code for each cell in a row with the id "row1"
+                //cellObj - related cell object
+                //ind - column index
+                myTreeGrid.cells(row_id, ind).setDisabled(true);
+                myTreeGrid.setCellTextStyle(row_id, ind, "color:gray;");
+            });
             event.cancelBubble = true;
         }
         //myTreeGrid.editCell();

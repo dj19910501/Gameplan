@@ -49,7 +49,7 @@ namespace RevenuePlanner.Models
     {
         public string id { get; set; }
         public List<string> data { get; set; }
-        public List<userdata> userdata { get; set; }
+        public userdata userdata { get; set; }
         public List<row_attrs> row_attrs { get; set; }
         public List<DhtmlxGridRowDataModel> rows { get; set; }
         public string Detailid { get; set; }
@@ -60,6 +60,7 @@ namespace RevenuePlanner.Models
         public string id { get; set; }
         public string idwithName { get; set; }
         public string row_attrs { get; set; }
+        public string row_locked { get; set; }
     }
     public class row_attrs
     {

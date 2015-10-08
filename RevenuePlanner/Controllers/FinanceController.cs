@@ -852,6 +852,11 @@ namespace RevenuePlanner.Controllers
             var children = lstChildren
               .Select(r => CreateItem(dataTable, r))
               .ToList();
+            userdata objuserData = new userdata();
+            List<row_attrs> rows_attrData = new List<row_attrs>();
+            //objuserData.Add(new userdata { idwithName = "parent_" + Convert.ToString(id) });
+            //objuserData.Add(new userdata { row_attrs = "parent_" + Convert.ToString(id) });
+           
             List<string> ParentData = new List<string>();
             ParentData.Add(HttpUtility.HtmlDecode(name));
             string strAddRow = string.Empty;
@@ -869,6 +874,8 @@ namespace RevenuePlanner.Controllers
                  .Cast<DataRow>()
                  .Where(rw => rw.Field<Int32>("Id") == id).Sum(chld => chld.Field<Int32>("LineItemCount"));
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
+                objuserData=(new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "1" });
+
                 //ParentData.Add(Convert.ToString(lineitemcount));
             }
             else
@@ -877,7 +884,9 @@ namespace RevenuePlanner.Controllers
                 { 
                     addRow = string.Empty;
                 SelectBox = string.Empty;
-                }
+                }	 
+                objuserData=(new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0" });
+
             }
             ParentData.Add(addRow);
             ParentData.Add(SelectBox);
@@ -937,11 +946,11 @@ namespace RevenuePlanner.Controllers
                 ParentData.Add(Convert.ToString(actualtotal.Value.ToString(formatThousand)));
             }
 
-            List<userdata> objuserData = new List<userdata>();
-            List<row_attrs> rows_attrData = new List<row_attrs>();
-            objuserData.Add(new userdata { id = Convert.ToString(id) });
-            objuserData.Add(new userdata { idwithName = "parent_" + Convert.ToString(id) });
-            objuserData.Add(new userdata { row_attrs = "parent_" + Convert.ToString(id) });
+            //List<userdata> objuserData = new List<userdata>();
+            //List<row_attrs> rows_attrData = new List<row_attrs>();
+            //objuserData.Add(new userdata { id = Convert.ToString(id) });
+            //objuserData.Add(new userdata { idwithName = "parent_" + Convert.ToString(id) });
+            //objuserData.Add(new userdata { row_attrs = "parent_" + Convert.ToString(id) });
 
             rows_attrData.Add(new row_attrs { id = Convert.ToString(id) });
             //return new FinanceParentChildModel { Id = id, Name = name, Children = children, Budget = budget, ForeCast = forcast, BudgetTotal = budgetTotal, ForeCastTotal = forcastTotal };
