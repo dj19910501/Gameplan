@@ -379,7 +379,7 @@ BEGIN
 
 		    IF NOT EXISTS(SELECT * FROM sys.columns WHERE [name] = N'IsDeleted' AND [object_id] = OBJECT_ID(N'Budget_Detail'))
 			 BEGIN
-		     ALTER TABLE [dbo].[Budget_Detail] ADD  IsDeleted bit  NULL 
+		     ALTER TABLE [dbo].[Budget_Detail] ADD  IsDeleted bit  Not Null DEFAULT 0
 		    END
 END
 
