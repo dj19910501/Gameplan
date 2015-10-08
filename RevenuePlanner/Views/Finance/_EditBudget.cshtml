@@ -375,16 +375,19 @@
                         //execute code for each cell in a row with the id "row1"
                         //cellObj - related cell object
                         //ind - column index
+                        var headerLable = myTreeGrid.getColLabel(ind, 1);
+                        if (headerLable != "Task Name") {
                         if (locked == 1) {
                             myTreeGrid.cells(rowid, ind).setDisabled(true);
                             myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
                         }
                         else {
-                            var headerLable = myTreeGrid.getColLabel(ind, 1);
+                                //var headerLable = myTreeGrid.getColLabel(ind, 1);
                             if (headerLable.toLowerCase() != GlobalEditLevel.toLowerCase()) {
                                 myTreeGrid.cells(rowid, ind).setDisabled(true);
                                 myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
                             }
+                        }
                         }
                     });
                
@@ -395,7 +398,7 @@
                     //cellObj - related cell object
                     //ind - column index
                     var headerLable = myTreeGrid.getColLabel(ind, 1);
-                    if (headerLable.toLowerCase() != GlobalEditLevel.toLowerCase()) {
+                    if (headerLable.toLowerCase() != GlobalEditLevel.toLowerCase() && headerLable != "Task Name") {
                         myTreeGrid.cells(rowid, ind).setDisabled(true);
                         myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
                     }
@@ -443,6 +446,7 @@
             
             var ColumnName = myTreeGrid.getColLabel(cInd, 1);
             if (stage == 1) {
+                if (ColumnName != "Task Name") {
                 $(".dhx_combo_edit").off("keydown");
                 $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
                 myTreeGrid.editor.obj.onkeypress = function (e) {
@@ -451,6 +455,7 @@
                         var text = this.value;
                         if (text.length > 10) { //max length of the text
                             return false;
+                            }
                         }
                     }
                 }
