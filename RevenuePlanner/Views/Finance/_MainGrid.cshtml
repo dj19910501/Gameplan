@@ -70,7 +70,8 @@
         //myTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
         var mainGridData = "@_mainGridData";
         //mainGridData = "@HttpUtility.HtmlDecode(_mainGridData)"
-        mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
+        //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
+        mainGridData = $('<div/>').html(mainGridData.toString().replace("\\", "\\\\")).text(); // Decode Html content.
         var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
 
        // GridData = JSON.parse(GridData);
@@ -227,7 +228,17 @@
             });
         }
         
-        if (rowId == id) {
+        if (rowId != id && stage.toString() == '0') {
+            if (id != null && id != 'undefined' && id != '') {
+                arr = id.split('_');
+                if (arr.length > 0) {
+                    var isEdit = arr[3];
+                    if (isEdit.toString().toLowerCase() == 'false') {    // if user does not have create/Edit permission then return.
+                        return false;
+                    }
+                }
+            }
+        }
 
             if (stage.toString() == '0' || stage.toString() == '1') {
                 return true;
@@ -236,24 +247,43 @@
                 
                 //var _budgetIdVal = $('#ddlParentFinanceMain').val();
                 var _budgetIdVal = $("#hdnBudgetId").val();
-                if (newVal == null || newVal == '') {
+                if (newVal == null || newVal == '' || newVal == oldVal) {
                     return false;
                 }
                 else {
-                    SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID);
-                    RefreshBudgetDropdown(false);
-                    //myTreeGrid.openItem(parentId);
-                    _newrowid = "";
-                    _isNewRowAdd = false;
-                    _newParentId = 0;
-                    _parentRowId = "";
-                    return true;
+                    if (rowId == id) {
+                        SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID);
+                        RefreshBudgetDropdown(false);
+                        //myTreeGrid.openItem(parentId);
+                        _newrowid = "";
+                        _isNewRowAdd = false;
+                        _newParentId = 0;
+                        _parentRowId = "";
+                        return true;
+                    }
+                    else {
+                        if (id != null && id != 'undefined' && id != '') {
+                            arr = id.split('_');
+                            if (arr.length > 0) {
+                                var budgetDetailId = arr[1];
+                                parentId = arr[2];
+                                var isEdit = arr[3];
+                                if (isEdit.toString().toLowerCase() == 'true') {    // if user has create/Edit permission then update.
+                                    UpdateBudgetDetail(_budgetIdVal, newVal, budgetDetailId, parentId, parentRowID);
+                                    RefreshBudgetDropdown(false);
+                                }
+                                else {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
                 }
             }
-        }
-        else {
-            return false;
-        }
+        //}
+        //else {
+        //    return false;
+        //}
         //alert(id);
         return true;
     };
@@ -268,6 +298,14 @@
         var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var url = "@Url.Content("~/Finance/SaveNewBudgetDetail")";
         $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame, function () {
+            myTreeGrid.openItem(parentRowID);
+        });
+    }
+    function UpdateBudgetDetail(budgetId, budgetDetailName,budgetDetailId, parentId, parentRowID) {
+        //budgetId = 8;
+        var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+        var url = "@Url.Content("~/Finance/UpdateBudgetDetail")";
+        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&BudgetDetailId=' + budgetDetailId + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame, function () {
             myTreeGrid.openItem(parentRowID);
         });
     }

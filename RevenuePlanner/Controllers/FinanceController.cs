@@ -83,7 +83,7 @@ namespace RevenuePlanner.Controllers
                 Budget objBudget = new Budget();
                 objBudget.ClientId = Sessions.User.ClientId;
                 objBudget.Name = budgetName;
-                objBudget.Desc = "Test Budget Description";
+                objBudget.Desc = string.Empty;
                 objBudget.CreatedBy = Sessions.User.UserId;
                 objBudget.CreatedDate = DateTime.Now;
                 objBudget.IsDeleted = false;
@@ -352,9 +352,11 @@ namespace RevenuePlanner.Controllers
                 forecast = forcastVal.HasValue ? forcastVal.Value.ToString(formatThousand):"0";
                 planned = pannedVal.HasValue ? pannedVal.Value.ToString(formatThousand) : "0";
                 actual = actualVal.HasValue ? actualVal.Value.ToString(formatThousand) : "0";
+                rowId = rowId + "_" + _IsBudgetCreate_Edit.ToString(); // Append Create/Edit flag value for Budget permission to RowId.
 
                 if (_IsBudgetCreate_Edit)
                 {
+                    
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />";
                     strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
                 }
@@ -373,6 +375,7 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
+                rowId = rowId + "_" + _IsForecastCreate_Edit.ToString(); // Append Create/Edit flag value for Forecast permission to RowId.
                 if (_IsForecastCreate_Edit)
                 {
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />";
@@ -397,6 +400,58 @@ namespace RevenuePlanner.Controllers
 
             //return new FinanceParentChildModel { Id = id, Name = name, Children = children, Budget = budget, ForeCast = forcast, BudgetTotal = budgetTotal, ForeCastTotal = forcastTotal };
             return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, Detailid = Convert.ToString(id) };
+        }
+        public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailName, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly")
+        {
+            int budgetId = 0,budgetDetailId=0,parentId=0;
+            try
+            {
+                budgetId = !string.IsNullOrEmpty(BudgetId) ? Int32.Parse(BudgetId) : 0;
+                budgetDetailId = !string.IsNullOrEmpty(BudgetDetailId) ? Int32.Parse(BudgetDetailId) : 0;
+                parentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
+                if (budgetDetailId > 0 && parentId > 0)
+                {
+                    #region "Update BudgetDetail Name"
+                    Budget_Detail objBudgetDetail = new Budget_Detail();
+                    objBudgetDetail = db.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
+                    if (objBudgetDetail != null)
+                    {
+                        objBudgetDetail.Name = BudgetDetailName;
+                        db.Entry(objBudgetDetail).State = EntityState.Modified;
+                        db.SaveChanges();
+                    } 
+                    #endregion
+                }
+                else if (budgetDetailId > 0 && parentId <= 0)
+                {
+                    #region "Update Budget Name"
+                    Budget objBudget = new Budget();
+                    Guid clientId = Sessions.User.ClientId;
+                    objBudget = db.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
+                    if (objBudget != null)
+                    {
+                        objBudget.Name = BudgetDetailName;
+                        db.Entry(objBudget).State = EntityState.Modified;
+                    } 
+                    #endregion
+
+                    #region "Update Budget Detail Name"
+                    Budget_Detail objMainBudgetDetail = new Budget_Detail();
+                    objMainBudgetDetail = db.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
+                    if (objMainBudgetDetail != null)
+                    {
+                        objMainBudgetDetail.Name = BudgetDetailName;
+                        db.Entry(objMainBudgetDetail).State = EntityState.Modified;
+                    }
+                    db.SaveChanges(); 
+                    #endregion
+                }
+                return RefreshMainGridData(null, budgetId, mainTimeFrame);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
         #endregion
 
