@@ -177,10 +177,10 @@ namespace RevenuePlanner.Controllers
                 var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                 if (temp != null)
                 {
-                    objFinanceHeader.Budget = Math.Round(Convert.ToDouble(temp[3]), 2);
-                    objFinanceHeader.Forecast = Math.Round(Convert.ToDouble(temp[4]), 2);
-                    objFinanceHeader.Planned = Math.Round(Convert.ToDouble(temp[5]), 2);
-                    objFinanceHeader.Actual = Math.Round(Convert.ToDouble(temp[6]), 2);
+                    objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
+                    objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
+                    objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
+                    objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
                 }
                 else
                 {
@@ -255,16 +255,33 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("LineItemCount", typeof(Int32));
                 //budgetId = 8;
                 var lstBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
+                List<string> tacticStatus = Common.GetStatusListAfterApproved();// Add By Nishant Sheth
 
                 List<int> lstBudgetDetailsIds = lstBudgetDetails.Select(bdgtdtls => bdgtdtls.Id).ToList();
                 List<Budget_DetailAmount> BudgetDetailAmount = new List<Budget_DetailAmount>();
                 BudgetDetailAmount = db.Budget_DetailAmount.Where(dtlAmnt => lstBudgetDetailsIds.Contains(dtlAmnt.BudgetDetailId)).ToList();
 
                 List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => lstBudgetDetailsIds.Contains(a.BudgetDetailId)).Select(a => a).ToList();
-                List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
 
-                List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
-                List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
+                // Change By Nishant Sheth
+                List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+                List<int> LineItemids = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).Select(a => a.PlanLineItemId).ToList(); ;
+
+                //List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
+                // #1590 Changes Observation:5 - Nishant Sheth
+                List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
+                                                                                     //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                     where LineItemids.Contains(Cost.PlanLineItemId)
+                                                                                     select Cost).ToList();
+                //List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
+                // #1590 Changes Observation:9 - Nishant Sheth
+                List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
+                                                                                         //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
+                                                                                         join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                         join Tactic in db.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
+                                                                                         where LineItemids.Contains(Actual.PlanLineItemId)
+                                                                                         && tacticStatus.Contains(Tactic.Status)
+                                                                                         select Actual).ToList();
 
                 string rowId = string.Empty;
                 List<int> PlanLineItemsId;
@@ -468,7 +485,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Methods for Get Header Value
-        public ActionResult GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly", bool IsMain = false)
+        public ActionResult GetFinanceHeaderValue(int budgetId = 0, string timeFrameOption = "", string isQuarterly = "Quarterly", bool IsMain = false, string mainTimeFrame = "Yearly")
         {
             //FinanceModelHeaders objfinanceheader = new FinanceModelHeaders();
             //if (TempData["FinanceHeader"] != null)
@@ -483,17 +500,19 @@ namespace RevenuePlanner.Controllers
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
             if (IsMain)
             {
-                gridRowModel = GetFinanceMainGridData(budgetId);
+                if (TempData["FinanceHeader"] != null)
+                {
+                    gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
                 var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
                 if (DetailId != null)
                 {
                     var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                     if (temp != null)
                     {
-                        objFinanceHeader.Budget = Math.Round(Convert.ToDouble(temp[3]), 2);
-                        objFinanceHeader.Forecast = Math.Round(Convert.ToDouble(temp[4]), 2);
-                        objFinanceHeader.Planned = Math.Round(Convert.ToDouble(temp[5]), 2);
-                        objFinanceHeader.Actual = Math.Round(Convert.ToDouble(temp[6]), 2);
+                            objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
+                            objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
+                            objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
+                            objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
                     }
                     else
                     {
@@ -509,6 +528,11 @@ namespace RevenuePlanner.Controllers
 
                     TempData["FinanceHeader"] = objFinanceHeader;
                     gridRowModel.FinanemodelheaderObj = Common.CommonGetFinanceHeaderValue(objFinanceHeader);
+                    }
+                }
+                else
+                {
+                    objFinanceHeader = TempData["FinanceHeader"] as FinanceModelHeaders;
                 }
             }
             else
@@ -537,7 +561,7 @@ namespace RevenuePlanner.Controllers
         {
             List<ViewByModel> lstViewByAllocated = new List<ViewByModel>();
             lstViewByAllocated.Add(new ViewByModel { Text = "This Year (Quarterly)", Value = Enums.PlanAllocatedBy.quarters.ToString() });
-            lstViewByAllocated.Add(new ViewByModel { Text = "Monthly", Value = Enums.PlanAllocatedBy.months.ToString() });
+            lstViewByAllocated.Add(new ViewByModel { Text = "This Year (Monthly)", Value = Enums.PlanAllocatedBy.months.ToString() });
             lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 1", Value = Enums.QuarterWithSpace.Quarter1.ToString() });
             lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 2", Value = Enums.QuarterWithSpace.Quarter2.ToString() });
             lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 3", Value = Enums.QuarterWithSpace.Quarter3.ToString() });
@@ -552,8 +576,6 @@ namespace RevenuePlanner.Controllers
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
             var MinBudgetid = 0; var MinParentid = 0;
-
-        
 
             #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
             _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
@@ -624,13 +646,31 @@ namespace RevenuePlanner.Controllers
             //MinParentid = BudgetId;
             List<int> BudgetDetailids = BudgetDetailList.Select(a => a.Id).ToList();
             List<LineItem_Budget> LineItemidBudgetList = db.LineItem_Budget.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
-            List<int> LineItemids = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+
+            // Change By Nishant Sheth
+            List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            List<int> LineItemids = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).Select(a => a.PlanLineItemId).ToList(); ;
+
 
             var Query = BudgetDetailList.Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
+            List<string> tacticStatus = Common.GetStatusListAfterApproved();
 
             List<Budget_DetailAmount> BudgetDetailAmount = db.Budget_DetailAmount.Where(a => BudgetDetailids.Contains(a.BudgetDetailId)).Select(a => a).ToList();
-            List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
-            List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
+            //List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
+            // #1590 Changes Observation:5 - Nishant Sheth
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
+                                                                                 //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                 where LineItemids.Contains(Cost.PlanLineItemId)
+                                                                                 select Cost).ToList();
+            //List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => LineItemids.Contains(a.PlanLineItemId)).Select(a => a).ToList();
+            // #1590 Changes Observation:9 - Nishant Sheth
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
+                                                                                     //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
+                                                                                     join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                     join Tactic in db.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
+                                                                                     where LineItemids.Contains(Actual.PlanLineItemId)
+                                                                                     && tacticStatus.Contains(Tactic.Status)
+                                                                                     select Actual).ToList();
 
             // foreach (var item in Query)
 
@@ -663,10 +703,10 @@ namespace RevenuePlanner.Controllers
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
             if (temp != null)
             {
-                objFinanceHeader.Budget = Math.Round(Convert.ToDouble(temp[temp.Count - 4]), 2);
-                objFinanceHeader.Forecast = Math.Round(Convert.ToDouble(temp[temp.Count - 3]), 2);
-                objFinanceHeader.Planned = Math.Round(Convert.ToDouble(temp[temp.Count - 2]), 2);
-                objFinanceHeader.Actual = Math.Round(Convert.ToDouble(temp[temp.Count - 1]), 2);
+                objFinanceHeader.Budget = Convert.ToDouble(temp[temp.Count - 4]);
+                objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
+                objFinanceHeader.Planned = Convert.ToDouble(temp[temp.Count - 2]);
+                objFinanceHeader.Actual = Convert.ToDouble(temp[temp.Count - 1]);
             }
             else
             {
@@ -849,7 +889,7 @@ namespace RevenuePlanner.Controllers
 
             for (i = 0; i < budget.Count; i++)
             {
-                ParentData.Add(Convert.ToString(budget[i]));
+                ParentData.Add(Convert.ToString(budget[i].Value.ToString(formatThousand)));
                 if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
                 {
                     //var CheckIsparentZero=dataTable
@@ -877,7 +917,7 @@ namespace RevenuePlanner.Controllers
 
             }
 
-            ParentData.Add(Convert.ToString(budgetTotal));
+            ParentData.Add(Convert.ToString(budgetTotal.ToString(formatThousand)));
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))
             {
                 var tempforcastTotal = GetSumofValue(dataTable, id, "ForeCastTotal");

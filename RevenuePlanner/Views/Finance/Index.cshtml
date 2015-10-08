@@ -178,10 +178,10 @@
             LoadBudgetGrid(AllocatedBy);
             GetFinanceHeaderValue(0, false);
         }
-        else
-        {
+        else {
             var budgetIDMain = $("#ddlParentFinanceMain").val();
             RefreshMainGridData(budgetIDMain);
+            GetFinanceHeaderValue(budgetIDMain, true, mainTimeFrame);
         }
 
         ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
@@ -278,11 +278,13 @@
         var parentid = $("#ddlParentFinance").val();
         if (pageName == "EditBudget") {
             if (budgetID > 0) {
-                GetFinanceHeaderValue(budgetID);
+                
                 EditBudget(budgetID, true);
+                GetFinanceHeaderValue(budgetID);
             } else {
-                GetFinanceHeaderValue(parentid);
+                
                 EditBudget(parentid, true);
+                GetFinanceHeaderValue(parentid);
             }
         }
         //myApp.hidePleaseWait();
@@ -292,14 +294,14 @@
         $("#btnMultiselect_ddlChildFinance").find("span").text(htmlDecode(txtval));
     });
 
-    function GetFinanceHeaderValue(_budgetId, Ismain) {
+    function GetFinanceHeaderValue(_budgetId, Ismain, mainTimeFrame) {
 
         var ismainGird = false;
         if (Ismain != null && Ismain != undefined) {
             ismainGird = Ismain
         }
         var url = '@Url.Content("~/Finance/GetFinanceHeaderValue/")';
-        $('#headerValue').load(url + '?budgetId=' + _budgetId + '&isQuarterly=monthly&timeFrameOption=2015&IsMain=' + ismainGird);
+        $('#headerValue').load(url + '?budgetId=' + _budgetId + '&isQuarterly=monthly&timeFrameOption=2015&IsMain=' + ismainGird + '&mainTimeFrame=' + mainTimeFrame);
 
     }
     function BindChildBudgetDrp(_budgetId) {
@@ -624,6 +626,7 @@
         _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var _budgetIdMain = $('#ddlParentFinanceMain').val();
         RefreshMainGridData(_budgetIdMain);
+        GetFinanceHeaderValue(_budgetIdMain, true, _mainTimeFrame);
     });
     $("#ddlRevenueTimeFrame").change(function () {
         // debugger;

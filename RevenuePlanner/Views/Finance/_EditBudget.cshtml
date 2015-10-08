@@ -128,7 +128,7 @@
 
         if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
             myTreeGrid.setHeader(",,,,Q1,Q1,Q1,Q1,Q2,Q2,Q2,Q2,Q3,Q3,Q3,Q3,Q4,Q4,Q4,Q4,Total,Total,Total,Total");
-            myTreeGrid.attachHeader("Task Name,,,Line Items,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual");
+            myTreeGrid.attachHeader("Task Name,,,Line Items,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual");
             for (var i = 4; i <= 23; i++) {
                 myTreeGrid.setNumberFormat("0,000.00", i, ".", ",");
             }
@@ -173,14 +173,14 @@
 
         } else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
             myTreeGrid.setHeader(",,,," + Jan + "," + Jan + "," + Jan + "," + Jan + "," + Feb + "," + Feb + "," + Feb + "," + Feb + "," + Mar + "," + Mar + "," + Mar + "," + Mar + "," + April + "," + April + "," + April + "," + April + "," + May + "," + May + "," + May + "," + May + "," + Jun + "," + Jun + "," + Jun + "," + Jun + "," + July + "," + July + "," + July + "," + July + "," + Aug + "," + Aug + "," + Aug + "," + Aug + "," + Sep + "," + Sep + "," + Sep + "," + Sep + "," + Oct + "," + Oct + "," + Oct + "," + Oct + "," + Nov + "," + Nov + "," + Nov + "," + Nov + "," + Dec + "," + Dec + "," + Dec + "," + Dec + ",Total,Total,Total,Total");
-            myTreeGrid.attachHeader("Task Name,,,Line Items,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual,Budget,Forecast,Plan,Actual");
+            myTreeGrid.attachHeader("Task Name,,,Line Items,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual,Budget,Forecast,Planned,Actual");
             for (var i = 4; i <= 55; i++) {
                 myTreeGrid.setNumberFormat("0,000.00", i, ".", ",");
             }
             //myTreeGrid.setInitWidths("150,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65");
             myTreeGrid.setColValidators("NotEmpty,,,,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric,ValidNumeric");
-            myTreeGrid.setInitWidths("200,30,30,70,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60");
-            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+            myTreeGrid.setInitWidths("200,30,30,90,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60,60,65,55,60");
+            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
             if (GlobalEditLevel == 'Budget') {
                 if (_isBudgetCreateEdit != null && _isBudgetCreateEdit != 'undefined' && _isBudgetCreateEdit.toLowerCase() == 'true') {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro,ro");
@@ -307,8 +307,8 @@
 
             myTreeGrid.setHeader(columnames);
             myTreeGrid.attachHeader(attachHeader);
-            myTreeGrid.setInitWidths("200,30,30,70,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65");
-            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+            myTreeGrid.setInitWidths("200,30,30,90,60,65,60,65,60,65,60,65,60,65,60,65,60,65,60,65");
+            myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
 
             //myTreeGrid.setHeader(",,,Jan,Jan,Jan,Jan,Feb,Feb,Feb,Feb,Mar,Mar,Mar,Mar,Total,Total,Total,Total");
             //myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
@@ -397,7 +397,21 @@
         //IsValid = true;
         //myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
-
+            
+            var ColumnName = myTreeGrid.getColLabel(cInd, 1);
+            if (stage == 1) {
+                $(".dhx_combo_edit").off("keydown");
+                $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
+                myTreeGrid.editor.obj.onkeypress = function (e) {
+                    e = e || window.event;
+                    if ((e.keyCode >= 47) || (e.keyCode == 0)) {
+                        var text = this.value;
+                        if (text.length > 10) { //max length of the text
+                            return false;
+                        }
+                    }
+                }
+            }
             if (stage == 0 && cInd == 2) return true;
             var ParentID = $("#ddlParentFinance").val();
             var ChildID = $("#ddlChildFinance").val();
@@ -423,7 +437,7 @@
                 }
 
                 var Period = myTreeGrid.getColLabel(cInd, 0);
-                var ColumnName = myTreeGrid.getColLabel(cInd, 1);
+
                 var BudgetQuartelyColIndex = ["3", "7", "11", "15"];
                 var ForeCastQuartelyColIndex = ["4", "8", "12", "16"];
                 var BudgetQuaterTotalIndex = 19;
