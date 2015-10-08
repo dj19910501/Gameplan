@@ -287,6 +287,7 @@ namespace RevenuePlanner.Controllers
                 List<int> PlanLineItemsId;
                 BudgetAmount objBudgetAmount;
                 bool isQuarterly = false;
+                int cntlineitem = 0;
                 if (!string.IsNullOrEmpty(mainTimeFrame))
                 {
                     if (!mainTimeFrame.Equals(Enums.QuarterFinance.Yearly.ToString()))
@@ -299,10 +300,14 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = new BudgetAmount();
                         PlanLineItemsId = new List<int>();
                         PlanLineItemsId = LineItemidBudgetList.Where(a => a.BudgetDetailId == i.Id).Select(a => a.PlanLineItemId).ToList();
+                        if (i.ParentId != null)
+                            cntlineitem = PlanLineItemsId.Count;
+                        else
+                            cntlineitem = LineItemids.Count;
                         objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList());
                         //rowId = Regex.Replace(i.Name.Trim(), @"\s+", "") + i.Id.ToString() + (i.ParentId == null ? "0" : i.ParentId.ToString());
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />", objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
-                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
+                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem });
                     });
 
                 var MinParentid = 0;
@@ -332,6 +337,7 @@ namespace RevenuePlanner.Controllers
             var planned = row.Field<String>("Planned");
             var actual = row.Field<String>("Actual");
             var lineItemCount = row.Field<Int32>("LineItemCount");
+            int parentId = row.Field<Int32>("ParentId");
             //var action = row.Field<String>("Action");
             //var budget = row.Field<List<Double?>>("Budget");
             //var forcast = row.Field<List<Double?>>("ForeCast");
@@ -342,29 +348,7 @@ namespace RevenuePlanner.Controllers
               .Select(r => CreateMainGridItem(dataTable, r))
               .ToList();
             List<string> ParentData = new List<string>();
-
-
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
-            // Change By Nishant Sheth
-            //if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
-            //{
-            //    forecast = Convert.ToString(GetSumofValueMainGrid(dataTable, id, "Forecast"));
-
-            //    planned = Convert.ToString(GetSumofValueMainGrid(dataTable, id, "Planned"));
-
-            //    actual = Convert.ToString(GetSumofValueMainGrid(dataTable, id, "Actual"));
-
-            //    ParentData.Add(forecast);
-            //    ParentData.Add(planned);
-            //    ParentData.Add(actual);
-            //}
-            //else
-            //{
-            //    ParentData.Add(forecast);
-            //    ParentData.Add(planned);
-            //    ParentData.Add(actual);
-            //}
-            // End by Nishant Sheth
 
             #region "Add Action column link"
             string strAction = string.Empty;
@@ -392,7 +376,7 @@ namespace RevenuePlanner.Controllers
                 {
                     strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
                 }
-                if ((lstChildren != null && lstChildren.Count() > 0))
+                if ((lstChildren != null && lstChildren.Count() > 0) && parentId > 0) // LineItem count will be not set for Most Parent Item & last Child Item.
                 {
                    lineItemCount = dataTable
                                        .Rows
