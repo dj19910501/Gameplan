@@ -89,6 +89,25 @@ jQuery.fn.extend({
 
 	    $('.Yes_BudgetView').parent().css('opacity', '');
 	    $('.No_BudgetView').parent().css('opacity', '');
+	    //$('.Yes_ForecastView').parent().css('opacity', '');
+	    //$('.No_ForecastView').parent().css('opacity', '');
+	}
+
+	if ($('.Yes_BudgetView').attr('checked') == 'checked') {
+
+	    //$('.Yes_BudgetView').attr("checked", true);
+	    //$('.Yes_BudgetView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+        	  
+	    $('.Yes_ForecastView').attr("checked", true);
+	    $('.Yes_ForecastView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.No_ForecastView').attr("checked", false);
+	    $('.No_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+	}
+	else {
+
+	    //$('.Yes_BudgetView').parent().css('opacity', '');
+	    
 	    $('.Yes_ForecastView').parent().css('opacity', '');
 	    $('.No_ForecastView').parent().css('opacity', '');
 	}
@@ -156,10 +175,22 @@ jQuery.fn.extend({
 
 	    $('.Yes_BudgetView').parent().css('opacity', '');
 	    $('.No_BudgetView').parent().css('opacity', '');
+	  
+	}
+
+	if ($('.Yes_BudgetView').attr('checked') == 'checked') {
+        	   
+	    $('.Yes_ForecastView').attr("checked", true);
+	    $('.Yes_ForecastView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
+
+	    $('.No_ForecastView').attr("checked", false);
+	    $('.No_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
+	}
+	else {
+           
 	    $('.Yes_ForecastView').parent().css('opacity', '');
 	    $('.No_ForecastView').parent().css('opacity', '');
 	}
-
 	if ($('.Yes_ForecastCreateEdit').attr('checked') == 'checked') {
 
 	    $('.Yes_ForecastView').attr("checked", true);
@@ -169,7 +200,7 @@ jQuery.fn.extend({
 	    $('.No_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
 	}
 	else {
-	    if ($('.Yes_BudgetCreateEdit').attr('checked') == 'checked') {
+	    if ($('.Yes_BudgetCreateEdit').attr('checked') == 'checked' || $('.Yes_BudgetView').attr('checked') == 'checked') {
 	        $('.Yes_ForecastView').parent().data('checked', true).css({ backgroundPosition: "left -" + (elmHeight * 2) + "px", opacity: "0.4" });
 	        $('.No_ForecastView').parent().data('checked', false).css({ backgroundPosition: "left 0", opacity: "0.4" });
 	    }
@@ -177,7 +208,6 @@ jQuery.fn.extend({
 	        $('.Yes_ForecastView').parent().css('opacity', '');
 	        $('.No_ForecastView').parent().css('opacity', '');
 	    }
-
 
 	}
 
