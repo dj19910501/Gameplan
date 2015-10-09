@@ -469,6 +469,7 @@
     <Content Include="Content\images\hive9-logo_2502.png" />
     <Content Include="Content\images\horizontal-shadow-left.png" />
     <Content Include="Content\images\horizontal-shadow-right.png" />
+    <Content Include="Content\images\Hve9-logo.png" />
     <Content Include="Content\images\icon-check-accordion.png" />
     <Content Include="Content\images\icon-check-fill.png" />
     <Content Include="Content\images\icon-collapse.png" />
@@ -927,7 +928,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>57725</DevelopmentServerPort>
+          <DevelopmentServerPort>58691</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

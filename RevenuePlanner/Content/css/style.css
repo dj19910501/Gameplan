@@ -144,8 +144,8 @@ body {
 }*/
 
 .mrp-logo {
-    background: url("../images/game-plan-logo.png") no-repeat scroll center 16px rgba(0, 0, 0, 0); /*uday 8 -7-2014 #559*/
-    width: 58px;
+    background: url("../images/Hve9-logo.png") no-repeat scroll center 16px rgba(0, 0, 0, 0); /*uday 8 -7-2014 #559*/
+    width: 87px;
     height: 78px;
     float: right;
     margin-right: 15px;
@@ -206,7 +206,7 @@ div[id*="modal-container"] { /*top: 100px;*/
 div.dropdown-info-user {
     position: absolute;
     z-index: 2000;
-    right: 83px; /*changed - added by uday #559*/
+    right: 106px; /*changed - added by dashrath #1645*/
     top: 78px;
     float: left;
 }
