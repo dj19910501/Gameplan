@@ -115,6 +115,65 @@ namespace RevenuePlanner.Controllers
 
 
         #region  Main Grid Realted Methods
+
+        #region "Delete MainGrid"
+        public ActionResult DeleteMainGrid(string SelectedRowIDs, string mainTimeFrame)
+        {
+            //Added By Komal Rawal for #1639
+            #region Delete Fields
+            if (SelectedRowIDs != null)
+            {
+                var Values = JsonConvert.DeserializeObject<List<DeleteRowID>>(SelectedRowIDs);
+                var Selectedids = Values.Select(ids => ids.Id).ToList();
+                List<Budget_Detail> BudgetDetail = db.Budget_Detail.Where(budgetdetail => Selectedids.Contains(budgetdetail.Id) && budgetdetail.IsDeleted == false).Select(a => a).ToList();
+
+                var bdlist = (from b in BudgetDetail
+                              join a in BudgetDetail on b.Id equals a.ParentId
+                              where Selectedids.Contains(b.Id)
+                              select b).ToList();
+
+
+                foreach (var item in BudgetDetail)
+                {
+                    var ParentID = item.ParentId;
+                    if (ParentID == null)
+                    {
+                        var Budget = db.Budgets.Where(a => a.Id == item.BudgetId).Select(a => a).ToList();
+                        foreach (var value in Budget)
+                        {
+                            value.IsDeleted = true;
+                            db.Entry(value).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+
+                        //var ChildItems = BudgetDetail.Where(child => child.ParentId == item.Id).Select(child => child).ToList();
+                        //foreach (var child in ChildItems)
+                        //{
+                        //    child.IsDeleted = true;
+                        //    db.Entry(child).State = EntityState.Modified;
+                        //    db.SaveChanges();
+                        //}
+
+                    }
+                    item.IsDeleted = true;
+                    db.Entry(item).State = EntityState.Modified;
+                }
+                db.SaveChanges();
+            }
+            var lstchildbudget = Common.GetBudgetlist();
+            int _budgetId = 0;
+            if (lstchildbudget != null)
+            {
+                string strbudgetId = lstchildbudget.Select(bdgt => bdgt.Value).FirstOrDefault();
+                _budgetId = !string.IsNullOrEmpty(strbudgetId) ? Int32.Parse(strbudgetId) : 0;
+            }
+            return RefreshMainGridData(null, _budgetId, mainTimeFrame);
+
+
+            #endregion
+            //End
+        }
+        #endregion
         public ActionResult RefreshMainGridData(string SelectedRowIDs, int budgetId = 0, string mainTimeFrame = "Yearly")
         {
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();

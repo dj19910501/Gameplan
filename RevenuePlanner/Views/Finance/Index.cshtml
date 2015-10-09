@@ -189,10 +189,31 @@
                     BindChildBudgetDrp(parseInt(budgetID));
                 }
                 else {
-                    var budgetIDMain = $("#ddlParentFinanceMain").val();
-                    RefreshMainGridData(budgetIDMain);
-                    GetFinanceHeaderValue(budgetIDMain, true, mainTimeFrame);
-                    RefreshBudgetDropdown(false);
+            //var budgetIDMain = $("#ddlParentFinanceMain").val();
+            //_isDelete = true;
+            var selectedValues = [];
+            if (RowIDs.IDs.length != 0) {
+                for (var i = 0; i < RowIDs.IDs.length; i++) {
+                    //alert(budgetIDMain + ":" + RowIDs.IDs[i]);
+                    selectedValues.push({
+                        Id: RowIDs.IDs[i],
+                    });
+                }
+            }
+            selectedValues = JSON.stringify(selectedValues);
+            var url = '@Url.Content("~/Finance/DeleteMainGrid/")';
+            $('#divGridView').load(url + '?SelectedRowIDs=' + selectedValues + '&mainTimeFrame=' + mainTimeFrame, function () { RefreshBudgetDropdown(false); var newbudgetID = $("#ddlParentFinanceMain").val(); GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame); });
+            //alert(budgetIDMain + ":" + selectedValues);
+            //RefreshMainGridData(budgetIDMain);
+            //GetFinanceHeaderValue(budgetIDMain, true, mainTimeFrame);
+            //RefreshBudgetDropdown(true);
+            //alert(budgetIDMain)
+            //if (budgetIDMain == null && budgetIDMain == 'undefined' && budgetIDMain == 0) {
+            //    RefreshBudgetDropdown(false);
+            //    var budgetIDMain1 = $("#ddlParentFinanceMain").val();
+            //    RefreshMainGridData(budgetIDMain);
+            //}
+ 
                 }
 
                 ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
@@ -654,7 +675,6 @@
     //    }
     //});
     $("#ddlMainGridTimeFrame").change(function () {
-        debugger;
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
