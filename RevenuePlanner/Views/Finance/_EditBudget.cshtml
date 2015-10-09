@@ -459,12 +459,18 @@
                             }
                         }
                     }
+
+                    var psv = myTreeGrid.cell;
+                    this.editor.obj.value = (psv.title.replace(/,/g, ""));
                 }
             }
             if (stage == 0 && cInd == 2) return true;
             var ParentID = $("#ddlParentFinance").val();
             var ChildID = $("#ddlChildFinance").val();
             if (IsValid) {
+                if (oValue != undefined) {
+                    oValue = oValue.replace(/,/g, "");
+                }
                 //if (IsAddNew == true) {
                 //    _parentRowId = $("#hdn_row_parentId").val();
                 //}
