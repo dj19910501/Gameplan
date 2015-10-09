@@ -151,22 +151,22 @@ namespace RevenuePlanner.Controllers
                             db.SaveChanges();
                         }
 
-                        var ChildItems = BudgetDetail.Where(child => child.ParentId == item.Id).Select(child => child).ToList();
-                        foreach (var child in ChildItems)
-                        {
-                            child.IsDeleted = true;
-                            db.Entry(child).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
+                        //var ChildItems = BudgetDetail.Where(child => child.ParentId == item.Id).Select(child => child).ToList();
+                        //foreach (var child in ChildItems)
+                        //{
+                        //    child.IsDeleted = true;
+                        //    db.Entry(child).State = EntityState.Modified;
+                        //    db.SaveChanges();
+                        //}
 
                     }
                     item.IsDeleted = true;
                     db.Entry(item).State = EntityState.Modified;
                 }
-
+                  db.SaveChanges();
             }
 
-            db.SaveChanges();
+          
 
             #endregion
             //End
@@ -369,7 +369,7 @@ namespace RevenuePlanner.Controllers
                 {
                     
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />";
-                    SelectCheckbox = "<input id='dv" + rowId + "' row-id='" + rowId + "' onclick='CheckboxClick(this)' type='checkbox' />";
+                    SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "' onclick='CheckboxClick(this)' type='checkbox' />";
                     strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
                 }
                 else
@@ -391,7 +391,7 @@ namespace RevenuePlanner.Controllers
                 if (_IsForecastCreate_Edit)
                 {
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />";
-                    SelectCheckbox = "<input id='dv" + rowId + "' row-id='" + rowId + "'  onclick='CheckboxClick(this)' type='checkbox' />";
+                    SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "'  onclick='CheckboxClick(this)' type='checkbox' />";
                     strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
                 }
                 else
@@ -584,7 +584,7 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("PlanTotal", typeof(Double));
             dataTableMain.Columns.Add("ActualTotal", typeof(Double));
             #region Delete Fields
-            if (SelectedRowIDs != null)
+            if (SelectedRowIDs != null )
             {
                 var Values = JsonConvert.DeserializeObject<List<DeleteRowID>>(SelectedRowIDs);
                 var Selectedids = Values.Select(ids => ids.Id).ToList();
@@ -600,21 +600,22 @@ namespace RevenuePlanner.Controllers
                             value.IsDeleted = true;
                             db.SaveChanges();
                         }
-                        var ChildItems = BudgetDetail.Where(child => child.ParentId == item.Id).Select(child => child).ToList();
-                        foreach (var child in ChildItems)
-                        {
-                            child.IsDeleted = true;
-                            db.Entry(child).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
+                        //var ChildItems = BudgetDetail.Where(child => child.ParentId == item.Id).Select(child => child).ToList();
+                        //foreach (var child in ChildItems)
+                        //{
+                        //    child.IsDeleted = true;
+                        //    db.Entry(child).State = EntityState.Modified;
+                        //    db.SaveChanges();
+                        //}
                     }
                     item.IsDeleted = true;
                     db.Entry(item).State = EntityState.Modified;
                 }
+                db.SaveChanges();
 
             }
 
-            db.SaveChanges();
+          
 
             #endregion
 
@@ -669,13 +670,13 @@ namespace RevenuePlanner.Controllers
                         if (item.Id != varBudgetIds.ParentId && item.ParentId != null)
                         {
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList);
-                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", "<input id='dv" + item.Id + "_" + item.ParentId + "' row-id='" + item.Id + "_" + item.ParentId + "' onclick='CheckboxClick(this)' type='checkbox' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
+                           dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", "<input id='cb_" + item.Id + "' row-id='" + item.Id + "' onclick='CheckboxClick(this)' type='checkbox' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                         }
                     }
                     else
                     {
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList);
-                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", "<input id='dv" + item.Id + "_" + item.ParentId + "' row-id='" + item.Id + "_" + item.ParentId + "' onclick='CheckboxClick(this)' type='checkbox' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
+                      dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='grid_add' style='float:none !important' />", "<input  id='cb_" + item.Id + "' row-id='" + item.Id + "' onclick='CheckboxClick(this)' type='checkbox' />", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                     }
                 });
 

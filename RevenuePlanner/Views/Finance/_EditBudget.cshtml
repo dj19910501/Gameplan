@@ -377,7 +377,7 @@
                         //cellObj - related cell object
                         //ind - column index
                         var headerLable = myTreeGrid.getColLabel(ind, 1);
-                        if (headerLable != "Task Name") {
+                        if (headerLable != "Task Name" && ind!=2) {
                         if (locked == 1) {
                             myTreeGrid.cells(rowid, ind).setDisabled(true);
                             myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
@@ -399,7 +399,7 @@
                     //cellObj - related cell object
                     //ind - column index
                     var headerLable = myTreeGrid.getColLabel(ind, 1);
-                    if (headerLable.toLowerCase() != GlobalEditLevel.toLowerCase() && headerLable != "Task Name") {
+                    if (headerLable.toLowerCase() != GlobalEditLevel.toLowerCase() && headerLable != "Task Name" && ind!=2) {
                         myTreeGrid.cells(rowid, ind).setDisabled(true);
                         myTreeGrid.setCellTextStyle(rowid, ind, "color:gray;");
                     }
@@ -641,22 +641,104 @@
     var _parentRowId = '';
     var _row_parentId = '';
 
+    //RowIDs = {
+    //    IDs: []
+    //}
+    //function CheckboxClick(checkbox) {
+    //    var val = $(checkbox).attr('row-id').split('_')[0];
+    //    var state = $(checkbox).attr("checked");
+    //    if (state == "checked") {
+    //        RowIDs.IDs.push(val);
+    //    }
+    //    else {
+    //        var index = RowIDs.IDs.indexOf(val);
+    //        RowIDs.IDs.splice(index, 1);
+    //    }
+
+
+    //}
+    //Added BY Komal Rawal for #1639
     RowIDs = {
         IDs: []
     }
+    var CheckedSubitems = [];
+    var ids = [];
     function CheckboxClick(checkbox) {
-        var val = $(checkbox).attr('row-id').split('_')[0];
+        RowIDs = {
+            IDs: []
+        }
         var state = $(checkbox).attr("checked");
+        ids = myTreeGrid.getAllSubItems($(checkbox).attr('row-id')).split(',');
+       
+        if (ids.length > 1) {
+            for (var i = 0; i < ids.length; i++) {
+                var Checkbox = ids[i];
         if (state == "checked") {
-            RowIDs.IDs.push(val);
+                    $('#cb_' + Checkbox).attr("checked", "checked");
+                    RowIDs.IDs.push(ids[i]);
         }
         else {
-            var index = RowIDs.IDs.indexOf(val);
-            RowIDs.IDs.splice(index, 1);
+            
+                    $('#cb_' + Checkbox).removeAttr("checked");
+                }
+
+            }
         }
 
+        var parentid = myTreeGrid.getParentId($(checkbox).attr('row-id'));
+        if (parentid == 0) {
+            if ($(checkbox).attr("checked") == "checked")
+                {
+            
+                RowIDs.IDs.push($(checkbox).attr("id").split('_')[1]);
+            }
+            else {
+                var index = RowIDs.IDs.indexOf($(checkbox).attr("id").split('_')[1]);
+                RowIDs.IDs.splice(index, 1);
 
+            }
+        }
+        SetParentCheckbox(parentid);
     }
+
+    function SetParentCheckbox(parentid) {
+        var flag = true;
+        if (parentid != 0) {
+            RowIDs = {
+                IDs: []
+            }
+            CheckedSubitems = myTreeGrid.getAllSubItems(parentid).split(',');
+            if (CheckedSubitems.length >= 1) {
+
+                for (var i = 0; i < CheckedSubitems.length; i++) {
+                    if ($('#cb_' + CheckedSubitems[i]).attr("checked") == "checked") {
+                        flag == true
+                        RowIDs.IDs.push(CheckedSubitems[i]);
+                    }
+                    else {
+                        var index = RowIDs.IDs.indexOf(CheckedSubitems[i]);
+                        if (index >= 0) {
+            RowIDs.IDs.splice(index, 1);
+        }
+                        flag = false;
+                    }
+                }
+
+            }
+            if (flag == true) {
+                $('#cb_' + parentid).attr("checked", "checked")
+                RowIDs.IDs.push($('#cb_' + parentid).attr("id").split('_')[1]);
+            }
+            else {
+                $('#cb_' + parentid).removeAttr("checked");
+            }
+            var parentid = myTreeGrid.getParentId($('#cb_' + parentid).attr('row-id'));
+            SetParentCheckbox(parentid);
+        }
+        return;
+    }
+
+    //End
     function AddRow(cntrl) {
         // debugger;
         if (_isNewRowAdd == false) {
@@ -698,7 +780,7 @@
                 } else {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
                 }
-                myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'/>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'/>", "<input id='cb" + _newrowid + "'  row-id='" + _newrowid + "' type='checkbox' />", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
             }
             else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
                 if (GlobalEditLevel == 'Budget') {
@@ -706,14 +788,14 @@
                 } else {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
                 }
-                myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'/>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'/>", "<input id='cb" + _newrowid + "'  row-id='" + _newrowid + "' type='checkbox' />", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
             } else {
                 if (GlobalEditLevel == 'Budget') {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro,ro");
                 } else {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
                 }
-                myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'/>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                myTreeGrid.addRow(_newrowid, ["", "<div id='dv" + _newrowid + "' class='grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'/>", "<input id='cb" + _newrowid + "'  row-id='" + _newrowid + "' type='checkbox' />", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
             }
             myTreeGrid.openItem(row_id);
             var GridWidth = $("#gridbox").width();
