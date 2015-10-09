@@ -184,7 +184,7 @@
         var state = $(checkbox).attr("checked");
         
         ids = myTreeGrid.getAllSubItems($(checkbox).attr('row-id')).split(',');
-        if (ids.length > 1) {
+        //if (ids.length > 1) {
             for (var i = 0; i < ids.length; i++) {
                 var Checkbox = ids[i];
         if (state == "checked") {
@@ -196,7 +196,7 @@
                 }
 
             }
-        }
+     //   }
 
         var parentid = myTreeGrid.getParentId($(checkbox).attr('row-id'));
         if (parentid == 0) {
