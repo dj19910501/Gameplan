@@ -1376,7 +1376,7 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             BudgetAmount obj = new BudgetAmount();
-            obj = objFinanceController.GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount);
+            obj = objFinanceController.GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList);
 
             if (obj != null)
             {
@@ -1403,7 +1403,7 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             BudgetAmount obj = new BudgetAmount();
-            obj = objFinanceController.GetAmountValue(null, null, null, null);
+            obj = objFinanceController.GetAmountValue(null, null, null, null,null);
 
             if (obj != null)
             {
@@ -1458,7 +1458,7 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             BudgetAmount obj = new BudgetAmount();
-            obj = objFinanceController.GetMainGridAmountValue(IsQuaterly, mainTimeFrame, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount);
+            obj = objFinanceController.GetMainGridAmountValue(IsQuaterly, mainTimeFrame, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList);
 
             if (obj != null)
             {
@@ -1485,7 +1485,7 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             BudgetAmount obj = new BudgetAmount();
-            obj = objFinanceController.GetMainGridAmountValue(true, null, null, null, null);
+            obj = objFinanceController.GetMainGridAmountValue(true, null, null, null, null,null);
 
             if (obj != null)
             {
