@@ -109,6 +109,12 @@
         
         $("#gridbox").find('table').css('width', gridWidth);
 
+        var rowcount = myTreeGrid.getRowsNum();
+        if (rowcount == null || rowcount == 'undefined' || rowcount == 0) {
+            $("#divGridView").hide();
+            $("#dvNoData").show();
+        }
+
         RowIDs = {
             IDs: []
         }
