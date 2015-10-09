@@ -188,8 +188,10 @@
             for (var i = 0; i < ids.length; i++) {
                 var Checkbox = ids[i];
         if (state == "checked") {
-                    $('#cb' + Checkbox).attr("checked", "checked");
-                    RowIDs.IDs.push(ids[i].split('_')[1]);
+            $('#cb' + Checkbox).attr("checked", "checked");
+            if ( ids[i].split('_')[1] != undefined) {
+                RowIDs.IDs.push(ids[i].split('_')[1]);
+            }
         }
         else {
                     $('#cb' + Checkbox).removeAttr("checked");

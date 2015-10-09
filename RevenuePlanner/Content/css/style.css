@@ -15252,3 +15252,17 @@ float:left;
         padding: 0;
         width: 24px;
     }
+
+
+    /*by bheru 09-10-2015*/
+/*@media screen and (-webkit-min-device-pixel-ratio:0) {
+ .inspect_attribute_parent div.gridbox_dhx_skyblue.gridbox
+{
+    border-right: none;
+}
+}*/
+#CustomHtmlHelperfieldforMapping div.gridbox_dhx_skyblue.gridbox {
+    border-right: none;
+    border-left: none;
+}
+/*by bheru 09-10-2015*/

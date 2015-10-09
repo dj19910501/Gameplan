@@ -679,9 +679,12 @@
         //if (ids.length > 1) {
             for (var i = 0; i < ids.length; i++) {
                 var Checkbox = ids[i];
+
         if (state == "checked") {
-                    $('#cb_' + Checkbox).attr("checked", "checked");
-                    RowIDs.IDs.push(ids[i]);
+            $('#cb_' + Checkbox).attr("checked", "checked");
+            if (ids[i] != "") {
+                RowIDs.IDs.push(ids[i]);
+            }
         }
         else {
             
