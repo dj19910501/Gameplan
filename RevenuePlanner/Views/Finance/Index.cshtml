@@ -51,12 +51,12 @@
             <div style="float:left;" id="drpChild">
                 @Html.DropDownList("ddlChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
             </div>
-             <div id="divSetttings" style="width:40px;float:left;position: relative;margin-right: 10px;">
+            <div id="divSetttings" style="width:40px;float:left;position: relative;margin-right: 10px;">
                 @*<button class="setting-icon btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:30%;height: 30px !important;" id="btnSettings"></button>*@
-                 <span class="btn-Settings btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px; height: 30px !important;" id="AddSettings"></span>
+                <span class="btn-Settings btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px; height: 30px !important;" id="AddSettings"></span>
                 <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="btnSettings">
                     <ul style="margin: 0;">
-                        <li  id="delSection" onclick="DeleteSelected()">Delete Selected</li>
+                        <li id="delSection" onclick="DeleteSelected()">Delete Selected</li>
                     </ul>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                     Collapse/Expand All
                 </button>
             </div>
-           
+
         </div>
 
         <div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
@@ -147,13 +147,14 @@
             var url = '@Url.Content("~/Finance/LoadnewBudget/")';
             $('#divGridView').load(url);
             RefreshBudgetDropdown(true);
-            GetFinanceHeaderValue(0,true);
+            GetFinanceHeaderValue(0, true);
         });
         //var testitem = "option[text=Budget3]";
         //$("#ddlParentFinance").find(testitem).attr("selected", "selected");
         //var budgetID = $("#ddlParentFinance").val();
         RefreshMainGridData(_budgetIdMain);
-        GetFinanceHeaderValue(_budgetIdMain, true);
+        
+        GetFinanceHeaderValue(_budgetIdMain, true, _mainTimeFrame);
         // GetFinanceHeaderValue(_budgetId);
         //BindChildBudgetDrp(_budgetId);
         // EditBudget(21);
@@ -168,34 +169,34 @@
     function DeleteSelected() {
         if (RowIDs.IDs.length > 0) {
             if (confirm('Are you sure you want to delete this Budget item ?')) {
-        for (var i = 0; i < RowIDs.IDs.length; i++) {
-            myTreeGrid.deleteRow(RowIDs.IDs[i]);
-        }
+                for (var i = 0; i < RowIDs.IDs.length; i++) {
+                    myTreeGrid.deleteRow(RowIDs.IDs[i]);
+                }
 
-        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
-        var mainTimeFrame = $('#ddlMainGridTimeFrame option:selected').val();
-        if (mainTimeFrame.toLowerCase() == "yearly") {
-            AllocatedBy = "@Enums.PlanAllocatedBy.quarters.ToString()";
-        } else {
-            AllocatedBy = mainTimeFrame;
-        }
+                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                var mainTimeFrame = $('#ddlMainGridTimeFrame option:selected').val();
+                if (mainTimeFrame.toLowerCase() == "yearly") {
+                    AllocatedBy = "@Enums.PlanAllocatedBy.quarters.ToString()";
+                } else {
+                    AllocatedBy = mainTimeFrame;
+                }
 
-        if (pageName == "EditBudget") {
+                if (pageName == "EditBudget") {
                     var budgetID = $("#ddlChildFinance").val();
-            LoadBudgetGrid(AllocatedBy);
-            GetFinanceHeaderValue(0, false);
+                    LoadBudgetGrid(AllocatedBy);
+                    GetFinanceHeaderValue(0, false);
                     BindParentBudgetDrp(parseInt(budgetID));
                     BindChildBudgetDrp(parseInt(budgetID));
-        }
-        else {
-            var budgetIDMain = $("#ddlParentFinanceMain").val();
-            RefreshMainGridData(budgetIDMain);
-            GetFinanceHeaderValue(budgetIDMain, true, mainTimeFrame);  
- RefreshBudgetDropdown(false);
-        }
+                }
+                else {
+                    var budgetIDMain = $("#ddlParentFinanceMain").val();
+                    RefreshMainGridData(budgetIDMain);
+                    GetFinanceHeaderValue(budgetIDMain, true, mainTimeFrame);
+                    RefreshBudgetDropdown(false);
+                }
 
-        ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
-               
+                ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
+
             }
             else {
                 return false;
@@ -207,6 +208,7 @@
     }
 
     function RefreshMainGridData(BudgetId) {
+        
         $("#divGridView").show();
         $("#dvNoData").hide();
         //debugger;
@@ -240,7 +242,7 @@
                     var opt = new Option(data[i].Text, data[i].Value);
                     $('#ddlRevenueTimeFrame').append(opt);
                 }
-                
+
                 if (Period != null && Period != '') {
                     $("#ddlRevenueTimeFrame option[value='" + Period + "']").attr("selected", "selected");
                 }
@@ -278,7 +280,7 @@
         $('#hdn_BudgetId').val(budgetIDMain);
         if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
             RefreshMainGridData(budgetIDMain);
-            GetFinanceHeaderValue(budgetIDMain, true);
+            GetFinanceHeaderValue(budgetIDMain, true, _mainTimeFrame);
         }
         else {
             $("#divGridView").hide();
@@ -302,11 +304,11 @@
         var parentid = $("#ddlParentFinance").val();
         if (pageName == "EditBudget") {
             if (budgetID > 0) {
-                
+
                 EditBudget(budgetID, true);
                 GetFinanceHeaderValue(budgetID);
             } else {
-                
+
                 EditBudget(parentid, true);
                 GetFinanceHeaderValue(parentid);
             }
@@ -652,6 +654,7 @@
     //    }
     //});
     $("#ddlMainGridTimeFrame").change(function () {
+        debugger;
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
