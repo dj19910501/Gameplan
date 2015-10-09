@@ -556,7 +556,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region Get Budget/Forecast Grid Data
-        public JsonResult EditBudgetGridData(string SelectedRowIDs,int BudgetId = 0, string IsQuaterly = "quarters")
+        public JsonResult EditBudgetGridData(string SelectedRowIDs,int BudgetId = 0, string IsQuaterly = "quarters",string EditLevel ="")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
             var MinBudgetid = 0; var MinParentid = 0;
@@ -681,7 +681,7 @@ namespace RevenuePlanner.Controllers
 
 
             var items = GetTopLevelRows(dataTableMain, MinParentid)
-                        .Select(row => CreateItem(dataTableMain, row))
+                        .Select(row => CreateItem(dataTableMain, row, EditLevel))
                         .ToList();
 
             var temp = items.Where(a => a.id == Convert.ToString(BudgetId)).Select(a => a.data).FirstOrDefault();
@@ -818,7 +818,7 @@ namespace RevenuePlanner.Controllers
 
             return Sum;
         }
-        DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row)
+        DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row, string EditLevel)
         {
             var id = row.Field<Int32>("Id");
             var name = row.Field<String>("Name");
@@ -835,7 +835,7 @@ namespace RevenuePlanner.Controllers
             var actualtotal = row.Field<Double?>("ActualTotal");
             var lstChildren = GetChildren(dataTable, id);
             var children = lstChildren
-              .Select(r => CreateItem(dataTable, r))
+              .Select(r => CreateItem(dataTable, r,EditLevel))
               .ToList();
             userdata objuserData = new userdata();
             List<row_attrs> rows_attrData = new List<row_attrs>();
@@ -848,12 +848,22 @@ namespace RevenuePlanner.Controllers
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
+                if (EditLevel.ToUpper().Equals("BUDGET"))
+                {
                 if (!_IsBudgetCreate_Edit)  // If user has not Create/Edit Budget permission then clear AddRow button Html.
                 {
                     addRow = string.Empty;
                     SelectBox = string.Empty;
                 }
-
+                }
+                else
+                {
+                    if (!_IsForecastCreate_Edit)    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
+                    {
+                        addRow = string.Empty;
+                        SelectBox = string.Empty;
+                    }	 
+                }
                 lineitemcount = dataTable
                  .Rows
                  .Cast<DataRow>()
