@@ -255,8 +255,13 @@
                             var checkbx = $(this).find('input:checkbox');
                             $(checkbx).attr('checked', 'checked');
 
-                            var x = $(this).position().top;
-                            lastElement.animate({ scrollTop: x }, 200);
+                           // var x = $(this).position().top;
+                           // lastElement.animate({ scrollTop: x }, 200);
+
+                            var scrollTo = $(this);
+                            lastElement.animate({
+                                scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
+                            });
                             return false;
                         }
                     }
@@ -284,8 +289,12 @@
                                 var checkbx = $(this).find('input:checkbox');
                                 $(checkbx).attr('checked', 'checked');
 
-                                var x = $(this).position().top;
-                                lastElement.animate({ scrollTop: x }, 200);
+                                //var x = $(this).position().top;
+                                //lastElement.animate({ scrollTop: x }, 200);
+                                var scrollTo = $(this);
+                                lastElement.animate({
+                                    scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
+                                });
                                 return false;
                             }
                         });
@@ -310,8 +319,12 @@
                                     var checkbx = $(this).find('input:checkbox');
                                     $(checkbx).attr('checked', 'checked');
 
-                                    var x = $(this).position().top;
-                                    lastElement.animate({ scrollTop: x }, 200);
+                                    //var x = $(this).position().top;
+                                    //lastElement.animate({ scrollTop: x }, 200);
+                                    var scrollTo = $(this);
+                                    lastElement.animate({
+                                        scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
+                                    });
                                     return false;
                                 }
                             });

@@ -304,9 +304,15 @@
                             $select.find('input:checkbox').removeAttr('checked');
                             var checkbx = $(this).find('input:checkbox');
                             $(checkbx).attr('checked', 'checked');
+                                
+                           // var x = $(this).position().top;
+                            //lastElement.animate({ scrollTop: x }, 200);
 
-                            var x = $(this).position().top;
-                            lastElement.animate({ scrollTop: x }, 200);
+                            var scrollTo = $(this);
+                            //lastElement.animate({ scrollTop: x }, 450);
+                            lastElement.animate({
+                                scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
+                            });
                             return false;
                         }
                     }
@@ -335,8 +341,15 @@
                                 var checkbx = $(this).find('input:checkbox');
                                 $(checkbx).attr('checked', 'checked');
 
-                                var x = $(this).position().top;
-                                lastElement.animate({ scrollTop: x }, 200);
+                                //var x = $(this).position().top;
+                                //alert(x + "second");
+                                //var x = $(this);
+                                var scrollTo = $(this);
+                                //lastElement.animate({ scrollTop: x }, 450);
+                                lastElement.animate({
+                                    scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
+                                });
+
                                 return false;
                             }
                         });
@@ -361,8 +374,14 @@
                                     var checkbx = $(this).find('input:checkbox');
                                     $(checkbx).attr('checked', 'checked');
 
-                                    var x = $(this).position().top;
-                                    lastElement.animate({ scrollTop: x }, 200);
+                                    //var x = $(this).position().top;
+                                    //var x = $(this);
+                                    var scrollTo = $(this);;
+                                    //lastElement.animate({ scrollTop: x }, 450);
+                                    lastElement.animate({
+                                        scrollTop: scrollTo.offset().top - lastElement.offset().top + lastElement.scrollTop()
+                                    });
+                                    //lastElement.animate({ scrollTop: x }, 200);
                                     return false;
                                 }
                             });
