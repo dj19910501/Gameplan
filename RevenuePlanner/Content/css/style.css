@@ -206,7 +206,7 @@ div[id*="modal-container"] { /*top: 100px;*/
 div.dropdown-info-user {
     position: absolute;
     z-index: 2000;
-    right: 106px; /*changed - added by dashrath #1645*/
+    right: 112px; /*changed - added by dashrath #1645*/
     top: 78px;
     float: left;
 }
