@@ -200,9 +200,10 @@
                     });
                 }
             }
+            var curntBudgetId = $("#ddlParentFinanceMain").val();
             selectedValues = JSON.stringify(selectedValues);
             var url = '@Url.Content("~/Finance/DeleteMainGrid/")';
-            $('#divGridView').load(url + '?SelectedRowIDs=' + selectedValues + '&mainTimeFrame=' + mainTimeFrame, function () { RefreshBudgetDropdown(false); var newbudgetID = $("#ddlParentFinanceMain").val(); GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame); });
+                    $('#divGridView').load(url + '?SelectedRowIDs=' + selectedValues + '&mainTimeFrame=' + mainTimeFrame + '&curntBudgetId=' + curntBudgetId, function () { RefreshBudgetDropdown(false); var newbudgetID = $("#ddlParentFinanceMain").val(); GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame); });
             //alert(budgetIDMain + ":" + selectedValues);
             //RefreshMainGridData(budgetIDMain);
             //GetFinanceHeaderValue(budgetIDMain, true, mainTimeFrame);

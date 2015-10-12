@@ -117,8 +117,9 @@ namespace RevenuePlanner.Controllers
         #region  Main Grid Realted Methods
 
         #region "Delete MainGrid"
-        public ActionResult DeleteMainGrid(string SelectedRowIDs, string mainTimeFrame)
+        public ActionResult DeleteMainGrid(string SelectedRowIDs, string mainTimeFrame, string curntBudgetId)
         {
+            ViewBag.isDelete = true;
             //Added By Komal Rawal for #1639
             #region Delete Fields
             if (SelectedRowIDs != null)
@@ -161,11 +162,17 @@ namespace RevenuePlanner.Controllers
                 db.SaveChanges();
             }
             var lstchildbudget = Common.GetBudgetlist();
-            int _budgetId = 0;
+            int _budgetId = 0,_curntBudgetId=0;
             if (lstchildbudget != null)
             {
-                string strbudgetId = lstchildbudget.Select(bdgt => bdgt.Value).FirstOrDefault();
-                _budgetId = !string.IsNullOrEmpty(strbudgetId) ? Int32.Parse(strbudgetId) : 0;
+                _curntBudgetId =!string.IsNullOrEmpty(curntBudgetId) ?Int32.Parse(curntBudgetId) :0;
+                if (lstchildbudget.Any(budgt => budgt.Value == _curntBudgetId.ToString()))
+                    _budgetId = _curntBudgetId;
+                else
+                {
+                    string strbudgetId = lstchildbudget.Select(bdgt => bdgt.Value).FirstOrDefault();
+                    _budgetId = !string.IsNullOrEmpty(strbudgetId) ? Int32.Parse(strbudgetId) : 0;
+                }
             }
             return RefreshMainGridData(null, _budgetId, mainTimeFrame);
 
