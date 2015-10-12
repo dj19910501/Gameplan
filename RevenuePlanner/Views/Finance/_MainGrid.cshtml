@@ -301,7 +301,7 @@
             $("#hdn_row_parentId").val(_row_parentId);
             /*End: Get ParentId and BudgetDetailId from RowId */
 
-            myTreeGrid.addRow(_newrowid, ["", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />", "<input id='cb" + _newrowid + "'  row-id='" + _newrowid + "' type='checkbox' />", "0", "0", "0", "0", "0"], -1, row_id);
+            myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />", "<input id='cb" + _newrowid + "'  row-id='" + _newrowid + "' type='checkbox' />", "0", "0", "0", "0", "0"], -1, row_id);
             var titleIndex = myTreeGrid.getColIndexById('title');
             myTreeGrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
             myTreeGrid.openItem(row_id);

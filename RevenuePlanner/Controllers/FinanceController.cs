@@ -1479,11 +1479,13 @@ namespace RevenuePlanner.Controllers
                     {
                         objBudAmount.Forecast = Convert.ToDouble(nValue);
                     }
-
-                    objBudAmount.Period = dataPeriod;
-                    objBudAmount.BudgetDetailId = BudgetId;
-                    db.Entry(objBudAmount).State = EntityState.Added;
-                    db.SaveChanges();
+                    if (BudgetId > 0)
+                    {
+                        objBudAmount.Period = dataPeriod;
+                        objBudAmount.BudgetDetailId = BudgetId;
+                        db.Entry(objBudAmount).State = EntityState.Added;
+                        db.SaveChanges();
+                    }
 
                 }
             }
