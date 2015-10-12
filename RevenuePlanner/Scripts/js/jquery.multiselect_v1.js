@@ -421,6 +421,71 @@
                       $(this).find('input')[0].click();
                       break;
               }
+              $(this).removeClass('ui-state-hover');
+              var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+              var theChar = String.fromCharCode(key);
+              var $select = self.menu.find('ul');
+              var $selectlist = $select.eq(0);
+              $selectlist.each(function () {
+                  debugger;
+                  var list = $(this).find('li');
+                  $(this).find('li').removeClass('ui-state-hover');
+                  var count = 0;
+                  var selectarr = [];
+                  $(list).each(function (index, val) {
+                      debugger;
+                      var currentLine = $(this).find('span').text();
+                      // if (currentLine != "Select All" || currentLine !="Deselect All") {
+                      var _mainText = currentLine.toLowerCase();
+                      var _fText = _mainText.substring(0, 1);
+                      if (count == 0) {
+
+                          if (_fText.indexOf(theChar.toLowerCase()) >= 0) {
+                              count++;
+                              debugger;
+                              //alert("1");
+                              //if (!button.hasClass('ui-state-disabled')) {
+                              $(this).addClass('ui-state-focus');
+                              self.labels.removeClass('ui-state-focus');
+                              $(this).addClass('ui-state-hover').find('input').focus();
+                              button.find('span').eq(0).text(currentLine);
+                              //button.prop('title', currentLine);
+                              //button.text(currentLine);
+
+                              //alert(button);
+                              //self.labels.removeClass('ui-state-hover');
+                              // $(this).addClass('ui-state-hover').find('input').focus();
+                              //
+
+                              //$(this).siblings().removeClass('ui-state-hover');
+                              // }
+                              // var t= $(this).parent().addClass('ui-state-hover');
+                          }
+                      }
+                      else {
+                          //$(selectarr).each(function (index, value) {
+
+                          //    if (value != $(this).index()) {
+                          //        $(this).removeClass('ui-state-hover');
+                          //    }
+                          //});
+                          //for (var i in selectarr) {
+                          //    if (i != $(this).index()) {
+                          //        $(this).removeClass('ui-state-hover');
+                          //    }
+                          //}                          
+                      }
+                      //}
+                      //else {
+
+                      //}
+                  })
+
+                  //var p = $(this).find('span');
+                  //var textj = jQuery(p).text().toLowerCase();
+
+              });
+
           })
           .delegate('input[type="checkbox"], input[type="radio"]', 'click.multiselect', function (e) {
               var $this = $(this);
@@ -671,6 +736,7 @@
             button.addClass('ui-state-active');
             this._isOpen = true;
             this._trigger('open');
+            menu.find('li').removeClass('ui-state-hover');
         },
 
         // close the menu
