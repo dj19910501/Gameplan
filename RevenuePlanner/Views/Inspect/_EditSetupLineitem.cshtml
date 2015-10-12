@@ -65,6 +65,18 @@
     div.gridbox {
         height : 100% ! important;
     }
+    .xhdr
+    {
+    height:0px !important ;
+    }
+
+   #CustomHtmlHelperfieldforMapping div.gridbox_dhx_skyblue.gridbox table.obj tr td {
+       border-width: 0px !important;
+    }
+
+    #CustomHtmlHelperfieldforMapping table {
+    border-collapse: inherit !important ;
+}
 
    
 </style>
@@ -159,6 +171,7 @@
         if($(this).next().css("display") == "none")
         {
             $(this).next().css("width","auto");
+          //  $(this).next().addClass('dropdownAddborder');
             $(this).next().css("display","block");
             LoadBudgetDropdown();
         }
@@ -184,18 +197,20 @@
                 GridData=data.data;
                 var imgpath = '@Url.Content("~/codebase/imgs/")';
                 TreeViewDdl.setImagePath(imgpath);
-                TreeViewDdl.setHeader("--Select a Budget--");
+                TreeViewDdl.setHeader(",");
                 TreeViewDdl.enableAutoHeight(true);
                 TreeViewDdl.enableAutoWidth(true);
                 TreeViewDdl.enableTreeCellEdit(false)
                 TreeViewDdl.setImageSize(1, 1);
-                TreeViewDdl.setColTypes("tree");
+                TreeViewDdl.setColTypes("tree,ro");
+                TreeViewDdl.setInitWidths("200,100");
                 TreeViewDdl.init();
-
-                TreeViewDdl.insertColumn(2, 'Weightage', 'ro');
+             
+             //  TreeViewDdl.insertColumn(1, '', 'ro');
                 //TreeViewDdl.setSkin("");
                 TreeViewDdl.parse(GridData, "json");
                 TreeViewDdl.attachEvent("onOpenEnd", function () {
+                    TreeViewDdl.adjustColumnSize(0);;
                     for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
                     {
                         $('#'+Weights.txtId[i]).val(Weights.values[i]);
@@ -444,9 +459,9 @@
         $('.ddlStyle .ui-multiselect.ui-widget.ui-state-default.ui-corner-all').addClass('light-blue-background');
         //End - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
         // LoadBudgetDropdown();
-        $('.dropdown_new_btn').click();
-        $("#treeviewddl").css("width","0px");
-        $("#treeviewddl").css("display","none");
+        //$('.dropdown_new_btn').click();
+        //$("#treeviewddl").css("width","0px");
+        //$("#treeviewddl").css("display","none");
 
     });
 

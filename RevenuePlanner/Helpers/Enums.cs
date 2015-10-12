@@ -969,7 +969,7 @@ namespace RevenuePlanner.Helpers
             {PlanEntity.Campaign.ToString(), "Campaign"},
             {PlanEntity.Program.ToString(), "Program"},
             {PlanEntity.Tactic.ToString(), "Tactic"},
-            {PlanEntity.LineItem.ToString(), "Line Item"},//modefied by Rahul Shah on 30/09/2015 for PL #1643
+            {PlanEntity.LineItem.ToString(), "Line item"},//modefied by Rahul Shah on 30/09/2015 for PL #1643
             {PlanEntity.ImprovementTactic.ToString(), "Improvement Tactic"}
         };
 

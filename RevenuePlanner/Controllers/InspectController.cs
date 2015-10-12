@@ -9112,9 +9112,9 @@ namespace RevenuePlanner.Controllers
               .ToList();
 
             var item = children.Count > 0 ? name : temp;
-            var Weightageitem = children.Count > 0 ? "" : AddWeightage;
+            weightage = children.Count > 0 ? "" : AddWeightage;
             datalist.Add("<input  type=checkbox /><span>" + item != null ? Convert.ToString(item) : "No" + "</span>" + name);
-            datalist.Add(Weightageitem);
+            datalist.Add(weightage);
             return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = datalist, rows = children };
 
         }
