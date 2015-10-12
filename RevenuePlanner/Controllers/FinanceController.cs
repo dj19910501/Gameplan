@@ -198,10 +198,10 @@ namespace RevenuePlanner.Controllers
                 var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                 if (temp != null)
                 {
-                    objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
-                    objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
-                    objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
-                    objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
+                    objFinanceHeader.Budget = Convert.ToDouble(temp[4]);
+                    objFinanceHeader.Forecast = Convert.ToDouble(temp[5]);
+                    objFinanceHeader.Planned = Convert.ToDouble(temp[6]);
+                    objFinanceHeader.Actual = Convert.ToDouble(temp[7]);
                 }
                 else
                 {
@@ -440,13 +440,13 @@ namespace RevenuePlanner.Controllers
             }
             //forecast = forecast.ToString(new c
             ParentData.Add(HttpUtility.HtmlDecode(name));
+            ParentData.Add(strAction);
             ParentData.Add(addRow);
             ParentData.Add(SelectCheckbox);
             ParentData.Add(budget);
             ParentData.Add(forecast);
             ParentData.Add(planned);
             ParentData.Add(actual);
-            ParentData.Add(strAction);
             ParentData.Add(lineItemCount.ToString());
             #endregion
 
@@ -532,10 +532,10 @@ namespace RevenuePlanner.Controllers
                         var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                         if (temp != null)
                         {
-                            objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
-                            objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
-                            objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
-                            objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
+                            objFinanceHeader.Budget = Convert.ToDouble(temp[4]);
+                            objFinanceHeader.Forecast = Convert.ToDouble(temp[5]);
+                            objFinanceHeader.Planned = Convert.ToDouble(temp[6]);
+                            objFinanceHeader.Actual = Convert.ToDouble(temp[7]);
                         }
                         else
                         {
