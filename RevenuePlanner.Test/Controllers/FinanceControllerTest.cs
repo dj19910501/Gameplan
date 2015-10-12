@@ -400,7 +400,7 @@ namespace RevenuePlanner.Test.Controllers
             string _InvalidRowID = "InValid";
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.RefreshMainGridData("", 0, "") as ViewResult;
+            var result = objFinanceController.RefreshMainGridData(0, "") as ViewResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -424,7 +424,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.RefreshMainGridData("", 0, "Quaterly") as ViewResult;
+            var result = objFinanceController.RefreshMainGridData(0, "Quaterly") as ViewResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -448,7 +448,7 @@ namespace RevenuePlanner.Test.Controllers
             string _InvalidRowID = "InValid";
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.RefreshMainGridData(null, 0, null) as ViewResult;
+            var result = objFinanceController.RefreshMainGridData(0, null) as ViewResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -473,7 +473,7 @@ namespace RevenuePlanner.Test.Controllers
             string _InvalidRowID = "InValid";
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.RefreshMainGridData(_InvalidRowID, 0, "Quaterly") as ViewResult;
+            var result = objFinanceController.RefreshMainGridData(0, "Quaterly") as ViewResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
@@ -497,7 +497,7 @@ namespace RevenuePlanner.Test.Controllers
 
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.RefreshMainGridData("[]", 9, "Quaterly") as ViewResult;
+            var result = objFinanceController.RefreshMainGridData(9, "Quaterly") as ViewResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName

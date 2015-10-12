@@ -235,17 +235,17 @@
         $("#dvNoData").hide();
         //debugger;
         //var budgetID = $("#ddlParentFinance").val();
-        _SelectedValues = [];
-        if (RowIDs.IDs.length != 0) {
-            for (var i = 0; i < RowIDs.IDs.length; i++) {
-                _SelectedValues.push({
-                    Id: RowIDs.IDs[i],
-                });
-            }
-        }
-        _SelectedValues = JSON.stringify(_SelectedValues);
+        //_SelectedValues = [];
+        //if (RowIDs.IDs.length != 0) {
+        //    for (var i = 0; i < RowIDs.IDs.length; i++) {
+        //        _SelectedValues.push({
+        //            Id: RowIDs.IDs[i],
+        //        });
+        //    }
+        //}
+        //_SelectedValues = JSON.stringify(_SelectedValues);
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
-        $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame + '&SelectedRowIDs=' + _SelectedValues);
+        $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame);
     }
 
     function BindTimeFrameForChild(Period) {

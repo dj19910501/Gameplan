@@ -99,7 +99,7 @@ namespace RevenuePlanner.Controllers
                 objBudgetDetail.CreatedDate = DateTime.Now;
                 db.Entry(objBudgetDetail).State = EntityState.Added;
                 db.SaveChanges();
-                return RefreshMainGridData(null, budgetId);
+                return RefreshMainGridData(budgetId);
             }
             catch (Exception ex)
             {
@@ -174,14 +174,14 @@ namespace RevenuePlanner.Controllers
                     _budgetId = !string.IsNullOrEmpty(strbudgetId) ? Int32.Parse(strbudgetId) : 0;
                 }
             }
-            return RefreshMainGridData(null, _budgetId, mainTimeFrame);
+            return RefreshMainGridData(_budgetId, mainTimeFrame);
 
 
             #endregion
             //End
         }
         #endregion
-        public ActionResult RefreshMainGridData(string SelectedRowIDs, int budgetId = 0, string mainTimeFrame = "Yearly")
+        public ActionResult RefreshMainGridData(int budgetId = 0, string mainTimeFrame = "Yearly")
         {
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
@@ -190,52 +190,7 @@ namespace RevenuePlanner.Controllers
             IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
             IsForecastCreateEdit = _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
             IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
-            //Added By Komal Rawal for #1639
-            #region Delete Fields
-            if (SelectedRowIDs != null)
-            {
-                var Values = JsonConvert.DeserializeObject<List<DeleteRowID>>(SelectedRowIDs);
-                var Selectedids = Values.Select(ids => ids.Id).ToList();
-                List<Budget_Detail> BudgetDetail = db.Budget_Detail.Where(budgetdetail => Selectedids.Contains(budgetdetail.Id) && budgetdetail.IsDeleted == false).Select(a => a).ToList();
-
-                var bdlist = (from b in BudgetDetail
-                              join a in BudgetDetail on b.Id equals a.ParentId
-                              where Selectedids.Contains(b.Id)
-                              select b).ToList();
-
-
-                foreach (var item in BudgetDetail)
-                {
-                    var ParentID = item.ParentId;
-                    if (ParentID == null)
-                    {
-                        var Budget = db.Budgets.Where(a => a.Id == item.BudgetId).Select(a => a).ToList();
-                        foreach (var value in Budget)
-                        {
-                            value.IsDeleted = true;
-                            db.Entry(value).State = EntityState.Modified;
-                            db.SaveChanges();
-                        }
-
-                        //var ChildItems = BudgetDetail.Where(child => child.ParentId == item.Id).Select(child => child).ToList();
-                        //foreach (var child in ChildItems)
-                        //{
-                        //    child.IsDeleted = true;
-                        //    db.Entry(child).State = EntityState.Modified;
-                        //    db.SaveChanges();
-                        //}
-
-                    }
-                    item.IsDeleted = true;
-                    db.Entry(item).State = EntityState.Modified;
-                }
-                db.SaveChanges();
-            }
-
-
-
-            #endregion
-            //End
+            
             gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
             var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
             if (DetailId != null)
@@ -304,7 +259,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                return RefreshMainGridData(null, _budgetId, mainTimeFrame);
+                return RefreshMainGridData(_budgetId, mainTimeFrame);
             }
             catch (Exception ex)
             {
@@ -543,7 +498,7 @@ namespace RevenuePlanner.Controllers
                     db.SaveChanges();
                     #endregion
                 }
-                return RefreshMainGridData(null, budgetId, mainTimeFrame);
+                return RefreshMainGridData(budgetId, mainTimeFrame);
             }
             catch (Exception ex)
             {
