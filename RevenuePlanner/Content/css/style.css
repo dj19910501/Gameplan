@@ -15205,7 +15205,7 @@ float:left;
 .inspect_attribute_parent .span3 {
     display: inline-block;
     float: none;
-    padding: 0 1%;
+    padding: 0 2%; /*PL 1670 Dashrath Prajapati*/
     vertical-align: top;
     width: 23%;
 }
