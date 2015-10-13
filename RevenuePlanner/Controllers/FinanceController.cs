@@ -77,6 +77,18 @@ namespace RevenuePlanner.Controllers
         }
         public ActionResult CreateNewBudget(string budgetName)
         {
+            try
+            {
+                int budgetId = SaveNewBudget(budgetName);
+                return RefreshMainGridData(budgetId);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+        public int SaveNewBudget(string budgetName)
+        {
             int budgetId = 0;
             try
             {
@@ -99,12 +111,12 @@ namespace RevenuePlanner.Controllers
                 objBudgetDetail.CreatedDate = DateTime.Now;
                 db.Entry(objBudgetDetail).State = EntityState.Added;
                 db.SaveChanges();
-                return RefreshMainGridData(budgetId);
             }
             catch (Exception ex)
             {
                 throw;
             }
+            return budgetId;
         }
         public JsonResult RefreshBudgetList()
         {
@@ -223,12 +235,19 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_MainGrid", gridRowModel);
         }
-        public ActionResult SaveNewBudgetDetail(string BudgetId, string BudgetDetailName, string ParentId, string mainTimeFrame = "Yearly")
+        public ActionResult SaveNewBudgetDetail(string BudgetId, string BudgetDetailName, string ParentId, string mainTimeFrame = "Yearly",bool isNewBudget = false)
         {
             int _budgetId = 0;
             try
             {
                 _budgetId = !string.IsNullOrEmpty(BudgetId) ? Int32.Parse(BudgetId) : 0;
+                if (isNewBudget)
+                {
+                    SaveNewBudget(BudgetDetailName);
+                }
+                else
+                {
+                    
                 Budget_Detail objBudgetDetail = new Budget_Detail();
                 objBudgetDetail.BudgetId = _budgetId;
                 objBudgetDetail.Name = BudgetDetailName;
@@ -255,7 +274,7 @@ namespace RevenuePlanner.Controllers
                     context.SaveChanges();
                 }
                 #endregion
-
+                }
                 return RefreshMainGridData(_budgetId, mainTimeFrame);
             }
             catch (Exception ex)
@@ -717,13 +736,13 @@ namespace RevenuePlanner.Controllers
                         if (item.Id != varBudgetIds.ParentId && item.ParentId != null)
                         {
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' ></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
+                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                         }
                     }
                     else
                     {
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' ></div><div   id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
+                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div   id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum() });
                     }
                 });
 
@@ -1356,12 +1375,20 @@ namespace RevenuePlanner.Controllers
             {
                 Budget objBudget = new Budget();
                 Budget_Detail objBudgetDetail = new Budget_Detail();
+
+                if (BudgetId == 0 && ParentRowId == 0 && !string.IsNullOrEmpty(nValue))
+                {
+                    SaveNewBudget(nValue);
+                }
+                else
+                {
                 objBudgetDetail = db.Budget_Detail.Where(a => a.Id == BudgetId && a.IsDeleted == false).FirstOrDefault();
                 if (objBudgetDetail != null)
                 {
                     objBudgetDetail.Name = Convert.ToString(nValue).Trim();
                     db.Entry(objBudgetDetail).State = EntityState.Modified;
                     db.SaveChanges();
+                        //if ((objBudgetDetail.BudgetId > 0) && ((objBudgetDetail.ParentId == null) || (objBudgetDetail.ParentId == 0)))
                     if (objBudgetDetail.ParentId == null)
                     {
                         objBudget = db.Budgets.Where(a => a.Id == objBudgetDetail.BudgetId).FirstOrDefault();
@@ -1403,6 +1430,7 @@ namespace RevenuePlanner.Controllers
                     }
                     #endregion
                 }
+            }
             }
             List<string> QuaterPeriod = new List<string>();
             List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };

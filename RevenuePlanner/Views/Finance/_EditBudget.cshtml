@@ -443,7 +443,7 @@
         //IsValid = true;
         //myTreeGrid.enableAutoWidth(true, GridWidth, GridWidth);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
-            
+            //debugger;
             var ColumnName = myTreeGrid.getColLabel(cInd, 1);
             if (stage == 1) {
                 if (ColumnName != "Task Name") {
@@ -850,7 +850,19 @@
     ////End
     function AddRow(cntrl) {
         // debugger;
+        DisplayPopUpMenu(cntrl);
+    }
+    function IsRootMostParentId(curntRowid) {
+        var parentid = myTreeGrid.getParentId(curntRowid);
+        var result = false;
+        if (parentid == null || parentid == 'undefined' || parentid <= 0) {
+            result = true;
+        }
+        return result;
+    }
+    function AddNewRowbyType(itemType, cntrl) {
         if (_isNewRowAdd == false) {
+            //debugger;
             var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
             //if (AllocatedBy == 'quarters') {
             //    AllocatedBy = true;
@@ -879,17 +891,32 @@
             // Create RowId for newRecord.
             _newrowid = "new" + insertrowindex.toString() + "_0_" + _newParentId;  // RowId format: NameofItem_BudgetDetailId_ParentId.
             _isNewRowAdd = true;
+            if (itemType.toLowerCase() == 'parallelitem') {
+                _parentRowId = $(cntrl).attr('parentId');
+            }
+            else {
             _parentRowId = row_id;
+            }
             _row_parentId = _row_parentId + "," + _newrowid + "~" + _newParentId + "~" + row_id; // Store NewRowId & ParentRowId in global variable This variable use to save data in OnEditCell event.
             $("#hdn_row_parentId").val(_row_parentId);
             /*End: Get ParentId and BudgetDetailId from RowId */
+            var isRootMostParent = IsRootMostParentId(row_id);
+
             if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
                 if (GlobalEditLevel == 'Budget') {
                     myTreeGrid.setColTypes("tree,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro,ro");
                 } else {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
                 }
-                myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                if (itemType.toLowerCase() == 'childitem') {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                }
+                else if (isRootMostParent) {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]);
+                }
+                else {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, _parentRowId);
+                }
             }
             else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
                 if (GlobalEditLevel == 'Budget') {
@@ -897,14 +924,30 @@
                 } else {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
                 }
-                myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                if (itemType.toLowerCase() == 'childitem') {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                }
+                else if (isRootMostParent) {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]);
+                }
+                else {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, _parentRowId);
+                }
             } else {
                 if (GlobalEditLevel == 'Budget') {
                     myTreeGrid.setColTypes("tree,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro,ro");
                 } else {
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
                 }
-                myTreeGrid.addRow(_newrowid, ["New item",  "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                if (itemType.toLowerCase() == 'childitem') {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
+                }
+                else if (isRootMostParent) {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]);
+                }
+                else {
+                    myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, _parentRowId);
+                }
             }
             myTreeGrid.openItem(row_id);
             var GridWidth = $("#gridbox").width();
@@ -927,6 +970,7 @@
             myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
             //myTreeGrid.cells(_newrowid, titleIndex).edit();
             //myTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
+            if (GlobalEditLevel !== 'Budget') {
             myTreeGrid.forEachCell(row_id, function (cellObj, ind) {
                 //execute code for each cell in a row with the id "row1"
                 //cellObj - related cell object
@@ -934,6 +978,7 @@
                 myTreeGrid.cells(row_id, ind).setDisabled(true);
                 myTreeGrid.setCellTextStyle(row_id, ind, "color:gray;");
             });
+            }
             event.cancelBubble = true;
         }
         //myTreeGrid.editCell();

@@ -27,6 +27,7 @@
 </style>
 <div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
 @Html.Hidden("hdnBudgetId", BudgetId, new { id = "hdnBudgetId", name = "hdnBudgetId", value = BudgetId })
+@Html.Hidden("hdnNewItemType", string.Empty, new { id = "hdnNewItemType", name = "hdnNewItemType", value = "" })
 <script type="text/javascript">
     var RowIDs = {
         IDs: []
@@ -290,8 +291,13 @@
 
     ////End
     function AddRow(cntrl) {
-        // debugger;
+        DisplayPopUpMenu(cntrl);
+        return false;
+    }
+
+    function AddNewRowbyType(itemType, cntrl) {
         if (_isNewRowAdd == false) {
+             $("#hdnNewItemType").val(itemType);
             var row_id = $(cntrl).attr('row-id');
 
             //var rowId = myTreeGrid.getSelectedId();
@@ -301,12 +307,28 @@
             var insertrowindex = childrencount + 1;
             /*Start: Get ParentId and BudgetDetailId from RowId */
             var budgetDetailId = 0;
+            var isRootMostParent = IsRootMostParentId(row_id);
             if (row_id !== null && row_id !== 'undefined' && row_id !== '') {
+
+                if (itemType.toLowerCase() == 'parallelitem' && !isRootMostParent) {
+                    var curntRowParentId = myTreeGrid.getParentId(row_id);
+                    var arr = curntRowParentId.split('_');
+                    if (arr !== null && arr !== 'undefined' && arr.length > 0) {
+                        if (arr[1] != null && arr[1] != 'undefined') {
+                            _newParentId = budgetDetailId = arr[1];
+                        }
+                    }
+                }
+                else if (itemType.toLowerCase() == 'childitem') {
                 var arr = row_id.split('_');
                 if (arr !== null && arr !== 'undefined' && arr.length > 0) {
                     if (arr[1] != null && arr[1] != 'undefined') {
                         _newParentId = budgetDetailId = arr[1];
                     }
+                }
+            }
+                else {
+                    _newParentId = budgetDetailId = 0;
                 }
             }
             // Create RowId for newRecord.
@@ -317,7 +339,18 @@
             $("#hdn_row_parentId").val(_row_parentId);
             /*End: Get ParentId and BudgetDetailId from RowId */
 
-            myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, row_id);
+            if (itemType.toLowerCase() == 'childitem') {
+                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, row_id);
+            }
+            else if (isRootMostParent) {
+                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"]);
+            }
+            else {
+                // Insert record at Parallel Level.
+                var curntRowParentId = myTreeGrid.getParentId(row_id);
+                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, curntRowParentId);
+            }
+            
             var titleIndex = myTreeGrid.getColIndexById('title');
             myTreeGrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
             myTreeGrid.openItem(row_id);
@@ -386,9 +419,19 @@
             }
             else {
                 if (rowId == id) {
-                    SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID);
+                    var newitemType = $("#hdnNewItemType").val();
+                    var isRootMostParentId = IsRootMostParentId(parentRowID);
+                    var isNewBudget = false;
+                    if (isRootMostParentId && newitemType.toLowerCase() == 'parallelitem') {
+                        parentId = '0';
+                        parentRowID = '';
+                        isNewBudget = true;
+                    }
+
+                    SaveNewBudgetDetail(_budgetIdVal, newVal, parentId, parentRowID, isNewBudget);
                     RefreshBudgetDropdown(false);
                     //myTreeGrid.openItem(parentId);
+                    $("#hdnNewItemType").val('');
                     _newrowid = "";
                     _isNewRowAdd = false;
                     _newParentId = 0;
@@ -427,12 +470,14 @@
     //    var newAction = "<a href='#' onclick='EditBudget(" + budgetDetailId.toString() + ")'>Edit Budget</a>"
     //    myTreeGrid.cells(actionIndex).setValue(newAction);
     //}
-    function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId, parentRowID) {
+    function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId, parentRowID,isNewBudget) {
         //budgetId = 8;
         var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var url = "@Url.Content("~/Finance/SaveNewBudgetDetail")";
-        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame, function () {
+        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame + '&isNewBudget=' + isNewBudget, function () {
+            if (!isNewBudget) {
             myTreeGrid.openItem(parentRowID);
+            }
         });
     }
     function UpdateBudgetDetail(budgetId, budgetDetailName, budgetDetailId, parentId, parentRowID) {
@@ -442,5 +487,13 @@
         $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&BudgetDetailId=' + budgetDetailId + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame, function () {
             myTreeGrid.openItem(parentRowID);
         });
+    }
+    function IsRootMostParentId(curntRowid) {
+        var parentid = myTreeGrid.getParentId(curntRowid);
+        var result = false;
+        if (parentid == null || parentid == 'undefined' || parentid <= 0) {
+            result = true;
+        }
+        return result;
     }
 </script> 

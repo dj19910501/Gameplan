@@ -108,7 +108,10 @@
     <div id="dvNoData" style="width: 100%; clear: both; display:none; font-weight:bold;">
         No data found.
     </div>
-
+    <div class="market-activity-main">
+        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
+        </div>
+    </div>
     <div class="row-fluid calc-height">
         <div class="span12">
             <div id="divDeletePopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -902,5 +905,50 @@
         PlanColumns.change();
         ActualColumns.change();
         // myApp.showPleaseWait();
+    });
+    function DisplayPopUpMenu(addControl) {
+        var ul;
+        ul = "<ul style='margin: 0;'>  <li class='new-finance' id='newFinanceItem' itemType='parallelitem'>New Item</li> <li class='new-finance' id='newFinacneChildItem' itemType='childitem'>New Child Item</li>  </ul>";
+        $('#popupType').css('display', 'block');
+        $('#popupType').html(ul);
+        var left = $(addControl).position().left + 45;//e.pageX;
+        //var target = $(addControl);
+        //debugger;
+        var targetOffset = $(addControl).offset().top;
+        var scrollPosition = $(window).scrollTop();
+
+        if ($('#popupType').css('display') != 'none') {
+            if (scrollPosition <= targetOffset) {
+                $('#popupType').css({
+                    //'display': 'block',
+                    'top': targetOffset,
+                    'left': left,
+                });
+            }
+            else {
+                var targetHeight = target.height();
+                var contentHeight = $('#popupType').outerHeight();
+                var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+                $('#popupType').css({
+                    // 'display': 'block',
+                    'top': targetBottomOffset,
+                    'left': left,
+                });
+            }
+        }
+        //e.stopPropagation();
+        
+        $('.new-finance').click(function () {
+            var itemtype = $(this).attr('itemType');
+            AddNewRowbyType(itemtype, addControl);
+            $('#popupType').css('display', 'none');
+        });
+    }
+    $(document).click(function () {
+        $('#popupType').css('display', 'none');
+    });
+
+    $(document).mouseup(function (e) {
+        $('#popupType').css("display", "none");
     });
 </script>

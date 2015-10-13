@@ -832,7 +832,7 @@ namespace RevenuePlanner.Test.Controllers
             string IsQuaterly = "quarters";
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData(SelectedRowIDs, budgetId, IsQuaterly) as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly,string.Empty) as JsonResult;
 
             if (result != null)
             {
@@ -860,7 +860,7 @@ namespace RevenuePlanner.Test.Controllers
             string IsQuaterly = "quarters";
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData("", 0, "") as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(0, "", "") as JsonResult;
 
             if (result != null)
             {
@@ -888,7 +888,7 @@ namespace RevenuePlanner.Test.Controllers
             string IsQuaterly = "quarters";
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData(null, 0, null) as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(0, null,null) as JsonResult;
 
             if (result != null)
             {
@@ -916,7 +916,7 @@ namespace RevenuePlanner.Test.Controllers
             string IsQuaterly = "quarters";
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData(SelectedRowIDs, budgetId, IsQuaterly) as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly,"") as JsonResult;
 
             if (result != null)
             {
