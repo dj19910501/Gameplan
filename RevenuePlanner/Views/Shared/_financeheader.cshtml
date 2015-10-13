@@ -106,24 +106,28 @@
     function formatBudgetValues(idName) {
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
+        $(idName).popover('destroy');
         setBootstrapTooltip(idName, budgetValue, maxsize, true);
     }
 
     function formatForecastValues(idName) {
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
+        $(idName).popover('destroy');
         setBootstrapTooltip(idName, budgetValue, maxsize, true);
     }
 
     function formatPlannedValues(idName) {
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
+        $(idName).popover('destroy');
         setBootstrapTooltip(idName, budgetValue, maxsize, true);
     }
 
     function formatActualValues(idName) {
         var budgetValue = $(idName).html();
         if (typeof (maxsize) === 'undefined') maxsize = 5;
+        $(idName).popover('destroy');
         setBootstrapTooltip(idName, budgetValue, maxsize, true);
     }
 
