@@ -466,7 +466,10 @@ body {
             }
 
             .main-nav ul li.finance a .icon { /*finance tab*/
-                background-position: -136px 0px;
+                background-position: center bottom;
+                background: url("../images/finance-icon.png") no-repeat !important;
+                height: 30px;
+                 margin: 0 auto;
             }
 
             .main-nav ul li.pref a .icon {
@@ -15239,7 +15242,6 @@ float:left;
     width: 10px;
     float: right;
 }
-
 
     .btn-Settings:after {
         background-image: url(../images/setting.png);
