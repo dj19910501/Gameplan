@@ -39,6 +39,7 @@
     var _row_parentId = '';
     var IsBudgetCreateEdit = '@IsBudgetCreateEdit';
     var IsForecastCreateEdit = '@IsForecastCreateEdit';
+
     var gridWidth = $("#divGridView").width() - 3;
     $(document).ready(function () {
         ShowHideControls('MainGrid');
@@ -56,25 +57,25 @@
         myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         myTreeGrid.setImageSize(1, 1);
         //myTreeGrid.enableTreeCellEdit(false);
-        myTreeGrid.setHeader("Task Name,,,,Budget,Forecast,Planned,Actual,Line Items", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;",, "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
-        myTreeGrid.setInitWidths("200,100,20,30,100,100,100,100,100");
-        myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center");
-        myTreeGrid.setColTypes("tree,ro,ro,ron,ron,ron,ron,ro,ro");
+        myTreeGrid.setHeader("Task Name,,,Budget,Forecast,Planned,Actual,Line Items", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;",, "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
+        myTreeGrid.setInitWidths("200,100,50,100,100,100,100,100");
+        myTreeGrid.setColAlign("left,center,center,center,center,center,center,center");
+        myTreeGrid.setColTypes("tree,ro,ro,ron,ron,ron,ro,ro");
         //myTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
         myTreeGrid.setColValidators("NotEmpty");
-        myTreeGrid.setColumnIds("title,action,addrow,SelectBox,budget,forecast,planned,actual,lineitems");
+        myTreeGrid.setColumnIds("title,action,addrow,budget,forecast,planned,actual,lineitems");
         //myTreeGrid.setColSorting("str,na,str,str,na,str");
         //myTreeGrid.setStyle("", "", "", "", "", "", "", "border-left:0px;", "");
         //myTreeGrid.setStyle("", "border:0px solid gray;", "", "");
         if (IsBudgetCreateEdit == "False" && IsForecastCreateEdit == "False") {
-            myTreeGrid.setColumnsVisibility("false,false,true,true,false,false,false,false,false");
+            myTreeGrid.setColumnsVisibility("false,false,true,false,false,false,false,false");
             $('#btnAddNewBudget').css("display", "none");
-            $('#AddSettings').css("display", "none");
+           // $('#AddSettings').css("display", "none");
 
 
         }
         else {
-            myTreeGrid.setColumnsVisibility("false,false,false,false,false,false,false,false,false");
+            myTreeGrid.setColumnsVisibility("false,false,false,false,false,false,false,false");
 
         }
 
@@ -132,9 +133,7 @@
             $("#dvNoData").show();
         }
 
-        RowIDs = {
-            IDs: []
-        }
+      
         //myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
         //    //debugger;
 
@@ -186,93 +185,110 @@
 
 
     });
-
-    //Added BY Komal Rawal for #1639
-    RowIDs = {
-        IDs: []
-    }
-    var CheckedSubitems = [];
-    //        var ids1 = [];
-    var ids = [];
     function CheckboxClick(checkbox) {
         RowIDs = {
             IDs: []
         }
-        var state = $(checkbox).attr("checked");
+        var val = $(checkbox).attr('row-id').split('_')[1];
+        var Name = $(checkbox).attr('name');
+        $("#lipname").html(Name);
+        $("#divDeletePopup").modal('show');
+        RowIDs.IDs.push(val);
+        $('#cancel-button_DeleteItem').on("click", function () {
+            var index = RowIDs.IDs.indexOf(val);
+            RowIDs.IDs.splice(index, 1);
+            $('#divDeletePopup').modal("hide");
 
-        ids = myTreeGrid.getAllSubItems($(checkbox).attr('row-id')).split(',');
-        //if (ids.length > 1) {
-        for (var i = 0; i < ids.length; i++) {
-            var Checkbox = ids[i];
-            if (state == "checked") {
-                $('#cb' + Checkbox).attr("checked", "checked");
-                if (ids[i].split('_')[1] != undefined) {
-                    RowIDs.IDs.push(ids[i].split('_')[1]);
-                }
-            }
-            else {
-                $('#cb' + Checkbox).removeAttr("checked");
-            }
-
-        }
+        });
+      
+    }
+   
+    ////Added BY Komal Rawal for #1639
+    //RowIDs = {
+    //    IDs: []
         //   }
+    //var CheckedSubitems = [];
+    ////        var ids1 = [];
+    //var ids = [];
+    //function CheckboxClick(checkbox) {
+    //    RowIDs = {
+    //        IDs: []
+    //    }
+    //    var state = $(checkbox).attr("checked");
 
-        var parentid = myTreeGrid.getParentId($(checkbox).attr('row-id'));
-        if (parentid == 0) {
-            if ($(checkbox).attr("checked") == "checked") {
+    //    ids = myTreeGrid.getAllSubItems($(checkbox).attr('row-id')).split(',');
+    //    //if (ids.length > 1) {
+    //    for (var i = 0; i < ids.length; i++) {
+    //        var Checkbox = ids[i];
+    //        if (state == "checked") {
+    //            $('#cb' + Checkbox).attr("checked", "checked");
+    //            if (ids[i].split('_')[1] != undefined) {
+    //                RowIDs.IDs.push(ids[i].split('_')[1]);
+    //            }
+    //        }
+    //        else {
+    //            $('#cb' + Checkbox).removeAttr("checked");
+    //        }
 
-                RowIDs.IDs.push($(checkbox).attr("id").split('_')[1]);
-            }
-            else {
-                var index = RowIDs.IDs.indexOf($(checkbox).attr("id").split('_')[1]);
-                RowIDs.IDs.splice(index, 1);
+    //    }
+    //    //   }
 
-            }
-        }
-        SetParentCheckbox(parentid);
+    //    var parentid = myTreeGrid.getParentId($(checkbox).attr('row-id'));
+    //    if (parentid == 0) {
+    //        if ($(checkbox).attr("checked") == "checked") {
 
-    }
+    //            RowIDs.IDs.push($(checkbox).attr("id").split('_')[1]);
+    //        }
+    //        else {
+    //            var index = RowIDs.IDs.indexOf($(checkbox).attr("id").split('_')[1]);
+    //            RowIDs.IDs.splice(index, 1);
 
-    function SetParentCheckbox(parentid) {
-        var flag = true;
-        if (parentid != 0) {
-            RowIDs = {
-                IDs: []
-            }
-            CheckedSubitems = myTreeGrid.getAllSubItems(parentid).split(',');
+    //        }
+    //    }
+    //    SetParentCheckbox(parentid);
 
-            if (CheckedSubitems.length >= 1) {
+    //}
 
-                for (var i = 0; i < CheckedSubitems.length; i++) {
-                    if ($('#cb' + CheckedSubitems[i]).attr("checked") == "checked") {
+    //function SetParentCheckbox(parentid) {
+    //    var flag = true;
+    //    if (parentid != 0) {
+    //        RowIDs = {
+    //            IDs: []
+    //        }
+    //        CheckedSubitems = myTreeGrid.getAllSubItems(parentid).split(',');
 
-                        flag == true
-                        RowIDs.IDs.push(CheckedSubitems[i].split('_')[1]);
-                    }
-                    else {
-                        var index = RowIDs.IDs.indexOf(CheckedSubitems[i].split('_')[1]);
-                        if (index >= 0) {
-                            RowIDs.IDs.splice(index, 1);
-                        }
-                        flag = false;
-                    }
-                }
+    //        if (CheckedSubitems.length >= 1) {
 
-            }
-            if (flag == true) {
-                $('#cb' + parentid).attr("checked", "checked")
-                RowIDs.IDs.push($('#cb' + parentid).attr("id").split('_')[1]);
-            }
-            else {
-                $('#cb' + parentid).removeAttr("checked");
-            }
-            var parentid = myTreeGrid.getParentId($('#cb' + parentid).attr('row-id'));
-            SetParentCheckbox(parentid);
-        }
-        return;
-    }
+    //            for (var i = 0; i < CheckedSubitems.length; i++) {
+    //                if ($('#cb' + CheckedSubitems[i]).attr("checked") == "checked") {
 
-    //End
+    //                    flag == true
+    //                    RowIDs.IDs.push(CheckedSubitems[i].split('_')[1]);
+    //                }
+    //                else {
+    //                    var index = RowIDs.IDs.indexOf(CheckedSubitems[i].split('_')[1]);
+    //                    if (index >= 0) {
+    //                        RowIDs.IDs.splice(index, 1);
+    //                    }
+    //                    flag = false;
+    //                }
+    //            }
+
+    //        }
+    //        if (flag == true) {
+    //            $('#cb' + parentid).attr("checked", "checked")
+    //            RowIDs.IDs.push($('#cb' + parentid).attr("id").split('_')[1]);
+    //        }
+    //        else {
+    //            $('#cb' + parentid).removeAttr("checked");
+    //        }
+    //        var parentid = myTreeGrid.getParentId($('#cb' + parentid).attr('row-id'));
+    //        SetParentCheckbox(parentid);
+    //    }
+    //    return;
+    //}
+
+    ////End
     function AddRow(cntrl) {
         // debugger;
         if (_isNewRowAdd == false) {
@@ -301,7 +317,7 @@
             $("#hdn_row_parentId").val(_row_parentId);
             /*End: Get ParentId and BudgetDetailId from RowId */
 
-            myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' />", "<input id='cb" + _newrowid + "'  row-id='" + _newrowid + "' type='checkbox' />", "0", "0", "0", "0", "0"], -1, row_id);
+            myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, row_id);
             var titleIndex = myTreeGrid.getColIndexById('title');
             myTreeGrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
             myTreeGrid.openItem(row_id);

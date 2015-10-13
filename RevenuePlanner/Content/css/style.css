@@ -4906,7 +4906,7 @@ input::-moz-placeholder {
         display: inline-block;
         font-weight: bold;
         padding-left: 36px;
-        height: 28x;
+        height: 28px;
         background: url("../images/check-red.png") no-repeat;
         color: #c6605b;
     }
@@ -5051,6 +5051,40 @@ a.link-gray {
 min-width:350px;
 }
 /*end by bheru 15-9-2015 */
+/*by bheru 13-10-2015 */
+.finance_grid_add,.grid_add {
+    cursor: pointer;
+    background-image: url(../../Content/images/icon-plus_in_circle.png);
+    opacity: 1;
+    background-position: center center;
+    background-repeat: no-repeat;
+    height: 25px;
+    position: relative;
+    width: 22px;
+
+}
+ .grid_add
+ {
+     margin:6px auto 0;
+ }
+.finance_grid_add {
+    margin: 0 0 0 18%;
+    display: inline-block;
+    padding-left: 7px;
+}
+ .grid_Delete {
+    background-image: url(../images/Remove-icon-blue.png) ;
+    background-repeat: no-repeat;
+    width: 18px;
+   display: inline-block;
+    opacity: 1;
+    background-position: center center;
+    height: 25px;
+    position: relative;
+    margin-right: 22%;
+    padding-right: 3px;
+}
+ /*by bheru 13-10-2015 */
 @media (max-width: 1920px) {
     /*by bheru 21-07-2015*/
     .full-width-header {
@@ -5078,6 +5112,15 @@ min-width:350px;
     height:90%;/*by bheru 29-9-2015*/
 }
     /*end  by bheru on 14/09/2015 for PL #1596*/
+
+       /*by bheru 13-10-2015 */
+    finance_grid_add {
+    margin:0 0 0 19%; 
+}
+ .grid_Delete {
+    margin-right: 15%;
+}
+ /*by bheru 13-10-2015 */
 }
 
 @media (max-width: 1440px) {
@@ -5092,6 +5135,14 @@ min-width:350px;
     height:82%;/*by bheru 29-9-2015*/
 }
     /*end by bheru on 14/09/2015 for PL #1596*/
+       /*by bheru 13-10-2015 */
+       .finance_grid_add {
+    margin:0 0 0 16%; 
+}
+ .grid_Delete {
+    margin-right: 19%;
+}
+ /*by bheru 13-10-2015 */
 }
 
 @media (max-width: 1366px) {
@@ -5114,6 +5165,14 @@ min-width:350px;
         width: 830px;
     }
     /*end by bheru on 14/09/2015 for PL #1596*/
+     /*by bheru 13-10-2015 */
+    .finance_grid_add {
+  margin: 0 0 0 9%;
+}
+    .grid_Delete {
+  margin-right: 15%;
+}
+    /*by bheru 13-10-2015 */
 }
 /*---------------------------
           Contact-support 
@@ -15265,3 +15324,25 @@ float:left;
 }*/
 
 /*by bheru 09-10-2015*/
+
+/*by bheru 13-10-2015*/
+.financetitle .nl-field-toggle,.financetitle .nl-field-toggle:hover
+{
+     color: #000000;
+     font-family: source_sans_proregular;
+     padding-right: 25px;
+     font-size: 22px;
+     background: rgba(0, 0, 0, 0) url("../images/drop-down-logo-black.png") no-repeat scroll right center;
+}
+.financetitle
+{
+    display: inline;
+    line-height: 30px;
+    vertical-align: baseline;
+     padding-right: 10px
+}
+    .financetitle .nl-field {
+        padding-right: 18px;
+        border-right: 1px solid #ccc;
+    }
+/*by bheru 13-10-2015*/

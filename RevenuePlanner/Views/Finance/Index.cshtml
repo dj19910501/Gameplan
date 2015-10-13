@@ -51,20 +51,20 @@
             <div style="float:left;" id="drpChild">
                 @Html.DropDownList("ddlChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
             </div>
-            <div id="divSetttings" style="width:40px;float:left;position: relative;margin-right: 10px;">
+            @*<div id="divSetttings" style="width:40px;float:left;position: relative;margin-right: 10px;">*@
                 @*<button class="setting-icon btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:30%;height: 30px !important;" id="btnSettings"></button>*@
-                <span class="btn-Settings btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px; height: 30px !important;" id="AddSettings"></span>
+            @*<span class="btn-Settings btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px; height: 30px !important;" id="AddSettings"></span>
                 <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="btnSettings">
                     <ul style="margin: 0;">
                         <li id="delSection" onclick="DeleteSelected()">Delete Selected</li>
                     </ul>
                 </div>
-            </div>
-            <div id="divExpandCollapse" style="width:120px;float:left;">
+                </div>*@
+            @*<div id="divExpandCollapse" style="width:120px;float:left;">
                 <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:100%;height: 30px !important;" id="btnExpandCollapse" onclick="javasript: ExpanCollapse();">
                     Collapse/Expand All
                 </button>
-            </div>
+                </div>*@
 
         </div>
 
@@ -92,6 +92,28 @@
         No data found.
     </div>
 
+    <div class="row-fluid calc-height">
+        <div class="span12">
+            <div id="divDeletePopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div>
+                    <form>
+
+                        <h2 class="primary-title source-sans-prosemibold resubmission_header">Deleting an item</h2>
+                        <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to delete </label>
+
+
+                        <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
+                        <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
+                        <input type="hidden" id="hdnsourceid" />
+                        <input type="hidden" id="hdndestid" />
+                        <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_DeleteItem">Proceed</button>
+                        <button id="cancel-button_DeleteItem" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
+                    </form>
+</div>
+            </div>
+        </div>
+    </div>
+
 </div>
 <script type="text/javascript">
     var pageName = "MainGrid";
@@ -99,22 +121,29 @@
     var CollapseExpand = true;
     var backBudgetid = '';
     var _mainTimeFrame = '';
-    $('#AddSettings').click(function () {
-        $('#errorMsg').css('display', 'none');
-        $('#SuccessMsg').css('display', 'none');
-        if ($('#btnSettings').css('display') == 'none') {
-            $('#btnSettings').css('display', 'block')
-        }
-        else {
-            $('#btnSettings').css('display', 'none')
-        }
-    });
-    $(document).click(function (event) {
-        if ($(event.target).closest("#AddSettings").get(0) == null) {
-            $('#btnSettings').css('display', 'none')
-        }
-    });
+    var GlobalEditLevel = '';
+    var GlobalBudgetId = '';
+    //$('#AddSettings').click(function () {
+    //    $('#errorMsg').css('display', 'none');
+    //    $('#SuccessMsg').css('display', 'none');
+    //    if ($('#btnSettings').css('display') == 'none') {
+    //        $('#btnSettings').css('display', 'block')
+    //    }
+    //    else {
+    //        $('#btnSettings').css('display', 'none')
+    //    }
+    //});
+    //$(document).click(function (event) {
+    //    if ($(event.target).closest("#AddSettings").get(0) == null) {
+    //        $('#btnSettings').css('display', 'none')
+    //    }
+    //});
     $(document).ready(function () {
+        //// Proceed to save data.
+        $('#proceed-button_DeleteItem').on("click", function () {
+            DeleteSelected();
+            $('#divDeletePopup').modal("hide");
+        });
         $("#sidebar").css("display", "none");
         $("#content_wraper").css("width", "100%");
         $("#ddlParentFinance,#ddlRevenueTimeFrame,#ddlChildFinance,#ddlParentFinanceMain,#ddlMainGridTimeFrame").multiselect({
@@ -167,8 +196,9 @@
 
 
     function DeleteSelected() {
-        if (RowIDs.IDs.length > 0) {
-            if (confirm('Are you sure you want to delete this Budget item ?')) {
+
+        //  if (RowIDs.IDs.length > 0) {
+        //if (confirm('Are you sure you want to delete this Budget item ?')) {
                 for (var i = 0; i < RowIDs.IDs.length; i++) {
                     myTreeGrid.deleteRow(RowIDs.IDs[i]);
                 }
@@ -181,16 +211,6 @@
                     AllocatedBy = mainTimeFrame;
                 }
 
-                if (pageName == "EditBudget") {
-                    var budgetID = $("#ddlChildFinance").val();
-                    LoadBudgetGrid(AllocatedBy);
-                    GetFinanceHeaderValue(0, false);
-                    BindParentBudgetDrp(parseInt(budgetID));
-                    BindChildBudgetDrp(parseInt(budgetID));
-                }
-                else {
-            //var budgetIDMain = $("#ddlParentFinanceMain").val();
-            //_isDelete = true;
             var selectedValues = [];
             if (RowIDs.IDs.length != 0) {
                 for (var i = 0; i < RowIDs.IDs.length; i++) {
@@ -200,50 +220,122 @@
                     });
                 }
             }
-            var curntBudgetId = $("#ddlParentFinanceMain").val();
             selectedValues = JSON.stringify(selectedValues);
+
+        if (pageName == "EditBudget") {
+            var budgetID = 0;
+            var budgetChildID = $("#ddlChildFinance").val();
+            var budgetParentID = $("#ddlParentFinance").val();
+            if (budgetChildID > 0) {
+                budgetID = budgetChildID;
+            }
+            else {
+                budgetID = budgetParentID;
+            }
+
+            // var EditLevel = GlobalEditLevel;
+            //LoadBudgetGrid(AllocatedBy);
+            //GetFinanceHeaderValue(0, false);
+            //BindParentBudgetDrp(parseInt(budgetID));
+            //BindChildBudgetDrp(parseInt(budgetID));
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/Finance/DeleteBudgetForecastData/")',
+                dataType: "json",
+                //   async: false,
+                data: {
+                    SelectedRowIDs: selectedValues,
+                },
+                success: function (data) {
+                    var ActId = RowIDs.IDs[0];
+                    var ParentOptions = {
+                        text: [],
+                        values: []
+                    }
+                    var ChildOptions = {
+                        text: [],
+                        values: []
+                    };
+                    $.each($("#ddlParentFinance").find("option"), function () {
+                        ParentOptions.text.push($(this).text());
+                        ParentOptions.values.push($(this).val())
+                    });
+                    $.each($("#ddlChildFinance").find("option"), function () {
+                        ChildOptions.text.push($(this).text());
+                        ChildOptions.values.push($(this).val())
+                    });
+
+                    var Childindex = ChildOptions.values.indexOf(ActId);
+                    if (Childindex >= 0) {
+                        ChildOptions.values.splice(Childindex, 1);
+                        ChildOptions.text.splice(Childindex, 1);
+                        BindChildBudgetDrp(parseInt(budgetParentID));
+                        $("#ddlChildFinance").multiselect({
+                            multiple: false,
+                            //noneSelectedText: "Please Select",
+                            selectedList: 1
+                        }).multiselectfilter({
+                        });
+                        //$("select[id='ddlChildFinance'] option:selected").index();
+                        GlobalBudgetId = $('#ddlChildFinance').val();
+                        if (budgetParentID > 0 && GlobalBudgetId == 0)
+                        {
+                            GlobalBudgetId = budgetParentID;
+                        }
+                    }
+
+                    var Parentindex = ParentOptions.values.indexOf(ActId);
+                    if (Parentindex >= 0) {
+                        ParentOptions.values.splice(Parentindex, 1);
+                        ParentOptions.text.splice(Parentindex, 1);
+                        $("#ddlParentFinance").html("");
+                        if (ParentOptions.values.length > 0) {
+                            
+                            for (var i = 0; i < ParentOptions.values.length ; i++) {
+                                var opt = new Option(ParentOptions.text[i], ParentOptions.values[i]);
+                                $('#ddlParentFinance').append(opt);
+                            }
+                        }
+                        $("#ddlParentFinance").multiselect({
+                            multiple: false,
+                            //noneSelectedText: "Please Select",
+                            selectedList: 1
+                        }).multiselectfilter({
+                        });
+                        //$("select[id='ddlParentFinance'] option:selected").index();
+                        GlobalBudgetId = $('#ddlParentFinance').val();
+                        if (GlobalBudgetId == 0 || GlobalBudgetId == null)
+                        {
+                            RefreshBudgetDropdown(false);
+                            var newbudgetID = $("#ddlParentFinanceMain").val();
+                            RefreshMainGridData(newbudgetID);
+                            GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame);
+                            //BindParentBudgetDrp(parseInt(backBudgetid));
+                        }
+                        BindChildBudgetDrp(parseInt(GlobalBudgetId));
+                    }
+                   
+                    LoadBudgetGrid(AllocatedBy);
+                    GetFinanceHeaderValue(0, false);
+                }
+            });
+        }
+        else {
+            var curntBudgetId = $("#ddlParentFinanceMain").val();
             var url = '@Url.Content("~/Finance/DeleteMainGrid/")';
                     $('#divGridView').load(url + '?SelectedRowIDs=' + selectedValues + '&mainTimeFrame=' + mainTimeFrame + '&curntBudgetId=' + curntBudgetId, function () { RefreshBudgetDropdown(false); var newbudgetID = $("#ddlParentFinanceMain").val(); GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame); });
-            //alert(budgetIDMain + ":" + selectedValues);
-            //RefreshMainGridData(budgetIDMain);
-            //GetFinanceHeaderValue(budgetIDMain, true, mainTimeFrame);
-            //RefreshBudgetDropdown(true);
-            //alert(budgetIDMain)
-            //if (budgetIDMain == null && budgetIDMain == 'undefined' && budgetIDMain == 0) {
-            //    RefreshBudgetDropdown(false);
-            //    var budgetIDMain1 = $("#ddlParentFinanceMain").val();
-            //    RefreshMainGridData(budgetIDMain);
-            //}
  
                 }
 
                 ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
 
             }
-            else {
-                return false;
-            }
-        }
-        else {
-            ShowMessage(true, "Please Select a record to delete", 1200);
-        }
-    }
 
     function RefreshMainGridData(BudgetId) {
         
         $("#divGridView").show();
         $("#dvNoData").hide();
-        //debugger;
-        //var budgetID = $("#ddlParentFinance").val();
-        //_SelectedValues = [];
-        //if (RowIDs.IDs.length != 0) {
-        //    for (var i = 0; i < RowIDs.IDs.length; i++) {
-        //        _SelectedValues.push({
-        //            Id: RowIDs.IDs[i],
-        //        });
-        //    }
-        //}
-        //_SelectedValues = JSON.stringify(_SelectedValues);
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame);
     }
@@ -488,18 +580,17 @@
         else {
             LoopLength = 4;
         }
-
         if (checkName == "Budget") {
-            Count = 4;
+            Count = 3;
         }
         else if (checkName == "ForeCast") {
-            Count = 5;
+            Count = 4;
         }
         else if (checkName == "Plan") {
-            Count = 6;
+            Count = 5;
         }
         else if (checkName == "Actual") {
-            Count = 7;
+            Count = 6;
         }
         var visibility = "false,";
         //mygrid.setColumnsVisibility("true,false,false,false,false");
