@@ -516,7 +516,7 @@ body {
             .main-nav ul li.finance:hover a .icon
             {
              background-image: url("../images/finance-icon.png") !important;
-               }
+             }
             .main-nav ul li.pref:hover a .icon, .main-nav ul li.pref:focus a .icon, .main-nav ul li.pref.active a .icon, .main-nav ul li.pref.active:hover a .icon {
                 background-position: -170px -30px;
             }
