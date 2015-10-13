@@ -449,6 +449,7 @@
     <Content Include="Content\images\filter-icon-active.png" />
     <Content Include="Content\images\filter-icon-blue.png" />
     <Content Include="Content\images\filter-icon.png" />
+    <Content Include="Content\images\finance-icon-blue.png" />
     <Content Include="Content\images\finance-icon.png" />
     <Content Include="Content\images\flag-icon.png" />
     <Content Include="Content\images\flag.png" />

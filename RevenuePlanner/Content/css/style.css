@@ -466,8 +466,8 @@ body {
             }
 
             .main-nav ul li.finance a .icon { /*finance tab*/
-                background-position: center bottom;
-                background: url("../images/finance-icon.png") no-repeat !important;
+                 -background-position: center bottom;
+                background: url("../images/finance-icon-blue.png") no-repeat !important;
                 height: 30px;
                  margin: 0 auto;
             }
@@ -508,10 +508,15 @@ body {
             }
 
             /*Finance Tab Menu*/
-            .main-nav ul li.finance:hover a .icon, .main-nav ul li.finance:focus a .icon, .main-nav ul li.finance.active a .icon, .main-nav ul li.finance.active:hover a .icon {
+             .main-nav ul li.finance:focus a .icon, .main-nav ul li.finance.active a .icon, .main-nav ul li.finance.active:hover a .icon {
                 background-position: -136px -30px;
-            }
+                 background: url("../images/finance-icon.png") no-repeat !important;
 
+            }
+            .main-nav ul li.finance:hover a .icon
+            {
+             background-image: url("../images/finance-icon.png") !important;
+               }
             .main-nav ul li.pref:hover a .icon, .main-nav ul li.pref:focus a .icon, .main-nav ul li.pref.active a .icon, .main-nav ul li.pref.active:hover a .icon {
                 background-position: -170px -30px;
             }
