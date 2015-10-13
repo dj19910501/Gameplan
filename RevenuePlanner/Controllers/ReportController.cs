@@ -2861,8 +2861,8 @@ namespace RevenuePlanner.Controllers
             {
                 BudgetMonth lineDiffPlanned = new BudgetMonth();
                 List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId).ToList();
-                BudgetModelReport otherLine = lines.Where(ol => ol.ActivityName == Common.DefaultLineItemTitle && ol.LineItemTypeId == null).SingleOrDefault();
-                lines = lines.Where(ol => ol.ActivityName != Common.DefaultLineItemTitle).ToList();
+                BudgetModelReport otherLine = lines.Where(ol => ol.LineItemTypeId == null).SingleOrDefault();
+                lines = lines.Where(ol => ol.LineItemTypeId != null).ToList();
                 if (otherLine != null)
                 {
                     //// Set monthly line Items values.
@@ -2894,18 +2894,18 @@ namespace RevenuePlanner.Controllers
                         lineDiffPlanned.Nov = lineDiffPlanned.Nov < 0 ? 0 : lineDiffPlanned.Nov;
                         lineDiffPlanned.Dec = lineDiffPlanned.Dec < 0 ? 0 : lineDiffPlanned.Dec;
 
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().MonthPlanned = lineDiffPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().ParentMonthPlanned = lineDiffPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().MonthPlanned = lineDiffPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().ParentMonthPlanned = lineDiffPlanned;
 
                         double planned = _budgModel.Planned - lines.Sum(l1 => l1.Planned);
                         planned = planned < 0 ? 0 : planned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.ActivityName == Common.DefaultLineItemTitle).SingleOrDefault().Planned = planned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().Planned = planned;
                     }
                     else
                     {
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.ActivityName == Common.DefaultLineItemTitle && line.LineItemTypeId == null).SingleOrDefault().MonthPlanned = _budgModel.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.ActivityName == Common.DefaultLineItemTitle && line.LineItemTypeId == null).SingleOrDefault().ParentMonthPlanned = _budgModel.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.ActivityName == Common.DefaultLineItemTitle && line.LineItemTypeId == null).SingleOrDefault().Planned = _budgModel.Planned < 0 ? 0 : _budgModel.Planned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().MonthPlanned = _budgModel.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().ParentMonthPlanned = _budgModel.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().Planned = _budgModel.Planned < 0 ? 0 : _budgModel.Planned;
                     }
                 }
             }

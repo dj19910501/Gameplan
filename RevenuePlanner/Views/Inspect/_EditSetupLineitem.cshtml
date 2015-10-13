@@ -516,12 +516,14 @@
         var iserror = false;
         var lineItemTitle = htmlEncode($('#txtTitle').val());
 
-        if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
+      @*  //#1642 Added By Bhavesh 09-Oct-2015
+      if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
             var errorMsg = "You can't use 'Other' as title.";
             ShowError(errorMsg);
             return false;
-        }
-        if ($('#txtTitle').val().toString().toLowerCase().trim() != '@Common.DefaultLineItemTitle.ToLower()') {
+        }*@
+        // //#1642 Added By Bhavesh 09-Oct-2015    
+        //if ($('#txtTitle').val().toString().toLowerCase().trim() != 'Common.DefaultLineItemTitle.ToLower()') {
             $('form').find('input[type=text], select, textarea').each(function () {
                 if ($(this).attr('require') == 'true') {
                     if ($(this).val() == '') {
@@ -554,7 +556,7 @@
                     $('#btnMultiselect_LineItemTypeId').removeClass("error");
                 }
             }
-        }
+   //     }
 
         if (iserror) {
             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");

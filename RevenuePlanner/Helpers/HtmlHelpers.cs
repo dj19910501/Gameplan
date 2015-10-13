@@ -938,7 +938,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Jan <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.January.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.January.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -947,7 +947,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
                                     //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.January.ToString(), p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.January.ToString(), p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Jan < p.Month.Jan && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -970,7 +970,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Feb <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.February.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.February.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -979,7 +979,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Feb.ToString(formatThousand));
                                     //className = p.Month.Feb <= p.ParentMonth.Feb ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.February.ToString(), p.Month.Feb.ToString(formatThousand)) : p.Month.Feb.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.February.ToString(), p.Month.Feb.ToString(formatThousand)) : p.Month.Feb.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Feb < p.Month.Feb && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1002,7 +1002,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Mar <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.March.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.March.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1011,7 +1011,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Mar.ToString(formatThousand));
                                     //className = p.Month.Mar <= p.ParentMonth.Mar ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.March.ToString(), p.Month.Mar.ToString(formatThousand)) : p.Month.Mar.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.March.ToString(), p.Month.Mar.ToString(formatThousand)) : p.Month.Mar.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Mar < p.Month.Mar && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1034,7 +1034,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Apr <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.April.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.April.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1044,7 +1044,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.April.ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.April.ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Apr < p.Month.Apr && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1067,7 +1067,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.May <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.May.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.May.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1076,7 +1076,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.May.ToString(formatThousand));
                                     //className = p.Month.May <= p.ParentMonth.May ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.May.ToString(), p.Month.May.ToString(formatThousand)) : p.Month.May.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.May.ToString(), p.Month.May.ToString(formatThousand)) : p.Month.May.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.May < p.Month.May && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1099,7 +1099,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Jun <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.June.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.June.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1109,7 +1109,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Jun <= p.ParentMonth.Jun ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.June.ToString(), p.Month.Jun.ToString(formatThousand)) : p.Month.Jun.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.June.ToString(), p.Month.Jun.ToString(formatThousand)) : p.Month.Jun.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Jun < p.Month.Jun && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1132,7 +1132,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Jul <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.July.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.July.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1142,7 +1142,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.July.ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.July.ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Jul < p.Month.Jul && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1165,7 +1165,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Aug <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.August.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.August.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1175,7 +1175,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Aug <= p.ParentMonth.Aug ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.August.ToString(), p.Month.Aug.ToString(formatThousand)) : p.Month.Aug.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.August.ToString(), p.Month.Aug.ToString(formatThousand)) : p.Month.Aug.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Aug < p.Month.Aug && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1198,7 +1198,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Sep <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.September.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.September.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1208,7 +1208,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Sep <= p.ParentMonth.Sep ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.September.ToString(), p.Month.Sep.ToString(formatThousand)) : p.Month.Sep.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.September.ToString(), p.Month.Sep.ToString(formatThousand)) : p.Month.Sep.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Sep < p.Month.Sep && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1232,7 +1232,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Oct <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.October.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.October.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1242,7 +1242,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.October.ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.October.ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Oct < p.Month.Oct && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1265,7 +1265,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Nov <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.November.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.November.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1275,7 +1275,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Nov <= p.ParentMonth.Nov ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.November.ToString(), p.Month.Nov.ToString(formatThousand)) : p.Month.Nov.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.November.ToString(), p.Month.Nov.ToString(formatThousand)) : p.Month.Nov.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Nov < p.Month.Nov && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1297,7 +1297,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Dec <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.December.ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.December.ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1307,7 +1307,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Dec <= p.ParentMonth.Dec ? className : className + budgetError;
                                 }
 
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.December.ToString(), p.Month.Dec.ToString(formatThousand)) : p.Month.Dec.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.December.ToString(), p.Month.Dec.ToString(formatThousand)) : p.Month.Dec.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Dec < p.Month.Dec && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1332,7 +1332,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Jan <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1341,7 +1341,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jan.ToString(formatThousand));
                                     //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(), p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()].ToString(), p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Jan < p.Month.Jan && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1364,7 +1364,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Apr <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1373,7 +1373,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Apr.ToString(formatThousand));
                                     //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()].ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Apr < p.Month.Apr && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1396,7 +1396,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Jul <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1405,7 +1405,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Jul.ToString(formatThousand));
                                     //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()].ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Jul < p.Month.Jul && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1428,7 +1428,7 @@ namespace RevenuePlanner.Helpers
                             }
                             if (activityType == ActivityType.ActivityLineItem && p.Month.Oct <= 0)
                             {
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(), "---") : "---";
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(), "---") : "---";
                             }
                             else
                             {
@@ -1437,7 +1437,7 @@ namespace RevenuePlanner.Helpers
                                     divProgram.Attributes.Add("allocated", p.ParentMonth.Oct.ToString(formatThousand));
                                     //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + budgetError;
                                 }
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()].ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString(formatThousand);
                                 if (strTab == "1" && p.BudgetMonth.Oct < p.Month.Oct && !isLineItem)
                                 {
                                     span.AddCssClass("red-corner-budget");
@@ -1829,7 +1829,7 @@ namespace RevenuePlanner.Helpers
                 div.Attributes.Add("data-parent", parentClassName + parentActivityId);
                 foreach (BudgetModel p in lst)
                 {
-                    if (p.ActivityType == ActivityType.ActivityLineItem && p.ActivityName == Common.DefaultLineItemTitle)
+                    if (p.ActivityType == ActivityType.ActivityLineItem && p.LineItemTypeId == null)
                     {
                         isOtherLineItem = true;
                     }
@@ -3402,7 +3402,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jan.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.January.ToString(), p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.January.ToString(), p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
                             }
 
                         }
@@ -3420,7 +3420,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Feb <= p.ParentMonth.Feb ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Feb.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle.ToString()))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.February.ToString(), p.Month.Feb.ToString(formatThousand)) : p.Month.Feb.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.February.ToString(), p.Month.Feb.ToString(formatThousand)) : p.Month.Feb.ToString(formatThousand);
                             }
 
                         }
@@ -3439,7 +3439,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Mar <= p.ParentMonth.Mar ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Mar.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.March.ToString(), p.Month.Mar.ToString(formatThousand)) : p.Month.Mar.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.March.ToString(), p.Month.Mar.ToString(formatThousand)) : p.Month.Mar.ToString(formatThousand);
                             }
 
                         }
@@ -3457,7 +3457,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Apr.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.April.ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.April.ToString(), p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
                             }
 
                         }
@@ -3475,7 +3475,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.May <= p.ParentMonth.May ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.May.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.May.ToString(), p.Month.May.ToString(formatThousand)) : p.Month.May.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.May.ToString(), p.Month.May.ToString(formatThousand)) : p.Month.May.ToString(formatThousand);
                             }
 
                         }
@@ -3493,7 +3493,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Jun <= p.ParentMonth.Jun ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jun.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.June.ToString(), p.Month.Jun.ToString(formatThousand)) : p.Month.Jun.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.June.ToString(), p.Month.Jun.ToString(formatThousand)) : p.Month.Jun.ToString(formatThousand);
                             }
 
                         }
@@ -3511,7 +3511,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jul.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.July.ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.July.ToString(), p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
                             }
 
                         }
@@ -3529,7 +3529,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Aug <= p.ParentMonth.Aug ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Aug.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.August.ToString(), p.Month.Aug.ToString(formatThousand)) : p.Month.Aug.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.August.ToString(), p.Month.Aug.ToString(formatThousand)) : p.Month.Aug.ToString(formatThousand);
                             }
 
                         }
@@ -3547,7 +3547,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Sep <= p.ParentMonth.Sep ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Sep.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.September.ToString(), p.Month.Sep.ToString(formatThousand)) : p.Month.Sep.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.September.ToString(), p.Month.Sep.ToString(formatThousand)) : p.Month.Sep.ToString(formatThousand);
                             }
 
 
@@ -3566,7 +3566,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Oct.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.October.ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString();
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.October.ToString(), p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString();
                             }
 
                         }
@@ -3584,7 +3584,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Nov <= p.ParentMonth.Nov ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Nov.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.November.ToString(), p.Month.Nov.ToString(formatThousand)) : p.Month.Nov.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.November.ToString(), p.Month.Nov.ToString(formatThousand)) : p.Month.Nov.ToString(formatThousand);
                             }
                         }
                         else if (month == 12)
@@ -3601,7 +3601,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Dec <= p.ParentMonth.Dec ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Dec.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.December.ToString(), p.Month.Dec.ToString(formatThousand)) : p.Month.Dec.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Months.December.ToString(), p.Month.Dec.ToString(formatThousand)) : p.Month.Dec.ToString(formatThousand);
                             }
                         }
                     }
@@ -3621,7 +3621,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Jan <= p.ParentMonth.Jan ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jan.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()], p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter1.ToString()], p.Month.Jan.ToString(formatThousand)) : p.Month.Jan.ToString(formatThousand);
                             }
 
                         }
@@ -3639,7 +3639,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Apr <= p.ParentMonth.Apr ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Apr.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()], p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter2.ToString()], p.Month.Apr.ToString(formatThousand)) : p.Month.Apr.ToString(formatThousand);
                             }
 
                         }
@@ -3657,7 +3657,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Jul <= p.ParentMonth.Jul ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Jul.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()], p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter3.ToString()], p.Month.Jul.ToString(formatThousand)) : p.Month.Jul.ToString(formatThousand);
                             }
 
                         }
@@ -3676,7 +3676,7 @@ namespace RevenuePlanner.Helpers
                                     //className = p.Month.Oct <= p.ParentMonth.Oct ? className : className + budgetError;
                                 }
                                 divProgram.Attributes.Add("mainbudget", p.BudgetMonth.Aug.ToString(formatThousand));
-                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.ActivityName != Common.DefaultLineItemTitle))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()], p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString(formatThousand);
+                                divProgram.InnerHtml = p.isEditable && ((isPlannedTab && (isTactic || (isLineItem && p.LineItemTypeId != null))) || (!isPlannedTab && isLineItem && p.isAfterApproved)) ? ClueTipAnchorTag(Enums.Quarters[Enums.QuarterWithSpace.Quarter4.ToString()], p.Month.Oct.ToString(formatThousand)) : p.Month.Oct.ToString(formatThousand);
                             }
 
                         }

@@ -294,14 +294,15 @@
             var iserror = false;
             var _lineitemtitle = htmlEncode($('#txtTitle').val());
             var _stractualsData = '';
-            var isotherlineitem = $("#hdnIsOtherLineItem").val();
-            if (isotherlineitem.toLowerCase() == 'false') {
+        // #1642 Comment By Bhavesh Dobariya #09-10-2015
+          //  var isotherlineitem = $("#hdnIsOtherLineItem").val();
+           @* if (isotherlineitem.toLowerCase() == 'false') {
                 if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
                     var errorMsg = "You can't use 'Other' as title.";
                     ShowError(errorMsg);
                     return false;
                 }
-            }
+            }*@
             $('#trActualCost').find('input').each(function () {
                 var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
                 _stractualsData = _stractualsData + "," + cvalue;

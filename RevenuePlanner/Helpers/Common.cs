@@ -125,7 +125,7 @@ namespace RevenuePlanner.Helpers
         public static string ImprovementProgram = "Improvement Program";
 
         // Default Other line item title
-        public static string DefaultLineItemTitle = "Other";
+        public static string LineItemTitleDefault = "Line item _";
 
         // Label text for Unallocated Budget label
         public static string UnallocatedBudgetLabelText = "Unallocated";

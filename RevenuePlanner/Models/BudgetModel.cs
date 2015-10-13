@@ -49,6 +49,7 @@ namespace RevenuePlanner.Models
         public bool isEditable { get; set; }
         public Guid CreatedBy { get; set; }
         public bool isAfterApproved { get; set; }
+        public int? LineItemTypeId { get; set; }
     }
 
     public class BudgetModelReport
