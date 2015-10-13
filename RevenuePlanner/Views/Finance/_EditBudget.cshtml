@@ -569,10 +569,20 @@
                                     BudgetMonthTotalIndex = myTreeGrid.getColIndexById("BudgetTotal");
                                     myTreeGrid.cells(rId, BudgetMonthTotalIndex).setValue(Intl.NumberFormat().format(BudgetRowTotal));
                                 }
+                                var TotalVal = "$" + myTreeGrid.cells(myTreeGrid.getRowId(0), BudgetMonthTotalIndex).getValue();
+                                $("#budgetID").html(TotalVal);
+                                $("#budgetID").attr("data-original-title", TotalVal);
+                                formatBudgetValues("#budgetID");
 
                             }
                             else if (ColumnName == "Forecast") {
-                               // debugger;
+
+                                
+                                var forparentid = myTreeGrid.getParentId(rId);
+                                if (forparentid > 0) {
+                                    RollupFinanceValue(forparentid, 0, cInd);
+                                }
+
                                 if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
                             //        $.each(ForeCastQuartelyColIndex, function () {
 
@@ -621,6 +631,18 @@
                                     ForcastMonthTotalIndex = myTreeGrid.getColIndexById("ForecastTotal");
                                     myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(Intl.NumberFormat().format(ForCastRowTotal));
                                 }
+                                if (forparentid > 0) {
+                                    RollupFinanceValue(forparentid, 0, ForcastMonthTotalIndex);
+                                }
+                                //myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(Intl.NumberFormat().format(myTreeGrid.cells(rId, ForcastMonthTotalIndex).getValue()));
+                                var TotalVal = "$" + myTreeGrid.cells(myTreeGrid.getRowId(0), ForcastMonthTotalIndex).getValue();
+                                $("#ForecastID").html(TotalVal);
+                                $("#ForecastID").attr("data-original-title", TotalVal);
+                              
+                                formatForecastValues("#ForecastID");
+
+                                //$("#ForecastID").html("$" + myTreeGrid.cells(myTreeGrid.getRowId(0), ForcastMonthTotalIndex).getValue());
+                                //formatForecastValues("#ForecastID");
                             }
 
                             //LoadBudgetGrid(AllocatedBy);
