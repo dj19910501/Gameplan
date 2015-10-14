@@ -466,10 +466,11 @@ body {
             }
 
             .main-nav ul li.finance a .icon { /*finance tab*/
-                 -background-position: center bottom;
-                background: url("../images/finance-icon-blue.png") no-repeat !important;
-                height: 30px;
-                 margin: 0 auto;
+                    background: rgba(0, 0, 0, 0) url("../images/finance-icon-blue.png") no-repeat scroll 0 0 !important;
+                    height: 30px;
+                    margin: 0 auto;
+                    width: 29px;
+
             }
 
             .main-nav ul li.pref a .icon {
