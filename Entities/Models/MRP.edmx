@@ -42,6 +42,7 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="IsForecast" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Budget_DetailAmount">
           <Key>
@@ -4898,6 +4899,7 @@
           <NavigationProperty Name="Budget" Relationship="MRPModel.FK_Budget_Detail_Budget1" FromRole="Budget_Detail" ToRole="Budget" />
           <NavigationProperty Name="Budget_DetailAmount" Relationship="MRPModel.FK_Budget_DetailAmount_Budget_Detail" FromRole="Budget_Detail" ToRole="Budget_DetailAmount" />
           <NavigationProperty Name="LineItem_Budget" Relationship="MRPModel.FK_LineItem_Budget_Budget_Detail" FromRole="Budget_Detail" ToRole="LineItem_Budget" />
+          <Property Name="IsForecast" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_Budget_Detail_Budget1">
           <End Type="MRPModel.Budget" Role="Budget" Multiplicity="1" />
@@ -5959,6 +5961,7 @@
           <EntitySetMapping Name="Budget_Detail">
             <EntityTypeMapping TypeName="MRPModel.Budget_Detail">
               <MappingFragment StoreEntitySet="Budget_Detail">
+                <ScalarProperty Name="IsForecast" ColumnName="IsForecast" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
