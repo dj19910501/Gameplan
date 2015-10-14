@@ -506,6 +506,7 @@
     <Content Include="Content\images\photo-user.jpg" />
     <Content Include="Content\images\plan-icon.png" />
     <Content Include="Content\images\r.png" />
+    <Content Include="Content\images\Remove-icon-blue.png" />
     <Content Include="Content\images\Remove-icon-white.png" />
     <Content Include="Content\images\Remove-icon.png" />
     <Content Include="Content\images\requests-logo.png" />
@@ -539,7 +540,6 @@
     <Content Include="Content\images\view-fullscreen.png" />
     <Content Include="Content\images\volumedown.png" />
     <Content Include="Content\images\volumeup.png" />
-    <Content Include="Content\Remove-icon-blue.png" />
     <Content Include="DLLs\Elmah.dll" />
     <Content Include="DLLs\evohtmltopdf.dll" />
     <Content Include="DLLs\HelperSharp.dll" />
