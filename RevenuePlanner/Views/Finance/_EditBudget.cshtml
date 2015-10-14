@@ -500,7 +500,10 @@
                 var ForcastMonthTotalIndex = 53;
                 var BudgetRowTotal = 0;
                 var ForCastRowTotal = 0;
-
+                var PlanRowTotal = 0;
+                var ActualRowTotal = 0;
+                var PlanTotalIndex = 0;
+                var ActualTotalIndex = 0;
                 if (nValue != oValue) {
                     $.ajax({
                         type: 'POST',
@@ -580,7 +583,7 @@
                                 
                                 var forparentid = myTreeGrid.getParentId(rId);
                                 if (forparentid > 0) {
-                                    RollupFinanceValue(forparentid, 0, cInd);
+                                    RollupFinanceValue(forparentid, 0, cInd);// Forecast
                                 }
 
                                 if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
@@ -597,11 +600,29 @@
                                         if (ColName == "Forecast") {
                                             var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
                                             ForCastRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
+                                        } else if (ColName == "Planned") {
+                                            if (forparentid > 0) {
+                                                RollupFinanceValue(forparentid, 0, colIndex);// Plan
+                                            }
+                                            var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
+                                            PlanRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
+                                        } else if (ColName == "Actual") {
+                                            if (forparentid > 0) {
+                                                RollupFinanceValue(forparentid, 0, colIndex);// Actual 
+                                            }
+                                            var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
+                                            ActualRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
                                         }
                                     }
                             //        BudgetRowTotal = parseFloat(ColTotalValue) + parseFloat(ColCurrentValue);
                                     ForcastMonthTotalIndex = myTreeGrid.getColIndexById("ForecastTotal");
                                     myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(Intl.NumberFormat().format(ForCastRowTotal));
+
+                                    PlanTotalIndex = myTreeGrid.getColIndexById("PlannedTotal");
+                                    myTreeGrid.cells(rId, PlanTotalIndex).setValue(Intl.NumberFormat().format(PlanRowTotal));
+
+                                    ActualTotalIndex = myTreeGrid.getColIndexById("ActualTotal");
+                                    myTreeGrid.cells(rId, ActualTotalIndex).setValue(Intl.NumberFormat().format(ActualRowTotal));
                                 }
                                 else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
                                     //var ColTotalValue = myTreeGrid.cells(rId, BudgetMonthTotalIndex).getValue();
@@ -613,10 +634,29 @@
                                             var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
                                             ForCastRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
                                         }
+                                        else if (ColName == "Planned") {
+                                            if (forparentid > 0) {
+                                                RollupFinanceValue(forparentid, 0, colIndex);// Plan
+                                            }
+                                            var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
+                                            PlanRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
+                                        } else if (ColName == "Actual") {
+                                            if (forparentid > 0) {
+                                                RollupFinanceValue(forparentid, 0, colIndex);// Actual
+                                            }
+                                            var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
+                                            ActualRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
+                                        }
                                     }
                                     //BudgetRowTotal = parseFloat(ColTotalValue) + parseFloat(ColCurrentValue);
                                     ForcastMonthTotalIndex = myTreeGrid.getColIndexById("ForecastTotal");
                                     myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(Intl.NumberFormat().format(ForCastRowTotal));
+
+                                    PlanTotalIndex = myTreeGrid.getColIndexById("PlannedTotal");
+                                    myTreeGrid.cells(rId, PlanTotalIndex).setValue(Intl.NumberFormat().format(PlanRowTotal));
+
+                                    ActualTotalIndex = myTreeGrid.getColIndexById("ActualTotal");
+                                    myTreeGrid.cells(rId, ActualTotalIndex).setValue(Intl.NumberFormat().format(ActualRowTotal));
                                 } else {
                                     for (var i = 1; i <= 14; i++) {
                                         var colId = myTreeGrid.getColumnId(i);
@@ -626,13 +666,34 @@
                                             var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
                                             ForCastRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
                                         }
+                                        else if (ColName == "Planned") {
+                                            if (forparentid > 0) {
+                                                RollupFinanceValue(forparentid, 0, colIndex);// Plan
+                                            }
+                                            var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
+                                            PlanRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
+                                        } else if (ColName == "Actual") {
+                                            if (forparentid > 0) {
+                                                RollupFinanceValue(forparentid, 0, colIndex);// Actual
+                                            }
+                                            var ColCurrentValue = myTreeGrid.cells(rId, colIndex).getValue();
+                                            ActualRowTotal += parseFloat(ColCurrentValue.replace(/,/g, ""));
+                                        }
                                     }
                                     //BudgetRowTotal = parseFloat(ColTotalValue) + parseFloat(ColCurrentValue);
                                     ForcastMonthTotalIndex = myTreeGrid.getColIndexById("ForecastTotal");
                                     myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(Intl.NumberFormat().format(ForCastRowTotal));
+
+                                    PlanTotalIndex = myTreeGrid.getColIndexById("PlannedTotal");
+                                    myTreeGrid.cells(rId, PlanTotalIndex).setValue(Intl.NumberFormat().format(PlanRowTotal));
+
+                                    ActualTotalIndex = myTreeGrid.getColIndexById("ActualTotal");
+                                    myTreeGrid.cells(rId, ActualTotalIndex).setValue(Intl.NumberFormat().format(ActualRowTotal));
                                 }
                                 if (forparentid > 0) {
                                     RollupFinanceValue(forparentid, 0, ForcastMonthTotalIndex);
+                                    RollupFinanceValue(forparentid, 0, PlanTotalIndex);
+                                    RollupFinanceValue(forparentid, 0, ActualTotalIndex);
                                 }
                                 //myTreeGrid.cells(rId, ForcastMonthTotalIndex).setValue(Intl.NumberFormat().format(myTreeGrid.cells(rId, ForcastMonthTotalIndex).getValue()));
                                 var TotalVal = "$" + myTreeGrid.cells(myTreeGrid.getRowId(0), ForcastMonthTotalIndex).getValue();
@@ -968,6 +1029,14 @@
             //myTreeGrid.selectCell(myTreeGrid.getRowIndex(_newRowIndex), 0, false, false, true);
             myTreeGrid.selectRow(_newRowIndex);
             myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
+            var ChkPlan = $("#chkPlan");
+            var ChkBudget = $("#chkBudget");
+            var ChkForeCast = $("#chkForeCast");
+            var ChkActual = $("#chkActual");
+            ShowHideColumns(ChkPlan[0]);
+            ShowHideColumns(ChkBudget[0]);
+            ShowHideColumns(ChkForeCast[0]);
+            ShowHideColumns(ChkActual[0]);
             //myTreeGrid.cells(_newrowid, titleIndex).edit();
             //myTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
             if (GlobalEditLevel !== 'Budget') {
@@ -979,9 +1048,29 @@
                 myTreeGrid.setCellTextStyle(row_id, ind, "color:gray;");
             });
             }
+
             event.cancelBubble = true;
         }
         //myTreeGrid.editCell();
+    }
+
+    function RollupFinanceValue(rId, cId, colIndex) {
+        
+        var parentid = rId;
+        var sum = 0;
+        var childitems = myTreeGrid.getSubItems(rId).split(',');
+        $.each(childitems, function () {
+            var ColCurrentValue = myTreeGrid.cells(this, colIndex).getValue();
+            sum += parseFloat(ColCurrentValue.replace(/,/g, ""));
+        });
+        myTreeGrid.cells(rId, colIndex).setValue(Intl.NumberFormat().format(sum));
+        parentid = myTreeGrid.getParentId(rId);
+        if (parentid == "") {
+            return true;
+        }
+        else {
+            return RollupFinanceValue(parentid, 0, colIndex);
+        }
     }
 
 </script>
