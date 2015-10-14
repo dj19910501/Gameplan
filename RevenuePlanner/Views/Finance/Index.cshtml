@@ -311,12 +311,13 @@
                         ChildOptions.values.splice(Childindex, 1);
                         ChildOptions.text.splice(Childindex, 1);
                         BindChildBudgetDrp(parseInt(budgetParentID));
-                        $("#ddlChildFinance").multiselect({
-                            multiple: false,
-                            //noneSelectedText: "Please Select",
-                            selectedList: 1
-                        }).multiselectfilter({
-                        });
+                        //Commented by Rahul Shah on 14/10/2015 for PL #1667
+                        //$("#ddlChildFinance").multiselect({
+                        //    multiple: false,
+                        //    //noneSelectedText: "Please Select",
+                        //    selectedList: 1
+                        //}).multiselectfilter({
+                        //});
                         //$("select[id='ddlChildFinance'] option:selected").index();
                         GlobalBudgetId = $('#ddlChildFinance').val();
                         if (budgetParentID > 0 && GlobalBudgetId == 0)
@@ -337,12 +338,34 @@
                                 $('#ddlParentFinance').append(opt);
                             }
                         }
-                        $("#ddlParentFinance").multiselect({
-                            multiple: false,
-                            //noneSelectedText: "Please Select",
-                            selectedList: 1
-                        }).multiselectfilter({
+                        //Commented by Rahul Shah on 14/10/2015 for PL #1667
+                        //$("#ddlParentFinance").multiselect({
+                        //    multiple: false,
+                        //    //noneSelectedText: "Please Select",
+                        //    selectedList: 1
+                        //}).multiselectfilter({
+                        //});
+                        new NLForm(document.getElementById('nl-formParentFinance'));
+
+                        $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+
+                            $('#errorMsg').css('display', 'none');
+                            $('#SuccessMsg').css('display', 'none');
+                            $("#divGridView").show();
+                            $("#dvNoData").hide();
+                            var budgetID = $(this).attr('value');
+                            if (pageName == "EditBudget") {
+                                GetFinanceHeaderValue(budgetID);
+                                EditBudget(budgetID, false);
+                            }
+
                         });
+                        var a = $("#nl-formParentFinance .nl-field.nl-dd");
+
+                        for (var i = 0; i < a.length ; i++) {
+
+                            $(a[a.length - i]).remove();
+                        }
                         //$("select[id='ddlParentFinance'] option:selected").index();
                         GlobalBudgetId = $('#ddlParentFinance').val();
                         if (GlobalBudgetId == 0 || GlobalBudgetId == null)
@@ -507,7 +530,7 @@
             }
         });
         //Added by Rahul Shah on 13/10/2015 for PL#1667
-        $('#nl-formChildFinance div').remove('');
+        //$('#nl-formChildFinance div').remove('');
         new NLForm(document.getElementById('nl-formChildFinance'));
         $('#nl-formChildFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             debugger;
@@ -533,6 +556,12 @@
             }
 
         });
+        var a = $("#nl-formChildFinance .nl-field.nl-dd");
+        debugger;
+        for (var i = 0; i < a.length ; i++) {
+            debugger;
+            $(a[a.length - i]).remove();
+        }
         //Commented by Rahul shah on 13/10/2015 for PL#1667
         //$("#ddlChildFinance").multiselect({
         //    multiple: false,
@@ -561,7 +590,7 @@
         });
         $("#ddlParentFinance").val(_budgetId);
         //Added by Rahul Shah on 13/10/2015 for PL#1667
-        $('#nl-formParentFinance div').remove('');
+        //$('#nl-formParentFinance div').remove('');
         new NLForm(document.getElementById('nl-formParentFinance'));
 
         $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
@@ -577,6 +606,12 @@
             }
 
         });
+        var a = $("#nl-formParentFinance .nl-field.nl-dd");
+
+        for (var i = 0; i < a.length ; i++) {
+
+            $(a[a.length - i]).remove();
+        }
         //Commented by Rahul shah on 13/10/2015 for PL#1667
         //$("#ddlParentFinance").multiselect({
         //    multiple: false,
@@ -828,7 +863,7 @@
         //}
         $dropdown.append($html);
 
-        $dropdown.multiselect("refresh");
+        //$dropdown.multiselect("refresh");
         if (IsAddNew != undefined && IsAddNew != null && IsAddNew == true) {
             $dropdown.val(0);
             $dropdown.find("input[type='search']").val(0);
@@ -844,7 +879,7 @@
             //$('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
         }
         //Addded by Rahul Shah on 13/10/2015 for PL #1667
-        $('#nl-formParentFinanceMain div').remove('');
+        //$('#nl-formParentFinanceMain div').remove('');
         new NLForm(document.getElementById('nl-formParentFinanceMain'));
         $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
             $('#errorMsg').css('display', 'none');
@@ -863,6 +898,12 @@
             }
 
         });
+        var a = $("#nl-formParentFinanceMain .nl-field.nl-dd");
+
+        for (var i = 0; i < a.length ; i++) {
+
+            $(a[a.length - i]).remove();
+        }
     }
 
     //$.ajaxSetup({
