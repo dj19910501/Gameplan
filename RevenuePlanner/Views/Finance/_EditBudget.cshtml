@@ -462,6 +462,11 @@
                     var psv = myTreeGrid.cell;
                     this.editor.obj.value = (psv.title.replace(/,/g, ""));
                 }
+                AddNewrow = false;
+
+                EditRowID = $("#dv" + rId + "").attr('id');
+                DeletIconID = $("#cb" + rId + "").attr('id');
+
             }
             if (stage == 0 && cInd == 2) return true;
             var ParentID = $("#ddlParentFinance").val();
@@ -504,7 +509,14 @@
                 var ActualRowTotal = 0;
                 var PlanTotalIndex = 0;
                 var ActualTotalIndex = 0;
+					  if (stage.toString() == '2') {
+                    if (nValue == null || nValue == '' || nValue == oValue) {
+                        AddNewrow = true;
+                        return false;
+                    }
+                }
                 if (nValue != oValue) {
+                    AddNewrow = true;
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Action("UpdateBudgetGridData")',
@@ -806,7 +818,11 @@
     var _row_parentId = '';
 
     function CheckboxClick(checkbox) {
-
+        var controlid = $(checkbox).attr('id')
+        if (AddNewrow == false & DeletIconID == controlid) {
+            return false;
+        }
+        else {
         RowIDs = {
             IDs: []
         }
@@ -821,7 +837,7 @@
                 $('#divDeletePopup').modal("hide");
 
             });
-
+        }
 
     }
     //Added BY Komal Rawal for #1639
@@ -910,8 +926,13 @@
 
     ////End
     function AddRow(cntrl) {
-        // debugger;
+        var controlid = $(cntrl).attr('id');
+        if (AddNewrow == false && EditRowID == controlid) {
+            return false;
+        }
+        else {
         DisplayPopUpMenu(cntrl);
+    }
     }
     function IsRootMostParentId(curntRowid) {
         var parentid = myTreeGrid.getParentId(curntRowid);

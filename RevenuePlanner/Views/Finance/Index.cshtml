@@ -143,6 +143,9 @@
     var _mainTimeFrame = '';
     var GlobalEditLevel = '';
     var GlobalBudgetId = '';
+    var AddNewrow = true;
+    var EditRowID = "";
+    var DeletIconID = "";
     //$('#AddSettings').click(function () {
     //    $('#errorMsg').css('display', 'none');
     //    $('#SuccessMsg').css('display', 'none');
@@ -195,6 +198,7 @@
             $('#divGridView').load(url + '?budgetId=' + budgetId);
         });*@
         $("#btnAddNewBudget").click(function () {
+            myTreeGrid.editStop();
             $('#errorMsg').css('display', 'none');
             $('#SuccessMsg').css('display', 'none');
             $("#divGridView").show();
@@ -640,6 +644,7 @@
 
     }
     function EditBudget(BudgetId, childChange, level) {
+        myTreeGrid.editStop();
         $('#btnSettings').css('display', 'none')
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');

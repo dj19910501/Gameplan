@@ -187,6 +187,11 @@
 
     });
     function CheckboxClick(checkbox) {
+        var controlid = $(checkbox).attr('id')
+        if (AddNewrow == false & DeletIconID == controlid) {
+            return false;
+        }
+        else {
         RowIDs = {
             IDs: []
         }
@@ -201,6 +206,7 @@
             $('#divDeletePopup').modal("hide");
 
         });
+        }
       
     }
    
@@ -291,8 +297,15 @@
 
     ////End
     function AddRow(cntrl) {
+        var controlid = $(cntrl).attr('id');
+        if (AddNewrow == false && EditRowID == controlid) {
+            return false;
+        }
+        else {
+
         DisplayPopUpMenu(cntrl);
         return false;
+    }
     }
 
     function AddNewRowbyType(itemType, cntrl) {
@@ -377,6 +390,14 @@
 
     function OnEditCell(stage, id, index, newVal, oldVal) {
         var selectIndex = myTreeGrid.getColIndexById('SelectBox');
+        if (stage == 1) {
+            AddNewrow = false;
+            EditRowID = $("#dv" + id + "").attr('id');
+            DeletIconID = $("#cb" + id + "").attr('id');
+             
+        }
+        //$("#dv" + id + "").unbind();
+        //$("#cb" + id + "").unbind();
         if (stage == 0 && index == selectIndex) return true;
         var _val = $("#hdn_row_parentId").val();
         var splitRowParentIds = '';
@@ -415,6 +436,7 @@
             //var _budgetIdVal = $('#ddlParentFinanceMain').val();
             var _budgetIdVal = $("#hdnBudgetId").val();
             if (newVal == null || newVal == '' || newVal == oldVal) {
+                AddNewrow = true;
                 return false;
             }
             else {
@@ -479,6 +501,7 @@
             myTreeGrid.openItem(parentRowID);
             }
         });
+        AddNewrow = true;
     }
     function UpdateBudgetDetail(budgetId, budgetDetailName, budgetDetailId, parentId, parentRowID) {
         //budgetId = 8;
