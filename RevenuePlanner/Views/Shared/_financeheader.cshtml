@@ -72,12 +72,14 @@
     formatActualValues("#ActualID");
     //setBootstrapTooltip("#budgetID", 45144, 4, false);
     function FinanceBack() {
+        
+        RefreshBudgetDropdown();
         pageName = "MainGrid";
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + backBudgetid);
         ShowHideControls("MainGrid");
         GetFinanceHeaderValue(backBudgetid, true);
-        RefreshBudgetDropdown();
+  
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         //myApp.hidePleaseWait();
