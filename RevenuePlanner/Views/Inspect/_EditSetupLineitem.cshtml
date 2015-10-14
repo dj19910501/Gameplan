@@ -117,9 +117,18 @@
         <div class="span3 review_no_padding" id="inspect-modal-left-column3">
             <p>@Html.Raw("Owner")</p>
             @Html.TextBox("txtOwner", owner, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", @readonly = "true" })
-            <p>@Html.Raw("Line Item Cost")</p>
-            @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate input-setup", id = "txtLineItemCost" })
-
+            
+            
+            @if (!isOtherLineitem)
+            {
+                <p>@Html.Raw("Line Item Cost")</p>
+                @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate input-setup", id = "txtLineItemCost" });
+            }
+            else
+            {
+                <p>@Html.Raw("Line Item Cost")</p>
+                @Html.TextBoxFor(model => model.Cost, new { @class = "span12 input-small currency_dollar truncate", id = "txtLineItemCost", @readonly = "true" });
+            }
         </div>
     </div>
 
@@ -450,9 +459,9 @@
         if ('@isOtherLineitem.ToString().ToLower()' == 'true') {
             $("#lblType").css("display", "none");
             $("#ddlTypeArea").css("display", "none");
-            $('#txtLineItemCost').attr('readonly', true);
-            $("#lblLineitemTitle").css('display', 'block');
-            $("#txtTitle").css('display', 'none');
+            //$('#txtLineItemCost').attr("readonly", "true");
+        //    $("#lblLineitemTitle").css('display', 'block');
+        //    $("#txtTitle").css('display', 'none');
         }
         //Start - Added by Viral Kadiya on 17/11/2014 to resolve PL ticket #947.
         $('.input-setup').addClass('light-blue-background');

@@ -5691,9 +5691,10 @@ namespace RevenuePlanner.Controllers
                                 #region "Update record to Plan_Campaign_Program_Tactic_LineItem table."
                                 Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(form.PlanLineItemId));
                                 objLineitem.Description = form.Description;
+                                objLineitem.Title = form.Title;
                                 if (!form.IsOtherLineItem)
                                 {
-                                    objLineitem.Title = form.Title;
+                                    
                                     objLineitem.LineItemTypeId = form.LineItemTypeId;
 
                                     //if ((db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(t => t.PlanLineItemId == form.PlanLineItemId).ToList()).Count() == 0 ||

@@ -308,8 +308,9 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("Actual", typeof(String));
                 dataTable.Columns.Add("Action", typeof(String));
                 dataTable.Columns.Add("LineItemCount", typeof(Int32));
+                dataTable.Columns.Add("IsForcast", typeof(Boolean));
                 //budgetId = 8;
-                var lstBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
+                var lstBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).Select(a => new { a.Id, a.ParentId, a.Name, a.IsForecast }).ToList();
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();// Add By Nishant Sheth
 
                 List<int> lstBudgetDetailsIds = lstBudgetDetails.Select(bdgtdtls => bdgtdtls.Id).ToList();
@@ -362,7 +363,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == i.Id).ToList());
                         //rowId = Regex.Replace(i.Name.Trim(), @"\s+", "") + i.Id.ToString() + (i.ParentId == null ? "0" : i.ParentId.ToString());
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />", objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
-                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem });
+                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast });
                     });
 
                 var MinParentid = 0;
@@ -393,15 +394,21 @@ namespace RevenuePlanner.Controllers
             var actual = row.Field<String>("Actual");
             var lineItemCount = row.Field<Int32>("LineItemCount");
             int parentId = row.Field<Int32>("ParentId");
+            bool IsForcast = row.Field<Boolean>("IsForcast");
             //var action = row.Field<String>("Action");
             //var budget = row.Field<List<Double?>>("Budget");
             //var forcast = row.Field<List<Double?>>("ForeCast");
             //var budgetTotal = row.Field<Double>("BudgetTotal");
             //var forcastTotal = row.Field<Double>("ForeCastTotal");
-            var lstChildren = GetChildren(dataTable, id);
-            var children = lstChildren
-              .Select(r => CreateMainGridItem(dataTable, r))
-              .ToList();
+            List<DhtmlxGridRowDataModel> children = new List<DhtmlxGridRowDataModel>();
+            IEnumerable<DataRow> lstChildren = null;
+            lstChildren = GetChildren(dataTable, id);
+            if (!IsForcast)
+            {
+                children = lstChildren
+                  .Select(r => CreateMainGridItem(dataTable, r))
+                  .ToList();
+            }
             List<string> ParentData = new List<string>();
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
 
@@ -425,11 +432,25 @@ namespace RevenuePlanner.Controllers
 
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
                     //  SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "' onclick='CheckboxClick(this)' type='checkbox' />";
-                    strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
+                    if (IsForcast)
+                    {
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
+                    }
+                    else
+                    {
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
+                    }
                 }
                 else
                 {
-                    strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
+                    if (IsForcast)
+                    {
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
+                    }
+                    else
+                    {
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
+                    }
                 }
                 if ((lstChildren != null && lstChildren.Count() > 0) && parentId > 0) // LineItem count will be not set for Most Parent Item & last Child Item.
                 {
@@ -1367,7 +1388,7 @@ namespace RevenuePlanner.Controllers
 
         #region Update Forecast/Budget Data
         [HttpPost]
-        public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0)
+        public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0, string GlobalEditLevel = "")
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             nValue = HttpUtility.HtmlDecode(nValue);
@@ -1402,7 +1423,12 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    var DetailParentId = db.Budget_Detail.Where(a => a.Id == ParentRowId).Select(a => new { a.ParentId, a.BudgetId }).FirstOrDefault();
+                    Budget_Detail DetailParentId = db.Budget_Detail.Where(a => a.Id == ParentRowId).FirstOrDefault();
+                    if (GlobalEditLevel == "ForeCast")
+                    {
+                        DetailParentId.IsForecast = true;
+                        db.Entry(DetailParentId).State = EntityState.Modified;
+                    }
                     objBudgetDetail = new Budget_Detail();
                     objBudgetDetail.Name = nValue;
                     objBudgetDetail.ParentId = Convert.ToInt32(ParentRowId);

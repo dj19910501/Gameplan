@@ -9530,7 +9530,7 @@ namespace RevenuePlanner.Controllers
                                                                 // Type = taskdata.LineItemType.Title,
                                                                 CreatedBy = taskdata.CreatedBy,
                                                                 IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
-                                                                IstactEditable = taskdata.LineItemTypeId != null ? (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "1"
+                                                                IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1"
                                                             });
                                                             foreach (var lineitem in lstLineItemTaskData)
                                                             {
@@ -9545,7 +9545,7 @@ namespace RevenuePlanner.Controllers
                                                                 }
                                                                 GridString.Append("]]></cell>");
                                                                 GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell bgColor='#ffffff' locked='1' style='color:#999'></cell>  <cell bgColor='#ffffff' locked='1' style='color:#999'></cell> ");
-                                                                GridString.Append(" <cell bgColor='#ffffff'   type='edn' locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + ">" + lineitem.Cost + "</cell>");
+                                                                GridString.Append(" <cell bgColor='#ffffff'   type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " + "style='color:#999;'" : lineitem.IstactEditable + "\" " + cellTextColor) + ">" + lineitem.Cost + "</cell>");
                                                                 GridString.Append("<cell bgColor='#ffffff'  locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " xmlcontent='true'>" + lineitem.Type);
                                                                 GridString.Append(strLineType + "</cell>");
                                                                 GridString.Append("<cell bgColor='#ffffff' type='ro' style='color:#999'>" + lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault() + "</cell> ");
