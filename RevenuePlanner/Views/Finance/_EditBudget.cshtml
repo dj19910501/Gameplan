@@ -520,7 +520,8 @@
                     $.ajax({
                         type: 'POST',
                         url: '@Url.Action("UpdateBudgetGridData")',
-                        data: { BudgetId: rId, IsQuaterly: AllocatedBy, nValue: htmlDecode(nValue), oValue: oValue, ColumnName: ColumnName, Period: Period, ParentRowId: _parentRowId, GlobalEditLevel: GlobalEditLevel },
+                        data: {
+                            BudgetId: rId, IsQuaterly: AllocatedBy, nValue: htmlDecode(nValue), oValue: oValue, ColumnName: ColumnName, Period: Period, ParentRowId: _parentRowId, GlobalEditLevel: GlobalEditLevel, isFromForecastChild: isFromForecastChild },
                         dataType: 'json',
                         beforeSend: function (x) { //Called before every request
                             myApp.hidePleaseWait();

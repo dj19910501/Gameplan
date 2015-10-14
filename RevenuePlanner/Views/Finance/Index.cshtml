@@ -149,7 +149,7 @@
     var nlformParentFinanceMain;
     var nlformParentFinance;
     var nlformChildFinance;
-
+    var isFromForecastChild = false;
     //$('#AddSettings').click(function () {
     //    $('#errorMsg').css('display', 'none');
     //    $('#SuccessMsg').css('display', 'none');
@@ -1039,6 +1039,13 @@
         
         $('.new-finance').click(function () {
             var itemtype = $(this).attr('itemType');
+            if (itemtype == 'childitem') {
+                isFromForecastChild = true;
+            }
+            else {
+                isFromForecastChild = false;
+            }
+
             AddNewRowbyType(itemtype, addControl);
             $('#popupType').css('display', 'none');
         });

@@ -1388,7 +1388,7 @@ namespace RevenuePlanner.Controllers
 
         #region Update Forecast/Budget Data
         [HttpPost]
-        public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0, string GlobalEditLevel = "")
+        public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0, string GlobalEditLevel = "", bool isFromForecastChild = false)
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             nValue = HttpUtility.HtmlDecode(nValue);
@@ -1424,7 +1424,7 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     Budget_Detail DetailParentId = db.Budget_Detail.Where(a => a.Id == ParentRowId).FirstOrDefault();
-                    if (GlobalEditLevel == "ForeCast")
+                    if (GlobalEditLevel == "ForeCast" && isFromForecastChild)
                     {
                         DetailParentId.IsForecast = true;
                         db.Entry(DetailParentId).State = EntityState.Modified;
