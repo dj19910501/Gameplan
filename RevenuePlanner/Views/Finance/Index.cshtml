@@ -173,7 +173,12 @@
         //    selectedList: 1
         //}).multiselectfilter({
         //});
-
+        $("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
+        }).multiselectfilter({
+        });
         var _budgetId = $('#ddlParentFinance').val();
         var _budgetIdMain = $('#ddlParentFinanceMain').val();
         _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
@@ -228,9 +233,9 @@
             }
 
         });
-        var txtval = $("#btnMultiselect_ddlParentFinanceMain").find("span").text();
-        $("#btnMultiselect_ddlParentFinanceMain").find("span").text('');
-        $("#btnMultiselect_ddlParentFinanceMain").find("span").text(htmlDecode(txtval));
+        //var txtval = $("#btnMultiselect_ddlParentFinanceMain").find("span").text();
+        //$("#btnMultiselect_ddlParentFinanceMain").find("span").text('');
+        //$("#btnMultiselect_ddlParentFinanceMain").find("span").text(htmlDecode(txtval));
     });
 
 
@@ -531,10 +536,15 @@
         });
         //Added by Rahul Shah on 13/10/2015 for PL#1667
         //$('#nl-formChildFinance div').remove('');
+        var a = $("#nl-formChildFinance .nl-field.nl-dd");
+        if (a.length > 0) {
+            for (var i = 0; i < a.length ; i++) {
+                $(a[a.length - i]).remove();
+            }
+        }
         new NLForm(document.getElementById('nl-formChildFinance'));
         $('#nl-formChildFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            debugger;
-
+            
             $('#errorMsg').css('display', 'none');
             $('#SuccessMsg').css('display', 'none');
             $("#divGridView").show();
@@ -557,9 +567,9 @@
 
         });
         var a = $("#nl-formChildFinance .nl-field.nl-dd");
-        debugger;
+        
         for (var i = 0; i < a.length ; i++) {
-            debugger;
+            
             $(a[a.length - i]).remove();
         }
         //Commented by Rahul shah on 13/10/2015 for PL#1667
@@ -591,10 +601,18 @@
         $("#ddlParentFinance").val(_budgetId);
         //Added by Rahul Shah on 13/10/2015 for PL#1667
         //$('#nl-formParentFinance div').remove('');
+        var a = $("#nl-formParentFinance .nl-field.nl-dd");
+        if (a.length > 0) {
+            for (var i = 0; i < a.length ; i++) {
+
+                $(a[i]).remove();
+            }
+        }
+
         new NLForm(document.getElementById('nl-formParentFinance'));
 
         $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            debugger;
+            //debugger;
             $('#errorMsg').css('display', 'none');
             $('#SuccessMsg').css('display', 'none');
             $("#divGridView").show();
