@@ -135,7 +135,7 @@ namespace Integration.Salesforce
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
             }
             /// End : #1385
-            
+
             _client = new SalesforceClient();
             var authFlow = new UsernamePasswordAuthenticationFlow(_consumerKey, _consumerSecret, _username, _password + _securityToken);
             int entityId = _integrationInstanceId;
@@ -229,7 +229,7 @@ namespace Integration.Salesforce
             int pushRecordBatchSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["IntegrationPushRecordBatchSize"]);
             try
             {
-                
+
                 if (EntityType.Tactic.Equals(_entityType))
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process start.");
@@ -307,7 +307,7 @@ namespace Integration.Salesforce
                             #region "Create CampaignIdList, ProgramIdList & TacticIdList"
                             //List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
                             //List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
-                           
+
                             List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
 
                             //List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
@@ -554,7 +554,7 @@ namespace Integration.Salesforce
                             else
                             {
                                 programIdList = programIdForTactic;
-                            } 
+                            }
                             #endregion
 
                             // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
@@ -612,7 +612,7 @@ namespace Integration.Salesforce
                                     string exMessage = Common.GetInnermostException(ex);
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Campaign data to Salesforce: " + exMessage);
                                 }
-                            } 
+                            }
                             #endregion
 
                             #region "Sync Program Data"
@@ -675,7 +675,7 @@ namespace Integration.Salesforce
                                     string exMessage = Common.GetInnermostException(ex);
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
                                 }
-                            } 
+                            }
                             #endregion
 
                             #region "Sync Tactic Data"
@@ -737,7 +737,7 @@ namespace Integration.Salesforce
                                     string exMessage = Common.GetInnermostException(ex);
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
                                 }
-                            } 
+                            }
                             #endregion
 
                             #endregion
@@ -876,7 +876,7 @@ namespace Integration.Salesforce
                     return; // no error.
                 }
                 #endregion
-                
+
                 Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
                 //// Get Eloqua integration type Id.
@@ -963,20 +963,25 @@ namespace Integration.Salesforce
 
                 //// Get SalesForce tactic list
                 List<Plan_Campaign_Program_Tactic> lstSalesForceTactic = lstAllTactics.Where(_tac => lstSalesForceplanIds.Contains(_tac.Plan_Campaign_Program.Plan_Campaign.PlanId) && _tac.StageId == INQStageId && _tac.IntegrationInstanceTacticId != null).ToList();
-                string SalesForceintegrationTacticIds = String.Join("','", (from tactic in lstSalesForceTactic select tactic.IntegrationInstanceTacticId));
+               // string SalesForceintegrationTacticIds = String.Join("','", (from tactic in lstSalesForceTactic select tactic.IntegrationInstanceTacticId));
 
                 //// Get Eloqua tactic list
                 List<Plan_Campaign_Program_Tactic> lstEloquaTactic = lstAllTactics.Where(tactic => lstEloquaPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.StageId == INQStageId && tactic.IntegrationInstanceTacticId != null).ToList();
-                string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
-                                                                                     join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
-                                                                                     select _ElqTactic.CRMId);
+                //string SalesForceintegrationTacticIdsByEloquaId = String.Join("','", from _Tactic in lstEloquaTactic
+                //                                                                     join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
+                //                                                                     select _ElqTactic.CRMId);
 
+                List<string> allids = (from tactic in lstSalesForceTactic select tactic.IntegrationInstanceTacticId).ToList();
+                List<string> alleloquaids = (from _Tactic in lstEloquaTactic
+                                             join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
+                                             select _ElqTactic.CRMId).ToList();
+                List<string> allidsinclude = allids.Concat(alleloquaids).ToList();
                 //// Merge SalesForce & Eloqua IntegrationTacticIds by comma(',').
-                string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
-                AllIntegrationTacticIds = AllIntegrationTacticIds.Trim(new char[] { ',' });
+              //  string AllIntegrationTacticIds = !string.IsNullOrEmpty(SalesForceintegrationTacticIdsByEloquaId) ? (!string.IsNullOrEmpty(SalesForceintegrationTacticIds) ? (SalesForceintegrationTacticIds + "','" + SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIdsByEloquaId) : SalesForceintegrationTacticIds;
+            //    AllIntegrationTacticIds = AllIntegrationTacticIds.Trim(new char[] { ',' });
                 //For Testing
                 //integrationTacticIds = "'701f00000003S9R','701f00000002cGG','701f00000002cGL'";
-                if (AllIntegrationTacticIds != string.Empty)
+                if (allidsinclude.Count() > 0)
                 {
                     try
                     {
@@ -1004,90 +1009,100 @@ namespace Integration.Salesforce
 
                             if (CampaignId != string.Empty && FirstRespondedDate != string.Empty && Status != string.Empty)
                             {
-                                int TotalPullResonsesCount = 0, ProcessedResponsesCount = 0; 
+                                int TotalPullResonsesCount = 0, ProcessedResponsesCount = 0;
                                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Getting CampaignList from CampaignMember Table within Salesforce start.");
 
                                 List<CampaignMember> CampaignMemberList = new List<CampaignMember>();
-                                var responsePull = _client.Query<object>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + AllIntegrationTacticIds + "') AND " + Status + "= '" + Common.Responded + "'");
-
-                                foreach (var resultin in responsePull)
+                                int pagesize = 400;
+                                int pagecount = 0;
+                                int totalrecords = lstSalesForceTactic.Count();
+                                int maxpage = (totalrecords / pagesize);
+                                while (pagecount <= maxpage)
                                 {
-                                    string TacticResult = resultin.ToString();
-                                    JObject jobj = JObject.Parse(TacticResult);
-                                    CampaignMember objCampaign = new CampaignMember();
-                                    int _PlanTacticId = 0;
-                                    try
+                                    string AllIntegrationTacticIds = String.Join("','", allidsinclude.Skip(pagecount * pagesize).Take(pagesize).Select(tactic => tactic).ToList());
+                                    AllIntegrationTacticIds = AllIntegrationTacticIds.Trim(new char[] { ',' });
+
+                                    var responsePull = _client.Query<object>("SELECT " + CampaignId + "," + FirstRespondedDate + " FROM CampaignMember WHERE " + CampaignId + " IN ('" + AllIntegrationTacticIds + "') AND " + Status + "= '" + Common.Responded + "'");
+
+                                    foreach (var resultin in responsePull)
                                     {
-                                        string campaignid = Convert.ToString(jobj[CampaignId]);
-                                        if (!AllIntegrationTacticIds.Contains(campaignid))
+                                        string TacticResult = resultin.ToString();
+                                        JObject jobj = JObject.Parse(TacticResult);
+                                        CampaignMember objCampaign = new CampaignMember();
+                                        int _PlanTacticId = 0;
+                                        try
                                         {
-                                            campaignid = campaignid.Substring(0, 15);
+                                            string campaignid = Convert.ToString(jobj[CampaignId]);
+                                            if (!AllIntegrationTacticIds.Contains(campaignid))
+                                            {
+                                                campaignid = campaignid.Substring(0, 15);
+                                            }
+                                            objCampaign.CampaignId = campaignid;
+                                            objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
+                                            CampaignMemberList.Add(objCampaign);
                                         }
-                                        objCampaign.CampaignId = campaignid;
-                                        objCampaign.FirstRespondedDate = Convert.ToDateTime(jobj[FirstRespondedDate]);
-                                        CampaignMemberList.Add(objCampaign);
+                                        catch (SalesforceException e)
+                                        {
+                                            string exMessage = Common.GetInnermostException(e);
+                                            ErrorFlag = true;
+                                            _ErrorMessage = exMessage;
+                                            string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
+
+                                            //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
+                                            var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
+                                            if (tactic != null)
+                                                _PlanTacticId = tactic.PlanTacticId;
+                                            else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
+                                                _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
+
+                                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                            instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                            instanceTactic.EntityId = _PlanTacticId;
+                                            instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                            instanceTactic.Status = StatusResult.Error.ToString();
+                                            instanceTactic.Operation = Operation.Pull_Responses.ToString();
+                                            instanceTactic.SyncTimeStamp = DateTime.Now;
+                                            instanceTactic.CreatedDate = DateTime.Now;
+                                            instanceTactic.ErrorDescription = exMessage;
+                                            instanceTactic.CreatedBy = _userId;
+                                            db.Entry(instanceTactic).State = EntityState.Added;
+                                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from Salesforce. Exception - " + exMessage);
+                                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Error occurred while getting Campaign from Salesforce. Exception - " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                            _isResultError = true;
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            string exMessage = Common.GetInnermostException(e);
+                                            ErrorFlag = true;
+                                            _ErrorMessage = exMessage;
+                                            string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
+
+                                            //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
+                                            var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
+                                            if (tactic != null)
+                                                _PlanTacticId = tactic.PlanTacticId;
+                                            else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
+                                                _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
+
+                                            IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
+                                            instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
+                                            instanceTactic.IntegrationInstanceId = _integrationInstanceId;
+                                            instanceTactic.EntityId = _PlanTacticId;
+                                            instanceTactic.EntityType = EntityType.Tactic.ToString();
+                                            instanceTactic.Status = StatusResult.Error.ToString();
+                                            instanceTactic.Operation = Operation.Pull_Responses.ToString();
+                                            instanceTactic.SyncTimeStamp = DateTime.Now;
+                                            instanceTactic.CreatedDate = DateTime.Now;
+                                            instanceTactic.ErrorDescription = exMessage;
+                                            instanceTactic.CreatedBy = _userId;
+                                            db.Entry(instanceTactic).State = EntityState.Added;
+                                            Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from Salesforce. Exception - " + exMessage);
+                                            _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Error occurred while getting Campaign from Salesforce. Exception - " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                            _isResultError = true;
+                                        }
                                     }
-                                    catch (SalesforceException e)
-                                    {
-                                        string exMessage = Common.GetInnermostException(e);
-                                        ErrorFlag = true;
-                                        _ErrorMessage = exMessage;
-                                        string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
-
-                                        //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
-                                        var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
-                                        if (tactic != null)
-                                            _PlanTacticId = tactic.PlanTacticId;
-                                        else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
-                                            _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
-
-                                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                        instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                        instanceTactic.EntityId = _PlanTacticId;
-                                        instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                        instanceTactic.Status = StatusResult.Error.ToString();
-                                        instanceTactic.Operation = Operation.Pull_Responses.ToString();
-                                        instanceTactic.SyncTimeStamp = DateTime.Now;
-                                        instanceTactic.CreatedDate = DateTime.Now;
-                                        instanceTactic.ErrorDescription = exMessage;
-                                        instanceTactic.CreatedBy = _userId;
-                                        db.Entry(instanceTactic).State = EntityState.Added;
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from Salesforce. Exception - " + exMessage);
-                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Error occurred while getting Campaign from Salesforce. Exception - " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
-                                        _isResultError = true;
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        string exMessage = Common.GetInnermostException(e);
-                                        ErrorFlag = true;
-                                        _ErrorMessage = exMessage;
-                                        string TacticId = Convert.ToString(jobj[CampaignId]); ////CRMId
-
-                                        //// check whether TacticId(CRMId) exist in field IntegrationInstanceTacticID field of SalesForceTactic list.
-                                        var tactic = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == TacticId);
-                                        if (tactic != null)
-                                            _PlanTacticId = tactic.PlanTacticId;
-                                        else                                        //// if Tactic not exist then retrieve PlanTacticId from EloquaTactic list.
-                                            _PlanTacticId = lstSalesForceIntegrationInstanceTacticIds.Where(_SalTac => _SalTac.CRMId != null && _SalTac.CRMId.Equals(TacticId)).Select(s => s.PlanTacticId).FirstOrDefault();
-
-                                        IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
-                                        instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
-                                        instanceTactic.IntegrationInstanceId = _integrationInstanceId;
-                                        instanceTactic.EntityId = _PlanTacticId;
-                                        instanceTactic.EntityType = EntityType.Tactic.ToString();
-                                        instanceTactic.Status = StatusResult.Error.ToString();
-                                        instanceTactic.Operation = Operation.Pull_Responses.ToString();
-                                        instanceTactic.SyncTimeStamp = DateTime.Now;
-                                        instanceTactic.CreatedDate = DateTime.Now;
-                                        instanceTactic.ErrorDescription = exMessage;
-                                        instanceTactic.CreatedBy = _userId;
-                                        db.Entry(instanceTactic).State = EntityState.Added;
-                                        Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while getting Campaign from Salesforce. Exception - " + exMessage);
-                                        _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullResponses.ToString(), "Pull Responses: Error occurred while getting Campaign from Salesforce. Exception - " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
-                                        _isResultError = true;
-                                    }
-
+                                    pagecount++;
                                 }
                                 List<Plan_Campaign_Program_Tactic> lstCRM_EloquaTactics = (from _Tactic in lstEloquaTactic
                                                                                            join _ElqTactic in lstSalesForceIntegrationInstanceTacticIds on _Tactic.IntegrationInstanceTacticId equals _ElqTactic.EloquaId
@@ -1459,7 +1474,7 @@ namespace Integration.Salesforce
                     return; // no error.
                 }
                 #endregion
-                
+
                 Guid ClientId = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == _integrationInstanceId).ClientId;
 
                 //// Get Eloqua integration type Id.
@@ -1600,7 +1615,7 @@ namespace Integration.Salesforce
                                 isDoneFirstPullCW = db.IntegrationInstances.Where(instance => instance.IntegrationInstanceId == _integrationInstanceId).Select(instance => instance.IsFirstPullCW).FirstOrDefault();
                                 string opportunityGetQueryWhere = string.Empty;
                                 string opportunityGetQuery = string.Empty;
-                                int TotalPullCWCount = 0, ProcessedCWCount = 0; 
+                                int TotalPullCWCount = 0, ProcessedCWCount = 0;
                                 string currentDate = DateTime.UtcNow.ToString(Common.DateFormatForSalesforce);
                                 string cwsection = Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString();
                                 string statusSuccess = StatusResult.Success.ToString();
@@ -1977,7 +1992,7 @@ namespace Integration.Salesforce
                             // Update IntegrationInstanceSection log with Error status, Dharmraj PL#684
                             Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Error, Common.msgMappingNotFoundForSalesforcePullCW);
                             _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Pull Closed Deals: " + Common.msgMappingNotFoundForSalesforcePullCW, Enums.SyncStatus.Error, DateTime.Now));
-                            
+
                             // Update IntegrationInstanceSection log with Success status, Dharmraj PL#684
                             //Common.UpdateIntegrationInstanceSection(IntegrationInstanceSectionId, StatusResult.Success, string.Empty);
                         }
@@ -2088,7 +2103,7 @@ namespace Integration.Salesforce
 
             try
             {
-                
+
                 // Start - Modified by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                 List<IntegrationInstanceDataTypeMapping> dataTypeMapping = db.IntegrationInstanceDataTypeMappings.Where(mapping => mapping.IntegrationInstanceId.Equals(_integrationInstanceId)).ToList();
                 if (!dataTypeMapping.Any()) // check if there is no field mapping configure then log error to IntegrationInstanceLogDetails table.
@@ -2195,7 +2210,7 @@ namespace Integration.Salesforce
                     string msg = "Data type mismatch for " +
                                 string.Join(",", lstMappingMisMatch.Where(m => m.Section == Section).Select(m => m.SourceField).ToList()) +
                                 " in salesforce for " + Section + ".";
-                    Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section,true);
+                    Enums.EntityType entityTypeSection = (Enums.EntityType)Enum.Parse(typeof(Enums.EntityType), Section, true);
                     _lstSyncError.Add(Common.PrepareSyncErrorList(0, entityTypeSection, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), msg, Enums.SyncStatus.Info, DateTime.Now));
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Info, msg);
                 }
@@ -2203,7 +2218,7 @@ namespace Integration.Salesforce
                 //{
                 //    return true;
                 //}
-                
+
 
                 try
                 {
@@ -2446,7 +2461,7 @@ namespace Integration.Salesforce
                     catch (SalesforceException e)
                     {
                         _isResultError = true;
-                        string exMessage = "System error occurred while creating campaign \"" + planCampaign.Title + "\": " +  Common.GetInnermostException(e);
+                        string exMessage = "System error occurred while creating campaign \"" + planCampaign.Title + "\": " + Common.GetInnermostException(e);
                         sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogCampaign.Status = StatusResult.Error.ToString();
                         instanceLogCampaign.ErrorDescription = exMessage;
@@ -2498,7 +2513,7 @@ namespace Integration.Salesforce
                             objProgramComment.CreatedBy = this._userId;
                         }
                         db.Entry(objProgramComment).State = EntityState.Added;
-                        db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment); 
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment);
                         #endregion
 
                         sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -2519,7 +2534,7 @@ namespace Integration.Salesforce
                         string exMessage = "System error occurred while creating program \"" + planProgram.Title + "\". ";
                         sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogProgram.Status = StatusResult.Error.ToString();
-                        instanceLogProgram.ErrorDescription = exMessage ;
+                        instanceLogProgram.ErrorDescription = exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Program, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                     instanceLogProgram.CreatedBy = this._userId;
@@ -2660,7 +2675,7 @@ namespace Integration.Salesforce
                                 objCampaignComment.CreatedBy = this._userId;
                             }
                             db.Entry(objCampaignComment).State = EntityState.Added;
-                            db.Plan_Campaign_Program_Tactic_Comment.Add(objCampaignComment); 
+                            db.Plan_Campaign_Program_Tactic_Comment.Add(objCampaignComment);
                             #endregion
 
                             sb.Append("Campaign: " + planCampaign.PlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -2726,7 +2741,7 @@ namespace Integration.Salesforce
                                 objProgramComment.CreatedBy = this._userId;
                             }
                             db.Entry(objProgramComment).State = EntityState.Added;
-                            db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment); 
+                            db.Plan_Campaign_Program_Tactic_Comment.Add(objProgramComment);
                             #endregion
 
                             sb.Append("Program: " + planProgram.PlanProgramId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -2791,7 +2806,7 @@ namespace Integration.Salesforce
                             objTacticComment.CreatedBy = this._userId;
                         }
                         db.Entry(objTacticComment).State = EntityState.Added;
-                        db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment); 
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
                         #endregion
                         // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -2805,7 +2820,7 @@ namespace Integration.Salesforce
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogTactic.Status = StatusResult.Error.ToString();
                         instanceLogTactic.ErrorDescription = exMessage;
-                        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage , Enums.SyncStatus.Error, DateTime.Now));
+                        _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                     catch (Exception)
                     {
@@ -2857,7 +2872,7 @@ namespace Integration.Salesforce
                             objTacticComment.CreatedBy = this._userId;
                         }
                         db.Entry(objTacticComment).State = EntityState.Added;
-                        db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment); 
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
                         #endregion
 
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -2890,11 +2905,11 @@ namespace Integration.Salesforce
                         instanceLogTactic.ErrorDescription = exMessage;
                     }
                 }
-                catch (Exception )
+                catch (Exception)
                 {
                     _isResultError = true;
                     string exMessage = "System error occurred while updating tactic \"" + planTactic.Title + "\". ";//Common.GetInnermostException(e);
-                    _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage  , Enums.SyncStatus.Error, DateTime.Now));
+                    _lstSyncError.Add(Common.PrepareSyncErrorList(planTactic.PlanTacticId, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     instanceLogTactic.Status = StatusResult.Error.ToString();
                     instanceLogTactic.ErrorDescription = exMessage;
                 }
@@ -3043,7 +3058,7 @@ namespace Integration.Salesforce
                             _isResultError = true;
                             sb.Append("ImprovementCampaign: " + planIMPCampaign.ImprovementPlanCampaignId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                             instanceLogCampaign.Status = StatusResult.Error.ToString();
-                            instanceLogCampaign.ErrorDescription = "System error occurred while creating Improvement Campaign \"" + planIMPCampaign.Title + "\": " +Common.GetInnermostException(e);
+                            instanceLogCampaign.ErrorDescription = "System error occurred while creating Improvement Campaign \"" + planIMPCampaign.Title + "\": " + Common.GetInnermostException(e);
                             // To get Total Tactic count and insert unique record into _lstSyncError list, below list we added EntityId as planIMPTactic.ImprovementPlanTacticId instead of planIMPCampaign.ImprovementPlanCampaignId
                             _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementCampaign, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), "System error occurred while syncing improvement campaign \"" + planIMPCampaign.Title + "\".", Enums.SyncStatus.Error, DateTime.Now));
                         }
@@ -3246,7 +3261,7 @@ namespace Integration.Salesforce
                         string exMessage = "System error occurred while updating Improvement tactic \"" + planIMPTactic.Title + "\": " + Common.GetInnermostException(e);
                         sb.Append("ImprovementTactic: " + planIMPTactic.ImprovementPlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Error.ToString() + "); ");
                         instanceLogTactic.Status = StatusResult.Error.ToString();
-                        instanceLogTactic.ErrorDescription = exMessage ;
+                        instanceLogTactic.ErrorDescription = exMessage;
                         _lstSyncError.Add(Common.PrepareSyncErrorList(planIMPTactic.ImprovementPlanTacticId, Enums.EntityType.ImprovementTactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), exMessage, Enums.SyncStatus.Error, DateTime.Now));
                     }
                 }
@@ -3391,7 +3406,7 @@ namespace Integration.Salesforce
                             string exMessage = Common.GetInnermostException(ex);
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Campaign data to Salesforce: " + exMessage);
                         }
-                    } 
+                    }
                     #endregion
 
                     #region "Sync Program Data"
@@ -3454,7 +3469,7 @@ namespace Integration.Salesforce
                             string exMessage = Common.GetInnermostException(ex);
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Program data to Salesforce: " + exMessage);
                         }
-                    } 
+                    }
                     #endregion
 
                     #region "Sync Tactic Data"
@@ -3516,7 +3531,7 @@ namespace Integration.Salesforce
                             string exMessage = Common.GetInnermostException(ex);
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing Tactic data to Salesforce: " + exMessage);
                         }
-                    } 
+                    }
                     #endregion
 
                     #region "Sync Improvement Tactic Data"
@@ -3565,7 +3580,7 @@ namespace Integration.Salesforce
                             string exMessage = Common.GetInnermostException(ex);
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Error occurred while pushing ImprovementTactic data to Salesforce: " + exMessage);
                         }
-                    } 
+                    }
                     #endregion
 
                     #region "Old-Code"
@@ -3652,7 +3667,7 @@ namespace Integration.Salesforce
                 string titleMappedValue = _mappingTactic["Title"].ToString();
                 if (tactic.ContainsKey(titleMappedValue))
                 {
-                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic,SequencialOrderedTableList,_mappingCustomFields)) : (planTactic.TacticCustomName);
+                    tactic[titleMappedValue] = (planTactic.TacticCustomName == null) ? (Common.GenerateCustomName(planTactic, SequencialOrderedTableList, _mappingCustomFields)) : (planTactic.TacticCustomName);
                     planTactic.TacticCustomName = tactic[titleMappedValue].ToString();
                     int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == titleMappedValue).FirstOrDefault().Length;
                     string customvalue = planTactic.TacticCustomName;
@@ -3927,7 +3942,7 @@ namespace Integration.Salesforce
                     else
                     {
                         int customid;
-                        if (Int32.TryParse(mapping.Key,out customid))
+                        if (Int32.TryParse(mapping.Key, out customid))
                         {
                             int valuelength = 0;
                             value = MapCustomField<T>(obj, sourceProps, mapping.Key);
@@ -3998,11 +4013,11 @@ namespace Integration.Salesforce
                     {
                         EntityTypeId = Convert.ToString(propInfoCustom.GetValue(((T)obj), null));
                     }
-                     var mapobj = _mappingCustomFields.Where(map => map.EntityId == Convert.ToInt32(EntityTypeId) && map.CustomFieldId == Convert.ToInt32(Key)).FirstOrDefault();
-                     if (mapobj != null)
-                     {
-                         return mapobj.Value;
-                     }
+                    var mapobj = _mappingCustomFields.Where(map => map.EntityId == Convert.ToInt32(EntityTypeId) && map.CustomFieldId == Convert.ToInt32(Key)).FirstOrDefault();
+                    if (mapobj != null)
+                    {
+                        return mapobj.Value;
+                    }
                     //if (_mappingCustomFields.ContainsKey(mappingKey))
                     //{
                     //    return new string[] { mapping.Value, _mappingCustomFields[mappingKey] };
@@ -4057,53 +4072,53 @@ namespace Integration.Salesforce
                 {
                     string idList = string.Join(",", EntityIdList);
 
-                String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
-                    "cast([Extent1].[CustomFieldId] as nvarchar) as CustomFieldId," +
-                    "cast(EntityId as nvarchar) as EntityId," +
-                    "case  " +
-                       "    when A.keyi is not null then Extent2.AbbreviationForMulti " +
-                       "    when Extent3.[Name]='TextBox' then Extent1.Value " +
-                       "    when Extent3.[Name]='DropDownList' then Extent4.Value " +
-                    "End as ValueV , " +
+                    String Query = "select distinct '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyv, " +
+                        "cast([Extent1].[CustomFieldId] as nvarchar) as CustomFieldId," +
+                        "cast(EntityId as nvarchar) as EntityId," +
                         "case  " +
-                           "    when A.keyi is not null then Extent2.AbbreviationForMulti" +
-                           "   when Extent3.[Name]='TextBox' then Extent1.Value " +
-                           "    when Extent3.[Name]='DropDownList' then CASE WHEN Extent4.Abbreviation IS nOT NULL THEN Extent4.Abbreviation ELSE Extent4.Value END" +
-                            "   END as CustomName" +
+                           "    when A.keyi is not null then Extent2.AbbreviationForMulti " +
+                           "    when Extent3.[Name]='TextBox' then Extent1.Value " +
+                           "    when Extent3.[Name]='DropDownList' then Extent4.Value " +
+                        "End as ValueV , " +
+                            "case  " +
+                               "    when A.keyi is not null then Extent2.AbbreviationForMulti" +
+                               "   when Extent3.[Name]='TextBox' then Extent1.Value " +
+                               "    when Extent3.[Name]='DropDownList' then CASE WHEN Extent4.Abbreviation IS nOT NULL THEN Extent4.Abbreviation ELSE Extent4.Value END" +
+                                "   END as CustomName" +
 
-                    " from CustomField_Entity Extent1 " +
-                        "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] AND [Extent2].[IsDeleted] = 0 " +
-                    "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
-                    "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and cast(Extent1.Value as nvarchar)=cast(Extent4.CustomFieldOptionID as nvarchar)" +
-                    "Left Outer join ( " +
-                    "select '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyi " +
+                        " from CustomField_Entity Extent1 " +
+                            "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] AND [Extent2].[IsDeleted] = 0 " +
+                        "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
+                        "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and cast(Extent1.Value as nvarchar)=cast(Extent4.CustomFieldOptionID as nvarchar)" +
+                        "Left Outer join ( " +
+                        "select '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) as keyi " +
 
-                    " from CustomField_Entity Extent1 " +
-                    "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] " +
-                    "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
-                    "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and Extent1.Value=Extent4.CustomFieldOptionID " +
-                    "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
-                    "group by '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
-                    "having count(*) > 1 " +
-                    ") A on A.keyi='" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
-                    "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
-                    "order by keyv";
+                        " from CustomField_Entity Extent1 " +
+                        "INNER JOIN [dbo].[CustomField] AS [Extent2] ON [Extent1].[CustomFieldId] = [Extent2].[CustomFieldId] " +
+                        "INNER Join CustomFieldType Extent3 on Extent2.CustomFieldTypeId=Extent3.CustomFieldTypeId " +
+                        "Left Outer join CustomFieldOption Extent4 on Extent4.CustomFieldId=Extent2.CustomFieldId and Extent1.Value=Extent4.CustomFieldOptionID " +
+                        "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
+                        "group by '" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
+                        "having count(*) > 1 " +
+                        ") A on A.keyi='" + EntityType.Substring(0, 1) + "-' + cast(EntityId as nvarchar) + '-' + cast(Extent1.CustomFieldID as nvarchar) " +
+                        "WHERE ([Extent1].[EntityId] IN (" + idList + ")) " +
+                        "order by keyv";
 
-                MRPEntities mp = new MRPEntities();
-                DbConnection conn = mp.Database.Connection;
-                conn.Open();
-                DbCommand comm = conn.CreateCommand();
-                comm.CommandText = Query;
-                DbDataReader ddr = comm.ExecuteReader();
+                    MRPEntities mp = new MRPEntities();
+                    DbConnection conn = mp.Database.Connection;
+                    conn.Open();
+                    DbCommand comm = conn.CreateCommand();
+                    comm.CommandText = Query;
+                    DbDataReader ddr = comm.ExecuteReader();
 
 
-                while (ddr.Read())
-                {
-                    CustomFieldsList.Add(new CustomFiledMapping { CustomFieldId = !ddr.IsDBNull(1) ? Convert.ToInt32(ddr.GetString(1)) : 0, EntityId = !ddr.IsDBNull(2) ? Convert.ToInt32(ddr.GetString(2)) : 0, Value = !ddr.IsDBNull(3) ? Convert.ToString(ddr.GetString(3)) : string.Empty, CustomNameValue = !ddr.IsDBNull(4) ? Convert.ToString(ddr.GetString(4)) : string.Empty });    
-                    
-                }
-                conn.Close();
-                mp.Dispose();
+                    while (ddr.Read())
+                    {
+                        CustomFieldsList.Add(new CustomFiledMapping { CustomFieldId = !ddr.IsDBNull(1) ? Convert.ToInt32(ddr.GetString(1)) : 0, EntityId = !ddr.IsDBNull(2) ? Convert.ToInt32(ddr.GetString(2)) : 0, Value = !ddr.IsDBNull(3) ? Convert.ToString(ddr.GetString(3)) : string.Empty, CustomNameValue = !ddr.IsDBNull(4) ? Convert.ToString(ddr.GetString(4)) : string.Empty });
+
+                    }
+                    conn.Close();
+                    mp.Dispose();
                 }
                 Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Get Mapping detail for " + EntityType + " custom field(s), Found " + CustomFieldsList.Count().ToString() + " custome field mapping");
             }
