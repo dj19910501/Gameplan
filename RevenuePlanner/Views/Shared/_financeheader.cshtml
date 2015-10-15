@@ -88,6 +88,11 @@
    
   
     $(document).ready(function () {
+        HeaderSectionName();
+    });
+
+    function HeaderSectionName()
+    {
         if (pageName == "MainGrid") {
             $("#divFinanceBack").css("display", "none");
             //Added by Rahul shah on 13/10/2015 for PL#1667
@@ -103,7 +108,7 @@
                 $("#lblfinanceTitle").text("Finance (Forecast)");
             }
         }
-    });
+    }
 
     function formatBudgetValues(idName) {
         var budgetValue = $(idName).html();

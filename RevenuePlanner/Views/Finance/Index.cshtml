@@ -383,6 +383,9 @@
                             RefreshBudgetDropdown(false);
                             var newbudgetID = $("#ddlParentFinanceMain").val();
                             backBudgetid = newbudgetID;
+                            ShowHideControls("MainGrid");
+                            pageName = "MainGrid";
+                            HeaderSectionName();
                             RefreshMainGridData(newbudgetID);
                             GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame);
                             //BindParentBudgetDrp(parseInt(backBudgetid));
