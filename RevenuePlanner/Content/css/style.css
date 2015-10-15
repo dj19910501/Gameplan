@@ -5090,6 +5090,17 @@ min-width:350px;
     margin-right: 22%;
     padding-right: 3px;
 }
+
+ .grid_Delete:hover {
+     background-color: #c1272d;
+    background-image: url("../images/Remove-icon-white.png");
+    background-position: 5px 5px !important;
+    background-size: 12px auto;
+    border-radius: 36px;
+    height: 21px;
+    width: 19px;
+}
+
  /*by bheru 13-10-2015 */
 @media (max-width: 1920px) {
     /*by bheru 21-07-2015*/
@@ -5146,7 +5157,7 @@ min-width:350px;
     margin:0 0 0 16%; 
 }
  .grid_Delete {
-    margin-right: 19%;
+    margin-right: 10%;
 }
  /*by bheru 13-10-2015 */
 }
