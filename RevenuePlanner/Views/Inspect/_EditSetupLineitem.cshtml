@@ -222,6 +222,7 @@
                     TreeViewDdl.adjustColumnSize(0);;
                     for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
                     {
+                     
                         $('#'+Weights.txtId[i]).val(Weights.values[i]);
                         var optionId = ListOfItmeCheck.Ids[i];
                         if (totalWeightage != 100) {
@@ -272,6 +273,13 @@
             $("#"+Weights.ChkId[i]).attr('checked','checked');
         }
         TreeViewDdl.collapseAll();
+
+        for(var i=0;i<ListOfItmeCheck.Ids.length;i++)
+        {
+            var optionId = ListOfItmeCheck.Ids[i];
+            var ParentID =  TreeViewDdl.getParentId(optionId);
+            TreeViewDdl.openItem(ParentID)
+        }
 
     }
 
