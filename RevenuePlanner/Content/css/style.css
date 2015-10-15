@@ -5089,6 +5089,7 @@ min-width:350px;
     position: relative;
     margin-right: 22%;
     padding-right: 3px;
+    cursor:pointer;
 }
 
  .grid_Delete:hover {
