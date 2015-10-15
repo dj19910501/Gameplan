@@ -52,7 +52,7 @@
                     @Html.DropDownList("ddlParentFinanceMain", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
                     <div class="nl-overlay"></div>
                 </div>
-                </div>
+            </div>
             <div style="float:left; margin-right:15px;margin-left:15px;" id="divAddnew">
                 <input type="button" id="btnAddNewBudget" name="btnAddNewBudget" value="Add New Budget" class="btn btn-blue text-shadow-blue source-sans-proregular" style="height: 30px !important;" />
             </div>
@@ -61,15 +61,15 @@
                     @Html.DropDownList("ddlParentFinance", new SelectList((System.Collections.IEnumerable)ViewBag.parentbudgetlist, "Value", "Text"))
                     <div class="nl-overlay"></div>
                 </div>
-                </div>
+            </div>
             <div style="float:left;margin-left:15px;margin-right:15px;" id="drpChild">
                 <div id="nl-formChildFinance" class="nl-form-plan-title without-margin plantitle financetitle">
                     @Html.DropDownList("ddlChildFinance", new SelectList((System.Collections.IEnumerable)ViewBag.childbudgetlist, "Value", "Text"))
                     <div class="nl-overlay"></div>
                 </div>
-                </div>
+            </div>
             @*<div id="divSetttings" style="width:40px;float:left;position: relative;margin-right: 10px;">*@
-                @*<button class="setting-icon btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:30%;height: 30px !important;" id="btnSettings"></button>*@
+            @*<button class="setting-icon btn btn-blue text-shadow-blue source-sans-proregular" type="button" style="min-width:30%;height: 30px !important;" id="btnSettings"></button>*@
             @*<span class="btn-Settings btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px; height: 30px !important;" id="AddSettings"></span>
                 <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="btnSettings">
                     <ul style="margin: 0;">
@@ -129,7 +129,7 @@
                         <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_DeleteItem">Proceed</button>
                         <button id="cancel-button_DeleteItem" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
                     </form>
-</div>
+                </div>
             </div>
         </div>
     </div>
@@ -216,7 +216,7 @@
         //$("#ddlParentFinance").find(testitem).attr("selected", "selected");
         //var budgetID = $("#ddlParentFinance").val();
         RefreshMainGridData(_budgetIdMain);
-        
+
         GetFinanceHeaderValue(_budgetIdMain, true, _mainTimeFrame);
         // GetFinanceHeaderValue(_budgetId);
         //BindChildBudgetDrp(_budgetId);
@@ -249,31 +249,31 @@
 
 
     function DeleteSelected() {
-
+        
         //  if (RowIDs.IDs.length > 0) {
         //if (confirm('Are you sure you want to delete this Budget item ?')) {
-                for (var i = 0; i < RowIDs.IDs.length; i++) {
-                    myTreeGrid.deleteRow(RowIDs.IDs[i]);
-                }
+        for (var i = 0; i < RowIDs.IDs.length; i++) {
+            myTreeGrid.deleteRow(RowIDs.IDs[i]);
+        }
 
-                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
-                var mainTimeFrame = $('#ddlMainGridTimeFrame option:selected').val();
-                if (mainTimeFrame.toLowerCase() == "yearly") {
-                    AllocatedBy = "@Enums.PlanAllocatedBy.quarters.ToString()";
-                } else {
-                    AllocatedBy = mainTimeFrame;
-                }
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        var mainTimeFrame = $('#ddlMainGridTimeFrame option:selected').val();
+        if (mainTimeFrame.toLowerCase() == "yearly") {
+            AllocatedBy = "@Enums.PlanAllocatedBy.quarters.ToString()";
+        } else {
+            AllocatedBy = mainTimeFrame;
+        }
 
-            var selectedValues = [];
-            if (RowIDs.IDs.length != 0) {
-                for (var i = 0; i < RowIDs.IDs.length; i++) {
-                    //alert(budgetIDMain + ":" + RowIDs.IDs[i]);
-                    selectedValues.push({
-                        Id: RowIDs.IDs[i],
-                    });
-                }
+        var selectedValues = [];
+        if (RowIDs.IDs.length != 0) {
+            for (var i = 0; i < RowIDs.IDs.length; i++) {
+                //alert(budgetIDMain + ":" + RowIDs.IDs[i]);
+                selectedValues.push({
+                    Id: RowIDs.IDs[i],
+                });
             }
-            selectedValues = JSON.stringify(selectedValues);
+        }
+        selectedValues = JSON.stringify(selectedValues);
 
         if (pageName == "EditBudget") {
             var budgetID = 0;
@@ -318,10 +318,10 @@
                         ChildOptions.text.push($(this).text());
                         ChildOptions.values.push($(this).val())
                     });
-
+                    
                     var Childindex = ChildOptions.values.indexOf(ActId);
                     if (Childindex >= 0) {
-                        
+
                         ChildOptions.values.splice(Childindex, 1);
                         ChildOptions.text.splice(Childindex, 1);
                         BindChildBudgetDrp(parseInt(budgetParentID));
@@ -331,21 +331,21 @@
                             GlobalBudgetId = budgetParentID;
                         }
                     }
-
+                    
                     var Parentindex = ParentOptions.values.indexOf(ActId);
                     if (Parentindex >= 0) {
-                        
+
                         ParentOptions.values.splice(Parentindex, 1);
                         ParentOptions.text.splice(Parentindex, 1);
                         $("#ddlParentFinance").html("");
                         if (ParentOptions.values.length > 0) {
-                            
+
                             for (var i = 0; i < ParentOptions.values.length ; i++) {
                                 var opt = new Option(ParentOptions.text[i], ParentOptions.values[i]);
                                 $('#ddlParentFinance').append(opt);
                             }
 
-                            
+
                             var nlDivs = $('#nl-formParentFinance div');
                             if (nlDivs.length > 0) {
                                 var overlay = $('#nl-formParentFinance .nl-overlay');
@@ -356,47 +356,47 @@
                             }
                             nlformParentFinance = new NLForm(document.getElementById('nl-formParentFinance'));
 
-                        $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                            $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
 
-                            $('#errorMsg').css('display', 'none');
-                            $('#SuccessMsg').css('display', 'none');
-                            $("#divGridView").show();
-                            $("#dvNoData").hide();
-                            var budgetID = $(this).attr('value');
-                            if (pageName == "EditBudget") {
-                                GetFinanceHeaderValue(budgetID);
-                                EditBudget(budgetID, false);
-                            }
+                                $('#errorMsg').css('display', 'none');
+                                $('#SuccessMsg').css('display', 'none');
+                                $("#divGridView").show();
+                                $("#dvNoData").hide();
+                                var budgetID = $(this).attr('value');
+                                if (pageName == "EditBudget") {
+                                    GetFinanceHeaderValue(budgetID);
+                                    EditBudget(budgetID, false);
+                                }
 
-                        });
+                            });
 
-                        var a = $("#nl-formParentFinance .nl-field.nl-dd");
+                            var a = $("#nl-formParentFinance .nl-field.nl-dd");
                             for (var i = 0; i < a.length - 1 ; i++) {
 
                                 $(a[i]).remove();
                             }
                         }
-                        
-                        //$("select[id='ddlParentFinance'] option:selected").index();
-                        GlobalBudgetId = $('#ddlParentFinance').val();
-                        if (GlobalBudgetId == 0 || GlobalBudgetId == null) {
-                            RefreshBudgetDropdown(false);
-                            var newbudgetID = $("#ddlParentFinanceMain").val();
-                            backBudgetid = newbudgetID;
-                            ShowHideControls("MainGrid");
-                            pageName = "MainGrid";
-                            HeaderSectionName();
-                            RefreshMainGridData(newbudgetID);
-                            GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame);
-                            //BindParentBudgetDrp(parseInt(backBudgetid));
-                        }
-                        else {
-                            
-                        BindChildBudgetDrp(parseInt(GlobalBudgetId));
-                    LoadBudgetGrid(AllocatedBy);
-                    GetFinanceHeaderValue(0, false);
-                        }
                     }
+                    //$("select[id='ddlParentFinance'] option:selected").index();
+                    GlobalBudgetId = $('#ddlParentFinance').val();
+                    if (GlobalBudgetId == 0 || GlobalBudgetId == null) {
+                        RefreshBudgetDropdown(false);
+                        var newbudgetID = $("#ddlParentFinanceMain").val();
+                        backBudgetid = newbudgetID;
+                        ShowHideControls("MainGrid");
+                        pageName = "MainGrid";
+                        HeaderSectionName();
+                        RefreshMainGridData(newbudgetID);
+                        GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame);
+                        //BindParentBudgetDrp(parseInt(backBudgetid));
+                    }
+                    else {
+
+                        BindChildBudgetDrp(parseInt(GlobalBudgetId));
+                        LoadBudgetGrid(AllocatedBy);
+                        GetFinanceHeaderValue(0, false);
+                    }
+
 
 
                 }
@@ -405,16 +405,16 @@
         else {
             var curntBudgetId = $("#ddlParentFinanceMain").val();
             var url = '@Url.Content("~/Finance/DeleteMainGrid/")';
-                    $('#divGridView').load(url + '?SelectedRowIDs=' + selectedValues + '&mainTimeFrame=' + mainTimeFrame + '&curntBudgetId=' + curntBudgetId, function () { RefreshBudgetDropdown(false); var newbudgetID = $("#ddlParentFinanceMain").val(); GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame); });
- 
-                }
+            $('#divGridView').load(url + '?SelectedRowIDs=' + selectedValues + '&mainTimeFrame=' + mainTimeFrame + '&curntBudgetId=' + curntBudgetId, function () { RefreshBudgetDropdown(false); var newbudgetID = $("#ddlParentFinanceMain").val(); GetFinanceHeaderValue(newbudgetID, true, mainTimeFrame); });
 
-                ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
+        }
 
-            }
+        ShowMessage(false, '@Common.objCached.PlanEntityDeleted'.replace('{0}', "Budget Item"), 1200);
+
+    }
 
     function RefreshMainGridData(BudgetId) {
-        
+
         $("#divGridView").show();
         $("#dvNoData").hide();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
@@ -526,8 +526,8 @@
 
     }
     function BindChildBudgetDrp(_budgetId) {
+
         
-        var ChildID = $("#ddlChildFinance").val();
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Finance/GetChildBudget/")',
@@ -542,6 +542,7 @@
                     var opt = new Option(data[i].Text, data[i].Value);
                     $('#ddlChildFinance').append(opt);
                 }
+                var ChildID = $("#ddlChildFinance").val();
                 if (ChildID > 0) {
                     $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
                 }
@@ -560,7 +561,7 @@
 
         nlformChildFinance = new NLForm(document.getElementById('nl-formChildFinance'));
         $('#nl-formChildFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            
+
             $('#errorMsg').css('display', 'none');
             $('#SuccessMsg').css('display', 'none');
             $("#divGridView").show();
@@ -583,9 +584,9 @@
 
         });
         var a = $("#nl-formChildFinance .nl-field.nl-dd");
-        
+
         for (var i = 0; i < a.length - 1 ; i++) {
-            
+
             $(a[i]).remove();
         }
         //Commented by Rahul shah on 13/10/2015 for PL#1667
@@ -868,7 +869,7 @@
     }
 
     function RefreshBudgetDropdown(IsAddNew) {
-        
+
         var _budgetId = $("#hdn_BudgetId").val();
         var $dropdown = $("#ddlParentFinanceMain");
         $dropdown.empty();
@@ -904,7 +905,7 @@
         $.each($("#ddlParentFinanceMain").find("option"), function () {
             ParentMainOptions.values.push($(this).val())
         });
-        
+
         // Add By Nishant
         // Desc:: user go with same level in edit budget/foreacst and remove same level after click on back button issue
         var Parentindex = ParentMainOptions.values.indexOf(backBudgetid);
@@ -924,7 +925,7 @@
             //$('#btnMultiselect_ddlParentFinanceMain span:first-child').html(spanSelectedItem);
         }
         else {
-            
+
             $dropdown.val(_budgetId);
             $dropdown.find("input[type='search']").val(_budgetId);
             $('select[name^="ddlParentFinanceMain"] option[value="' + _budgetId + '"]').attr("selected", "selected");
@@ -988,7 +989,7 @@
     $("#ddlRevenueTimeFrame").change(function () {
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
-        // 
+        //
         // myApp.showPleaseWait();
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
         //if (AllocatedBy == 'quarters') {
@@ -1040,7 +1041,7 @@
             }
         }
         //e.stopPropagation();
-        
+
         $('.new-finance').click(function () {
             var itemtype = $(this).attr('itemType');
             if (itemtype == 'childitem') {

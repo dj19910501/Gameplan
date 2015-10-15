@@ -4,9 +4,37 @@
 <script type="text/javascript">
     
     var newTreeGrid;
+    var ValidParentId = 0;
+    var ValidColumnId = 0;
+    var ValidRowId = 0;
     
     var gridWidth = $("#divGridView").width();
     $(document).ready(function () {
+
+        // Add By Nishant Sheth
+        // Desc :: handle for same name or empty string
+        dhtmlxValidation.isNameValid = function (data) {
+
+            var childitems = myTreeGrid.getSubItems(ValidParentId).split(',');
+            var isrepeat = true;
+            if (data.trim() == '' || data.trim() == null) {
+                isrepeat = false;
+                IsValid = false;
+            } else {
+                $.each(childitems, function () {
+
+                    if (this.toString() != ValidRowId.toString()) {
+                        var ColCurrentValue = myTreeGrid.cells(this, ValidColumnId).getValue();
+                        if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
+                            isrepeat = false;
+                            IsValid = false;
+                        }
+                    }
+                });
+            }
+            return isrepeat;
+        };
+
         newTreeGrid = new dhtmlXGridObject('newGridbox');
         newTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         newTreeGrid.setImageSize(1, 1);
@@ -16,11 +44,20 @@
         newTreeGrid.setColAlign("left,center,center,center,center,center,center");
         newTreeGrid.setColTypes("tree,ron,ron,ron,ron,ro,ro");
         //newTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
-        newTreeGrid.setColValidators("NotEmpty");
+        myTreeGrid.enableValidation(true);
+        newTreeGrid.setColValidators("NameValid,,,,,,");
         newTreeGrid.setColumnIds("title,budget,forecast,planned,actual,action,lineitems");
         //newTreeGrid.setColSorting("str,na,str,str,na,str");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);
         
+        myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
+
+            IsValid = false;
+            return true;
+        });
+        myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
+            IsValid = true;
+        });
         newTreeGrid.init();
         
         var newBudget = "newBudget";
@@ -31,6 +68,10 @@
 
     function OnEditCell(stage, id, index,newVal,oldVal) {
         
+        ValidParentId = myTreeGrid.getParentId(id);
+        ValidColumnId = index;
+        ValidRowId = id;
+
         //var _val = $("#hdn_row_parentId").val();
         //var splitRowParentIds = '';
         //var rowId = '', parentId = '',parentRowID='';
@@ -39,6 +80,7 @@
             if (stage.toString() == '0' || stage.toString() == '1') {
                 return true;
             }
+            if (IsValid) {
             if (stage.toString() == '2') {
                 
                 //var _budgetIdVal = $('#ddlParentFinance').val();
@@ -53,6 +95,7 @@
                     //_newParentId = 0;
                     //_parentRowId = "";
                     return true;
+                    }
                 }
             }
     };
