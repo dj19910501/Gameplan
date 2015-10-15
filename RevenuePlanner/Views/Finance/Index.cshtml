@@ -653,6 +653,7 @@
 
     }
     function EditBudget(BudgetId, childChange, level) {
+        myTreeGrid.editStop();
         $('#btnSettings').css('display', 'none')
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
