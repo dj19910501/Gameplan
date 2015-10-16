@@ -15,7 +15,7 @@
         // Desc :: handle for same name or empty string
         dhtmlxValidation.isNameValid = function (data) {
 
-            var childitems = myTreeGrid.getSubItems(ValidParentId).split(',');
+            var childitems = newTreeGrid.getSubItems(ValidParentId).split(',');
             var isrepeat = true;
             if (data.trim() == '' || data.trim() == null) {
                 isrepeat = false;
@@ -24,7 +24,7 @@
                 $.each(childitems, function () {
 
                     if (this.toString() != ValidRowId.toString()) {
-                        var ColCurrentValue = myTreeGrid.cells(this, ValidColumnId).getValue();
+                        var ColCurrentValue = newTreeGrid.cells(this, ValidColumnId).getValue();
                         if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
                             isrepeat = false;
                             IsValid = false;
@@ -39,36 +39,50 @@
         newTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         newTreeGrid.setImageSize(1, 1);
         //newTreeGrid.enableTreeCellEdit(false);
-        newTreeGrid.setHeader("Task Name,Budget,Forecast,Planned,Actual,Action,Line Items", null, ["text-align:center;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
+        newTreeGrid.setHeader("Task Name,,Budget,Forecast,Planned,Actual,Line Items", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", , "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center"]);
         newTreeGrid.setInitWidths("100,100,100,100,100,100,100");
         newTreeGrid.setColAlign("left,center,center,center,center,center,center");
-        newTreeGrid.setColTypes("tree,ron,ron,ron,ron,ro,ro");
+        newTreeGrid.setColTypes("tree,ro,ron,ron,ron,ron,ro");
         //newTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
-        myTreeGrid.enableValidation(true);
+        newTreeGrid.enableValidation(true);
         newTreeGrid.setColValidators("NameValid,,,,,,");
-        newTreeGrid.setColumnIds("title,budget,forecast,planned,actual,action,lineitems");
+        newTreeGrid.setColumnIds("title,action,budget,forecast,planned,actual,lineitems");
         //newTreeGrid.setColSorting("str,na,str,str,na,str");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);
         
-        myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
+        newTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
 
             IsValid = false;
             return true;
         });
-        myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
+        newTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
             IsValid = true;
         });
         newTreeGrid.init();
         
         var newBudget = "newBudget";
-        newTreeGrid.addRow("newBudget", ["", "0", "0", "0", "0", "Edit Budget", "0"], 0);
-        
+        newTreeGrid.addRow("newBudget", ["New Budget", "Edit Budget", "0", "0", "0", "0", "0"], 0);
+
+        newTreeGrid.selectRowById(newBudget);
+        var rowindex = newTreeGrid.getRowIndex(newBudget);
+        window.setTimeout(function () {
+            newTreeGrid.selectCell(rowindex, 0, false, false, true, true);
+            newTreeGrid.editCell();
+            //newTreeGrid.editor.obj.placeholder = "New Budget";
+        }, 1);
+        newTreeGrid.forEachRow(function (rowid) {
+            var titleIndex = newTreeGrid.getColIndexById('title');
+            //alert(titleIndex);
+            newTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4;");
+            
+        });
         $("#newGridbox").find('table').css('width', gridWidth);
+        return true;
     });
 
     function OnEditCell(stage, id, index,newVal,oldVal) {
         
-        ValidParentId = myTreeGrid.getParentId(id);
+        ValidParentId = newTreeGrid.getParentId(id);
         ValidColumnId = index;
         ValidRowId = id;
 
@@ -78,6 +92,14 @@
         //var itemIndex=-1;
        
             if (stage.toString() == '0' || stage.toString() == '1') {
+            //if (stage.toString() == '1') {
+            //    var currentval = $(this).value;
+            //    //alert(currentval);
+            //    if (currentval == null || currentval == 'undefined' || currentval == '') {
+                //        this.editor.obj.placeholder = "New Budget";
+                // 
+            //    }
+            //}
                 return true;
             }
             if (IsValid) {
