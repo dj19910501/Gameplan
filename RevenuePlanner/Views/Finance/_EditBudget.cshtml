@@ -959,7 +959,9 @@
             return false;
         }
         else {
-        DisplayPopUpMenu(cntrl);
+            var attrRowId = $(cntrl).attr('row-id');
+            var rowIndex = myTreeGrid.getRowIndex(attrRowId);
+            DisplayPopUpMenu(cntrl, rowIndex);
     }
     }
     function IsRootMostParentId(curntRowid) {
