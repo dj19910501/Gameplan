@@ -1103,11 +1103,6 @@
             //myTreeGrid.selectCell(myTreeGrid.getRowIndex(_newRowIndex), 0, false, false, true);
             //myTreeGrid.selectRow(_newRowIndex);
             //myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
-            window.setTimeout(function () {
-            myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
-                myTreeGrid.editCell();
-            }, 1);
-            return true;
             var ChkPlan = $("#chkPlan");
             var ChkBudget = $("#chkBudget");
             var ChkForeCast = $("#chkForeCast");
@@ -1127,6 +1122,13 @@
                 myTreeGrid.setCellTextStyle(row_id, ind, "color:gray;");
             });
             }
+            
+            window.setTimeout(function () {
+
+                myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
+                myTreeGrid.editCell();
+            }, 1);
+            return true;
 
             // event.cancelBubble = true;
         }

@@ -24,6 +24,13 @@
     div.gridbox {
         height: 100% !important;
     }
+        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+        width: 100% !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
+        width: 100% !important;
+    }
 </style>
 <div id="gridbox" style="width:100%; height:500px; background-color:white;"></div>
 @Html.Hidden("hdnBudgetId", BudgetId, new { id = "hdnBudgetId", name = "hdnBudgetId", value = BudgetId })
@@ -117,13 +124,13 @@
         //    if (!myTreeGrid.getRowsNum())
         //        myTreeGrid.addRow(myTreeGrid.uid(), "no data");
         //})
-        myTreeGrid.attachEvent("onOpenEnd", function () {
-            var tableheight = $(".objbox").find("table").height();
-            $("#gridbox").css("height", tableheight + 100);
-            myTreeGrid.setSizes();
-            $("#gridbox").find("table").css("width", gridWidth);
-            return true;
-        });
+        //myTreeGrid.attachEvent("onOpenEnd", function () {
+        //    var tableheight = $(".objbox").find("table").height();
+        //    $("#gridbox").css("height", tableheight + 100);
+        //    myTreeGrid.setSizes();
+        //    $("#gridbox").find("table").css("width", gridWidth);
+        //    return true;
+        //});
 
         myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
             
@@ -155,14 +162,18 @@
             //alert(titleIndex);
             myTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4;");
         });
+
+        myTreeGrid.enableAutoHeight(true);
+        myTreeGrid.enableAutoWidth(false);
+
         myTreeGrid.expandAll();
         //myTreeGrid.parse(data2, "json");
         //myTreeGrid.selectRow(0, false, false, true);
-        var tableheight = $(".objbox").find("table").height();
-        $("#gridbox").css("height", tableheight + 100);
-        myTreeGrid.setSizes();
+        //var tableheight = $(".objbox").find("table").height();
+        //$("#gridbox").css("height", tableheight + 100);
+        //myTreeGrid.setSizes();
 
-        $("#gridbox").find('table').css('width', gridWidth);
+        //$("#gridbox").find('table').css('width', gridWidth);
 
         var rowcount = myTreeGrid.getRowsNum();
         if (rowcount == null || rowcount == 'undefined' || rowcount == 0) {
@@ -404,7 +415,7 @@
             var titleIndex = myTreeGrid.getColIndexById('title');
             myTreeGrid.setCellTextStyle(_newrowid, titleIndex, "border-right:0px solid #d4d4d4;");
             myTreeGrid.openItem(row_id);
-            $("#gridbox").find("table").css("width", gridWidth);
+            //$("#gridbox").find("table").css("width", gridWidth);
             //myTreeGrid.enableValidation(true);
             
             //myTreeGrid.cells(_newrowid, titleIndex).setAttribute("validate", "NotEmpty");
@@ -417,11 +428,16 @@
             //}
 
             var _newRowIndex = myTreeGrid.getRowIndex(_newrowid.toString());
-            myTreeGrid.selectRow(_newRowIndex);
+            //myTreeGrid.selectRow(_newRowIndex);
+            //myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
+            ////myTreeGrid.cells(_newrowid, titleIndex).edit();
+            ////myTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
+            //event.cancelBubble = true;
+            window.setTimeout(function () {
+
             myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);
-            //myTreeGrid.cells(_newrowid, titleIndex).edit();
-            //myTreeGrid.selectCell(_newRowIndex, titleIndex, false, true, true);
-            event.cancelBubble = true;
+                myTreeGrid.editCell();
+            }, 1);
         }
     }
 
