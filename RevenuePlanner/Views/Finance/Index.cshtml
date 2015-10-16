@@ -150,6 +150,8 @@
     var nlformParentFinance;
     var nlformChildFinance;
     var isFromForecastChild = false;
+    var RevnueTimeFrameChange = true;
+    var valueTimeFrame = "";
     //$('#AddSettings').click(function () {
     //    $('#errorMsg').css('display', 'none');
     //    $('#SuccessMsg').css('display', 'none');
@@ -364,8 +366,9 @@
                                 $("#dvNoData").hide();
                                 var budgetID = $(this).attr('value');
                                 if (pageName == "EditBudget") {
-                                    GetFinanceHeaderValue(budgetID);
+                                    
                                     EditBudget(budgetID, false);
+                                    //GetFinanceHeaderValue(budgetID);
                                 }
 
                             });
@@ -574,11 +577,11 @@
                 if (ChildbudgetID > 0) {
 
                     EditBudget(ChildbudgetID, true);
-                    GetFinanceHeaderValue(ChildbudgetID);
+                    //GetFinanceHeaderValue(ChildbudgetID);
                 } else {
 
                     EditBudget(parentid, true);
-                    GetFinanceHeaderValue(parentid);
+                    //GetFinanceHeaderValue(parentid);
                 }
             }
 
@@ -636,8 +639,9 @@
             $("#dvNoData").hide();
             var budgetID = $(this).attr('value');
             if (pageName == "EditBudget") {
-                GetFinanceHeaderValue(budgetID);
+                
                 EditBudget(budgetID, false);
+                //GetFinanceHeaderValue(budgetID);
             }
 
         });
@@ -694,6 +698,8 @@
             BindChildBudgetDrp(parseInt(BudgetId));
         }
         BindTimeFrameForChild(AllocatedBy);
+        valueTimeFrame = $("#ddlRevenueTimeFrame").val();
+        $("#ddlRevenueTimeFrame").val(valueTimeFrame);
         var url = '@Url.Content("~/Finance/EditBudget/")';
         $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel);
 
@@ -991,13 +997,19 @@
         $('#SuccessMsg').css('display', 'none');
         //
         // myApp.showPleaseWait();
-        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+
         //if (AllocatedBy == 'quarters') {
         //    AllocatedBy = true;
         //}
         //else {
         //    AllocatedBy = false;
         //}
+        //myTreeGrid.editStop();
+        
+        valueTimeFrame = $("#ddlRevenueTimeFrame").val();
+        $("#ddlRevenueTimeFrame").val(valueTimeFrame);
+        if (RevnueTimeFrameChange) {
+            var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
         LoadBudgetGrid(AllocatedBy);
         GetFinanceHeaderValue(0, false);
         var BudgetColumns = $("#chkBudget");
@@ -1008,6 +1020,11 @@
         ForeCastColumns.change();
         PlanColumns.change();
         ActualColumns.change();
+        }
+        else {
+            RevnueTimeFrameChange = true;
+        }
+        //RevnueTimeFrameChange = true;
         // myApp.showPleaseWait();
     });
     function DisplayPopUpMenu(addControl, rowIndex) {

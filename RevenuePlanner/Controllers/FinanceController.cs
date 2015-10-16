@@ -207,10 +207,10 @@ namespace RevenuePlanner.Controllers
                 var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                 if (temp != null)
                 {
-                    objFinanceHeader.Budget = Convert.ToDouble(temp[4]);
-                    objFinanceHeader.Forecast = Convert.ToDouble(temp[5]);
-                    objFinanceHeader.Planned = Convert.ToDouble(temp[6]);
-                    objFinanceHeader.Actual = Convert.ToDouble(temp[7]);
+                    objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
+                    objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
+                    objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
+                    objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
                 }
                 else
                 {
@@ -569,10 +569,10 @@ namespace RevenuePlanner.Controllers
                         var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                         if (temp != null)
                         {
-                            objFinanceHeader.Budget = Convert.ToDouble(temp[4]);
-                            objFinanceHeader.Forecast = Convert.ToDouble(temp[5]);
-                            objFinanceHeader.Planned = Convert.ToDouble(temp[6]);
-                            objFinanceHeader.Actual = Convert.ToDouble(temp[7]);
+                            objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
+                            objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
+                            objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
+                            objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
                         }
                         else
                         {
@@ -598,6 +598,7 @@ namespace RevenuePlanner.Controllers
             else
             {
                 objFinanceHeader = TempData["FinanceHeader"] as FinanceModelHeaders;
+                
             }
 
             return PartialView("_financeheader", objFinanceHeader);
