@@ -95,7 +95,30 @@
         ValidParentId = newTreeGrid.getParentId(id);
         ValidColumnId = index;
         ValidRowId = id;
+        var ColumnName = myTreeGrid.getColLabel(index, 0);
+        
+        if (stage == 1) {
+            
+            if (ColumnName == "Task Name") {
+                $(".dhx_combo_edit").off("keydown");
+                $(".dhx_combo_edit").on('keydown', (
+                newTreeGrid.editor.obj.onkeypress = function (e) {
+                    
+                    var key = window.event ? event.keyCode : event.which;
+                    var text = this.value;
+                    if (event.keyCode == 8 || event.keyCode == 46
+                     || event.keyCode == 37 || event.keyCode == 39) {
 
+                        return true;
+                    }
+                    else if (text.length > 250) { //max length of the text
+                        return false;
+                    }
+                    else { return true; }
+
+                }));
+            }
+        }
         //var _val = $("#hdn_row_parentId").val();
         //var splitRowParentIds = '';
         //var rowId = '', parentId = '',parentRowID='';

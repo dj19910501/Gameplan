@@ -87,6 +87,7 @@
     });
 
     function LoadBudgetGrid(AllocatedBy) {
+
         myApp.showPleaseWait();
         var GridWidth = $("#gridbox").width();
         RevnueTimeFrameChange = true;
@@ -478,7 +479,9 @@
         myTreeGrid.enableAutoHeight(true);
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
+            if (!_isNewRowAdd) {
             RevnueTimeFrameChange = false;
+            }
             
             ValidParentId = myTreeGrid.getParentId(rId);
             ValidColumnId = cInd;
@@ -489,6 +492,7 @@
                 $(".dhx_combo_edit").off("keydown");
                 $(".dhx_combo_edit").on('keydown', (function (e) { GridPriceFormatKeydown(e); }));
                 myTreeGrid.editor.obj.onkeypress = function (e) {
+                        
                     e = e || window.event;
                     if ((e.keyCode >= 47) || (e.keyCode == 0)) {
                         var text = this.value;
@@ -500,6 +504,24 @@
 
                     var psv = myTreeGrid.cell;
                     this.editor.obj.value = (psv.title.replace(/,/g, ""));
+                } else if (ColumnName == "Task Name") {
+                    //$(".dhx_combo_edit").off("keydown");
+                    $(".dhx_combo_edit").on('keydown', (
+                    myTreeGrid.editor.obj.onkeypress = function (e) {
+
+                        var key = window.event ? event.keyCode : event.which;
+                        var text = this.value;
+                        if (event.keyCode == 8 || event.keyCode == 46
+                         || event.keyCode == 37 || event.keyCode == 39) {
+
+                            return true;
+                        }
+                        else if (text.length > 250) { //max length of the text
+                            return false;
+                        }
+                        else { return true; }
+
+                    }));
                 }
                 AddNewrow = false;
 
@@ -1039,9 +1061,9 @@
 
             if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
                 if (GlobalEditLevel == 'Budget') {
-                    myTreeGrid.setColTypes("tree,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro,ro");
+                    myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 } else {
-                    myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
+                    myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 }
                 if (itemType.toLowerCase() == 'childitem') {
                     myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
@@ -1055,9 +1077,9 @@
             }
             else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
                 if (GlobalEditLevel == 'Budget') {
-                    myTreeGrid.setColTypes("tree,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro,ro");
+                    myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 } else {
-                    myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
+                    myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 }
                 if (itemType.toLowerCase() == 'childitem') {
                     myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
@@ -1070,9 +1092,9 @@
                 }
             } else {
                 if (GlobalEditLevel == 'Budget') {
-                    myTreeGrid.setColTypes("tree,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro,ro");
+                    myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 } else {
-                    myTreeGrid.setColTypes("tree,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ed,ro,ro,ro,ro,ro,ro");
+                    myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 }
                 if (itemType.toLowerCase() == 'childitem') {
                     myTreeGrid.addRow(_newrowid, ["New item", "<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], -1, row_id);
@@ -1100,6 +1122,7 @@
             // debugger;
             var _newRowIndex = myTreeGrid.getRowIndex(_newrowid.toString());
             IsAddNew = true;
+
             //myTreeGrid.selectCell(myTreeGrid.getRowIndex(_newRowIndex), 0, false, false, true);
             //myTreeGrid.selectRow(_newRowIndex);
             //myTreeGrid.selectCell(_newRowIndex, 0, false, false, true, true);

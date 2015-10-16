@@ -505,7 +505,7 @@ namespace RevenuePlanner.Controllers
                     objBudgetDetail = db.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
                     if (objBudgetDetail != null)
                     {
-                        objBudgetDetail.Name = BudgetDetailName;
+                        objBudgetDetail.Name = BudgetDetailName.Trim();
                         db.Entry(objBudgetDetail).State = EntityState.Modified;
                         db.SaveChanges();
                     }
@@ -519,7 +519,7 @@ namespace RevenuePlanner.Controllers
                     objBudget = db.Budgets.Where(budgt => budgt.Id == budgetId && budgt.IsDeleted == false && budgt.ClientId == clientId).FirstOrDefault();
                     if (objBudget != null)
                     {
-                        objBudget.Name = BudgetDetailName;
+                        objBudget.Name = BudgetDetailName.Trim();
                         db.Entry(objBudget).State = EntityState.Modified;
                     }
                     #endregion
@@ -529,7 +529,7 @@ namespace RevenuePlanner.Controllers
                     objMainBudgetDetail = db.Budget_Detail.Where(budgtDtl => budgtDtl.Id == budgetDetailId && budgtDtl.IsDeleted == false).FirstOrDefault();
                     if (objMainBudgetDetail != null)
                     {
-                        objMainBudgetDetail.Name = BudgetDetailName;
+                        objMainBudgetDetail.Name = BudgetDetailName.Trim();
                         db.Entry(objMainBudgetDetail).State = EntityState.Modified;
                     }
                     db.SaveChanges();
@@ -1392,7 +1392,7 @@ namespace RevenuePlanner.Controllers
         public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0, string GlobalEditLevel = "", bool isFromForecastChild = false)
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
-            nValue = HttpUtility.HtmlDecode(nValue);
+            nValue = HttpUtility.HtmlDecode(nValue.Trim());
             if (ColumnName == "Task Name")
             {
                 Budget objBudget = new Budget();
