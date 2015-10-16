@@ -721,4 +721,21 @@
             menu.find('tr').removeClass('trdropdownhover setfocusTr');
         }
     });
+
+    function isEmpty(el) {
+        return !$.trim(el.html())
+    }
+
+
+    if (isEmpty($('#CustomHtmlHelperfield'))) {
+        $('#CustomHtmlHelperfield').hide();
+        $('#CustomAttributeheading').hide();
+        $('#divTacticSaveCancel').removeClass('border-top-div');//Added by Mitesh Vaishnav for PL ticket 1196
+    }
+    else {
+        $('#CustomHtmlHelperfield').show();
+        $('#CustomAttributeheading').show();
+
+    }
+
 </script>
