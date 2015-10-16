@@ -53,6 +53,17 @@
     <span class="flag-icon"></span>
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
         id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;" />
+    
+    <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+        <li class="pull-left">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanLineItemId, Enums.EntityType.Lineitem.ToString(), 0)
+    </div>
+    
 
     <ul id="FinanceMappingHeading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
         <li class="pull-left">

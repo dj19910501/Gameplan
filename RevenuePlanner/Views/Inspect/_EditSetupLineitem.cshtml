@@ -131,6 +131,17 @@
             }
         </div>
     </div>
+    
+    <ul id="CustomAttributeheading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
+        <li class="pull-left">
+            <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
+        </li>
+    </ul>
+
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanLineItemId, Enums.EntityType.Lineitem.ToString(), 0, Enums.InspectPopupMode.Edit.ToString())
+    </div>
+
 
     <ul id="FinanceMappingHeading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
         <li class="pull-left">
@@ -174,9 +185,9 @@
             window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
         }
     }
-
+   
     //Added BY Komal Rawal for #1617
-    $('.dropdown_new_btn').click(function () {
+    $('#dropdown_new_btn_FieldMapping').click(function () {
         if($(this).next().css("display") == "none")
         {
             $(this).next().css("width","auto");
@@ -263,7 +274,7 @@
             });
             if(totalWeightage != 100)
             {
-                DivideEqualInputValue();
+                DivideEqualInputValueForMapping();
             }
 
         }
@@ -287,12 +298,12 @@
     function ddlcheckboxclick(items)
     {
         ValueChanged = true;
-        $('.span3').find('.dropdown_new_btn p:first').text("");
+        $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text("");
         if(items.checked)
         {
             ListOfItmeCheck.Ids.push(items.id);
             ListOfItmeCheck.values.push(items.title);
-            DivideEqualInputValue();
+            DivideEqualInputValueForMapping();
         }
         else{
             var index = ListOfItmeCheck.Ids.indexOf(items.id);
@@ -303,7 +314,7 @@
                 if ($('#'+ 'wt_'+ items.id).hasClass('error')) {
                     $('#'+ 'wt_'+ items.id).removeClass('error')
                 }
-                DivideEqualInputValue();
+                DivideEqualInputValueForMapping();
             }
         }
         var Selectedvalue = "";
@@ -314,11 +325,11 @@
 
         if (Selectedvalue.indexOf(',') > 0) {
             Selectedvalue = Selectedvalue.slice(0, -2);
-            $('.span3').find('.dropdown_new_btn p:first').text(Selectedvalue);
-            $('.span3').find('.dropdown_new_btn p:first').attr('title', Selectedvalue);
+            $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text(Selectedvalue);
+            $('.span3').find('#dropdown_new_btn_FieldMapping p:first').attr('title', Selectedvalue);
         }
         else {
-            $('.span3').find('.dropdown_new_btn p:first').text('Please Select');
+            $('.span3').find('#dropdown_new_btn_FieldMapping p:first').text('Please Select');
         }
 
     }
@@ -389,7 +400,7 @@
 
     });
 
-    function DivideEqualInputValue() {
+    function DivideEqualInputValueForMapping() {
         ValueChanged = true;
         Weights= {
             ChkId: [],
@@ -437,7 +448,7 @@
         $(document).click(function(){
             $("#treeviewddl").css("display","none");
         });
-        $('.dropdown_new_btn').on('click', function (e) {
+        $('#dropdown_new_btn_FieldMapping').on('click', function (e) {
             e.stopPropagation();
         });
         //// Call function to redirect on service unavailibility.
@@ -456,7 +467,10 @@
             CustomName: '@Common.CustomTitle'
         }).multiselectfilter();
 
-
+        $('.dropdown_new_btn').each(function () {
+            $(this).multiselectWeight(
+            );
+        });
 
         $('#LineItemTypeId').next().css('width', '95%');
         $('#LineItemTypeId').next().css('min-height', '30px');
@@ -602,6 +616,18 @@
         }
         _FieldMappingValues = JSON.stringify(_FieldMappingValues);
         //End
+
+        var _customFieldValues = [];
+        $('form').find('input[type=text],input:checked, select').each(function () {
+            if ($(this).attr('cf_id') != '' && typeof $(this).attr('cf_id') != 'undefined' && $(this).val() != '') {
+                _customFieldValues.push({
+                    Key: $(this).attr('cf_id').toString(),
+                    Value: htmlEncode($(this).val().toString())
+                });
+            }
+        });
+        _customFieldValues = JSON.stringify(_customFieldValues);
+
         var regex = /(>|<)/m;
 
         var descriptionvalue = $("#txtDescription").val();
@@ -620,7 +646,7 @@
             type: 'POST',
             async: false,
             url: '@Url.Content("~/Inspect/SaveLineitem")',
-            data: $("form").serialize() + '&title='+escape(lineItemTitle)+ '&FieldMappingValues=' + escape(_FieldMappingValues) + '&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
+            data: $("form").serialize() + '&title='+escape(lineItemTitle)+ '&FieldMappingValues=' + escape(_FieldMappingValues) + '&customFieldInputs=' + escape(_customFieldValues) + '&tacticId=@Model.PlanTacticId'+'&UserId='+uId,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
@@ -680,4 +706,19 @@
         //   });
         return returnparameter;
     }
+    
+    $(".table_drpdwn").each(function () {
+        var chekcedCount = $(this).find('input:checked').length;
+        if (chekcedCount > 1) {
+            var menu = $(this).parents('.dropdown-wrapper');
+            menu.toggleClass('dropdown-block minimum-width215');
+            menu.find('.text_ellipsis').toggleClass('minmax-width200');
+            menu.find(".first_hide,.revenue_header,.cost_header,.top_head_attribute,.value_header").toggle();
+            menu.find('.advance_a').text("< Single-selection");
+            menu.find('.advance_a').attr('mode', 'Multi');
+            menu.find('input[type=checkbox]').toggle();
+            menu.find('p').removeClass('single-p');
+            menu.find('tr').removeClass('trdropdownhover setfocusTr');
+        }
+    });
 </script>

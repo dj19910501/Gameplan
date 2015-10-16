@@ -897,7 +897,8 @@ namespace RevenuePlanner.Helpers
             Program,
             Tactic,
             Plan,
-            ImprovementTactic
+            ImprovementTactic,
+            Lineitem
         }
 
         #region "Inspect Popup"

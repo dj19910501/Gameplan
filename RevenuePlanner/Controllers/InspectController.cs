@@ -5489,7 +5489,7 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of edit Setup Tab.</returns>
         [HttpPost]
 
-        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string UserId = "", int tacticId = 0)
+        public ActionResult SaveLineitem(Plan_Campaign_Program_Tactic_LineItemModel form, string title, string FieldMappingValues, string customFieldInputs, string UserId = "", int tacticId = 0)
         {
             //// Check whether current user is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -5524,6 +5524,8 @@ namespace RevenuePlanner.Controllers
 
                 int planid = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == cid && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
                 #endregion
+
+                var customFields = JsonConvert.DeserializeObject<List<KeyValuePair<string, string>>>(customFieldInputs);
 
                 //// if  PlanLineItemId is null then insert new record to table.
                 if (form.PlanLineItemId == 0)
@@ -5577,6 +5579,24 @@ namespace RevenuePlanner.Controllers
                                 }
                                 db.SaveChanges();
 
+                                #endregion
+
+                                #region "Save custom field to CustomField_Entity table"
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = lineItemId;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                    }
+                                }
+                                db.SaveChanges();
                                 #endregion
 
                                 //// Calculate TotalLineItemCost.
@@ -5798,6 +5818,8 @@ namespace RevenuePlanner.Controllers
                                 db.Entry(objLineitem).State = EntityState.Modified;
                                 #endregion
 
+                              
+
                                 #region Save Field Mapping Details
                                 List<LineItem_Budget> ExistingValues = db.LineItem_Budget.Where(a => a.PlanLineItemId == form.PlanLineItemId).ToList();
                                 ExistingValues.ForEach(Field => db.Entry(Field).State = EntityState.Deleted);
@@ -5816,6 +5838,31 @@ namespace RevenuePlanner.Controllers
                                 }
 
 
+                                #endregion
+
+                                #region "Remove previous custom fields by PlanCampaignId"
+                                string entityTypeLineitem = Enums.EntityType.Lineitem.ToString();
+                                var prevCustomFieldList = db.CustomField_Entity.Where(custmfield => custmfield.EntityId == form.PlanLineItemId && custmfield.CustomField.EntityType == entityTypeLineitem).ToList();
+                                prevCustomFieldList.ForEach(custmfield => db.Entry(custmfield).State = EntityState.Deleted);
+                                #endregion
+
+                                #region "Save Custom fields to CustomField_Entity table"
+                                if (customFields.Count != 0)
+                                {
+                                    foreach (var item in customFields)
+                                    {
+                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity.EntityId = form.PlanLineItemId;
+                                        objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
+                                        objcustomFieldEntity.Value = item.Value.Trim().ToString();
+                                        objcustomFieldEntity.CreatedDate = DateTime.Now;
+                                        objcustomFieldEntity.CreatedBy = Sessions.User.UserId;
+                                        db.Entry(objcustomFieldEntity).State = EntityState.Added;
+
+                                    }
+                                }
+
+                                db.SaveChanges();
                                 #endregion
 
                                 int result;
