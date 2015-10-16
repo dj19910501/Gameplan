@@ -5081,7 +5081,7 @@ min-width:350px;
  .grid_Delete {
     background-image: url(../images/Remove-icon-blue.png) ;
     background-repeat: no-repeat;
-    width: 18px;
+    width: 19px;
    display: inline-block;
     opacity: 1;
     background-position: center center;
@@ -5136,7 +5136,7 @@ min-width:350px;
     margin:0 0 0 19%; 
 }
  .grid_Delete {
-    margin-right: 15%;
+    margin-right: 6px;
 }
  /*by bheru 13-10-2015 */
 }
@@ -5158,7 +5158,7 @@ min-width:350px;
     margin:0 0 0 16%; 
 }
  .grid_Delete {
-    margin-right: 10%;
+    margin-right: 6px;
 }
  /*by bheru 13-10-2015 */
 }
@@ -5188,7 +5188,7 @@ min-width:350px;
   margin: 0 0 0 9%;
 }
     .grid_Delete {
-  margin-right: 15%;
+  margin-right: 6px;
 }
     /*by bheru 13-10-2015 */
 }
