@@ -18,6 +18,10 @@
  *   http://www.gnu.org/licenses/gpl.html
  *
  */
+var $prevtext = '';
+var $nextdata = -1;
+var $_prevdata = -1;
+var selectbox_keys = '';
 (function ($, undefined) {
     var multiselectID = 0;
     var $doc = $(document);
@@ -326,6 +330,10 @@
             button.bind({
                 click: clickHandler,
                 keypress: function (e) {
+                    $prevtext = '';
+                    $nextdata = -1;
+                    $_prevdata = -1;
+                    selectbox_keys = ''
                     switch (e.which) {
                         case 27: // esc
                         case 38: // up
@@ -405,7 +413,9 @@
           })
           .delegate('label', 'keydown.multiselect', function (e) {
               e.preventDefault();
-
+              // alert(e.which);
+              //debugger;
+              var t = e.which;
               switch (e.which) {
                   case 9: // tab
                   case 27: // esc
@@ -421,34 +431,73 @@
                       $(this).find('input')[0].click();
                       break;
               }
+
+              //ui-state-hover -->setfocus
               $(this).removeClass('ui-state-hover');
               var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+
+              if (key == 38 || key == 40) {
+                  $nextdata.removeClass('ui-state-hover');
+                  return false;
+                  //var tt = $_prevdata;
+                  //var cu = $(this);
+              }
+
+              // delta to convert num-pad key codes to QWERTY codes.
+              var numPadToKeyPadDelta = 48;
+              // if a numeric key on the num pad was pressed.
+              if (key >= 96 && key <= 105) {
+                  key = key - numPadToKeyPadDelta;
+                  //return String.fromCharCode(keyCode);
+              }
+
               var theChar = String.fromCharCode(key);
+              // alert(theChar);
+              var cur_check = '';
+              cur_check = selectbox_keys + theChar.toLowerCase();
+              //  alert(cur_check);
               var $select = self.menu.find('ul');
               var $selectlist = $select.eq(0);
+              // var cur_check = theChar;
+
               $selectlist.each(function () {
-                  debugger;
+                  // debugger;
                   var list = $(this).find('li');
                   $(this).find('li').removeClass('ui-state-hover');
                   var count = 0;
+
                   var selectarr = [];
                   $(list).each(function (index, val) {
-                      debugger;
+                     // debugger;
                       var currentLine = $(this).find('span').text();
                       // if (currentLine != "Select All" || currentLine !="Deselect All") {
                       var _mainText = currentLine.toLowerCase();
                       var _fText = _mainText.substring(0, 1);
-                      if (count == 0) {
-
-                          if (_fText.indexOf(theChar.toLowerCase()) >= 0) {
+                      // if (count == 0) {
+                      if ($prevtext == '' || cur_check.length > 1) {
+                          if (_mainText.indexOf(cur_check) == 0) {
                               count++;
-                              debugger;
-                              //alert("1");
-                              //if (!button.hasClass('ui-state-disabled')) {
-                              $(this).addClass('ui-state-focus');
-                              self.labels.removeClass('ui-state-focus');
-                              $(this).addClass('ui-state-hover').find('input').focus();
+                              // debugger;
+                              $prevtext = _mainText;
+                              if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
+                                  $($_prevdata).removeClass('setfocus');
+                              }
+                              //debugger;
+                              $_prevdata = jQuery(this);
+                              $nextdata = jQuery(this);
+                              $nextdata.addClass('setfocus');
+
+                              //$(this).addClass('ui-state-focus');
+                              //self.labels.removeClass('ui-state-focus');
+                              $($nextdata).addClass('ui-state-hover');
+                              $($nextdata).find('input').focus();
+                              //$(this).addClass('ui-state-hover').find('input').focus();
                               button.find('span').eq(0).text(currentLine);
+
+                              selectbox_keys = cur_check;
+                              // precode = currCode;
+
+                              return false;
                               //button.prop('title', currentLine);
                               //button.text(currentLine);
 
@@ -463,28 +512,92 @@
                           }
                       }
                       else {
-                          //$(selectarr).each(function (index, value) {
+                          // debugger;
+                          var nextdata = '';
+                          //var nextdata = $(list).eq(listIndex).nextAll();
+                          var nextdata = $('.setfocus').nextAll();
+                          var cntr = 0;
+                          $.each(nextdata, function (key, value) {
+                             // debugger;
+                              var nextdataline = $(value).find('span').text();
+                              var _nextlineText = nextdataline.toLowerCase();
+                              var _fText = _nextlineText.substring(0, 1);
+                              if (_nextlineText.indexOf(cur_check) == 0) {
+                                  //if (_nextlineText != $prevtext && _nextlineText.indexOf(cur_check) == 0) {
+                                 // debugger;
+                                  $prevtext = _nextlineText;
+                                  selectbox_keys = cur_check;
+                                  //_prevdata = nextdataline;
+                                  $($_prevdata).removeClass('setfocus');   // remove class 'setFocusli' from previously selected list object. 
+                                  $_prevdata = jQuery(this);
+                                  $nextdata = jQuery(this);
+                                  $($nextdata).addClass('setfocus');
+                                  //$(this).addClass('ui-state-focus');
+                                  //self.labels.removeClass('ui-state-focus');
+                                  $($nextdata).addClass('ui-state-hover');
+                                  $($nextdata).find('input').focus();
+                                  //$(this).addClass('ui-state-hover').find('input').focus();
+                                  button.find('span').eq(0).text(nextdataline);
+                                  // listIndex = key;
+                                  cntr = cntr + 1;
+                                  return false;
+                              }
+                          });
+                          // debugger;
+                          if (cntr == 0) {
+                              // debugger;
+                              var nextdata = list;
+                              $.each(nextdata, function (key, value) {
+                                 // debugger;
+                                  var nextdataline = $(this).find('span').text();
+                                  var _nextlineText = nextdataline.toLowerCase();
+                                  var _fText = _nextlineText.substring(0, 1);
+                                  if (_nextlineText != $prevtext && _nextlineText.indexOf(cur_check) == 0) {
+                                    //  debugger;
+                                      $prevtext = _nextlineText;
+                                      selectbox_keys = cur_check;
+                                      $($_prevdata).removeClass('setfocus');   // remove class 'setFocusli' from previously selected list object.
+                                      $_prevdata = jQuery(this);
+                                      $nextdata = jQuery(this);
+                                      $($nextdata).addClass('setfocus');   // add class 'setFocusli' to currently selected list object. 
+                                      //$(this).addClass('ui-state-focus');
+                                      //self.labels.removeClass('ui-state-focus');
+                                      $($nextdata).addClass('ui-state-hover');
+                                      $($nextdata).find('input').focus();
+                                      //$(this).addClass('ui-state-hover').find('input').focus();
+                                      button.find('span').eq(0).text(nextdataline);
+                                      return false;
+                                  }
+                              });
 
-                          //    if (value != $(this).index()) {
-                          //        $(this).removeClass('ui-state-hover');
-                          //    }
-                          //});
-                          //for (var i in selectarr) {
-                          //    if (i != $(this).index()) {
-                          //        $(this).removeClass('ui-state-hover');
-                          //    }
-                          //}                          
+                          }
+                          if (cur_check.length <= 1) {
+                              return false;
+                          }
+
                       }
-                      //}
-                      //else {
-
-                      //}
+                      // }
+                      //  else {
+                      // }
                   })
-
-                  //var p = $(this).find('span');
-                  //var textj = jQuery(p).text().toLowerCase();
-
               });
+
+              if ($nextdata != -1) {
+                 // debugger;
+                  //alert('dd');
+                  $nextdata.removeClass('ui-state-hover');
+                  $nextdata.addClass('ui-state-hover').focus();
+                  $($nextdata).find('input').focus();
+                  //button.find('span').eq(0).text($nextdata);
+                  //self.labels.removeClass('ui-state-hover');
+              }
+
+              clearTimeout(selectbox_keys_timeout);
+              var selectbox_keys_timeout = setTimeout(function () {
+                  selectbox_keys = "";
+              }, 500);
+              e.stopPropagation();
+              return false;
 
           })
           .delegate('input[type="checkbox"], input[type="radio"]', 'click.multiselect', function (e) {

@@ -158,7 +158,7 @@ namespace RevenuePlanner.Controllers
                 //// Get list of Active(published) plans for all above models
                 string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
                 activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
-                planmodel.lstPlan = activePlan.Select(plan => new PlanListModel { PlanId = plan.PlanId, Title = HttpUtility.HtmlEncode(plan.Title) })
+                planmodel.lstPlan = activePlan.Select(plan => new PlanListModel { PlanId = plan.PlanId, Title = HttpUtility.HtmlDecode(plan.Title) })
                                                              .Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
             }
 
