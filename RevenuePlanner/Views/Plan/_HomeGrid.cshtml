@@ -21,9 +21,9 @@
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100% !important;
     }
-      /*Added by Rahul Shah on 29/09/2015 for PL #1618*/
+    /*Added by Rahul Shah on 29/09/2015 for PL #1618*/
     div.gridbox {
-        height : 100% ! important;
+        height: 100% !important;
     }
 </style>
 
@@ -118,7 +118,7 @@
             var targetHeight = $(this).height();
             var contentHeight = $('#divTacticReqMsg').outerHeight();
             var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-            
+
             $('#divTacticReqMsg').css({
                 'top': targetBottomOffset,
                 'left': position.left,
@@ -211,7 +211,7 @@
                 var targetHeight = $(this).height();
                 var contentHeight = $('#divTacticReqMsg').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-              
+
                 $('#divTacticReqMsg').css({
                     'top': targetBottomOffset,
                     'left': position.left,
@@ -277,7 +277,7 @@
             var spnerror = $(this).find("#tacticIsRequired");
             if (typeof spnerror != 'undefined' && spnerror != null) {
                 var div = $(spnerror).parent().parent();
-               
+
                 if (typeof div != 'undefined') {
                     $(spnerror).remove();
                     $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
@@ -292,7 +292,7 @@
                 var targetHeight = $(this).height();
                 var contentHeight = $('#divTacticReqMsg').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-              
+
                 $('#divTacticReqMsg').css({
                     'top': targetBottomOffset,
                     'left': position.left,
@@ -425,9 +425,9 @@
                 }
             }
         });
-      
+
     }
-  
+
     function sort_Owner(a, b, ord, a_id, b_id) {
 
         a = HomeGrid.cells(a_id, 8).getText();
@@ -561,13 +561,16 @@
     var progid = 0;
     var campid = 0;
     var planid = 0;
+    var tactid = 0;
     var progActVal = 0;
     var CampActVal = 0;
     var PlanActVal = 0;
+    var TactActVal = 0;
     var diff = 0;
     var newProgVal = 0;
     var newCampVal = 0;
     var newPlanVal = 0;
+    var newTactVal = 0;
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
         var updatetype = rowId.split(".")[0];
@@ -701,7 +704,14 @@
                 }
                 if (updatetype == "line") {
                     if (nValue != oValue) {
+                        debugger;
                         UpdateVal = nValue;
+                        //Added By Rahul Shah on 16/10/2015 for PL 1559
+                        tactid = HomeGrid.getParentId(rowId);
+                        progid = HomeGrid.getParentId(tactid);
+                        campid = HomeGrid.getParentId(progid);
+                        planid = HomeGrid.getParentId(campid);
+                        var TotalRowIds = HomeGrid.getAllSubItems(tactid);
                         $.ajax({
                             type: 'POST',
                             url: '@Url.Action("SaveGridDetail")', // we are calling json method
@@ -714,7 +724,37 @@
                                     return false;
                                 }
                                 else if (UpdateColumn == "Planned Cost") {
-                                    LoadPlanGrid();
+                                    debugger;
+                                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                                    diff = parseInt(nValue) - parseInt(oValue);
+                                    diffLineAndTactic = states.lineItemCost - states.tacticCost
+                                    if (states.lineItemCost > states.tacticCost) {
+
+                                        SetColumUpdatedValue(6, diffLineAndTactic);
+                                        HomeGrid.cells(progid, 6).setValue((newProgVal));
+                                        HomeGrid.cells(campid, 6).setValue((newCampVal));
+                                        HomeGrid.cells(planid, 6).setValue((newPlanVal));
+                                        HomeGrid.cells(tactid, 6).setValue((newTactVal));
+                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                            if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+
+                                                HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
+                                            }
+                                        }
+                                    }
+                                    else {
+
+                                        for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+                                            if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+
+                                                HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
+
+                                            }
+                                        }
+                                    }
+                                    HomeGrid.cells(rowId, 6).setValue((nValue));
+                                    //Commented By Rahul Shah on 16/10/2015 for PL 1559
+                                    //LoadPlanGrid();
                                 }
                             }
                         });
@@ -726,7 +766,9 @@
                         progid = HomeGrid.getParentId(rowId);
                         campid = HomeGrid.getParentId(progid);
                         planid = HomeGrid.getParentId(campid);
-
+                        //Added By Rahul Shah on 16/10/2015 for PL 1559
+                        var TotalRowIds = HomeGrid.getAllSubItems(rowId);
+                        //
                         UpdateVal = nValue;
                         $.ajax({
                             type: 'POST',
@@ -749,12 +791,36 @@
                                     ComapreDate(updatetype, rowId, edateindex, nValue, UpdateColumn);
                                 }
                                 if (UpdateColumn == "Planned Cost") {
-                                    diff = parseInt(nValue) - parseInt(oValue);
-                                    SetColumUpdatedValue(6, diff);
-                                    HomeGrid.cells(progid, 6).setValue((newProgVal));
-                                    HomeGrid.cells(campid, 6).setValue((newCampVal));
-                                    HomeGrid.cells(planid, 6).setValue((newPlanVal));
-                                    HomeGrid.cells(rowId, 6).setValue((nValue));
+                                    //Commented By Rahul Shah on 16/10/2015 for PL 1559
+                                    //diff = parseInt(nValue) - parseInt(oValue);
+                                    //SetColumUpdatedValue(6, diff);
+                                    //HomeGrid.cells(progid, 6).setValue((newProgVal));
+                                    //HomeGrid.cells(campid, 6).setValue((newCampVal));
+                                    //HomeGrid.cells(planid, 6).setValue((newPlanVal));
+                                    //HomeGrid.cells(rowId, 6).setValue((nValue));
+                                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                                    if (nValue < states.lineItemCost) {
+
+                                        HomeGrid.cells(rowId, 6).setValue((oValue));
+                                    }
+                                    else {
+
+                                        diff = parseInt(nValue) - parseInt(oValue);
+                                        SetColumUpdatedValue(6, diff);
+                                        HomeGrid.cells(progid, 6).setValue((newProgVal));
+                                        HomeGrid.cells(campid, 6).setValue((newCampVal));
+                                        HomeGrid.cells(planid, 6).setValue((newPlanVal));
+                                        HomeGrid.cells(rowId, 6).setValue((nValue));
+                                        if (TotalRowIds != "") {
+                                            for (var i = 0; i < TotalRowIds.split(',').length; i++) {
+
+                                                if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                                    HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.OtherLineItemCost));
+                                                }
+                                            }
+                                        }
+
+                                    }
                                 }
                                 if (UpdateColumn == "Owner") {
                                     CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
@@ -1031,6 +1097,12 @@
         HomeGrid.cells(progid, CellInd).setAttribute("actval", newProgVal);
         HomeGrid.cells(campid, CellInd).setAttribute("actval", newCampVal);
         HomeGrid.cells(planid, CellInd).setAttribute("actval", newPlanVal);
+        //Added By Rahul Shah on 16/10/2015 for PL 1559
+        if (tactid != 0) {
+            TactActVal = HomeGrid.cells(tactid, CellInd).getAttribute("actval");
+            newTactVal = parseInt(TactActVal) + parseInt(diff);
+            HomeGrid.cells(tactid, CellInd).setAttribute("actval", newTactVal);
+        }
     }
     $(document).ready(function () {
         $('#cancel-button_Movetactic').on("click", function () {

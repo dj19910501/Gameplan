@@ -5094,6 +5094,14 @@ function () {
     ///new code  
     var ganttwidth = $("#gantt_here").width();
     var totalWidth = ganttwidth - 230;
+    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+        if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
+            var ganttwidth = $("#gridbox").width();
+            var totalWidth = ganttwidth + 230;
+            ResizeGrid(totalWidth);
+        }
+    }
+
     gantt._render_tasks_scales(totalWidth);
     $('#gantt_hor_scroll').attr('style', 'Width: 1453px;');
 
@@ -5129,13 +5137,13 @@ function () {
 
     $('.gantt_hor_scroll').hide();
 
-    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+    @*if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
             var ganttwidth = $("#gridbox").width();
             var totalWidth = ganttwidth + 230;
             ResizeGrid(totalWidth);
         }
-    }
+    }*@
 
 }, function () {
     $('#sidebar').css({

@@ -9545,7 +9545,7 @@ namespace RevenuePlanner.Controllers
                                                                 }
                                                                 GridString.Append("]]></cell>");
                                                                 GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell bgColor='#ffffff' locked='1' style='color:#999'></cell>  <cell bgColor='#ffffff' locked='1' style='color:#999'></cell> ");
-                                                                GridString.Append(" <cell bgColor='#ffffff'   type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " + "style='color:#999;'" : lineitem.IstactEditable + "\" " + cellTextColor) + ">" + lineitem.Cost + "</cell>");
+                                                                GridString.Append(" <cell bgColor='#ffffff'   type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " + "style='color:#999;'" : lineitem.IstactEditable + "\" " + cellTextColor) + " IsOther =\"" + (lineitem.Type == null ? true : false) + "\">" + lineitem.Cost + "</cell>"); //Modified by Rahul Shah on
                                                                 GridString.Append("<cell bgColor='#ffffff'  locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " xmlcontent='true'>" + lineitem.Type);
                                                                 GridString.Append(strLineType + "</cell>");
                                                                 GridString.Append("<cell bgColor='#ffffff' type='ro' style='color:#999'>" + lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault() + "</cell> ");
@@ -9659,6 +9659,7 @@ namespace RevenuePlanner.Controllers
                     Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcptobjw => pcptobjw.PlanTacticId.Equals(id)).FirstOrDefault();
                     List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
                     double totalLineitemCost = 0;
+                    double otherLineItemCost = 0;
                     // update tactic detail
                     if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
                     {
@@ -9919,6 +9920,8 @@ namespace RevenuePlanner.Controllers
                                 if (pcpobj.Cost > totalLineitemCost)
                                 {
                                     objOtherLineItem.Cost = pcpobj.Cost - totalLineitemCost;
+                                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                                    otherLineItemCost = objOtherLineItem.Cost;
                                 }
                                 else
                                 {
@@ -9929,6 +9932,8 @@ namespace RevenuePlanner.Controllers
                             db.SaveChanges();
                         }
                     }
+                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
                 #region update program detail
@@ -10049,7 +10054,8 @@ namespace RevenuePlanner.Controllers
                 {
                     Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(id));
                     var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == objLineitem.PlanTacticId);
-
+                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                    double tacticostNew = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
                     if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
                     {
                         //// Get duplicate record to check duplication.
@@ -10207,6 +10213,11 @@ namespace RevenuePlanner.Controllers
                         db.Entry(objOtherLineItem).State = EntityState.Modified;
                         db.SaveChanges();
                     }
+                    //Added By Rahul Shah on 16/10/2015 for PL 1559
+                    double totalLineitemCost1 = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
+                    var objOtherLineItemNew = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId == null);
+
+                    return Json(new { lineItemCost = totalLineitemCost1, tacticCost = tacticostNew, otherLineItemCost = objOtherLineItemNew.Cost }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
             }

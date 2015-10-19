@@ -17696,8 +17696,10 @@ function eXcell_edn(a) {
     }
 }
 eXcell_edn.prototype = new eXcell_ed;
-eXcell_edn.prototype.setValue = function(a) {
-    if (!a || a.toString()._dhx_trim() == "") {
+eXcell_edn.prototype.setValue = function (a) {
+ 
+    //if (!a || a.toString()._dhx_trim() == "") {
+    if (a.toString()._dhx_trim() == "") {// remove !a condition to apply a $0 value when we edit cell
         this.cell._clearCell = true;
         return this.setCValue("&nbsp;", 0)
     } else {
