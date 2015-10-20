@@ -225,24 +225,37 @@
         // EditBudget(21);
         ShowHideControls("MainGrid");
         //Added by Rahul Shah on 13/10/2015 for PL#1667
-        nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
-        $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            $('#errorMsg').css('display', 'none');
-            $('#SuccessMsg').css('display', 'none');
-            $("#divGridView").show();
-            $("#dvNoData").hide();
-            var budgetIDMain = $(this).attr('value');
-            $('#hdn_BudgetId').val(budgetIDMain);
-            if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
-                RefreshMainGridData(budgetIDMain);
-                GetFinanceHeaderValue(budgetIDMain, true, _mainTimeFrame);
-            }
-            else {
-                $("#divGridView").hide();
-                $("#dvNoData").show();
-            }
+        //debugger;
+        
+        var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
+        if (liParentFinanceMain != null && liParentFinanceMain != 'undefined' && liParentFinanceMain.length > 0) {
+            $("#drpParentMain").css("display", "block");
+            $("#ddlParentFinanceMain").css("display", "block");
+            $("#dvNoData").css('margin-left', '0px');
+            nlformParentFinanceMain = new NLForm(document.getElementById('nl-formParentFinanceMain'));
+            $('#nl-formParentFinanceMain > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                $('#errorMsg').css('display', 'none');
+                $('#SuccessMsg').css('display', 'none');
+                $("#divGridView").show();
+                $("#dvNoData").hide();
+                var budgetIDMain = $(this).attr('value');
+                $('#hdn_BudgetId').val(budgetIDMain);
+                if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
+                    RefreshMainGridData(budgetIDMain);
+                    GetFinanceHeaderValue(budgetIDMain, true, _mainTimeFrame);
+                }
+                else {
+                    $("#divGridView").hide();
+                    $("#dvNoData").show();
+                }
 
-        });
+            });
+        }
+        else {
+            $("#drpParentMain").css("display", "none");
+            $("#ddlParentFinanceMain").css("display", "none");
+            $("#dvNoData").css('margin-left', '25px');
+        }
         //var txtval = $("#btnMultiselect_ddlParentFinanceMain").find("span").text();
         //$("#btnMultiselect_ddlParentFinanceMain").find("span").text('');
         //$("#btnMultiselect_ddlParentFinanceMain").find("span").text(htmlDecode(txtval));
