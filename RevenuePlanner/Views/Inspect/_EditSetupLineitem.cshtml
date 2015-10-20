@@ -54,6 +54,7 @@
     div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue
     {
     background: #fff !important;
+    border:none !important  ;
     }
     div.gridbox_dhx_skyblue.gridbox table.obj tr td.cellselected, div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected {
      background: #fff !important;
@@ -65,19 +66,113 @@
     div.gridbox {
         height : 100% ! important;
     }
-    .xhdr
-    {
-    height:0px !important ;
-    }
-
-   #CustomHtmlHelperfieldforMapping div.gridbox_dhx_skyblue.gridbox table.obj tr td {
-       border-width: 0px !important;
-    }
+   
 
     #CustomHtmlHelperfieldforMapping table {
     border-collapse: inherit !important ;
 }
-
+    /*by bheru 19-10-2015*/
+    .finance_mapping  div.gridbox_dhx_skyblue.gridbox
+    {
+    border-top:1px solid #e7e7e7 !important;
+    border-left:1px solid #e7e7e7 !important;
+    border-right:1px solid #eeeeee !important;
+    border-radius:4px!important ;
+    }
+  .finance_mapping  div.gridbox_dhx_skyblue.gridbox table.obj tr td
+    {
+      border-bottom: 1px solid #dfdfdf;
+     border-left: 0 none;
+     border-top:none;
+     border-right: 0 none;
+    font-family: source_sans_prolight,Arial,sans-serif;
+    color:#000;
+    font-size:14px;
+    padding-left: 20px;
+    height: 36px;
+    }
+    .finance_mapping   .treegrid_cell > span {
+  padding-left: 7px;
+  vertical-align: middle;
+}
+    .finance_mapping  div.gridbox_dhx_skyblue.gridbox table.obj tr td input
+    {
+         background-color: #f2f2f2;
+        border: 1px solid #d1d1d1;
+    color:#6D6D6D;
+    box-shadow:none;
+    min-height: auto !important;
+    width: 38px;
+    text-align:center;
+     margin-right: 12px;
+    }
+   .finance_mapping div.gridbox_dhx_skyblue.gridbox .ftr, div.gridbox_dhx_skyblue.gridbox .xhdr, div.gridbox_dhx_skyblue table.hdr tr td {
+   
+  color: #000000;
+  font-family: source_sans_prosemibold,Arial,sans-serif;
+  font-size: 14px;
+  overflow: visible;
+  padding-left: 40px;
+}
+   div.gridbox_dhx_skyblue.gridbox .xhdr
+    {
+    padding-left:0px;
+    height:auto !important;
+    }
+   .finance_mapping  div.gridbox_dhx_skyblue table.hdr tr td:last-child
+    {
+        padding-left:14px;
+    }
+    div.gridbox_dhx_skyblue table.hdr tr td
+    {
+    border-bottom: 1px solid #dfdfdf;
+     border-left: 0 none;
+     border-top:none;
+     border-right: 0 none;
+    }
+  .finance_mapping  div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell
+    {
+     color:#000000;
+    padding-left: 8px !important;
+   text-align: left;
+    font-weight: normal;
+}
+    .finance_mapping
+    {
+    border-bottom: medium none;
+    }
+    div.gridbox.gridbox_dhx_skyblue table.hdr td
+    {
+         border-bottom: 1px solid #dfdfdf;
+     border-left: 0 none;
+     border-top:none;
+     border-right: 0 none;
+    
+    }
+    .finance_mapping div.gridbox_dhx_skyblue table.hdr tr td
+    {
+    height:25px;
+    vertical-align: middle;
+    }
+    .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td .treegrid_cell img:nth-child(2)
+    {
+    display:none\9;
+    }
+   _:-ms-input-placeholder, :root   .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td .treegrid_cell img:nth-child(2)
+    {
+      display:none  ;
+    }
+    .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td span input
+    {
+     background-color: transparent\9;
+         border: none\9;
+    }
+   _:-ms-input-placeholder, :root .finance_mapping div.gridbox.gridbox_dhx_skyblue table.obj tr td span input
+    {
+        background-color: transparent;
+         border: none;
+    }
+    /*by bheru 19-10-2015*/
    
 </style>
 @using (Html.BeginForm())
@@ -149,7 +244,7 @@
         </li>
     </ul>
 
-    <div id="CustomHtmlHelperfieldforMapping" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
+    <div id="CustomHtmlHelperfieldforMapping" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent finance_mapping">
         @HtmlHelpers.GenerateMappingFieldsForInspectPopup(Model.PlanLineItemId, Enums.InspectPopupMode.Edit.ToString())
     </div>
     @*<div style="width: 100%; clear: both" class="wraper-btns cf border-top-div ">
@@ -217,7 +312,7 @@
                 GridData=data.data;
                 var imgpath = '@Url.Content("~/codebase/imgs/")';
                 TreeViewDdl.setImagePath(imgpath);
-                TreeViewDdl.setHeader(",");
+                TreeViewDdl.setHeader("Item Name,Weight%");
                 TreeViewDdl.enableAutoHeight(true);
                 TreeViewDdl.enableAutoWidth(true);
                 TreeViewDdl.enableTreeCellEdit(false)
