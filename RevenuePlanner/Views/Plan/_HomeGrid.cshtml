@@ -100,14 +100,14 @@
 
         pageIsScroll = false;
 
-        //Modified by komal Rawal for #1553
-        $(".grid_Search").click(function (e) {
-            inspectCloseFocus = $(this).position().top;
-            var id = $(this).attr('alt');
-            var type = $(this).attr('id');
-            gridSearchFlag = 1;
-            DisplayEditablePopup(id, type);
-        });
+        //Commented by Rahul Shah for #1683
+        //$(".grid_Search").click(function (e) {
+        //    inspectCloseFocus = $(this).position().top;
+        //    var id = $(this).attr('alt');
+        //    var type = $(this).attr('id');
+        //    gridSearchFlag = 1;
+        //    DisplayEditablePopup(id, type);
+        //});
 
         //End
 
@@ -331,12 +331,13 @@
             $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
             $("#popupType").css("display", "none");
         });
-        HomeGrid.attachEvent("onOpenEnd", function (rowid) {
+        //Commented by Rahul Shah on 20/10/2015 for PL#1683
+        //HomeGrid.attachEvent("onOpenEnd", function (rowid) {
 
-            callsearch();
+        //    callsearch();
 
-            return true;
-        });
+        //    return true;
+        //});
         HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
             var locked = HomeGrid.cells(id, 1).getAttribute("locked");
@@ -351,7 +352,12 @@
         }
         HomeGrid.sortRows(1, 'str', 'asc');
         HomeGrid.forEachRow(function (rowid) {
+            //Added by Rahul Shah on 20/10/2015 for PL #1683
+            if (rowid.split(".")[0] == "tact") {
+                var a = this.getRowById(rowid);
+                this.collapseKids(a);
 
+            }
             var MQL = HomeGrid.cells(rowid, 10).getValue();
             if (MQL != "--")
                 HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
@@ -367,7 +373,9 @@
             //HomeGrid.closeItem(rowid);
             var id = HomeGrid.cells(rowid, 3).getValue();
             var pid = HomeGrid.getParentId(rowid);
+            
             if (isCopyTactic != 0) {
+               
                 //if (HomeGrid.getOpenState(rowid) == true)
                 //    HomeGrid.closeItem(rowid);
                 if (id == isCopyTactic) {
@@ -405,11 +413,50 @@
                 if (id == isEditTactic) {
                     HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
                     var scrolltop = $(".rowselected").offset().top;
-
                     $(window).scrollTop(scrolltop - 100);
                 }
             }
         });
+        //Added by Rahul shah for PL #1683
+        HomeGrid.attachEvent("onOpenEnd", function (rowid) {
+            //Modified by komal Rawal for #1553
+            $(".grid_Search").off("click");
+            $(".grid_Search").click(function (e) {
+                inspectCloseFocus = $(this).position().top;
+                var id = $(this).attr('alt');
+                var type = $(this).attr('id');
+                gridSearchFlag = 1;
+                DisplayEditablePopup(id, type);
+
+            });
+
+            $(".grid_add").click(function (e) {
+                $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+                gridSearchFlag = 1;
+                var type = $(this).attr('id');
+                var name = $(this).attr('alt');
+                var title = $(this).attr('data-title');
+                /*Modified by Mitesh for PL ticket 1570
+                combination of title and permission conflict when title has "\" separator*/
+                var permission = $(this).attr('permission');
+                //title = chk_permission[0];
+                //var permission = chk_permission[1];
+                DisplayPopUpMenu(type, name, title, permission, e);
+
+            });
+
+        });
+        
+        $(".grid_Search").off("click");
+        $(".grid_Search").click(function (e) {
+            inspectCloseFocus = $(this).position().top;
+            var id = $(this).attr('alt');
+            var type = $(this).attr('id');
+            gridSearchFlag = 1;
+            DisplayEditablePopup(id, type);
+
+        });
+        //End
         isCopyTactic = 0;
         isEditTactic = 0;
 
