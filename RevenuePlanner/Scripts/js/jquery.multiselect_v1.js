@@ -46,6 +46,7 @@ var selectbox_keys = '';
             appendTo: "body",
             ////Added by Mitesh Vaishnav - Additional perameter to identify customfields Ids
             CustomCampaignName: "",
+            CustomLineItemName: "",
             CustomProgramName: "",
             CustomTacticName: "",
             CustomName: "",
@@ -147,6 +148,7 @@ var selectbox_keys = '';
             var id = el.attr('id') || multiselectID++; // unique ID for the label & option tags
             //Start: Added by Mitesh Vaishnav for PL ticket #959 Filter changes for Revenue report
             var isCampaignCustomField = false;
+            var isLineitemCustomField = false;
             var isProgramCustomField = false;
             var isTacticCustomField = false;
             var isCustomField = false;
@@ -218,6 +220,13 @@ var selectbox_keys = '';
                         istacticSectionDisplay = true;
                         var tempId = $this.parent().attr('id');
                         html += '<div class="report-seperator" id="' + tempId + '_tacticCustomHeader"><span>Tactic Fields</span></div>'
+                    }
+                }
+                if (!isLineitemCustomField && o.CustomLineItemName != '') {
+                    if (value.substring(0, o.CustomLineItemName.length) == o.CustomLineItemName) {
+                        isLineitemCustomField = true;
+                        var tempId = $this.parent().attr('id');
+                        html += '<div class="report-seperator" id="' + tempId + '_LineitemCustomHeader"><span>Lineitem Fields</span></div>'
                     }
                 }
 

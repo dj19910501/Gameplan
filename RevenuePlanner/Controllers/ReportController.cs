@@ -1848,6 +1848,7 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ReportView)]  // Added by Sohel Pathan on 24/06/2014 for PL ticket #519 to implement user permission Logic
         public ActionResult GetBudget()
         {
+            bool IsBudgetTab = true;
             string planIds = string.Join(",", Sessions.ReportPlanIds.Select(plan => plan.ToString()).ToArray());
             List<int> TacticId = Common.GetTacticByPlanIDs(planIds);
 
@@ -1859,9 +1860,10 @@ namespace RevenuePlanner.Controllers
             var campaignProgramList = db.Plan_Campaign_Program_Tactic.Where(tactic => TacticId.Contains(tactic.PlanTacticId)).ToList();
             List<int> campaignlist = campaignProgramList.Select(campaign => campaign.Plan_Campaign_Program.PlanCampaignId).ToList();
             List<int> programlist = campaignProgramList.Select(program => program.PlanProgramId).ToList();
+            //List<int> LineItemlist = db.Plan_Campaign_Program_Tactic_LineItem.Where(tactic => TacticId.Contains(tactic.PlanTacticId)).Select(lineitem => lineitem.PlanLineItemId).ToList();
 
             lstViewByTab = lstViewByTab.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
-            var lstCustomFields = Common.GetCustomFields(TacticId, programlist, campaignlist);
+            var lstCustomFields = Common.GetCustomFields(TacticId, programlist, campaignlist, IsBudgetTab);
             lstViewByTab = lstViewByTab.Concat(lstCustomFields).ToList();
             ////End - Modified by Mitesh Vaishnav for PL ticket #831
             ViewBag.ViewByTab = lstViewByTab;
@@ -1942,10 +1944,12 @@ namespace RevenuePlanner.Controllers
 
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             tacticList = GetTacticForReporting(true);
-
+            var FilteredLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
             //// load Filter lists.
             List<int> TacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+         
             var LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => TacticIds.Contains(lineitem.PlanTacticId) && lineitem.IsDeleted.Equals(false)).ToList();
+            List<int> LineitemIds = LineItemList.Select(id => id.PlanLineItemId).ToList();
             List<int> ProgramIds = tacticList.Select(tactic => tactic.PlanProgramId).ToList();
             var ProgramList = db.Plan_Campaign_Program.Where(program => ProgramIds.Contains(program.PlanProgramId) && program.IsDeleted.Equals(false)).ToList();
             List<int> CampaignIds = ProgramList.Select(tactic => tactic.PlanCampaignId).ToList();
@@ -2090,6 +2094,8 @@ namespace RevenuePlanner.Controllers
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.ProgramCustomTitle, ""));
                 else if (Tab.Contains(Common.CampaignCustomTitle))
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.CampaignCustomTitle, ""));
+                else if (Tab.Contains(Common.LineitemCustomTitle))
+                    customfieldId = Convert.ToInt32(Tab.Replace(Common.LineitemCustomTitle, ""));
 
                 customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 planobj = GetCustomFieldOptionMappinglist(Tab, customfieldId, customFieldType, tacticList);
@@ -2129,6 +2135,16 @@ namespace RevenuePlanner.Controllers
                             cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
                             List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
                             TacticListInner = tacticList.Where(tactic => entityids.Contains(tactic.Plan_Campaign_Program.PlanCampaignId)).ToList();
+                            p.Id = p.Id.Replace(' ', '_').Replace('#', '_').Replace('-', '_');
+                        }
+                        else if (Tab.Contains(Common.LineitemCustomTitle))
+                        {
+                            cusomfieldEntity = new List<CustomField_Entity>();
+                            cusomfieldEntity = db.CustomField_Entity.Where(c => c.CustomFieldId == customfieldId && c.Value == p.Id).ToList();
+                            List<int> entityids = cusomfieldEntity.Select(e => e.EntityId).ToList();
+                            FilteredLineItemList = LineItemList.Where(list => entityids.Contains(list.PlanLineItemId)).ToList();
+                            var TacticId = LineItemList.Where(list => entityids.Contains(list.PlanLineItemId)).Select(list => list.PlanTacticId);
+                            TacticListInner = tacticList.Where(tactic => TacticId.Contains(tactic.PlanTacticId)).ToList();
                             p.Id = p.Id.Replace(' ', '_').Replace('#', '_').Replace('-', '_');
                         }
                         ////End - Added by Mitesh Vaishnav for PL ticket #831
@@ -2204,7 +2220,15 @@ namespace RevenuePlanner.Controllers
                                     parentTacticId = "cpt_" + p.Id + t.PlanTacticId.ToString();
 
                                     LineItemObj = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                                    if (FilteredLineItemList.Count != 0 )
+                                    {
+                                        var FilteredLineItemIDs = FilteredLineItemList.Select(list=>list.PlanLineItemId).ToList();
+                                        LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId && FilteredLineItemIDs.Contains(l.PlanLineItemId)).OrderBy(l => l.Title).ToList();
+                                    }
+                                    else
+                                    {
                                     LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId).OrderBy(l => l.Title).ToList();
+                                    }
                                     foreach (var l in LineItemObj)
                                     {
                                         //// Add LineItem data to BudgetModelReport.
@@ -2921,7 +2945,7 @@ namespace RevenuePlanner.Controllers
         private List<BudgetModelReport> SetTacticWeightage(List<BudgetModelReport> lstModel, bool IsCustomFieldViewBy)
         {
             List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
-            lstCustomFieldEntities = db.CustomField_Entity.ToList();
+            lstCustomFieldEntities = db.CustomField_Entity.Where(list=>list.CustomField.ClientId == Sessions.User.ClientId).ToList();
             int PlanTacticId = 0;
             string CustomFieldOptionID = string.Empty;
             foreach (BudgetModelReport obj in lstModel)
@@ -2934,13 +2958,13 @@ namespace RevenuePlanner.Controllers
                     {
                         PlanTacticId = !string.IsNullOrEmpty(obj.Id) ? Convert.ToInt32(obj.Id.ToString()) : 0; // Get PlanTacticId from Tactic ActivityId.
                         CustomFieldOptionID = obj.TabActivityId.ToString(); // Get CustomfieldOptionId from Tactic ActivityId.
-                        int weightage = 0;
+                        int weightage = 100;
                         if (lstCustomFieldEntities != null && lstCustomFieldEntities.Count > 0)
                         {
                             //// Get CustomFieldEntity based on EntityId and CustomFieldOptionId from CustomFieldEntities.
                             var _custment = lstCustomFieldEntities.Where(_ent => _ent.EntityId.Equals(PlanTacticId) && _ent.Value.Equals(CustomFieldOptionID)).FirstOrDefault();
                             if (_custment == null)
-                                weightage = 0;
+                                weightage = 100;
                             else if (_custment.CostWeightage != null && Convert.ToInt32(_custment.CostWeightage.Value) > 0) // Get CostWeightage from table CustomFieldEntity.
                                 weightage = Convert.ToInt32(_custment.CostWeightage.Value);
 

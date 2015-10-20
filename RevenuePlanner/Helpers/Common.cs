@@ -142,6 +142,7 @@ namespace RevenuePlanner.Helpers
         public const string CampaignCustomTitle = "CampaignCustom";
         public const string ProgramCustomTitle = "ProgramCustom";
         public const string TacticCustomTitle = "TacticCustom";
+        public const string LineitemCustomTitle = "LineitemCustom";
 
         //Added By Sohel Pathan
         public static string ColorCodeForCustomField = "";
@@ -4530,13 +4531,16 @@ namespace RevenuePlanner.Helpers
         /// <param name="planTacticIds">List of id</param>
         /// <param name="type">Section name(Like Campaign,Program and Tactic)</param>
         /// <returns>List of ViewbyModel</returns>
-        public static List<ViewByModel> GetCustomFields(List<int> tacticids, List<int> programids, List<int> campaignids)
+        public static List<ViewByModel> GetCustomFields(List<int> tacticids, List<int> programids, List<int> campaignids, bool IsBudgetTab = false)
         {
             MRPEntities db = new MRPEntities();
+            List<int> LineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(tactic => tacticids.Contains(tactic.PlanTacticId)).Select(lineitem => lineitem.PlanLineItemId).ToList();
+
             List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
             string CampaignCustomText = Enums.EntityType.Campaign.ToString(),
                 ProgramCustomText = Enums.EntityType.Program.ToString(),
-                TacticCustomText = Enums.EntityType.Tactic.ToString();
+                TacticCustomText = Enums.EntityType.Tactic.ToString(),
+               LineItemCustomText = Enums.EntityType.Lineitem.ToString();
 
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
             var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId
@@ -4546,7 +4550,7 @@ namespace RevenuePlanner.Helpers
 
             List<int> customfieldids = customfieldlist.Select(cfl => cfl.CustomFieldId).ToList();
             // Check tacticid exists or not then use concat
-            List<int> allentityids = tacticids.Concat(programids).Concat(campaignids).ToList();
+            List<int> allentityids = tacticids.Concat(programids).Concat(campaignids).Concat(LineItemIds).ToList();
 
             var customfieldentity = db.CustomField_Entity.Where(cfe => customfieldids.Contains(cfe.CustomFieldId)).Select(cfe => new { EntityId = cfe.EntityId, CustomFieldId = cfe.CustomFieldId }).ToList();
 
@@ -4565,9 +4569,19 @@ namespace RevenuePlanner.Helpers
             var tacticcustomids = customfieldentity.Where(cfe => tacticids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
             List<ViewByModel> lstCustomFieldsViewByTabTactic = customfieldlist.Where(cf => cf.EntityType == TacticCustomText && tacticcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = TacticCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabTactic = lstCustomFieldsViewByTabTactic.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            var LineItemcustomids = customfieldentity.Where(cfe => LineItemIds.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabLineItem = customfieldlist.Where(cf => cf.EntityType == LineItemCustomText && LineItemcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = LineitemCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            lstCustomFieldsViewByTabLineItem = lstCustomFieldsViewByTabLineItem.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
+            if (IsBudgetTab)
+            {
+                lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabTactic).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabCampaign).Concat(lstCustomFieldsViewByTabLineItem).ToList();
+
+            }
+            else
+            {
             lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabTactic).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabCampaign).ToList();
-
+            }
             return lstCustomFieldsViewByTab;
         }
 
