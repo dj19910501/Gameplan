@@ -225,6 +225,7 @@
 
     function KeyPressOnDropdown() {
         $(document).keypress(function (e) {
+            //alert('1');
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.tbodycampaignprogram');
 
@@ -239,8 +240,12 @@
                 $this.find(".trdropdownhover").each(function () {
                     var p = $(this).find('p');
                     var text = jQuery(p).text().toLowerCase();
+                    var _checkdiv = $(this).css('display');
                     if ($prevtext == '' || cur_check.length > 1) {
                         if (text.indexOf(cur_check) == 0) {
+                            if (_checkdiv == "none") {
+                                return false;
+                            }
                             $prevtext = text;
                             if ($_prevdata != null && $_prevdata != 'undefined' && $_prevdata != -1) {
                                 $($_prevdata).removeClass('setfocusTr');

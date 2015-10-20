@@ -29,7 +29,7 @@
                 }
             </div>
             <div class="span6">
-                <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Edit Plan</button>
+                <button id="EditPlan" class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button" disabled="disabled">Edit Plan</button>
                 @* Modified By :- Sohel on 08/04/2014 for PL ticket #424 to Change Add Activity to “Edit Plan” and make it as disabled. *@
             </div>
         </div>
@@ -94,7 +94,7 @@
         }
         /*End: Added by Mitesh Vaishnav on 16/07/2014 for functional review point 64   */
         LoadYearsData(); //function call to load Years tabs
-
+        $("#EditPlan").css('display', 'none'); //PL#1546 
         // Code to set Error/Success message
         //if ($('#cSuccess').html() != '') {
         //    $('#cSuccess').html('<strong>Success.</strong> ' + $('#cSuccess').html())

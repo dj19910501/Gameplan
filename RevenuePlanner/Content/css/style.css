@@ -10248,6 +10248,7 @@ li.close-list {
 
     .inspect-column-parent .span3 {
         width: 22%;
+        padding-right: 2.2%; /*Change by dashrath -PL 1607*/
     }
 
     .inspect-column-parent p {
