@@ -4645,7 +4645,13 @@ function Quarter() {
         }
         else if (type == "Line") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItem'>New Line Item</li> <li class='new-prog' id='CloneLineItem'>Copy Line Item</li>  </ul>";
+                if (title.indexOf("Other")>=0) {
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItem'>New Line Item</li> </ul>";
+                }
+                else {
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItem'>New Line Item</li> <li class='new-prog' id='CloneLineItem'>Copy Line Item</li>  </ul>";
+                    
+                }
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -4943,6 +4949,7 @@ function Quarter() {
         
         //Copy Line Item
         $('#CloneLineItem').click(function () {
+           // debugger;
             isCopyTactic = TacticId;
             var idPlanLineItem = LineId;// $("#hdnPlanTacticId").val();
             var Title = title;// $("#lblTacticTitle").html();
