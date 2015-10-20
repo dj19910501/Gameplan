@@ -2861,7 +2861,7 @@ namespace RevenuePlanner.Controllers
             {
                 BudgetMonth lineDiffPlanned = new BudgetMonth();
                 List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId).ToList();
-                BudgetModelReport otherLine = lines.Where(ol => ol.LineItemTypeId == null).SingleOrDefault();
+                BudgetModelReport otherLine = lines.Where(ol => ol.LineItemTypeId == null).FirstOrDefault();
                 lines = lines.Where(ol => ol.LineItemTypeId != null).ToList();
                 if (otherLine != null)
                 {
@@ -2894,18 +2894,18 @@ namespace RevenuePlanner.Controllers
                         lineDiffPlanned.Nov = lineDiffPlanned.Nov < 0 ? 0 : lineDiffPlanned.Nov;
                         lineDiffPlanned.Dec = lineDiffPlanned.Dec < 0 ? 0 : lineDiffPlanned.Dec;
 
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().MonthPlanned = lineDiffPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().ParentMonthPlanned = lineDiffPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = lineDiffPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = lineDiffPlanned;
 
                         double planned = _budgModel.Planned - lines.Sum(l1 => l1.Planned);
                         planned = planned < 0 ? 0 : planned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().Planned = planned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Planned = planned;
                     }
                     else
                     {
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().MonthPlanned = _budgModel.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().ParentMonthPlanned = _budgModel.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).SingleOrDefault().Planned = _budgModel.Planned < 0 ? 0 : _budgModel.Planned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = _budgModel.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = _budgModel.MonthPlanned;
+                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Planned = _budgModel.Planned < 0 ? 0 : _budgModel.Planned;
                     }
                 }
             }
@@ -2921,7 +2921,7 @@ namespace RevenuePlanner.Controllers
         private List<BudgetModelReport> SetTacticWeightage(List<BudgetModelReport> lstModel, bool IsCustomFieldViewBy)
         {
             List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
-            lstCustomFieldEntities = db.CustomField_Entity.ToList();
+            lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
             int PlanTacticId = 0;
             string CustomFieldOptionID = string.Empty;
             foreach (BudgetModelReport obj in lstModel)
@@ -2934,13 +2934,13 @@ namespace RevenuePlanner.Controllers
                     {
                         PlanTacticId = !string.IsNullOrEmpty(obj.Id) ? Convert.ToInt32(obj.Id.ToString()) : 0; // Get PlanTacticId from Tactic ActivityId.
                         CustomFieldOptionID = obj.TabActivityId.ToString(); // Get CustomfieldOptionId from Tactic ActivityId.
-                        int weightage = 0;
+                        int weightage = 100;
                         if (lstCustomFieldEntities != null && lstCustomFieldEntities.Count > 0)
                         {
                             //// Get CustomFieldEntity based on EntityId and CustomFieldOptionId from CustomFieldEntities.
                             var _custment = lstCustomFieldEntities.Where(_ent => _ent.EntityId.Equals(PlanTacticId) && _ent.Value.Equals(CustomFieldOptionID)).FirstOrDefault();
                             if (_custment == null)
-                                weightage = 0;
+                                weightage = 100;
                             else if (_custment.CostWeightage != null && Convert.ToInt32(_custment.CostWeightage.Value) > 0) // Get CostWeightage from table CustomFieldEntity.
                                 weightage = Convert.ToInt32(_custment.CostWeightage.Value);
 
@@ -6078,7 +6078,7 @@ namespace RevenuePlanner.Controllers
 
             List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
 
-            List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
+            TacticData = new List<TacticStageValue>();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -6131,7 +6131,7 @@ namespace RevenuePlanner.Controllers
             {
                 //PlanTacticIdsList
                 tacticlist = GetTacticForReporting();
-
+                TacticData = new List<TacticStageValue>();
                 if (ParentLabel.Equals(Common.RevenueCampaign))
                 {
                     if (childlabelType == Common.RevenueCampaign)
@@ -6165,7 +6165,7 @@ namespace RevenuePlanner.Controllers
                     //tacticlist = GetTacticForReporting();
                     // Fetch the respectives Campaign Ids and Program Ids from the tactic list
                     // Get the List of tacic for card section base on parent label, child label and child id and also set view bag for details button.
-                    Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+                    TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
 
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
@@ -6222,7 +6222,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
                 {
-
+                    TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
                     _customfieldOptionId = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                     if (ParentLabel.Contains(Common.TacticCustomTitle))
                     {
@@ -8071,8 +8071,11 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
         {
             #region "Declare Local Variables"
-            List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
+            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+
+            List<TacticStageValue> TacticData = tacticStageList;
+            TempData["ReportData"] = tacticStageList;
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
             string StageCode = code;
@@ -8096,7 +8099,7 @@ namespace RevenuePlanner.Controllers
 
                 string customFieldType = string.Empty;
                 // Add By Nishant Sheth
-                List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
+                // List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
                 List<int> campaignlist = new List<int>();
                 List<int> programlist = new List<int>();
                 List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
