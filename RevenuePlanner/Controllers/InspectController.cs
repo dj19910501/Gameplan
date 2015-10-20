@@ -5570,6 +5570,7 @@ namespace RevenuePlanner.Controllers
                                 LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
                                 foreach (var item in MappingFields)
                                 {
+                                    LineitemBudgetMapping = new LineItem_Budget();
                                     LineitemBudgetMapping.BudgetDetailId = item.Id;
                                     LineitemBudgetMapping.PlanLineItemId = lineItemId;
                                     LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
@@ -5828,15 +5829,15 @@ namespace RevenuePlanner.Controllers
                                 LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
                                 foreach (var item in MappingFields)
                                 {
+                                    LineitemBudgetMapping = new LineItem_Budget();
                                     LineitemBudgetMapping.BudgetDetailId = item.Id;
                                     LineitemBudgetMapping.PlanLineItemId = form.PlanLineItemId;
                                     LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
                                     LineitemBudgetMapping.CreatedDate = DateTime.Now;
                                     db.Entry(LineitemBudgetMapping).State = EntityState.Added;
                                     LineitemBudgetMapping.Weightage = (byte)item.Weightage;
-                                    db.SaveChanges();
                                 }
-
+                                db.SaveChanges();
 
                                 #endregion
 
