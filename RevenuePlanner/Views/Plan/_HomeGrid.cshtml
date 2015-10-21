@@ -21,9 +21,9 @@
     div.gridbox_dhx_skyblue.gridbox div.objbox table.row20px {
         width: 100% !important;
     }
-      /*Added by Rahul Shah on 29/09/2015 for PL #1618*/
+    /*Added by Rahul Shah on 29/09/2015 for PL #1618*/
     div.gridbox {
-        height : 100% ! important;
+        height: 100% !important;
     }
 </style>
 
@@ -99,15 +99,15 @@
         window.focus();
 
         pageIsScroll = false;
-
+        //Commented by Rahul Shah on 21/10/2015 for PL #1702
         //Modified by komal Rawal for #1553
-        $(".grid_Search").click(function (e) {
-            inspectCloseFocus = $(this).position().top;
-            var id = $(this).attr('alt');
-            var type = $(this).attr('id');
-            gridSearchFlag = 1;
-            DisplayEditablePopup(id, type);
-        });
+        //$(".grid_Search").click(function (e) {
+        //    inspectCloseFocus = $(this).position().top;
+        //    var id = $(this).attr('alt');
+        //    var type = $(this).attr('id');
+        //    gridSearchFlag = 1;
+        //    DisplayEditablePopup(id, type);
+        //});
 
         //End
 
@@ -118,7 +118,7 @@
             var targetHeight = $(this).height();
             var contentHeight = $('#divTacticReqMsg').outerHeight();
             var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-            
+
             $('#divTacticReqMsg').css({
                 'top': targetBottomOffset,
                 'left': position.left,
@@ -211,7 +211,7 @@
                 var targetHeight = $(this).height();
                 var contentHeight = $('#divTacticReqMsg').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-              
+
                 $('#divTacticReqMsg').css({
                     'top': targetBottomOffset,
                     'left': position.left,
@@ -276,7 +276,7 @@
             var spnerror = $(this).find("#tacticIsRequired");
             if (typeof spnerror != 'undefined' && spnerror != null) {
                 var div = $(spnerror).parent().parent();
-               
+
                 if (typeof div != 'undefined') {
                     $(spnerror).remove();
                     $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
@@ -291,7 +291,7 @@
                 var targetHeight = $(this).height();
                 var contentHeight = $('#divTacticReqMsg').outerHeight();
                 var targetBottomOffset = targetOffset + targetHeight - contentHeight;
-              
+
                 $('#divTacticReqMsg').css({
                     'top': targetBottomOffset,
                     'left': position.left,
@@ -350,7 +350,7 @@
         }
         HomeGrid.sortRows(1, 'str', 'asc');
         HomeGrid.forEachRow(function (rowid) {
-
+            
             var MQL = HomeGrid.cells(rowid, 10).getValue();
             if (MQL != "--")
                 HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
@@ -404,10 +404,19 @@
                 if (id == isEditTactic) {
                     HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
                     var scrolltop = $(".rowselected").offset().top;
-
                     $(window).scrollTop(scrolltop - 100);
                 }
             }
+        });
+        //Added by Rahul Shah on 21/10/2015 for PL #1702
+        $(".grid_Search").off("click");
+        $(".grid_Search").click(function (e) {
+            inspectCloseFocus = $(this).position().top;
+            var id = $(this).attr('alt');
+            var type = $(this).attr('id');
+            gridSearchFlag = 1;
+            DisplayEditablePopup(id, type);
+
         });
         isCopyTactic = 0;
         isEditTactic = 0;
@@ -424,9 +433,9 @@
                 }
             }
         });
-      
+
     }
-  
+
     function sort_Owner(a, b, ord, a_id, b_id) {
 
         a = HomeGrid.cells(a_id, 8).getText();
