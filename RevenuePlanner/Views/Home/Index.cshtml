@@ -2678,7 +2678,8 @@ function AjaxRequest() {
                         var name = $(this).attr('Name');
                         var title = $(this).attr('aria-label');
                         var permission = $(this).attr('Permission');
-                        DisplayPopUpMenu(type, name, title, permission, e);
+                        var linetype = $(this).attr('lineitemtype');
+                        DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
                     });
 
@@ -2916,7 +2917,8 @@ function renderGantt(taskData) {
             var name = $(this).attr('Name');
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
-            DisplayPopUpMenu(type, name, title, permission, e);
+            var linetype = $(this).attr('lineitemtype');
+            DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
         });
 
@@ -2981,7 +2983,8 @@ function renderGantt(taskData) {
             var name = $(this).attr('Name');
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
-            DisplayPopUpMenu(type, name, title, permission, e);
+            var linetype = $(this).attr('lineitemtype');
+            DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
         });
 
@@ -3505,7 +3508,8 @@ function Quarter() {
                           var name = $(this).attr('Name');
                           var title = $(this).attr('aria-label');
                           var permission = $(this).attr('Permission');
-                          DisplayPopUpMenu(type, name, title, permission, e);
+                          var linetype = $(this).attr('lineitemtype');
+                          DisplayPopUpMenu(type, name, title, permission,linetype, e);
                       });
 
                       var $doc = $(document);
@@ -3782,7 +3786,8 @@ function Quarter() {
             var name = $(this).attr('Name');
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
-            DisplayPopUpMenu(type, name, title, permission, e);
+            var linetype = $(this).attr('lineitemtype');
+            DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
         });
 
@@ -4116,7 +4121,8 @@ function Quarter() {
             var name = $(this).attr('Name');
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
-            DisplayPopUpMenu(type, name, title, permission, e);
+            var linetype = $(this).attr('lineitemtype');
+            DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
         });
 
@@ -4442,7 +4448,8 @@ function Quarter() {
             var name = $(this).attr('Name');
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
-            DisplayPopUpMenu(type, name, title, permission, e);
+            var linetype = $(this).attr('lineitemtype');
+            DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
         });
     });
@@ -4565,7 +4572,7 @@ function Quarter() {
 
 
 
-    function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission, e) {
+    function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission,linetype, e) {
 
         var type = typeVal;
         var name = nameVal;
@@ -4573,7 +4580,7 @@ function Quarter() {
         var title = titleVal;
         var permission = permission;
         var name_Id = name.split("_");
-
+        var LineType = linetype;
         var PlanId;
         var CampaignId;
         var ProgramId;
@@ -4645,7 +4652,7 @@ function Quarter() {
         }
         else if (type == "Line") {
             if (permission == "true") {
-                if (title.indexOf("Other")>=0) {
+                if (LineType == "") {
                     ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItem'>New Line Item</li> </ul>";
                 }
                 else {
@@ -5126,7 +5133,8 @@ function () {
         var name = $(this).attr('Name');
         var title = $(this).attr('aria-label');
         var permission = $(this).attr('Permission');
-        DisplayPopUpMenu(type, name, title, permission, e);
+        var linetype = $(this).attr('lineitemtype');
+        DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
     });
 
@@ -5189,7 +5197,8 @@ function () {
         var name = $(this).attr('Name');
         var title = $(this).attr('aria-label');
         var permission = $(this).attr('Permission');
-        DisplayPopUpMenu(type, name, title, permission, e);
+        var linetype = $(this).attr('lineitemtype');
+        DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
     });
 

@@ -232,7 +232,11 @@ namespace RevenuePlanner.Helpers
         };
         // End By Nishant Sheth
         #endregion
+        public enum clientAcivityType
+        {
+            DefaultBudgetForFinanace
 
+        }
         //#region User
         ///// <summary>
         ///// Enum for role.

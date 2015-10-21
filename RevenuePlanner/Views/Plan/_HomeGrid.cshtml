@@ -240,7 +240,8 @@
                 var permission = $(this).attr('permission');
                 //title = chk_permission[0];
                 //var permission = chk_permission[1];
-                DisplayPopUpMenu(type, name, title, permission, e);
+                var linetype = $(this).attr('lineitemtype');
+                DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
             });
 
@@ -270,7 +271,8 @@
                 var name = $(this).attr('alt');
                 var title = $(this).attr('data-title');
                 var permission = $(this).attr('permission');
-                DisplayPopUpMenu(type, name, title, permission, e);
+                var linetype = $(this).attr('lineitemtype');
+                DisplayPopUpMenu(type, name, title, permission,linetype, e);
             });
         });
         $('#gridbox').find('tbody tr').each(function () {
@@ -441,7 +443,8 @@
                 var permission = $(this).attr('permission');
                 //title = chk_permission[0];
                 //var permission = chk_permission[1];
-                DisplayPopUpMenu(type, name, title, permission, e);
+                var linetype = $(this).attr('lineitemtype');
+                DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
             });
 
@@ -1174,7 +1177,8 @@
             var permission = $(this).attr('permission');
             //title = chk_permission[0];
             //var permission = chk_permission[1];
-            DisplayPopUpMenu(type, name, title, permission, e);
+            var linetype = $(this).attr('lineitemtype');
+            DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
         });
     });

@@ -399,5 +399,17 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        public static bool IsBudgetShow
+        {
+            get
+            {
+                return Convert.ToBoolean(HttpContext.Current.Session["IsBudgetShow"]);
+            }
+            set
+            {
+                HttpContext.Current.Session["IsBudgetShow"] = value;
+            }
+        }
+
     }
 }

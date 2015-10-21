@@ -123,9 +123,12 @@
         <li class="active pull-left" id="liSetup">
             <a>Setup</a>
         </li>
+         @if(!Sessions.IsBudgetShow)
+        {
         <li class="pull-left" id="liBudget">
             <a>Budget</a>
         </li>
+         }
     </ul>
     <div id="divTab">
     </div>

@@ -25,6 +25,7 @@ namespace RevenuePlanner.Controllers
     {
         #region Variables
         MRPEntities db = new MRPEntities();
+        private bool IsClientAllowedForCustomNaming = false;
         #endregion
 
         #region Login
@@ -155,7 +156,20 @@ namespace RevenuePlanner.Controllers
 
                     //// Set user activity permission session.
                     SetUserActivityPermission();
-
+                    //
+                    var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == obj.ClientId).ToList();
+                    var ApplicationActivityList = objBDSServiceClient.GetClientApplicationactivitylist(applicationId);
+                    var clientApplicationActivityList = (from c in clientActivityList
+                                                         join ca in ApplicationActivityList on c.ApplicationActivityId equals ca.ApplicationActivityId
+                                                         select new
+                                                         {
+                                                             Code = ca.Code,
+                                                             ActivityTitle = ca.ActivityTitle,
+                                                             clientId = c.ClientId
+                                                         }).Select(c => c).ToList();
+                    IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(o => o.Code == Enums.clientAcivityType.DefaultBudgetForFinanace.ToString()).Any();
+                    Sessions.IsBudgetShow = IsClientAllowedForCustomNaming;
+                    //
                     // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
                     if (Sessions.AppMenus != null)
                     {
