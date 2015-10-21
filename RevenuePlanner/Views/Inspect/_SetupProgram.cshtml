@@ -83,10 +83,10 @@
             <h3 class="modal-popup-innertitle source-sans-proregular">Attributes</h3>
         </li>
     </ul>
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent">
-         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(program.PlanProgramId, Enums.EntityType.Program.ToString(), 0)
-    </div>     
-    //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section                           
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent margin-left">
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(program.PlanProgramId, Enums.EntityType.Program.ToString(), 0)
+    </div>
+    //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section
     <span class="flag-icon"></span>
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular gear-icon button-inspect-review-modal pull-right"
         id="button-review-tactic" name="button-save" value="Review Tactic" style="display: none;" />

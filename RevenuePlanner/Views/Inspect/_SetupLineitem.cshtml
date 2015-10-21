@@ -60,10 +60,10 @@
         </li>
     </ul>
 
-    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
+    <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left">
         @HtmlHelpers.GenerateCustomFieldsForInspectPopup(Model.PlanLineItemId, Enums.EntityType.Lineitem.ToString(), 0)
     </div>
-    
+
 
     <ul id="FinanceMappingHeading" class="nav nav-tabs new-margin padding-bottom10 clear border-bottom-div">
         <li class="pull-left">
@@ -71,7 +71,7 @@
         </li>
     </ul>
 
-    <div id="CustomHtmlHelperfieldforMapping" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent">
+    <div id="CustomHtmlHelperfieldforMapping" class="inspect-column-parent source-sans-proregular remove-bottom-border margin-bottom0 inspect_attribute_parent margin-left">
         @HtmlHelpers.GenerateMappingFieldsForInspectPopup(Model.PlanLineItemId)
     </div>
 }
