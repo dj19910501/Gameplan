@@ -47,7 +47,7 @@
             @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate", @readonly = "true", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat)  })
         </div>
 
-        <div class="span3 review_no_padding" id="inspect-modal-left-column3">
+        <div class="span3" id="inspect-modal-left-column3">
             <p>@Html.Raw("Campaign Budget")</p>
             @Html.TextBox("txtcampaignBudget",campaignBudget, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtCost", @readonly = "true" })
                <div class="content dark inline-ellipsis">
