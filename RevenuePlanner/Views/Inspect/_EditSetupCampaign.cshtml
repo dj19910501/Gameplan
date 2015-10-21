@@ -87,7 +87,7 @@
     @Html.HiddenFor(model => model.CampaignBudget, new { id = "hdnOldCampaignBudget" })
     @Html.HiddenFor(model => model.Description, new { id = "hdnDescription" })  // Added by Viral Kadiya on 11/15/2014 for PL ticket #794
                                                                                 
-                                                                                <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting .inspect_attribute_parent" style="margin-bottom: 0px;">
+                                                                                <div class="inspect-column-parent source-sans-proregular remove-bottom-border inspect-column-parent-reformatting inspect_attribute_parent" style="margin-bottom: 0px;">
 
         <div class="span6" id="inspect-modal-left-column1">
             <p>@Html.Raw("Description")</p>
@@ -129,7 +129,7 @@
                         <img src="~/Content/images/gray-calendar-icon.png"></span>
                 </div>
             </span>
-            <p class="clear-section" style="margin-top: 2px;">End Date</p>
+            <p class="clear-section" style="padding-top: 10px;">End Date</p>
             <span style="position: relative;">
                 <div class="dp input-append date without-margin calendar-width sidebar-datepicker inspect-date" id="dp_end" data-date="@Model.EndDate.ToShortDateString()" data-date-format="@RevenuePlanner.Helpers.Common.DateFormatDatePicker">
                     @Html.TextBoxFor(model => model.EndDate, new { @class = "span12 input-small truncate input-setup", @Value = Model.EndDate.ToString(@RevenuePlanner.Helpers.Common.DateFormat), id = "t_enddate" })
@@ -138,7 +138,7 @@
                 </div>
             </span>
         </div>
-         <div class="span3 review_no_padding" id="inspect-modal-left-column3">
+         <div class="span3" id="inspect-modal-left-column3">
             <p>@Html.Raw("Campaign Budget")</p>
             @Html.TextBoxFor(model => model.CampaignBudget, new { @class = "currency_dollar span12 input-small truncate input-setup", id = "txtCampaignBudget", placeholder = "Required", require = "true", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
             <p>Remaining Plan Budget</p>

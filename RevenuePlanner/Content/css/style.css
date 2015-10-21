@@ -2734,7 +2734,7 @@ ul.welcome-sprite {
     padding-right: 3px;
 }*/
 #inspect-modal-left-column2, #inspect-modal-left-column3, #inspect-modal-left-column4 {
-    padding-left: 3.5%;
+    padding-left: 1.5%;
     margin: 0 auto !important; /*by bheru 08-09-2015*/
     /*margin-top: 20px;*/
 }
@@ -15285,7 +15285,7 @@ float:left;
 .inspect_attribute_parent .span3 {
     display: inline-block;
     float: none;
-    padding: 0 2%; /*PL 1670 Dashrath Prajapati*/
+    padding: 0 1%; /*PL 1670 Dashrath Prajapati*/
     vertical-align: top;
     width: 23%;
 }
