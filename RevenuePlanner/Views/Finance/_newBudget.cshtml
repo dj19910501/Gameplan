@@ -17,10 +17,14 @@
     var ValidParentId = 0;
     var ValidColumnId = 0;
     var ValidRowId = 0;
-    
+    var BudgetDetails = {
+        Name: []
+    };
+    var IsValid = true;
     var gridWidth = $("#divGridView").width();
     $(document).ready(function () {
 
+        GetListOfBudgetName();
         // Add By Nishant Sheth
         // Desc :: handle for same name or empty string
         dhtmlxValidation.isNameValid = function (data) {
@@ -31,16 +35,20 @@
                 isrepeat = false;
                 IsValid = false;
             } else {
-                $.each(childitems, function () {
-
-                    if (this.toString() != ValidRowId.toString()) {
-                        var ColCurrentValue = newTreeGrid.cells(this, ValidColumnId).getValue();
-                        if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
+                var BudgetIndex = BudgetDetails.Name.indexOf(data.toLowerCase().trim());
+                if (BudgetIndex >= 0) {
+                    
                             isrepeat = false;
                             IsValid = false;
                         }
-                    }
-                });
+                //$.each(BudgetDetails.Name, function () {
+
+                //    if (data.toLowerCase().trim() == this.toString()) {
+                //        debugger;
+                //        isrepeat = false;
+                //        IsValid = false;
+                //    }
+                //});
             }
             return isrepeat;
         };
@@ -158,5 +166,19 @@
         //budgetId = 8;
         var url = "@Url.Content("~/Finance/CreateNewBudget")";
         $("#divGridView").load(url + '?budgetName=' + escape(budgetName), function () { RefreshBudgetDropdown(); });
+    }
+
+    function GetListOfBudgetName() {
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            url: '@Url.Content("~/Finance/ListOfBudgetName/")',
+            success: function (data) {
+                debugger;
+                BudgetDetails.Name = data;
+
+            }
+
+        });
     }
 </script> 

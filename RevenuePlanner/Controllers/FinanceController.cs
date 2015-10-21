@@ -814,6 +814,12 @@ namespace RevenuePlanner.Controllers
             //IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
             return PartialView("_EditBudget", objFinanceModel);
         }
+
+        public JsonResult ListOfBudgetName()
+        {
+            var ListOfBudgetName = db.Budgets.Where(a => a.IsDeleted == false).Select(a => a.Name.ToLower()).ToList();
+            return Json(ListOfBudgetName, JsonRequestBehavior.AllowGet);
+        }
         #endregion
 
         #region Declarion of Budget/Forecast for Parent Child List

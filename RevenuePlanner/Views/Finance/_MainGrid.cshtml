@@ -401,15 +401,15 @@
             /*End: Get ParentId and BudgetDetailId from RowId */
 
             if (itemType.toLowerCase() == 'childitem') {
-                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, row_id);
+                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "", "0", "0", "0", "0", "0"], -1, row_id);
             }
             else if (isRootMostParent) {
-                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"]);
+                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "", "0", "0", "0", "0", "0"]);
             }
             else {
                 // Insert record at Parallel Level.
                 var curntRowParentId = myTreeGrid.getParentId(row_id);
-                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, curntRowParentId);
+                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "", "0", "0", "0", "0", "0"], -1, curntRowParentId);
             }
             
             var titleIndex = myTreeGrid.getColIndexById('title');
