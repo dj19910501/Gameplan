@@ -227,11 +227,20 @@
     var _campaignLabel = '@Common.RevenueCampaign';
 
     $('#ddlParentConversionSummery').bind('change', function () {
+        
         var _parentValue = $(this).val();
         marsterCustomField = _parentValue;
         if (_parentValue == _campaignLabel) {
             $("#CustomFieldChildDDL").css('display', 'none');
             $("#CampaignChildDDL").css('display', 'inline-block');
+
+            // Add by Nishant Sheth
+            $("#ddlCampaignConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlCampaignConversionToPlan").css('display', '');
+            $("#ddlProgramConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlProgramConversionToPlan").css('display', '');
+            $("#ddlTacticConversionToPlan").css('display', 'none');
+            $("#btnMultiselect_ddlTacticConversionToPlan").css('display', '');
 
             /*Start: Refresh Campaign, Program, Tactic dropdowns*/
             $("#ddlCampaignConversionToPlan").val("0");
@@ -420,7 +429,7 @@
     });
 
     function fillProgramDropdown() {
-        myApp.showPleaseWait(); // New
+        //myApp.showPleaseWait(); // New
         var id = '';
         campaignId = $('#ddlCampaignConversionToPlan').val();
         if (campaignId > 0) {
@@ -453,7 +462,7 @@
     }
 
     function fillTacticDropdown() {
-        myApp.showPleaseWait();//New
+        //myApp.showPleaseWait();//New
         var id = '';
         var Type = '';
         programId = $('#ddlProgramConversionToPlan').val();
@@ -503,7 +512,7 @@
     var isParentChng = false;
     function LoadDataConversionToPlanByCampaign() {
 
-        myApp.showPleaseWait();// New
+        //myApp.showPleaseWait();// New
         var _childValue = '0';
 
         var id = '';
@@ -708,7 +717,7 @@
     $("#ddlConversionTimeFrame").change(function () {
         //$('#ddlINQToPlan').close();
         $("#ddlParentConversionSummery,#ddlTopChildConversionToPlan,#ddlINQToPlan,#ddlCampaignConversionToPlan,#ddlProgramConversionToPlan,#ddlTacticConversionToPlan,#ddlSortby,#Itemsperpage").multiselect("close");
-        myApp.showPleaseWait();
+        //myApp.showPleaseWait();
         AllocatedBy = $("#ddlTimeFrameSelectBox option:selected").text()
         Qurt_Month = AllocatedBy;
         AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
