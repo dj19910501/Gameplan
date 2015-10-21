@@ -156,7 +156,7 @@ namespace RevenuePlanner.Controllers
 
                     //// Set user activity permission session.
                     SetUserActivityPermission();
-                    //
+                    //Start - PL#1675 
                     var clientActivityList = db.Client_Activity.Where(clientActivity => clientActivity.ClientId == obj.ClientId).ToList();
                     var ApplicationActivityList = objBDSServiceClient.GetClientApplicationactivitylist(applicationId);
                     var clientApplicationActivityList = (from c in clientActivityList
@@ -169,6 +169,7 @@ namespace RevenuePlanner.Controllers
                                                          }).Select(c => c).ToList();
                     IsClientAllowedForCustomNaming = clientApplicationActivityList.Where(o => o.Code == Enums.clientAcivityType.DefaultBudgetForFinanace.ToString()).Any();
                     Sessions.IsBudgetShow = IsClientAllowedForCustomNaming;
+                    //End PL#1675
                     //
                     // Start - Added by Sohel Pathan on 19/06/2014 for PL ticket #519 to implement user permission Logic
                     if (Sessions.AppMenus != null)
