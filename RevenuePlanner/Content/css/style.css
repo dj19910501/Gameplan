@@ -15365,3 +15365,7 @@ float:left;
         border-right: 1px solid #ccc;
     }
 /*by bheru 13-10-2015*/
+
+ .margin-left {
+    margin-left: -9px !important;
+}
