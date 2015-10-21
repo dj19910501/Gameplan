@@ -417,7 +417,7 @@ namespace RevenuePlanner.Controllers
             #region "Add Action column link"
             string strAction = string.Empty;
 
-            if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
+            if ((lstChildren != null && lstChildren.Count() > 0 && IsForcast == false) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
                 double? forcastVal = 0, pannedVal = 0, actualVal = 0;
                 forcastVal = GetSumofValueMainGrid(dataTable, id, "Forecast");
@@ -466,6 +466,17 @@ namespace RevenuePlanner.Controllers
             else
             {
                 rowId = rowId + "_" + _IsForecastCreate_Edit.ToString(); // Append Create/Edit flag value for Forecast permission to RowId.
+                if (IsForcast)
+                {
+                    double? forcastVal = 0, pannedVal = 0, actualVal = 0;
+                    forcastVal = GetSumofValueMainGrid(dataTable, id, "Forecast");
+                    pannedVal = GetSumofValueMainGrid(dataTable, id, "Planned");
+                    actualVal = GetSumofValueMainGrid(dataTable, id, "Actual");
+
+                    forecast = forcastVal.HasValue ? forcastVal.Value.ToString(formatThousand) : "0";
+                    planned = pannedVal.HasValue ? pannedVal.Value.ToString(formatThousand) : "0";
+                    actual = actualVal.HasValue ? actualVal.Value.ToString(formatThousand) : "0";
+                }
                 if (_IsForecastCreate_Edit)
                 {
                     addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
@@ -941,12 +952,14 @@ namespace RevenuePlanner.Controllers
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
+                string IsTitleEdit = "1";
                 if (EditLevel.ToUpper().Equals("BUDGET"))
                 {
                     if (!_IsBudgetCreate_Edit)  // If user has not Create/Edit Budget permission then clear AddRow button Html.
                     {
                         addRow = string.Empty;
                         //   SelectBox = string.Empty;
+                        IsTitleEdit = "0";
                     }
                 }
                 else
@@ -955,6 +968,7 @@ namespace RevenuePlanner.Controllers
                     {
                         addRow = string.Empty;
                         //  SelectBox = string.Empty;
+                        IsTitleEdit = "0";
                     }
                 }
                 lineitemcount = dataTable
@@ -964,11 +978,11 @@ namespace RevenuePlanner.Controllers
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
                 if (rwcount == 1 && lstChildren.Count() == 0)
                 {
-                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0" });
+                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = IsTitleEdit });
                 }
                 else
                 {
-                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "1" });
+                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "1", isTitleEdit = IsTitleEdit });
                 }
 
                 //ParentData.Add(Convert.ToString(lineitemcount));
@@ -978,9 +992,10 @@ namespace RevenuePlanner.Controllers
                 if (!_IsForecastCreate_Edit)    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
                 {
                     addRow = string.Empty;
-                    //  SelectBox = string.Empty;
+                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = "0" });
                 }
-                objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0" });
+                else
+                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = "1" });
 
             }
             ParentData.Add(addRow);

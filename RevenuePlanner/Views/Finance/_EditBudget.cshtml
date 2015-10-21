@@ -172,7 +172,7 @@
                     myTreeGrid.enableTreeCellEdit(true);
                 }
                 else {
-                    myTreeGrid.enableTreeCellEdit(false);
+                    ///myTreeGrid.enableTreeCellEdit(false); 
                     myTreeGrid.setColTypes("tree,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
                 }
                 if (_isBudgetCreateEdit == "False" && _isForecastCreateEdit == "False") {
@@ -397,7 +397,7 @@
         myTreeGrid.setImageSize(1, 1);
         myTreeGrid.setSkin("dhx_skyblue");
         myTreeGrid.parse(GridData, "json");
-
+        var titleIndx = myTreeGrid.getColIndexById('Title');
         myTreeGrid.forEachRow(function (rowid) {
             if (GlobalEditLevel != 'Budget') {
                 var locked = myTreeGrid.getUserData(rowid, "row_locked");
@@ -438,6 +438,12 @@
                     }
                 });
             }
+            //debugger;
+            var isTitleEdit = myTreeGrid.getUserData(rowid, "isTitleEdit");
+            if (isTitleEdit == "0") {
+                myTreeGrid.cells(rowid, titleIndx).setDisabled(true);
+            }
+            
         });
         //myTreeGrid.setUserData("id");
         $("#gridbox").find("table").first().find("tr").next().last().find("td").first().css("text-align", "center");
