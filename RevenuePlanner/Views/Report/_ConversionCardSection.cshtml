@@ -52,6 +52,14 @@
     {
         width:190px;
     }
+
+    .paging ul li {
+        color: #2185C1;
+    }
+
+    .paging ul .active {
+        color: #fff;
+    }
 </style>
 <div class="revenue-filter" id="div-revenue-filter">
     <div class="sorting">
@@ -526,7 +534,7 @@
         var AllocatedBy = $('#ddlConversionTimeFrame option:selected').text();
         var Qurt_Month = AllocatedBy;
         var Code = $("#ddlINQToPlan").val();
-        myApp.showPleaseWait();// New
+        //myApp.showPleaseWait();// New
 
         var _url = "@Url.Content("~/Report/GetTopConversionToPlanByCustomFilter/")" + "?ParentLabel=" + parentlabel + "&childlabelType=" + Type + "&childId=" + id + "&option=" + OptionMain + "&IsQuarterly=" + Qurt_Month + "&code=" + Code + "&BackHeadTitle=" + HeadTitleval + "&isDetails=" + true;
         $("#dvConversionToPlan").load(_url);
@@ -743,7 +751,7 @@
                 //alert('call function!');
                 //LoadDataRevenueToPlanByCampaign();
                 //LoadDataRevenueRealization();
-                myApp.hidePleaseWait();
+                //myApp.hidePleaseWait();
             },
             error: function () {
                 $("#ddlTacticConversionToPlan").empty();
@@ -806,7 +814,7 @@
             //PrevNextDotButtons(6, 'next');
         } else {
 
-            navigation_html = '<ul> <li onclick="javascript:previous();" style="cursor: pointer;"><a href="javascript:previous();">«</a> </li>';
+            navigation_html = '<ul> <li onclick="javascript:previous();" style="cursor: pointer;">«</li>';
             for (var i = 0; i < NumberOfArray; i++) {
                 var PageSeries = SeriresofNum[i].split(',');
                 if (PageSeries.indexOf("@CurrentPageNum") > -1) {
@@ -829,7 +837,7 @@
         //navigation_html += '<li id="prevmore">...</li>';
         var current_link = 0;
         while (number_of_pages > current_link) {
-            navigation_html += '<li class="page_link" longdesc="' + current_link + '" style="cursor: pointer;" onclick="javascript:go_to_page(' + current_link + ')"><a href="javascript:go_to_page(' + current_link + ')" longdesc="' + current_link + '">' + (current_link + 1) + '</a> </li>';
+            navigation_html += '<li class="page_link" longdesc="' + current_link + '" style="cursor: pointer;" onclick="javascript:go_to_page(' + current_link + ')">' + (current_link + 1) + '</li>';
             current_link++;
         }
         //navigation_html += '<li id="nextmore">...</li>';
@@ -861,7 +869,7 @@
                 }
             }
             //navigation_html += '<li onclick="javascript:go_to_page(' + parseInt(number_of_pages) - 1 + ');" style="cursor: pointer;"> <a href="javascript:go_to_page(' + parseInt(number_of_pages) - 1 + ');" >»</a></li> </ul>';
-            navigation_html += '<li onclick="javascript:next();" style="cursor: pointer;"><a href="javascript:next();"</a>»</li></u>';
+            navigation_html += '<li onclick="javascript:next();" style="cursor: pointer;">»</li></u>';
         }
         if (number_of_items > 0) {
             $('#page_navigation').html(navigation_html);

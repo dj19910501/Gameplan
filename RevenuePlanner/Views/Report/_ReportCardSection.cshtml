@@ -27,6 +27,14 @@
     {
         display: block;
     }
+
+    .paging ul li {
+        color: #2185C1;
+    }
+
+    .paging ul .active {
+        color: #fff;
+    }
 </style>
 <div class="revenue-filter" id="div-revenue-filter">
     <div class="sorting" style="width: auto;">
@@ -81,9 +89,7 @@
     // var RevIsnextprev = false;
     //var childId = '@ViewBag.childId';
     var optionmain = '@ViewBag.option';
-    $(window).bind("load", function () {
-        //alert('Nishantr');
-    });
+
     $(document).ready(function () {
 
         @*BackParentLabel = '@TempData["BackParentLabel"]';
@@ -688,7 +694,7 @@ function fillCardProgramDropDown(campaignId, type) {
             //PrevNextDotButtons(6, 'next');
         } else {
 
-            navigation_html = '<ul> <li onclick="javascript:previous();" style="cursor: pointer;"><a href="javascript:previous();">«</a> </li>';
+            navigation_html = '<ul> <li onclick="javascript:previous();" style="cursor: pointer;">«</li>';
             for (var i = 0; i < NumberOfArray; i++) {
                 var PageSeries = SeriresofNum[i].split(',');
                 if (PageSeries.indexOf("@CurrentPageNum") > -1) {
@@ -711,7 +717,7 @@ function fillCardProgramDropDown(campaignId, type) {
         //navigation_html += '<li id="prevmore">...</li>';
         var current_link = 0;
         while (number_of_pages > current_link) {
-            navigation_html += '<li class="page_link" longdesc="' + current_link + '" style="cursor: pointer;" onclick="javascript:go_to_page(' + current_link + ')"><a href="javascript:go_to_page(' + current_link + ')" longdesc="' + current_link + '">' + (current_link + 1) + '</a> </li>';
+            navigation_html += '<li class="page_link" longdesc="' + current_link + '" style="cursor: pointer;" onclick="javascript:go_to_page(' + current_link + ')">' + (current_link + 1) + '</li>';
             current_link++;
         }
         //navigation_html += '<li id="nextmore">...</li>';
@@ -743,7 +749,7 @@ function fillCardProgramDropDown(campaignId, type) {
                 }
             }
             //navigation_html += '<li onclick="javascript:go_to_page(' + parseInt(number_of_pages) - 1 + ');" style="cursor: pointer;"> <a href="javascript:go_to_page(' + parseInt(number_of_pages) - 1 + ');" >»</a></li> </ul>';
-            navigation_html += '<li onclick="javascript:next();" style="cursor: pointer;"><a href="javascript:next();"</a>»</li></u>';
+            navigation_html += '<li onclick="javascript:next();" style="cursor: pointer;">»</li></u>';
         }
         if (number_of_items > 0) {
             $('#page_navigation').html(navigation_html);
@@ -849,6 +855,7 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function next() {
+        
         //alert('Next');
 
         //var pageNumber = parseInt($('#current_page').val());
@@ -900,6 +907,7 @@ function fillCardProgramDropDown(campaignId, type) {
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
         //var SearchString = $('#txtSearch').val();
+        
         var _url = "@Url.Content("~/Report/SearchSortPaginataionRevenue/")" + "?PageNo=" + page_num + "&PageSize=" + ItemPerPage + "&SearchString=" + encodeURIComponent(SearchString) + "&SortBy=" + sortBy + "&ParentLabel=" + ParentLabel + "&childlabelType=" + childlabelType + "&option=" + optionmain;
         $("#dvCardSectionData").load(_url);
 
@@ -909,6 +917,7 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function ItemsPerPagefunction() {
+        
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();
         //myApp.showPleaseWait();
@@ -1189,6 +1198,7 @@ function fillCardProgramDropDown(campaignId, type) {
     }
 
     function SortByFunction() {
+        
         //SortCardSection($("#ddlSortby :selected").val());
         var ItemPerPage = $('#Itemsperpage :selected').text();
         var sortBy = $("#ddlSortby :selected").text();

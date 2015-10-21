@@ -30,6 +30,7 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsOther" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="Budget_Detail">
           <Key>
@@ -37,7 +38,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="BudgetId" Type="int" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" />
           <Property Name="ParentId" Type="int" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
@@ -4784,6 +4785,7 @@
           <NavigationProperty Name="Budget1" Relationship="MRPModel.FK_Budget_Budget" FromRole="Budget" ToRole="Budget1" />
           <NavigationProperty Name="Budget2" Relationship="MRPModel.FK_Budget_Budget" FromRole="Budget1" ToRole="Budget" />
           <NavigationProperty Name="Budget_Detail" Relationship="MRPModel.FK_Budget_Detail_Budget1" FromRole="Budget" ToRole="Budget_Detail" />
+          <Property Name="IsOther" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_Budget_Budget">
           <End Type="MRPModel.Budget" Role="Budget" Multiplicity="1" />
@@ -4891,7 +4893,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="BudgetId" Type="Int32" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="ParentId" Type="Int32" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="CreatedBy" Type="Guid" Nullable="false" />
@@ -5911,6 +5913,7 @@
           <EntitySetMapping Name="Budgets">
             <EntityTypeMapping TypeName="MRPModel.Budget">
               <MappingFragment StoreEntitySet="Budget">
+                <ScalarProperty Name="IsOther" ColumnName="IsOther" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />

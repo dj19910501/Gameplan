@@ -5568,8 +5568,11 @@ namespace RevenuePlanner.Controllers
                                 #region Save Field Mapping Details
                                 var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
                                 LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
+                                if (MappingFields.Count > 0)
+                                {
                                 foreach (var item in MappingFields)
                                 {
+                                        LineitemBudgetMapping = new LineItem_Budget();
                                     LineitemBudgetMapping.BudgetDetailId = item.Id;
                                     LineitemBudgetMapping.PlanLineItemId = lineItemId;
                                     LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
@@ -5577,6 +5580,20 @@ namespace RevenuePlanner.Controllers
                                     LineitemBudgetMapping.Weightage = (byte)item.Weightage;
                                     db.Entry(LineitemBudgetMapping).State = EntityState.Added;
                                 }
+                                }
+                                else
+                                {
+                                    // Add By Nishant Sheth
+                                    // Desc : #1672 if any Budget line item not selected then assoicated with other line item.
+                                    int OtherId = Common.GetOtherBudgetId();
+                                    LineitemBudgetMapping.BudgetDetailId = OtherId;
+                                    LineitemBudgetMapping.PlanLineItemId = lineItemId;
+                                    LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
+                                    LineitemBudgetMapping.CreatedDate = DateTime.Now;
+                                    LineitemBudgetMapping.Weightage = 100;
+                                    db.Entry(LineitemBudgetMapping).State = EntityState.Added;
+                                }
+
                                 db.SaveChanges();
 
                                 #endregion
@@ -5584,9 +5601,10 @@ namespace RevenuePlanner.Controllers
                                 #region "Save custom field to CustomField_Entity table"
                                 if (customFields.Count != 0)
                                 {
+                                    CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                     foreach (var item in customFields)
                                     {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = lineItemId;
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();
@@ -5826,17 +5844,34 @@ namespace RevenuePlanner.Controllers
                                 var MappingFields = JsonConvert.DeserializeObject<List<BudgetAccountMapping>>(FieldMappingValues);
 
                                 LineItem_Budget LineitemBudgetMapping = new LineItem_Budget();
+
+                                if (MappingFields.Count > 0)
+                                {
                                 foreach (var item in MappingFields)
                                 {
+                                        LineitemBudgetMapping = new LineItem_Budget();
                                     LineitemBudgetMapping.BudgetDetailId = item.Id;
                                     LineitemBudgetMapping.PlanLineItemId = form.PlanLineItemId;
                                     LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
                                     LineitemBudgetMapping.CreatedDate = DateTime.Now;
-                                    db.Entry(LineitemBudgetMapping).State = EntityState.Added;
                                     LineitemBudgetMapping.Weightage = (byte)item.Weightage;
-                                    db.SaveChanges();
+                                        db.Entry(LineitemBudgetMapping).State = EntityState.Added;
+                                    }
+                                }
+                                else
+                                {
+                                    // Add By Nishant Sheth
+                                    // Desc : #1672 if any Budget line item not selected then assoicated with other line item.
+                                    int OtherId = Common.GetOtherBudgetId();
+                                    LineitemBudgetMapping.BudgetDetailId = OtherId;
+                                    LineitemBudgetMapping.PlanLineItemId = form.PlanLineItemId; ;
+                                    LineitemBudgetMapping.CreatedBy = Sessions.User.UserId;
+                                    LineitemBudgetMapping.CreatedDate = DateTime.Now;
+                                    LineitemBudgetMapping.Weightage = 100;
+                                    db.Entry(LineitemBudgetMapping).State = EntityState.Added;
                                 }
 
+                                db.SaveChanges();
 
                                 #endregion
 
@@ -5849,9 +5884,10 @@ namespace RevenuePlanner.Controllers
                                 #region "Save Custom fields to CustomField_Entity table"
                                 if (customFields.Count != 0)
                                 {
+                                    CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
                                     foreach (var item in customFields)
                                     {
-                                        CustomField_Entity objcustomFieldEntity = new CustomField_Entity();
+                                        objcustomFieldEntity = new CustomField_Entity();
                                         objcustomFieldEntity.EntityId = form.PlanLineItemId;
                                         objcustomFieldEntity.CustomFieldId = Convert.ToInt32(item.Key);
                                         objcustomFieldEntity.Value = item.Value.Trim().ToString();

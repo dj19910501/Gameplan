@@ -5142,6 +5142,25 @@ namespace RevenuePlanner.Helpers
 
         #endregion
 
+        #region OtherBudgetItem
+        // Add By Nishant Sheth
+        public static int GetOtherBudgetId()
+        {
+            MRPEntities db = new MRPEntities();
+
+            var item = (from ParentBudget in db.Budgets
+                        join
+                            ChildBudget in db.Budget_Detail on ParentBudget.Id equals ChildBudget.BudgetId
+                        where ParentBudget.ClientId == Sessions.User.ClientId
+                        && (ParentBudget.IsDeleted == false || ParentBudget.IsDeleted == null)
+                        && ParentBudget.IsOther == true
+                        select new
+                        {
+                            Id = ChildBudget.Id
+                        }).FirstOrDefault();
+            return item.Id;
+        }
+        #endregion
         /// <summary>
         /// Function to set session variable application name.
         /// Added By: Maninder 12/04/2014

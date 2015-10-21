@@ -26,6 +26,7 @@ namespace RevenuePlanner.Models
         public System.DateTime CreatedDate { get; set; }
         public Nullable<bool> IsDeleted { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public bool IsOther { get; set; }
     
         public virtual Budget Budget1 { get; set; }
         public virtual Budget Budget2 { get; set; }

@@ -6102,7 +6102,7 @@ namespace RevenuePlanner.Controllers
 
             List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
 
-            List<TacticStageValue> Tacticdata = new List<TacticStageValue>();
+            TacticData = new List<TacticStageValue>();
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -6155,7 +6155,7 @@ namespace RevenuePlanner.Controllers
             {
                 //PlanTacticIdsList
                 tacticlist = GetTacticForReporting();
-
+                TacticData = new List<TacticStageValue>();
                 if (ParentLabel.Equals(Common.RevenueCampaign))
                 {
                     if (childlabelType == Common.RevenueCampaign)
@@ -6189,7 +6189,7 @@ namespace RevenuePlanner.Controllers
                     //tacticlist = GetTacticForReporting();
                     // Fetch the respectives Campaign Ids and Program Ids from the tactic list
                     // Get the List of tacic for card section base on parent label, child label and child id and also set view bag for details button.
-                    Tacticdata = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+                    TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
 
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
@@ -6246,7 +6246,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
                 {
-
+                    TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
                     _customfieldOptionId = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                     if (ParentLabel.Contains(Common.TacticCustomTitle))
                     {
@@ -8095,8 +8095,11 @@ namespace RevenuePlanner.Controllers
         public ActionResult GetTopConversionToPlanByCustomFilter(string ParentLabel = "", string childlabelType = "", string childId = "", string option = "", string IsQuarterly = "Quarterly", string code = "", bool isDetails = false, string BackHeadTitle = "", bool IsBackClick = false, string DrpChange = "CampaignDrp", string marsterCustomField = "", int masterCustomFieldOptionId = 0)
         {
             #region "Declare Local Variables"
-            List<TacticStageValue> TacticData = (List<TacticStageValue>)TempData["ReportData"];
-            TempData["ReportData"] = TempData["ReportData"];
+            List<Plan_Campaign_Program_Tactic> tacticlist = GetTacticForReporting();
+            List<TacticStageValue> tacticStageList = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+
+            List<TacticStageValue> TacticData = tacticStageList;
+            TempData["ReportData"] = tacticStageList;
             List<ActualTacticListByStage> ActualTacticStageList = new List<ActualTacticListByStage>();
             List<ActualTrendModel> ActualTacticTrendList = new List<ActualTrendModel>();
             string StageCode = code;
@@ -8120,7 +8123,7 @@ namespace RevenuePlanner.Controllers
 
                 string customFieldType = string.Empty;
                 // Add By Nishant Sheth
-                List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
+                // List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
                 List<int> campaignlist = new List<int>();
                 List<int> programlist = new List<int>();
                 List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();

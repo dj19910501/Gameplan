@@ -190,14 +190,14 @@
     $('#dropdown_new_btn_FieldMapping').click(function () {
         if($(this).next().css("display") == "none")
         {
-            $(this).next().css("width","auto");
+            //$(this).next().css("width","auto");
           //  $(this).next().addClass('dropdownAddborder');
             $(this).next().css("display","block");
-            LoadBudgetDropdown();
+            //LoadBudgetDropdown();
         }
         else
         {
-            $(this).next().css("width","0px");
+            //$(this).next().css("width","0px");
             $(this).next().css("display","none");
         }
     });
@@ -445,6 +445,7 @@
     //End
 
     $(document).ready(function () {
+        LoadBudgetDropdown();
         $(document).click(function(){
             $("#treeviewddl").css("display","none");
         });
@@ -595,6 +596,7 @@
         }
 
         //Added BY Komal Rawal for #1617
+        
         _FieldMappingValues = [];
         if(ListOfItmeCheck.Ids.length != 0)
         {
