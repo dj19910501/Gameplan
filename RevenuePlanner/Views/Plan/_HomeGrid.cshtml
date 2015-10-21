@@ -413,6 +413,7 @@
             else if (isEditTactic != 0) {
                 // HomeGrid.expandAll();
                 if (id == isEditTactic) {
+                    HomeGrid.openItem(HomeGrid.getParentId(rowid));
                     HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
                     var scrolltop = $(".rowselected").offset().top;
                     $(window).scrollTop(scrolltop - 100);
@@ -754,7 +755,7 @@
                 }
                 if (updatetype == "line") {
                     if (nValue != oValue) {
-                        debugger;
+                       
                         UpdateVal = nValue;
                         //Added By Rahul Shah on 16/10/2015 for PL 1559
                         tactid = HomeGrid.getParentId(rowId);
@@ -774,7 +775,7 @@
                                     return false;
                                 }
                                 else if (UpdateColumn == "Planned Cost") {
-                                    debugger;
+                                    
                                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                                     diff = parseInt(nValue) - parseInt(oValue);
                                     diffLineAndTactic = states.lineItemCost - states.tacticCost

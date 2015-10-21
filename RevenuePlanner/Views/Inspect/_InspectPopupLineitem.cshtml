@@ -693,6 +693,16 @@ $("#deleteLineItem").click(function () {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                                  SaveMessageOnParent(data.msg);
                                  $('body').removeClass('bodyOverflow');
+                                //Added by Rahul Shah on 21/10/2015 for PL#1701
+                                 if (isDataModified) {
+
+                                     $('.objbox table .cellselected').parent().remove();
+                                     gridSearchFlag = 0;
+                                     addDefaultModalPopupBackgroungColor();
+                                     $("#modal-container-186470").addClass("transition-close");
+                                     $("#modal-container-186470").removeClass("transition_y");
+                                     $('body').removeClass('bodyOverflow');
+                                 }
                              }
                              else {
                                  if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
