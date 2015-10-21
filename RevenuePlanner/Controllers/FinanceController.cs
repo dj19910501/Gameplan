@@ -403,6 +403,8 @@ namespace RevenuePlanner.Controllers
             List<DhtmlxGridRowDataModel> children = new List<DhtmlxGridRowDataModel>();
             IEnumerable<DataRow> lstChildren = null;
             lstChildren = GetChildren(dataTable, id);
+            if (lstChildren != null && lstChildren.Count() > 0)
+                lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name"), new AlphaNumericComparer()).ToList();
             if (!IsForcast)
             {
                 children = lstChildren
@@ -923,6 +925,8 @@ namespace RevenuePlanner.Controllers
             var plantotal = row.Field<Double?>("PlanTotal");
             var actualtotal = row.Field<Double?>("ActualTotal");
             var lstChildren = GetChildren(dataTable, id);
+            if (lstChildren != null && lstChildren.Count() > 0)
+                lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name")).ToList();
             var children = lstChildren
               .Select(r => CreateItem(dataTable, r, EditLevel))
               .ToList();
