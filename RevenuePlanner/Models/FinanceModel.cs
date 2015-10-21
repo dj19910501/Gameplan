@@ -61,6 +61,7 @@ namespace RevenuePlanner.Models
         public string idwithName { get; set; }
         public string row_attrs { get; set; }
         public string row_locked { get; set; }
+        public string isTitleEdit { get; set; }
     }
     public class row_attrs
     {
