@@ -120,8 +120,8 @@ namespace Integration
             Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Success, "Check entity type");
             if (EntityType.Tactic.Equals(_entityType))
             {
-                
-                int? sfdcInstanceId = 0, eloquaInstanceId = 0;
+
+                int? sfdcInstanceId = 0, eloquaInstanceId = 0, workfrontInstanceId = 0;
                 Model objModel = new Model();
                 objModel = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == _id).Plan_Campaign_Program.Plan_Campaign.Plan.Model;
                 #region "Get Salesforce & Eloqua InstanceId from Plan_Campaign_Program_Tactic table"
@@ -130,10 +130,11 @@ namespace Integration
                 {
                     sfdcInstanceId = objModel.IntegrationInstanceId;
                     eloquaInstanceId = objModel.IntegrationInstanceEloquaId;
+                    workfrontInstanceId = objModel.IntegrationInstanceIdProjMgmt; //added Brad Gray 10-13-2015 PL#1514
                 }
                 #endregion
 
-                #region "Execute Syncing process for Salesforce & Eloqua"
+                #region "Execute Syncing process for Salesforce, Eloqua, & WorkFront"
                 if (sfdcInstanceId.HasValue && sfdcInstanceId.Value > 0)
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Salesforce started - Initiated by Approved Flow");
@@ -145,6 +146,12 @@ namespace Integration
                     Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
                     SyncTactic(eloquaInstanceId.Value);
                     Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with Eloqua started - Initiated by Approved Flow");
+                }
+                if (workfrontInstanceId.HasValue && workfrontInstanceId.Value > 0) //added Brad Gray 10-13-2015 PL#1514
+                {
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with WorkFront started - Initiated by Approved Flow");
+                    SyncTactic(workfrontInstanceId.Value);
+                    Common.SaveIntegrationInstanceLogDetails(_id, null, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Sync Tactic Instance with WorkFront started - Initiated by Approved Flow");
                 } 
                 #endregion
             }

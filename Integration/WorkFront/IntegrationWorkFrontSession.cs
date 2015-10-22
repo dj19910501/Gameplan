@@ -587,7 +587,12 @@ namespace Integration.WorkFront
                 //program portfolio information -- all programs should be linked to a portfolio in WorkFront
                 IntegrationWorkFrontPortfolio portfolioInfo = db.IntegrationWorkFrontPortfolios.Where(port => port.PlanProgramId == tactic.PlanProgramId &&
                     port.IntegrationInstanceId == tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt && port.IsDeleted == false).FirstOrDefault();
-                JToken existingInWorkFront = client.Search(ObjCode.PORTFOLIO, new { ID = portfolioInfo.PortfolioId });
+                JToken existingInWorkFront = null;
+                if (portfolioInfo != null) // If Gameplan doesn't have an ID - can't search for a portfolio.
+                {
+                    existingInWorkFront = client.Search(ObjCode.PORTFOLIO, new { ID = portfolioInfo.PortfolioId }); 
+                }
+                                   
                 if (portfolioInfo == null || existingInWorkFront == null || !existingInWorkFront["data"].HasValues || portfolioInfo.PortfolioId != existingInWorkFront["data"][0]["ID"].ToString())
                 {
                     bool programError = syncProgram(tactic.Plan_Campaign_Program, ref SyncErrors); //force program sync to create a portfolio if none found
