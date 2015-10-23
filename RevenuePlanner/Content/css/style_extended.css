@@ -2903,7 +2903,7 @@ font-family: 'source_sans_proregular', Arial, "sans-serif" !important; color:#ff
     float:right;
     text-align:left;
     line-height:20px;
-    width:203px;
+    width:220px; /*Made changes for PL#1698*/
 }
 
 #divUserDelete .selectbox-validation-message {

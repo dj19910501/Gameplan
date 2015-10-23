@@ -5029,7 +5029,7 @@ a.link-gray {
 
 .content-colum-info-user {
     float: left;
-    width: 640px !important;
+    width: 697px !important; /*made changes for PL #1698*/
 }
 
 .content-user-checkbox {

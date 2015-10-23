@@ -265,13 +265,13 @@
                 return false;
             }
 
-            if ($('#Password').val().length < 8) {
+            if ($('#Password').val().length < 8 && $('#Password').val().length > 0) {
                 $('#result').removeClass();
                 $('#result').addClass('check-icon-red')
                 return false;
             }
 
-            if ($('#ConfirmPassword').val().length < 8) {
+            if ($('#ConfirmPassword').val().length < 8 && $('#ConfirmPassword').val().length > 0) {
                 $('#match').removeClass();
                 $('#match').addClass("check-icon-red");
                 return false;
