@@ -9523,7 +9523,7 @@ namespace RevenuePlanner.Controllers
                                                             {
                                                                 index = index,
                                                                 Cost = taskdata.Cost,
-
+                                                                lineitemtype = taskdata.LineItemTypeId,
                                                                 PlanLineItemId = taskdata.PlanLineItemId,
                                                                 title = taskdata.Title,
                                                                 Type = taskdata.LineItemTypeId,
@@ -9541,7 +9541,7 @@ namespace RevenuePlanner.Controllers
                                                                 GridString.Append("<cell bgColor='#ffffff' locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.title) + "</cell><cell bgColor='#ffffff'><![CDATA[<div  class='grid_Search' id='LinePopup' alt=\"" + lineitem.PlanLineItemId + "\"></div> ");
                                                                 if (tactic.IsPlanCreateAll)
                                                                 {
-                                                                    GridString.Append("<div class='grid_add' id='Line'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" data-title=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" permission=\"" + lineitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
+                                                                    GridString.Append("<div class='grid_add' id='Line' lineitemtype=\"" + lineitem.lineitemtype + "\" " + " alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" data-title=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" permission=\"" + lineitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
                                                                 }
                                                                 GridString.Append("]]></cell>");
                                                                 GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell bgColor='#ffffff' locked='1' style='color:#999'></cell>  <cell bgColor='#ffffff' locked='1' style='color:#999'></cell> ");
