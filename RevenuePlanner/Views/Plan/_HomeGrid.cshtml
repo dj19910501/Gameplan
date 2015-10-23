@@ -144,7 +144,10 @@
     $(".grid_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
-
+   //Added by Rahul shah on 23/10/2015 for PL #1693 : set grid size after performing any operation
+    $(document).ajaxComplete(function () {
+        HomeGrid.setSizes();        
+    });
 
     function ExportToCSV() {
         HomeGrid.expandAll();
