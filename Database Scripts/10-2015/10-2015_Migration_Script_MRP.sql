@@ -4,7 +4,7 @@ GO
 -- Created Date : 20/10/2015
 -- Description :Update GamePlan text to Plan from subject Column
 -- ======================================================================================
-UPDATE [dbo].[Notification] SET [Subject] = REPLACE([EmailContent], N'GamePlan', 'Plan') 
+UPDATE [dbo].[Notification] SET [Subject] = REPLACE([Subject], N'GamePlan', 'Plan') 
 Go
 
 -- ======================================================================================
