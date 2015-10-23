@@ -1931,6 +1931,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="DeleteBudget" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="BudgetDetailId" Type="int" Mode="In" />
+          <Parameter Name="ClientId" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="ELMAH_GetErrorsXml" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Application" Type="nvarchar" Mode="In" />
           <Parameter Name="PageIndex" Type="int" Mode="In" />
@@ -2782,6 +2786,10 @@
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
             <End Role="LineItem_Budget" EntitySet="LineItem_Budget" />
           </AssociationSet>
+          <FunctionImport Name="DeleteBudget">
+            <Parameter Name="BudgetDetailId" Mode="In" Type="Int32" />
+            <Parameter Name="ClientId" Mode="In" Type="String" />
+          </FunctionImport>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -5975,6 +5983,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="DeleteBudget" FunctionName="MRPModel.Store.DeleteBudget" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

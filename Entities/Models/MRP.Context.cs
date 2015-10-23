@@ -176,5 +176,18 @@ namespace RevenuePlanner.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ELMAH_LogError", errorIdParameter, applicationParameter, hostParameter, typeParameter, sourceParameter, messageParameter, userParameter, allXmlParameter, statusCodeParameter, timeUtcParameter, clientParameter);
         }
+    
+        public virtual int DeleteBudget(Nullable<int> budgetDetailId, string clientId)
+        {
+            var budgetDetailIdParameter = budgetDetailId.HasValue ?
+                new ObjectParameter("BudgetDetailId", budgetDetailId) :
+                new ObjectParameter("BudgetDetailId", typeof(int));
+    
+            var clientIdParameter = clientId != null ?
+                new ObjectParameter("ClientId", clientId) :
+                new ObjectParameter("ClientId", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("DeleteBudget", budgetDetailIdParameter, clientIdParameter);
+        }
     }
 }
