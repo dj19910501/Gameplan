@@ -139,7 +139,7 @@ namespace RevenuePlanner.Controllers
             #region Delete Fields
             if (SelectedRowIDs != null)
             {
-                
+
                 var Values = JsonConvert.DeserializeObject<List<DeleteRowID>>(SelectedRowIDs);
                 var Selectedids = Values.Select(ids => int.Parse(ids.Id.ToString())).FirstOrDefault();
 
@@ -248,10 +248,10 @@ namespace RevenuePlanner.Controllers
                 //db.DeleteBudget(Selectedids, Convert.ToString(Sessions.User.ClientId));
             }
             var lstchildbudget = Common.GetBudgetlist();
-            int _budgetId = 0,_curntBudgetId=0;
+            int _budgetId = 0, _curntBudgetId = 0;
             if (lstchildbudget != null)
             {
-                _curntBudgetId =!string.IsNullOrEmpty(curntBudgetId) ?Int32.Parse(curntBudgetId) :0;
+                _curntBudgetId = !string.IsNullOrEmpty(curntBudgetId) ? Int32.Parse(curntBudgetId) : 0;
                 if (lstchildbudget.Any(budgt => budgt.Value == _curntBudgetId.ToString()))
                     _budgetId = _curntBudgetId;
                 else
@@ -276,7 +276,7 @@ namespace RevenuePlanner.Controllers
             IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
             IsForecastCreateEdit = _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
             IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
-            
+
             gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
             var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
             if (DetailId != null)
@@ -312,7 +312,7 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_MainGrid", gridRowModel);
         }
-        public ActionResult SaveNewBudgetDetail(string BudgetId, string BudgetDetailName, string ParentId, string mainTimeFrame = "Yearly",bool isNewBudget = false)
+        public ActionResult SaveNewBudgetDetail(string BudgetId, string BudgetDetailName, string ParentId, string mainTimeFrame = "Yearly", bool isNewBudget = false)
         {
             int _budgetId = 0;
             try
@@ -324,33 +324,33 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    
-                Budget_Detail objBudgetDetail = new Budget_Detail();
-                objBudgetDetail.BudgetId = _budgetId;
-                objBudgetDetail.Name = BudgetDetailName;
-                objBudgetDetail.ParentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
-                objBudgetDetail.CreatedBy = Sessions.User.UserId;
-                objBudgetDetail.CreatedDate = DateTime.Now;
-                objBudgetDetail.IsDeleted = false;
-                db.Entry(objBudgetDetail).State = EntityState.Added;
-                db.SaveChanges();
 
-                #region Udate LineItem with child item
-                //Add By Nishant Sheth
-                int? BudgetDetailParentid = objBudgetDetail.ParentId;
-                int BudgetDetailId = objBudgetDetail.Id;
+                    Budget_Detail objBudgetDetail = new Budget_Detail();
+                    objBudgetDetail.BudgetId = _budgetId;
+                    objBudgetDetail.Name = BudgetDetailName;
+                    objBudgetDetail.ParentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
+                    objBudgetDetail.CreatedBy = Sessions.User.UserId;
+                    objBudgetDetail.CreatedDate = DateTime.Now;
+                    objBudgetDetail.IsDeleted = false;
+                    db.Entry(objBudgetDetail).State = EntityState.Added;
+                    db.SaveChanges();
 
-                using (MRPEntities context = new MRPEntities())
-                {
-                    IQueryable<LineItem_Budget> objLineItem = context.LineItem_Budget
-                        .Where(x => x.BudgetDetailId == BudgetDetailParentid);
-                    foreach (LineItem_Budget LineItem in objLineItem)
+                    #region Udate LineItem with child item
+                    //Add By Nishant Sheth
+                    int? BudgetDetailParentid = objBudgetDetail.ParentId;
+                    int BudgetDetailId = objBudgetDetail.Id;
+
+                    using (MRPEntities context = new MRPEntities())
                     {
-                        LineItem.BudgetDetailId = BudgetDetailId;
+                        IQueryable<LineItem_Budget> objLineItem = context.LineItem_Budget
+                            .Where(x => x.BudgetDetailId == BudgetDetailParentid);
+                        foreach (LineItem_Budget LineItem in objLineItem)
+                        {
+                            LineItem.BudgetDetailId = BudgetDetailId;
+                        }
+                        context.SaveChanges();
                     }
-                    context.SaveChanges();
-                }
-                #endregion
+                    #endregion
                 }
                 return RefreshMainGridData(_budgetId, mainTimeFrame);
             }
@@ -389,7 +389,7 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("lstLineItemIds", typeof(List<int>));
                 dataTable.Columns.Add("Owner", typeof(String)); // Add By Nishant
                 //budgetId = 8;
-                List<Budget_Detail> tblBudgetDetails =db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
+                List<Budget_Detail> tblBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
                 var lstBudgetDetails = tblBudgetDetails.Select(a => new { a.Id, a.ParentId, a.Name, a.IsForecast, a.CreatedBy }).ToList();
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();// Add By Nishant Sheth
 
@@ -457,9 +457,10 @@ namespace RevenuePlanner.Controllers
                     });
 
                 var MinParentid = 0;
+                int OtherBudgetid = Common.GetOtherBudgetId();
                 List<DhtmlxGridRowDataModel> lstData = new List<DhtmlxGridRowDataModel>();
                 lstData = GetTopLevelRows(dataTable, MinParentid)
-                            .Select(row => CreateMainGridItem(dataTable, row, tblBudgetDetails, LineItemidBudgetList)).ToList();
+                            .Select(row => CreateMainGridItem(dataTable, row, tblBudgetDetails, LineItemidBudgetList, OtherBudgetid)).ToList();
 
                 #endregion
 
@@ -471,7 +472,7 @@ namespace RevenuePlanner.Controllers
             }
             return mainGridData;
         }
-        private DhtmlxGridRowDataModel CreateMainGridItem(DataTable dataTable, DataRow row, List<Budget_Detail> lstBudgetDetails, List<LineItem_Budget> lstLineItemBudget)
+        private DhtmlxGridRowDataModel CreateMainGridItem(DataTable dataTable, DataRow row, List<Budget_Detail> lstBudgetDetails, List<LineItem_Budget> lstLineItemBudget, int OtherBudgetId = 0)
         {
             var id = row.Field<Int32>("Id");
             string rowId = row.Field<String>("RowId");
@@ -500,7 +501,7 @@ namespace RevenuePlanner.Controllers
             if (!IsForcast)
             {
                 children = lstChildren
-                  .Select(r => CreateMainGridItem(dataTable, r,lstBudgetDetails,lstLineItemBudget))
+                  .Select(r => CreateMainGridItem(dataTable, r, lstBudgetDetails, lstLineItemBudget, OtherBudgetId))
                   .ToList();
             }
             List<string> ParentData = new List<string>();
@@ -523,8 +524,14 @@ namespace RevenuePlanner.Controllers
 
                 if (_IsBudgetCreate_Edit)
                 {
-
-                    addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                    if (id != OtherBudgetId)
+                    {
+                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                    }
+                    else
+                    {
+                        addRow = "";
+                    }
                     //  SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "' onclick='CheckboxClick(this)' type='checkbox' />";
                     if (IsForcast)
                     {
@@ -564,7 +571,7 @@ namespace RevenuePlanner.Controllers
                     LineItemIds.ForEach(lstIds => lstLineItemIds.AddRange(lstIds));
 
                     row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
-                    lineItemCount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count():0;
+                    lineItemCount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
                     row.SetField<Int32>("LineItemCount", lineItemCount); // Update LineItemCount in DataTable.
                 }
             }
@@ -723,7 +730,7 @@ namespace RevenuePlanner.Controllers
             else
             {
                 objFinanceHeader = TempData["FinanceHeader"] as FinanceModelHeaders;
-                
+
             }
 
             return PartialView("_financeheader", objFinanceHeader);
@@ -757,9 +764,9 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region Get Budget/Forecast Grid Data		   
+        #region Get Budget/Forecast Grid Data
 
- public JsonResult DeleteBudgetForecastData(string SelectedRowIDs = null)
+        public JsonResult DeleteBudgetForecastData(string SelectedRowIDs = null)
         {
             #region Delete Fields
             if (SelectedRowIDs != null)
@@ -879,7 +886,7 @@ namespace RevenuePlanner.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult EditBudgetGridData( int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "")
+        public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
             var MinBudgetid = 0; var MinParentid = 0;
@@ -946,7 +953,7 @@ namespace RevenuePlanner.Controllers
                                                                                      select Actual).ToList();
 
             // foreach (var item in Query)
-
+            int OtherBudgetid = Common.GetOtherBudgetId();
             Query.ForEach(
                 item =>
                 {
@@ -958,13 +965,13 @@ namespace RevenuePlanner.Controllers
                         if (item.Id != varBudgetIds.ParentId && item.ParentId != null)
                         {
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
                         }
                     }
                     else
                     {
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div   id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>", PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
                     }
                 });
 
@@ -1136,7 +1143,7 @@ namespace RevenuePlanner.Controllers
 
             List<string> ParentData = new List<string>();
             ParentData.Add(HttpUtility.HtmlDecode(name));
-            string strAddRow, strLineItemLink; 
+            string strAddRow, strLineItemLink;
             strAddRow = strLineItemLink = string.Empty;
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
@@ -1174,7 +1181,7 @@ namespace RevenuePlanner.Controllers
                 row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
                 lineitemcount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
-				strLineItemLink = lineitemcount.ToString();
+                strLineItemLink = lineitemcount.ToString();
                 //lineitemcount = dataTable
                 // .Rows
                 // .Cast<DataRow>()
@@ -1200,7 +1207,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                     objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = "1" });
-				 strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
+                strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
             }
             ParentData.Add(addRow);
             // ParentData.Add(SelectBox);
@@ -1627,60 +1634,60 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                objBudgetDetail = db.Budget_Detail.Where(a => a.Id == BudgetId && a.IsDeleted == false).FirstOrDefault();
-                if (objBudgetDetail != null)
-                {
-                    objBudgetDetail.Name = Convert.ToString(nValue).Trim();
-                    db.Entry(objBudgetDetail).State = EntityState.Modified;
-                    db.SaveChanges();
+                    objBudgetDetail = db.Budget_Detail.Where(a => a.Id == BudgetId && a.IsDeleted == false).FirstOrDefault();
+                    if (objBudgetDetail != null)
+                    {
+                        objBudgetDetail.Name = Convert.ToString(nValue).Trim();
+                        db.Entry(objBudgetDetail).State = EntityState.Modified;
+                        db.SaveChanges();
                         //if ((objBudgetDetail.BudgetId > 0) && ((objBudgetDetail.ParentId == null) || (objBudgetDetail.ParentId == 0)))
-                    if (objBudgetDetail.ParentId == null)
-                    {
-                        objBudget = db.Budgets.Where(a => a.Id == objBudgetDetail.BudgetId).FirstOrDefault();
-                        if (objBudget != null)
+                        if (objBudgetDetail.ParentId == null)
                         {
-                            objBudget.Name = nValue;
-                            db.Entry(objBudget).State = EntityState.Modified;
-                            db.SaveChanges();
+                            objBudget = db.Budgets.Where(a => a.Id == objBudgetDetail.BudgetId).FirstOrDefault();
+                            if (objBudget != null)
+                            {
+                                objBudget.Name = nValue;
+                                db.Entry(objBudget).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
                         }
                     }
-                }
-                else
-                {
-                    Budget_Detail DetailParentId = db.Budget_Detail.Where(a => a.Id == ParentRowId).FirstOrDefault();
-                    if (GlobalEditLevel == "ForeCast" && isFromForecastChild)
+                    else
                     {
-                        DetailParentId.IsForecast = true;
-                        db.Entry(DetailParentId).State = EntityState.Modified;
-                    }
-                    objBudgetDetail = new Budget_Detail();
-                    objBudgetDetail.Name = nValue;
-                    objBudgetDetail.ParentId = Convert.ToInt32(ParentRowId);
-                    objBudgetDetail.BudgetId = Convert.ToInt32(DetailParentId.BudgetId);
-                    objBudgetDetail.CreatedDate = System.DateTime.Now;
-                    objBudgetDetail.CreatedBy = Sessions.User.UserId;
-                    objBudgetDetail.IsDeleted = false;
-                    db.Entry(objBudgetDetail).State = EntityState.Added;
-                    db.SaveChanges();
-
-                    #region Udate LineItem with child item
-                    //Add By Nishant Sheth
-                    int? BudgetDetailParentid = objBudgetDetail.ParentId;
-                    int BudgetDetailId = objBudgetDetail.Id;
-
-                    using (MRPEntities context = new MRPEntities())
-                    {
-                        IQueryable<LineItem_Budget> objLineItem = context.LineItem_Budget
-                            .Where(x => x.BudgetDetailId == BudgetDetailParentid);
-                        foreach (LineItem_Budget LineItem in objLineItem)
+                        Budget_Detail DetailParentId = db.Budget_Detail.Where(a => a.Id == ParentRowId).FirstOrDefault();
+                        if (GlobalEditLevel == "ForeCast" && isFromForecastChild)
                         {
-                            LineItem.BudgetDetailId = BudgetDetailId;
+                            DetailParentId.IsForecast = true;
+                            db.Entry(DetailParentId).State = EntityState.Modified;
                         }
-                        context.SaveChanges();
+                        objBudgetDetail = new Budget_Detail();
+                        objBudgetDetail.Name = nValue;
+                        objBudgetDetail.ParentId = Convert.ToInt32(ParentRowId);
+                        objBudgetDetail.BudgetId = Convert.ToInt32(DetailParentId.BudgetId);
+                        objBudgetDetail.CreatedDate = System.DateTime.Now;
+                        objBudgetDetail.CreatedBy = Sessions.User.UserId;
+                        objBudgetDetail.IsDeleted = false;
+                        db.Entry(objBudgetDetail).State = EntityState.Added;
+                        db.SaveChanges();
+
+                        #region Udate LineItem with child item
+                        //Add By Nishant Sheth
+                        int? BudgetDetailParentid = objBudgetDetail.ParentId;
+                        int BudgetDetailId = objBudgetDetail.Id;
+
+                        using (MRPEntities context = new MRPEntities())
+                        {
+                            IQueryable<LineItem_Budget> objLineItem = context.LineItem_Budget
+                                .Where(x => x.BudgetDetailId == BudgetDetailParentid);
+                            foreach (LineItem_Budget LineItem in objLineItem)
+                            {
+                                LineItem.BudgetDetailId = BudgetDetailId;
+                            }
+                            context.SaveChanges();
+                        }
+                        #endregion
                     }
-                    #endregion
                 }
-            }
             }
             List<string> QuaterPeriod = new List<string>();
             List<string> Q1 = new List<string>() { "Y1", "Y2", "Y3" };
@@ -1966,16 +1973,16 @@ namespace RevenuePlanner.Controllers
             List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
             List<Plan_Campaign_Program_Tactic_LineItem> lstPlanLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).ToList();
             List<int> LineItemids = lstPlanLineItems != null ? lstPlanLineItems.Select(line => line.PlanLineItemId).ToList() : new List<int>();
-            
+
             List<string> tacticStatus = Common.GetStatusListAfterApproved();
 
             List<Budget_DetailAmount> BudgetDetailAmount = db.Budget_DetailAmount.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
-            
+
             List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
                                                                                  //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
                                                                                  where LineItemids.Contains(Cost.PlanLineItemId)
                                                                                  select Cost).ToList();
-            
+
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
                                                                                      //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
                                                                                      join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
@@ -1994,7 +2001,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstPlannedValue;
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstActualValue;
             List<LineItem_Budget> lstLineItemBudget;
-            double planVal = 0, actualVal = 0, forecstVal = 0, totalPlanned=0, totalActual =0;
+            double planVal = 0, actualVal = 0, forecstVal = 0, totalPlanned = 0, totalActual = 0;
             string strlineItemPopupUrl;
             int planId;
             #endregion
@@ -2005,7 +2012,7 @@ namespace RevenuePlanner.Controllers
                 totalPlanned = totalActual = 0;
                 childModel = new DhtmlxGridRowDataModel();
                 childData = new List<string>();
-                planId =0;
+                planId = 0;
                 strlineItemPopupUrl = string.Empty;
                 // Name,View,Forecast,Planned,Actual
                 childData.Add(HttpUtility.HtmlDecode(lineitem.Title));
@@ -2061,7 +2068,7 @@ namespace RevenuePlanner.Controllers
                 childModel.data = childData;
                 childModelList.Add(childModel);
                 #endregion
-            } 
+            }
             #endregion
 
             #endregion
@@ -2070,7 +2077,7 @@ namespace RevenuePlanner.Controllers
             List<DhtmlxGridRowDataModel> parentModelList = new List<DhtmlxGridRowDataModel>();
             List<string> parentData = new List<string>();
             DhtmlxGridRowDataModel parentDataModel = new DhtmlxGridRowDataModel();
-            double totalParentForecast = 0,totalParentPlanned = 0, totalParentActual = 0;
+            double totalParentForecast = 0, totalParentPlanned = 0, totalParentActual = 0;
             parentData.Add(HttpUtility.HtmlDecode(objBudgetDetail.Name));   // Set TaskName column value
             parentData.Add(string.Empty);           // Set View column value
             objBudgetAmount = new BudgetAmount();
@@ -2136,7 +2143,7 @@ namespace RevenuePlanner.Controllers
 
             lineItemGridData.rows = parentModelList;
             lineItemGridData.FinanemodelheaderObj = objFinanceHeader;
-            return PartialView("_LineItem",lineItemGridData);
+            return PartialView("_LineItem", lineItemGridData);
         }
 
         public JsonResult GetParentLineItemList(int BudgetDetailId = 0)
