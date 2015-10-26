@@ -92,17 +92,19 @@
   padding-left: 7px;
   vertical-align: middle;
 }
-    .finance_mapping  div.gridbox_dhx_skyblue.gridbox table.obj tr td input
-    {
-         background-color: #f2f2f2;
-        border: 1px solid #d1d1d1;
-    color:#6D6D6D;
-    box-shadow:none;
+   .finance_mapping div.gridbox_dhx_skyblue.gridbox table.obj tr td input[type="text"] {
+    background-color: #f2f2f2;
+    border: 1px solid #d1d1d1;
+    color: #6D6D6D;
+    box-shadow: none;
     min-height: auto !important;
     width: 38px;
-    text-align:center;
-     margin-right: 12px;
-    }
+    text-align: center;
+    margin-right: 12px;
+    padding: 0;
+    margin: 0 !important;
+    height: 23px;
+}
    .finance_mapping div.gridbox_dhx_skyblue.gridbox .ftr, div.gridbox_dhx_skyblue.gridbox .xhdr, div.gridbox_dhx_skyblue table.hdr tr td {
 
   color: #000000;
@@ -174,6 +176,11 @@
     {
     padding-left:0px; 
     font-weight: 600;
+    }
+  finance_mapping  div.gridbox_dhx_skyblue.gridbox table.obj tr.odd_dhx_skyblue.rowselected td, div.gridbox_dhx_skyblue.gridbox table.obj tr.rowselected td
+    {
+    border-top:none !important;
+     border-right: none !important;
     }
     /*by bheru 19-10-2015*/
    
