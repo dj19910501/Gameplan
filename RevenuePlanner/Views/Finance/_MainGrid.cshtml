@@ -153,7 +153,8 @@
         //mainGridData = "@HttpUtility.HtmlDecode(_mainGridData)"
         //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+        //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+        var GridData = (mainGridData.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>'));
 
         // GridData = JSON.parse(GridData);
         myTreeGrid.parse(GridData, "json");
@@ -235,7 +236,7 @@
     });
     function CheckboxClick(checkbox) {
         var controlid = $(checkbox).attr('id')
-        if (AddNewrow == false & DeletIconID == controlid) {
+        if (AddNewrow == false && DeletIconID == controlid) {
             return false;
         }
         else {
@@ -494,7 +495,7 @@
 
             //var _budgetIdVal = $('#ddlParentFinanceMain').val();
             var _budgetIdVal = $("#hdnBudgetId").val();
-            if (newVal == null || newVal == '' || newVal == oldVal) {
+            if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal) {
                 AddNewrow = true;
                 return false;
             }
@@ -562,8 +563,9 @@
             if (!isNewBudget) {
             myTreeGrid.openItem(parentRowID);
             }
-        });
         AddNewrow = true;
+        });
+        
     }
     function UpdateBudgetDetail(budgetId, budgetDetailName, budgetDetailId, parentId, parentRowID) {
         //budgetId = 8;
@@ -571,6 +573,7 @@
         var url = "@Url.Content("~/Finance/UpdateBudgetDetail")";
         $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&BudgetDetailId=' + budgetDetailId + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame, function () {
             myTreeGrid.openItem(parentRowID);
+            AddNewrow = true;
         });
     }
     function IsRootMostParentId(curntRowid) {

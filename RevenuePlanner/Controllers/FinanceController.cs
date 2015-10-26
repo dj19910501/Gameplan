@@ -506,7 +506,7 @@ namespace RevenuePlanner.Controllers
             }
             List<string> ParentData = new List<string>();
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
-
+            name = HttpUtility.HtmlEncode(name);
             #region "Add Action column link"
             string strAction = string.Empty;
 
@@ -607,7 +607,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             //forecast = forecast.ToString(new c
-            ParentData.Add(HttpUtility.HtmlDecode(name));
+            ParentData.Add(name);
             ParentData.Add(strAction);
             ParentData.Add(addRow);
             //   ParentData.Add(SelectCheckbox);
@@ -965,13 +965,13 @@ namespace RevenuePlanner.Controllers
                         if (item.Id != varBudgetIds.ParentId && item.ParentId != null)
                         {
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
                         }
                     }
                     else
                     {
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + item.Name + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
                     }
                 });
 

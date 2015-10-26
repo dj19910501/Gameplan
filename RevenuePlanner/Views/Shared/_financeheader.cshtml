@@ -103,6 +103,7 @@
 
     function HeaderSectionName()
     {
+        //debugger;
         if (pageName == "MainGrid") {
             $("#divFinanceBack").css("display", "none");
             //Added by Rahul shah on 13/10/2015 for PL#1667
@@ -117,6 +118,10 @@
             } else {
                 $("#lblfinanceTitle").text("Finance (Forecast)");
             }
+        }
+        else {
+            $("#divFinanceBack").css("display", "block");
+            $("#lblfinanceTitle").text("Finance");
         }
     }
 

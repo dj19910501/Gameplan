@@ -59,10 +59,8 @@
         GlobalEditLevel = '@ViewBag.EditLevel';
         pageName = "LineItemGrid";
         var hasLineItems = '@_hasLineItems';
-        @*_isBudgetCreateEdit = '@ViewBag.IsBudgetCreate_Edit';
-        _isForecastCreateEdit = '@ViewBag.IsForecastCreate_Edit';*@
-        
-        //GetFinanceHeaderValue(0, false);
+        $("#divFinanceBack").css("display", "block");
+        $("#lblfinanceTitle").text("Finance");
         var GridData = "";
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
         ConfigureLineItemGrid(AllocatedBy);

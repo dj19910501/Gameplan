@@ -397,6 +397,7 @@
         myTreeGrid.init();
         myTreeGrid.setImageSize(1, 1);
         myTreeGrid.setSkin("dhx_skyblue");
+        //GridData = 'GridData';
         myTreeGrid.parse(GridData, "json");
         var titleIndx = myTreeGrid.getColIndexById('Title');
         myTreeGrid.forEachRow(function (rowid) {
@@ -486,6 +487,7 @@
         myTreeGrid.enableAutoHeight(true);
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
+            //debugger;
             if (!_isNewRowAdd) {
             RevnueTimeFrameChange = false;
             }
@@ -907,6 +909,7 @@
             IDs: []
         }
         var val = $(checkbox).attr('row-id');
+        
         var Name = $(checkbox).attr('name');
             RowIDs.IDs.push(val);
             $("#lipname").html(Name);
