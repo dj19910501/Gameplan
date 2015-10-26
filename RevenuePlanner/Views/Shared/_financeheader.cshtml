@@ -22,7 +22,7 @@
         <p class="value source-sans-prolight" id="ForecastID">$ @Html.DisplayFor(model => model.Forecast)</p>
         @*<a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>*@
     </div>
-    <div class="white-chart">
+    <div id="dvBudgetHeader" class="white-chart">
         <p class="source-sans-probold" id="budgetLabel" title="@Html.DisplayFor(model => model.BudgetTitle)">@Html.DisplayFor(model => model.BudgetTitle)</p>
         <p class="value source-sans-prolight" id="budgetID">$ @Html.DisplayFor(model => model.Budget)</p>
 
@@ -72,14 +72,24 @@
     formatActualValues("#ActualID");
     //setBootstrapTooltip("#budgetID", 45144, 4, false);
     function FinanceBack() {
-        
+        if (pageName == "EditBudget") {
         RefreshBudgetDropdown();
         pageName = "MainGrid";
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
         $('#divGridView').load(url + '?budgetId=' + backBudgetid);
         ShowHideControls("MainGrid");
         GetFinanceHeaderValue(backBudgetid, true);
-  
+        }
+        else {
+            //RefreshBudgetDropdown();
+            pageName = "EditBudget";
+            var budgetDetailId = $("#hdn_BudgetDetailId").val();
+            EditBudget(budgetDetailId, false);
+            //var url = '@Url.Content("~/Finance/EditBudget/")';
+            //$('#divGridView').load(url + '?budgetId=' + backBudgetid);
+            ShowHideControls("EditBudget");
+            //GetFinanceHeaderValue(0, false);
+        }
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         //myApp.hidePleaseWait();

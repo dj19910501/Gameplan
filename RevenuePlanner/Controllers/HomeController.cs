@@ -50,7 +50,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId =0)
         {
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -68,6 +68,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.ShowInspectForPlanProgramId = planProgramId;
             ViewBag.IsImprovement = isImprovement;
             ViewBag.GridView = isGridView;
+            ViewBag.ShowInspectForPlanLineItemId = planLineItemId;
             // Added by Komal Rawal  for new homepage ui publish button
             if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
             {
@@ -109,7 +110,7 @@ namespace RevenuePlanner.Controllers
             //// Check insepct popup shared link validation to open insepct pop up as per link
             if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
             {
-                currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement);
+                currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement,planLineItemId);
             }
             else if (activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
             {
@@ -265,7 +266,7 @@ namespace RevenuePlanner.Controllers
                     {
                         if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
                         {
-                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement);
+                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement,planLineItemId);
                             ViewBag.ShowInspectPopup = isCustomRestrictionPass;
                             if (isCustomRestrictionPass.Equals(false))
                             {
@@ -4117,7 +4118,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planTacticId">planTacticId from query string parameter of shared link</param>
         /// <param name="isImprovement">isImprovement flag from query string parameter of shared link</param>
         /// <returns>returns currentPlanId</returns>
-        private int InspectPopupSharedLinkValidation(int currentPlanId, int planCampaignId, int planProgramId, int planTacticId, bool isImprovement)
+        private int InspectPopupSharedLinkValidation(int currentPlanId, int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId=0)
         {
             bool IsEntityDeleted = false;
             bool isValidLoginUser = true;
@@ -4139,6 +4140,10 @@ namespace RevenuePlanner.Controllers
             else if (planTacticId > 0 && isImprovement.Equals(true))
             {
                 isValidLoginUser = Common.ValidateNotificationShaedLink(currentPlanId, planTacticId, Enums.PlanEntity.ImprovementTactic.ToString(), out IsEntityDeleted, out isEntityExists, out isCorrectPlanId);
+            }
+            else if (planLineItemId > 0)
+            {
+                isValidLoginUser = Common.ValidateNotificationShaedLink(currentPlanId, planLineItemId, Enums.PlanEntity.LineItem.ToString(), out IsEntityDeleted, out isEntityExists, out isCorrectPlanId);
             }
             else
             {
@@ -4201,7 +4206,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ViewOnlyPermission">ViewOnlyPermission flag in form of int</param>
         /// <param name="ViewEditPermission">ViewEditPermission flag in form of int</param>
         /// <returns>returns flag for custom restriction as per custom restriction</returns>
-        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement)
+        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId=0)
         {
             bool isValidEntity = false;
 
@@ -4245,6 +4250,16 @@ namespace RevenuePlanner.Controllers
                                                                                         ).Select(improvementTactic => improvementTactic.ImprovementPlanTacticId);
 
                 if (objImprovementTactic.Count() != 0)
+                {
+                    isValidEntity = true;
+                }
+            }
+            else if (planLineItemId > 0)
+            {
+                var objPlanLineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanLineItemId == planLineItemId && lineItem.IsDeleted == false
+                                                                ).Select(lineItem => lineItem.PlanLineItemId);
+
+                if (objPlanLineItem.Count() != 0)
                 {
                     isValidEntity = true;
                 }

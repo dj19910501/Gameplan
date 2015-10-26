@@ -126,7 +126,7 @@ namespace RevenuePlanner.Controllers
         #endregion
 
 
-        #region  Main Grid Realted Methods
+        #region  Main Grid related Methods
 
         #region "Delete MainGrid"
         public ActionResult DeleteMainGrid(string SelectedRowIDs, string mainTimeFrame, string curntBudgetId)
@@ -993,7 +993,8 @@ namespace RevenuePlanner.Controllers
 
             List<string> ParentData = new List<string>();
             ParentData.Add(HttpUtility.HtmlDecode(name));
-            string strAddRow = string.Empty;
+            string strAddRow, strLineItemLink; 
+            strAddRow = strLineItemLink = string.Empty;
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
@@ -1030,7 +1031,7 @@ namespace RevenuePlanner.Controllers
                 row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
                 lineitemcount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
-
+				strLineItemLink = lineitemcount.ToString();
                 //lineitemcount = dataTable
                 // .Rows
                 // .Cast<DataRow>()
@@ -1056,11 +1057,11 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                     objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = "1" });
-
+				 strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
             }
             ParentData.Add(addRow);
             // ParentData.Add(SelectBox);
-            ParentData.Add(Convert.ToString(lineitemcount));
+            ParentData.Add(strLineItemLink);
             //ParentData.Add(string.Join(",", budget));
             //ParentData.Add(string.Join(",", forcast));
 
@@ -1789,6 +1790,246 @@ namespace RevenuePlanner.Controllers
             }
             return Json(new { errormsg = "" });
         }
+        #endregion
+
+        #region "Finance LineItem Grid related Methods"
+        public ActionResult GetFinanceLineItemData(int BudgetDetailId = 0, string IsQuaterly = "quarters")
+        {
+            DhtmlXGridRowModel lineItemGridData = new DhtmlXGridRowModel();
+
+            #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
+            _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
+            //IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
+            _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
+            //IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView); 
+            #endregion
+            //var Query = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId)).Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
+            //var varBudgetIds = db.Budget_Detail.Where(a => a.Id == (BudgetId > 0 ? BudgetId : a.BudgetId) && a.IsDeleted == false).Select(a => new { a.BudgetId, a.ParentId }).FirstOrDefault();
+            //List<Budget_Detail> BudgetDetailList = new List<Budget_Detail>();
+            //if (varBudgetIds != null)
+            //{
+            //    BudgetDetailList = db.Budget_Detail.Where(a => (a.Id == (BudgetId > 0 ? BudgetId : a.BudgetId) || a.ParentId == (BudgetId > 0 ? BudgetId : a.ParentId)
+            //       || a.BudgetId == (varBudgetIds.BudgetId != null ? varBudgetIds.BudgetId : 0)) && a.IsDeleted == false).Select(a => a).ToList();
+            //}
+            //MinParentid = BudgetId;
+            Budget_Detail objBudgetDetail = db.Budget_Detail.Where(a => a.Id == (BudgetDetailId > 0 ? BudgetDetailId : a.BudgetId) && a.IsDeleted == false).FirstOrDefault();
+            List<LineItem_Budget> LineItemidBudgetList = new List<LineItem_Budget>();
+            if (objBudgetDetail == null)
+                objBudgetDetail = new Budget_Detail();
+
+            LineItemidBudgetList = db.LineItem_Budget.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
+
+            //// Change By Nishant Sheth
+            List<int> PlanLineItemBudgetDetail = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            List<Plan_Campaign_Program_Tactic_LineItem> lstPlanLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => PlanLineItemBudgetDetail.Contains(a.PlanLineItemId) && a.IsDeleted == false).ToList();
+            List<int> LineItemids = lstPlanLineItems != null ? lstPlanLineItems.Select(line => line.PlanLineItemId).ToList() : new List<int>();
+            
+            List<string> tacticStatus = Common.GetStatusListAfterApproved();
+
+            List<Budget_DetailAmount> BudgetDetailAmount = db.Budget_DetailAmount.Where(a => objBudgetDetail.Id == a.BudgetDetailId).Select(a => a).ToList();
+            
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount = (from Cost in db.Plan_Campaign_Program_Tactic_LineItem_Cost
+                                                                                 //join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Cost.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                 where LineItemids.Contains(Cost.PlanLineItemId)
+                                                                                 select Cost).ToList();
+            
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount = (from Actual in db.Plan_Campaign_Program_Tactic_LineItem_Actual
+                                                                                     //join LineItemBudget in db.LineItem_Budget on Actual.PlanLineItemId equals LineItemBudget.PlanLineItemId
+                                                                                     join TacticLineItem in db.Plan_Campaign_Program_Tactic_LineItem on Actual.PlanLineItemId equals TacticLineItem.PlanLineItemId
+                                                                                     join Tactic in db.Plan_Campaign_Program_Tactic on TacticLineItem.PlanTacticId equals Tactic.PlanTacticId
+                                                                                     where LineItemids.Contains(Actual.PlanLineItemId)
+                                                                                     && tacticStatus.Contains(Tactic.Status)
+                                                                                     select Actual).ToList();
+
+            #region "Create Child Data Model"
+
+            #region "Declare local variables"
+            List<DhtmlxGridRowDataModel> childModelList = new List<DhtmlxGridRowDataModel>();
+            DhtmlxGridRowDataModel childModel = new DhtmlxGridRowDataModel();
+            List<string> childData = new List<string>();
+            BudgetAmount objBudgetAmount;
+            List<Plan_Campaign_Program_Tactic_LineItem_Cost> lstPlannedValue;
+            List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstActualValue;
+            List<LineItem_Budget> lstLineItemBudget;
+            double planVal = 0, actualVal = 0, forecstVal = 0, totalPlanned=0, totalActual =0;
+            string strlineItemPopupUrl;
+            int planId;
+            #endregion
+
+            #region "Foreach LineItem list to set Value into Model"
+            foreach (Plan_Campaign_Program_Tactic_LineItem lineitem in lstPlanLineItems)
+            {
+                totalPlanned = totalActual = 0;
+                childModel = new DhtmlxGridRowDataModel();
+                childData = new List<string>();
+                planId =0;
+                strlineItemPopupUrl = string.Empty;
+                // Name,View,Forecast,Planned,Actual
+                childData.Add(HttpUtility.HtmlDecode(lineitem.Title));
+                planId = lineitem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId;
+                strlineItemPopupUrl = GetNotificationURLbyStatus(planId, lineitem.PlanLineItemId, Enums.Section.LineItem.ToString());
+                childData.Add(string.Format("<div id='{0}' onclick=OpenLineItemPopup('{1}') title='View' class='grid_Search'></div>", lineitem.PlanLineItemId, HttpUtility.HtmlDecode(strlineItemPopupUrl)));
+
+                #region "Filter Planned Value"
+                lstPlannedValue = new List<Plan_Campaign_Program_Tactic_LineItem_Cost>();
+                lstPlannedValue = PlanDetailAmount.Where(plan => plan.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Filter Actual Value"
+                lstActualValue = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
+                lstActualValue = ActualDetailAmount.Where(actual => actual.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Filter LineItem_Budget List"
+                lstLineItemBudget = new List<LineItem_Budget>();
+                lstLineItemBudget = LineItemidBudgetList.Where(line => line.PlanLineItemId == lineitem.PlanLineItemId).ToList();
+                #endregion
+
+                #region "Get Planned & Actual value based on Timeframe selected value"
+                objBudgetAmount = new BudgetAmount();
+                objBudgetAmount = GetAmountValue(IsQuaterly, new List<Budget_DetailAmount>(), lstPlannedValue, lstActualValue, lstLineItemBudget);
+                #endregion
+
+                if (objBudgetAmount != null)
+                {
+                    #region "Insert data as per timeframe wise"
+                    int timeframeRowCount = objBudgetAmount.Plan != null ? objBudgetAmount.Plan.Count : 0;
+                    for (int row = 0; row < timeframeRowCount; row++)
+                    {
+                        planVal = objBudgetAmount.Plan[row] != null ? Convert.ToDouble(objBudgetAmount.Plan[row]) : 0;
+                        actualVal = objBudgetAmount.Actual[row] != null ? Convert.ToDouble(objBudgetAmount.Actual[row]) : 0;
+                        totalPlanned = totalPlanned + planVal;
+                        totalActual = totalActual + actualVal;
+                        childData.Add("<div style='color: gray;'>0</div>"); // Insert Forecast Column Value
+                        childData.Add(planVal.ToString(formatThousand));    // Insert Planned Column Value
+                        childData.Add(actualVal.ToString(formatThousand));  // Insert Actual Column Value
+                    }
+                    #endregion
+                }
+
+                #region "Add Child Items Total values to Model"
+                childData.Add("<div style='color: gray;'>0</div>");
+                childData.Add(totalPlanned.ToString(formatThousand));    // Insert Planned Column Total Value
+                childData.Add(totalActual.ToString(formatThousand));  // Insert Actual Column Total Value 
+                #endregion
+
+                #region "Set LinetItem Value in Model"
+                childModel.id = lineitem.PlanLineItemId.ToString();
+                childModel.data = childData;
+                childModelList.Add(childModel);
+                #endregion
+            } 
+            #endregion
+
+            #endregion
+
+            #region "Create Parent Data Model"
+            List<DhtmlxGridRowDataModel> parentModelList = new List<DhtmlxGridRowDataModel>();
+            List<string> parentData = new List<string>();
+            DhtmlxGridRowDataModel parentDataModel = new DhtmlxGridRowDataModel();
+            double totalParentForecast = 0,totalParentPlanned = 0, totalParentActual = 0;
+            parentData.Add(HttpUtility.HtmlDecode(objBudgetDetail.Name));   // Set TaskName column value
+            parentData.Add(string.Empty);           // Set View column value
+            objBudgetAmount = new BudgetAmount();
+            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount, PlanDetailAmount, ActualDetailAmount, LineItemidBudgetList);
+
+            if (objBudgetAmount != null)
+            {
+                #region "Insert data as per timeframe wise"
+                int timeframeRowCount = objBudgetAmount.Plan != null ? objBudgetAmount.Plan.Count : 0;
+
+                for (int row = 0; row < timeframeRowCount; row++)
+                {
+                    forecstVal = objBudgetAmount.ForeCast[row] != null ? Convert.ToDouble(objBudgetAmount.ForeCast[row]) : 0;
+                    planVal = objBudgetAmount.Plan[row] != null ? Convert.ToDouble(objBudgetAmount.Plan[row]) : 0;
+                    actualVal = objBudgetAmount.Actual[row] != null ? Convert.ToDouble(objBudgetAmount.Actual[row]) : 0;
+
+                    totalParentForecast = totalParentForecast + forecstVal;
+                    totalParentPlanned = totalParentPlanned + planVal;
+                    totalParentActual = totalParentActual + actualVal;
+
+                    parentData.Add(forecstVal.ToString(formatThousand)); // Insert Forecast Column Value
+                    parentData.Add(planVal.ToString(formatThousand));    // Insert Planned Column Value
+                    parentData.Add(actualVal.ToString(formatThousand));  // Insert Actual Column Value
+                }
+                #endregion
+            }
+
+            #region "Add Child Items Total values to Model"
+            parentData.Add(totalParentForecast.ToString(formatThousand));   // Insert Forecast Column Total Value
+            parentData.Add(totalParentPlanned.ToString(formatThousand));    // Insert Planned Column Total Value
+            parentData.Add(totalParentActual.ToString(formatThousand));  // Insert Actual Column Total Value 
+            #endregion
+
+            parentDataModel.id = BudgetDetailId.ToString();
+            parentDataModel.data = parentData;
+            parentDataModel.rows = childModelList;
+            parentModelList.Add(parentDataModel);
+
+            ViewBag.HasLineItems = childModelList != null && childModelList.Count > 0 ? true : false;
+
+            #endregion
+
+            //DhtmlxGridRowDataModel  objResultModel = new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = ParentData, rows = children, userdata = objuserData, row_attrs = rows_attrData };
+
+            var temp = parentModelList.Where(a => a.id == Convert.ToString(BudgetDetailId)).Select(a => a.data).FirstOrDefault();
+            FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
+            if (temp != null)
+            {
+                objFinanceHeader.Budget = 0;
+                objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
+                objFinanceHeader.Planned = Convert.ToDouble(temp[temp.Count - 2]);
+                objFinanceHeader.Actual = Convert.ToDouble(temp[temp.Count - 1]);
+            }
+            else
+            {
+                objFinanceHeader.Budget = objFinanceHeader.Forecast = objFinanceHeader.Planned = objFinanceHeader.Actual = 0;
+            }
+            objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+            //TempData["FinanceHeader"] = objFinanceHeader;
+            TempData["FinanceHeader"] = new FinanceModelHeaders();
+
+            lineItemGridData.rows = parentModelList;
+            lineItemGridData.FinanemodelheaderObj = objFinanceHeader;
+            return PartialView("_LineItem",lineItemGridData);
+        }
+
+        public JsonResult GetParentLineItemList(int BudgetDetailId = 0)
+        {
+            var lstparnetbudget = Common.GetParentLineItemBudgetDetailslist(BudgetDetailId);
+            return Json(lstparnetbudget, JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetChildLineItemList(int BudgetDetailId = 0)
+        {
+            var lstchildbudget = Common.GetChildLineItemBudgetDetailslist(BudgetDetailId);
+            return Json(lstchildbudget, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Function to get Notification URL.
+        /// Added By: Viral Kadiya on 10/26/2015.
+        /// </summary>
+        /// <param name="planId">Plan Id.</param>
+        /// <param name="planTacticId">Plan Tactic Id.</param>
+        /// <param name="section">Section.</param>
+        /// <returns>Return NotificationURL.</returns>
+        public string GetNotificationURLbyStatus(int planId = 0, int entityId = 0, string section = "")
+        {
+            string strURL = string.Empty;
+            try
+            {
+                if (section == Convert.ToString(Enums.Section.LineItem))
+                    strURL = Url.Action("Index", "Home", new { currentPlanId = planId, planLineItemId = entityId, activeMenu = "Plan" }, Request.Url.Scheme);
+            }
+            catch (Exception e)
+            {
+                Elmah.ErrorSignal.FromCurrentContext().Raise(e);
+            }
+            return strURL;
+        }
+
         #endregion
     }
 }

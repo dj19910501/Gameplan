@@ -887,6 +887,7 @@
     <Content Include="Views\Finance\_MainGrid.cshtml" />
     <Content Include="Views\Finance\_newBudget.cshtml" />
     <Content Include="Views\Shared\_financeheader.cshtml" />
+    <Content Include="Views\Finance\_LineItem.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>
@@ -932,7 +933,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>58691</DevelopmentServerPort>
+          <DevelopmentServerPort>51642</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

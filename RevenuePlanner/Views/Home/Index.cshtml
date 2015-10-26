@@ -7,6 +7,7 @@
     int showInspectForPlanTacticId = ViewBag.ShowInspectForPlanTacticId;
     int showInspectForPlanCampaignId = ViewBag.ShowInspectForPlanCampaignId; // variable added to show campagin popup from email url link click when email sent to user when comapign shared
     int showInspectForPlanProgramId = ViewBag.ShowInspectForPlanProgramId; // variable added to show program popup from email url link click when email sent to user when program shared
+    int ShowInspectForPlanLineItemId = ViewBag.ShowInspectForPlanLineItemId; // variable added to show Plan LineItem popup from Finance page when user click on View button of LineItem Grid
     //// Modified By Maninder Singh Wadhva PL Ticket#47
     bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
@@ -43,6 +44,7 @@
 @Html.Hidden("hdnshowInspectForPlanCampaignId", showInspectForPlanCampaignId)
 @Html.Hidden("hdnshowInspectForPlanProgramId", showInspectForPlanProgramId)
 @Html.Hidden("hdnSelectedPlanIds", 0, new { id = "hdnSelectedPlanIds" })
+@Html.Hidden("hdnShowInspectForPlanLineItemId", ShowInspectForPlanLineItemId)
 
 <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
 @Html.Hidden("hdnIsImprovement", isImprovement)
@@ -2159,6 +2161,7 @@
             //functions added to show campagin and program popup from email url link click when email sent to user when comapign or program shared
             ShowInspectForPlanCampaignId();
             ShowInspectForPlanProgramId();
+            ShowInspectForPlanLineItemId();
         }
         else {
             var currentUrlQueryString = window.location.search.toString().toLowerCase();
@@ -2260,6 +2263,13 @@
 
             ShowModel(null, true);
             hdnshowInspectForPlanProgramId.val(0);
+        }
+    }
+    function ShowInspectForPlanLineItemId() {
+        var hdnShowInspectForPlanLineItemId = $("#hdnShowInspectForPlanLineItemId")
+        if (hdnShowInspectForPlanLineItemId.val() != 0) {
+            ShowModel(null, true);
+            hdnShowInspectForPlanLineItemId.val(0);
         }
     }
     strflg = "";
@@ -3369,7 +3379,7 @@ function Quarter() {
                               //// Modified By Maninder Singh Wadhva PL Ticket#47
                               function ShowModel(taskId, isShowInspect) {
                                   removeDefaultModalPopupBackgroungColor();
-                                  var task, planTacticId, planProgramId, planCampaignId, planId;
+                                  var task, planTacticId, planProgramId, planCampaignId, planId, planLineItemId;
                                   var isImprovement = false;
                                   if (taskId != null) {
                                       task = gantt.getTask(taskId);
@@ -3390,6 +3400,7 @@ function Quarter() {
                                       planCampaignId = $("#hdnshowInspectForPlanCampaignId").val();
                                       planProgramId = $("#hdnshowInspectForPlanProgramId").val();
                                       isImprovement = $('#hdnIsImprovement').val().toLowerCase();
+                                      planLineItemId = $("#hdnShowInspectForPlanLineItemId").val();
                                   }
                                   isImprovement = isImprovement.toString();
                                   //// Checking whether current task is improvement tactic or not.
@@ -3434,6 +3445,16 @@ function Quarter() {
                                       $("#errorMessage").css("display", "none");
                                       $("#modal-container-186470").modal('show');
                                       loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()"); //Modified by Komal rawal For #1324 - To get the default mode as read only
+                                  }
+                                      //// Checking whether current task is tactic or not.
+                                  else if (typeof planLineItemId != 'undefined' && planLineItemId != 0) {
+                                      modalFullPosition(); // Added by Kapil Antala on 17 Sep 2014 for #732 - new popup design
+                                      $('.modal-backdrop').addClass('modalFull-backdrop');
+                                      $('.modal-backdrop').attr("style", "display:none !important;");
+                                      $("#successMessage").css("display", "none");
+                                      $("#errorMessage").css("display", "none");
+                                      $("#modal-container-186470").modal('show');
+                                      loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
                                   }
                                   else if (typeof planId != 'undefined' && planId != 0) {
                                       modalFullPosition();

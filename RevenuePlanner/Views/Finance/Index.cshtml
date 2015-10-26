@@ -25,6 +25,11 @@
         z-index: 98;
         width: 55px;
     }*/
+    .finance_lineItemlink
+    {
+        text-decoration:solid underline;
+        cursor:pointer;
+    }
 </style>
 @section PlanHeader{
     <div id="headerValue">
@@ -43,6 +48,7 @@
 
 @Html.Hidden("hdn_row_parentId", "", new { id = "hdn_row_parentId", name = "hdn_row_parentId", value = "" })
 @Html.Hidden("hdn_BudgetId", "", new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
+@Html.Hidden("hdn_BudgetDetailId", "", new { id = "hdn_BudgetDetailId", name = "hdn_BudgetDetailId", value = "" })
 @*<div style="width: 100%;">*@
 <div style="width: 97.05%; padding:20px;">
     <div style="width:auto;height:50px;display:block;">
@@ -87,10 +93,10 @@
 
         <div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
             <div id="divCheckbox" style="width:300px;float:left;line-height: 22px;">
-                <div id="divBudget" style="float:left;margin-right:10px;"><input type="checkbox" value="Budget" id="chkBudget" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Budget</label></div>
-                <div id="divforecast" style="float:left;margin-right:10px;"><input type="checkbox" value="ForeCast" id="chkForeCast" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Forecast</label></div>
-                <div id="divPlan" style="float:left;margin-right:10px;"><input type="checkbox" value="Plan" id="chkPlan" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Planned</label></div>
-                <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
+                <div id="divBudget" style="float:left;margin-right:10px;"><input type="checkbox" value="Budget" id="chkBudget" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Budget</label></div>
+                <div id="divforecast" style="float:left;margin-right:10px;"><input type="checkbox" value="ForeCast" id="chkForeCast" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Forecast</label></div>
+                <div id="divPlan" style="float:left;margin-right:10px;"><input type="checkbox" value="Plan" id="chkPlan" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Planned</label></div>
+                <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
             </div>
             <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;margin-right:0px">
                 @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
@@ -678,7 +684,7 @@
         $('#btnSettings').css('display', 'none')
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
-
+        $("#hdn_BudgetDetailId").val(BudgetId);
         //backBudgetid = BudgetId;
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         backBudgetid = budgetIDMain;
@@ -690,11 +696,14 @@
 
         myApp.showPleaseWait();
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        // if user came from MainGrid Page then modify TimeFrame value for "Yearly" value.
+        if (pageName == 'MainGrid') {                                               
         var mainTimeFrame = $('#ddlMainGridTimeFrame option:selected').val();
         if (mainTimeFrame.toLowerCase() == "yearly") {
             AllocatedBy = "@Enums.PlanAllocatedBy.quarters.ToString()";
         } else {
             AllocatedBy = mainTimeFrame;
+            }
         }
         //if (AllocatedBy == 'quarters') {
         //    AllocatedBy = true;
@@ -869,8 +878,24 @@
             $("#drpChild").css("display", "none");
             $("#divFinanceBack").css("display", "none");
             $("#divAddnew").css("display", "block");
+            $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
         }
         if (Page == "EditBudget") {
+            $("#drpParentMain").css("display", "none");
+            $("#drpParent").css("display", "block");
+            $("#divExpandCollapse").css("display", "");
+            $("#divCheckbox").css("display", "");
+            $("#ddlTimeFrameSelectBox").css("display", "");
+            $("#ddlMainTimeFrameSelectBox").css("display", "none");
+            $("#drpChild").css("display", "block");
+            $("#divFinanceBack").css("display", "block");
+            $("#divAddnew").css("display", "none");
+            $("#divBudget").css("display", "block");        // Show Budget checkbox
+            $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
+        }
+        if (Page == "LineItemGrid") {
+            $("#divBudget").css("display", "none");         // Hide Budget checkbox
+            $("#dvBudgetHeader").css("display", "none");    // Hide Budget Header
             $("#drpParentMain").css("display", "none");
             $("#drpParent").css("display", "block");
             $("#divExpandCollapse").css("display", "");
@@ -1018,7 +1043,7 @@
         //    AllocatedBy = false;
         //}
         //myTreeGrid.editStop();
-        
+        if (pageName == 'EditBudget') {
         valueTimeFrame = $("#ddlRevenueTimeFrame").val();
         $("#ddlRevenueTimeFrame").val(valueTimeFrame);
         if (RevnueTimeFrameChange) {
@@ -1039,6 +1064,28 @@
         }
         //RevnueTimeFrameChange = true;
         // myApp.showPleaseWait();
+        }
+        else if (pageName == 'LineItemGrid') {
+            var paramDetailId=0;
+            var budgetDetailId = $('#ddlChildFinance').val();
+            //debugger;
+            if (budgetDetailId > 0) {
+                paramDetailId = budgetDetailId;
+            }
+            else {
+                paramDetailId = $("#hdn_BudgetDetailId").val();
+            }
+            var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+            BindFinanceLineItmeData(paramDetailId, AllocatedBy);
+            //GetFinanceHeaderValue(0, false);
+            //ShowHideControls("LineItemGrid");
+            //var ForeCastColumns = $("#chkForeCast");
+            //var PlanColumns = $("#chkPlan");
+            //var ActualColumns = $("#chkActual");
+            //ForeCastColumns.change();
+            //PlanColumns.change();
+            //ActualColumns.change();
+        }
     });
     function DisplayPopUpMenu(addControl, rowIndex) {
         var ul, newItemList = '';
@@ -1094,4 +1141,189 @@
     $(document).mouseup(function (e) {
         $('#popupType').css("display", "none");
     });
+
+    $("#chkBudget, #chkForeCast, #chkPlan, #chkActual").change(function () {
+        if (pageName == 'EditBudget') {
+            ShowHideColumns(this);
+        }
+        else if (pageName == 'LineItemGrid') {
+            ShowHideLineItemsColumns(this);
+        }
+    });
+
+    function LoadLineItemGrid(BudgetDetailid) {
+        $('#btnSettings').css('display', 'none')
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+
+        BindParentLineItemDropdown(parseInt(BudgetDetailid));
+       // debugger;
+        //var parentBudgetDetailId = $("#ddlParentFinance").val();
+        var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
+        $("#ddlChildFinance").val(BudgetDetailid);
+        if (BudgetDetailid > 0) {
+            $("#ddlChildFinance option[value='" + BudgetDetailid + "']").attr("selected", "selected");
+        }
+        BindChildLineItemDropdown(parseInt(parentBudgetDetailId));
+        
+    myApp.showPleaseWait();
+    var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        BindTimeFrameForChild(AllocatedBy);
+        //ShowHideControls("LineItemGrid");
+        //BindFinanceLineItmeData(BudgetDetailid, AllocatedBy);
+        
+    }
+    function BindFinanceLineItmeData(BudgetDetailid, AllocatedBy) {
+        var url = '@Url.Content("~/Finance/GetFinanceLineItemData/")';
+        $('#divGridView').load(url + '?BudgetDetailId=' + BudgetDetailid + '&IsQuaterly=' + AllocatedBy);
+    }
+
+    function BindParentLineItemDropdown(BudgetDetailId) {
+        //debugger;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Finance/GetParentLineItemList/")',
+            dataType: "json",
+            async: false,
+            data: { BudgetDetailId: BudgetDetailId },
+            success: function (data) {
+                
+                $("#ddlParentFinance").html("");
+                for (var i = 0; i < data.length; i++) {
+
+                    var opt = new Option(data[i].Text, data[i].Value);
+                    $('#ddlParentFinance').append(opt);
+                }
+            }
+        });
+       // debugger;
+        var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
+        $("#ddlParentFinance").val(parentBudgetDetailId);
+        if (parentBudgetDetailId > 0) {
+            $("#ddlParentFinance option[value='" + parentBudgetDetailId + "']").attr("selected", "selected");
+        }
+        //Added by Rahul Shah on 13/10/2015 for PL#1667
+        //$('#nl-formParentFinance div').remove('');
+        var nlDivs = $('#nl-formParentFinance div');
+        if (nlDivs.length > 0) {
+            var overlay = $('#nl-formParentFinance .nl-overlay');
+            if (overlay.length > 0) {
+            } else {
+                $('#nl-formParentFinance div').first().remove();
+            }
+        }
+
+        var liParentFinance = $('#ddlParentFinance').find('option');
+        if (liParentFinance != null && liParentFinance != 'undefined' && liParentFinance.length > 0) {
+
+            //nlformParentFinance = new NLForm(document.getElementById('nl-formParentFinance'));
+
+            $('#nl-formParentFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+                //
+                $('#errorMsg').css('display', 'none');
+                $('#SuccessMsg').css('display', 'none');
+                $("#divGridView").show();
+                $("#dvNoData").hide();
+                var parentbudgetDetailID = $(this).attr('value');
+                $("#hdn_BudgetDetailId").val(parentbudgetDetailID);
+                if (pageName == "LineItemGrid") {
+                    $("#ddlChildFinance").val(0);
+                    BindChildLineItemDropdown(parentbudgetDetailID);
+                    //GetFinanceHeaderValue(0,false);
+                }
+
+            });
+            var a = $("#nl-formParentFinance .nl-field.nl-dd");
+        }
+        for (var i = 0; i < a.length - 1 ; i++) {
+
+            $(a[i]).remove();
+        }
+        
+    }
+    function BindChildLineItemDropdown(ParentBudgetDetailId) {
+        //debugger;
+        var ChildID = 0;
+        var budgetDetailId = 0;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Finance/GetChildLineItemList/")',
+            dataType: "json",
+            async: false,
+            data: { BudgetDetailId: ParentBudgetDetailId },
+            success: function (data) {
+                $("#ddlChildFinance").html("");
+                //debugger;
+                if (data == null || data.length == 0) {
+                    $('#ddlChildFinance').append($('<option></option>').attr('value', '0').text('Please Select'));
+                    
+                }
+                for (var i = 0; i < data.length; i++) {
+
+                    var opt = new Option(data[i].Text, data[i].Value);
+                    $('#ddlChildFinance').append(opt);
+
+                    
+                }
+                if (data.length > 0) {
+                    ChildID = data[0].Value; // Set first value
+                }
+                $("#ddlChildFinance").val(ChildID);
+                //var ChildID = $('#nl-formChildFinance .nl-dd-checked ').attr('value');
+                //debugger;
+                if (ChildID > 0) {
+                    budgetDetailId = ChildID;
+                    $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
+                }
+                else {
+                    budgetDetailId = ParentBudgetDetailId;
+                }
+                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                BindFinanceLineItmeData(budgetDetailId, AllocatedBy);
+            }
+        });
+
+
+        //Added by Rahul Shah on 13/10/2015 for PL#1667
+        //$('#nl-formChildFinance div').remove('');
+        var nlDivs = $('#nl-formChildFinance div');
+        if (nlDivs.length > 0) {
+            var overlay = $('#nl-formChildFinance .nl-overlay');
+            if (overlay.length > 0) {
+            } else {
+                $('#nl-formChildFinance div').first().remove();
+            }
+        }
+        nlformChildFinance = new NLForm(document.getElementById('nl-formChildFinance'));
+        var liChildFinance = $('#ddlChildFinance').find('option');
+        if (liChildFinance != null && liChildFinance != 'undefined' && liChildFinance.length > 0) {
+            
+            $('#nl-formChildFinance > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+
+                $('#errorMsg').css('display', 'none');
+                $('#SuccessMsg').css('display', 'none');
+                $("#divGridView").show();
+                $("#dvNoData").hide();
+
+                var ChildbudgetID = $(this).attr('value');
+                var parentid = $('#nl-formParentFinance .nl-dd-checked ').attr('value');
+
+                if (pageName == "LineItemGrid") {
+                    var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                    if (ChildbudgetID > 0) {
+                        BindFinanceLineItmeData(ChildbudgetID, AllocatedBy);
+                    }
+                    else {
+                        BindFinanceLineItmeData(parentid, AllocatedBy);
+                    }
+                }
+            });
+        }
+        var a = $("#nl-formChildFinance .nl-field.nl-dd");
+
+        for (var i = 0; i < a.length - 1 ; i++) {
+
+            $(a[i]).remove();
+        }
+    }
 </script>

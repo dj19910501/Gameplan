@@ -5269,6 +5269,23 @@ namespace RevenuePlanner.Helpers
                             }
                         }
                     }
+                    if (EntityType.Equals(Enums.PlanEntity.LineItem.ToString()))
+                    {
+                        var entityObj = objMRPEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanLineItemId == InspectEntityId).Select(lineItem => new { lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId, lineItem.IsDeleted, lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.PlanId });
+                        if (entityObj.Count() != 0)
+                        {
+                            IsEntityExists = true;
+                            if (entityObj.Where(entity => entity.ClientId == Sessions.User.ClientId).Any())
+                            {
+                                isValidUser = true;
+                                IsDeleted = entityObj.Select(entity => entity.IsDeleted).First<bool>();
+                                if (entityObj.Select(entity => entity.PlanId).First() == PlanId)
+                                {
+                                    IsCorrectPlanId = true;
+                                }
+                            }
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -6284,6 +6301,45 @@ namespace RevenuePlanner.Helpers
             return objfinanceheader;
         }
         #endregion
+
+        #region "Finance: Get Parent & Child dropdown list for LineItem page "
+        /// <summary>
+        /// Get the list of Parent dropdown for LineItem screen
+        /// </summary>
+        /// <returns>Return the list of Budget Details list</returns>
+        public static List<ViewByModel> GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0)
+        {
+            MRPEntities db = new MRPEntities();
+            List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
+            tblBudgetDetails = db.Budget_Detail.Where(a => a.IsDeleted == false).ToList();
+            List<ViewByModel> lstParentItems = new List<ViewByModel>();
+            int? ParentId = 0, mostParentId = 0;
+            ParentId = tblBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            mostParentId = tblBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
+            var filterParentList = (from detail1 in tblBudgetDetails
+                                   where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
+                                   select new { detail1.Name, detail1.Id }).Distinct().ToList();
+            lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            return lstParentItems;
+        }
+
+        /// <summary>
+        /// Get the list of Child dropdown for LineItem screen
+        /// </summary>
+        /// <returns>Return the list of Budget Details list</returns>
+        public static List<ViewByModel> GetChildLineItemBudgetDetailslist(int ParentBudgetDetailId = 0)
+        {
+            MRPEntities db = new MRPEntities();
+            List<ViewByModel> lstChildItems = new List<ViewByModel>();
+            var filterChildList = (from detail1 in db.Budget_Detail
+                                   where detail1.ParentId == ParentBudgetDetailId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
+                                   select new { detail1.Name, detail1.Id }).Distinct().ToList();
+            lstChildItems = filterChildList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            return lstChildItems;
+        }
+        #endregion
+
+        
     }
 
     /// <summary>
