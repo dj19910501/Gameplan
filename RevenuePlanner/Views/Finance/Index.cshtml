@@ -254,7 +254,8 @@
                     $("#divGridView").hide();
                     $("#dvNoData").show();
                 }
-
+                //addded by Rahul Shah
+                $('.nl-field-toggle').text($(this).text());
             });
         }
         else {
@@ -389,7 +390,8 @@
                                     EditBudget(budgetID, false);
                                     //GetFinanceHeaderValue(budgetID);
                                 }
-
+                                //addded by Rahul Shah
+                                $('.nl-field-toggle').text($(this).text());
                             });
 
                             var a = $("#nl-formParentFinance .nl-field.nl-dd");
@@ -603,7 +605,8 @@
                     //GetFinanceHeaderValue(parentid);
                 }
             }
-
+            //addded by Rahul Shah
+            $('.nl-field-toggle').text($(this).text());
         });
         var a = $("#nl-formChildFinance .nl-field.nl-dd");
 
@@ -662,7 +665,8 @@
                 EditBudget(budgetID, false);
                 //GetFinanceHeaderValue(budgetID);
             }
-
+            //addded by Rahul Shah
+            $('.nl-field-toggle').text($(this).text());
         });
         var a = $("#nl-formParentFinance .nl-field.nl-dd");
 
@@ -1003,7 +1007,8 @@
                 $("#divGridView").hide();
                 $("#dvNoData").show();
             }
-
+            //addded by Rahul Shah
+            $('.nl-field-toggle').text($(this).text());
         });
         var a = $("#nl-formParentFinanceMain .nl-field.nl-dd");
 

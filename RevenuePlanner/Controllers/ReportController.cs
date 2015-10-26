@@ -1262,7 +1262,7 @@ namespace RevenuePlanner.Controllers
                 List<double> serData1 = new List<double>();
                 List<double> serData2 = new List<double>();
                 List<double> serData3 = new List<double>();
-                double _Actual = 0, _Projected = 0, _Goal = 0, _plotBandFromValue = 0, _plotBandToValue = 0;
+                double _Actual = 0, _Projected = 0, _Goal = 0, _plotBandFromValue = 0;
                 bool _IsQuarterly = objBasicModel.IsQuarterly;
                 int _compareValue = 0;
                 serData1.Add(0); // Insert blank data at 1st index of list to Add padding to Graph.
@@ -2765,7 +2765,7 @@ namespace RevenuePlanner.Controllers
             {
                 int weightage = 100;
                 List<BudgetModelReport> LineCheck;
-                BudgetMonth parent, parentActual, parentAllocated;
+                BudgetMonth parent, parentActual;
                 foreach (BudgetModelReport l in model.Where(l => l.ActivityType == ParentActivityType))
                 {
                     if (IsCustomFieldViewBy)
@@ -4503,13 +4503,13 @@ namespace RevenuePlanner.Controllers
                 #region "Common code for all StageCode"
 
                 #region "Declare local variables"
-                bool IsTacticCustomField = false, IsProgramCustomField = false, IsCampaignCustomField = false;
+                bool IsTacticCustomField = false,IsCampaignCustomField = false;
                 string customFieldType = string.Empty;
                 int customfieldId = 0;
                 List<RevenueContrinutionData> CustomFieldOptionList = new List<RevenueContrinutionData>();
                 #endregion
 
-                #region "Get CustomField Id & set IsTacticCustomField,IsCampaignCustomField,IsProgramCustomField by selecte CustomField label"
+                #region "Get CustomField Id & set IsTacticCustomField,IsCampaignCustomField by selecte CustomField label"
                 if (strCustomField.Contains(Common.TacticCustomTitle))
                 {
                     customfieldId = Convert.ToInt32(strCustomField.Replace(Common.TacticCustomTitle, ""));
@@ -4523,7 +4523,7 @@ namespace RevenuePlanner.Controllers
                 else if (strCustomField.Contains(Common.ProgramCustomTitle))
                 {
                     customfieldId = Convert.ToInt32(strCustomField.Replace(Common.ProgramCustomTitle, ""));
-                    IsProgramCustomField = true;
+                    //IsProgramCustomField = true;
                 }
                 #endregion
 
@@ -5124,7 +5124,7 @@ namespace RevenuePlanner.Controllers
                     List<TacticMonthValue> TacticCostData = new List<TacticMonthValue>();
                     List<ActualTrendModel> ActualCostTrendModelList = new List<ActualTrendModel>();
                     List<ActualTrendModel> ActualTrendModelList = new List<ActualTrendModel>();
-                    double revActualQ1 = 0, revActualQ2 = 0, revActualQ3 = 0, revActualQ4 = 0, costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0, revTrendQ1 = 0, revTrendQ2 = 0, revTrendQ3 = 0, revTrendQ4 = 0, costTrendQ1 = 0, costTrendQ2 = 0, costTrendQ3 = 0, costTrendQ4 = 0;
+                    double revActualQ1 = 0, revActualQ2 = 0, revActualQ3 = 0, revActualQ4 = 0, costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0, revTrendQ1 = 0, revTrendQ2 = 0, revTrendQ3 = 0, revTrendQ4 = 0, costTrendQ1 = 0, costTrendQ2 = 0, costTrendQ3 = 0;
                     string strRevenueTypeColumn = string.Empty;
                     #endregion
 
@@ -5198,7 +5198,7 @@ namespace RevenuePlanner.Controllers
                         if (IsQuarterly)
                         {
                             strActual = strProjected = strTrendValue = string.Empty;
-                            revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = revTrendQ1 = revTrendQ2 = revTrendQ3 = revTrendQ4 = costTrendQ1 = costTrendQ2 = costTrendQ3 = costTrendQ4 = 0;
+                            revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = revTrendQ1 = revTrendQ2 = revTrendQ3 = revTrendQ4 = costTrendQ1 = costTrendQ2 = costTrendQ3 = 0;
                             ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
 
                             //// Get Actual Revenue value upto currentmonth by Quarterly.
@@ -5262,7 +5262,7 @@ namespace RevenuePlanner.Controllers
                     if (IsQuarterly)
                     {
                         strActual = strProjected = strTrendValue = string.Empty;
-                        revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = revTrendQ1 = revTrendQ2 = revTrendQ3 = revTrendQ4 = costTrendQ1 = costTrendQ2 = costTrendQ3 = costTrendQ4 = 0;
+                        revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = revTrendQ1 = revTrendQ2 = revTrendQ3 = revTrendQ4 = costTrendQ1 = costTrendQ2 = costTrendQ3 = 0;
                         ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
 
                         //// Get Actual Revenue value upto currentmonth by Quarterly.

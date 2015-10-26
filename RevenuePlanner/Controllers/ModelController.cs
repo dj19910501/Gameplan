@@ -237,7 +237,7 @@ namespace RevenuePlanner.Controllers
         [AuthorizeUser(Enums.ApplicationActivity.ModelCreateEdit)]    //// Added by Sohel Pathan on 19/06/2014 for PL ticket #537 to implement user permission Logic
         public ActionResult Create(FormCollection collection, ICollection<string> txtStageId, ICollection<string> txtTargetStage, ICollection<string> txtMCR, ICollection<string> txtMSV)
         {
-            int intFunnelMarketing = 0;
+            
             int intFunnelTeleprospecting = 0;
             int intFunnelSales = 0;
             string mode = Convert.ToString(Request.Form["whichButton"]);

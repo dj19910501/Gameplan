@@ -163,9 +163,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string BudgetId = "59";
-            string BudgetDetailName = "Test";
-            string ParentId = "1138";
+
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(null, null, null, "") as JsonResult;
@@ -192,7 +190,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string BudgetID = "59";
+            
             string BudgetDetailName = "Test";
             string ParentId = "1138";
             //// Call SaveNewBudgetDetail
@@ -222,7 +220,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string BudgetID = "59";
-            string BudgetDetailName = "Test";
+           
             string ParentId = "1138";
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
@@ -252,7 +250,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string BudgetID = "59";
             string BudgetDetailName = "Test";
-            string ParentId = "1138";
+            
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(BudgetID, BudgetDetailName, null, null) as JsonResult;
@@ -279,9 +277,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string BudgetId = "59";
-            string BudgetDetailName = "Test";
-            string ParentId = "1138";
+           
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail("", "", "", "") as JsonResult;
@@ -308,7 +304,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string BudgetId = "59";
+            
             string BudgetDetailName = "Test";
             string ParentId = "1138";
             //// Call SaveNewBudgetDetail
@@ -338,7 +334,7 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string BudgetId = "59";
-            string BudgetDetailName = "Test";
+         
             string ParentId = "1138";
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
@@ -368,7 +364,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             string BudgetId = "59";
             string BudgetDetailName = "Test";
-            string ParentId = "1138";
+            
             //// Call SaveNewBudgetDetail
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.SaveNewBudgetDetail(BudgetId, BudgetDetailName, "", "quaterly") as JsonResult;
@@ -397,7 +393,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string _InvalidRowID = "InValid";
+          
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, "") as ViewResult;
@@ -445,7 +441,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string _InvalidRowID = "InValid";
+      
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, null) as ViewResult;
@@ -470,7 +466,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string _InvalidRowID = "InValid";
+            
             //// Call CreateNewBudget
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.RefreshMainGridData(0, "Quaterly") as ViewResult;
@@ -560,7 +556,7 @@ namespace RevenuePlanner.Test.Controllers
 
         //}
         //#endregion
-        
+
         #endregion
 
         #region Finance Header Value Related Function
@@ -602,10 +598,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 0;
-            string timeFrameOption = "";
-            string isQuarterly = "Quarterly";
-            bool IsMain = true;
+            
             //// Call GetFinanceHeaderValue method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetFinanceHeaderValue(0, "", "", false) as JsonResult;
@@ -631,10 +624,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 0;
-            string timeFrameOption = "";
-            string isQuarterly = "Quarterly";
-            bool IsMain = true;
+          
             //// Call GetFinanceHeaderValue method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetFinanceHeaderValue(0, null, null, true) as JsonResult;
@@ -719,7 +709,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1;
+            
             //// Call GetChildBudget method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetChildBudget() as JsonResult;
@@ -745,7 +735,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1;
+            
             //// Call GetParentBudget method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.GetParentBudget() as JsonResult;
@@ -828,11 +818,11 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1138;
-            string SelectedRowIDs = "[]";
+           
             string IsQuaterly = "quarters";
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly,string.Empty) as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly, string.Empty) as JsonResult;
 
             if (result != null)
             {
@@ -855,9 +845,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
-            string SelectedRowIDs = "[]";
-            string IsQuaterly = "quarters";
+           
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.EditBudgetGridData(0, "", "") as JsonResult;
@@ -883,12 +871,10 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
-            string SelectedRowIDs = "[]";
-            string IsQuaterly = "quarters";
+          
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData(0, null,null) as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(0, null, null) as JsonResult;
 
             if (result != null)
             {
@@ -912,11 +898,10 @@ namespace RevenuePlanner.Test.Controllers
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1138;
-            string SelectedRowIDs = "";
             string IsQuaterly = "quarters";
             //// Call EditBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
-            var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly,"") as JsonResult;
+            var result = objFinanceController.EditBudgetGridData(budgetId, IsQuaterly, "") as JsonResult;
 
             if (result != null)
             {
@@ -976,14 +961,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
-            string IsQuaterly = "quarters";
             string nValue = "Budget Test";
-            string oValue = "Budget Test123";
-            string ColumnName = "Task Name";
-            string Period = "";
-            int ParentRowId = 1138;
-
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(1138, "", nValue, "", "", "", 0) as JsonResult;
@@ -1012,7 +990,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1138;
             string IsQuaterly = "quarters";
-            string nValue = "Budget Test";
+
             string oValue = "Budget Test123";
             string ColumnName = "Task Name";
             string Period = "";
@@ -1047,7 +1025,7 @@ namespace RevenuePlanner.Test.Controllers
             int budgetId = 1138;
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
-            string oValue = "Budget Test123";
+
             string ColumnName = "Task Name";
             string Period = "";
             int ParentRowId = 1138;
@@ -1082,7 +1060,7 @@ namespace RevenuePlanner.Test.Controllers
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
             string oValue = "Budget Test123";
-            string ColumnName = "Task Name";
+
             string Period = "";
             int ParentRowId = 1138;
 
@@ -1112,13 +1090,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            int budgetId = 1138;
-            string IsQuaterly = "quarters";
-            string nValue = "Budget Test";
-            string oValue = "Budget Test123";
-            string ColumnName = "Task Name";
-            string Period = "";
-            int ParentRowId = 1138;
+
             //// Call UpdateBudgetGridData method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetGridData(0, null, null, null, null, null, 0) as JsonResult;
@@ -1147,7 +1119,7 @@ namespace RevenuePlanner.Test.Controllers
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
             int budgetId = 1138;
             string IsQuaterly = "quarters";
-            string nValue = "Budget Test";
+
             string oValue = "Budget Test123";
             string ColumnName = "Task Name";
             string Period = "";
@@ -1182,7 +1154,7 @@ namespace RevenuePlanner.Test.Controllers
             int budgetId = 1138;
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
-            string oValue = "Budget Test123";
+
             string ColumnName = "Task Name";
             string Period = "";
             int ParentRowId = 1138;
@@ -1217,7 +1189,7 @@ namespace RevenuePlanner.Test.Controllers
             string IsQuaterly = "quarters";
             string nValue = "Budget Test";
             string oValue = "Budget Test123";
-            string ColumnName = "Task Name";
+
             string Period = "";
             int ParentRowId = 1138;
 
@@ -1281,11 +1253,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string budgetId = "59";
-            string BudgetDetailId = "1138";
-            string mainTimeFrame = "Invalid";
-            string BudgetDetailName = "Budget Test";
-            string ParentId = "0";
+
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetDetail("", "", "", "", "") as JsonResult;
@@ -1311,11 +1279,7 @@ namespace RevenuePlanner.Test.Controllers
         {
             //// Set session value
             System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-            string budgetId = "59";
-            string BudgetDetailId = "1138";
-            string mainTimeFrame = "Invalid";
-            string BudgetDetailName = "Budget Test";
-            string ParentId = "0";
+
             //// Call UpdateBudgetDetail method
             FinanceController objFinanceController = new FinanceController();
             var result = objFinanceController.UpdateBudgetDetail(null, null, null, null, null) as JsonResult;
@@ -1403,7 +1367,7 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             BudgetAmount obj = new BudgetAmount();
-            obj = objFinanceController.GetAmountValue(null, null, null, null,null);
+            obj = objFinanceController.GetAmountValue(null, null, null, null, null);
 
             if (obj != null)
             {
@@ -1413,7 +1377,7 @@ namespace RevenuePlanner.Test.Controllers
 
         }
         #endregion
-              
+
         #region Get MainGrid Amount Value With Valid Value
         /// <summary>
         /// To Get MainGrid Amount value With Valid Value
@@ -1485,7 +1449,7 @@ namespace RevenuePlanner.Test.Controllers
             FinanceController objFinanceController = new FinanceController();
 
             BudgetAmount obj = new BudgetAmount();
-            obj = objFinanceController.GetMainGridAmountValue(true, null, null, null, null,null);
+            obj = objFinanceController.GetMainGridAmountValue(true, null, null, null, null, null);
 
             if (obj != null)
             {
@@ -1498,6 +1462,6 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-                
+
     }
 }
