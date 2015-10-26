@@ -10,6 +10,7 @@ using System.Data;
 using System.Text.RegularExpressions;
 using RevenuePlanner.Helpers;
 using Newtonsoft.Json;
+using RevenuePlanner.BDSService;
 
 namespace RevenuePlanner.Controllers
 {
@@ -22,6 +23,8 @@ namespace RevenuePlanner.Controllers
         private const string formatThousand = "#,#0.##";
         private bool _IsBudgetCreate_Edit = true;
         private bool _IsForecastCreate_Edit = true;
+        List<User> lstUserDetails = new List<User>();
+
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
             //Added by Rahul Shah on 02/10/2015 for PL #1650
@@ -174,7 +177,75 @@ namespace RevenuePlanner.Controllers
                 //db.SaveChanges();
                 #endregion
 
-                db.DeleteBudget(Selectedids, Convert.ToString(Sessions.User.ClientId));
+                var SelectedBudgetDetail = (from details in db.Budget_Detail
+                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                            select new
+                                            {
+                                                details.Id,
+                                                details.BudgetId,
+                                                details.ParentId,
+                                                details.Name,
+                                                details.IsDeleted
+                                            }).ToList();
+
+                var BudgetDetailJoin = (from details in db.Budget_Detail
+                                        join selectdetails in
+                                            (from details in db.Budget_Detail
+                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                             select new
+                                             {
+                                                 details.Id,
+                                                 details.BudgetId,
+                                                 details.ParentId,
+                                                 details.Name,
+                                                 details.IsDeleted
+                                             }) on details.ParentId equals selectdetails.Id
+                                        select new
+                                        {
+                                            details.Id,
+                                            details.BudgetId,
+                                            details.ParentId,
+                                            details.Name,
+                                            details.IsDeleted
+                                        }).ToList();
+
+                var BudgetDetailData = SelectedBudgetDetail.Union(BudgetDetailJoin).ToList();
+                if (BudgetDetailData.Count > 0)
+                {
+                    var ParentId = BudgetDetailData.Where(a => a.ParentId == null).Select(a => a).FirstOrDefault();
+                    var BudgetDetailIds = BudgetDetailData.Select(a => a.Id).ToList();
+                    int OtherBudgetId = Common.GetOtherBudgetId();
+
+                    if (ParentId != null)
+                    {
+                        // Delete Budget From Budget Table
+
+                        Budget objBudget = db.Budgets.Where(a => a.Id == ParentId.BudgetId && a.IsDeleted == false).FirstOrDefault();
+                        if (objBudget != null)
+                        {
+                            objBudget.IsDeleted = true;
+                            db.Entry(objBudget).State = EntityState.Modified;
+                        }
+                    }
+
+                    // Update Line Item with Other Budget Id
+                    List<LineItem_Budget> LineItemBudgetList = db.LineItem_Budget.Where(a => BudgetDetailIds.Contains(a.BudgetDetailId)).ToList();
+                    foreach (var LineitemBudget in LineItemBudgetList)
+                    {
+                        LineitemBudget.BudgetDetailId = OtherBudgetId;
+                        db.Entry(LineitemBudget).State = EntityState.Modified;
+                    }
+
+                    // Delete Budget Id
+                    List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => BudgetDetailIds.Contains(a.Id)).ToList();
+                    foreach (var BudgetDetail in BudgetDetailList)
+                    {
+                        BudgetDetail.IsDeleted = true;
+                        db.Entry(BudgetDetail).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+                }
+                //db.DeleteBudget(Selectedids, Convert.ToString(Sessions.User.ClientId));
             }
             var lstchildbudget = Common.GetBudgetlist();
             int _budgetId = 0,_curntBudgetId=0;
@@ -316,9 +387,10 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("LineItemCount", typeof(Int32));
                 dataTable.Columns.Add("IsForcast", typeof(Boolean));
                 dataTable.Columns.Add("lstLineItemIds", typeof(List<int>));
+                dataTable.Columns.Add("Owner", typeof(String)); // Add By Nishant
                 //budgetId = 8;
                 List<Budget_Detail> tblBudgetDetails =db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
-                var lstBudgetDetails = tblBudgetDetails.Select(a => new { a.Id, a.ParentId, a.Name, a.IsForecast }).ToList();
+                var lstBudgetDetails = tblBudgetDetails.Select(a => new { a.Id, a.ParentId, a.Name, a.IsForecast, a.CreatedBy }).ToList();
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();// Add By Nishant Sheth
 
                 List<int> lstBudgetDetailsIds = lstBudgetDetails.Select(bdgtdtls => bdgtdtls.Id).ToList();
@@ -381,7 +453,7 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == i.Id).ToList());
                         //rowId = Regex.Replace(i.Name.Trim(), @"\s+", "") + i.Id.ToString() + (i.ParentId == null ? "0" : i.ParentId.ToString());
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />", objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
-                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds });
+                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds, Common.GetUserName(i.CreatedBy.ToString()) });
                     });
 
                 var MinParentid = 0;
@@ -414,6 +486,7 @@ namespace RevenuePlanner.Controllers
             int parentId = row.Field<Int32>("ParentId");
             bool IsForcast = row.Field<Boolean>("IsForcast");
             List<int> lstLineItemIds = row.Field<List<int>>("lstLineItemIds");
+            var Owner = row.Field<String>("Owner");  // Add By Nishant
             //var action = row.Field<String>("Action");
             //var budget = row.Field<List<Double?>>("Budget");
             //var forcast = row.Field<List<Double?>>("ForeCast");
@@ -536,6 +609,7 @@ namespace RevenuePlanner.Controllers
             ParentData.Add(planned);
             ParentData.Add(actual);
             ParentData.Add(lineItemCount.ToString());
+            ParentData.Add(Owner);
             #endregion
 
             //return new FinanceParentChildModel { Id = id, Name = name, Children = children, Budget = budget, ForeCast = forcast, BudgetTotal = budgetTotal, ForeCastTotal = forcastTotal };
@@ -727,9 +801,78 @@ namespace RevenuePlanner.Controllers
                 //db.SaveChanges();
                 #endregion
 
-                db.DeleteBudget(Selectedids, Convert.ToString(Sessions.User.ClientId));
-            }
 
+                //db.DeleteBudget(Selectedids, Convert.ToString(Sessions.User.ClientId));
+                var SelectedBudgetDetail = (from details in db.Budget_Detail
+                                            where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                            select new
+                                            {
+                                                details.Id,
+                                                details.BudgetId,
+                                                details.ParentId,
+                                                details.Name,
+                                                details.IsDeleted
+                                            }).ToList();
+
+                var BudgetDetailJoin = (from details in db.Budget_Detail
+                                        join selectdetails in
+                                            (from details in db.Budget_Detail
+                                             where (details.ParentId == Selectedids || details.Id == Selectedids) && details.IsDeleted == false || details.IsDeleted == null
+                                             select new
+                                             {
+                                                 details.Id,
+                                                 details.BudgetId,
+                                                 details.ParentId,
+                                                 details.Name,
+                                                 details.IsDeleted
+                                             }) on details.ParentId equals selectdetails.Id
+                                        select new
+                                        {
+                                            details.Id,
+                                            details.BudgetId,
+                                            details.ParentId,
+                                            details.Name,
+                                            details.IsDeleted
+                                        }).ToList();
+
+                var BudgetDetailData = SelectedBudgetDetail.Union(BudgetDetailJoin).ToList();
+                if (BudgetDetailData.Count > 0)
+                {
+                    var ParentId = BudgetDetailData.Where(a => a.ParentId == null).Select(a => a).FirstOrDefault();
+                    var BudgetDetailIds = BudgetDetailData.Select(a => a.Id).ToList();
+                    int OtherBudgetId = Common.GetOtherBudgetId();
+
+                    if (ParentId != null)
+                    {
+                        // Delete Budget From Budget Table
+
+                        Budget objBudget = db.Budgets.Where(a => a.Id == ParentId.BudgetId && a.IsDeleted == false).FirstOrDefault();
+                        if (objBudget != null)
+                        {
+                            objBudget.IsDeleted = true;
+                            db.Entry(objBudget).State = EntityState.Modified;
+                        }
+                    }
+
+                    // Update Line Item with Other Budget Id
+                    List<LineItem_Budget> LineItemBudgetList = db.LineItem_Budget.Where(a => BudgetDetailIds.Contains(a.BudgetDetailId)).ToList();
+                    foreach (var LineitemBudget in LineItemBudgetList)
+                    {
+                        LineitemBudget.BudgetDetailId = OtherBudgetId;
+                        db.Entry(LineitemBudget).State = EntityState.Modified;
+                    }
+
+                    // Delete Budget Id
+                    List<Budget_Detail> BudgetDetailList = db.Budget_Detail.Where(a => BudgetDetailIds.Contains(a.Id)).ToList();
+                    foreach (var BudgetDetail in BudgetDetailList)
+                    {
+                        BudgetDetail.IsDeleted = true;
+                        db.Entry(BudgetDetail).State = EntityState.Modified;
+                    }
+                    db.SaveChanges();
+                }
+                //db.DeleteBudget(Selectedids, Convert.ToString(Sessions.User.ClientId));
+            }
 
             #endregion
 
