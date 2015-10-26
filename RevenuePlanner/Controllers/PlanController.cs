@@ -9604,11 +9604,7 @@ namespace RevenuePlanner.Controllers
                 List<CustomFieldModel> customFieldList = Common.GetCustomFields(tacticObj.PlanTacticId, section);
                 var customfieldidlist = customFieldList.Select(c => c.customFieldId).ToList();
                 string TacticType = "";
-                if (section == Enums.EntityType.Tactic.ToString())
-                {
-                    Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(tacticObj.PlanTacticId) && pcptobj.IsDeleted == false).FirstOrDefault();
-                    TacticType = pcpt.TacticTypeId.ToString();
-                }
+                TacticType = tacticObj.TacticTypeId.ToString();
                 foreach (var item in customFieldList)
                 {
                     List<string> val = new List<string>();
