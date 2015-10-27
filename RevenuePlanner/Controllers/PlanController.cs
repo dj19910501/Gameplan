@@ -9632,7 +9632,7 @@ namespace RevenuePlanner.Controllers
                     {
                         lstCustomFieldsRequired = new List<int>();
                     }
-                    tcnt += tacticcustomfieldsentity.Where(t => t.EntityId == tacticObj.PlanTacticId && lstCustomFieldsRequired.Contains(t.CustomFieldId)).Count();
+                    tcnt += tacticcustomfieldsentity.Where(t => t.EntityId == tacticObj.PlanTacticId && lstCustomFieldsRequired.Contains(t.CustomFieldId)).Select(a=>a.CustomFieldId).Distinct().Count();
                     trequiredcnt += lstCustomFieldsRequired.Count();
 
                 }
