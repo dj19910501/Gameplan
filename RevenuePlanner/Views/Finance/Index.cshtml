@@ -11,26 +11,7 @@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid.js")">*@
 <script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid.js")"></script>
 
-<style>
-    /*.grid_add:hover:after {
-        background: #333;
-        background: rgba(0,0,0,.8);
-        border-radius: 5px;
-        bottom: 0px;
-        color: #fff;
-        content: attr(data-title);
-        left: 10px;
-        position: relative;
-        cursor: pointer;
-        z-index: 98;
-        width: 55px;
-    }*/
-    .finance_lineItemlink
-    {
-        text-decoration:solid underline;
-        cursor:pointer;
-    }
-</style>
+
 @section PlanHeader{
     <div id="headerValue">
         @Html.Partial("~/Views/Shared/_financeheader.cshtml", HeaderDataModel)
@@ -50,9 +31,9 @@
 @Html.Hidden("hdn_BudgetId", "", new { id = "hdn_BudgetId", name = "hdn_BudgetId", value = "" })
 @Html.Hidden("hdn_BudgetDetailId", "", new { id = "hdn_BudgetDetailId", name = "hdn_BudgetDetailId", value = "" })
 @*<div style="width: 100%;">*@
-<div style="width: 97.05%; padding:20px;">
-    <div style="width:auto;height:50px;display:block;">
-        <div style="float:left;margin-top:10px;margin-bottom:10px;margin-left:0px;width:auto;">
+<div style="" class="finance-header">
+    <div style="" id="DivFilter" class="finance-header-inner">
+        <div style="" class="fin-head-left">
             <div style="float:left;" id="drpParentMain">
                 <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
                     @Html.DropDownList("ddlParentFinanceMain", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))
@@ -91,31 +72,43 @@
 
         </div>
 
-        <div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
+        @*<div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
             <div id="divCheckbox" style="width:300px;float:left;line-height: 22px;">
-                <div id="divBudget" style="float:left;margin-right:10px;"><input type="checkbox" value="Budget" id="chkBudget" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Budget</label></div>
-                <div id="divforecast" style="float:left;margin-right:10px;"><input type="checkbox" value="ForeCast" id="chkForeCast" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Forecast</label></div>
-                <div id="divPlan" style="float:left;margin-right:10px;"><input type="checkbox" value="Plan" id="chkPlan" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Planned</label></div>
-                <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
-            </div>
-            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px; line-height: 1.1;margin-right:0px">
+                <div id="divBudget" style="float:left;margin-right:10px;"><input type="checkbox" value="Budget" id="chkBudget" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Budget</label></div>
+                <div id="divforecast" style="float:left;margin-right:10px;"><input type="checkbox" value="ForeCast" id="chkForeCast" onchange="ShowHideColumns(this)" checked="checked" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Forecast</label></div>
+                <div id="divPlan" style="float:left;margin-right:10px;"><input type="checkbox" value="Plan" id="chkPlan" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Planned</label></div>
+                <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
+            </div>*@
+        <div class="fin-head-right" style="">
+
+            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px;margin-right:0px;">
                 @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
             </span>
-            <span class="selectBox" id="ddlMainTimeFrameSelectBox" style="width: 158px; line-height: 1.1;margin-right:0px">
+            <div style="display:inline-block">
+                <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select">
+                    <option value="option1" id="divBudget">Budget</option>
+                    <option value="option2" id="divforecast">Forecast</option>
+                    <option value="option3" id="divPlan">Planned</option>
+                    <option value="option4" id="divActual">Actual</option>
+
+                </select>
+            </div>
+            <span class="selectBox quarter_selection" id="ddlMainTimeFrameSelectBox" style="">
                 @Html.DropDownList("ddlMainGridTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByMainGridAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
             </span>
         </div>
     </div>
+    </div>
     @*<input type="button" id="btnRefreshMainGrid" name="btnRefreshMainGrid" value="Refresh MainGrid" />*@
     @*<div id="divGridView" style="width:98%;display:block;margin-left:10px;margin-right:10px;">*@
-    <div id="divGridView" style="width: 100%; clear: both;">
+    <div id="divGridView" style="" class="finance-tbl">
         @Html.Partial("_MainGrid", MainGridData)
     </div>
-    <div id="dvNoData" style="width: 100%; clear: both; display:none; font-weight:bold;">
+    <div id="dvNoData" style="" class="no-data">
         No data found.
     </div>
     <div class="market-activity-main">
-        <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px; z-index: 1;" id="popupType">
+        <div class="btn-dropdwn" style="" id="popupType">
         </div>
     </div>
     <div class="row-fluid calc-height">
@@ -1331,4 +1324,5 @@
             $(a[i]).remove();
         }
     }
+    $('#budget-select').multiselect();
 </script>

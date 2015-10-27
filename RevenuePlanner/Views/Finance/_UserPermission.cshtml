@@ -1,0 +1,219 @@
+﻿@using RevenuePlanner.Helpers;
+@model RevenuePlanner.Models.FinanceModel
+@section nlFormContent{
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+}
+<div style="" class="finance-header">
+    <div style="" id="DivFilter" class="finance-header-inner">
+        <div style="" class="fin-head-left">
+            <div style="float:left;" id="drpParentMain">
+                <div id="nl-formParentFinanceMain" class="nl-form-plan-title without-margin plantitle financetitle">
+                    @*@Html.DropDownList("ddlParentFinanceMain", new SelectList((System.Collections.IEnumerable)ViewBag.budgetlist, "Value", "Text"))*@
+                    <div class="nl-overlay"></div>
+                </div>
+            </div>
+            
+        </div>
+
+     
+    </div>
+</div>
+<div class="fin-permission">
+    <div class="permission-inner">
+        <div class="user-list">
+            <p>Add user to list</p>
+            <div class="search-user"><input type="search" placeholder="Search" /></div>
+            <div class="user-info">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>Johnny Anderson</td>
+                            <td>Director</td>
+                            <td><a href="#"><img src="~/Content/images/icon-plus_in_circle.png" /></a></td>
+                        </tr>
+                        <tr>
+                            <td>Johnny Anderson</td>
+                            <td>Director</td>
+                            <td><a href="#"><img src="~/Content/images/icon-plus_in_circle.png" /></a></td>
+                        </tr>
+                        <tr>
+                            <td>Johnny Anderson</td>
+                            <td>Director</td>
+                            <td><a href="#"><img src="~/Content/images/icon-plus_in_circle.png" /></a></td>
+                        </tr>
+                        <tr>
+                            <td>Johnny Anderson</td>
+                            <td>Director</td>
+                            <td><a href="#"><img src="~/Content/images/icon-plus_in_circle.png" /></a></td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="user-table">
+            <div class="alert alert-success">
+                <span class="x-icon pull-right" title=""></span>
+                 <span>Changes saved.</span>
+            </div>
+            <p>Users with permission</p>
+            <table id="userTable" class="table table-striped table-hover myteam">
+                <thead>
+                    <tr>
+                        <th title="First Name">
+                            First Name
+                        </th>
+                        <th title="Last Name">
+                            Last Name
+                        </th>
+
+                        <th title="Role">
+                            Role
+                        </th>
+                        <th>Business Unit</th>
+                        <th>region</th>
+                        <th>Permission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="userRow">
+                        <td title="1">
+                            1
+                        </td>
+                        <td title="2">
+                            2
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td class="userDelete">
+                            <p><input type="radio" id="vew-edit" name="permission" /><label for="vew-edit">View/Edit</label></p>
+                            <p> <input type="radio" id="view-only" name="permission" /><label for="view-only">view only</label></p>
+                            <a href="#">
+                                <span title="Delete Member" class="x-icon hide pull-right"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr class="userRow">
+                        <td title="1">
+                            1
+                        </td>
+                        <td title="2">
+                            2
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td class="userDelete">
+                            <p><input type="radio" id="vew-edit" name="permission" /><label for="vew-edit">View/Edit</label></p>
+                            <p> <input type="radio" id="view-only" name="permission" /><label for="view-only">view only</label></p>
+                            <a href="#">
+                                <span title="Delete Member" class="x-icon hide pull-right"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr class="userRow selected">
+                        <td title="1">
+                            1
+                        </td>
+                        <td title="2">
+                            2
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td class="userDelete">
+                            <p><input type="radio" id="vew-edit" name="permission" /><label for="vew-edit">View/Edit</label></p>
+                            <p> <input type="radio" id="view-only" name="permission" /><label for="view-only">view only</label></p>
+                            <a href="#">
+                                <span title="Delete Member" class="x-icon hide pull-right"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr class="userRow">
+                        <td title="1">
+                            1
+                        </td>
+                        <td title="2">
+                            2
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td class="userDelete">
+                            <p><input type="radio" id="vew-edit" name="permission" /><label for="vew-edit">View/Edit</label></p>
+                            <p> <input type="radio" id="view-only" name="permission" /><label for="view-only">view only</label></p>
+                            <a href="#">
+                                <span title="Delete Member" class="x-icon hide pull-right"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr class="userRow">
+                        <td title="1">
+                            1
+                        </td>
+                        <td title="2">
+                            2
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td>
+                            Bhavesh dont touch
+                        </td>
+                        <td class="userDelete">
+                            <p><input type="radio" id="vew-edit" name="permission" /><label for="vew-edit">View/Edit</label></p>
+                            <p> <input type="radio" id="view-only" name="permission" /><label for="view-only">view only</label></p>
+         <a href="#">
+         <span title="Delete Member" class="x-icon hide pull-right"></span>
+    </a>
+</td>
+                    </tr>
+                </tbody>
+            </table>
+            <input type="submit" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" title="Save Changes" value="Save Changes">
+            <button class="btn-link Cancel-button-center-popups" type="button">Cancel</button>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    var nlformUserChildFinance;
+    $(function () {
+        debugger;
+        $("#DivFilter").css('display', 'none');
+       
+    })
+</script>
+
