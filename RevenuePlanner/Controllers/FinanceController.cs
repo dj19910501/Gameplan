@@ -18,12 +18,15 @@ namespace RevenuePlanner.Controllers
     {
         //
         // GET: /Finance/
+        #region Declartion
         private MRPEntities db = new MRPEntities();
         private const string PeriodPrefix = "Y";
         private const string formatThousand = "#,#0.##";
         private bool _IsBudgetCreate_Edit = true;
         private bool _IsForecastCreate_Edit = true;
         List<User> lstUserDetails = new List<User>();
+        private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        #endregion
 
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
@@ -425,6 +428,9 @@ namespace RevenuePlanner.Controllers
                                                                                          && tacticStatus.Contains(Tactic.Status)
                                                                                          select Actual).ToList();
 
+                List<BDSService.User> lstUser = null;
+                lstUser = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ToList();
+
                 string rowId = string.Empty;
                 List<int> PlanLineItemsId, lstLineItemIds;
                 BudgetAmount objBudgetAmount;
@@ -453,7 +459,9 @@ namespace RevenuePlanner.Controllers
                         objBudgetAmount = GetMainGridAmountValue(isQuarterly, mainTimeFrame, BudgetDetailAmount.Where(a => a.BudgetDetailId == i.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == i.Id).ToList());
                         //rowId = Regex.Replace(i.Name.Trim(), @"\s+", "") + i.Id.ToString() + (i.ParentId == null ? "0" : i.ParentId.ToString());
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />", objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
-                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds, Common.GetUserName(i.CreatedBy.ToString()) });
+                        // Get Owner name
+                        var OwnerName = lstUser.Where(a => a.UserId == i.CreatedBy).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
+                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds, Convert.ToString(OwnerName) });
                     });
 
                 var MinParentid = 0;
