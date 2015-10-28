@@ -104,12 +104,12 @@ body {
 /* 27-10-2015 for ticket 1713 by bheru start*/
 #header .title {
     color: #fff;
-    font-size: 24px;
-    line-height: 1.1;
-    display: block;
+    font-size: 30px;/*by bheru 28-10-2015*/
+    line-height: 78px/*by bheru 28-10-2015*/
+    /*display: block;
     float: left;
     padding-top: 24px;
-    max-width: 240px;
+    max-width: 240px;*/
 }
 /* 27-10-2015 for ticket 1713 by bheru end*/
 .mrp-logo {
@@ -986,7 +986,8 @@ span.info-icon {
 .primary-title {
     color: #fff;
     margin: center center 20px;
-    text-shadow: 2px 2px #292929
+    text-shadow: 2px 2px #292929;
+    margin-bottom:20px;/*by bheru 28-10-2015*/
 }
 .message-position {
     margin: -37px 3px 3px!important
@@ -3851,20 +3852,21 @@ a.link-gray {
     width: 30%;
     text-align: right
 }
-.quarter_selection {
+.fin-head-right .quarter_selection {
     width: auto;
     line-height: 1.1;
     margin-left: 20px;
     float: right;
+    margin-right:0px;
 }
 .finance-header {
-    width: 100%
+  display: flex;
+  padding: 20px 20px 10px
 }
 .finance-header-inner {
-    width: auto;
+    width: 100%;
     height: auto;
     display: block;
-    padding: 20px
 }
 .fin-head-left {
     float: left;
@@ -3875,8 +3877,29 @@ a.link-gray {
 .fin-permission,
 .finance-tbl,
 .no-data {
-    width: 100%;
+    padding:20px;
     clear: both
+}
+.fin-head-left  .btn-blue
+{
+    margin-bottom:0px;
+}
+.finance-tbl .div.gridbox
+{
+    width:100% !important;
+}
+#btnMultiselect_budget-select
+{
+     margin-left: 15px;
+    margin-right: 0;
+}
+.finance-tbl
+{
+    padding-top:0;
+}
+.fin-head-right .ui-multiselect.ui-widget
+{
+      margin-right: 15px;
 }
 .no-data {
     display: none;
