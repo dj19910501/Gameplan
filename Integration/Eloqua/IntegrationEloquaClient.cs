@@ -1149,7 +1149,7 @@ namespace Integration.Eloqua
                     #endregion
                     sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _isResultError = true;
                     string message = "System error occurred while creating tactic \"" + planTactic.Title + "\" at Eloqua.";

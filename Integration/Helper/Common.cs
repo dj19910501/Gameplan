@@ -65,7 +65,7 @@ namespace Integration.Helper
         /// Date: 28/7/2015
         /// Ticket : #1385	Enable TLS 1.1 or higher Encryption for Salesforce
         /// </summary>
-        public static readonly string EnableTLS1AndHigher = Convert.ToString(System.Configuration.ConfigurationSettings.AppSettings["EnableTLS1AndHigher"]);
+        public static readonly string EnableTLS1AndHigher = Convert.ToString(System.Configuration.ConfigurationManager.AppSettings["EnableTLS1AndHigher"]);
 
         /// <summary>
         /// Decrypt string

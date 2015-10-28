@@ -8,7 +8,6 @@ using RevenuePlanner.Models;
 using System.Text;
 using System.Data;
 using System.Text.RegularExpressions;
-using RevenuePlanner.Helpers;
 using Newtonsoft.Json;
 using RevenuePlanner.BDSService;
 
@@ -88,7 +87,7 @@ namespace RevenuePlanner.Controllers
                 int budgetId = SaveNewBudget(budgetName);
                 return RefreshMainGridData(budgetId);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -118,7 +117,7 @@ namespace RevenuePlanner.Controllers
                 db.Entry(objBudgetDetail).State = EntityState.Added;
                 db.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -282,7 +281,7 @@ namespace RevenuePlanner.Controllers
 
             gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
             var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
-            if (DetailId != null)
+            if (DetailId != 0)
             {
                 var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                 if (temp != null)
@@ -357,7 +356,7 @@ namespace RevenuePlanner.Controllers
                 }
                 return RefreshMainGridData(_budgetId, mainTimeFrame);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -677,7 +676,7 @@ namespace RevenuePlanner.Controllers
                 }
                 return RefreshMainGridData(budgetId, mainTimeFrame);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -704,7 +703,7 @@ namespace RevenuePlanner.Controllers
                 {
                     gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
                     var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
-                    if (DetailId != null)
+                    if (DetailId != 0)
                     {
                         var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
                         if (temp != null)
@@ -897,7 +896,7 @@ namespace RevenuePlanner.Controllers
         public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
-            var MinBudgetid = 0; var MinParentid = 0;
+            var MinParentid = 0;
 
             #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
             _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
@@ -1300,7 +1299,6 @@ namespace RevenuePlanner.Controllers
         public BudgetAmount GetAmountValue(string isQuaterly, List<Budget_DetailAmount> Budget_DetailAmountList, List<Plan_Campaign_Program_Tactic_LineItem_Cost> PlanDetailAmount, List<Plan_Campaign_Program_Tactic_LineItem_Actual> ActualDetailAmount, List<LineItem_Budget> LineItemidBudgetList)
         {
             #region Declartion
-            int? weightage = 0;
             BudgetAmount objbudget = new BudgetAmount();
             List<double?> _budgetlist = new List<double?>();
             List<double?> _forecastlist = new List<double?>();

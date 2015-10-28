@@ -29,7 +29,6 @@ namespace Integration.Eloqua
         private static string archiveFolder = "/Archived/";
         private static string rootResponseFolder = ConfigurationManager.AppSettings["EloquaResponseFolderPath"].ToString();
         private static string eloquaCampaignIDColumn = "EloquaCampaignID";
-        private static string externalCampaignIDColumn = "ExternalCampaignID";
         private static string eloquaResponseDateTimeColumn = "ResponseDateTime";
         private static string responsedateformat = "yyyy-MM-dd";
         private MRPEntities db = new MRPEntities();

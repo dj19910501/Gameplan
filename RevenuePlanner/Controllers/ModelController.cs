@@ -1336,7 +1336,7 @@ namespace RevenuePlanner.Controllers
 
                 //// Start Manoj Limbachiya 05May2014 PL#458
                 ViewBag.CanDelete = false;
-                if (objTacticType.ModelId != null)
+                if (objTacticType.ModelId != 0)
                 {
                     ViewBag.CanDelete = true;
                 }
@@ -2466,7 +2466,6 @@ namespace RevenuePlanner.Controllers
         public JsonResult SaveIntegration(int id, BaselineModel objBaselineModel, bool IsIntegrationChanged = false, bool IsIntegrationEloquaChanged = false)
         {
             //// set values of objDbMrpEntities.Model object as per posted values and update objDbMrpEntities.Model
-            bool returnValue = false;
             string message = string.Empty;
             using (TransactionScope scope = new TransactionScope())
             {
@@ -2502,7 +2501,6 @@ namespace RevenuePlanner.Controllers
                             ViewBag.ModelTitle = objModel.Title;
                             message = Common.objCached.ModelIntegrationSaveSuccess;
                             TempData["SuccessMessageIntegration"] = Common.objCached.IntegrationSelectionSaved;
-                            returnValue = true;
                         }
                     }
                 }

@@ -3488,7 +3488,6 @@ namespace RevenuePlanner.Controllers
                             {
                                 #region "Variable Initialize"
                                 bool isReSubmission = false;
-                                bool isOwner = false;
                                 string status = string.Empty;
                                 int oldProgramId = 0;
                                 string oldProgramTitle = "";
@@ -3501,7 +3500,6 @@ namespace RevenuePlanner.Controllers
                                 }
 
                                 Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
-                                if (pcpobj.CreatedBy == Sessions.User.UserId) isOwner = true;
 
                                 pcpobj.Title = form.TacticTitle;
                                 status = pcpobj.Status;
@@ -6836,7 +6834,6 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        bool isManagerLevelUser = false;
                         string status = string.Empty;
                         Plan_Improvement_Campaign_Program_Tactic pcpobj = db.Plan_Improvement_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.ImprovementPlanTacticId.Equals(Improvementid)).FirstOrDefault();
 
@@ -6844,10 +6841,6 @@ namespace RevenuePlanner.Controllers
                         BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
                         var lstUserHierarchy = objBDSServiceClient.GetUserHierarchy(Sessions.User.ClientId, Sessions.ApplicationId);
                         var lstSubordinates = lstUserHierarchy.Where(u => u.ManagerId == Sessions.User.UserId).Select(u => u.UserId).ToList();
-                        if (lstSubordinates.Contains(pcpobj.CreatedBy))
-                        {
-                            isManagerLevelUser = true;
-                        }
 
                         pcpobj.Title = title;
                         status = pcpobj.Status;
@@ -8952,14 +8945,12 @@ namespace RevenuePlanner.Controllers
                 }
                 var Programids = db.Plan_Campaign_Program.Where(id => id.PlanCampaignId == Id && id.Status == status).Select(program => program.PlanProgramId).ToList();
                 var Tactics = db.Plan_Campaign_Program_Tactic.Where(id => Programids.Contains(id.PlanProgramId)).Select(tactic => tactic).ToList();
-                bool isApproved = false;
                 DateTime todaydate = DateTime.Now;
                 foreach (var item in Tactics)
                 {
                     if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                     {
                         item.Status = status;
-                        isApproved = true;
                         if (todaydate > item.StartDate && todaydate < item.EndDate)
                         {
                             item.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
@@ -9013,14 +9004,12 @@ namespace RevenuePlanner.Controllers
             {
 
                 var Tactics = db.Plan_Campaign_Program_Tactic.Where(id => id.PlanProgramId == Id && id.Status == status && id.IsDeleted == false).Select(id => id).ToList();
-                bool isApproved = false;
                 DateTime todaydate = DateTime.Now;
                 foreach (var item in Tactics)
                 {
                     if (status.Equals(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString()))
                     {
                         item.Status = status;
-                        isApproved = true;
                         if (todaydate > item.StartDate && todaydate < item.EndDate)
                         {
                             item.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();

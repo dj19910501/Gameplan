@@ -62,7 +62,7 @@ namespace IntegrationWinService
                 retval = 1;
                 return retval;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 retval = 0;
                 return retval;

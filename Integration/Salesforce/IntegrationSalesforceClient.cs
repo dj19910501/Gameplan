@@ -60,7 +60,6 @@ namespace Integration.Salesforce
         private readonly string objectName;
         private string _parentId { get; set; }
         private string ColumnParentId = "ParentId";
-        private string ColumnId = "Id";
         private string UnableToUpdate = "Unable to update";
         private string UnableToDelete = "Unable to delete";
         private bool _isAuthenticated { get; set; }

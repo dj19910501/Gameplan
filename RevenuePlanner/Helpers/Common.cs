@@ -62,8 +62,8 @@ namespace RevenuePlanner.Helpers
         //public static string xmlMsgFilePath = HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLCommonMsgFilePath"));
         //public static string xmlBenchmarkFilePath = HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLBenchmarkFilePath"));
 
-        public static string xmlMsgFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLCommonMsgFilePath"));
-        public static string xmlBenchmarkFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationSettings.AppSettings.Get("XMLBenchmarkFilePath"));
+        public static string xmlMsgFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLCommonMsgFilePath"));
+        public static string xmlBenchmarkFilePath = HttpContext.Current.Request.ApplicationPath == null ? string.Empty : HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath.Replace("/", "\\") + "\\" + System.Configuration.ConfigurationManager.AppSettings.Get("XMLBenchmarkFilePath"));
 
 
         public static readonly int imgWidth = 50;
@@ -91,15 +91,6 @@ namespace RevenuePlanner.Helpers
         public const string maxLengthValue = "10";
         public const string maxLengthPercentageValue = "5";
         public const string copySuffix = "_Copy";
-
-        /*----------------------- Temp variables juned ---------------------------- */
-
-        private static string PASSWORD_CHARS_LCASE = "abcdefgijkmnopqrstwxyz";
-        private static string PASSWORD_CHARS_UCASE = "ABCDEFGHJKLMNPQRSTWXYZ";
-        private static string PASSWORD_CHARS_NUMERIC = "23456789";
-        private static string PASSWORD_CHARS_SPECIAL = "*$-+?_&=!{}";
-
-        /*----------------------- Temp section ends here -------------------------- */
 
         //----------------------- Constants for Report Conversion Summary ----------------------//
         public const string Actuals = "Actuals";
@@ -483,7 +474,7 @@ namespace RevenuePlanner.Helpers
                 smtpClient.EnableSsl = smtpSection.Network.EnableSsl;
                 smtpClient.Send(objEmail);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //// Changed By: Maninder Singh Wadhva to avoid argument null exception.
                 //Elmah.ErrorLog.GetDefault(null).Log(new Error(ex));
@@ -2226,7 +2217,7 @@ namespace RevenuePlanner.Helpers
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 db = null;
                 return false;
@@ -2448,7 +2439,7 @@ namespace RevenuePlanner.Helpers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -4842,7 +4833,7 @@ namespace RevenuePlanner.Helpers
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return returnValue;
             }
@@ -6161,8 +6152,6 @@ namespace RevenuePlanner.Helpers
         /// <returns>Actual cost of a Tactic</returns>
         public static List<TacticActualCostModel> CalculateActualCostTacticslist(List<int> PlanTacticIds, List<TacticStageValue> Tacticdata)
         {
-            string cost = "Cost";
-            //string strActualCost = "0";
             Dictionary<int, string> dicTactic_ActualCost = new Dictionary<int, string>();
             List<int> lstLineItems = new List<int>();
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();

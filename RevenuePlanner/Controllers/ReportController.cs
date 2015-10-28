@@ -1285,9 +1285,9 @@ namespace RevenuePlanner.Controllers
 
                 for (int i = 0; i < catLength; i++)
                 {
-                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
-                    _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
-                    _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
+                    _Actual = objBasicModel.ActualList[i];
+                    _Projected = objBasicModel.ProjectedList[i];
+                    _Goal = objBasicModel.GoalList[i];
                     serData2.Add(_Goal);
                     serData1.Add(_Actual);
                     serData3.Add(_Projected);
@@ -5124,7 +5124,7 @@ namespace RevenuePlanner.Controllers
                     List<TacticMonthValue> TacticCostData = new List<TacticMonthValue>();
                     List<ActualTrendModel> ActualCostTrendModelList = new List<ActualTrendModel>();
                     List<ActualTrendModel> ActualTrendModelList = new List<ActualTrendModel>();
-                    double revActualQ1 = 0, revActualQ2 = 0, revActualQ3 = 0, revActualQ4 = 0, costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0, revTrendQ1 = 0, revTrendQ2 = 0, revTrendQ3 = 0, revTrendQ4 = 0, costTrendQ1 = 0, costTrendQ2 = 0, costTrendQ3 = 0;
+                    double revActualQ1 = 0, revActualQ2 = 0, revActualQ3 = 0, revActualQ4 = 0, costActualQ1 = 0, costActualQ2 = 0, costActualQ3 = 0, costActualQ4 = 0;
                     string strRevenueTypeColumn = string.Empty;
                     #endregion
 
@@ -5198,7 +5198,7 @@ namespace RevenuePlanner.Controllers
                         if (IsQuarterly)
                         {
                             strActual = strProjected = strTrendValue = string.Empty;
-                            revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = revTrendQ1 = revTrendQ2 = revTrendQ3 = revTrendQ4 = costTrendQ1 = costTrendQ2 = costTrendQ3 = 0;
+                            revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
                             ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
 
                             //// Get Actual Revenue value upto currentmonth by Quarterly.
@@ -5262,7 +5262,7 @@ namespace RevenuePlanner.Controllers
                     if (IsQuarterly)
                     {
                         strActual = strProjected = strTrendValue = string.Empty;
-                        revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = revTrendQ1 = revTrendQ2 = revTrendQ3 = revTrendQ4 = costTrendQ1 = costTrendQ2 = costTrendQ3 = 0;
+                        revActualQ1 = revActualQ2 = revActualQ3 = revActualQ4 = costActualQ1 = costActualQ2 = costActualQ3 = costActualQ4 = 0;
                         ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
 
                         //// Get Actual Revenue value upto currentmonth by Quarterly.
@@ -5599,9 +5599,9 @@ namespace RevenuePlanner.Controllers
 
                 for (int i = 0; i < catLength; i++)
                 {
-                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
-                    _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
-                    _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
+                    _Actual = objBasicModel.ActualList[i];
+                    _Projected = objBasicModel.ProjectedList[i];
+                    _Goal = objBasicModel.GoalList[i];
                     Actual_Projected = _prevActual_Projected = _prevActual_Projected + (_Actual + _Projected);
                     _Goal = _prevGoal = _prevGoal + _Goal;
                     serData1.Add(Actual_Projected);
@@ -5701,9 +5701,9 @@ namespace RevenuePlanner.Controllers
                 _comparevalue = TodayValue - paddingval;
                 for (int i = 0; i < catLength; i++)
                 {
-                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
-                    _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
-                    _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
+                    _Actual = objBasicModel.ActualList[i];
+                    _Projected = objBasicModel.ProjectedList[i];
+                    _Goal = objBasicModel.GoalList[i];
                     Actual_Projected = _prevActual_Projected = _prevActual_Projected + (_Actual + _Projected);
                     _Goal = _prevGoal = _prevGoal + _Goal;
 
@@ -7640,9 +7640,9 @@ namespace RevenuePlanner.Controllers
 
                 for (int i = 0; i < catLength; i++)
                 {
-                    _Actual = objBasicModelDataTable.ActualList[i] != null ? objBasicModelDataTable.ActualList[i] : 0;
-                    _Projected = objBasicModelDataTable.ProjectedList[i] != null ? objBasicModelDataTable.ProjectedList[i] : 0;
-                    _Goal = objBasicModelDataTable.GoalList[i] != null ? objBasicModelDataTable.GoalList[i] : 0;
+                    _Actual = objBasicModelDataTable.ActualList[i];
+                    _Projected = objBasicModelDataTable.ProjectedList[i];
+                    _Goal = objBasicModelDataTable.GoalList[i];
                     serData2.Add(_Goal);
                     serData1.Add(_Actual);
                     serData3.Add(_Projected);
@@ -8737,9 +8737,9 @@ namespace RevenuePlanner.Controllers
 
                     for (int i = 0; i < catLength; i++)
                     {
-                        _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
-                        _Projected = objBasicModel.ProjectedList[i] != null ? objBasicModel.ProjectedList[i] : 0;
-                        _Goal = objBasicModel.GoalList[i] != null ? objBasicModel.GoalList[i] : 0;
+                        _Actual = objBasicModel.ActualList[i];
+                        _Projected = objBasicModel.ProjectedList[i];
+                        _Goal = objBasicModel.GoalList[i];
                         serData2.Add(_Goal);
                         serData1.Add(_Actual);
                         serData3.Add(_Projected);
@@ -9628,9 +9628,9 @@ namespace RevenuePlanner.Controllers
 
                 for (int i = 0; i < catLength; i++)
                 {
-                    _Actual = objBasicModel.ActualList[i] != null ? objBasicModel.ActualList[i] : 0;
+                    _Actual = objBasicModel.ActualList[i];
                     _totActul = _totActul + _Actual;
-                    _Cost = objBasicModel.CostList[i] != null ? objBasicModel.CostList[i] : 0;
+                    _Cost = objBasicModel.CostList[i];
                     _totalcost = _totalcost + _Cost;
                     serData1.Add(_totActul);
                     serData2.Add(_totalcost);

@@ -2044,7 +2044,6 @@ namespace RevenuePlanner.Controllers
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
 
                 //// Check Users own & Subordinate plan Editable or not.
-                bool IsPlanEditable = false;
                 bool IsPlanCreateAll = false;
                 if (IsPlanCreateAuthorized)
                 {
@@ -2057,15 +2056,7 @@ namespace RevenuePlanner.Controllers
                         IsPlanCreateAll = true;
                     }
                 }
-                if (plan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditAllAuthorized)
-                {
-                    IsPlanEditable = true;
-                }
-                else if (IsPlanEditSubordinatesAuthorized)
+                if (IsPlanEditSubordinatesAuthorized)
                 {
                     //Get all subordinates of current user upto n level
                     var lstSubOrdinates = new List<Guid>();
@@ -2090,7 +2081,6 @@ namespace RevenuePlanner.Controllers
 
                     if (lstSubOrdinates.Contains(plan.CreatedBy))
                     {
-                        IsPlanEditable = true;
                         IsPlanCreateAll = true;
                     }
                 }
@@ -9669,7 +9659,7 @@ namespace RevenuePlanner.Controllers
                 }
                 if (string.IsNullOrEmpty(tacticObj.Title))
                     return true;
-                else if (tacticObj.TacticTypeId == null)
+                else if (tacticObj.TacticTypeId == 0)
                     return true;
                 else if (tacticObj.CreatedBy == null)
                     return true;
