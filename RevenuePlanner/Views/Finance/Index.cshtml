@@ -1178,7 +1178,8 @@
         if (BudgetDetailid > 0) {
             $("#ddlChildFinance option[value='" + BudgetDetailid + "']").attr("selected", "selected");
         }
-        BindChildLineItemDropdown(parseInt(parentBudgetDetailId));
+        var childBudgetDetailId = BudgetDetailid;
+        BindChildLineItemDropdown(parseInt(parentBudgetDetailId), childBudgetDetailId);
 
         myApp.showPleaseWait();
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
@@ -1242,7 +1243,7 @@
                 $("#hdn_BudgetDetailId").val(parentbudgetDetailID);
                 if (pageName == "LineItemGrid") {
                     $("#ddlChildFinance").val(0);
-                    BindChildLineItemDropdown(parentbudgetDetailID);
+                    BindChildLineItemDropdown(parentbudgetDetailID,0);
                     //GetFinanceHeaderValue(0,false);
                 }
 
@@ -1255,7 +1256,7 @@
         }
 
     }
-    function BindChildLineItemDropdown(ParentBudgetDetailId) {
+    function BindChildLineItemDropdown(ParentBudgetDetailId, childBudgetDetailId) {
         //debugger;
         var ChildID = 0;
         var budgetDetailId = 0;
@@ -1279,7 +1280,10 @@
 
 
                 }
-                if (data.length > 0) {
+                if (childBudgetDetailId > 0) {
+                    ChildID = childBudgetDetailId
+                }
+                else if (data.length > 0) {
                     ChildID = data[0].Value; // Set first value
                 }
                 $("#ddlChildFinance").val(ChildID);

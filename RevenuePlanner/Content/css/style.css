@@ -4876,17 +4876,18 @@ a.link-gray {
     font-family: source_sans_probold;
     font-weight: 400;
 }
-
-.myteam th:nth-child(3),
-.myteam th:nth-child(4),
-.myteam th:nth-child(5),
-.myteam tr td:nth-child(2),
-.myteam tr td:nth-child(3),
-.myteam tr td:nth-child(4),
-.myteam tr td:nth-child(5),
+/*by bheru 28-10-2015*/
+.user-table .myteam th:nth-child(3),
+.user-table .myteam th:nth-child(4),
+.user-table .myteam th:nth-child(5),
+.user-table .myteam tr td:nth-child(2),
+.user-table .myteam tr td:nth-child(3),
+.user-table .myteam tr td:nth-child(4),
+.user-table .myteam tr td:nth-child(5),
 .user-table .myteam th:nth-child(2) {
     border-right: 1px solid #a6a6a6;
 }
+/*by bheru 28-10-2015*/
 
 .user-table table th {
     font-size: 14px;
@@ -4897,7 +4898,7 @@ a.link-gray {
 
 .user-table table.myteam tbody tr:hover > td:last-child,
 table.myteam tbody tr > td:last-child {
-    width: auto !important;
+    width: 37px !important; /*by bheru 28-10-2015*/
 }
 
 .user-table tr td.userDelete p {
@@ -4915,8 +4916,8 @@ table.myteam tbody tr > td:last-child {
         vertical-align: middle;
         color: grey;
     }
-
-.table td,
+/*by bheru 28-10-2015*/
+/*.table td,
 .user-table .table th {
     line-height: 20px;
     padding: 6px 20px;
@@ -4924,7 +4925,8 @@ table.myteam tbody tr > td:last-child {
     vertical-align: middle;
     border-bottom: 1px solid #a6a6a6;
     text-transform: capitalize;
-}
+}*/
+/*by bheru 28-10-2015*/
 
 .table td {
     border-bottom: none;
