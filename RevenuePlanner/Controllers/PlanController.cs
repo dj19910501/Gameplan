@@ -47,7 +47,7 @@ namespace RevenuePlanner.Controllers
         List<Stage> stageList = new List<Stage>();
         List<User> lstUserDetails = new List<User>();
         List<int> lstCustomFieldsRequired = new List<int>();
-        List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
+    //    List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
         List<Plan_Campaign_Program_Tactic_LineItem> DBLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
 
         #endregion
@@ -9072,6 +9072,34 @@ namespace RevenuePlanner.Controllers
                 var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
                 //    lstCustomFieldsRequired = cusomfield.Where(customField => (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true) && customField.IsRequired == true).Select(customField => customField.CustomFieldId).ToList();
 
+                List<CustomFieldDependency> DependencyList = db.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
+                List<int> childdepedentcustomfieldids = DependencyList.Select(list => list.ChildCustomFieldId).ToList();
+                List<int?> childdependentoptionlist = DependencyList.Select(list => list.ChildOptionId).ToList();
+                var lstCustomFields = cusomfield.Where(customField => customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true).ToList().Select(a => new CustomFieldModel
+                {
+                    customFieldId = a.CustomFieldId,
+                    name = a.Name,
+                    customFieldType = a.CustomFieldType.Name,
+                    description = a.Description,
+                    isRequired = a.IsRequired,
+                    entityType = a.EntityType,
+                    isChild = childdepedentcustomfieldids.Contains(a.CustomFieldId) ? true : false,
+                    ParentId = DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault() == null ? 0 : DependencyList.Where(b => b.ChildCustomFieldId == a.CustomFieldId).Select(b => b.ParentCustomFieldId).FirstOrDefault(),
+                    ParentOptionId = DependencyList.Where(list => list.ChildCustomFieldId == a.CustomFieldId && list.ChildOptionId == null).Select(list => list.ParentOptionId).ToList().FirstOrDefault(),
+                    option = a.CustomFieldOptions.Where(Option => Option.IsDeleted == false).ToList().Select(o => new CustomFieldOptionModel
+                    {
+                        ChildOptionId = childdependentoptionlist.Contains(o.CustomFieldOptionId) ? true : false,
+                        ParentOptionId = DependencyList.Where(b => b.ChildOptionId == o.CustomFieldOptionId).Select(b => b.ParentOptionId).FirstOrDefault(),
+                        customFieldOptionId = o.CustomFieldOptionId,
+                        ChildOptionIds = DependencyList.Where(Child => Child.ParentOptionId == o.CustomFieldOptionId).Select(list => list.ChildOptionId).ToList(),
+                        value = o.Value,
+                        customFieldId = o.CustomFieldId
+                    }).OrderBy(o => o.value).ToList()
+
+                }).OrderBy(a => a.name, new AlphaNumericComparer()).ToList();
+                
+                
+                
                 var lstAllTacticCustomFieldEntitiesanony = db.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
                                                                                                        .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
 
@@ -9084,7 +9112,7 @@ namespace RevenuePlanner.Controllers
                                                                 Value = tbl.Value
                                                             }).ToList();
 
-                tacticcustomfieldsentity = customfieldlist;
+            //    tacticcustomfieldsentity = customfieldlist;
 
                 if (programtactic != null && programtactic.Count > 0)
                     IsTacticExist = true;
@@ -9480,7 +9508,7 @@ namespace RevenuePlanner.Controllers
                                                         IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                                         ProjectStage = taskdata.Stage.Title,
                                                         IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0",
-                                                        IsRequiredfalse = CheckTacticRequiredfield(taskdata)
+                                                        IsRequiredfalse = CheckTacticRequiredfield(taskdata, lstCustomFields, customfieldlist)
                                                     });
 
 
@@ -9593,7 +9621,7 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
         #region Check tactic required field condition
-        public bool CheckTacticRequiredfield(Plan_Campaign_Program_Tactic tacticObj)
+        public bool CheckTacticRequiredfield(Plan_Campaign_Program_Tactic tacticObj, List<CustomFieldModel> lstCustomFields, List<CustomField_Entity> customfieldlist)
         {
             try
             {
@@ -9601,11 +9629,12 @@ namespace RevenuePlanner.Controllers
                 int tcnt = 0;
                 int trequiredcnt = 0;
                 string section = Enums.Section.Tactic.ToString();
-                List<CustomFieldModel> customFieldList = Common.GetCustomFields(tacticObj.PlanTacticId, section);
-                var customfieldidlist = customFieldList.Select(c => c.customFieldId).ToList();
+                List<CustomFieldModel> FinalcustomFieldList = GetEntityData(tacticObj.PlanTacticId, lstCustomFields, customfieldlist);
+                var customfieldidlist = FinalcustomFieldList.Select(c => c.customFieldId).ToList();
                 string TacticType = "";
+                
                 TacticType = tacticObj.TacticTypeId.ToString();
-                foreach (var item in customFieldList)
+                foreach (var item in FinalcustomFieldList)
                 {
                     List<string> val = new List<string>();
                     var ParentCustomFieldID = item.ParentId;
@@ -9615,24 +9644,26 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                        val = customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
+                        //Gets the value of the selected option of Parent Customfield.
+                        val = FinalcustomFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? FinalcustomFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
                     }
+                    //checks if the options of the child custom field are the ones related to the selected parent option.
                     var IsSelectedParentsChild = item.option.Where(op => val.Contains(op.ParentOptionId.ToString())).Any();
-                    if (item.customFieldType == "TextBox" && item.isChild)
+                    if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() && item.isChild)
                     {
                         IsSelectedParentsChild = val.Contains(item.ParentOptionId.ToString());
                     }
 
                     if ((item.isChild == false || IsSelectedParentsChild) && item.isRequired)
                     {
-                        lstCustomFieldsRequired = customFieldList.Where(field => field.customFieldId.Equals(item.customFieldId)).Select(customField => customField.customFieldId).ToList();
+                        lstCustomFieldsRequired = FinalcustomFieldList.Where(field => field.customFieldId.Equals(item.customFieldId)).Select(customField => customField.customFieldId).ToList();
 
                     }
                     else
                     {
                         lstCustomFieldsRequired = new List<int>();
                     }
-                    tcnt += tacticcustomfieldsentity.Where(t => t.EntityId == tacticObj.PlanTacticId && lstCustomFieldsRequired.Contains(t.CustomFieldId)).Select(a=>a.CustomFieldId).Distinct().Count();
+                    tcnt += customfieldlist.Where(t => t.EntityId == tacticObj.PlanTacticId && lstCustomFieldsRequired.Contains(t.CustomFieldId)).Select(a => a.CustomFieldId).Distinct().Count();
                     trequiredcnt += lstCustomFieldsRequired.Count();
 
                 }
@@ -9657,6 +9688,20 @@ namespace RevenuePlanner.Controllers
             }
 
             //End
+        }
+
+        public List<CustomFieldModel> GetEntityData(int id, List<CustomFieldModel> lstCustomFields, List<CustomField_Entity> customfieldlist)
+        {
+            List<int> customFieldIds = lstCustomFields.Select(cs => cs.customFieldId).ToList();
+            var EntityValue = customfieldlist.Where(ct => ct.EntityId == id && customFieldIds.Contains(ct.CustomFieldId)).Select(ct => new { ct.Value, ct.CustomFieldId }).ToList();
+            foreach (var CustomFieldId in customFieldIds)
+            {
+                lstCustomFields.Where(c => c.customFieldId == CustomFieldId).FirstOrDefault().value = EntityValue.Where(ev => ev.CustomFieldId == CustomFieldId).Select(ev => ev.Value).ToList();
+
+            }
+
+            return lstCustomFields;
+
         }
         #endregion
         #region Save gridview detail from home
