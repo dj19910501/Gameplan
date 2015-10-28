@@ -11342,6 +11342,11 @@ top-revenue-table table td:nth-child(4) {
     cursor: pointer;
     color: #005580
 }
+.finance_lineItemlink
+{
+    text-decoration:solid underline;
+    cursor:pointer;
+}
 .btn-Settings {
     padding-left: 2px;
     width: 10px;
