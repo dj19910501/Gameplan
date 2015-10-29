@@ -183,6 +183,10 @@
     //    }
     //});
     $(document).ready(function () {
+        //Added by Rahul Shah on 29/10/2015 to set maximum character of dropdownlist.
+        $('#ddlParentFinanceMain').attr('maxlength', '30');
+        $('#ddlParentFinance').attr('maxlength', '30');
+        $('#ddlChildFinance').attr('maxlength', '30');
         //// Proceed to save data.
         $('#proceed-button_DeleteItem').on("click", function () {
             DeleteSelected();
@@ -1024,6 +1028,10 @@
         for (var i = 0; i < a.length - 1 ; i++) {
 
             $(a[i]).remove();
+        }
+
+        if ($('#nl-formParentFinanceMain .nl-field-toggle').text().length > 30) {
+            $('#nl-formParentFinanceMain .nl-field-toggle').text().substring(0, 30) + '...';
         }
     }
 
