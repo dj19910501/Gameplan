@@ -331,6 +331,7 @@
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Sep3.css" />
     <Content Include="Content\css\style_min_Oct6.css" />
+    <Content Include="Content\css\style_min_Oct7.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -933,7 +934,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>54381</DevelopmentServerPort>
+          <DevelopmentServerPort>51197</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
