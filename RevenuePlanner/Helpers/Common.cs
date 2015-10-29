@@ -4566,7 +4566,7 @@ namespace RevenuePlanner.Helpers
 
             if (IsBudgetTab)
             {
-                lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabTactic).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabCampaign).Concat(lstCustomFieldsViewByTabLineItem).ToList();
+                lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabLineItem).Concat(lstCustomFieldsViewByTabTactic).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabCampaign).ToList();
 
             }
             else

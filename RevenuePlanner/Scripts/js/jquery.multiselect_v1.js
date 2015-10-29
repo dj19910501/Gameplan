@@ -226,7 +226,7 @@ var selectbox_keys = '';
                     if (value.substring(0, o.CustomLineItemName.length) == o.CustomLineItemName) {
                         isLineitemCustomField = true;
                         var tempId = $this.parent().attr('id');
-                        html += '<div class="report-seperator" id="' + tempId + '_LineitemCustomHeader"><span>Lineitem Fields</span></div>'
+                        html += '<div class="report-seperator" id="' + tempId + '_LineitemCustomHeader"><span>Line Item Fields</span></div>'
                     }
                 }
 
