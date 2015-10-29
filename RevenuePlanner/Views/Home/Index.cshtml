@@ -111,7 +111,10 @@
                     $("#TacticTypeAllModule").css("display", "block");
                     $("#NoTTFound").hide();
                     $.each(data.TacticTypelist, function (i, TactictypeItem) {
-                        $('#ulTacticType').append('<li class="accordion-inner" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"></input></li>');
+                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+                        var checked = "checked";
+                        var checkedclass = "close-list";
+                        $('#ulTacticType').append('<li class="accordion-inner' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                     });
                 }
                 else {
@@ -325,7 +328,10 @@
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                        $('#ulSelectedOwner').append('<li class="accordion-inner" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"></input></li>');
+                                        //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
+                                        var checked = "checked";
+                                        var checkedclass = "close-list";
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
                                         // filters.OwnerIds.push(OwnerItem.OwnerId);
                                     });
                                 }
@@ -771,13 +777,13 @@
                         <h2 class="accordion-toggle" data-toggle="collapse" data-parent="#accordion-Status" href="#accordion-element-Status">Status<i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
                     </div>
                     <div id="accordion-element-Status" class="accordion-body collapse">
-                        <ul class="scroll-list" id="ulStatus">
-                            <li class="accordion-inner" id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@CreatedStatus"/></li>
-                            <li class="accordion-inner" id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@SubmittedStatus"/></li>
-                            <li class="accordion-inner" id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@ApprovedStatus"/></li>
-                            <li class="accordion-inner" id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@InProgressStatus"/></li>
-                            <li class="accordion-inner" id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@CompleteStatus"/></li>
-                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter"  onchange="toggleStatus(this)" id="@DeclineStatus"/></li>
+                        <ul class="scroll-list" id="ulStatus">@*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
+                            <li class="accordion-inner close-list" id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" checked/></li>
+                            <li class="accordion-inner close-list" id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" checked /></li>
                         </ul>
                         <div class="list-tab">
                             <ul id="StatusAllModule">
