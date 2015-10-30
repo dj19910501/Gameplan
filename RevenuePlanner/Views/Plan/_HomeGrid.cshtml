@@ -389,6 +389,11 @@
                     //var subids = HomeGrid.getSubItems(rowid).split(',');
                     //for (var i = 0; i < subids.length; i++)
                     //    HomeGrid.openItem(subids[i]);
+                    if (SourcePtype == "line") {
+                        HomeGrid.openItem(pid);
+                        HomeGrid.openItem(HomeGrid.getParentId(pid));
+                        HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(pid)));
+                    }
                     if (SourcePtype == "tact") {
                         HomeGrid.openItem(rowid);
                         HomeGrid.openItem(pid);

@@ -440,7 +440,6 @@
                     }
                 });
             }
-            //debugger;
             var isTitleEdit = myTreeGrid.getUserData(rowid, "isTitleEdit");
             if (isTitleEdit == "0") {
                 myTreeGrid.cells(rowid, titleIndx).setDisabled(true);
@@ -460,7 +459,6 @@
             IsValid = true;
         });
         myTreeGrid.attachEvent("onEditCancel", function (id, value) {
-            //debugger;
             //myTreeGrid.cells(id, 0).setCValue("invalid");
             //alert('');
             RevnueTimeFrameChange = true;
@@ -487,7 +485,6 @@
         myTreeGrid.enableAutoHeight(true);
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
-            //debugger;
             if (!_isNewRowAdd) {
             RevnueTimeFrameChange = false;
             }
@@ -554,7 +551,6 @@
                 if (_row_parentId != null && _row_parentId.length > 0) {
                     splitRowParentIds = _row_parentId.split(',');
                     $.each(splitRowParentIds, function (key, val) {
-                        //  debugger;
                         rowId = val.split('~')[0];
                         parentId = val.split('~')[1];
                         parentRowID = val.split('~')[2];
@@ -793,7 +789,6 @@
                             // GetFinanceHeaderValue(rId, false);
 
                             //var rowIndex = myTreeGrid.getRowIndex(rId);
-                            //debugger;
                             //if (rowIndex == 0) {
 
                             if (RevnueTimeFrameChange) {
@@ -1029,7 +1024,6 @@
     }
     function AddNewRowbyType(itemType, cntrl) {
         if (_isNewRowAdd == false) {
-            //debugger;
             var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
             //if (AllocatedBy == 'quarters') {
             //    AllocatedBy = true;
@@ -1129,7 +1123,6 @@
             //if (childrencount == null || childrencount == 'undefined' || childrencount == '' || childrencount.toString() == "0") {
             //    //UpdateActionColumn(budgetDetailId);
             //}
-            // debugger;
             var _newRowIndex = myTreeGrid.getRowIndex(_newrowid.toString());
             IsAddNew = true;
 

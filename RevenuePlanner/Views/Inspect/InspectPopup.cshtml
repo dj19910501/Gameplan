@@ -751,9 +751,6 @@
                         $("#hdnBudgetingExpandId").val(expandPlanTacticId);
                         $("#hdnBudgetingIsSave").val("true");
                     }
-                    else {
-                        RefreshCurrentTab('@RequestedModule', planCampaignId, planProgramId, planTacticId);
-                    }
 
                     $("#successMessage").css("display", "block");
                     $("#spanMessageSuccess").empty();
@@ -818,21 +815,19 @@
                                 if (document.getElementById("liGrid") != null && document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                     LoadPlanGrid();
                                     gridSearchFlag = 0;
-                                    //Added by Rahul Shah on 20/10/2015 fro PL #1634
-                                    addDefaultModalPopupBackgroungColor();
-                                    $("#modal-container-186470").addClass("transition-close");
-                                    $("#modal-container-186470").removeClass("transition_y");
-                                    $('body').removeClass('bodyOverflow');
+                                    
+                                  
                                 }
                                 else {
                                     RefreshCurrentTab();
                                     //Added by Rahul Shah on 20/10/2015 fro PL #1634
-                                    addDefaultModalPopupBackgroungColor();
-                                    $("#modal-container-186470").addClass("transition-close");
-                                    $("#modal-container-186470").removeClass("transition_y");
-                                    $('body').removeClass('bodyOverflow');
+                                   
                                 }
-                                // $('body').removeClass('bodyOverflow');
+                                //Added by Rahul Shah on 20/10/2015 fro PL #1634
+                                addDefaultModalPopupBackgroungColor();
+                                $("#modal-container-186470").addClass("transition-close");
+                                $("#modal-container-186470").removeClass("transition_y");
+                                $('body').removeClass('bodyOverflow');
                             }
                             else {
 

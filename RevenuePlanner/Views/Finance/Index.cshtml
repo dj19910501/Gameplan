@@ -244,7 +244,6 @@
         // EditBudget(21);
         ShowHideControls("MainGrid");
         //Added by Rahul Shah on 13/10/2015 for PL#1667
-        //debugger;
 
         var liParentFinanceMain = $('#ddlParentFinanceMain').find('option');
         if (liParentFinanceMain != null && liParentFinanceMain != 'undefined' && liParentFinanceMain.length > 0) {
@@ -847,7 +846,6 @@
         //$('.gridbox .xhdr .hdr td').css("border-right", "");
         //$('.gridbox .objbox td').css("border-right", "");
         //for (var j = 1; j <= 23; j++) {
-        //    //debugger;
         //    if (BorderCount == j) {
         //        var check = $('.gridbox .xhdr .hdr td:nth-child(' + j + ')').css("display");
         //        if (check == "none") {
@@ -1090,7 +1088,6 @@
         else if (pageName == 'LineItemGrid') {
             var paramDetailId = 0;
             var budgetDetailId = $('#ddlChildFinance').val();
-            //debugger;
             if (budgetDetailId > 0) {
                 paramDetailId = budgetDetailId;
             }
@@ -1118,7 +1115,6 @@
         $('#popupType').html(ul);
         var left = $(addControl).position().left + 45;//e.pageX;
         //var target = $(addControl);
-        //debugger;
         var targetOffset = $(addControl).offset().top;
         var scrollPosition = $(window).scrollTop();
 
@@ -1179,7 +1175,6 @@
         $('#SuccessMsg').css('display', 'none');
 
         BindParentLineItemDropdown(parseInt(BudgetDetailid));
-        // debugger;
         //var parentBudgetDetailId = $("#ddlParentFinance").val();
         var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
         $("#ddlChildFinance").val(BudgetDetailid);
@@ -1202,7 +1197,6 @@
     }
 
     function BindParentLineItemDropdown(BudgetDetailId) {
-        //debugger;
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Finance/GetParentLineItemList/")',

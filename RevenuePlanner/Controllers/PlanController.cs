@@ -8295,7 +8295,7 @@ namespace RevenuePlanner.Controllers
                 for (int i = 0; i < arrActualCostInputValues.Length; i++)
                 {
                     //// Insert LineItem Actual data to Plan_Campaign_Program_Tactic_LineItem_Actual table.
-                    if (arrActualCostInputValues[i] != "")
+                    if (!string.IsNullOrWhiteSpace(arrActualCostInputValues[i]))
                     {
                         Plan_Campaign_Program_Tactic_LineItem_Actual obPlanCampaignProgramTacticActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
                         obPlanCampaignProgramTacticActual.PlanLineItemId = PlanLineItemId;

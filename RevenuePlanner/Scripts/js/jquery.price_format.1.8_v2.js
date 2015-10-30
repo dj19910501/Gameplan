@@ -94,7 +94,6 @@
             // don't skip left zeros 
             function to_numbers_keyup(str) {
                 var formatted = '';
-                //debugger;
                 for (var i = 0; i < (str.length) ; i++) {
                     char_ = str.charAt(i);
 
@@ -114,7 +113,6 @@
 
             // format to fill with zeros to complete cents chars
             function fill_with_zeroes(str) {
-                //debugger;
                 while (str.length < (centsLimit + 1)) str = '0' + str;
                 return str;
             }
@@ -193,7 +191,6 @@
                             formatted = '+' + formatted;
                     }
                 }
-                //debugger;
                 // Start - Added by Sohel Pathan on 02/09/2014 for PL ticket #742
                 if (formatted == '0' && (doubleLast == '' || doubleLast == 'undefined' || doubleLast == null)) { // Made changes by Viral Kadiya on 09/14/2015 for PL ticket #1395.
                     if (isAllowNull) {

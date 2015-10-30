@@ -194,7 +194,12 @@
                             for (i in actualData) {
                                 var indx = parseInt(i) + 1;
                                 var actVal = actualData[i].costValue;
-                                $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
+                                if (!isNaN(actVal) && actVal != '') {
+                                    $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
+                                }
+                                else {
+                                    $("#txtActual-Y" + indx).val("");
+                                }
                             }
                         }
                         var projectedval = data.ProjectedValue;
@@ -305,6 +310,9 @@
             }*@
             $('#trActualCost').find('input').each(function () {
                 var cvalue = parseFloat($(this).val().trim().replace(/,/g, '').replace('$', ''));
+                if (isNaN(cvalue)) {
+                    cvalue = ' ';
+                }
                 _stractualsData = _stractualsData + "," + cvalue;
             });
             var _strPlanLineitemId = $("#hdnPlanLineItemID").val();

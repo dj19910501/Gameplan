@@ -128,7 +128,6 @@
             }
 
         });*@
-        //debugger;
         var GridData = "@_lineItemGridData";
         GridData = $('<div/>').html(GridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         GridData = (GridData.toString().replace(/&quot;/g, '"'));
@@ -150,7 +149,6 @@
             
 
         } else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
-            //debugger;
             myTreeGrid.setHeader(",," + Jan + "," + Jan + "," + Jan + "," + Feb + "," + Feb + "," + Feb + "," + Mar + "," + Mar + "," + Mar + "," + April + "," + April + "," + April + "," + May + "," + May + "," + May + "," + Jun + "," + Jun + "," + Jun + "," + July + "," + July + "," + July + "," + Aug + "," + Aug + "," + Aug + "," + Sep + "," + Sep + "," + Sep + "," + Oct + "," + Oct + "," + Oct + "," + Nov + "," + Nov + "," + Nov + "," + Dec + "," + Dec + "," + Dec + ",Total,Total,Total", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
             myTreeGrid.attachHeader("Task Name,,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual,Forecast,Planned,Actual",["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;"]);
             myTreeGrid.setColumnIds("Title,,ForecastM1,PlannedM1,ActualM1,ForecastM2,PlannedM2,ActualM2,ForecastM3,PlannedM3,ActualM3,ForecastM4,PlannedM4,ActualM4,ForecastM5,PlannedM5,ActualM5,ForecastM6,PlannedM6,ActualM6,ForecastM7,PlannedM7,ActualM7,ForecastM8,PlannedM8,ActualM8,ForecastM9,PlannedM9,ActualM9,ForecastM10,PlannedM10,ActualM10,ForecastM11,PlannedM11,ActualM11,ForecastM12,PlannedM12,ActualM12,ForecastTotal,PlannedTotal,ActualTotal");

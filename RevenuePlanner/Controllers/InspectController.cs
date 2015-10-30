@@ -8724,10 +8724,9 @@ namespace RevenuePlanner.Controllers
                             returnValue = Common.PlanTaskDelete(Enums.Section.LineItem.ToString(), id);
                             if (returnValue != 0)
                             {
-                                List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.ToList();
-                                Plan_Campaign_Program_Tactic_LineItem pcptl = tblLineItem.Where(lineitem => lineitem.PlanLineItemId == id).FirstOrDefault();
-                                var objOtherLineItem = tblLineItem.FirstOrDefault(lineitem => lineitem.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && lineitem.LineItemTypeId == null);
-                                double totalLoneitemCost = tblLineItem.Where(lineitem => lineitem.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && lineitem.LineItemTypeId != null && lineitem.IsDeleted == false).ToList().Sum(lineitem => lineitem.Cost);
+                                Plan_Campaign_Program_Tactic_LineItem pcptl = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanLineItemId == id).FirstOrDefault();
+                                var objOtherLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(lineitem => lineitem.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && lineitem.LineItemTypeId == null);
+                                double totalLoneitemCost = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.PlanTacticId == pcptl.Plan_Campaign_Program_Tactic.PlanTacticId && lineitem.LineItemTypeId != null && lineitem.IsDeleted == false).ToList().Sum(lineitem => lineitem.Cost);
                                 if (objOtherLineItem == null)
                                 {
                                     Plan_Campaign_Program_Tactic_LineItem objNewLineitem = new Plan_Campaign_Program_Tactic_LineItem();

@@ -607,9 +607,6 @@
                             $("#hdnBudgetingExpandId").val(expandplanProgramId);
                             $("#hdnBudgetingIsSave").val("true");
                         }
-                        else {
-                            RefreshCurrentTab('@RedirectType', planCampaignId, 0, 0);
-                        }
 
                         $("#successMessage").css("display", "block");
                         $("#spanMessageSuccess").empty();
@@ -637,7 +634,7 @@
         $("#cSuccessDuplicatePlan").text(htmlDecode(value));
         $("#successMessageDuplicatePlan").removeClass("message-position");
         $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-        RefreshCurrentTab();
+       
     }
 
     $("#deleteProgram").click(function () {
@@ -670,14 +667,17 @@
                              if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
                                  SaveMessageOnParent(data.msg);
                                  //Added By : Kalpesh Sharma Internal review points 18/11/2014
-
+                                 RefershPlanHeaderCalc();
                                  if (document.getElementById("liGrid") != null && document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                      LoadPlanGrid();
                                      gridSearchFlag = 0;
                                  }
                                  else {
-                                     RefershPlanHeaderCalc();
+                                     RefreshCurrentTab();
                                  }
+                                 addDefaultModalPopupBackgroungColor();
+                                 $("#modal-container-186470").addClass("transition-close");
+                                 $("#modal-container-186470").removeClass("transition_y");
                                  $('body').removeClass('bodyOverflow');
                                 }
                              else {

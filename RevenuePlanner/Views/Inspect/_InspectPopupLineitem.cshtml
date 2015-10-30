@@ -68,47 +68,6 @@
     <span id="spanMessageEditLineitem"></span>
 </div>
 
-@*<form>
-    <div class="modal-popup-title">
-        <span class="icon-flag bg-purple" style="background-color:#@colorCode !important;"></span>
-        <h2 class="title-simple source-sans-prolight">
-            @if (lineitemTitle != string.Empty)
-            {
-                <span>
-                    <span id="lblLineitemTitle" class="tipsyclassTitle" title="@Html.Raw(lineitemTitle)" >@Html.Raw(lineitemTitle)</span>
-                    @if (IsPlanEditable)
-                    {
-                        if(!IsOtherLineItem){  
-                        <div class="delete-btn-tab" style="float: right;" id="divDeleteProgram">
-                            <button class="delete-btn-gray" id="deleteLineItem" type="button">Delete</button>
-                        </div>
-                        }
-                    }
-                    
-                    @if(!IsOtherLineItem){
-                         <div style="float: right; position: relative;">
-                            <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
-                            <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupLineitem">
-                                <ul style="margin: 0;">
-                                    <li class="new-prog" id="NewLineItem">New Line Item</li>
-                                    <li class="copy-camp" id="CloneLineItem">Copy Line Item</li>
-                                </ul>
-                            </div>
-                        </div>
-                    }
-
-                    @if (IsPlanEditable)
-                    {
-                        <a class="edit-icon-white btn-blue btn-large" href="#" id="btnEditlineItem" style="margin-right: 15px;"></a>
-                    }
-                </span> 
-            }
-            @Html.TextBox("txtTitle", HttpUtility.HtmlDecode(lineitemTitle), new { placeholder = "Line Item name goes here", require = "true", maxlength = "255", @class = "span12 input-small light-blue-background", @style = "width: 95%; height: 28px;display:none;font-family:'source_sans_prolight', Arial, 'sans-serif';font-size:27px;color:#4d4d4d;line-height: normal;", title = lineitemTitle, id = "txtTitle" })
-            @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
-        </h2>
-    </div>
-</form>*@
-
 <div class="headerfix-wraper">
     @*Modified for Design changes ticket #1318*@
     <div class="headefix">
@@ -330,8 +289,66 @@
              $('#lblLineitemTitle').css('display', 'none');
          }
 
+      $("#NewLineItem").on("click", function () {
+          loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@tacticId', '@RedirectType');
+        });
 
-     });
+      $('#CloneLineItem').click(function () {
+          isDataModified = true;
+          var idPlanProgram = $("#hdnPlanLineItemID").val();
+          var Title = $("#lblLineitemTitle").html();
+          $.ajax({
+              type: 'POST',
+              url: '@Url.Content("~/Inspect/Clone")',
+            data: {
+                CloneType: '@Enums.DuplicationModule.LineItem',
+                Id: idPlanProgram,
+                title: Title,
+                CalledFromBudget: '@CalledFromBudget',
+                RequsetedModule: '@RedirectType'
+            },
+            success: function (data) {
+                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else if (data.IsSuccess) {
+                   
+                        var currentTab = "Setup";
+
+                        if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                            currentTab = "Budget";
+                        }
+
+                        var lineItemId = data.Id;
+                        var expandplanLineItemId = data.expand;
+                        var planCampaignId = '@campaignId';
+                        var planProgramId = '@planProgrameId';
+                        var planTacticId = '@tacticId';
+                        loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+
+                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                            $("#hdnBudgetingExpandId").val(expandplanLineItemId);
+                            $("#hdnBudgetingIsSave").val("true");
+                        }
+
+                        $("#successMessage").css("display", "block");
+                        $("#spanMessageSuccess").empty();
+                        $("#spanMessageSuccess").text(data.msg);
+                        $("#errorMessage").css("display", "none");
+                        return;
+                }
+                else {
+                    $("#successMessageViewProgram").slideUp(50);
+                    $("#errorMessageEditProgram").slideDown(400);
+                    $("#spanMessageEditProgram").empty();
+                    $("#spanMessageEditProgram").val(data.msg);
+                    return false;
+                }
+            }
+        });
+          });
+
+    
 
      //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
      function SaveTitle() {
@@ -388,9 +405,7 @@
 
     //<--- End Document.ready event --->
 
-    $("#NewLineItem").on("click", function () {
-        loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@tacticId', '@RedirectType');
-    });
+  
 
     $("#btnEditlineItem").on("click", function () {
         isDataModified = true;
@@ -588,69 +603,7 @@ function loadReview(id, tabValue) {
         $(this).closest(".alert").css("display", "none");
     });
 
-    $('#CloneLineItem').click(function () {
-        isDataModified = true;
-        var idPlanProgram = $("#hdnPlanLineItemID").val();
-        var Title = $("#lblLineitemTitle").html();
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/Clone")',
-            data: {
-                CloneType: '@Enums.DuplicationModule.LineItem',
-                Id: idPlanProgram,
-                title: Title,
-                CalledFromBudget: '@CalledFromBudget',
-                RequsetedModule: '@RedirectType'
-            },
-            success: function (data) {
-                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
-                }
-                else if (data.IsSuccess) {
-                    if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                        SaveMessageOnParent(data.msg);
-                        $('body').removeClass('bodyOverflow');
-                    }
-                    else {
 
-                        var currentTab = "Setup";
-
-                        if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
-                            currentTab = "Budget";
-                        }
-
-                        var lineItemId = data.Id;
-                        var expandplanLineItemId = data.expand;
-                        var planCampaignId = '@campaignId';
-                        var planProgramId = '@planProgrameId';
-                        var planTacticId = '@tacticId';
-                        loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
-
-                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
-                            $("#hdnBudgetingExpandId").val(expandplanLineItemId);
-                            $("#hdnBudgetingIsSave").val("true");
-                        }
-                        else {
-                            RefreshCurrentTab('@RedirectType', planCampaignId, planProgramId, planTacticId);
-                        }
-
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.msg);
-                        $("#errorMessage").css("display", "none");
-                        return;
-                    }
-                }
-                else {
-                    $("#successMessageViewProgram").slideUp(50);
-                    $("#errorMessageEditProgram").slideDown(400);
-                    $("#spanMessageEditProgram").empty();
-                    $("#spanMessageEditProgram").val(data.msg);
-                    return false;
-                }
-            }
-        });
-    });
 
 function SaveMessageOnParent(value) {
     $("#modal-container-186470").modal('hide');
@@ -660,7 +613,7 @@ function SaveMessageOnParent(value) {
     $("#cSuccessDuplicatePlan").text(htmlDecode(value));
     $("#successMessageDuplicatePlan").removeClass("message-position");
     $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-    RefreshCurrentTab();
+    
 }
 
 $("#deleteLineItem").click(function () {
@@ -691,18 +644,18 @@ $("#deleteLineItem").click(function () {
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
                             if (data.opt == '@Enums.InspectPopupRequestedModules.Index.ToString()') {
-                                 SaveMessageOnParent(data.msg);
-                                 $('body').removeClass('bodyOverflow');
-                                //Added by Rahul Shah on 21/10/2015 for PL#1701
-                                 if (isDataModified) {
-
-                                     $('.objbox table .cellselected').parent().remove();
-                                     gridSearchFlag = 0;
-                                     addDefaultModalPopupBackgroungColor();
-                                     $("#modal-container-186470").addClass("transition-close");
-                                     $("#modal-container-186470").removeClass("transition_y");
-                                     $('body').removeClass('bodyOverflow');
-                                 }
+                                SaveMessageOnParent(data.msg);
+                                if (document.getElementById("liGrid") != null && document.getElementById("liGrid").className.indexOf("active") >= 0) {
+                                    LoadPlanGrid();
+                                    gridSearchFlag = 0;
+                                }
+                                else {
+                                    RefreshCurrentTab();
+                                }
+                                addDefaultModalPopupBackgroungColor();
+                                $("#modal-container-186470").addClass("transition-close");
+                                $("#modal-container-186470").removeClass("transition_y");
+                                $('body').removeClass('bodyOverflow');
                              }
                              else {
                                  if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
@@ -750,5 +703,6 @@ $("#deleteLineItem").click(function () {
         return false;
     }
 
+  });
 </script>
 

@@ -454,14 +454,4 @@
          }
     });
 
-    function SaveMessageOnParent(value) {
-        $("#modal-container-186470").modal('hide');
-        $("#errorMessageDuplicatePlan").slideUp(50);
-        $("#successMessageDuplicatePlan").slideDown(400);
-        $("#cSuccessDuplicatePlan").empty();
-        $("#cSuccessDuplicatePlan").text(htmlDecode(value));
-        $("#successMessageDuplicatePlan").removeClass("message-position");
-        $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-        RefreshCurrentTab();
-    }
 </script>
