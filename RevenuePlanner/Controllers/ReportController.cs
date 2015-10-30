@@ -957,7 +957,7 @@ namespace RevenuePlanner.Controllers
             return returnData;
         }
 
-      
+
 
         /// <summary>
         /// Get Last month of current quarter.
@@ -1947,7 +1947,7 @@ namespace RevenuePlanner.Controllers
             var FilteredLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
             //// load Filter lists.
             List<int> TacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-         
+
             var LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => TacticIds.Contains(lineitem.PlanTacticId) && lineitem.IsDeleted.Equals(false)).ToList();
             List<int> LineitemIds = LineItemList.Select(id => id.PlanLineItemId).ToList();
             List<int> ProgramIds = tacticList.Select(tactic => tactic.PlanProgramId).ToList();
@@ -2220,14 +2220,14 @@ namespace RevenuePlanner.Controllers
                                     parentTacticId = "cpt_" + p.Id + t.PlanTacticId.ToString();
 
                                     LineItemObj = new List<Plan_Campaign_Program_Tactic_LineItem>();
-                                    if (FilteredLineItemList.Count != 0 )
+                                    if (FilteredLineItemList.Count != 0)
                                     {
-                                        var FilteredLineItemIDs = FilteredLineItemList.Select(list=>list.PlanLineItemId).ToList();
+                                        var FilteredLineItemIDs = FilteredLineItemList.Select(list => list.PlanLineItemId).ToList();
                                         LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId && FilteredLineItemIDs.Contains(l.PlanLineItemId)).OrderBy(l => l.Title).ToList();
                                     }
                                     else
                                     {
-                                    LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId).OrderBy(l => l.Title).ToList();
+                                        LineItemObj = LineItemList.Where(l => l.PlanTacticId == t.PlanTacticId).OrderBy(l => l.Title).ToList();
                                     }
                                     foreach (var l in LineItemObj)
                                     {
@@ -2945,7 +2945,7 @@ namespace RevenuePlanner.Controllers
         private List<BudgetModelReport> SetTacticWeightage(List<BudgetModelReport> lstModel, bool IsCustomFieldViewBy)
         {
             List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
-            lstCustomFieldEntities = db.CustomField_Entity.Where(list=>list.CustomField.ClientId == Sessions.User.ClientId).ToList();
+            lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
             int PlanTacticId = 0;
             string CustomFieldOptionID = string.Empty;
             foreach (BudgetModelReport obj in lstModel)
@@ -3879,7 +3879,7 @@ namespace RevenuePlanner.Controllers
                     List<int> _TacticIds = new List<int>();
                     List<Plan_Campaign_Program_Tactic> _tacList = new List<Plan_Campaign_Program_Tactic>();
                     List<Plan_Campaign_Program_Tactic_Cost> _tacCostList = new List<Plan_Campaign_Program_Tactic_Cost>();
-                    
+
                     List<Plan_Campaign_Program_Tactic_Budget> _tacBudgetList = new List<Plan_Campaign_Program_Tactic_Budget>();
                     string RevenueStageType = Enums.InspectStage.Revenue.ToString();
                     List<string> categories = new List<string>();
@@ -3912,7 +3912,7 @@ namespace RevenuePlanner.Controllers
 
                     List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
                     TacticActualCostList = Common.CalculateActualCostTacticslist(_TacticIds, Tacticdata);
-                    
+
                     double _ActualCostvsBudget = 0;
                     if (TacticActualCostList != null)
                         TacticActualCostList.ForEach(tac => _ActualCostvsBudget += tac.ActualList.Sum(actual => actual.Value));
@@ -4503,7 +4503,7 @@ namespace RevenuePlanner.Controllers
                 #region "Common code for all StageCode"
 
                 #region "Declare local variables"
-                bool IsTacticCustomField = false,IsCampaignCustomField = false;
+                bool IsTacticCustomField = false, IsCampaignCustomField = false;
                 string customFieldType = string.Empty;
                 int customfieldId = 0;
                 List<RevenueContrinutionData> CustomFieldOptionList = new List<RevenueContrinutionData>();
@@ -4553,14 +4553,14 @@ namespace RevenuePlanner.Controllers
                     if (customFieldType == Enums.CustomFieldType.DropDownList.ToString())
                     {
                         var optionlist = cusomfieldEntity.Select(c => Convert.ToInt32(c.Value)).ToList();
-                       
+
                         var customoptionlisttest = (from cfo in db.CustomFieldOptions
-                                                 where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
-                                                 select new 
-                                                 {
-                                                     CustomFieldOptionId = cfo.CustomFieldOptionId,
-                                                     Title = cfo.Value
-                                                 }).ToList();
+                                                    where cfo.CustomFieldId == customfieldId && optionlist.Contains(cfo.CustomFieldOptionId) && cfo.IsDeleted == false
+                                                    select new
+                                                    {
+                                                        CustomFieldOptionId = cfo.CustomFieldOptionId,
+                                                        Title = cfo.Value
+                                                    }).ToList();
                         CustomFieldOptionList = cusomfieldEntity.GroupBy(pc => new { id = pc.Value }).Select(pc =>
                                     new RevenueContrinutionData
                                     {
@@ -5025,7 +5025,7 @@ namespace RevenuePlanner.Controllers
                     string costStageCode = Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString();
                     List<TacticMonthValue> CurrentMonthCostList = new List<TacticMonthValue>();
                     List<int> TacticIds = new List<int>();
-                    
+
                     List<TacticMonthValue> TacticCostData = new List<TacticMonthValue>();
                     List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
                     #endregion
@@ -5033,9 +5033,9 @@ namespace RevenuePlanner.Controllers
                     #region "Evaluate Customfield Option wise Sparkline chart data"
 
                     TacticIds = Tacticdata.Select(tac => tac.TacticObj.PlanTacticId).ToList();
-                    
-                    
-                    
+
+
+
                     foreach (RevenueContrinutionData _obj in CustomFieldOptionList)
                     {
                         TacticCostData = new List<TacticMonthValue>();
@@ -5118,9 +5118,9 @@ namespace RevenuePlanner.Controllers
                     List<Plan_Campaign_Program_Tactic_Actual> revActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
                     List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
                     List<TacticMonthValue> CurrentMonthCostList = new List<TacticMonthValue>();
-                    
-                    
-                    
+
+
+
                     List<TacticMonthValue> TacticCostData = new List<TacticMonthValue>();
                     List<ActualTrendModel> ActualCostTrendModelList = new List<ActualTrendModel>();
                     List<ActualTrendModel> ActualTrendModelList = new List<ActualTrendModel>();
@@ -5521,7 +5521,7 @@ namespace RevenuePlanner.Controllers
         public List<TacticwiseOverviewModel> GetTacticwiseActualProjectedRevenueList(List<ActualTrendModel> ActualTrendList, List<ProjectedTrendModel> ProjectedTrendModelList)
         {
             List<TacticwiseOverviewModel> OverviewModelList = new List<TacticwiseOverviewModel>();
-          
+
             try
             {
                 TacticwiseOverviewModel objOverviewModel = new TacticwiseOverviewModel();
@@ -5529,22 +5529,22 @@ namespace RevenuePlanner.Controllers
                 TacticIdList = ProjectedTrendModelList.Select(_projTactic => _projTactic.PlanTacticId).Distinct().ToList();
                 TacticIdList.AddRange(ActualTrendList.Select(actual => actual.PlanTacticId).Distinct().ToList());
                 TacticIdList = TacticIdList.Distinct().ToList();
-           
+
                 var actuallist = ActualTrendList.GroupBy(g => g.PlanTacticId).Select(g => new { PlanTacticId = g.Key, ActualValue = g.Sum(a => a.Value) }).ToList();
                 var projectedlist = ProjectedTrendModelList.GroupBy(g => g.PlanTacticId).Select(g => new { PlanTacticId = g.Key, ProjectedTrend = g.Sum(a => a.TrendValue), Goal = g.Sum(a => a.Value) }).ToList();
 
                 OverviewModelList = (from pt in projectedlist
-                                join at in actuallist on pt.PlanTacticId equals at.PlanTacticId into comlist
-                                from rl in comlist.DefaultIfEmpty()
-                                select new TacticwiseOverviewModel
-                                {
-                                    PlanTacticId = pt.PlanTacticId,
-                                    Actual_ProjectedValue = pt.ProjectedTrend + (rl == null ? 0 : rl.ActualValue),
-                                    Goal = pt.Goal
-                                }
+                                     join at in actuallist on pt.PlanTacticId equals at.PlanTacticId into comlist
+                                     from rl in comlist.DefaultIfEmpty()
+                                     select new TacticwiseOverviewModel
+                                     {
+                                         PlanTacticId = pt.PlanTacticId,
+                                         Actual_ProjectedValue = pt.ProjectedTrend + (rl == null ? 0 : rl.ActualValue),
+                                         Goal = pt.Goal
+                                     }
                                 ).ToList();
 
-             
+
             }
             catch (Exception ex)
             {
@@ -6103,6 +6103,9 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> tacticlist = new List<Plan_Campaign_Program_Tactic>();
 
             TacticData = new List<TacticStageValue>();
+            //Added by Rahul Shah on 30/10/2015 for PL #1715
+            tacticlist = GetTacticForReporting();
+            TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
             List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
             List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
             CardSectionModel objCardSectionModel = new CardSectionModel();
@@ -6154,8 +6157,9 @@ namespace RevenuePlanner.Controllers
             try
             {
                 //PlanTacticIdsList
-                tacticlist = GetTacticForReporting();
-                TacticData = new List<TacticStageValue>();
+                //Commented by Rahul Shah on 30/10/2015 for PL #1715
+                //tacticlist = GetTacticForReporting();
+                //TacticData = new List<TacticStageValue>();
                 if (ParentLabel.Equals(Common.RevenueCampaign))
                 {
                     if (childlabelType == Common.RevenueCampaign)
@@ -6189,7 +6193,8 @@ namespace RevenuePlanner.Controllers
                     //tacticlist = GetTacticForReporting();
                     // Fetch the respectives Campaign Ids and Program Ids from the tactic list
                     // Get the List of tacic for card section base on parent label, child label and child id and also set view bag for details button.
-                    TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+                    //Commented by Rahul Shah on 30/10/2015 for PL #1715
+                    //TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
 
                     if (childlabelType.Contains(Common.RevenueTactic))
                     {
@@ -6246,7 +6251,8 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (ParentLabel.Contains(Common.TacticCustomTitle) || ParentLabel.Contains(Common.CampaignCustomTitle) || ParentLabel.Contains(Common.ProgramCustomTitle))
                 {
-                    TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
+                    //Commented by Rahul Shah on 30/10/2015 for PL #1715
+                    //TacticData = Common.GetTacticStageRelation(tacticlist, IsReport: true);
                     _customfieldOptionId = !string.IsNullOrEmpty(childId) ? int.Parse(childId) : 0;
                     if (ParentLabel.Contains(Common.TacticCustomTitle))
                     {
@@ -8911,7 +8917,7 @@ namespace RevenuePlanner.Controllers
 
             ParentIdsList = TacticMappingList.Select(card => card.ParentId).Distinct().ToList();
             List<TacticStageValue> fltrTacticData = new List<TacticStageValue>();
-           
+
             try
             {
                 if (ParentLabel != Common.RevenueCampaign)
