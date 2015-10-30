@@ -10,6 +10,7 @@
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>*@
 
+  <div class="plancart-box">
 <div class="white-chart">
     <p class="source-sans-probold">Activity Distribution</p>
     <div id="chart2" style="width: 140px; height: 85px; margin-left: 34px; margin-top:38px;"></div>
@@ -36,8 +37,9 @@
     <!-- Modified font class by kapil - 100614 - #508 -->
     <p id="pMQLImproved" class="small-value source-sans-prosemibold">@Html.DisplayFor(model => model.PercentageMQLImproved)</p>
 </div>
+</div>
   @*  Added By Komal Rawal for new UI of homepage*@
-<div  style="margin-top: 27px; width:30%">
+<div  class="planheader-title">
       
        <h2 id="lblMarkringActivitiesTitle" style="display:none;">Marketing Activities (Ongoing)</h2>
   

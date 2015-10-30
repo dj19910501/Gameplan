@@ -518,10 +518,10 @@
         <div class="WelcomeMessageBorder"></div>
         <div class="sidebar-section scroll-section">
             <div style="width: 100%;">
-                <div class="width50 float-left ">
+                <div class="width50 float-left filter-title ">
                     <span class="filter-header">Filters</span>
                 </div>
-                <div class="width50 float-left">
+                <div class="width50 float-left filter-btn">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
                         Update Results
                     </button>
@@ -866,6 +866,7 @@
 
                 </div>
                 <div class="shadow-scroll-gantt"></div>
+                <div class="table-row">
                 <table id="table_activities" class="table table-striped table-hover bold">
                     <thead>
                         <tr>
@@ -884,6 +885,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 <div id="Notabcontent" style="display: none;">
     @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
