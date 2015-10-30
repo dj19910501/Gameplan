@@ -175,6 +175,40 @@ namespace Integration.Salesforce
         }
 
         /// <summary>
+        /// Modified By Dharmraj on 6-8-2014, Ticket #658
+        /// </summary>
+        /// <param name="objectName">Sales force object name</param>
+        /// <returns>Returns property list of salesforce object</returns>
+        public List<PullClosedDealModel> GetPullClosedDealsTargetDataType(string objectName)
+        {
+            List<string> TargetDataTypeList = new List<string>();
+            string metadata = _client.ReadMetaData(objectName);
+            JObject data = JObject.Parse(metadata);
+            List<PullClosedDealModel> pickListresult = new List<PullClosedDealModel>();
+            PullClosedDealModel objPickItem ;
+            List<string> picklistValues;
+            foreach (var result in data["fields"])
+            {
+                objPickItem = new PullClosedDealModel();
+                objPickItem.fieldname =(string)result["name"];
+                var picklist = result["picklistValues"];
+                objPickItem.IsPicklistExist= (picklist != null && picklist.Count() > 0) ? true : false;
+
+                if (objPickItem.IsPicklistExist)
+                {
+                    picklistValues = new List<string>();
+                    picklist.ToList().ForEach(item => picklistValues.Add((string)item["label"]));
+                    objPickItem.pickList = picklistValues;
+                }
+                else
+                    objPickItem.pickList = new List<string>();
+
+                pickListresult.Add(objPickItem);
+            }
+            return pickListresult;
+        }
+
+        /// <summary>
         /// Modified By Mitesh on 25-07-2015
         /// To Fetch salesforce target field details 
         /// </summary>
@@ -1679,14 +1713,27 @@ namespace Integration.Salesforce
                                 {
                                     lastSyncDate = Convert.ToDateTime(lastsync).ToUniversalTime().ToString(Common.DateFormatForSalesforce);
                                 }
+                                string strCWStagename = string.Empty;
+                                try
+                                {
+                                    strCWStagename = Common.GetClosedWonMappingField(_id);
+                                }
+                                catch (Exception ex)
+                                {
+                                    string exMessage = Common.GetInnermostException(ex);
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.Error, "Please check your Closed Won field mapping value. Exception - " + exMessage);
+                                    _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullClosedDeals.ToString(), "Pull Closed Deals: Please check your Closed Won field mapping value. Exception - " + exMessage, Enums.SyncStatus.Error, DateTime.Now));
+                                }
+                                
                                 if (lastSyncDate != string.Empty)
                                 {
-                                    opportunityGetQueryWhere = " WHERE " + StageName + "= '" + Common.GetClosedWon(_clientId) + "' AND " + LastModifiedDate + " > " + lastSyncDate + " AND " + LastModifiedDate + " < " + currentDate;
+                                    opportunityGetQueryWhere = " WHERE " + StageName + "= '" + strCWStagename + "' AND " + LastModifiedDate + " > " + lastSyncDate + " AND " + LastModifiedDate + " < " + currentDate;
                                 }
                                 else
                                 {
-                                    opportunityGetQueryWhere = " WHERE " + StageName + "= '" + Common.GetClosedWon(_clientId) + "' AND " + LastModifiedDate + " < " + currentDate;
+                                    opportunityGetQueryWhere = " WHERE " + StageName + "= '" + strCWStagename + "' AND " + LastModifiedDate + " < " + currentDate;
                                 }
+                                
 
                                 string opportunityRoleQuery = "SELECT ContactId,IsPrimary,OpportunityId FROM OpportunityContactRole WHERE OpportunityId IN (SELECT Id FROM Opportunity" + opportunityGetQueryWhere + ")";
 

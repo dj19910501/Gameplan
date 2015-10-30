@@ -1299,7 +1299,10 @@ namespace RevenuePlanner.Controllers
             try
             {
                 ExternalIntegration objEx = new ExternalIntegration(id, Sessions.ApplicationId);
-                List<string> ExternalFieldsCloseDeal = objEx.GetTargetDataMemberCloseDeal();
+                List<Integration.Helper.PullClosedDealModel> lstPullClosedDealModel = new List<Integration.Helper.PullClosedDealModel>();
+                lstPullClosedDealModel = objEx.GetTargetDataMemberCloseDeal();
+                System.Web.HttpContext.Current.Cache["closedDealsPickList"] = lstPullClosedDealModel;
+                List<string> ExternalFieldsCloseDeal = lstPullClosedDealModel.Select(item => item.fieldname).OrderBy(s=>s).ToList();
                 if (ExternalFieldsCloseDeal == null)
                 {
                     ExternalFieldsCloseDeal = new List<string>();
@@ -1313,9 +1316,51 @@ namespace RevenuePlanner.Controllers
             finally
             {
                 listGameplanDataTypePullZero = GetGameplanDataTypePullListFromDB(id, Enums.GameplanDatatypePullType.CW);
+                if (listGameplanDataTypePullZero.Any(field => field.Type == "CW" && field.ActualFieldName == "CW") && listGameplanDataTypePullZero.Any(field => field.Type == "CW" && field.ActualFieldName == "Stage"))
+                { 
+                    var stageItem = listGameplanDataTypePullZero.Where(field => field.Type == "CW" && field.ActualFieldName == "Stage").FirstOrDefault();
+                    int stageIndex = listGameplanDataTypePullZero.IndexOf(stageItem);
+                    var cwItem = listGameplanDataTypePullZero.Where(field => field.Type == "CW" && field.ActualFieldName == "CW").FirstOrDefault();
+                    int cwOldIndex = listGameplanDataTypePullZero.IndexOf(cwItem);
+                    ViewBag.cwTargetType = cwItem.TargetDataType != null ? cwItem.TargetDataType : string.Empty;
+                    listGameplanDataTypePullZero.RemoveAt(cwOldIndex);
+                    listGameplanDataTypePullZero.Insert(stageIndex + 1, cwItem);
+                }
             }
             return listGameplanDataTypePullZero;
         }
+
+        public JsonResult BindClosedDealsPickList(int instanceId, string stageName="")
+        {
+            List<string> pickList = new List<string>();
+            List<Integration.Helper.PullClosedDealModel> lstPullClosedDealModel = new List<Integration.Helper.PullClosedDealModel>();
+            try
+            {
+                // Set/get common messages cache
+                if (System.Web.HttpContext.Current.Cache["closedDealsPickList"] == null)
+                {
+                    ExternalIntegration objEx = new ExternalIntegration(instanceId, Sessions.ApplicationId);
+                    lstPullClosedDealModel = objEx.GetTargetDataMemberCloseDeal();
+                    System.Web.HttpContext.Current.Cache["closedDealsPickList"] = lstPullClosedDealModel;
+                    //CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                    //System.Web.HttpContext.Current.Cache.Insert("closedDealsPickList", );
+                }
+                else
+                {
+                    lstPullClosedDealModel = (List<Integration.Helper.PullClosedDealModel>)System.Web.HttpContext.Current.Cache["closedDealsPickList"];
+                }
+                if(!string.IsNullOrEmpty(stageName) && stageName.ToLower() != "select")
+                    pickList = lstPullClosedDealModel.Where(field => field.fieldname == stageName).FirstOrDefault().pickList;
+                else
+                    pickList = new List<string>();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return Json(pickList, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
 
         #region Get Gampeplan DataType Pull Revenue/MQL List
@@ -2446,5 +2491,17 @@ namespace RevenuePlanner.Controllers
             }
             return objIntegrationTypeAttributes;
         }
+
+        public void SetPullClosedDealsCache(List<Integration.Helper.PullClosedDealModel> pullClosedDealsModel)
+        {
+            // Set/get common messages cache
+            if (System.Web.HttpContext.Current.Cache["closedDealsPickList"] == null)
+            {
+                System.Web.HttpContext.Current.Cache["closedDealsPickList"] = pullClosedDealsModel;
+                //CacheDependency dependency = new CacheDependency(Common.xmlMsgFilePath);
+                //System.Web.HttpContext.Current.Cache.Insert("closedDealsPickList", );
+            }
+        }
+
     }
 }

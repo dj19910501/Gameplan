@@ -1,6 +1,11 @@
 ﻿@model IList<RevenuePlanner.Models.GameplanDataTypePullModel>
 @using RevenuePlanner.Helpers
-
+<style type="text/css">
+    .hidetext
+    {
+        display:none !important;
+    }
+</style>
 <div class="accordion-group">
     <div class="accordion-heading">
         <a class="accordion-toggle" style="border-bottom:none;position:static;" data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pull Closed Deals<span href="javascript:void(0)">+ Expand</span></a>
@@ -36,9 +41,19 @@
                                         </td>
                                         <td class="width60">
                                             <span class="simpleSelectBox" style="  margin-left: -2px;">
-                                                @if (actualname != "ResponseDate")
+                                                @if (actualname == "CW")
                                                 {
-                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPull"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide", id = i.ToString(), tabindex = ((int)(500 + i)).ToString() })
+                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)"", null), "Select", new { @class = "ddlStyle drpdwnCW", id = "drpdwn" + i.ToString(), tabindex = ((int)(500 + i)).ToString() })
+                                                    @Html.TextBoxFor(x => x[i].TargetDataType, new { @class = "txtCW hidetext", id = "txt" + i.ToString(), tabindex = ((int)(500 + i)).ToString() })
+                                                }
+                                                else if (actualname != "ResponseDate")
+                                                {
+                                                    string clsStage = string.Empty;
+                                                    if (actualname == "Stage")
+                                                    {
+                                                        clsStage = " drpdwnStage";
+                                                    }
+                                                    @Html.DropDownListFor(x => x[i].TargetDataType, new SelectList((System.Collections.IEnumerable)ViewData["ExternalFieldListPull"], Model[i].TargetDataType), "Select", new { @class = "ddlStyle hide" + clsStage, id = i.ToString(), tabindex = ((int)(500 + i)).ToString() })
                                                 }
                                                 else
                                                 {
@@ -95,7 +110,7 @@
 </div>
 
 <script type="text/javascript">
-
+    var isPageLoad = false;
     $(document).ready(function () {
         $(".simpleSelectBox select").selectbox();
         $('#frmClosedDealDataMapping .ddlStyle').each(function () {
@@ -103,8 +118,11 @@
                 $(this).next('.sbHolder').removeClass("error");
             }
         });
-
+        var cwTargetType = '@ViewBag.cwTargetType';
         AssignDefaultValueClosedDeal();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
+        isPageLoad = true;
+        $('.drpdwnStage').trigger('change');
+        
     });
 
     $('#frmClosedDealDataMapping .ddlStyle').change(function () {
@@ -175,6 +193,8 @@
     // Start - Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
     function CheckTargetFieldMappingClosedDeal() {
         var isFieldMappingError = false;
+        var textCW = $('.txtCW');
+        
         $('#frmClosedDealDataMapping .ddlStyle').each(function () {
             var isError = false;
             var currentDdl = this;
@@ -197,6 +217,16 @@
                             $(currentDdl).next('.sbHolder').removeClass("error");
                         }
                     });
+                    
+                    if (!textCW.hasClass("hidetext")) {
+                        var textCWVal = textCW.val();
+                        if (currentTargetValue.toLowerCase() == textCWVal.toLowerCase() && textCWVal != '') {
+                            $(currentDdl).next('.sbHolder').addClass("error");
+                            textCW.addClass("error");
+                            isError = true;
+                            isFieldMappingError = true;
+                        }
+                    }
                 }
                 else {
                     $(currentDdl).next('.sbHolder').removeClass("error");
@@ -221,4 +251,108 @@
         });
     }
     // End - Added by Sohel Pathan on 17/11/2014 for PL ticket #949.
+
+    $(".drpdwnStage").change(function () {
+        var stage = $(this).val();
+        var IntegrationInstanceId = '@ViewBag.IntegrationInstanceId';
+        var drpdwnCWId = $('.drpdwnCW').attr('id');
+        var drpdwnCW = $("#" + drpdwnCWId);
+        var sb = $("#" + drpdwnCWId).attr('sb');
+        var ul = $("#sbOptions_" + sb);
+        var dvHolder = $("#sbHolder_" + sb);
+        var aSelector = $("#sbSelector_" + sb);
+        var txtCW = $('.txtCW ');
+
+        if (stage == null || stage == 'undefined' || stage.toLowerCase() == 'select') {
+            dvHolder.addClass('hidetext');
+            txtCW.val('');
+            txtCW.removeClass("error");
+            txtCW.removeClass('hidetext');
+            //aSelector.empty();
+            drpdwnCW.val('');
+            drpdwnCW.attr('myValue', '');
+            drpdwnCW.addClass('hidetext');
+        }
+        else {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Content("~/ExternalService/BindClosedDealsPickList")',
+                data: 'instanceId=' + parseInt(IntegrationInstanceId) + '&stageName=' + stage,
+                success: function (data) {
+                   
+                    if (data != null && data != 'undefined' && data.length > 0) {
+                        ul.empty();
+                        drpdwnCW.empty();
+                        ul.append('<li> <a class="" href="#" rel="">Select</a> </li>');
+                        aSelector.empty();
+                        aSelector.html("Select");
+                        $.each(data, function (index, itemData) {
+                            drpdwnCW.append($('<option/>', {
+                                value: itemData,
+                                text: itemData
+                            }));
+                            ul.append('<li> <a class="" href="#' + itemData + '" rel="' + itemData + '">' + itemData + '</a> </li>');
+                        });
+                        dvHolder.removeClass('hidetext');
+                        drpdwnCW.removeClass('hidetext');
+                        txtCW.addClass('hidetext');
+                        ul.find("li a").click(function () {
+                            var currentVal = $(this).attr('rel');
+                            aSelector.empty();
+                            if (currentVal == '') {
+                                
+                                aSelector.html("Select");
+                            }
+                            else {
+                                aSelector.html(currentVal);
+                            }
+                            ul.slideUp(100);
+                            drpdwnCW.val(currentVal);
+                            drpdwnCW.attr('myValue', currentVal);
+                        });
+
+                        if (isPageLoad) {
+                            var cwTargetType = '@ViewBag.cwTargetType';
+                            //cwTargetType = 'Closed Won';
+                            aSelector.empty();
+                            if (cwTargetType == '') {
+
+                                aSelector.html("Select");
+                            }
+                            else {
+                                aSelector.html(cwTargetType);
+                            }
+                            //ul.slideUp(100);
+                            drpdwnCW.val(cwTargetType);
+                            drpdwnCW.attr('myValue', cwTargetType);
+                            isPageLoad = false;
+                        }
+                        
+                    }
+                    else {
+                        // show closed won textbox  and hide dropdown.
+                        dvHolder.addClass('hidetext');
+                        txtCW.val('');
+                        txtCW.removeClass("error");
+                        txtCW.removeClass('hidetext');
+                        //aSelector.empty();
+                        drpdwnCW.val('');
+                        drpdwnCW.attr('myValue', '');
+                        drpdwnCW.addClass('hidetext');
+
+                        if (isPageLoad) {
+                            var cwTargetType = '@ViewBag.cwTargetType';
+                            //cwTargetType = 'Closed Won';
+                            txtCW.val(cwTargetType);
+                        }
+                        isPageLoad = false;
+                    }
+                    
+                }
+            });
+        }
+    });
+
+    
+
 </script>

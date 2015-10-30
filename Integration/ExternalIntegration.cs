@@ -890,7 +890,7 @@ namespace Integration
         /// Added By Dharmraj on 8-8-2014, Ticket #658
         /// </summary>
         /// <returns>Returns list of properties of salesforce opportunuty object</returns>
-        public List<string> GetTargetDataMemberCloseDeal()
+        public List<PullClosedDealModel> GetTargetDataMemberCloseDeal()
         {
             _integrationInstanceId = _id;
             if (_integrationInstanceId.HasValue)
@@ -903,7 +903,7 @@ namespace Integration
                 IntegrationSalesforceClient integrationSalesforceClient = new IntegrationSalesforceClient(Convert.ToInt32(_integrationInstanceId), _id, _entityType, _userId, 0, _applicationId);
                 if (integrationSalesforceClient.IsAuthenticated)
                 {
-                    return integrationSalesforceClient.GetTargetDataType("Opportunity");
+                    return integrationSalesforceClient.GetPullClosedDealsTargetDataType("Opportunity");
                 }
             }
 

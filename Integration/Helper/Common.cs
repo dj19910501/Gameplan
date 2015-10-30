@@ -592,6 +592,29 @@ namespace Integration.Helper
             return ClosedWonTitle;
         }
 
+        /// <summary>
+        /// </summary>
+        public static string GetClosedWonMappingField(int integrationInstanceId)
+        {
+            string cwTargetType = string.Empty, gpCWActualFieldName = "CW", gpCWType="CW";
+            int integrationTypeId = 0;
+            using (MRPEntities db = new MRPEntities())
+            {
+                IntegrationInstance objInstance = new IntegrationInstance();
+                objInstance = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId);
+                integrationTypeId = objInstance.IntegrationTypeId;
+                GameplanDataTypePull objGPTypePull = new GameplanDataTypePull();
+                objGPTypePull = db.GameplanDataTypePulls.FirstOrDefault(item => item.IntegrationTypeId == integrationTypeId && item.ActualFieldName == gpCWActualFieldName && item.Type == gpCWType && item.IsDeleted == false);
+                int gpDataTypePullId = objGPTypePull != null ? objGPTypePull.GameplanDataTypePullId : 0;
+
+                IntegrationInstanceDataTypeMappingPull objPUll = new IntegrationInstanceDataTypeMappingPull();
+                objPUll = db.IntegrationInstanceDataTypeMappingPulls.FirstOrDefault(item => item.IntegrationInstanceId == integrationInstanceId && item.GameplanDataTypePullId == gpDataTypePullId);
+                cwTargetType = objPUll != null ? objPUll.TargetDataType : string.Empty;
+            }
+            return cwTargetType;
+        }
+
+
         #region "Save IntegrationInstance Log Details Function"
         public static void SaveIntegrationInstanceLogDetails(int _entityId, int? IntegrationInstanceLogId, Enums.MessageOperation MsgOprtn, string functionName, Enums.MessageLabel MsgLabel, string logMsg)
         {
@@ -680,5 +703,11 @@ namespace Integration.Helper
         public string token_type { get; set; }
         public int expires_in { get; set; }
         public string refresh_token { get; set; }
+    }
+    public class PullClosedDealModel
+    {
+        public string fieldname { get; set; }
+        public bool IsPicklistExist { get; set; }
+        public List<string> pickList { get; set; }
     }
 }
