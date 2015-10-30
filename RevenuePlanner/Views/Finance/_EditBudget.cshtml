@@ -48,8 +48,17 @@
     var ValidColumnId = 0;
     var ValidRowId = 0;
     $(document).ready(function () {
+       
         GlobalBudgetId = '@ViewBag.BudgetId';
         GlobalEditLevel = '@ViewBag.EditLevel';
+
+        if (GlobalEditLevel == "Budget") {
+            GetListOfBudgetName();
+        }
+        else
+        {
+            GetListofForecastNames( $("#hdn_BudgetDetailId").val());
+        }
         pageName = "EditBudget";
         _isBudgetCreateEdit = '@ViewBag.IsBudgetCreate_Edit';
         _isForecastCreateEdit = '@ViewBag.IsForecastCreate_Edit';
@@ -106,9 +115,10 @@
         var Dec = "@Enums.ReportMonthDisplayValues[RevenuePlanner.Helpers.Enums.ReportMonthDisplay.Dec.ToString()]";
 
         dhtmlxValidation.isNameValid = function (data) {
-            
-            var childitems = myTreeGrid.getSubItems(ValidParentId).split(',');
             var isrepeat = true;
+            if (ValidParentId != 0) {
+
+                var childitems = myTreeGrid.getSubItems(ValidParentId).split(',');
             if (data.trim() == '' || data.trim() == null) {
                 isrepeat = false;
                 IsValid = false;
@@ -123,6 +133,19 @@
                         }
                     }
                 });
+            }
+            }
+            else {
+                if (data != ValidOldValue.trim())
+                {
+                    var BudgetIndex = BudgetDetails.Name.indexOf(data.toLowerCase().trim());
+                    if (BudgetIndex >= 0) {
+
+                        isrepeat = false;
+                        IsValid = false;
+                    }
+                }
+              
             }
             return isrepeat;
         };
@@ -452,13 +475,16 @@
         var IsValid = true;
 
         myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
+            ValidOldValue = "";
             IsValid = false;
             return true;
         });
         myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
+            ValidOldValue = "";
             IsValid = true;
         });
         myTreeGrid.attachEvent("onEditCancel", function (id, value) {
+            //debugger;
             //myTreeGrid.cells(id, 0).setCValue("invalid");
             //alert('');
             RevnueTimeFrameChange = true;
@@ -485,6 +511,7 @@
         myTreeGrid.enableAutoHeight(true);
         myTreeGrid.enableAutoWidth(false);
         myTreeGrid.attachEvent("onEditCell", function (stage, rId, cInd, nValue, oValue) {
+           
             if (!_isNewRowAdd) {
             RevnueTimeFrameChange = false;
             }
@@ -539,6 +566,10 @@
             var ParentID = $("#ddlParentFinance").val();
             var ChildID = $("#ddlChildFinance").val();
             if (IsValid) {
+                if (stage == 0)
+                {
+                    ValidOldValue = myTreeGrid.cells(rId, cInd).getValue();
+                }
                 if (oValue != undefined) {
                     oValue = oValue.replace(/,/g, "");
                 }
@@ -820,9 +851,16 @@
                             //myApp.hidePleaseWait();
                         }
                     });
+                    if (GlobalEditLevel == "Budget") {
+                        GetListOfBudgetName();
+                    }
+                    else {
+                        GetListofForecastNames($("#hdn_BudgetDetailId").val());
+                    }
                 }
-
+             
             }
+
         });
         //myTreeGrid.attachEvent("onMouseIn", function (id) {
         //    $("#gridbox").find("table").css("width", GridWidth);

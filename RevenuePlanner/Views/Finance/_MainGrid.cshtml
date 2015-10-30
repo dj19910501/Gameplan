@@ -52,7 +52,11 @@
     var ValidRowId = 0;
     var IsValid = true;
     var gridWidth = $("#divGridView").width() - 3;
+    BudgetDetails = {
+        Name: []
+    };
     $(document).ready(function () {
+        GetListOfBudgetName();
         ShowHideControls('MainGrid');
         //myGrid = new dhtmlXGridObject('gridbox');
         //myGrid.setImagePath("../../codebase/imgs/");
@@ -67,9 +71,11 @@
         // Add By Nishant Sheth
         // Desc :: handle for same name or empty string
         dhtmlxValidation.isNameValid = function (data) {
-            
-            var childitems = myTreeGrid.getSubItems(ValidParentId).split(',');
             var isrepeat = true;
+            //Modified by komal rawal for #1721
+            if (ValidParentId != 0) {
+                var childitems = myTreeGrid.getSubItems(ValidParentId).split(',');
+
             if (data.trim() == '' || data.trim() == null) {
                 isrepeat = false;
                 IsValid = false;
@@ -84,6 +90,18 @@
                         }
                     }
                 });
+            }
+            }
+            else
+            {
+                if (data != ValidOldValue.trim()) {
+                    var BudgetIndex = BudgetDetails.Name.indexOf(data.toLowerCase().trim());
+                    if (BudgetIndex >= 0) {
+
+                        isrepeat = false;
+                        IsValid = false;
+                    }
+                }
             }
             return isrepeat;
         };
@@ -133,11 +151,12 @@
         //});
 
         myTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
-            
+            ValidOldValue = "";
             IsValid = false;
             return true;
         });
         myTreeGrid.attachEvent("onValidationCorrect", function (id, index, value, rule) {
+            ValidOldValue = "";
             IsValid = true;
         });
         myTreeGrid.init();
@@ -154,7 +173,8 @@
         //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
-        var GridData = (mainGridData.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>'));
+        var GridData = (mainGridData.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>').replace(/&amp;/g, '&'));
+
 
         // GridData = JSON.parse(GridData);
         myTreeGrid.parse(GridData, "json");
@@ -442,6 +462,9 @@
     }
 
     function OnEditCell(stage, id, index, newVal, oldVal) {
+        if (stage == 0) {
+            ValidOldValue = myTreeGrid.cells(id, index).getValue();
+        }
 
         ValidParentId = myTreeGrid.getParentId(id);
         ValidColumnId = index;
@@ -489,9 +512,10 @@
         if (stage.toString() == '0' || stage.toString() == '1') {
             return true;
         }
+   
         if (IsValid) {
+          
         if (stage.toString() == '2') {
-
             //var _budgetIdVal = $('#ddlParentFinanceMain').val();
             var _budgetIdVal = $("#hdnBudgetId").val();
             if (newVal == null || newVal == '' || newVal.replace(/&lt;/g, '<').replace(/&gt;/g, '>') == oldVal) {

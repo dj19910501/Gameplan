@@ -1,5 +1,21 @@
 ﻿<style>
-        div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
+    div.xhdr {
+        width: 100.7% !important;
+    }
+
+    div.objbox {
+        width: 100.7% !important;
+    }
+
+    div.objbox {
+        height: 100% !important;
+    }
+
+    div.gridbox {
+        height: 100% !important;
+    }
+
+    div.gridbox_dhx_skyblue.gridbox div.xhdr table.hdr {
         width: 100% !important;
     }
 
@@ -12,35 +28,45 @@
 <div id="newGridbox" style="width:100%; height:100px; background-color:white;"></div>
 
 <script type="text/javascript">
-    
+
     var newTreeGrid;
     var ValidParentId = 0;
     var ValidColumnId = 0;
     var ValidRowId = 0;
-    
+    BudgetDetails = {
+        Name: []
+    };
+    var IsValid = true;
     var gridWidth = $("#divGridView").width();
     $(document).ready(function () {
-
+        $('#ddlMainTimeFrameSelectBox').css('display', 'none');
+        GetListOfBudgetName();
         // Add By Nishant Sheth
         // Desc :: handle for same name or empty string
         dhtmlxValidation.isNameValid = function (data) {
-
             var childitems = newTreeGrid.getSubItems(ValidParentId).split(',');
             var isrepeat = true;
             if (data.trim() == '' || data.trim() == null) {
                 isrepeat = false;
                 IsValid = false;
             } else {
-                $.each(childitems, function () {
+                //$.each(childitems, function () {
 
-                    if (this.toString() != ValidRowId.toString()) {
-                        var ColCurrentValue = newTreeGrid.cells(this, ValidColumnId).getValue();
-                        if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
-                            isrepeat = false;
-                            IsValid = false;
-                        }
-                    }
-                });
+                //    if (this.toString() != ValidRowId.toString()) {
+                //        var ColCurrentValue = newTreeGrid.cells(this, ValidColumnId).getValue();
+                //        if (data.toLowerCase().trim() == ColCurrentValue.toLowerCase().trim()) {
+                //            isrepeat = false;
+                //            IsValid = false;
+                //        }
+                //    }
+                //});
+
+                var BudgetIndex = BudgetDetails.Name.indexOf(data.toLowerCase().trim());
+                if (BudgetIndex >= 0) {
+
+                    isrepeat = false;
+                    IsValid = false;
+                }
             }
             return isrepeat;
         };
@@ -59,7 +85,7 @@
         newTreeGrid.setColumnIds("title,action,budget,forecast,planned,actual,lineitems");
         //newTreeGrid.setColSorting("str,na,str,str,na,str");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);
-        
+
         newTreeGrid.attachEvent("onValidationError", function (id, ind, value) {
 
             IsValid = false;
@@ -69,7 +95,7 @@
             IsValid = true;
         });
         newTreeGrid.init();
-        
+
         var newBudget = "newBudget";
         newTreeGrid.addRow("newBudget", ["New Budget", "Edit Budget", "0", "0", "0", "0", "0"], 0);
 
@@ -84,26 +110,26 @@
             var titleIndex = newTreeGrid.getColIndexById('title');
             //alert(titleIndex);
             newTreeGrid.setCellTextStyle(rowid, titleIndex, "border-right:0px solid #d4d4d4;");
-            
+
         });
         $("#newGridbox").find('table').css('width', gridWidth);
         return true;
     });
 
-    function OnEditCell(stage, id, index,newVal,oldVal) {
-        
+    function OnEditCell(stage, id, index, newVal, oldVal) {
+
         ValidParentId = newTreeGrid.getParentId(id);
         ValidColumnId = index;
         ValidRowId = id;
         var ColumnName = myTreeGrid.getColLabel(index, 0);
-        
+
         if (stage == 1) {
-            
+
             if (ColumnName == "Task Name") {
                 $(".dhx_combo_edit").off("keydown");
                 $(".dhx_combo_edit").on('keydown', (
                 newTreeGrid.editor.obj.onkeypress = function (e) {
-                    
+
                     var key = window.event ? event.keyCode : event.which;
                     var text = this.value;
                     if (event.keyCode == 8 || event.keyCode == 46
@@ -123,21 +149,21 @@
         //var splitRowParentIds = '';
         //var rowId = '', parentId = '',parentRowID='';
         //var itemIndex=-1;
-       
-            if (stage.toString() == '0' || stage.toString() == '1') {
+
+        if (stage.toString() == '0' || stage.toString() == '1') {
             //if (stage.toString() == '1') {
             //    var currentval = $(this).value;
             //    //alert(currentval);
             //    if (currentval == null || currentval == 'undefined' || currentval == '') {
-                //        this.editor.obj.placeholder = "New Budget";
-                // 
+            //        this.editor.obj.placeholder = "New Budget";
+            //
             //    }
             //}
-                return true;
-            }
-            if (IsValid) {
+            return true;
+        }
+        if (IsValid) {
             if (stage.toString() == '2') {
-                
+
                 //var _budgetIdVal = $('#ddlParentFinance').val();
                 if (newVal == null || newVal == '') {
                     return false;
@@ -150,13 +176,15 @@
                     //_newParentId = 0;
                     //_parentRowId = "";
                     return true;
-                    }
                 }
             }
+        }
     };
     function SaveNewBudgetDetail(budgetName) {
         //budgetId = 8;
         var url = "@Url.Content("~/Finance/CreateNewBudget")";
         $("#divGridView").load(url + '?budgetName=' + escape(budgetName), function () { RefreshBudgetDropdown(); });
     }
+
+
 </script> 

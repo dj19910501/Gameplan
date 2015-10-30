@@ -72,6 +72,8 @@
     formatActualValues("#ActualID");
     //setBootstrapTooltip("#budgetID", 45144, 4, false);
     function FinanceBack() {
+        //Modified for #1721
+        myTreeGrid.editStop();
         if (pageName == "EditBudget") {
         RefreshBudgetDropdown();
         pageName = "MainGrid";

@@ -167,6 +167,10 @@
     var isFromForecastChild = false;
     var RevnueTimeFrameChange = true;
     var valueTimeFrame = "";
+    var BudgetDetails = {
+        Name: []
+    };
+    var ValidOldValue = "";
     //$('#AddSettings').click(function () {
     //    $('#errorMsg').css('display', 'none');
     //    $('#SuccessMsg').css('display', 'none');
@@ -257,6 +261,7 @@
                 $("#divGridView").show();
                 $("#dvNoData").hide();
                 var budgetIDMain = $(this).attr('value');
+                $("#ddlParentFinanceMain").val(budgetIDMain);
                 $('#hdn_BudgetId').val(budgetIDMain);
                 if (budgetIDMain != null && budgetIDMain != 'undefined' && budgetIDMain != '0') {
                     RefreshMainGridData(budgetIDMain);
@@ -965,14 +970,28 @@
             ParentMainOptions.values.push($(this).val())
         });
 
+        //Modified by komal rawal for 1721.
+        //Checks if the budget id exists then set that value as selected.
+        var CheckIfExist = ParentMainOptions.values.indexOf(_budgetId);
+        if (CheckIfExist >= 0) {
+            $("#ddlParentFinanceMain option[value='" + _budgetId + "']").attr("selected", "selected");
+        }
         // Add By Nishant
         // Desc:: user go with same level in edit budget/foreacst and remove same level after click on back button issue
-        var Parentindex = ParentMainOptions.values.indexOf(backBudgetid);
+       
+        var Parentindex = ParentMainOptions.values.indexOf(backBudgetid.toString());
+
         if (Parentindex >= 0) {
             _budgetId = _budgetId;
         } else {
+            //$("#ddlParentFinanceMain").find('option:first').prop('selected', 'selected');
+            if (backBudgetid.toString() != undefined && backBudgetid.toString() != null && backBudgetid.toString() != '') {
+                var pIndex = ParentMainOptions.values.indexOf(backBudgetid.toString());
+                if (pIndex == -1) {
             $("#ddlParentFinanceMain").find('option:first').prop('selected', 'selected');
             _budgetId = $("#ddlParentFinanceMain").val();
+                }
+            }
             backBudgetid = _budgetId;
         }
         //$dropdown.multiselect("refresh");
@@ -1347,4 +1366,32 @@
         }
     }
     $('#budget-select').multiselect();
+		    function GetListOfBudgetName() {
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            url: '@Url.Content("~/Finance/ListOfBudgetName/")',
+            success: function (data) {
+                BudgetDetails.Name = data;
+
+            }
+
+        });
+    }
+   
+    function GetListofForecastNames(BudgetId) {
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            data: {
+                BudgetId : BudgetId,
+            },
+            url: '@Url.Content("~/Finance/GetListofForecastNames/")',
+            success: function (data) {
+                BudgetDetails.Name = data;
+
+            }
+
+        });
+    }
 </script>

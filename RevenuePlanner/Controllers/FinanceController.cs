@@ -1026,6 +1026,24 @@ namespace RevenuePlanner.Controllers
             //IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
             return PartialView("_EditBudget", objFinanceModel);
         }
+
+        public JsonResult ListOfBudgetName()
+        {
+            var ListOfBudgetName = db.Budgets.Where(a => a.IsDeleted == false).Select(a => a.Name.ToLower()).ToList();
+            return Json(ListOfBudgetName, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetListofForecastNames(int BudgetId)
+        {
+            var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
+            int? ParentId = 0;
+            var checkParent = db.Budget_Detail.Where(a => a.Id == BudgetId && (a.IsDeleted == false || a.IsDeleted == false)).Select(a => a.ParentId).ToList();
+            ParentId = checkParent.Count > 0 ? checkParent[0] : 0;
+
+            var ListofForecastNames = db.Budget_Detail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && budgeparentids.Contains(a.BudgetId) && (a.IsDeleted == false || a.IsDeleted == false) && !string.IsNullOrEmpty(a.Name)).Select(a => a.Name.ToLower()).ToList();
+            return Json(ListofForecastNames, JsonRequestBehavior.AllowGet);
+
+        }
         #endregion
 
         #region Declarion of Budget/Forecast for Parent Child List
