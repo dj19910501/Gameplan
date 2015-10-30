@@ -604,9 +604,11 @@
                                     @{
                         foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                         {
+
                             liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
                             cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
-                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customFieldTitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
+                            
+                                <li class="accordion-inner close-list" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid" checked></input></li>
                         }
                                     }
                                 </ul>
