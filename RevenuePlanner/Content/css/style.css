@@ -5220,8 +5220,9 @@ span.left-arrow {
 }
 
 .table-info-actual-left-wraper:first-child {
-    float: left;
-    width: 140px;
+    /*Commented by Rahul Shah for Pl #1724*/
+    /*float: left;*/
+    width: 287px;
     color: #908D88;
 }
 
