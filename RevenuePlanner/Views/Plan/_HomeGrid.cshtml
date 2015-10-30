@@ -4,7 +4,7 @@
     var isTacticExist = Model.ImprovementObj.IsTacticExists;
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid1_min.css")" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>
+@*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>*@
 
 
 
@@ -358,11 +358,11 @@
         HomeGrid.sortRows(1, 'str', 'asc');
         HomeGrid.forEachRow(function (rowid) {
             //Added by Rahul Shah on 20/10/2015 for PL #1683
-            if (rowid.split(".")[0] == "tact") {
-                var a = this.getRowById(rowid);
-                this.collapseKids(a);
+            //if (rowid.split(".")[0] == "tact") {
+            //    var a = this.getRowById(rowid);
+            //    this.collapseKids(a);
 
-            }
+            //}
             var MQL = HomeGrid.cells(rowid, 10).getValue();
             if (MQL != "--")
                 HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
@@ -386,10 +386,11 @@
                 if (id == isCopyTactic) {
                     var SourcePtype = (rowid).split(".")[0];
 
-                    var subids = HomeGrid.getSubItems(rowid).split(',');
-                    for (var i = 0; i < subids.length; i++)
-                        HomeGrid.openItem(subids[i]);
+                    //var subids = HomeGrid.getSubItems(rowid).split(',');
+                    //for (var i = 0; i < subids.length; i++)
+                    //    HomeGrid.openItem(subids[i]);
                     if (SourcePtype == "tact") {
+                        HomeGrid.openItem(rowid);
                         HomeGrid.openItem(pid);
                         HomeGrid.openItem(HomeGrid.getParentId(pid));
                         HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(pid)));

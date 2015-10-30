@@ -70,7 +70,7 @@ namespace RevenuePlanner.Controllers
             ViewBag.GridView = isGridView;
             ViewBag.ShowInspectForPlanLineItemId = planLineItemId;
             // Added by Komal Rawal  for new homepage ui publish button
-            if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
+            if (currentPlanId > 0)
             {
                 //Get all subordinates of current user upto n level
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
@@ -324,33 +324,9 @@ namespace RevenuePlanner.Controllers
         /// <param name="currentPlanId">current selected plan Id</param>
         /// <param name="activeMenu">current active menu</param>
         /// <returns>returns partial view of PlanDropdown</returns>
-        public ActionResult HomePlan(int currentPlanId, string activeMenu)
+        public ActionResult HomePlan(int currentPlanId)
         {
-            Enums.ActiveMenu objactivemenu = Common.GetKey<Enums.ActiveMenu>(Enums.ActiveMenuValues, activeMenu.ToLower());
             HomePlan objHomePlan = new HomePlan();
-            //List<SelectListItem> planList;
-
-            ////// if condition added to dispaly only published plan on home page
-            //if (objactivemenu.Equals(Enums.ActiveMenu.Plan))
-            //{
-            //    var lstPlanAll = Common.GetPlan();
-            //    planList = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-
-            //    var objexists = planList.Where(plan => plan.Value == currentPlanId.ToString()).ToList();
-            //    if (objexists.Count != 0)
-            //    {
-            //        planList.Single(plan => plan.Value.Equals(currentPlanId.ToString())).Selected = true;
-            //    }
-            //    else
-            //    {
-            //        planList.FirstOrDefault().Selected = true;
-            //    }
-
-            //    //// Set Plan dropdown values
-            //    if (planList != null)
-            //        planList = planList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
-            //    objHomePlan.plans = planList;
-            //}
 
             //// Prepare ViewBy dropdown values
             List<ViewByModel> lstViewByTab = Common.GetDefaultGanttTypes(null);
@@ -4272,35 +4248,11 @@ namespace RevenuePlanner.Controllers
 
         #region Tactic type list
 
-        public List<TacticTypeModel> GetTacticTypeList(string ViewBy, string ActiveMenu, List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds)
+        public List<TacticTypeModel> GetTacticTypeList(List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds)
         {
 
            
             var TacticUserList = tacticList.ToList();
-
-            //if (ActiveMenu.Equals(Enums.ActiveMenu.Plan.ToString()))
-            //{
-            //    //    List<string> statusCD = new List<string>();
-            //    //    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            //    //    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-            //    //    status.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            //    TacticUserList = TacticUserList.Where(tactic => (!ViewBy.Equals(GanttTabs.Request.ToString())) ? true :  false).Distinct().ToList();
-            //}
-            //else
-            //{
-            //    List<string> statusCD = new List<string>();
-            //    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-            //    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-            //    statusCD.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
-            //    if(!ViewBy.Equals(GanttTabs.Request.ToString()))
-            //    {
-            //        TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status) || statusCD.Contains(tactic.Status)).Distinct().ToList();
-            //    }
-            //    else
-            //    {
-            //        TacticUserList = TacticUserList.Where(tactic => status.Contains(tactic.Status)).Distinct().ToList();
-            //    }
-            //}
 
             if (TacticUserList.Count > 0)
             {
@@ -4320,7 +4272,7 @@ namespace RevenuePlanner.Controllers
 
 
         //Added by Komal rawal for #1283
-        public async Task<JsonResult> GetTacticTypeListForFilter(string PlanId, string ViewBy, string ActiveMenu)
+        public async Task<JsonResult> GetTacticTypeListForFilter(string PlanId)
         {
             try
             {
@@ -4330,7 +4282,7 @@ namespace RevenuePlanner.Controllers
                    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
                     await Task.Delay(1);    
-                return Json(new { isSuccess = true, TacticTypelist = GetTacticTypeList(ViewBy, ActiveMenu, tacticList, lstAllowedEntityIds) }, JsonRequestBehavior.AllowGet);
+                return Json(new { isSuccess = true, TacticTypelist = GetTacticTypeList(tacticList, lstAllowedEntityIds) }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
             {

@@ -8,7 +8,7 @@
 
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
+@*<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>*@
 
 <div class="white-chart">
     <p class="source-sans-probold">Activity Distribution</p>
@@ -41,7 +41,7 @@
       
        <h2 id="lblMarkringActivitiesTitle" style="display:none;">Marketing Activities (Ongoing)</h2>
   
-       @if (Model.plans != null && Model.plans.Count > 0 && activeMenu != Enums.ActiveMenu.Home.ToString())
+       @if (Model.plans != null && Model.plans.Count > 0)
        {
         <form id="nl-form2" class="nl-form-plan-title without-margin plantitle"  style=" margin-top:35px !important;display:none;">
 

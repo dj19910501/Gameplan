@@ -52,202 +52,6 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        //public ActionResult Create(int id = 0, bool isBackFromAssortment = false)
-        //{
-        //    /*Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
-        //    if (isBackFromAssortment == true)
-        //    {
-        //        TempData["IsBackFromAssortment"] = true;
-        //    }
-        //    /*End :Added by Mitesh Vaishnav on 25/07/2014 for PL ticket 619*/
-        //    // Added by dharmraj to check user activity permission
-        //    bool IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-        //    ViewBag.IsPlanCreateAuthorized = IsPlanCreateAuthorized;
-
-        //    bool IsPlanCreateAll = false;
-
-
-        //    try
-        //    {
-        //        if (id > 0)
-        //        {
-        //            // Added by Dharmraj Mangukiya for edit authentication of plan, PL ticket #519
-        //            var objplan = db.Plans.FirstOrDefault(m => m.PlanId == id && m.IsDeleted == false);
-        //            bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
-        //            bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-        //            //Get all subordinates of current user upto n level
-        //            var lstSubOrdinates = new List<Guid>();
-        //            try
-        //            {
-        //                lstSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                ErrorSignal.FromCurrentContext().Raise(e);
-
-        //                //To handle unavailability of BDSService
-        //                if (e is System.ServiceModel.EndpointNotFoundException)
-        //                {
-        //                    return RedirectToAction("ServiceUnavailable", "Login");
-        //                }
-        //            }
-
-        //            //// Set flag to check whether his Own Plan & Subordinate Plan editable or not.
-        //            bool isPlanDefinationDisable = true;
-
-        //            if (IsPlanCreateAuthorized)
-        //            {
-        //                IsPlanCreateAll = true;
-        //            }
-        //            else
-        //            {
-        //                if (objplan.CreatedBy.Equals(Sessions.User.UserId))
-        //                {
-        //                    IsPlanCreateAll = true;
-        //                }
-        //            }
-        //            if (id == 0 && !IsPlanCreateAuthorized)
-        //            {
-        //                return AuthorizeUserAttribute.RedirectToNoAccess();
-        //            }
-        //            if (objplan.CreatedBy.Equals(Sessions.User.UserId)) // Added by Dharmraj for #712 Edit Own and Subordinate Plan
-        //            {
-        //                isPlanDefinationDisable = false;
-        //            }
-        //            else if (IsPlanEditAllAuthorized)
-        //            {
-        //                isPlanDefinationDisable = false;
-        //            }
-        //            else if (IsPlanEditSubordinatesAuthorized)
-        //            {
-        //                if (lstSubOrdinates.Contains(objplan.CreatedBy))
-        //                {
-        //                    isPlanDefinationDisable = false;
-        //                }
-        //            }
-        //            //Modified by Mitesh Vaishnav for internal review point related to "Edit All Plan" permission
-        //            ViewBag.IsPlanDefinationDisable = isPlanDefinationDisable;
-        //            ViewBag.IsPlanCreateAll = IsPlanCreateAll;
-
-        //        }
-        //        else
-        //        {
-        //            ViewBag.IsPlanCreateAll = true;
-        //        }
-
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-
-        //        //To handle unavailability of BDSService
-        //        if (e is System.ServiceModel.EndpointNotFoundException)
-        //        {
-        //            return RedirectToAction("ServiceUnavailable", "Login");
-        //        }
-        //    }
-
-        //    PlanModel objPlanModel = new PlanModel();
-        //    try
-        //    {
-        //        ViewBag.ActiveMenu = Enums.ActiveMenu.Plan;
-        //        Sessions.PlanId = id;/*added by Nirav for plan consistency on 14 apr 2014*/
-
-        //        var List = GetModelName();
-        //        if (List == null || List.Count == 0)
-        //        {
-        //            //Modified by Mitesh Vaishnav for functional review point 64
-        //            TempData["IsNoModel"] = true;
-        //            return RedirectToAction("PlanSelector");
-        //            //End: Modified by Mitesh Vaishnav for functional review point 64
-
-        //        }
-        //        List.Insert(0, new PlanModel { ModelId = 0, ModelTitle = "select" }); // Added by dharmraj to add default select item in model dropdown
-        //        TempData["selectList"] = new SelectList(List, "ModelId", "ModelTitle");
-        //        /*Modified by Mitesh Vaishnav for PL ticket #622*/
-        //        List<SelectListItem> Listyear = new List<SelectListItem>();
-        //        int yr = DateTime.Now.Year;
-        //        for (int i = 0; i < 5; i++)
-        //        {
-        //            Listyear.Add(new SelectListItem { Text = (yr + i).ToString(), Value = (yr + i).ToString(), Selected = false });
-        //        }
-        //        var year = Listyear;
-        //        TempData["selectYearList"] = new SelectList(year, "Value", "Text");
-        //        /*End :Modified by Mitesh Vaishnav for PL ticket #622*/
-
-        //        var GoalTypeList = Common.GetGoalTypeList(Sessions.User.ClientId);
-        //        var AllocatedByList = Common.GetAllocatedByList();      // Added by Sohel Pathan on 05/08/2014
-
-        //        //added by kunal to fill the plan data in edit mode - 01/17/2014
-        //        if (id != 0)
-        //        {
-        //            var objplan = db.Plans.Where(plan => plan.PlanId == id && plan.IsDeleted == false).FirstOrDefault();/*changed by Nirav for plan consistency on 14 apr 2014*/
-        //            objPlanModel.PlanId = objplan.PlanId;
-        //            objPlanModel.ModelId = objplan.ModelId;
-        //            objPlanModel.Title = objplan.Title;
-        //            objPlanModel.Year = objplan.Year;
-        //            objPlanModel.GoalType = GoalTypeList.Where(a => a.Value == objplan.GoalType).Select(a => a.Value).FirstOrDefault();
-        //            objPlanModel.GoalValue = Convert.ToString(objplan.GoalValue);
-        //            objPlanModel.AllocatedBy = objplan.AllocatedBy;
-        //            objPlanModel.Budget = objplan.Budget;
-        //            objPlanModel.Version = objplan.Version;
-        //            objPlanModel.ModelTitle = objplan.Model.Title + " " + objplan.Model.Version;
-        //            double TotalAllocatedCampaignBudget = 0;
-        //            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == objplan.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(a => a.Value).ToList();
-        //            if (PlanCampaignBudgetList.Count > 0)
-        //            {
-        //                TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Sum();
-        //            }
-        //            objPlanModel.TotalAllocatedCampaignBudget = TotalAllocatedCampaignBudget;
-        //            #region "In edit mode, plan year might be of previous year. We included previous year"
-        //            int planYear = 0; //plan's year
-        //            int.TryParse(objplan.Year, out planYear);
-        //            if (planYear != 0 && planYear < yr)
-        //            {
-        //                for (int i = planYear; i < yr; i++)
-        //                {
-        //                    Listyear.Add(new SelectListItem { Text = (i).ToString(), Value = (i).ToString(), Selected = false });//Modified by Pratik for PL ticket #1089
-        //                }
-
-        //                year = Listyear.OrderBy(objyear => objyear.Value).ToList();//Modified by Pratik for PL ticket #1089
-        //                TempData["selectYearList"] = new SelectList(year, "Value", "Text");//Modified by Mitesh Vaishnav for PL ticket #622
-        //            }
-
-        //            //Added By Komal Rawal for #1176
-        //            if (objplan.Status == Enums.PlanStatus.Published.ToString())
-        //            {
-        //                bool IsModelCreateEdit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ModelCreateEdit);
-        //                ViewBag.modelcreateedit = IsModelCreateEdit;
-        //            }
-        //            else
-        //            {
-        //                ViewBag.modelcreateedit = true;
-
-        //            }
-        //            //End
-        //            #endregion
-        //        }
-        //        else
-        //        {
-        //            objPlanModel.Title = "Plan Title";
-        //            objPlanModel.GoalValue = "0";
-        //            objPlanModel.Budget = 0;
-        //            objPlanModel.Year = DateTime.Now.Year.ToString(); // Added by dharmraj to add default year in year dropdown
-        //            ViewBag.modelcreateedit = true;
-        //        }
-        //        //end
-
-        //        TempData["goalTypeList"] = GoalTypeList;
-        //        TempData["allocatedByList"] = Common.GetAllocatedByList(); // Modified by Sohel Pathan on 05/08/2014
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        ErrorSignal.FromCurrentContext().Raise(e);
-        //    }
-        //    return View(objPlanModel);
-
-        //}
-
         #region Create
 
         /// <summary>
@@ -9290,7 +9094,7 @@ namespace RevenuePlanner.Controllers
                                 CreatedBy = GetUserName(taskdata.CreatedBy),
                                 IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                 CreatedByID = taskdata.CreatedBy,
-                                tacticids = TacticfilterList.Where(t => t.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == taskdata.PlanCampaignId).Any()
+                                tacticids = TacticfilterList.Where(t => t.Plan_Campaign_Program.PlanCampaignId == taskdata.PlanCampaignId).Any()
                             });
                             foreach (var Campaignitem in lstcampaignTaskData)
                             {
@@ -9394,7 +9198,7 @@ namespace RevenuePlanner.Controllers
                                             IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                             IsProgEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? true : false,
                                             CreatedByID = taskdata.CreatedBy,
-                                            tacticids = TacticfilterList.Where(t => t.Plan_Campaign_Program.PlanProgramId == taskdata.PlanProgramId).Any()
+                                            tacticids = TacticfilterList.Where(t => t.PlanProgramId == taskdata.PlanProgramId).Any()
 
                                         });
 
@@ -9470,7 +9274,7 @@ namespace RevenuePlanner.Controllers
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                                 {
 
-                                                    var ProgramTactic = programtactic.Where(tact => tact.Plan_Campaign_Program.PlanProgramId == Programitem.PlanProgramId).ToList();
+                                                    var ProgramTactic = programtactic.Where(tact => tact.PlanProgramId == Programitem.PlanProgramId).ToList();
                                                     if (CampaignTactic != null && CampaignTactic.Count > 0)
                                                     {
                                                         Startdate = CampaignTactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
@@ -9523,7 +9327,7 @@ namespace RevenuePlanner.Controllers
                                                     foreach (var tactic in lsttacticTaskData)
                                                     {
                                                         cellTextColor = tactic.IstactEditable == "1" ? "style='color:#999;'" : "style='color:#000;'";
-                                                        GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "' bgColor='#E4F1E1' open='1'><cell>Tactic</cell>");
+                                                        GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "' bgColor='#E4F1E1'><cell>Tactic</cell>");
 
                                                         GridString.Append("<cell bgColor='#E4F1E1' locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? new XCData("<span id='tacticIsRequired'></span>") : null) + "</cell><cell bgColor='#E4F1E1'><![CDATA[<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> ");
                                                         if (tactic.IsPlanCreateAll)

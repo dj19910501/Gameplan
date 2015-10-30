@@ -53,8 +53,8 @@
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
-<script type="text/javascript" src="@Url.Content("~/Scripts/js/ganttExportapi.js")"></script>
+@*<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/js/ganttExportapi.js")"></script>*@
 <style type="text/css">
     .pull-right > span {
         margin-right: -15px !important;
@@ -79,15 +79,15 @@
         color: #6d6d6d !important;
     }
 </style>
-@if (activeMenu.ToLower() == "plan")
-{
+@*@if (activeMenu.ToLower() == "plan")*@
+
     @section nlFormContent{
         <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
         <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
         <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/modernizr.custom.js")"></script>
-        <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js?n=")@DateTime.Now"></script>
+        <script type="text/javascript" src="@Url.Content("~/Scripts/js/NaturalLanguageForm/nlform.js")"></script>
     }
-}
+
 @Html.Hidden("ActiveMenu", activeMenu)
 @Html.HiddenFor(m => m.PlanId)
 @section PlanHeader{
@@ -139,10 +139,7 @@
                 cache: false,
                 url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
                 data: {
-                    PlanId: Planids.toString(),
-                    ViewBy: type,
-                    ActiveMenu: $('#ActiveMenu').val()
-
+                    PlanId: Planids.toString()
                 },
                 dataType: "json",
                 success: function (data) {
@@ -211,8 +208,7 @@
             //  $("#nl-form2").hide();
             //Added by Nirav for Custom Dropdown - 388
 
-            if (($('#ActiveMenu').val().toLowerCase() == "plan")) {
-                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
+                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid, function (response, status, xhr) {
                     if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
                         //// Call function to redirect on service unavailibility.
                         //// Added By: Maninder Singh Wadhva on 11/24/2014.
@@ -220,17 +216,6 @@
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
                 });//activeMenu parameter added
-            }
-            else {
-                $('#DivloadPlan').load('@Url.Action("HomePlan", "Home")' + '?currentPlanId=' + pid + '&activeMenu=' + $('#ActiveMenu').val(), function (response, status, xhr) {
-                    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                        //// Call function to redirect on service unavailibility.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-                    }
-                });//activeMenu parameter added
-            }
 
             switch ($('#ActiveMenu').val().toLowerCase()) {
                 case 'home':
@@ -239,7 +224,6 @@
                     break;
                 case 'plan':
                     $("#DivButtonsHome").hide();
-                    $("#SideBarUserWelcomeMessage").hide();
                     $("#DivButtonsPlanSummary").show();
                     break;
             }
@@ -284,8 +268,10 @@
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                     if (CurrentPlanId > 0) {
                         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                            EditPlanHome();
-                            return true;
+                            //EditPlanHome();
+                            var pid = $("#CurrentPlanId").val();
+                            var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
+                            window.location.href = url;
                         }
                         else {
                             var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
@@ -432,7 +418,6 @@
                     </button>
                     @if (IsPlanEditable)
                     {
-                        int pid = Model.PlanId;
                         <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()" style="min-width: 90%">
                             Edit Plan Definition
                         </button>
@@ -444,43 +429,6 @@
                         Export to .pdf
                     </button>
                 </div>
-                @*  @if (IsPlanCreateAuthorized) // added by dharmraj form user activity permission
-                {
-                    <div class="span6">
-                        <div class="btn-group ">
-                            <button id="BtnGroup" class="btn btn-blue text-shadow-blue source-sans-proregular buttom-width resize-drop-button without-border-buttom displayinherit   source-sans-prolight width90px">
-                                New Plan
-                            </button>
-                            <button data-toggle="dropdown" class="btn btn-blue dropdown-toggle height25 displayinherit width19px">
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu source-sans-prolight">
-                                <li>
-                                    <a href="#">Create New</a>
-                                </li>
-                                <li>
-                                    <a href="#">Duplicate</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                }
-                <div class="span6" id="divPlanEditButtonPlan">
-                    <!-- change by kunal for edit plan - 01-17-2012 -->
-                    <!-- start -->
-                    @{
-                        if (Model.PlanId != null)
-                        {
-                            int pid = Model.PlanId;
-                        <button class="btn btn-blue text-shadow-blue source-sans-proregular" type="button" onclick="EditPlan()">Edit Plan</button>
-                        }
-                        else
-                        {
-                        <button class="btn btn-blue-disable text-shadow-blue source-sans-proregular" type="button">Edit Plan</button>
-                        }
-                    }
-                    <!-- end -->
-                </div>*@
             </div>
         </div>
 
@@ -864,9 +812,8 @@
     var GanttTaskData;// Added By Nishant Sheth #1533 for color bar
 </script>
 
-@if (activeMenu.ToLower() == "plan") //// Added by Komal Rawal for new Homepage UI
-{
-    <div class="calender-view-nav">
+
+    <div class="calender-view-nav" style="display:none;" id="divcalenderandgridtab">
         <ul class="nav nav-tabs new-margin no-position" id="PlanTab">
             <li class="active pull-left" id="liCalender">
                 <a>CALENDAR VIEW</a>
@@ -876,7 +823,7 @@
             </li>
         </ul>
     </div>
-}
+
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
 <div id="divgridview" class="task-tbl" style="display: none;"></div>
@@ -890,12 +837,11 @@
 <div id="CalenderView" class="tab-content all-height cf" style="padding-right: 18px;">
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
-            @if (activeMenu.ToLower() == "plan") //// Added by Sohel Pathan on 16/07/2014 for PL ticket #556 to hide "Showstatus" feature on home screen
-            {
-                <div class="pull-left" id="divCollaborator" style="position: relative;">
+            
+                <div class="pull-left" id="divCollaborator" style="position: relative; display:none;">
                     <!-- position:relative = added by kapil -->
                 </div>
-            }
+            
 @* Start - Added by Sohel on 12/05/2014 for PL #425 to Show status of tactics on Home and Plan screen *@
             <div class="pull-right toggle-status source-sans-proregular">
                 <div class="pull-right">
@@ -1010,8 +956,6 @@
     var PlanCount = 0, OwnerCount = 0;
     var isCopyTactic = 0;
     var isEditTactic = 0;
-    var isFirstCall = true;
-
     var inspectCloseFocus = "";
     //Added By Komal Rawal for #1376
     function toggleStatus(obj) {
@@ -1194,6 +1138,18 @@
                 }
             }
         });
+        filters.SelectedPlans = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.SelectedPlans.push(chkid);
+                }
+            }
+        });
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
 
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -1253,17 +1209,23 @@
     }
     //End
 
-    function removeByValue(arr, val) {
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] == val) {
-                arr.splice(i, 1);
-                break;
-            }
-        }
-    }
     // modify by devanshi
     function LoadPlanGrid() {
         $("#btnPlanReport").css("display", "none");// Add By Nishant Sheth
+        filters.SelectedPlans = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.SelectedPlans.push(chkid);
+                }
+            }
+        });
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+        }
         if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
             SelectedPlanIds = filters.SelectedPlans.toString();
         }
@@ -1281,7 +1243,7 @@
             }
         });
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
-
+        
 
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -1310,25 +1272,21 @@
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liPlan" + id).addClass("close-list");
-            filters.SelectedPlans.push(id);
-            GetOwnerListForFilter(filters.SelectedPlans);
-            GetTacticTypelist(filters.SelectedPlans);
         }
         else {
             $("#liPlan" + id).removeClass("close-list");
-            removeByValue(filters.SelectedPlans, id);
-            GetOwnerListForFilter(filters.SelectedPlans);
-            GetTacticTypelist(filters.SelectedPlans);
         }
-
-        if (filters.SelectedPlans.length == 0) {
-            isFirstCall = false;
-        }
-
-        if (filters.SelectedPlans.length == 1) {
-            CurrentPlanId = id;
-            $("#CurrentPlanId").val(id);
-        }
+        var planids = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    planids.push(chkid);
+                }
+            }
+        });
+        GetOwnerListForFilter(planids);
+        GetTacticTypelist(planids);
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -1375,6 +1333,7 @@
                     }
                     else {
                         // Set collaborator details
+                        $("#divCollaborator").css("display", "block");
                         $('#divCollaborator').empty(); // Clear collaborators div content
                         ////  set collaborator's image
                         if (data.collaboratorsImage != null && data.collaboratorsImage != 'undefined') {
@@ -1449,10 +1408,6 @@
             $('#improvements').hide();
             // End - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #63
         }
-    }
-
-    function BindPlans() {
-        filters.SelectedPlans.push(CurrentPlanId);
     }
 
     function ResetControlsBeforeOtherAttributes() {
@@ -1576,14 +1531,14 @@
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkPlanOperation(selection) {
-        filters.SelectedPlans = [];
+        var planids = [];
 
         if (selection) {
             $("#ulSelectedPlans li").each(function (i) {
                 $(this).addClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).attr("checked", "checked");
-                filters.SelectedPlans.push(chkid);
+                planids.push(chkid);
             });
         }
         else {
@@ -1594,11 +1549,8 @@
             });
         }
 
-        if (filters.SelectedPlans.length == 0) {
-            isFirstCall = false;
-        }
-        GetOwnerListForFilter(filters.SelectedPlans);
-        GetTacticTypelist(filters.SelectedPlans);
+        GetOwnerListForFilter(planids);
+        GetTacticTypelist(planids);
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -1648,9 +1600,25 @@
 
     //Added By Komal Rawal for #1498
     function EditPlanHome() {
-        var pid = $("#CurrentPlanId").val();
+        @*var pid = $("#CurrentPlanId").val();
         var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
-        window.location.href = url;
+        window.location.href = url;*@
+        $("#lblMarkringActivitiesTitle").hide();
+        $("#nl-form2").show();
+        $("#DivButtonsHome").hide();
+        $("#DivButtonsPlanSummary").show();
+        $('#ActiveMenu').val("@Enums.ActiveMenu.Plan");
+        activeMenu = $('#ActiveMenu').val().toLowerCase();
+        $("#divcalenderandgridtab").css("display", "block");
+        $("#accordion-2").css("display", "none");
+        $("#CalenderView").hide();
+        $("#nl-form2 .nl-dd-checked").removeClass("nl-dd-checked");
+        $("#nl-form2").find("li[value=" + $("#CurrentPlanId").val() + "]").addClass("nl-dd-checked");
+        $("#nl-form2 .nl-field-toggle").html($("#nl-form2").find("li[value=" + $("#CurrentPlanId").val() + "]").attr("originalvalue"));
+        $('.plan').addClass('active');
+        $('.home').removeClass('active');
+        $('html head title').html("Plan");
+        $("#liGrid").click();
     }
 
     function CallPDF() {
@@ -2114,6 +2082,9 @@
     var Successmsgduplicate = '@Successmsgduplicate';
     var Errormsgduplicate = '@errormsgduplicate';
     var isError = false;
+    if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+        $("#divcalenderandgridtab").css("display", "block");
+    }
     function SetPlanButtons() {
 
         //Added : By Kalpesh Sharma Ticket #638 Cloning icon for plans, campaigns, programs and tactics
@@ -2186,23 +2157,14 @@
             }
         }
         // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
-
-        if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-            BindPlans();
-            PlanIdsCustom = filters.SelectedPlans.toString();
-        }
-        else {
-            PlanIdsCustom = CurrentPlanId;
-        }
-
-        if (activeMenu.toLowerCase() == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            LoadPlan();
-        }
+        filters.SelectedPlans.push(CurrentPlanId);
+        PlanIdsCustom = filters.SelectedPlans.toString();
+        LoadPlan();
         getViewByList = true;
       
         $('#hdnSelectedPlanIds').val(PlanIdsCustom);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
-
+        
         if ($('#IsGridView').val() == "True") {
             $("#CalenderView").hide();
             $("#liGrid").click();
@@ -2528,6 +2490,20 @@ function AjaxRequest() {
             }
         }
     });
+    filters.SelectedPlans = [];
+    $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+        if ($(this).attr('checked') == 'checked') {
+            var chkid = $(this).attr("id");
+            if (chkid != undefined && chkid != 'undefined') {
+                filters.SelectedPlans.push(chkid);
+            }
+        }
+    });
+    if (filters.SelectedPlans.length == 1) {
+        CurrentPlanId = filters.SelectedPlans[0].toString();
+        $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+    }
     //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
 
     var Planid = filters.SelectedPlans;
@@ -2621,7 +2597,7 @@ function AjaxRequest() {
                     }
                     else {
                         $("#divPlanEditButtonHome").hide();
-                        $('.WelcomeMessageBorder').hide();
+                        $('.WelcomeMessageBorder').show();
                         //  $("#divAddActuals").hide();
                     }
 
@@ -2768,7 +2744,7 @@ function GetCurrentPlanPermissionDetail() {
                 }
                 else {
                     $("#divPlanEditButtonHome").hide();
-                    $('.WelcomeMessageBorder').hide();
+                    $('.WelcomeMessageBorder').show();
                     $("#isViewOnly").val(false);
                 }
             }
@@ -4815,6 +4791,7 @@ function Quarter() {
                         window.location = '@Url.Content("~/Login/Index")';
                     }
                     else if (data.IsSuccess) {
+                        isCopyTactic = data.Id;
                         RefreshCurrentTab();
                         ShowMessage(isError, data.msg);
 
@@ -4871,6 +4848,7 @@ function Quarter() {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
+                    isCopyTactic = data.Id;
                     RefreshCurrentTab();
                     ShowMessage(isError, data.msg);
                     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -4931,6 +4909,7 @@ function Quarter() {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
+                    isCopyTactic = data.Id;
                     RefreshCurrentTab();
                     ShowMessage(isError, data.msg);
                     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -5002,6 +4981,7 @@ function Quarter() {
                         window.location = '@Url.Content("~/Login/Index")';
                     }
                     else if (data.IsSuccess) {
+                        isCopyTactic = data.Id;
                         RefreshCurrentTab();
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {

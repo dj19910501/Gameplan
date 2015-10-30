@@ -82,6 +82,20 @@
           
         }
         $('.request-icons').show();
+        filters.SelectedPlans = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.SelectedPlans.push(chkid);
+                }
+            }
+        });
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+        }
         var SelectedPlans = filters.SelectedPlans.toString();
 
             GetHealderData(SelectedPlans);
@@ -116,7 +130,21 @@
 
 
     $("#ddlUpComingActivites").change(function () {
-        var TempPlanIds ;
+        filters.SelectedPlans = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.SelectedPlans.push(chkid);
+                }
+            }
+        });
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+        }
+        var TempPlanIds;
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             TempPlanIds = CurrentPlanId;
         }

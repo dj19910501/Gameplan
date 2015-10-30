@@ -61,7 +61,11 @@ namespace RevenuePlanner
                         "~/Scripts/MultiselectWeight.js",
                         "~/Scripts/jquery.cluetip.js",
                         "~/Scripts/js/scripts.js",
-                        "~/Scripts/js/scripts_extended.js"
+                        "~/Scripts/js/scripts_extended.js",
+                        "~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js",
+                        "~/Scripts/js/errorhandler.js",
+                        "~/Scripts/dhtmlxchart.js",
+                        "~/Scripts/js/ganttExportapi.js"
                         ));
             bundles.Add(new ScriptBundle("~/bundles/GetJSReport").Include(
                        "~/Scripts/js/jquery.slimscroll.js",
