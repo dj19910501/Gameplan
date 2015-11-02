@@ -79,4 +79,9 @@ namespace RevenuePlanner.Models
         public int Id { get; set; }
 
     }
+    public class LineItemDropdownModel
+    {
+        public List<ViewByModel> list { get; set; }
+        public int parentId { get; set; }
+    }
 }

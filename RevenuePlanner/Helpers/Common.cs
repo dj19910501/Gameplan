@@ -6296,12 +6296,13 @@ namespace RevenuePlanner.Helpers
         /// Get the list of Parent dropdown for LineItem screen
         /// </summary>
         /// <returns>Return the list of Budget Details list</returns>
-        public static List<ViewByModel> GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0)
+        public static LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0)
         {
             MRPEntities db = new MRPEntities();
             List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
             tblBudgetDetails = db.Budget_Detail.Where(a => a.IsDeleted == false).ToList();
             List<ViewByModel> lstParentItems = new List<ViewByModel>();
+            LineItemDropdownModel objParentListModel = new LineItemDropdownModel();
             int? ParentId = 0, mostParentId = 0;
             ParentId = tblBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
             mostParentId = tblBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
@@ -6309,7 +6310,9 @@ namespace RevenuePlanner.Helpers
                                    where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
                                    select new { detail1.Name, detail1.Id }).Distinct().ToList();
             lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
-            return lstParentItems;
+            objParentListModel.list = lstParentItems;
+            objParentListModel.parentId = ParentId.HasValue ? ParentId.Value : 0;
+            return objParentListModel;
         }
 
         /// <summary>

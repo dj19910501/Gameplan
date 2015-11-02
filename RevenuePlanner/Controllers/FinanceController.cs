@@ -1189,6 +1189,23 @@ namespace RevenuePlanner.Controllers
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
                 string IsTitleEdit = "1";
+
+                #region "Get LineItem Count"
+                var LineItemIds = dataTable
+                         .Rows
+                         .Cast<DataRow>()
+                                                .Where(rw => rw.Field<Int32>("ParentId") == id).Select(chld => chld.Field<List<int>>("lstLineItemIds")).ToList();
+                if (lstLineItemIds == null)
+                    lstLineItemIds = new List<int>();
+
+                LineItemIds.ForEach(lstIds => lstLineItemIds.AddRange(lstIds));
+
+                row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
+                lineitemcount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
+                row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable. 
+                #endregion
+                
+
                 if (EditLevel.ToUpper().Equals("BUDGET"))
                 {
                     if (!_IsBudgetCreate_Edit)  // If user has not Create/Edit Budget permission then clear AddRow button Html.
@@ -1197,6 +1214,7 @@ namespace RevenuePlanner.Controllers
                         //   SelectBox = string.Empty;
                         IsTitleEdit = "0";
                     }
+                    strLineItemLink = lineitemcount.ToString();
                 }
                 else
                 {
@@ -1206,22 +1224,15 @@ namespace RevenuePlanner.Controllers
                         //  SelectBox = string.Empty;
                         IsTitleEdit = "0";
                     }
+                    if (rwcount.Equals(1))
+                        strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
+                    else
+                        strLineItemLink = lineitemcount.ToString();
                 }
 
-                var LineItemIds = dataTable
-                 .Rows
-                 .Cast<DataRow>()
-                                        .Where(rw => rw.Field<Int32>("ParentId") == id).Select(chld => chld.Field<List<int>>("lstLineItemIds")).ToList();
+                
 
-                if (lstLineItemIds == null)
-                    lstLineItemIds = new List<int>();
-
-                LineItemIds.ForEach(lstIds => lstLineItemIds.AddRange(lstIds));
-
-                row.SetField<List<int>>("lstLineItemIds", lstLineItemIds);
-                lineitemcount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
-                row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable.
-                strLineItemLink = lineitemcount.ToString();
+                
                 //lineitemcount = dataTable
                 // .Rows
                 // .Cast<DataRow>()
@@ -2187,8 +2198,9 @@ namespace RevenuePlanner.Controllers
 
         public JsonResult GetParentLineItemList(int BudgetDetailId = 0)
         {
-            var lstparnetbudget = Common.GetParentLineItemBudgetDetailslist(BudgetDetailId);
-            return Json(lstparnetbudget, JsonRequestBehavior.AllowGet);
+            LineItemDropdownModel objParentDDLModel = new LineItemDropdownModel();
+            objParentDDLModel = Common.GetParentLineItemBudgetDetailslist(BudgetDetailId);
+            return Json(objParentDDLModel, JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetChildLineItemList(int BudgetDetailId = 0)
         {
