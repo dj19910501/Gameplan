@@ -117,7 +117,6 @@
     });
 
     function OnEditCell(stage, id, index, newVal, oldVal) {
-
         ValidParentId = newTreeGrid.getParentId(id);
         ValidColumnId = index;
         ValidRowId = id;
@@ -181,9 +180,13 @@
         }
     };
     function SaveNewBudgetDetail(budgetName) {
-        //budgetId = 8;
-        var url = "@Url.Content("~/Finance/CreateNewBudget")";
-        $("#divGridView").load(url + '?budgetName=' + escape(budgetName), function () { RefreshBudgetDropdown(); });
+        if (IsClickOnAddNew == false) {
+            $('#btnAddNewBudget').prop('disabled', false);
+            var url = "@Url.Content("~/Finance/CreateNewBudget")";
+            $("#divGridView").load(url + '?budgetName=' + escape(budgetName), function () { RefreshBudgetDropdown(); });
+        }
+
+
     }
 
 

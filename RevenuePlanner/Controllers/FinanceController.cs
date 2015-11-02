@@ -78,14 +78,27 @@ namespace RevenuePlanner.Controllers
         #region "Create new Budget related methods"
         public ActionResult LoadnewBudget()
         {
+            FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
+            objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+            objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+            objFinanceHeader.Budget = 0;
+            objFinanceHeader.Forecast = 0;
+            objFinanceHeader.Planned = 0;
+            objFinanceHeader.Actual = 0;
+            TempData["FinanceHeader"] = objFinanceHeader;
+
             return PartialView("_newBudget");
         }
         public ActionResult CreateNewBudget(string budgetName)
         {
             try
             {
+             
                 int budgetId = SaveNewBudget(budgetName);
                 return RefreshMainGridData(budgetId);
+               
             }
             catch (Exception)
             {
@@ -699,6 +712,10 @@ namespace RevenuePlanner.Controllers
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
             if (IsMain)
             {
+                objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+                objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+                objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+                objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
                 if (TempData["FinanceHeader"] != null)
                 {
                     gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
@@ -720,10 +737,7 @@ namespace RevenuePlanner.Controllers
                             objFinanceHeader.Planned = 0;
                             objFinanceHeader.Actual = 0;
                         }
-                        objFinanceHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
-                        objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
-                        objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
-                        objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+
 
                         TempData["FinanceHeader"] = objFinanceHeader;
                         gridRowModel.FinanemodelheaderObj = Common.CommonGetFinanceHeaderValue(objFinanceHeader);
@@ -1032,6 +1046,7 @@ namespace RevenuePlanner.Controllers
             var ListOfBudgetName = db.Budgets.Where(a => a.IsDeleted == false).Select(a => a.Name.ToLower()).ToList();
             return Json(ListOfBudgetName, JsonRequestBehavior.AllowGet);
         }
+
 
         public JsonResult GetListofForecastNames(int BudgetId)
         {
