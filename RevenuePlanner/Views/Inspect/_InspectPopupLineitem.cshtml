@@ -181,6 +181,207 @@
          window.location = '@Url.Content(RevenuePlanner.Helpers.Common.RedirectOnServiceUnavailibilityPage)';
      }
  }
+    //Added By Komal Rawal 
+    function SaveAllData(activeTab) {
+        var LineitemOpt = $("#hdnLineitemOpt").val();
+        if (LineitemOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
+            if (activeTab == TabSetup) {
+                var ReturnParameter = SetupSaveLineitem();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+
+            else if (activeTab == TabBudget) {
+                var ReturnParameter = SaveLineitemBudget();
+                if (ReturnParameter == false) {
+                    return false;
+                }
+            }
+            else if (activeTab == TabActual) {
+                //var ReturnParameter = SaveLineitemActual();
+                //if (ReturnParameter == false) {
+                //    return false;
+                //}
+                var hdnTacticStatus = $("#hdnParentTacticStatus").val();
+                var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
+                     var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+                     var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+                     if (typeof hdnTacticStatus != 'undefined' && (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus)) {
+                         var ReturnParameter = SaveLineitemActual();
+                     }
+                     else {
+                         var ReturnParameter = SaveTitle();
+                     }
+                     if (ReturnParameter == false) {
+                         return false;
+                     }
+                 }
+
+
+     }
+
+     return true;
+ }
+
+
+
+
+ //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
+ function SaveTitle() {
+     var returnparameter = false;
+     var planLineitemId = $("#hdnPlanLineItemID").val();
+     var _lineitemtitle = htmlEncode($('#txtTitle').val());
+     //  var isotherlineitem = $("#hdnIsOtherLineItem").val();
+       @* if (isotherlineitem.toLowerCase() == 'false') {
+            if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
+                    var errorMsg = "You can't use 'Other' as title.";
+                    ShowError(errorMsg);
+                    return false;
+                }
+            }*@
+         var iserror = false;
+
+         if (_lineitemtitle == '') {
+             $('#txtTitle').addClass("error");
+             iserror = true;
+         }
+         else {
+             $('#txtTitle').removeClass("error");
+         }
+
+         if (iserror) {
+             ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
+            return false;
+        }
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Content("~/Inspect/SaveTitle/")',
+            data: { title: _lineitemtitle, Id: planLineitemId, ActivePopup: "LineItem" },
+            success: function (data) {
+                if (!data.IsDuplicate) {
+                    var requestedModule = $("#hdnRedirectType").val();
+                    $('#lblLineitemTitle').text(_lineitemtitle);
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $("#errorMessage").css("display", "none");
+                    RefreshCurrentTab(requestedModule, data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
+                    returnparameter = true
+                }
+                else {
+                    ShowError(data.errormsg);
+                    returnparameter = false;
+                }
+            }
+        });
+        return returnparameter;
+    }
+    //End
+
+    //<--- End Document.ready event --->
+
+
+
+
+
+    function RemoveTabClass() {
+        $('#InspectTab').children().each(function () {
+            if ($(this).hasClass('active pull-left')) {
+                $(this).removeClass("active pull-left");
+                $(this).addClass("pull-left");
+            }
+        });
+    }
+
+    function loadReview(id, tabValue) {
+
+        $("#hdnInspectPopup").val(tabValue);
+        $.ajaxSetup({ cache: false });
+        var url;
+
+        var LineitemOpt = $("#hdnLineitemOpt").val();
+        if (tabValue == TabSetup) {
+            if (LineitemOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblLineitemTitle').css('display', 'none');
+                url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
+        }
+        else {
+            url = '@Url.Content("~/Inspect/LoadSetupLineitem/")';
+        }
+    }
+
+    if (tabValue == TabBudget) {
+        if (LineitemOpt == "Edit") {
+            $('#txtTitle').css('display', 'block');
+            $('#lblLineitemTitle').css('display', 'none');
+        }
+        url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
+        }
+        if (tabValue == TabActual) {
+            if (LineitemOpt == "Edit") {
+                $('#txtTitle').css('display', 'block');
+                $('#lblLineitemTitle').css('display', 'none');
+            }
+            url = '@Url.Content("~/Inspect/LoadActualsLineItem/")';
+        }
+
+        RemoveTabClass();
+        $("#li" + tabValue).removeClass("pull-left");
+        $("#li" + tabValue).addClass("active pull-left");
+        $('#div' + tabValue).css({ display: "block" });
+        $("#divTab").empty();
+        $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
+            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                //// Call function to redirect on service unavailibility.
+                //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                //// Ticket: 942 Exception handeling in Gameplan.
+                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+        });
+    }
+    // Close event for Error Message & Success Message Close button 
+    $(".alert").find(".close").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        $(this).closest(".alert").css("display", "none");
+    });
+
+
+
+    function SaveMessageOnParent(value) {
+        $("#modal-container-186470").modal('hide');
+        $("#errorMessageDuplicatePlan").slideUp(50);
+        $("#successMessageDuplicatePlan").slideDown(400);
+        $("#cSuccessDuplicatePlan").empty();
+        $("#cSuccessDuplicatePlan").text(htmlDecode(value));
+        $("#successMessageDuplicatePlan").removeClass("message-position");
+        $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
+
+    }
+
+
+    function loadAddSetup() {
+        $("#errorMessage").css("display", "none");
+        $("#successMessage").css("display", "none");
+        $("#hdnLineitemOpt").val("Edit");
+        var InspectValue = $("#hdnInspectPopup").val();
+        var tabtext = ($("#li" + InspectValue).children('a').text());
+        var tacticId = '@tacticId';
+         if (tabtext == "Setup") {
+             url = '@Url.Content("~/Inspect/createLineitem/")';
+            $("#divTab").empty();
+            $("#divTab").load(url + '?id=' + tacticId);
+        }
+         //$("#btnEditlineItem").css("display", "none");
+        $("#AddForm").css("display", "none");
+        $('#txtTitle').css('display', 'block');
+        $('#txtTitle').text('');
+        $('#lblLineitemTitle').css('display', 'none');
+        return false;
+    }
 
  $(document).ready(
   function () {
@@ -228,48 +429,6 @@
              }
          });
 
-         //Added By Komal Rawal 
-         function SaveAllData(activeTab) {
-             var LineitemOpt = $("#hdnLineitemOpt").val();
-             if (LineitemOpt == '@Enums.InspectPopupMode.Edit.ToString()') {
-                 if (activeTab == TabSetup) {
-                     var ReturnParameter = SetupSaveLineitem();
-                     if (ReturnParameter == false) {
-                         return false;
-                     }
-                 }
-
-                 else if (activeTab == TabBudget) {
-                     var ReturnParameter = SaveLineitemBudget();
-                     if (ReturnParameter == false) {
-                         return false;
-                     }
-                 }
-                 else if (activeTab == TabActual) {
-                     //var ReturnParameter = SaveLineitemActual();
-                     //if (ReturnParameter == false) {
-                     //    return false;
-                     //}
-                     var hdnTacticStatus = $("#hdnParentTacticStatus").val();
-                     var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                      var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                      var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                      if (typeof hdnTacticStatus != 'undefined' && (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus)) {
-                          var ReturnParameter = SaveLineitemActual();
-                      }
-                      else {
-                          var ReturnParameter = SaveTitle();
-                      }
-                      if (ReturnParameter == false) {
-                          return false;
-                      }
-                  }
-
-
-      }
-
-      return true;
-  }
          //End
          if (planLineitemId != '0') {
              loadReview(planLineitemId, tabtext);
@@ -291,7 +450,7 @@
 
       $("#NewLineItem").on("click", function () {
           loadInspectPopup(0, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Add.ToString()", '@tacticId', '@RedirectType');
-        });
+      });
 
       $('#CloneLineItem').click(function () {
           isDataModified = true;
@@ -300,22 +459,22 @@
           $.ajax({
               type: 'POST',
               url: '@Url.Content("~/Inspect/Clone")',
-            data: {
-                CloneType: '@Enums.DuplicationModule.LineItem',
+              data: {
+                  CloneType: '@Enums.DuplicationModule.LineItem',
                 Id: idPlanProgram,
                 title: Title,
                 CalledFromBudget: '@CalledFromBudget',
                 RequsetedModule: '@RedirectType'
             },
-            success: function (data) {
-                if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
-                    window.location = '@Url.Content("~/Login/Index")';
+              success: function (data) {
+                  if (data.IsSuccess != 'undefined' && data.IsSuccess == '#') {
+                      window.location = '@Url.Content("~/Login/Index")';
                 }
                 else if (data.IsSuccess) {
-                   
-                        var currentTab = "Setup";
 
-                        if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
+                    var currentTab = "Setup";
+
+                    if ('@RedirectType' == "@Enums.InspectPopupRequestedModules.Budgeting.ToString()") {
                             currentTab = "Budget";
                         }
 
@@ -323,19 +482,19 @@
                         var expandplanLineItemId = data.expand;
                         var planCampaignId = '@campaignId';
                         var planProgramId = '@planProgrameId';
-                        var planTacticId = '@tacticId';
-                        loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
+                    var planTacticId = '@tacticId';
+                    loadInspectPopup(lineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", currentTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, '@RedirectType');
 
-                        if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
-                            $("#hdnBudgetingExpandId").val(expandplanLineItemId);
-                            $("#hdnBudgetingIsSave").val("true");
-                        }
+                    if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == '@RedirectType') {
+                        $("#hdnBudgetingExpandId").val(expandplanLineItemId);
+                        $("#hdnBudgetingIsSave").val("true");
+                    }
 
-                        $("#successMessage").css("display", "block");
-                        $("#spanMessageSuccess").empty();
-                        $("#spanMessageSuccess").text(data.msg);
-                        $("#errorMessage").css("display", "none");
-                        return;
+                    $("#successMessage").css("display", "block");
+                    $("#spanMessageSuccess").empty();
+                    $("#spanMessageSuccess").text(data.msg);
+                    $("#errorMessage").css("display", "none");
+                    return;
                 }
                 else {
                     $("#successMessageViewProgram").slideUp(50);
@@ -345,93 +504,35 @@
                     return false;
                 }
             }
-        });
           });
+      });
 
-    
-
-     //Added By komal rawal for saving the Tactictitle in actual tab of Edit Mode
-     function SaveTitle() {
-         var returnparameter = false;
-         var planLineitemId = $("#hdnPlanLineItemID").val();
-         var _lineitemtitle = htmlEncode($('#txtTitle').val());
-         //  var isotherlineitem = $("#hdnIsOtherLineItem").val();
-       @* if (isotherlineitem.toLowerCase() == 'false') {
-            if ($('#txtTitle').val().toString().toLowerCase().trim() == '@Common.DefaultLineItemTitle.ToLower()' && $('#lblLineitemTitle').css('display') != 'block') {
-                    var errorMsg = "You can't use 'Other' as title.";
-                    ShowError(errorMsg);
-                    return false;
+      $("#btnEditlineItem").on("click", function () {
+          isDataModified = true;
+          debugger;
+          var activeTab = $("#InspectTab li.active a").text();
+          if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
+              $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
+              $('#btnEditlineItem').addClass('Save-icon-white');
+              $("#errorMessage").css("display", "none");
+              $("#successMessage").css("display", "none");
+              $("#hdnLineitemOpt").val("Edit");
+              var InspectValue = $("#hdnInspectPopup").val();
+              var tabtext = ($("#li" + InspectValue).children('a').text());
+              if (tabtext == "Setup") {
+                  url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
+                $("#divTab").empty();
+                $("#divTab").load(url + '?id=' + PlanLineItemId, function (response, status, xhr) {
+                    if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
+                        //// Call function to redirect on service unavailibility.
+                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
+                        //// Ticket: 942 Exception handeling in Gameplan.
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
-            }*@
-        var iserror = false;
-
-        if (_lineitemtitle == '') {
-            $('#txtTitle').addClass("error");
-            iserror = true;
+            });
         }
-        else {
-            $('#txtTitle').removeClass("error");
-        }
-
-        if (iserror) {
-            ShowError("@RevenuePlanner.Helpers.Common.objCached.ValidateForEmptyField");
-            return false;
-        }
-        $.ajax({
-            async: false,
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/SaveTitle/")',
-            data: { title: _lineitemtitle, Id: planLineitemId, ActivePopup: "LineItem" },
-            success: function (data) {
-                if (!data.IsDuplicate) {
-                    var requestedModule = $("#hdnRedirectType").val();
-                    $('#lblLineitemTitle').text(_lineitemtitle);
-                    $("#successMessage").css("display", "block");
-                    $("#spanMessageSuccess").empty();
-                    $("#spanMessageSuccess").text(data.msg);
-                    $("#errorMessage").css("display", "none");
-                    RefreshCurrentTab(requestedModule, data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
-                    returnparameter = true
-                }
-                else {
-                    ShowError(data.errormsg);
-                    returnparameter = false;
-                }
-            }
-        });
-        return returnparameter;
-    }
-    //End
-
-    //<--- End Document.ready event --->
-
-  
-
-    $("#btnEditlineItem").on("click", function () {
-        isDataModified = true;
-        var activeTab = $("#InspectTab li.active a").text();
-        if ($('#btnEditlineItem').hasClass('edit-icon-white')) {
-            $('#btnEditlineItem').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
-            $('#btnEditlineItem').addClass('Save-icon-white');
-            $("#errorMessage").css("display", "none");
-            $("#successMessage").css("display", "none");
-            $("#hdnLineitemOpt").val("Edit");
-            var InspectValue = $("#hdnInspectPopup").val();
-            var tabtext = ($("#li" + InspectValue).children('a').text());
-            if (tabtext == "Setup") {
-                url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
-            $("#divTab").empty();
-            $("#divTab").load(url + '?id=' + PlanLineItemId, function (response, status, xhr) {
-                if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                    //// Call function to redirect on service unavailibility.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-			          }
-			      });
-              }
-              else if (tabtext == "Budget") {
-                  url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
+        else if (tabtext == "Budget") {
+            url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
                   $("#divTab").empty();
                   $("#divTab").load(url + '?id=' + PlanLineItemId);
               }
@@ -496,150 +597,75 @@
       else if (activeTab == TabActual) {
           var hdnTacticStatus = $("#hdnParentTacticStatus").val();
           var Approvedstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Approved.ToString()].ToString()";
-                var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
-                var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
-                if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
-                    var ReturnParameter = SaveLineitemActual();
-                }
-                else {
-                    var ReturnParameter = SaveTitle();
-                }
-                if (ReturnParameter == false) {
-                    return false;
-                }
-                else {
-                    $("#hdnLineitemOpt").val("View");
-                    loadReview(PlanLineItemId, activeTab);
-                    $('#btnEditlineItem').removeClass('Save-icon-white');
-                    $('#btnEditlineItem').addClass('edit-icon-white');
-                    $('#txtTitle').css('display', 'none');
-                    $('#lblLineitemTitle').css('display', 'block');
-                    $("#txtTitle").prop('readonly', true);
+          var Completestatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.Complete.ToString()].ToString()";
+          var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
+          if (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus) {
+              var ReturnParameter = SaveLineitemActual();
+          }
+          else {
+              var ReturnParameter = SaveTitle();
+          }
+          if (ReturnParameter == false) {
+              return false;
+          }
+          else {
+              $("#hdnLineitemOpt").val("View");
+              loadReview(PlanLineItemId, activeTab);
+              $('#btnEditlineItem').removeClass('Save-icon-white');
+              $('#btnEditlineItem').addClass('edit-icon-white');
+              $('#txtTitle').css('display', 'none');
+              $('#lblLineitemTitle').css('display', 'block');
+              $("#txtTitle").prop('readonly', true);
 
-                }
+          }
 
-            }
+      }
 
 }
-    });
-
-function RemoveTabClass() {
-    $('#InspectTab').children().each(function () {
-        if ($(this).hasClass('active pull-left')) {
-            $(this).removeClass("active pull-left");
-            $(this).addClass("pull-left");
-        }
-    });
-}
-
-$('#AddForm').click(function () {
-    if ($('#popupLineitem').css('display') == 'none') {
-        $('#popupLineitem').css('display', 'block')
-    }
-    else {
-        $('#popupLineitem').css('display', 'none')
-    }
-});
-
-$(document).mouseup(function (e) {
-    var popup = $('#popupLineitem');
-    var button = $('#AddForm');
-    if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
-        $('#popupLineitem').css('display', 'none');
-    }
-});
-
-function loadReview(id, tabValue) {
-
-    $("#hdnInspectPopup").val(tabValue);
-    $.ajaxSetup({ cache: false });
-    var url;
-
-    var LineitemOpt = $("#hdnLineitemOpt").val();
-    if (tabValue == TabSetup) {
-        if (LineitemOpt == "Edit") {
-            $('#txtTitle').css('display', 'block');
-            $('#lblLineitemTitle').css('display', 'none');
-            url = '@Url.Content("~/Inspect/LoadEditSetupLineitem/")';
-            }
-            else {
-                url = '@Url.Content("~/Inspect/LoadSetupLineitem/")';
-            }
-        }
-
-        if (tabValue == TabBudget) {
-            if (LineitemOpt == "Edit") {
-                $('#txtTitle').css('display', 'block');
-                $('#lblLineitemTitle').css('display', 'none');
-            }
-            url = '@Url.Content("~/Inspect/LoadLineItemBudgetAllocation/")';
-        }
-        if (tabValue == TabActual) {
-            if (LineitemOpt == "Edit") {
-                $('#txtTitle').css('display', 'block');
-                $('#lblLineitemTitle').css('display', 'none');
-            }
-            url = '@Url.Content("~/Inspect/LoadActualsLineItem/")';
-        }
-
-        RemoveTabClass();
-        $("#li" + tabValue).removeClass("pull-left");
-        $("#li" + tabValue).addClass("active pull-left");
-        $('#div' + tabValue).css({ display: "block" });
-        $("#divTab").empty();
-        $("#divTab").load(url + '?id=' + id, function (response, status, xhr) {
-            if (response == '{"serviceUnavailable":"~/Login/ServiceUnavailable"}') {
-                //// Call function to redirect on service unavailibility.
-                //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                //// Ticket: 942 Exception handeling in Gameplan.
-                window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
-            }
-        });
-    }
-    // Close event for Error Message & Success Message Close button 
-    $(".alert").find(".close").on("click", function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        $(this).closest(".alert").css("display", "none");
-    });
+      });
 
 
+      $('#AddForm').click(function () {
+          if ($('#popupLineitem').css('display') == 'none') {
+              $('#popupLineitem').css('display', 'block')
+          }
+          else {
+              $('#popupLineitem').css('display', 'none')
+          }
+      });
 
-function SaveMessageOnParent(value) {
-    $("#modal-container-186470").modal('hide');
-    $("#errorMessageDuplicatePlan").slideUp(50);
-    $("#successMessageDuplicatePlan").slideDown(400);
-    $("#cSuccessDuplicatePlan").empty();
-    $("#cSuccessDuplicatePlan").text(htmlDecode(value));
-    $("#successMessageDuplicatePlan").removeClass("message-position");
-    $("#successMessageDuplicatePlan").addClass("successMessage-InspectPopUpSections");
-    
-}
+      $(document).mouseup(function (e) {
+          var popup = $('#popupLineitem');
+          var button = $('#AddForm');
+          if (!popup.is(e.target) && popup.has(e.target).length === 0 && popup.css('display') == 'block' && !button.is(e.target) && button.has(e.target).length === 0) {
+              $('#popupLineitem').css('display', 'none');
+          }
+      });
 
-$("#deleteLineItem").click(function () {
-    if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
-        isDataModified = true;
-        var ProgramId = $("#hdnPlanLineItemID").val();
-        var uId = $(window).attr('name');
-        var arrClosedTaskString = null;
-        if (typeof arrClosedTask != 'undefined') {
-            arrClosedTaskString = arrClosedTask.toString();
-        }
-        $.ajax({
-            type: 'POST',
-            url: '@Url.Content("~/Inspect/DeleteSection")',
-                data: {
-                    ID: ProgramId
-                    , DeleteType: '@Enums.DuplicationModule.LineItem'
+      $("#deleteLineItem").click(function () {
+          if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
+              isDataModified = true;
+              var ProgramId = $("#hdnPlanLineItemID").val();
+              var uId = $(window).attr('name');
+              var arrClosedTaskString = null;
+              if (typeof arrClosedTask != 'undefined') {
+                  arrClosedTaskString = arrClosedTask.toString();
+              }
+              $.ajax({
+                  type: 'POST',
+                  url: '@Url.Content("~/Inspect/DeleteSection")',
+            data: {
+                ID: ProgramId
+                , DeleteType: '@Enums.DuplicationModule.LineItem'
                      , UserId: uId
                      , closedTask: arrClosedTaskString
                      , CalledFromBudget: '@CalledFromBudget'
                         , IsIndex: '@isIndex'
                         , RedirectType: '@RedirectTypeMode'
                 },
-                success: function (data) {
-                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
-                        window.location = '@Url.Content("~/Login/Index")';
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
                     }
                     else {
                         if (data.IsSuccess && data.opt != 'undefined') {
@@ -656,53 +682,41 @@ $("#deleteLineItem").click(function () {
                                 $("#modal-container-186470").addClass("transition-close");
                                 $("#modal-container-186470").removeClass("transition_y");
                                 $('body').removeClass('bodyOverflow');
-                             }
-                             else {
-                                 if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
-                                     $("#hdnBudgetingExpandId").val(data.expand);
-                                     $("#hdnBudgetingIsSave").val("true");
-                                     $("#hdnBudgetingIsDelete").val("true");
-                                     $(".close-x-big-icon").trigger("click");
-                                 }
-                                 else {
-                                     window.location.href = data.redirect;
-                                 }
+                            }
+                            else {
+                                if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == data.opt) {
+                                    $("#hdnBudgetingExpandId").val(data.expand);
+                                    $("#hdnBudgetingIsSave").val("true");
+                                    $("#hdnBudgetingIsDelete").val("true");
+                                    $(".close-x-big-icon").trigger("click");
+                                }
+                                else {
+                                    window.location.href = data.redirect;
+                                }
 
-                                 return;
-                             }
-                         }
-                         else {
-                             $("#successMessageViewProgram").slideUp(50);
-                             $("#errorMessageEditProgram").slideDown(400);
-                             $("#spanMessageEditProgram").empty();
-                             $("#spanMessageEditProgram").val(data.msg);
-                             return false;
-                         }
-                     }
+                                return;
+                            }
+                        }
+                        else {
+                            $("#successMessageViewProgram").slideUp(50);
+                            $("#errorMessageEditProgram").slideDown(400);
+                            $("#spanMessageEditProgram").empty();
+                            $("#spanMessageEditProgram").val(data.msg);
+                            return false;
+                        }
+                    }
                 }
-            });
-         }
-});
-     function loadAddSetup() {
-         $("#errorMessage").css("display", "none");
-         $("#successMessage").css("display", "none");
-         $("#hdnLineitemOpt").val("Edit");
-         var InspectValue = $("#hdnInspectPopup").val();
-         var tabtext = ($("#li" + InspectValue).children('a').text());
-         var tacticId = '@tacticId';
-        if (tabtext == "Setup") {
-            url = '@Url.Content("~/Inspect/createLineitem/")';
-            $("#divTab").empty();
-            $("#divTab").load(url + '?id=' + tacticId);
+        });
         }
-        //$("#btnEditlineItem").css("display", "none");
-        $("#AddForm").css("display", "none");
-        $('#txtTitle').css('display', 'block');
-        $('#txtTitle').text('');
-        $('#lblLineitemTitle').css('display', 'none');
-        return false;
-    }
-
+      });
   });
+
+   
+
+
+
+
+
+  
 </script>
 

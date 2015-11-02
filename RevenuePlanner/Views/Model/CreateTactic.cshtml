@@ -9,7 +9,7 @@
     //string ModelIntegrationType = ViewBag.ModelIntegrationType;
     //Start Manoj Limbachiya PL # 486
     bool IsDeplyed = ViewBag.IsDeployed;
-    bool IsWorkFront = ViewBag.isIntegratedWithWorkFront;
+    bool IsWorkFront = ViewBag.isIntegratedWithWorkFront != null ? ViewBag.isIntegratedWithWorkFront : false; // Update by bhavesh #1727
     //End Manoj Limbachiya PL # 486
     // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);

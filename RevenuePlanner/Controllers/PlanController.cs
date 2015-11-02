@@ -1,4 +1,5 @@
-﻿using Elmah;
+﻿
+using Elmah;
 using RevenuePlanner.Helpers;
 using RevenuePlanner.Models;
 using System;
@@ -8292,6 +8293,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //Insert actual cost of tactic
                 int saveresult = 0;
+                bool isdataupdate = false;
                 for (int i = 0; i < arrActualCostInputValues.Length; i++)
                 {
                     //// Insert LineItem Actual data to Plan_Campaign_Program_Tactic_LineItem_Actual table.
@@ -8304,13 +8306,14 @@ namespace RevenuePlanner.Controllers
                         obPlanCampaignProgramTacticActual.CreatedBy = Sessions.User.UserId;
                         obPlanCampaignProgramTacticActual.CreatedDate = DateTime.Now;
                         db.Entry(obPlanCampaignProgramTacticActual).State = EntityState.Added;
+                        isdataupdate = true;
                     }
                 }
                 saveresult = db.SaveChanges();
 
                 int pid = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanTacticId == tid).FirstOrDefault().PlanProgramId;
                 int cid = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.PlanProgramId == pid).FirstOrDefault().PlanCampaignId;
-                if (saveresult > 0)
+                if (saveresult > 0 || !isdataupdate)
                 {
                     string strMessage = Common.objCached.PlanEntityActualsUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
                     return Json(new { id = strPlanItemId, TabValue = "Actuals", msg = strMessage, planCampaignID = cid, planProgramID = pid, planTacticID = tid });
