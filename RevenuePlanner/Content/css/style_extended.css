@@ -1365,7 +1365,8 @@ a {
 
 .table-info-actual-width {
     float: right;
-    width: 140px;
+    /*modified by Rahul Shah on 02/11/2015*/
+    width: 95px;
 }
 /*Added by Kuber Joshi on 11 March 2014 for TFS point 221 */
 .title-header.plan {

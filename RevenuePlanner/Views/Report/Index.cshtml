@@ -213,7 +213,7 @@
                     foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                     {
                         liCustom = "liCustom" + item.Value;
-                        <li class="accordion-inner close-list" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@item.Value" checked onchange="OnMultiselectchange(this);"></input></li>
+                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@item.Value" onchange="OnMultiselectchange(this);"></input></li>
                     }
                                 }
                                </ul>
