@@ -330,7 +330,7 @@
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Sep3.css" />
-    <Content Include="Content\css\style_min_Oct10.css" />
+    <Content Include="Content\css\style_min_Oct11.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -380,8 +380,6 @@
     <Content Include="Content\images\blue-arrow-top.png" />
     <Content Include="Content\images\border-inner-accordion.png" />
     <Content Include="Content\images\btn-bg-35h-disable.jpg" />
-    <Content Include="Content\images\btn-bg-35h-hover.jpg" />
-    <Content Include="Content\images\btn-bg-35h.jpg" />
     <Content Include="Content\images\btn-login.jpg" />
     <Content Include="Content\images\bullhorn-bg-disabled.png" />
     <Content Include="Content\images\bullhorn-bg.png" />
@@ -515,7 +513,6 @@
     <Content Include="Content\images\select2x2.png" />
     <Content Include="Content\images\setting-icon.png" />
     <Content Include="Content\images\setting.png" />
-    <Content Include="Content\images\shadow-sidebar-horizontal.png" />
     <Content Include="Content\images\share-tactic-icon.png" />
     <Content Include="Content\images\share-tactic-white.png" />
     <Content Include="Content\images\simple-accordion-x.png" />

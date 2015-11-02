@@ -5207,12 +5207,11 @@ span.left-arrow {
 }
 
 .table-info-actual-left-wraper {
-    /*modified by Rahul Shah on 02/11/2015*/
-    margin-left: 365px;
-    width: 210px;
+    margin-left: 288px;
+    width: 287px;
     height: 46px;
     margin-top: -46px;
-    /*text-align: right;*/
+    text-align: right;
 }
 
 .table-info-actual-left {
@@ -5221,9 +5220,9 @@ span.left-arrow {
 }
 
 .table-info-actual-left-wraper:first-child {
-    /*modified by Rahul Shah on 02/11/2015*/
+    /*Commented by Rahul Shah for Pl #1724*/
     /*float: left;*/
-    width: 210px;
+    width: 287px;
     color: #908D88;
 }
 
