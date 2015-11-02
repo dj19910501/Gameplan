@@ -164,6 +164,8 @@
             HomeGrid.setColumnHidden(4, true);
             HomeGrid.insertColumn(5);
             HomeGrid.setColumnHidden(5, true);
+            HomeGrid.insertColumn(6);
+            HomeGrid.setColumnHidden(6, true);
             for (var i = 0; i < count; i++) {
                 var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
                 var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
@@ -190,18 +192,31 @@
                     HomeGrid.cellByIndex(i, 3).setValue(parentname);
                     HomeGrid.cellByIndex(i, 5).setValue(Taskname);
                 }
+                if (ActivityTypeName == "LineItem") {
+                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 5).setValue(parentname);
+                    ParentProgramid = HomeGrid.getParentId(parentid);
+                    ParentProgramname = HomeGrid.cells(ParentProgramid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 4).setValue(ParentProgramname);
+                    ParentCampaignid = HomeGrid.getParentId(ParentProgramid);
+                    ParentCampaignname = HomeGrid.cells(ParentCampaignid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 3).setValue(ParentCampaignname);
+                   HomeGrid.cellByIndex(i, 6).setValue(Taskname);
+                }
             }
 
             HomeGrid.enableCSVAutoID(true);
             HomeGrid.enableCSVHeader(true);
-            HomeGrid.setSerializableColumns("false,false,true,true,true,true,false,false,true,true,true,true,true,true,true,true");
+            HomeGrid.setSerializableColumns("false,false,true,true,true,true,true,false,false,true,true,true,true,true,true,true,true");
             var myCSVString = HomeGrid.serializeToCSV(true);
             var lines = myCSVString.split(",");
-            lines.splice(0, 11);
+            lines.splice(0, 12);
             lines.splice(0, 1, "Plan");
             lines.splice(1, 1, "Campaign");
             lines.splice(2, 1, "Program");
             lines.splice(3, 1, "Tactic");
+            lines.splice(4, 1, "Line Item");
             var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
             $("#exportcsv").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv')
             $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));

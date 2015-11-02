@@ -68,6 +68,7 @@
         //ShowHideColumns($("#chkPlan"));
         var GridData = "";
         var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+    //    alert(AllocatedBy);
 
         //if (AllocatedBy == 'quarters') {
         //    AllocatedBy = true;
@@ -821,7 +822,6 @@
 
                             //var rowIndex = myTreeGrid.getRowIndex(rId);
                             //if (rowIndex == 0) {
-
                             if (RevnueTimeFrameChange) {
                                 $("#ddlRevenueTimeFrame").change();
                             }
@@ -840,6 +840,7 @@
                             $("#divFinanceBack").css("display", "block");
                             //}
                             if (ColumnName == "Task Name") {
+                                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
                                 LoadBudgetGrid(AllocatedBy);
                                 //GetFinanceHeaderValue(rId, false);
                             BindParentBudgetDrp(ParentID);

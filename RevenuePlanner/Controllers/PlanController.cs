@@ -9358,7 +9358,7 @@ namespace RevenuePlanner.Controllers
                                                             {
                                                                 cellTextColor = lineitem.IstactEditable == "1" ? "style='color:#999;'" : "style='color:#000;'";
 
-                                                                GridString.Append("<row id='line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index + "' bgColor='#ffffff' ><cell>LintItem</cell>");
+                                                                GridString.Append("<row id='line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index + "' bgColor='#ffffff' ><cell>LineItem</cell>");
 
                                                                 GridString.Append("<cell bgColor='#ffffff' locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.title) + "</cell><cell bgColor='#ffffff'><![CDATA[<div  class='grid_Search' id='LinePopup' alt=\"" + lineitem.PlanLineItemId + "\"></div> ");
                                                                 if (tactic.IsPlanCreateAll)

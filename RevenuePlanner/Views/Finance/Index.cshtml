@@ -1090,8 +1090,8 @@
         if (pageName == 'EditBudget') {
             valueTimeFrame = $("#ddlRevenueTimeFrame").val();
             $("#ddlRevenueTimeFrame").val(valueTimeFrame);
+            var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
             if (RevnueTimeFrameChange) {
-                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
                 LoadBudgetGrid(AllocatedBy);
                 GetFinanceHeaderValue(0, false);
                 var BudgetColumns = $("#chkBudget");

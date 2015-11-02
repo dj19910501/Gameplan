@@ -6173,7 +6173,7 @@ namespace RevenuePlanner.Helpers
 
                 customFieldEntityValue += string.Join(",", SelectedOptionValues);
 
-                sb = sb.Replace("#CUSTOMFEILD_VALUE#", customFieldEntityValue);
+                sb = sb.Replace("#CUSTOMFEILD_VALUE#", customFieldEntityValue.Replace("\"", "&quot;"));
                 sb.Append("</div>");
 
             }
