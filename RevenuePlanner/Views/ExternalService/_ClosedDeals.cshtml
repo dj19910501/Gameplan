@@ -6,6 +6,7 @@
         display:none !important;
     }
 </style>
+ @Html.Hidden("hdnCWValue",string.Empty,new {id="hdnCWValue",naem ="hdnCWValue", value =string.Empty})
 <div class="accordion-group">
     <div class="accordion-heading">
         <a class="accordion-toggle" style="border-bottom:none;position:static;" data-toggle="collapse" data-parent="#accordion" href="#collapseCloseDeal">Pull Closed Deals<span href="javascript:void(0)">+ Expand</span></a>
@@ -119,6 +120,7 @@
             }
         });
         var cwTargetType = '@ViewBag.cwTargetType';
+        $("#hdnCWValue").val(cwTargetType);
         AssignDefaultValueClosedDeal();   // Added by Sohel Pathan on 22/08/2014 for PL ticket #716.
         isPageLoad = true;
         $('.drpdwnStage').trigger('change');
@@ -143,14 +145,15 @@
             e.preventDefault();
             return false;
         }
-
         var formData = $("#frmClosedDealDataMapping").serialize();
         var IntegrationInstanceId = '@ViewBag.IntegrationInstanceId';
         var uId = $(window).attr('name');
+        var cwValue = $("#hdnCWValue").val();
+        cwValue = cwValue.toLowerCase() == "select" ? "" : cwValue;
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/ExternalService/SaveDataMappingPullCloseDeal")',
-            data: formData + '&IntegrationInstanceId=' + parseInt(IntegrationInstanceId) + '&UserId=' + uId,
+            data: formData + '&IntegrationInstanceId=' + parseInt(IntegrationInstanceId) + '&UserId=' + uId + '&closedwon=' + cwValue,
             success: function (data) {
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
@@ -272,6 +275,7 @@
             drpdwnCW.val('');
             drpdwnCW.attr('myValue', '');
             drpdwnCW.addClass('hidetext');
+            $("#hdnCWValue").val('');
         }
         else {
             $.ajax({
@@ -286,6 +290,7 @@
                         ul.append('<li> <a class="" href="#" rel="">Select</a> </li>');
                         aSelector.empty();
                         aSelector.html("Select");
+                        $("#hdnCWValue").val("Select");
                         $.each(data, function (index, itemData) {
                             drpdwnCW.append($('<option/>', {
                                 value: itemData,
@@ -309,6 +314,8 @@
                             ul.slideUp(100);
                             drpdwnCW.val(currentVal);
                             drpdwnCW.attr('myValue', currentVal);
+                            $('select[sb="' + sb + '"]').val(currentVal);
+                            $("#hdnCWValue").val(currentVal);
                         });
 
                         if (isPageLoad) {
@@ -325,6 +332,7 @@
                             //ul.slideUp(100);
                             drpdwnCW.val(cwTargetType);
                             drpdwnCW.attr('myValue', cwTargetType);
+                            $("#hdnCWValue").val(cwTargetType);
                             isPageLoad = false;
                         }
                         

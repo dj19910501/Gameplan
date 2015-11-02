@@ -1702,7 +1702,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>
         /// <returns>Returns status = 1 and success message on success and status = 0 and failure message on error</returns>
         [HttpPost]
-        public JsonResult SaveDataMappingPullCloseDeal(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "")
+        public JsonResult SaveDataMappingPullCloseDeal(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string UserId = "", string closedwon = "")
         {
             //// Check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -1716,7 +1716,7 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                SaveDataMappingPull(form, IntegrationInstanceId);
+                SaveDataMappingPull(form, IntegrationInstanceId,closedwon);
                 return Json(new { status = 1, Message = Common.objCached.DataTypeMappingPullSaveSuccess }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -1737,7 +1737,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId">user id of logged in user</param>
         /// <returns>Returns status = 1 and success message on success and status = 0 and failure message on error</returns>
         [HttpPost]
-        public JsonResult SaveDataMappingPulling(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string IntegrationType = "", string UserId = "")
+        public JsonResult SaveDataMappingPulling(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId, string IntegrationType = "", string UserId = "", string closedwon = "")
         {
             //// Check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -1777,7 +1777,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="form">List of GameplanDataTypePullModel objects</param>
         /// <param name="IntegrationInstanceId">ID of integration instance</param>
-        public void SaveDataMappingPull(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId)
+        public void SaveDataMappingPull(IList<GameplanDataTypePullModel> form, int IntegrationInstanceId,string cwValue = "")
         {
             using (MRPEntities mrp = new MRPEntities())
             {
@@ -1796,6 +1796,8 @@ namespace RevenuePlanner.Controllers
                     //// Add new IntegrationInstanceDataTypeMappingPull entry for new GameplanDataTypeMappingPull
                     foreach (GameplanDataTypePullModel obj in form)
                     {
+                        if (obj.ActualFieldName.Equals("CW"))       // set TargetDataType for CW value.
+                            obj.TargetDataType = cwValue;
                         if (!string.IsNullOrEmpty(obj.TargetDataType))
                         {
                             IntegrationInstanceDataTypeMappingPull objMappingPull = new IntegrationInstanceDataTypeMappingPull();
