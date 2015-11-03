@@ -4738,7 +4738,11 @@ a.link-gray {
     padding: 20px;
     clear: both;
 }
-
+.user-per_wrapper
+{
+    padding-top: 0;
+    padding-bottom: 0;
+}
 .fin-head-left .btn-blue {
     margin-bottom: 0px;
 }
@@ -4797,7 +4801,7 @@ a.link-gray {
 
 .user-table {
     float: right;
-    width: 80%;
+    width: 77%;
 }
 
     .user-table table.myteam {
@@ -4848,15 +4852,70 @@ a.link-gray {
 
 .search-user input,
 .user-list input {
-    border: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 0 8px 7px;
     box-shadow: none;
-    margin-left: 5%;
-    padding: 0;
-    width: 95%;
+    width: 96%;
     font-family: source_sans_proregular;
     margin-bottom: 0;
 }
+.search-user input:focus
+{
+box-shadow:none;
+outline:none;
+border-color:#ccc;
+}
+.search-user input::-webkit-input-placeholder {
+    padding-left:7px;
+}
 
+.search-user input:-moz-placeholder { /* Firefox 18- */
+    padding-left:7px;
+}
+
+.search-user input::-moz-placeholder {  /* Firefox 19+ */
+    padding-left:7px;
+}
+
+.search-user input:-ms-input-placeholder {  
+   padding-left:7px; 
+}
+.add-interest {
+    padding: 7px;
+}
+.add-interest div {
+    display: inline-block;
+    text-transform:capitalize;
+}
+.add-interest div:first-child {
+        width: 53%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 15px;
+    color:#000000;
+}
+.add-interest div:nth-child(2) {
+    width: 22%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 15px;
+    color:#808080;
+}
+.add-interest div:last-child {
+      width: 10%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 0;
+    float:right;
+}
+.user-per_wrapper .financetitle .nl-field
+{
+border:none;
+}
 .user-info table tr td:first-child {
     color: #000;
     width: 60%;
@@ -4869,12 +4928,12 @@ a.link-gray {
 }
 
 .search-user {
-    border: 1px solid #ccc;
+    /*border: 1px solid #ccc;
     border-radius: 4px;
-    height: auto;
+    height: auto;*/
     margin-bottom: 10px;
     margin-top: 16px;
-    padding: 8px 0;
+    /*padding: 8px 0;*/
 }
 
 .user-info table tr td {
@@ -4891,7 +4950,10 @@ a.link-gray {
     width: 15px;
     margin-right: 0;
 }
-
+.user-table table.myteam tbody tr > td:last-child span.x-icon
+{
+margin-right:12px;
+}
 .user-table .alert-success {
     padding-right: 14px;
     font-family: source_sans_probold;
@@ -4915,6 +4977,7 @@ a.link-gray {
     color: grey;
     font-family: source_sans_prosemibold;
     font-weight: 400;
+    border-right: 1px solid #a6a6a6;/*by bheru 1-11-2015*/
 }
 
 .user-table table.myteam tbody tr:hover > td:last-child,
@@ -10182,7 +10245,26 @@ li.close-list {
     white-space: nowrap;
     width: 60%;
 }
-
+.user_permission_list .ui-state-focus
+    {
+        background: #f6d87f!important;
+       color:#000 !important;
+       font-weight:normal !important;
+       border: none;
+    }
+  .user_permission_list
+    {
+        margin-top: 41px !important;
+        border: none !important;
+     color: #000 !important;
+     font-family: source_sans_proregular, Arial, sans-serif !important;
+    font-size: 14px !important;
+     max-height: 307px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 242px;
+    }
+    
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;
@@ -13754,6 +13836,7 @@ html, body {
 .table-row { width:100%; overflow:scroll;}
 #table_activities td, #table_activities th, #table_baseline td, #table_baseline th, #table_tactics td, #table_tactics th { text-align:left;}
 #table_activities.table { width:1250px; max-width:inherit;}
+.user_permission_list   { width: 241px !important; }
 }
  @media (max-width: 1024px) {
 .headerfix {

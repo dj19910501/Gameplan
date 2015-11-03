@@ -310,6 +310,7 @@
     <Content Include="Content\css\bootstrap-responsive.min.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\style_min_Oct13.css" />
     <Content Include="Content\css\datepicker.css" />
     <Content Include="Content\css\dhtmlxchart.css" />
     <Content Include="Content\css\dhtmlxchart_1.css" />
@@ -324,13 +325,14 @@
     <Content Include="Content\css\jquery.multiselect.css" />
     <Content Include="Content\css\jquery.slidepanel.css" />
     <Content Include="Content\css\jquery.treeview.css" />
+    <Content Include="Content\css\JquryUI\jquery-ui-1.11.4.min.js" />
+    <Content Include="Content\css\JquryUI\jquery-ui-1.8.21.custom.css" />
     <Content Include="Content\css\NaturalLanguageForm\component.css" />
     <Content Include="Content\css\NaturalLanguageForm\default.css" />
     <Content Include="Content\css\Select2\select2.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\style_extended.css" />
     <Content Include="Content\css\style_extended_min_Sep3.css" />
-    <Content Include="Content\css\style_min_Oct12.css" />
     <Content Include="Content\css\summernote.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\HelveticaLTStd-Light.svg" />
@@ -883,6 +885,7 @@
     <Content Include="Views\Finance\_newBudget.cshtml" />
     <Content Include="Views\Shared\_financeheader.cshtml" />
     <Content Include="Views\Finance\_LineItem.cshtml" />
+    <Content Include="Views\Finance\_UserPermission.cshtml" />
     <None Include="Web.BulldogProduction.config" />
   </ItemGroup>
   <ItemGroup>
@@ -928,7 +931,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>51197</DevelopmentServerPort>
+          <DevelopmentServerPort>65521</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

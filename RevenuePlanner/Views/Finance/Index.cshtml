@@ -26,6 +26,8 @@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxgrid.js")">*@
 <script src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid.js")"></script>
 
+<script src="@Url.Content("~/Scripts/js/DHTMLX/jquery-ui-1.11.4.min.js")"></script>
+
 
 @section PlanHeader{
     <div id="headerValue">
@@ -181,6 +183,7 @@
     var isFromForecastChild = false;
     var RevnueTimeFrameChange = true;
     var valueTimeFrame = "";
+    var _UserBudgetId = '';
     var BudgetDetails = {
         Name: []
     };
@@ -1005,6 +1008,43 @@
         //}).multiselectfilter({
         //});
 
+    }
+
+    function Edit(BudgetId, childChange, level, e) {
+        debugger;
+        var budgetIDMain = $("#ddlParentFinanceMain").val();
+        backBudgetid = budgetIDMain;
+        //$("#hdn_BudgetDetailId").val(BudgetId);
+        _UserBudgetId = BudgetId;
+        //e= window.event
+        //var t = event.which;
+        //var _targetDiv = e.srcElement;
+
+        var _flagCondition;
+        var _text = e.lastChild.textContent.trim();
+        //var _targetDiv = event.target;
+        //alert(_targetDiv);
+        if (_text == "Edit") {
+            _flagCondition = "Edit";
+        }
+        else {
+            _flagCondition = "View";
+        }
+        myTreeGrid.editStop();
+        $('#btnSettings').css('display', 'none')
+        $('#errorMsg').css('display', 'none');
+        $('#SuccessMsg').css('display', 'none');
+        myApp.showPleaseWait();
+        if (level != undefined && level != '') {
+            GlobalLevel = level;
+        }
+
+        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        BindTimeFrameForChild(AllocatedBy);
+        valueTimeFrame = $("#ddlRevenueTimeFrame").val();
+        $("#ddlRevenueTimeFrame").val(valueTimeFrame);
+        var url = '@Url.Content("~/Finance/EditPermission/")';
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition);
     }
     function EditBudget(BudgetId, childChange, level) {
         myTreeGrid.editStop();

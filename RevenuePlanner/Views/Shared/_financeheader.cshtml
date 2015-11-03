@@ -94,8 +94,18 @@
         pageName = "MainGrid";
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
             $('#divGridView').load(url + '?budgetId=' + backBudgetid + '&mainTimeFrame=' + _mainTimeFrame + '&ListofCheckedColums=' + CheckedColumns);
-        ShowHideControls("MainGrid");
+            ShowHideControls("MainGrid");
+           
         GetFinanceHeaderValue(backBudgetid, true);
+        }
+        else if (pageName = "UserPermission") {
+            RefreshBudgetDropdown();
+            pageName = "MainGrid";
+            var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
+            $('#divGridView').load(url + '?budgetId=' + backBudgetid);
+            ShowHideControls("MainGrid");
+            $("#DivFilter").css('display', 'block');
+            GetFinanceHeaderValue(backBudgetid, true);
         }
         else {
             //RefreshBudgetDropdown();

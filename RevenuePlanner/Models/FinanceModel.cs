@@ -22,6 +22,19 @@ namespace RevenuePlanner.Models
     {
         public FinanceModelHeaders FinanemodelheaderObj { get; set; }
         public DhtmlXGridRowModel DhtmlXGridRowModelObj { get; set; }
+        public List<UserPermission> Userpermission { get; set; }
+
+    }
+    public class UserPermission
+    {
+        public int budgetID { get; set; }
+        public string id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Role { get; set; }
+        public string BusssinessUnit { get; set; }
+        public string Region { get; set; }
+        public int Permission { get; set; }
 
     }
     //public class FinanceParentChildModel

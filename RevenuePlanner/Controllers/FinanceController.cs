@@ -12,6 +12,7 @@ using RevenuePlanner.Helpers;
 using Newtonsoft.Json;
 using RevenuePlanner.BDSService;
 using System.Globalization;
+using Elmah;
 
 namespace RevenuePlanner.Controllers
 {
@@ -133,6 +134,8 @@ namespace RevenuePlanner.Controllers
                 objBudgetDetail.CreatedDate = DateTime.Now;
                 db.Entry(objBudgetDetail).State = EntityState.Added;
                 db.SaveChanges();
+                int _budgetid = objBudgetDetail.Id;
+                SaveUserBudgetpermission(_budgetid);
             }
             catch (Exception)
             {
@@ -353,6 +356,8 @@ namespace RevenuePlanner.Controllers
                     objBudgetDetail.IsDeleted = false;
                     db.Entry(objBudgetDetail).State = EntityState.Added;
                     db.SaveChanges();
+                    int _budgetid = objBudgetDetail.Id;
+                    SaveUserBudgetpermission(_budgetid);
 
                     #region Udate LineItem with child item
                     //Add By Nishant Sheth
@@ -933,6 +938,297 @@ namespace RevenuePlanner.Controllers
                 throw;
             }
         }
+        #endregion
+        #region "User Permission:Ability to add multiple users to Budget items"
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// 
+        /// </summary>
+        /// <param name="BudgetId">contains BudgetDetail's Id</param>
+        /// <param name="FlagCondition">contains of edit or view</param>
+        /// <returns>return model to partial view</returns>
+        public ActionResult EditPermission(int BudgetId = 0, string level = "", string FlagCondition = "")
+        {
+            FinanceModel objFinanceModel = new FinanceModel();
+            ViewBag.BudgetId = BudgetId;
+            ViewBag.EditLevel = level;
+            List<ViewByModel> lstchildbudget = new List<ViewByModel>();
+            lstchildbudget = Common.GetParentBudgetlist(BudgetId);
+            List<UserPermission> _user = new List<UserPermission>();
+            if (lstchildbudget.Count > 0)
+            {
+                ViewBag.childbudgetlist = lstchildbudget;
+
+            }
+            else
+            {
+                lstchildbudget.Add(new ViewByModel { Text = "Please Select", Value = "0" });
+                ViewBag.childbudgetlist = lstchildbudget;
+            }
+            if (FlagCondition == "Edit")
+            {
+                ViewBag.FlagCondition = "Edit";
+            }
+            else
+            {
+                ViewBag.FlagCondition = "View";
+
+            }
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+            Guid userId = new Guid();
+            BDSService.User objUser = new BDSService.User();
+
+            var UserList = (from c in db.Budget_Permission
+                            where c.BudgetDetailId == BudgetId
+                            orderby c.UserId
+                            select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
+
+            for (int i = 0; i < UserList.Count; i++)
+            {
+                UserPermission user = new UserPermission();
+                objUser = objBDSServiceClient.GetTeamMemberDetails(userId = Guid.Parse(UserList[i].UserId.ToString()), Sessions.ApplicationId);
+                user.budgetID = BudgetId;
+                user.id = objUser.UserId.ToString();
+                user.FirstName = objUser.FirstName;
+                user.LastName = objUser.LastName;
+                user.Role = objUser.RoleTitle;
+                user.Permission = UserList[i].PermisssionCode;
+                _user.Add(user);
+            }
+            if (UserList.Count == 0)
+            {
+                ViewBag.NoRecord = "NoRecord";
+            }
+            objFinanceModel.Userpermission = _user;
+            return PartialView("_UserPermission", objFinanceModel);
+        }
+
+
+        //public JsonResult LoadUser(string term, string UserId)
+        //{
+        //    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+        //    List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+        //    lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList();
+        //    List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+
+        //    string strUserList = string.Join(",", lstClientUsers);
+        //    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); 
+        //    var result = (object)null;
+        //    if (lstUserDetails.Count > 0)
+        //    {
+        //        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+        //        result = lstUserDetails.Where(user => user.FirstName.ToLower().StartsWith(term.ToLower())).Select(r => new { id = r.UserId, firstName = r.FirstName, lastName = r.LastName });
+
+        //    }
+        //    else
+        //    {
+        //        result = new List<User>();
+        //    }
+        //    return Json(result, JsonRequestBehavior.AllowGet);
+        //}
+
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Delete record from Budget_Permission table
+        /// </summary>
+        /// <param name="id">contains user's Id</param>
+        /// <returns>If success than return true</returns>
+        [HttpPost]
+        public JsonResult Delete(Guid id, int budgetId)
+        {
+            List<Budget_Permission> BudgetDetailList = db.Budget_Permission.Where(i => i.BudgetDetailId == budgetId && i.UserId == id).ToList();
+            foreach (var BudgetDetail in BudgetDetailList)
+            {
+                db.Entry(BudgetDetail).State = EntityState.Deleted;
+            }
+            db.SaveChanges();
+            return Json(new { Flag = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Get list of user records when typing letter on textbox 
+        /// </summary>
+        /// <param name="term">contains typed letter of textbox</param>
+        /// <returns>User list</returns>
+        public JsonResult getData(string term)
+        {
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            List<User> lstUserDetails = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).OrderBy(teamlist => teamlist.FirstName, new AlphaNumericComparer()).ToList();
+
+            List<User> Getvalue = new List<User>();
+            if (lstUserDetails.Count > 0)
+            {
+                lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                Getvalue = lstUserDetails.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+            }
+            else
+            {
+                Getvalue = new List<User>();
+            }
+            return Json(Getvalue, JsonRequestBehavior.AllowGet);
+        }
+
+        //public ActionResult DeleteUser(string Id)
+        //{
+
+        //    return Json(null, JsonRequestBehavior.AllowGet);
+        //}
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Get specific of user record on selection of dropdown list
+        /// </summary>
+        /// <param name="Id">contains user's id</param>
+        /// <returns>User Record</returns>
+        public JsonResult GetuserRecord(string Id)
+        {
+            Guid userId = new Guid();
+            if (Id == null)
+            {
+                userId = Sessions.User.UserId;
+            }
+            else
+            {
+                userId = Guid.Parse(Id);
+            }
+            BDSService.User objUser = new BDSService.User();
+            UserModel objUserModel = new UserModel();
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            try
+            {
+                objUser = objBDSServiceClient.GetTeamMemberDetails(userId, Sessions.ApplicationId);
+                if (objUser != null)
+                {
+                    objUserModel.DisplayName = objUser.DisplayName;
+                    objUserModel.Email = objUser.Email;
+                    objUserModel.Phone = objUser.Phone;
+                    objUserModel.FirstName = objUser.FirstName;
+                    objUserModel.JobTitle = objUser.JobTitle;
+                    objUserModel.LastName = objUser.LastName;
+                    objUserModel.UserId = objUser.UserId;
+                    objUserModel.RoleTitle = objUser.RoleTitle;
+                }
+            }
+            catch (Exception e)
+            {
+                ErrorSignal.FromCurrentContext().Raise(e);
+            }
+
+
+            return Json(objUserModel, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Save record in Budget_Permission table
+        /// </summary>
+        /// <param name="UserData">contains user's UserId,permission code,dropdown selection id</param>
+        /// <param name="ID">contains user's id</param>
+        /// <returns>if sucess then return true else false</returns>
+        [HttpPost]
+        public JsonResult SaveDetail(List<UserBudgetPermission> UserData, int ID)
+        {
+            if (UserData != null)
+            {
+                for (int i = 0; i < UserData.Count; i++)
+                {
+                    Budget_Permission objBudget_Permission = new Budget_Permission();
+                    Guid id = Guid.Parse(UserData[i].UserId);
+
+                    Budget_Permission BudgetDetailList = db.Budget_Permission.Where(t => t.BudgetDetailId.Equals(ID) && t.UserId.Equals(id)).FirstOrDefault();
+                    if (BudgetDetailList == null)
+                    {
+                        objBudget_Permission.UserId = Guid.Parse(UserData[i].UserId);
+                        objBudget_Permission.BudgetDetailId = Convert.ToInt32(ID);
+                        objBudget_Permission.CreatedBy = Sessions.User.UserId;
+                        objBudget_Permission.CreatedDate = DateTime.Now;
+                        objBudget_Permission.PermisssionCode = UserData[i].PermisssionCode;
+                        db.Entry(objBudget_Permission).State = EntityState.Added;
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+
+                        BudgetDetailList.UserId = Guid.Parse(UserData[i].UserId);
+                        BudgetDetailList.BudgetDetailId = Convert.ToInt32(ID);
+                        BudgetDetailList.CreatedBy = Sessions.User.UserId;
+                        BudgetDetailList.CreatedDate = DateTime.Now;
+                        BudgetDetailList.PermisssionCode = UserData[i].PermisssionCode;
+                        db.Entry(BudgetDetailList).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                    }
+                }
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            return Json(false, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Get specific record based on dropdown selection value of budgetdetail id
+        /// </summary>
+        /// <param name="BudgetId">contains BudgetDetailid</param>
+        /// <param name="FlagCondition">contains Condion of edit or view</param>
+        /// <returns>if sucess then return true else false</returns>
+        public JsonResult DrpFilterByBudget(int BudgetId = 0, string level = "", string FlagCondition = "")
+        {
+
+            ViewBag.BudgetId = BudgetId;
+            List<UserPermission> _user = new List<UserPermission>();
+            if (FlagCondition == "Edit")
+            {
+                ViewBag.FlagCondition = "Edit";
+            }
+            else
+            {
+                ViewBag.FlagCondition = "View";
+
+            }
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+
+            Guid userId = new Guid();
+            BDSService.User objUser = new BDSService.User();
+            var UserList = (from c in db.Budget_Permission
+                            where c.BudgetDetailId == BudgetId
+                            orderby c.UserId
+                            select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
+
+            for (int i = 0; i < UserList.Count; i++)
+            {
+                UserPermission user = new UserPermission();
+                objUser = objBDSServiceClient.GetTeamMemberDetails(userId = Guid.Parse(UserList[i].UserId.ToString()), Sessions.ApplicationId);
+                user.budgetID = BudgetId;
+                user.id = objUser.UserId.ToString();
+                user.FirstName = objUser.FirstName;
+                user.LastName = objUser.LastName;
+                user.Role = objUser.RoleTitle;
+                user.Permission = UserList[i].PermisssionCode;
+                _user.Add(user);
+            }
+            return Json(_user, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Added by Dashrath Prajapati for PL ticket #1679
+        /// Save detail on aading new budgetitem in Budget_Permission table
+        /// </summary>
+        /// <param name="BudgetId">contains BudgetDetailid</param>
+        public void SaveUserBudgetpermission(int budgetId)
+        {
+            Budget_Permission objBudget_Permission = new Budget_Permission();
+            objBudget_Permission.UserId = Sessions.User.UserId;
+            objBudget_Permission.BudgetDetailId = budgetId;
+            objBudget_Permission.CreatedDate = System.DateTime.Now.Date;
+            objBudget_Permission.CreatedBy = Sessions.User.UserId;
+            objBudget_Permission.PermisssionCode = 0;
+            db.Entry(objBudget_Permission).State = EntityState.Added;
+            db.SaveChanges();
+        }
+
         #endregion
 
         #region Methods for Get Header Value
@@ -2766,6 +3062,8 @@ namespace RevenuePlanner.Controllers
                         objBudgetDetail.IsDeleted = false;
                         db.Entry(objBudgetDetail).State = EntityState.Added;
                         db.SaveChanges();
+                        int _budgetid = objBudgetDetail.Id;
+                        SaveUserBudgetpermission(_budgetid);
 
                         #region Udate LineItem with child item
                         //Add By Nishant Sheth
@@ -3304,4 +3602,19 @@ namespace RevenuePlanner.Controllers
 
         #endregion
     }
+    #region "Budget Permission"
+    public class UserBudgetPermission
+    {
+        public string UserId { get; set; }
+        public int PermisssionCode { get; set; }
+    }
+    public class Budget_Permissions
+    {
+        public Guid UserId { get; set; }
+        public int BudgetDetailId { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public int PermisssionCode { get; set; }
+    }
+    #endregion
 }
