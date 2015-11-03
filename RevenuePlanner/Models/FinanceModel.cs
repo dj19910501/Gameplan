@@ -44,6 +44,22 @@ namespace RevenuePlanner.Models
     {
         public List<DhtmlxGridRowDataModel> rows { get; set; }
         public FinanceModelHeaders FinanemodelheaderObj { get; set; }// Add By Nishant Sheth
+        public string setHeader { get; set; }
+        public string attachHeader { get; set; }
+        public string setInitWidths { get; set; }
+        public string setColAlign { get; set; }
+        public string setColValidators { get; set; }
+        public string setColumnIds { get; set; }
+        public string setColTypes { get; set; }
+        public string setColumnsVisibility { get; set; }
+        public bool enableTreeCellEdit { get; set; }
+        public List<String> CustColumnsList { get; set; }
+        public string ColumneditLevel { get; set; }
+        public string BudgetColName { get; set; }
+        public string ForecastColName { get; set; }
+        public string PlanColName { get; set; }
+        public string ActualColName { get; set; }
+        public string HeaderStyle { get; set; }
     }
     public class DhtmlxGridRowDataModel
     {
@@ -53,6 +69,7 @@ namespace RevenuePlanner.Models
         public List<row_attrs> row_attrs { get; set; }
         public List<DhtmlxGridRowDataModel> rows { get; set; }
         public string Detailid { get; set; }
+        public FinanceModelHeaders FinanemodelheaderObj { get; set; }
     }
    
     public class userdata

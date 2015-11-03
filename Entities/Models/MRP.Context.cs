@@ -97,6 +97,9 @@ namespace RevenuePlanner.Models
         public DbSet<CustomFieldDependency> CustomFieldDependencies { get; set; }
         public DbSet<LineItem_Budget> LineItem_Budget { get; set; }
         public DbSet<Budget_Detail> Budget_Detail { get; set; }
+        public DbSet<Budget_Columns> Budget_Columns { get; set; }
+        public DbSet<Budget_ColumnSet> Budget_ColumnSet { get; set; }
+        public DbSet<Budget_Permission> Budget_Permission { get; set; }
     
         public virtual ObjectResult<string> ELMAH_GetErrorsXml(string application, Nullable<int> pageIndex, Nullable<int> pageSize, ObjectParameter totalCount)
         {

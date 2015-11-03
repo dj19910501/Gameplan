@@ -18,6 +18,7 @@ namespace RevenuePlanner.Models
         {
             this.Budget_DetailAmount = new HashSet<Budget_DetailAmount>();
             this.LineItem_Budget = new HashSet<LineItem_Budget>();
+            this.Budget_Permission = new HashSet<Budget_Permission>();
         }
     
         public int Id { get; set; }
@@ -32,5 +33,6 @@ namespace RevenuePlanner.Models
         public virtual Budget Budget { get; set; }
         public virtual ICollection<Budget_DetailAmount> Budget_DetailAmount { get; set; }
         public virtual ICollection<LineItem_Budget> LineItem_Budget { get; set; }
+        public virtual ICollection<Budget_Permission> Budget_Permission { get; set; }
     }
 }

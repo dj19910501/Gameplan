@@ -75,10 +75,25 @@
         //Modified for #1721
         myTreeGrid.editStop();
         if (pageName == "EditBudget") {
+
+            // Add BY Nishant Sheth
+            // Desc : display selected columns
+            var _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+            var Columnsetval = $("#ddlColumnSet").val();
+            var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+            var CheckedColumns = "";
+            $.each(ColumnsCheckBox, function () {
+                var a = $(this).attr("aria-selected");
+                if (a != undefined && a == "true") {
+                    CheckedColumns += $(this).val() + ",";
+                }
+                CheckedColumns.slice(0, -1);
+            });
+            // End by nishant sheth
         RefreshBudgetDropdown();
         pageName = "MainGrid";
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
-        $('#divGridView').load(url + '?budgetId=' + backBudgetid);
+            $('#divGridView').load(url + '?budgetId=' + backBudgetid + '&mainTimeFrame=' + _mainTimeFrame + '&ListofCheckedColums=' + CheckedColumns);
         ShowHideControls("MainGrid");
         GetFinanceHeaderValue(backBudgetid, true);
         }

@@ -32,6 +32,33 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsOther" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="Budget_Columns">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Column_SetId" Type="int" Nullable="false" />
+          <Property Name="CustomFieldId" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsTimeFrame" Type="bit" />
+          <Property Name="IsDeleted" Type="bit" />
+          <Property Name="MapTableName" Type="nvarchar" MaxLength="100" />
+          <Property Name="ValueOnEditable" Type="int" />
+          <Property Name="ValidationType" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="Budget_ColumnSet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" />
+        </EntityType>
         <EntityType Name="Budget_Detail">
           <Key>
             <PropertyRef Name="Id" />
@@ -54,6 +81,17 @@
           <Property Name="Period" Type="nvarchar" MaxLength="5" Nullable="false" />
           <Property Name="Budget" Type="float" />
           <Property Name="Forecast" Type="float" />
+        </EntityType>
+        <EntityType Name="Budget_Permission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="BudgetDetailId" Type="int" Nullable="false" />
+          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="PermisssionCode" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="CampaignNameConvention">
           <Key>
@@ -971,6 +1009,18 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <Association Name="BudgetID_FK">
+          <End Role="Budget_Detail" Type="Self.Budget_Detail" Multiplicity="1" />
+          <End Role="Budget_Permission" Type="Self.Budget_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget_Detail">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Budget_Permission">
+              <PropertyRef Name="BudgetDetailId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__Plan_Camp__PlanC__43A1090D">
           <End Role="Plan_Campaign" Type="Self.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="Self.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
@@ -1040,6 +1090,30 @@
             </Principal>
             <Dependent Role="Budget1">
               <PropertyRef Name="Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Budget_Columns_Budget_ColumnSet">
+          <End Role="Budget_ColumnSet" Type="Self.Budget_ColumnSet" Multiplicity="1" />
+          <End Role="Budget_Columns" Type="Self.Budget_Columns" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget_ColumnSet">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Budget_Columns">
+              <PropertyRef Name="Column_SetId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Budget_Columns_CustomField">
+          <End Role="CustomField" Type="Self.CustomField" Multiplicity="1" />
+          <End Role="Budget_Columns" Type="Self.Budget_Columns" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="Budget_Columns">
+              <PropertyRef Name="CustomFieldId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1961,8 +2035,11 @@
         <EntityContainer Name="MRPModelStoreContainer">
           <EntitySet Name="BestInClass" EntityType="Self.BestInClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Budget" EntityType="Self.Budget" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Budget_Columns" EntityType="Self.Budget_Columns" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Budget_ColumnSet" EntityType="Self.Budget_ColumnSet" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Budget_Detail" EntityType="Self.Budget_Detail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Budget_DetailAmount" EntityType="Self.Budget_DetailAmount" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Budget_Permission" EntityType="Self.Budget_Permission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CampaignNameConvention" EntityType="Self.CampaignNameConvention" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChangeLog" EntityType="Self.ChangeLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Client_Activity" EntityType="Self.Client_Activity" Schema="dbo" store:Type="Tables" />
@@ -2028,6 +2105,10 @@
           <EntitySet Name="TacticType" EntityType="Self.TacticType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Filter" EntityType="Self.User_Filter" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User_Notification" EntityType="Self.User_Notification" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="BudgetID_FK" Association="Self.BudgetID_FK">
+            <End Role="Budget_Detail" EntitySet="Budget_Detail" />
+            <End Role="Budget_Permission" EntitySet="Budget_Permission" />
+          </AssociationSet>
           <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="Self.FK__Plan_Camp__PlanC__43A1090D">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
@@ -2051,6 +2132,14 @@
           <AssociationSet Name="FK_Budget_Budget" Association="Self.FK_Budget_Budget">
             <End Role="Budget" EntitySet="Budget" />
             <End Role="Budget1" EntitySet="Budget" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Budget_Columns_Budget_ColumnSet" Association="Self.FK_Budget_Columns_Budget_ColumnSet">
+            <End Role="Budget_ColumnSet" EntitySet="Budget_ColumnSet" />
+            <End Role="Budget_Columns" EntitySet="Budget_Columns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Budget_Columns_CustomField" Association="Self.FK_Budget_Columns_CustomField">
+            <End Role="CustomField" EntitySet="CustomField" />
+            <End Role="Budget_Columns" EntitySet="Budget_Columns" />
           </AssociationSet>
           <AssociationSet Name="FK_Budget_Detail_Budget1" Association="Self.FK_Budget_Detail_Budget1">
             <End Role="Budget" EntitySet="Budget" />
@@ -2790,6 +2879,21 @@
             <Parameter Name="BudgetDetailId" Mode="In" Type="Int32" />
             <Parameter Name="ClientId" Mode="In" Type="String" />
           </FunctionImport>
+          <EntitySet Name="Budget_Columns" EntityType="MRPModel.Budget_Columns" />
+          <EntitySet Name="Budget_ColumnSet" EntityType="MRPModel.Budget_ColumnSet" />
+          <EntitySet Name="Budget_Permission" EntityType="MRPModel.Budget_Permission" />
+          <AssociationSet Name="FK_Budget_Columns_Budget_ColumnSet" Association="MRPModel.FK_Budget_Columns_Budget_ColumnSet">
+            <End Role="Budget_ColumnSet" EntitySet="Budget_ColumnSet" />
+            <End Role="Budget_Columns" EntitySet="Budget_Columns" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Budget_Columns_CustomField" Association="MRPModel.FK_Budget_Columns_CustomField">
+            <End Role="CustomField" EntitySet="CustomFields" />
+            <End Role="Budget_Columns" EntitySet="Budget_Columns" />
+          </AssociationSet>
+          <AssociationSet Name="BudgetID_FK" Association="MRPModel.BudgetID_FK">
+            <End Role="Budget_Detail" EntitySet="Budget_Detail" />
+            <End Role="Budget_Permission" EntitySet="Budget_Permission" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -2905,6 +3009,7 @@
           <Property Name="IsGet" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="CustomFieldDependencies" Relationship="MRPModel.FK_CustomFieldDependency_CustomField" FromRole="CustomField" ToRole="CustomFieldDependency" />
           <NavigationProperty Name="CustomFieldDependencies1" Relationship="MRPModel.FK_CustomFieldDependency_CustomField1" FromRole="CustomField" ToRole="CustomFieldDependency" />
+          <NavigationProperty Name="Budget_Columns" Relationship="MRPModel.FK_Budget_Columns_CustomField" FromRole="CustomField" ToRole="Budget_Columns" />
           </EntityType>
         <EntityType Name="CustomFieldOption">
           <Key>
@@ -4910,6 +5015,7 @@
           <NavigationProperty Name="Budget_DetailAmount" Relationship="MRPModel.FK_Budget_DetailAmount_Budget_Detail" FromRole="Budget_Detail" ToRole="Budget_DetailAmount" />
           <NavigationProperty Name="LineItem_Budget" Relationship="MRPModel.FK_LineItem_Budget_Budget_Detail" FromRole="Budget_Detail" ToRole="LineItem_Budget" />
           <Property Name="IsForecast" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Budget_Permission" Relationship="MRPModel.BudgetID_FK" FromRole="Budget_Detail" ToRole="Budget_Permission" />
         </EntityType>
         <Association Name="FK_Budget_Detail_Budget1">
           <End Type="MRPModel.Budget" Role="Budget" Multiplicity="1" />
@@ -4943,6 +5049,84 @@
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="LineItem_Budget">
+              <PropertyRef Name="BudgetDetailId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Budget_Columns">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Column_SetId" Type="Int32" Nullable="false" />
+          <Property Name="CustomFieldId" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+          <Property Name="IsTimeFrame" Type="Boolean" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <Property Name="MapTableName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ValueOnEditable" Type="Int32" />
+          <Property Name="ValidationType" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Budget_ColumnSet" Relationship="MRPModel.FK_Budget_Columns_Budget_ColumnSet" FromRole="Budget_Columns" ToRole="Budget_ColumnSet" />
+          <NavigationProperty Name="CustomField" Relationship="MRPModel.FK_Budget_Columns_CustomField" FromRole="Budget_Columns" ToRole="CustomField" />
+        </EntityType>
+        <EntityType Name="Budget_ColumnSet">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="ClientId" Type="Guid" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" />
+          <NavigationProperty Name="Budget_Columns" Relationship="MRPModel.FK_Budget_Columns_Budget_ColumnSet" FromRole="Budget_ColumnSet" ToRole="Budget_Columns" />
+        </EntityType>
+        <EntityType Name="Budget_Permission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Guid" Nullable="false" />
+          <Property Name="BudgetDetailId" Type="Int32" Nullable="false" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="CreatedBy" Type="Guid" Nullable="false" />
+          <Property Name="PermisssionCode" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Budget_Detail" Relationship="MRPModel.BudgetID_FK" FromRole="Budget_Permission" ToRole="Budget_Detail" />
+        </EntityType>
+        <Association Name="FK_Budget_Columns_Budget_ColumnSet">
+          <End Type="MRPModel.Budget_ColumnSet" Role="Budget_ColumnSet" Multiplicity="1" />
+          <End Type="MRPModel.Budget_Columns" Role="Budget_Columns" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget_ColumnSet">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Budget_Columns">
+              <PropertyRef Name="Column_SetId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Budget_Columns_CustomField">
+          <End Type="MRPModel.CustomField" Role="CustomField" Multiplicity="1" />
+          <End Type="MRPModel.Budget_Columns" Role="Budget_Columns" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomField">
+              <PropertyRef Name="CustomFieldId" />
+            </Principal>
+            <Dependent Role="Budget_Columns">
+              <PropertyRef Name="CustomFieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="BudgetID_FK">
+          <End Type="MRPModel.Budget_Detail" Role="Budget_Detail" Multiplicity="1" />
+          <End Type="MRPModel.Budget_Permission" Role="Budget_Permission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Budget_Detail">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Budget_Permission">
               <PropertyRef Name="BudgetDetailId" />
             </Dependent>
           </ReferentialConstraint>
@@ -5984,6 +6168,47 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="DeleteBudget" FunctionName="MRPModel.Store.DeleteBudget" />
+          <EntitySetMapping Name="Budget_Columns">
+            <EntityTypeMapping TypeName="MRPModel.Budget_Columns">
+              <MappingFragment StoreEntitySet="Budget_Columns">
+                <ScalarProperty Name="ValidationType" ColumnName="ValidationType" />
+                <ScalarProperty Name="ValueOnEditable" ColumnName="ValueOnEditable" />
+                <ScalarProperty Name="MapTableName" ColumnName="MapTableName" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="IsTimeFrame" ColumnName="IsTimeFrame" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="CustomFieldId" ColumnName="CustomFieldId" />
+                <ScalarProperty Name="Column_SetId" ColumnName="Column_SetId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Budget_ColumnSet">
+            <EntityTypeMapping TypeName="MRPModel.Budget_ColumnSet">
+              <MappingFragment StoreEntitySet="Budget_ColumnSet">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ClientId" ColumnName="ClientId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Budget_Permission">
+            <EntityTypeMapping TypeName="MRPModel.Budget_Permission">
+              <MappingFragment StoreEntitySet="Budget_Permission">
+                <ScalarProperty Name="PermisssionCode" ColumnName="PermisssionCode" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="BudgetDetailId" ColumnName="BudgetDetailId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

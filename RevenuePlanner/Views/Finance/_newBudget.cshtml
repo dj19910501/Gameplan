@@ -179,11 +179,23 @@
             }
         }
     };
-    function SaveNewBudgetDetail(budgetName) {
+    function SaveNewBudgetDetail(budgetName) {	
+       // Desc : display selected columns
+        var Columnsetval = $("#ddlColumnSet").val();
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        var CheckedColumns = "";
+        $.each(ColumnsCheckBox, function () {
+            var a = $(this).attr("aria-selected");
+            if (a != undefined && a == "true") {
+                CheckedColumns += $(this).val() + ",";
+            }
+            CheckedColumns.slice(0, -1);
+        });
+        // End by nishant sheth
         if (IsClickOnAddNew == false) {
             $('#btnAddNewBudget').prop('disabled', false);
             var url = "@Url.Content("~/Finance/CreateNewBudget")";
-            $("#divGridView").load(url + '?budgetName=' + escape(budgetName), function () { RefreshBudgetDropdown(); });
+            $("#divGridView").load(url + '?budgetName=' + escape(budgetName) + '&ListofCheckedColums=' + CheckedColumns, function () { RefreshBudgetDropdown(); });
         }
 
 

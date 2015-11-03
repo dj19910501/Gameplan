@@ -1,10 +1,25 @@
 ﻿@model RevenuePlanner.Models.FinanceModel
 @using RevenuePlanner.Helpers;
+@using RevenuePlanner.Models;
+@using Newtonsoft.Json;
 @{
     ViewBag.Title = "Finance";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    MRPEntities db = new MRPEntities();
     var MainGridData = Model.DhtmlXGridRowModelObj != null ? Model.DhtmlXGridRowModelObj : new RevenuePlanner.Models.DhtmlXGridRowModel();
     var HeaderDataModel = Model.DhtmlXGridRowModelObj.FinanemodelheaderObj != null ? Model.DhtmlXGridRowModelObj.FinanemodelheaderObj : new RevenuePlanner.Models.FinanceModelHeaders();
+    var objColumns = (from ColumnSet in db.Budget_ColumnSet
+                      join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
+                      where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
+                      && ColumnSet.ClientId == Sessions.User.ClientId
+                      select Columns).ToList();
+    var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a.CustomField.Name).ToList();
+    var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a.CustomField.Name).ToList();
+    var ListAllColumns = objColumns.Select(a => a.CustomField.Name).ToList();
+    string AllColumns = String.Join(",", ListAllColumns);
+    string CustomColumns = String.Join(",", objCustomColumns);
+    string TimeFrameColumns = String.Join(",", objTimeFrameColumns);
+
 
 }
 <link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
@@ -89,8 +104,11 @@
                     <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
                 </div>
             </div>
-            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px;margin-right:0px;">
+            <span class="selectBox" id="ddlTimeFrameSelectBox" style="width: 158px;margin-right:0px;float: right;">
                 @Html.DropDownList("ddlRevenueTimeFrame", new SelectList((System.Collections.IEnumerable)ViewBag.ViewByAllocated, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
+            </span>
+            <span class="selectBox quarter_selection" id="ddlColumnSetFrameBox" style="float:left;">
+                @Html.DropDownList("ddlColumnSet", new SelectList((System.Collections.IEnumerable)ViewBag.ColumnSet, "Value", "Text", (string)ViewBag.SelectedTimeFrame), new { @class = "ddlStyleReport hide quarterly_btn" })
             </span>
             @*<div style="float:right;margin-top:10px;margin-bottom:10px;text-align: right;">
                     <div id="divCheckbox" style="width:300px;float:left;line-height: 22px;">
@@ -100,12 +118,8 @@
                         <div id="divActual" style="float:left;margin-right:10px;"><input type="checkbox" value="Actual" id="chkActual" onchange="ShowHideColumns(this)" style="display: inline-block;vertical-align: middle;" /><label style="display: inline-block;vertical-align: sub; padding-left: 4px;">Actual</label></div>
                     </div>
                 </div>*@
-            <div style="display:none;">
+            <div style="display:inline-block" id="ddlColumnsFrameBox">
                 <select title="Basic example" multiple="multiple" name="example-basic" size="5" id="budget-select">
-                    <option value="option1" id="divBudget">Budget</option>
-                    <option value="option2" id="divforecast">Forecast</option>
-                    <option value="option3" id="divPlan">Planned</option>
-                    <option value="option4" id="divActual">Actual</option>
 
                 </select>
             </div>
@@ -173,6 +187,10 @@
     var ValidOldValue = "";
     var IsClickOnAddNew = false; 
     var backlineBudgetDetailId = 0;     // this variable utilize when user click on back button in LineItem screen.
+    var objAllColumns=[];
+    var objCustomColumns = [];		
+    var objTimeFrameColumns = [];
+    var objTimeFrameColumns = [];
     //$('#AddSettings').click(function () {
     //    $('#errorMsg').css('display', 'none');
     //    $('#SuccessMsg').css('display', 'none');
@@ -207,11 +225,23 @@
         //    selectedList: 1
         //}).multiselectfilter({
         //});
+        var Columnsetval = $("#ddlColumnSet").val();
+        BindColumnsfilter(Columnsetval);
+        
+        objAllColumns= @Html.Raw(JsonConvert.SerializeObject(AllColumns.Split(',')));
+        objCustomColumns = @Html.Raw(JsonConvert.SerializeObject(CustomColumns.Split(',')));
+        objTimeFrameColumns = @Html.Raw(JsonConvert.SerializeObject(TimeFrameColumns.Split(',')));
+
         $("#ddlRevenueTimeFrame,#ddlMainGridTimeFrame").multiselect({
             multiple: false,
             noneSelectedText: "Please Select",
             selectedList: 1
         }).multiselectfilter({
+        });
+        $("#ddlColumnSet").multiselect({
+            multiple: false,
+            noneSelectedText: "Please Select",
+            selectedList: 1
         });
         var _budgetId = $('#ddlParentFinance').val();
         var _budgetIdMain = $('#ddlParentFinanceMain').val();
@@ -459,11 +489,23 @@
     }
 
     function RefreshMainGridData(BudgetId) {
-
+        // Add BY Nishant Sheth
+        // Desc : display selected columns
+        var Columnsetval = $("#ddlColumnSet").val();
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        var CheckedColumns = "";
+        $.each(ColumnsCheckBox, function () {
+            var a = $(this).attr("aria-selected");
+            if (a != undefined && a == "true") {
+                CheckedColumns += $(this).val() + ",";
+            }
+            CheckedColumns.slice(0, -1);
+        });
+        // End by nishant sheth
         $("#divGridView").show();
         $("#dvNoData").hide();
         var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
-        $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame);
+        $('#divGridView').load(url + '?budgetId=' + BudgetId + '&mainTimeFrame=' + _mainTimeFrame+'&ListofCheckedColums='+CheckedColumns);
     }
 
     function BindTimeFrameForChild(Period) {
@@ -494,6 +536,266 @@
             selectedList: 1
         }).multiselectfilter({
         });
+    }
+    $("#ddlColumnSet").change(function () {
+        var Columnsetval = $("#ddlColumnSet").val();
+        BindColumnsfilter(Columnsetval);
+        //// Code for hide show columns
+        var ListColumnsIndex=[];
+
+        var clickcheck = 1;
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]');
+
+
+        $.each(ColumnsCheckBox,function(){
+            if(pageName=="EditBudget"){
+                var spanval = $(this).find("span");
+                var checkboxval = $(this).find("input");
+                var colName = spanval.attr("title");
+                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                var IstimeFrame;
+                var IsChecked = checkboxval.attr("aria-selected");
+                var Count = 0;
+                var TotalColumn = myTreeGrid.getColumnCount();
+                var GetColName = false;
+
+                if (checkboxval != null && checkboxval != undefined && checkboxval != '' ) {
+                    for (var a = 0; a < TotalColumn; a++) {
+                        if (!GetColName) {
+                            var GridColName = myTreeGrid.getColLabel(a, 1);
+                            if (GridColName == colName) {
+                                Count = a;
+                                for(var k=0;k<TotalColumn;k++)
+                                {
+                                    var GridAllColName = myTreeGrid.getColLabel(k, 1);
+                                    if (GridAllColName == colName) {
+                                        ListColumnsIndex.push(k);
+                                    }
+                                }
+                                GetColName = true;
+                            }
+                        }
+
+                        var IsDisplay = ListColumnsIndex.indexOf(a);
+                        if(a>2 && a!=Count && !(IsDisplay>=0))
+                        {
+                            myTreeGrid.setColumnHidden(a, true);
+                        }
+                    }
+                    if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
+                        LoopLength = 5;
+                    }
+                    else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
+                        LoopLength = 13;
+                    }
+                    else {
+                        LoopLength = 4;
+                    }
+                    IstimeFrame = objTimeFrameColumns.indexOf(colName);
+                    if (IstimeFrame >= 0) {
+                        if (IsChecked == "false" || IsChecked == undefined) {
+                            for (var i = 0; i < LoopLength; i++) {
+                                myTreeGrid.setColumnHidden(Count, true);
+                                Count = Count + 4;
+                            }
+                        }
+
+                        if (IsChecked == "true") {
+                            for (var i = 0; i < LoopLength; i++) {
+                                myTreeGrid.setColumnHidden(Count, false);
+                                Count = Count + 4;
+                            }
+                        }
+                    }else{
+                        if (IsChecked == "false" || IsChecked == undefined) {
+                            myTreeGrid.setColumnHidden(Count, true);
+                        }
+                        if (IsChecked == "true") {
+                            myTreeGrid.setColumnHidden(Count, false);
+                        }
+                    }
+
+                    clickcheck = clickcheck + 1;
+                } else {
+                    clickcheck = 1;
+                    GetColName = false;
+                }
+            }else{
+                var spanval = $(this).find("span");
+                var checkboxval = $(this).find("input");
+                var colName = spanval.attr("title");
+                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                var IstimeFrame;
+                var IsChecked = checkboxval.attr("aria-selected");
+                var Count = 0;
+                var TotalColumn = myTreeGrid.getColumnCount();
+                var GetColName = false;
+                if (checkboxval != null && checkboxval != undefined && checkboxval != '' ) {
+                    for (var a = 0; a < TotalColumn; a++) {
+                        if (!GetColName) {
+                            var GridColName = myTreeGrid.getColLabel(a, 0);
+                            if (GridColName == colName) {
+                                Count = a;
+                                for(var k=0;k<TotalColumn;k++)
+                                {
+                                    var GridAllColName = myTreeGrid.getColLabel(k, 0);
+                                    if (GridAllColName == colName) {
+                                        ListColumnsIndex.push(k);
+                                    }
+                                }
+                                GetColName = true;
+                            }
+                        }
+
+                        var IsDisplay = ListColumnsIndex.indexOf(a);
+                        if(a>2 && a!=Count && !(IsDisplay>=0) && a<(TotalColumn-3))
+                        {
+                            myTreeGrid.setColumnHidden(a, true);
+                        }
+                    }
+                    if (IsChecked == "false" || IsChecked == undefined) {
+                        myTreeGrid.setColumnHidden(Count, true);
+                    }
+                    if (IsChecked == "true") {
+                        myTreeGrid.setColumnHidden(Count, false);
+                    }
+                    clickcheck = clickcheck + 1;
+                }
+                else{
+                    clickcheck = 1;
+                    GetColName = false;
+                }
+            }
+        });
+
+        // End Code for hide show columns
+    });
+    function BindColumnsfilter(ColumnSetId) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Content("~/Finance/GetColumns/")',
+            data: { ColumnSetId: ColumnSetId },
+            dataType: "json",
+            async: false,
+            success: function (data) {
+
+                $("#budget-select").html("");
+
+                for (var i = 0; i < data.length; i++) {
+
+                    //var opt = new Option(data[i].Text, data[i].Value);
+                    //$('#budget-select').append(opt);
+                    //<option value="option1" id="divBudget">Budget</option>
+                    $('#budget-select').append("<option value=" + data[i].Value + " id='div" + data[i].Text + "'>" + data[i].Text + "</option>");
+                }
+            }
+        });
+
+        $('#budget-select').multiselect({ multiple: true, title: 'Filter Columns', noneSelectedText: "Filter Columns", });
+        var clickcheck = 1;
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        $.each(ColumnsCheckBox,function(){
+
+            $(this).attr("aria-selected","true");
+            $(this).attr("checked","checked");
+        });
+
+        $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').click(function () {
+            if(pageName=="EditBudget")
+            {
+                var spanval = $(this).find("span");
+                var checkboxval = $(this).find("input");
+                var colName = spanval.attr("title");
+                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                var IstimeFrame;
+                var IsChecked = checkboxval.attr("aria-selected");
+                var Count = 0;
+                var TotalColumn = myTreeGrid.getColumnCount();
+                var GetColName = false;
+
+                if (checkboxval != null && checkboxval != undefined && checkboxval != '' ) {
+                    for (var a = 1; a <= TotalColumn; a++) {
+                        if (!GetColName) {
+                            var GridColName = myTreeGrid.getColLabel(a, 1);
+                            if (GridColName == colName) {
+                                Count = a;
+                                GetColName = true;
+                            }
+                        }
+                    }
+                    if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
+                        LoopLength = 5;
+                    }
+                    else if (AllocatedBy == "@Enums.PlanAllocatedBy.months.ToString()") {
+                        LoopLength = 13;
+                    }
+                    else {
+                        LoopLength = 4;
+                    }
+                    IstimeFrame = objTimeFrameColumns.indexOf(colName);
+                    if (IstimeFrame >= 0) {
+                        if (IsChecked == "false" || IsChecked == undefined) {
+                            for (var i = 0; i < LoopLength; i++) {
+                                myTreeGrid.setColumnHidden(Count, false);
+                                Count = Count + 4;
+                            }
+                        }
+
+                        if (IsChecked == "true") {
+                            for (var i = 0; i < LoopLength; i++) {
+                                myTreeGrid.setColumnHidden(Count, true);
+                                Count = Count + 4;
+                            }
+                        }
+                    }else{
+                        if (IsChecked == "false" || IsChecked == undefined) {
+                            myTreeGrid.setColumnHidden(Count, false);
+                        }
+                        if (IsChecked == "true") {
+                            myTreeGrid.setColumnHidden(Count, true);
+                        }
+                    }
+
+                    clickcheck = clickcheck + 1;
+                } else {
+                    clickcheck = 1;
+                    GetColName = false;
+                }
+            }else{
+                
+                var spanval = $(this).find("span");
+                var checkboxval = $(this).find("input");
+                var colName = spanval.attr("title");
+                var AllocatedBy = $('#ddlMainGridTimeFrame option:selected').val();
+                var IstimeFrame;
+                var IsChecked = checkboxval.attr("aria-selected");
+                var Count = 0;
+                var TotalColumn = myTreeGrid.getColumnCount();
+                var GetColName = false;
+                if (checkboxval != null && checkboxval != undefined && checkboxval != '' ) {
+                    for (var a = 1; a <= TotalColumn; a++) {
+                        if (!GetColName) {
+                            var GridColName = myTreeGrid.getColLabel(a, 0);
+                            if (GridColName == colName) {
+                                Count = a;
+                                GetColName = true;
+                            }
+                        }
+                    }
+                    if (IsChecked == "false" || IsChecked == undefined) {
+                        myTreeGrid.setColumnHidden(Count, false);
+                    }
+                    if (IsChecked == "true") {
+                        myTreeGrid.setColumnHidden(Count, true);
+                    }
+                    clickcheck = clickcheck + 1;
+                }else {
+                    clickcheck = 1;
+                    GetColName = false;
+                }
+            }
+        });
+
     }
     //commented by Rahul shah on 12/10/2015 for PL #1667
     //$("#ddlParentFinance").change(function () {
@@ -774,6 +1076,7 @@
         $("#gridbox").find("table").css("width", GridWidth);
     }
     function ShowHideColumns(chekbox) {
+        debugger;
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         var GridWidth = $("#gridbox").width();
@@ -904,12 +1207,14 @@
             $("#divFinanceBack").css("display", "none");
             $("#divAddnew").css("display", "block");
             $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
+            $("#ddlColumnSetFrameBox").css("display","block"); 
+            $("#ddlColumnsFrameBox").css("display","inline-block"); 
         }
         if (Page == "EditBudget") {
             $("#drpParentMain").css("display", "none");
             $("#drpParent").css("display", "block");
             $("#divExpandCollapse").css("display", "");
-            $("#divCheckbox").css("display", "");
+            $("#divCheckbox").css("display", "none");
             $("#ddlTimeFrameSelectBox").css("display", "");
             $("#ddlMainTimeFrameSelectBox").css("display", "none");
             $("#drpChild").css("display", "block");
@@ -917,6 +1222,8 @@
             $("#divAddnew").css("display", "none");
             $("#divBudget").css("display", "block");        // Show Budget checkbox
             $("#dvBudgetHeader").css("display", "block");   // Show Budget Header
+            $("#ddlColumnSetFrameBox").css("display","block"); 
+            $("#ddlColumnsFrameBox").css("display","inline-block"); 
         }
         if (Page == "LineItemGrid") {
             $("#divBudget").css("display", "none");         // Hide Budget checkbox
@@ -930,6 +1237,8 @@
             $("#drpChild").css("display", "block");
             $("#divFinanceBack").css("display", "block");
             $("#divAddnew").css("display", "none");
+            $("#ddlColumnSetFrameBox").css("display","none"); 
+            $("#ddlColumnsFrameBox").css("display","none"); 
         }
     }
 
@@ -1094,14 +1403,14 @@
             if (RevnueTimeFrameChange) {
                 LoadBudgetGrid(AllocatedBy);
                 GetFinanceHeaderValue(0, false);
-                var BudgetColumns = $("#chkBudget");
-                var ForeCastColumns = $("#chkForeCast");
-                var PlanColumns = $("#chkPlan");
-                var ActualColumns = $("#chkActual");
-                BudgetColumns.change();
-                ForeCastColumns.change();
-                PlanColumns.change();
-                ActualColumns.change();
+                //var BudgetColumns = $("#chkBudget");
+                //var ForeCastColumns = $("#chkForeCast");
+                //var PlanColumns = $("#chkPlan");
+                //var ActualColumns = $("#chkActual");
+                //BudgetColumns.change();
+                //ForeCastColumns.change();
+                //PlanColumns.change();
+                //ActualColumns.change();
             }
             else {
                 RevnueTimeFrameChange = true;
@@ -1185,10 +1494,8 @@
     });
 
     $("#chkBudget, #chkForeCast, #chkPlan, #chkActual").change(function () {
-        if (pageName == 'EditBudget') {
-            ShowHideColumns(this);
-        }
-        else if (pageName == 'LineItemGrid') {
+        debugger;
+       if (pageName == 'LineItemGrid') {
             ShowHideLineItemsColumns(this);
         }
     });
@@ -1374,7 +1681,7 @@
             $(a[i]).remove();
         }
     }
-    $('#budget-select').multiselect();
+    $('#budget-select').multiselect({ multiple: true, title: 'Filter Columns', noneSelectedText: "Filter Columns", });
     function GetListOfBudgetName() {
         //alert('BudgetList');
         $.ajax({
@@ -1403,5 +1710,77 @@
             }
 
         });
-    }
+    } 
+    $("#selectAll_budget-select").click(function(){
+        var ListOfColName=[];
+        var Coldrp=$("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("span");
+        $.each(Coldrp,function(){
+            ListOfColName.push($(this).text());
+        });
+        var TotalColumn = myTreeGrid.getColumnCount();
+        if(pageName=="EditBudget")
+        {
+            for(var i=0;i<TotalColumn;i++)
+            {
+                if(i>2)
+                {
+                    var colName= myTreeGrid.getColLabel(i,1);
+                    var isList= ListOfColName.indexOf(colName);
+                    if(isList>=0)
+                    {
+                        myTreeGrid.setColumnHidden(i, false);
+                    }
+                }
+            }
+        }else{
+            for(var i=0;i<TotalColumn;i++)
+            {
+                if(i>2)
+                {
+                    var colName= myTreeGrid.getColLabel(i,0);
+                    var isList= ListOfColName.indexOf(colName);
+                    if(isList>=0)
+                    {
+                        myTreeGrid.setColumnHidden(i, false);
+                    }
+                }
+            }
+        }
+    });
+    $("#deselectAll_budget-select").click(function(){
+        var ListOfColName=[];
+        var Coldrp=$("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("span");
+        $.each(Coldrp,function(){
+            ListOfColName.push($(this).text());
+        });
+        var TotalColumn = myTreeGrid.getColumnCount();
+        if(pageName=="EditBudget")
+        {
+            for(var i=0;i<TotalColumn;i++)
+            {
+                if(i>2)
+                {
+                    var colName= myTreeGrid.getColLabel(i,1);
+                    var isList= ListOfColName.indexOf(colName);
+                    if(isList>=0)
+                    {
+                        myTreeGrid.setColumnHidden(i, true);
+                    }
+                }
+            }
+        }else{
+            for(var i=0;i<TotalColumn;i++)
+            {
+                if(i>2)
+                {
+                    var colName= myTreeGrid.getColLabel(i,0);
+                    var isList= ListOfColName.indexOf(colName);
+                    if(isList>=0)
+                    {
+                        myTreeGrid.setColumnHidden(i, true);
+                    }
+                }
+            }
+        }
+    });
 </script>

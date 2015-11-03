@@ -1176,6 +1176,94 @@ namespace RevenuePlanner.Helpers
            {"Quarter 4",Enums.QuarterFinance.Quarter4.ToString()}
         };
         #endregion
+
+        // Created By Nishant Sheth
+        #region BudgetColumns
+        public enum MapTableName
+        {
+            Budget_DetailAmount = 0,
+            Plan_Campaign_Program_Tactic_LineItem_Cost = 1,
+            Plan_Campaign_Program_Tactic_LineItem_Actual = 2,
+            CustomField_Entity = 3
+        }
+        public static Dictionary<string, string> MapTableNameValues = new Dictionary<string, string>()
+        {
+            {MapTableName.Budget_DetailAmount.ToString(), "Budget_DetailAmount"},
+            {MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString(), "Plan_Campaign_Program_Tactic_LineItem_Cost"},
+            {MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString(), "Plan_Campaign_Program_Tactic_LineItem_Actual"}
+        };
+
+        public enum ValueOnEditable
+        {
+            Budget = 1,
+            Forecast = 2,
+            Custom = 3,
+            None = 4
+        }
+        public enum ColumnValidation
+        {
+            Empty = 1,
+            NotEmpty = 2,
+            ValidAplhaNumeric = 3,
+            ValidBoolean = 4,
+            ValidCurrency = 5,
+            ValidDate = 6,
+            ValidDatetime = 7,
+            ValidEmail = 8,
+            ValidInteger = 9,
+            ValidIPv4 = 10,
+            ValidNumeric = 11,
+            ValidSIN = 12,
+            ValidSSN = 13,
+            ValidTime = 14,
+            CustomNameValid = 15,
+            None = 16
+        }
+        public static Dictionary<string, string> ColumnValidationValues = new Dictionary<string, string>()
+        {
+            {ColumnValidation.CustomNameValid.ToString(), "CustomNameValid"},
+            {ColumnValidation.Empty.ToString(), "Empty"},
+            {ColumnValidation.None.ToString(), "None"},
+            {ColumnValidation.NotEmpty.ToString(), "NotEmpty"},
+            {ColumnValidation.ValidAplhaNumeric.ToString(), "ValidAplhaNumeric"},
+            {ColumnValidation.ValidBoolean.ToString(), "ValidBoolean"},
+            {ColumnValidation.ValidCurrency.ToString(), "ValidCurrency"},
+            {ColumnValidation.ValidDate.ToString(), "ValidDate"},
+            {ColumnValidation.ValidDatetime.ToString(), "ValidDatetime"},
+            {ColumnValidation.ValidEmail.ToString(), "ValidEmail"},
+            {ColumnValidation.ValidInteger.ToString(), "ValidInteger"},
+            {ColumnValidation.ValidIPv4.ToString(), "ValidIPv4"},
+            {ColumnValidation.ValidNumeric.ToString(), "ValidNumeric"},
+            {ColumnValidation.ValidSIN.ToString(), "ValidSIN"},
+            {ColumnValidation.ValidSSN.ToString(), "ValidSSN"},
+            {ColumnValidation.ValidTime.ToString(), "ValidTime"}
+        };
+
+        public enum DefaultGridColumn
+        {
+            Id = 1,
+            ParentId = 2,
+            Name = 3,
+            AddRow = 4,
+            LineItemCount = 5,
+            lstLineItemIds = 6,
+            Action = 7,
+            IsForcast = 8,
+            Owner = 9,
+            RowId = 10,
+            User = 11
+        }
+
+        public static Dictionary<string, string> DefaultGridColumnValues = new Dictionary<string, string>()
+        {
+            {DefaultGridColumn.Id.ToString(), "Id"},
+            {DefaultGridColumn.ParentId.ToString(), "ParentId"},
+            {DefaultGridColumn.Name.ToString(), "Name"},
+            {DefaultGridColumn.AddRow.ToString(), "AddRow"},
+            {DefaultGridColumn.LineItemCount.ToString(), "LineItemCount"},
+            {DefaultGridColumn.lstLineItemIds.ToString(), "lstLineItemIds"}
+            };
+        #endregion
     }
 
     #region Authorization

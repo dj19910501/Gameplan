@@ -58,6 +58,11 @@
     $(document).ready(function () {
         GetListOfBudgetName();
         ShowHideControls('MainGrid');
+        var mainGridData = "@_mainGridData";
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+        var GridData = (mainGridData.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>'));
+        var GridProperties = JSON.parse(GridData);
         //myGrid = new dhtmlXGridObject('gridbox');
         //myGrid.setImagePath("../../codebase/imgs/");
         //myGrid.setHeader("Sales, Book Title, Author");
@@ -110,27 +115,45 @@
         myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         myTreeGrid.setImageSize(1, 1);
         //myTreeGrid.enableTreeCellEdit(false);
-        myTreeGrid.setHeader("Task Name,,,Budget,Forecast,Planned,Actual,Line Items,Owner", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center"]);
-        myTreeGrid.setInitWidths("200,100,50,100,100,100,100,100,100");
-        myTreeGrid.setColAlign("left,center,center,center,center,center,center,center,center");
-        myTreeGrid.setColTypes("tree,ro,ro,ron,ron,ron,ro,ro,ro");
+        
+        //myTreeGrid.setHeader("Task Name,,,Budget,Forecast,Planned,Actual,Line Items,Owner", null, ["text-align:center;border-right:0px solid #d4d4d4;", "border-left:0px solid #d4d4d4;", , "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center;", "text-align:center", "text-align:center"]);
+        if (GridProperties.rows != null) {
+            if (GridProperties.setHeader != null) {
+                myTreeGrid.setHeader(GridProperties.setHeader, null, GridProperties.HeaderStyle.split(','));
+            }
+            if (GridProperties.setInitWidths != null) {
+                myTreeGrid.setInitWidths(GridProperties.setInitWidths);
+            }
+            if (GridProperties.setColAlign != null) {
+                myTreeGrid.setColAlign(GridProperties.setColAlign);
+            }
+            if (GridProperties.setColTypes != null) {
+                myTreeGrid.setColTypes(GridProperties.setColTypes);
+            }
         //myTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
         myTreeGrid.enableValidation(true);
-        myTreeGrid.setColValidators("NameValid,,,,,,,,");
-        myTreeGrid.setColumnIds("title,action,addrow,budget,forecast,planned,actual,lineitems,owner");
+            if (GridProperties.setColValidators != null) {
+                myTreeGrid.setColValidators(GridProperties.setColValidators);
+            }
+            if (GridProperties.setColumnIds != null) {
+                myTreeGrid.setColumnIds(GridProperties.setColumnIds);
+            }
+            
         //myTreeGrid.setColSorting("str,na,str,str,na,str");
         //myTreeGrid.setStyle("", "", "", "", "", "", "", "border-left:0px;", "");
         //myTreeGrid.setStyle("", "border:0px solid gray;", "", "");
+            if (GridProperties.setColumnsVisibility != null) {
+                myTreeGrid.setColumnsVisibility(GridProperties.setColumnsVisibility);
+            }
         if (IsBudgetCreateEdit == "False" && IsForecastCreateEdit == "False") {
-            myTreeGrid.setColumnsVisibility("false,false,true,false,false,false,false,false,false");
+                //myTreeGrid.setColumnsVisibility("false,false,true,false,false,false,false,false,false");
             $('#btnAddNewBudget').css("display", "none");
            // $('#AddSettings').css("display", "none");
 
 
         }
         else {
-            myTreeGrid.setColumnsVisibility("false,false,false,false,false,false,false,false,false");
-
+                //myTreeGrid.setColumnsVisibility("false,false,false,false,false,false,false,false,false");
         }
 
         if (IsBudgetCreateEdit == "False") {
@@ -168,16 +191,15 @@
         $("#hdn_BudgetId").val(_budgetIdVal);
         //myTreeGrid.setSkin("dhx_skyblue");
         //myTreeGrid.setStyle("", "background-color:#e3e3e3;color:black; font-weight:bold;", "", "");
-        var mainGridData = "@_mainGridData";
+
         //mainGridData = "@HttpUtility.HtmlDecode(_mainGridData)"
         //mainGridData = $('<div/>').html(mainGridData).text(); // Decode Html content.
-        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
-        var GridData = (mainGridData.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>').replace(/&amp;/g, '&'));
 
 
         // GridData = JSON.parse(GridData);
+            if (GridProperties.rows != null) {
         myTreeGrid.parse(GridData, "json");
+            }
         myTreeGrid.forEachRow(function (rowid) {
             var titleIndex = myTreeGrid.getColIndexById('title');
             //alert(titleIndex);
@@ -202,8 +224,13 @@
             $("#dvNoData").show();
         }
 
+        } else {
+            $("#divGridView").hide();
+            $("#dvNoData").show();
       
+        }
         //myTreeGrid.attachEvent("onCheck", function (rId, cInd, state) {
+        //    //debugger;
 
         //    var val = rId.split('_')[1];
 
@@ -420,16 +447,39 @@
             $("#hdn_row_parentId").val(_row_parentId);
             /*End: Get ParentId and BudgetDetailId from RowId */
 
+            var TotalColumn = myTreeGrid.getColumnCount();
+            var AddRowString = [];
+            var AddRowColTypes = "tree,ro,ro";
+            var ColumnsVisibility = "";
+
+            AddRowString.push("New item");
+            AddRowString.push("Edit Forecast");
+            AddRowString.push("<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>");
+            for (var k = 0; k < TotalColumn; k++) {
+                ColumnsVisibility += myTreeGrid.isColumnHidden(k) + ",";
+                if (k > 2 && k < (TotalColumn - 3)) {
+                    AddRowString.push("0");
+                    AddRowColTypes += ",ro";
+                }
+            }
+            AddRowString.push("0 | Edit");
+            AddRowString.push("0");
+            AddRowString.push("User");
+            AddRowColTypes += ",ro,ro,ro";
+            ColumnsVisibility = ColumnsVisibility.slice(0, -1);
+            myTreeGrid.setColTypes(AddRowColTypes);
+            myTreeGrid.setColumnsVisibility(ColumnsVisibility);
+
             if (itemType.toLowerCase() == 'childitem') {
-                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, row_id);
+                myTreeGrid.addRow(_newrowid, AddRowString, -1, row_id);
             }
             else if (isRootMostParent) {
-                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"]);
+                myTreeGrid.addRow(_newrowid, AddRowString);
             }
             else {
                 // Insert record at Parallel Level.
                 var curntRowParentId = myTreeGrid.getParentId(row_id);
-                myTreeGrid.addRow(_newrowid, ["New item", "Edit Forecast", "<div id='dv" + _newrowid + "' class='finance_grid_add' row-id='" + _newrowid + "' title='Add New Row' ></div><div id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>", "0", "0", "0", "0", "0"], -1, curntRowParentId);
+                myTreeGrid.addRow(_newrowid, AddRowString, -1, curntRowParentId);
             }
             
             var titleIndex = myTreeGrid.getColIndexById('title');
@@ -580,9 +630,22 @@
     //}
     function SaveNewBudgetDetail(budgetId, budgetDetailName, parentId, parentRowID,isNewBudget) {
         //budgetId = 8;
+        // Add BY Nishant Sheth
+        // Desc : display selected columns
+        var Columnsetval = $("#ddlColumnSet").val();
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        var CheckedColumns = "";
+        $.each(ColumnsCheckBox, function () {
+            var a = $(this).attr("aria-selected");
+            if (a != undefined && a == "true") {
+                CheckedColumns += $(this).val() + ",";
+            }
+            CheckedColumns.slice(0, -1);
+        });
+        // End by nishant sheth
         var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var url = "@Url.Content("~/Finance/SaveNewBudgetDetail")";
-        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame + '&isNewBudget=' + isNewBudget, function () {
+        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame + '&isNewBudget=' + isNewBudget + '&ListofCheckedColums=' + CheckedColumns, function () {
             if (!isNewBudget) {
             myTreeGrid.openItem(parentRowID);
             }
@@ -592,9 +655,22 @@
     }
     function UpdateBudgetDetail(budgetId, budgetDetailName, budgetDetailId, parentId, parentRowID) {
         //budgetId = 8;
+        // Add BY Nishant Sheth
+        // Desc : display selected columns
+        var Columnsetval = $("#ddlColumnSet").val();
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        var CheckedColumns = "";
+        $.each(ColumnsCheckBox, function () {
+            var a = $(this).attr("aria-selected");
+            if (a != undefined && a == "true") {
+                CheckedColumns += $(this).val() + ",";
+            }
+            CheckedColumns.slice(0, -1);
+        });
+        // End by nishant sheth
         var mainTimeFrame = $('#ddlMainGridTimeFrame').val();
         var url = "@Url.Content("~/Finance/UpdateBudgetDetail")";
-        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&BudgetDetailId=' + budgetDetailId + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame, function () {
+        $("#divGridView").load(url + '?BudgetId=' + budgetId + '&BudgetDetailName=' + escape(budgetDetailName) + '&BudgetDetailId=' + budgetDetailId + '&ParentId=' + parentId + '&mainTimeFrame=' + mainTimeFrame + '&ListofCheckedColums=' + CheckedColumns, function () {
             myTreeGrid.openItem(parentRowID);
             AddNewrow = true;
         });

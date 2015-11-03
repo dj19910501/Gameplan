@@ -159,6 +159,12 @@
         <AssociationConnector Association="MRPModel.FK_Budget_Detail_Budget1" />
         <AssociationConnector Association="MRPModel.FK_Budget_DetailAmount_Budget_Detail" />
         <AssociationConnector Association="MRPModel.FK_LineItem_Budget_Budget_Detail" />
+        <EntityTypeShape EntityType="MRPModel.Budget_Columns" Width="1.5" PointX="16.25" PointY="8.5" />
+        <EntityTypeShape EntityType="MRPModel.Budget_ColumnSet" Width="1.5" PointX="14" PointY="4.875" />
+        <EntityTypeShape EntityType="MRPModel.Budget_Permission" Width="1.5" PointX="11.125" PointY="42.125" />
+        <AssociationConnector Association="MRPModel.FK_Budget_Columns_Budget_ColumnSet" />
+        <AssociationConnector Association="MRPModel.FK_Budget_Columns_CustomField" />
+        <AssociationConnector Association="MRPModel.BudgetID_FK" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -8,8 +8,10 @@ using RevenuePlanner.Models;
 using System.Text;
 using System.Data;
 using System.Text.RegularExpressions;
+using RevenuePlanner.Helpers;
 using Newtonsoft.Json;
 using RevenuePlanner.BDSService;
+using System.Globalization;
 
 namespace RevenuePlanner.Controllers
 {
@@ -64,6 +66,9 @@ namespace RevenuePlanner.Controllers
             ViewBag.ViewByMainGridAllocated = lstMainAllocated;
             #endregion
 
+            #region "Bind Column Set"
+            ViewBag.ColumnSet = GetColumnSet();
+            #endregion
             //financeObj.FinanemodelheaderObj = Common.GetFinanceHeaderValue();
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
             string strbudgetId = lstMainBudget != null && lstMainBudget.Count > 0 ? lstMainBudget.Select(budgt => budgt.Value).FirstOrDefault() : "0";
@@ -91,14 +96,13 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_newBudget");
         }
-        public ActionResult CreateNewBudget(string budgetName)
+        public ActionResult CreateNewBudget(string budgetName, string ListofCheckedColums = "")
         {
             try
             {
              
                 int budgetId = SaveNewBudget(budgetName);
-                return RefreshMainGridData(budgetId);
-               
+                return RefreshMainGridData(budgetId, "Yearly", ListofCheckedColums);
             }
             catch (Exception)
             {
@@ -282,7 +286,7 @@ namespace RevenuePlanner.Controllers
             //End
         }
         #endregion
-        public ActionResult RefreshMainGridData(int budgetId = 0, string mainTimeFrame = "Yearly")
+        public ActionResult RefreshMainGridData(int budgetId = 0, string mainTimeFrame = "Yearly", string ListofCheckedColums = "")
         {
             DhtmlXGridRowModel gridRowModel = new DhtmlXGridRowModel();
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
@@ -292,17 +296,17 @@ namespace RevenuePlanner.Controllers
             IsForecastCreateEdit = _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
             IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
 
-            gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
+            gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame, ListofCheckedColums);
             var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
             if (DetailId != 0)
             {
-                var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
+                var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.FinanemodelheaderObj).FirstOrDefault();
                 if (temp != null)
                 {
-                    objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
-                    objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
-                    objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
-                    objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
+                    objFinanceHeader.Budget = Convert.ToDouble(temp.Budget);
+                    objFinanceHeader.Forecast = Convert.ToDouble(temp.Forecast);
+                    objFinanceHeader.Planned = Convert.ToDouble(temp.Planned);
+                    objFinanceHeader.Actual = Convert.ToDouble(temp.Actual);
                 }
                 else
                 {
@@ -327,7 +331,7 @@ namespace RevenuePlanner.Controllers
 
             return PartialView("_MainGrid", gridRowModel);
         }
-        public ActionResult SaveNewBudgetDetail(string BudgetId, string BudgetDetailName, string ParentId, string mainTimeFrame = "Yearly", bool isNewBudget = false)
+        public ActionResult SaveNewBudgetDetail(string BudgetId, string BudgetDetailName, string ParentId, string mainTimeFrame = "Yearly", bool isNewBudget = false, string ListofCheckedColums = "")
         {
             int _budgetId = 0;
             try
@@ -367,23 +371,50 @@ namespace RevenuePlanner.Controllers
                     }
                     #endregion
                 }
-                return RefreshMainGridData(_budgetId, mainTimeFrame);
+                return RefreshMainGridData(_budgetId, mainTimeFrame, ListofCheckedColums);
             }
             catch (Exception)
             {
                 throw;
             }
         }
-        private DhtmlXGridRowModel GetFinanceMainGridData(int budgetId, string mainTimeFrame = "Yearly")
+        private DhtmlXGridRowModel GetFinanceMainGridData(int budgetId, string mainTimeFrame = "Yearly", string ListofCheckedColums = "")
         {
             DhtmlXGridRowModel mainGridData = new DhtmlXGridRowModel();
             List<DhtmlxGridRowDataModel> gridRowData = new List<DhtmlxGridRowDataModel>();
             try
             {
+                // Add By Nishant Sheth
+                // Desc #1678 
+                StringBuilder setHeader = new StringBuilder();
+                StringBuilder attachHeader = new StringBuilder();
+                StringBuilder setInitWidths = new StringBuilder();
+                StringBuilder setColAlign = new StringBuilder();
+                StringBuilder setColValidators = new StringBuilder();
+                StringBuilder setColumnIds = new StringBuilder();
+                StringBuilder setColTypes = new StringBuilder();
+                StringBuilder setColumnsVisibility = new StringBuilder();
+                StringBuilder HeaderStyle = new StringBuilder();
+                #region Set coulmn base on columnset
+                //List<Budget_Columns> objColumns = db.Budget_Columns.Where(a => a.Column_SetId == ColumnSetId && a.IsDeleted == false).Select(a => a).ToList();
+                List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
+                                                   join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
+                                                   where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
+                                                   && ColumnSet.ClientId == Sessions.User.ClientId
+                                                   select Columns).ToList();
+                var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
+                var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a).ToList();
+
+                #endregion
+                // End By Nishant Sheth
+
+
                 _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
                 //IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
                 _IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);
                 //IsForecastView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastView);
+
+                var Listofcheckedcol = ListofCheckedColums.Split(',');
 
                 #region "GetFinancial Parent-Child Data"
 
@@ -393,16 +424,77 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("RowId", typeof(String));
                 dataTable.Columns.Add("Name", typeof(String));
                 dataTable.Columns.Add("AddRow", typeof(String));
+
                 //  dataTable.Columns.Add("Selection", typeof(String));
-                dataTable.Columns.Add("Budget", typeof(String));
-                dataTable.Columns.Add("Forecast", typeof(String));
-                dataTable.Columns.Add("Planned", typeof(String));
-                dataTable.Columns.Add("Actual", typeof(String));
+                //dataTable.Columns.Add("Budget", typeof(String));
+                //dataTable.Columns.Add("Forecast", typeof(String));
+                //dataTable.Columns.Add("Planned", typeof(String));
+                //dataTable.Columns.Add("Actual", typeof(String));
+                #region set dynamic columns in dataTable
+                foreach (var Columns in objColumns)
+                {
+                    dataTable.Columns.Add(Convert.ToString(Columns.CustomField.Name), typeof(String));
+                }
+                #endregion
                 dataTable.Columns.Add("Action", typeof(String));
                 dataTable.Columns.Add("LineItemCount", typeof(Int32));
                 dataTable.Columns.Add("IsForcast", typeof(Boolean));
                 dataTable.Columns.Add("lstLineItemIds", typeof(List<int>));
+                dataTable.Columns.Add("User", typeof(String)); // Add By Nishant
                 dataTable.Columns.Add("Owner", typeof(String)); // Add By Nishant
+                #region Set Tree Grid Properties and methods
+
+                setHeader.Append("Task Name,,,");// Default 1st 4 columns header
+                setInitWidths.Append("200,100,50,");
+                setColAlign.Append("left,center,center,");
+                setColTypes.Append("tree,ro,ro,");
+                setColValidators.Append("NameValid,,,");
+                setColumnIds.Append("title,action,addrow,");
+                HeaderStyle.Append("text-align:center;border-right:0px solid #d4d4d4;,border-left:0px solid #d4d4d4;,,");
+                if (!_IsBudgetCreate_Edit && !_IsForecastCreate_Edit)
+                {
+                    setColumnsVisibility.Append("false,false,true,");
+                }
+                else
+                {
+                    setColumnsVisibility.Append("false,false,false,");
+                }
+                foreach (var columns in objColumns)
+                {
+                    setHeader.Append(columns.CustomField.Name + ",");
+                    setInitWidths.Append("100,");
+                    setColAlign.Append("center,");
+                    setColTypes.Append("ro,");
+                    setColValidators.Append(",");
+                    setColumnIds.Append(columns.CustomField.Name + ",");
+                    if (Listofcheckedcol.Contains(columns.CustomFieldId.ToString()))
+                    {
+                        setColumnsVisibility.Append("false,");
+                    }
+                    else
+                    {
+                        setColumnsVisibility.Append("true,");
+                    }
+                    HeaderStyle.Append("text-align:center;,");
+                }
+                setHeader.Append("User,Line Items,Owner");
+                setInitWidths.Append("100,100,100");
+                setColAlign.Append("center,center,center");
+                setColTypes.Append("ro,ro,ro");
+                setColumnIds.Append("action,lineitems,owner");
+                setColumnsVisibility.Append("false,false,false");
+                HeaderStyle.Append("text-align:center;,text-align:center;,text-align:center;");
+
+                string trimSetheader = setHeader.ToString().TrimEnd(',');
+                string trimAttachheader = attachHeader.ToString().TrimEnd(',');
+                string trimSetInitWidths = setInitWidths.ToString().TrimEnd(',');
+                string trimSetColAlign = setColAlign.ToString().TrimEnd(',');
+                string trimSetColValidators = setColValidators.ToString().TrimEnd(',');
+                string trimSetColumnIds = setColumnIds.ToString().TrimEnd(',');
+                string trimSetColTypes = setColTypes.ToString().TrimEnd(',');
+                string trimSetColumnsVisibility = setColumnsVisibility.ToString().TrimEnd(',');
+                string trimHeaderStyle = HeaderStyle.ToString().TrimEnd(',');
+                #endregion
                 //budgetId = 8;
                 List<Budget_Detail> tblBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
                 var lstBudgetDetails = tblBudgetDetails.Select(a => new { a.Id, a.ParentId, a.Name, a.IsForecast, a.CreatedBy }).ToList();
@@ -442,7 +534,8 @@ namespace RevenuePlanner.Controllers
 
                 List<BDSService.User> lstUser = null;
                 lstUser = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ToList();
-
+                var lstUserId = lstUser.Select(a => a.UserId).ToList();
+                var ListOfUserPermission = db.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
                 string rowId = string.Empty;
                 List<int> PlanLineItemsId, lstLineItemIds;
                 BudgetAmount objBudgetAmount;
@@ -453,6 +546,13 @@ namespace RevenuePlanner.Controllers
                     if (!mainTimeFrame.Equals(Enums.QuarterFinance.Yearly.ToString()))
                         isQuarterly = true;
                 }
+
+                var DefaultColumnList = Enums.DefaultGridColumnValues.Select(a => a.Key).ToList();
+                var CustomCoulmnsId = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && a.IsTimeFrame == false
+                    && a.MapTableName == Enums.MapTableName.CustomField_Entity.ToString()).Select(a => a.CustomFieldId).ToList();
+
+                var CustomColumnsValue = db.CustomField_Entity.Where(a => CustomCoulmnsId.Contains(a.CustomFieldId)).Select(a => new { a.Value, a.CustomFieldId, a.CustomFieldEntityId, a.EntityId }).ToList();
+
                 lstBudgetDetails.ForEach(
                     i =>
                     {
@@ -473,17 +573,100 @@ namespace RevenuePlanner.Controllers
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row' />", objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", PlanLineItemsId.Count });
                         // Get Owner name
                         var OwnerName = lstUser.Where(a => a.UserId == i.CreatedBy).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
-                        dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds, Convert.ToString(OwnerName) });
-                    });
+                        //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds, Convert.ToString(OwnerName) });
+                        DataRow Datarow = dataTable.NewRow();
+                        Datarow[Enums.DefaultGridColumn.Id.ToString()] = i.Id;
+                        Datarow[Enums.DefaultGridColumn.ParentId.ToString()] = i.ParentId == null ? 0 : i.ParentId;
+                        Datarow[Enums.DefaultGridColumn.RowId.ToString()] = rowId;
+                        Datarow[Enums.DefaultGridColumn.Name.ToString()] = i.Name;
+                        Datarow[Enums.DefaultGridColumn.AddRow.ToString()] = string.Empty;
+                        Datarow[Enums.DefaultGridColumn.Owner.ToString()] = Convert.ToString(OwnerName);
+                        Datarow[Enums.DefaultGridColumn.lstLineItemIds.ToString()] = lstLineItemIds;
+                        Datarow[Enums.DefaultGridColumn.IsForcast.ToString()] = i.IsForecast;
+                        Datarow[Enums.DefaultGridColumn.LineItemCount.ToString()] = cntlineitem;
+                        Datarow[Enums.DefaultGridColumn.Action.ToString()] = "";
 
+                        int count = 0;
+                        var CountUser = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id).Select(t => t.UserId).Distinct().ToList();
+                        if (CountUser.Count > 0)
+                        {
+                            count = CountUser.Count;
+                        }
+                        var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id && a.UserId == Sessions.User.UserId).Select(a => a.PermisssionCode).ToList();
+                        string isEdit = "";
+                        string strUserAction = string.Empty;
+                        if (CheckUserPermission.Count > 0)
+                        {
+                            isEdit = CheckUserPermission.ToString() == "0" ? "Edit" : "View";
+                        }
+                        else
+                        {
+                            isEdit = "Edit";
+                        }
+
+                        if (_IsBudgetCreate_Edit)
+                        {
+                            strUserAction = string.Format("<div onclick='Edit({0},false,{1},this)' class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                        }
+                        else
+                        {
+                            strUserAction = string.Format("<div onclick='Edit({0},false,{1},this)' class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
+                        }
+
+                        Datarow[Enums.DefaultGridColumn.User.ToString()] = strUserAction;
+                        foreach (var col in objColumns)
+                        {
+                            string colname = col.CustomField.Name;
+
+                            if (!DefaultColumnList.Contains(col.CustomField.Name))
+                            {
+
+                                if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                {
+                                    Datarow[colname] = objBudgetAmount.Budget.Sum().Value.ToString(formatThousand);
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                {
+                                    Datarow[colname] = objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand);
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.None && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString())
+                                {
+                                    Datarow[colname] = objBudgetAmount.Plan.Sum().Value.ToString(formatThousand);
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.None && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString())
+                                {
+                                    Datarow[colname] = objBudgetAmount.Actual.Sum().Value.ToString(formatThousand);
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && col.IsTimeFrame == false && col.MapTableName == Enums.MapTableName.CustomField_Entity.ToString())
+                                {
+                                    var CustomValue = CustomColumnsValue.Where(a => a.EntityId == i.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
+                                    Datarow[colname] = CustomValue != null ? CustomValue : "0";
+                                }
+                            }
+                        }
+
+                        dataTable.Rows.Add(Datarow);
+                    });
+                var columnNames = dataTable.Columns.Cast<DataColumn>()
+                  .Select(x => x)
+                  .ToList();
                 var MinParentid = 0;
                 int OtherBudgetid = Common.GetOtherBudgetId();
                 List<DhtmlxGridRowDataModel> lstData = new List<DhtmlxGridRowDataModel>();
                 lstData = GetTopLevelRows(dataTable, MinParentid)
-                            .Select(row => CreateMainGridItem(dataTable, row, tblBudgetDetails, LineItemidBudgetList, OtherBudgetid)).ToList();
+                            .Select(row => CreateMainGridItem(dataTable, row, tblBudgetDetails, LineItemidBudgetList, columnNames, objColumns, OtherBudgetid)).ToList();
 
                 #endregion
 
+                mainGridData.setHeader = trimSetheader;
+                mainGridData.attachHeader = trimAttachheader;
+                mainGridData.setInitWidths = trimSetInitWidths;
+                mainGridData.setColAlign = trimSetColAlign;
+                mainGridData.setColValidators = trimSetColValidators;
+                mainGridData.setColumnIds = trimSetColumnIds;
+                mainGridData.setColTypes = trimSetColTypes;
+                mainGridData.setColumnsVisibility = trimSetColumnsVisibility;
+                mainGridData.HeaderStyle = trimHeaderStyle;
                 mainGridData.rows = lstData;
             }
             catch (Exception ex)
@@ -492,22 +675,49 @@ namespace RevenuePlanner.Controllers
             }
             return mainGridData;
         }
-        private DhtmlxGridRowDataModel CreateMainGridItem(DataTable dataTable, DataRow row, List<Budget_Detail> lstBudgetDetails, List<LineItem_Budget> lstLineItemBudget, int OtherBudgetId = 0)
+        private DhtmlxGridRowDataModel CreateMainGridItem(DataTable dataTable, DataRow row, List<Budget_Detail> lstBudgetDetails, List<LineItem_Budget> lstLineItemBudget, List<DataColumn> DataTablecolumnNames, List<Budget_Columns> objColumns, int OtherBudgetId = 0)
         {
-            var id = row.Field<Int32>("Id");
-            string rowId = row.Field<String>("RowId");
-            var name = row.Field<String>("Name");
-            var addRow = row.Field<String>("AddRow");
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+            var BudgetCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget).Select(a => a.CustomField.Name).FirstOrDefault();
+            var ForecastCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast).Select(a => a.CustomField.Name).FirstOrDefault();
+            var PlannedCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.None).Select(a => a.CustomField.Name).FirstOrDefault();
+            var ActualCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.None).Select(a => a.CustomField.Name).FirstOrDefault();
+
+            foreach (var col in DataTablecolumnNames)
+            {
+                variables.Add(col.ColumnName.ToString(), row[col.ColumnName.ToString()]);
+            }
+
+            //var id = row.Field<Int32>("Id");
+            var id = variables.Where(a => a.Key == Enums.DefaultGridColumn.Id.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
+            //string rowId = row.Field<String>("RowId");
+            var rowId = variables.Where(a => a.Key == Enums.DefaultGridColumn.RowId.ToString()).Select(a => a.Value.ToString()).FirstOrDefault();
+            //var name = row.Field<String>("Name");
+            var name = variables.Where(a => a.Key == Enums.DefaultGridColumn.Name.ToString()).Select(a => a.Value.ToString()).FirstOrDefault();
+            //var addRow = row.Field<String>("AddRow");
+            var addRow = variables.Where(a => a.Key == Enums.DefaultGridColumn.AddRow.ToString()).Select(a => a.Value.ToString()).FirstOrDefault();
             //  var SelectCheckbox = row.Field<String>("Selection");
-            var budget = row.Field<String>("Budget");
-            var forecast = row.Field<String>("Forecast");
-            var planned = row.Field<String>("Planned");
-            var actual = row.Field<String>("Actual");
-            var lineItemCount = row.Field<Int32>("LineItemCount");
-            int parentId = row.Field<Int32>("ParentId");
-            bool IsForcast = row.Field<Boolean>("IsForcast");
+            var budget = variables.Where(a => a.Key == BudgetCol).Select(a => a.Value).FirstOrDefault();
+            var forecast = variables.Where(a => a.Key == ForecastCol).Select(a => a.Value).FirstOrDefault();
+            var planned = variables.Where(a => a.Key == PlannedCol).Select(a => a.Value).FirstOrDefault();
+            var actual = variables.Where(a => a.Key == ActualCol).Select(a => a.Value).FirstOrDefault();
+
+            //var lineItemCount = row.Field<Int32>("LineItemCount");
+            var lineItemCount = variables.Where(a => a.Key == Enums.DefaultGridColumn.LineItemCount.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
+            //int parentId = row.Field<Int32>("ParentId");
+            var parentId = variables.Where(a => a.Key == Enums.DefaultGridColumn.ParentId.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
+            //bool IsForcast = row.Field<Boolean>("IsForcast");
+            var IsForcast = variables.Where(a => a.Key == Enums.DefaultGridColumn.IsForcast.ToString()).Select(a => a.Value.ToString()).FirstOrDefault();
             List<int> lstLineItemIds = row.Field<List<int>>("lstLineItemIds");
-            var Owner = row.Field<String>("Owner");  // Add By Nishant
+            //var Owner = row.Field<String>("Owner");  // Add By Nishant
+            var Owner = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.Owner.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
+            //var User = row.Field<String>("User");  // Add By Nishant
+            var User = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.User.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
             //var action = row.Field<String>("Action");
             //var budget = row.Field<List<Double?>>("Budget");
             //var forcast = row.Field<List<Double?>>("ForeCast");
@@ -518,19 +728,19 @@ namespace RevenuePlanner.Controllers
             lstChildren = GetChildren(dataTable, id);
             if (lstChildren != null && lstChildren.Count() > 0)
                 lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name"), new AlphaNumericComparer()).ToList();
-            if (!IsForcast)
+            if (!Convert.ToBoolean(IsForcast))
             {
                 children = lstChildren
-                  .Select(r => CreateMainGridItem(dataTable, r, lstBudgetDetails, lstLineItemBudget, OtherBudgetId))
+                  .Select(r => CreateMainGridItem(dataTable, r, lstBudgetDetails, lstLineItemBudget, DataTablecolumnNames, objColumns, OtherBudgetId))
                   .ToList();
             }
             List<string> ParentData = new List<string>();
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
-            name = HttpUtility.HtmlEncode(name);
+            name = HttpUtility.HtmlEncode(Convert.ToString(name));
             #region "Add Action column link"
             string strAction = string.Empty;
 
-            if ((lstChildren != null && lstChildren.Count() > 0 && IsForcast == false) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
+            if ((lstChildren != null && lstChildren.Count() > 0 && Convert.ToBoolean(IsForcast) == false) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
                 double? forcastVal = 0, pannedVal = 0, actualVal = 0;
                 forcastVal = GetSumofValueMainGrid(dataTable, id, "Forecast");
@@ -553,7 +763,7 @@ namespace RevenuePlanner.Controllers
                         addRow = "";
                     }
                     //  SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "' onclick='CheckboxClick(this)' type='checkbox' />";
-                    if (IsForcast)
+                    if (Convert.ToBoolean(IsForcast))
                     {
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
                     }
@@ -564,7 +774,7 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    if (IsForcast)
+                    if (Convert.ToBoolean(IsForcast))
                     {
                         strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
                     }
@@ -598,7 +808,7 @@ namespace RevenuePlanner.Controllers
             else
             {
                 rowId = rowId + "_" + _IsForecastCreate_Edit.ToString(); // Append Create/Edit flag value for Forecast permission to RowId.
-                if (IsForcast)
+                if (Convert.ToBoolean(IsForcast))
                 {
                     double? forcastVal = 0, pannedVal = 0, actualVal = 0;
                     forcastVal = GetSumofValueMainGrid(dataTable, id, "Forecast");
@@ -631,18 +841,47 @@ namespace RevenuePlanner.Controllers
             ParentData.Add(strAction);
             ParentData.Add(addRow);
             //   ParentData.Add(SelectCheckbox);
-            ParentData.Add(budget);
-            ParentData.Add(forecast);
-            ParentData.Add(planned);
-            ParentData.Add(actual);
+            FinanceModelHeaders objHeader = new FinanceModelHeaders();
+            objHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+            objHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+
+            if (BudgetCol != null)
+            {
+                ParentData.Add(Convert.ToString(budget));
+                objHeader.Budget = Convert.ToDouble(budget);
+            }
+            if (ForecastCol != null)
+            {
+                ParentData.Add(Convert.ToString(forecast));
+                objHeader.Forecast = Convert.ToDouble(forecast);
+            }
+            if (PlannedCol != null)
+            {
+                ParentData.Add(Convert.ToString(planned));
+                objHeader.Planned = Convert.ToDouble(planned);
+            }
+            if (ActualCol != null)
+            {
+                ParentData.Add(Convert.ToString(actual));
+                objHeader.Actual = Convert.ToDouble(actual);
+            }
+            var CustColList = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && a.IsTimeFrame == false && a.MapTableName == Enums.MapTableName.CustomField_Entity.ToString()).ToList();
+            foreach (var custCol in CustColList)
+            {
+                var custval = variables.Where(a => a.Key == custCol.CustomField.Name).Select(a => a.Value).FirstOrDefault();
+                ParentData.Add(Convert.ToString(custval));
+            }
+            ParentData.Add(User);
             ParentData.Add(lineItemCount.ToString());
             ParentData.Add(Owner);
             #endregion
 
             //return new FinanceParentChildModel { Id = id, Name = name, Children = children, Budget = budget, ForeCast = forcast, BudgetTotal = budgetTotal, ForeCastTotal = forcastTotal };
-            return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, Detailid = Convert.ToString(id) };
+            return new DhtmlxGridRowDataModel { id = rowId, data = ParentData, rows = children, Detailid = Convert.ToString(id), FinanemodelheaderObj = objHeader };
         }
-        public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailName, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly")
+        public ActionResult UpdateBudgetDetail(string BudgetId, string BudgetDetailName, string BudgetDetailId, string ParentId, string mainTimeFrame = "Yearly", string ListofCheckedColums = "")
         {
             int budgetId = 0, budgetDetailId = 0, parentId = 0;
             try
@@ -687,7 +926,7 @@ namespace RevenuePlanner.Controllers
                     db.SaveChanges();
                     #endregion
                 }
-                return RefreshMainGridData(budgetId, mainTimeFrame);
+                return RefreshMainGridData(budgetId, mainTimeFrame, ListofCheckedColums);
             }
             catch (Exception)
             {
@@ -722,13 +961,13 @@ namespace RevenuePlanner.Controllers
                     var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
                     if (DetailId != 0)
                     {
-                        var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.data).FirstOrDefault();
+                        var temp = gridRowModel.rows.Where(a => a.Detailid == Convert.ToString(DetailId)).Select(a => a.FinanemodelheaderObj).FirstOrDefault();
                         if (temp != null)
                         {
-                            objFinanceHeader.Budget = Convert.ToDouble(temp[3]);
-                            objFinanceHeader.Forecast = Convert.ToDouble(temp[4]);
-                            objFinanceHeader.Planned = Convert.ToDouble(temp[5]);
-                            objFinanceHeader.Actual = Convert.ToDouble(temp[6]);
+                            objFinanceHeader.Budget = Convert.ToDouble(temp.Budget);
+                            objFinanceHeader.Forecast = Convert.ToDouble(temp.Forecast);
+                            objFinanceHeader.Planned = Convert.ToDouble(temp.Planned);
+                            objFinanceHeader.Actual = Convert.ToDouble(temp.Actual);
                         }
                         else
                         {
@@ -782,6 +1021,41 @@ namespace RevenuePlanner.Controllers
             lstViewByAllocated.Add(new ViewByModel { Text = "Quarter 4", Value = Enums.QuarterWithSpace.Quarter4.ToString() });
 
             return Json(lstViewByAllocated, JsonRequestBehavior.AllowGet);
+        }
+
+        public List<ViewByModel> GetColumnSet()
+        {
+
+            //List<ViewByModel> lstColumnset = db.Budget_ColumnSet.Where(a => a.ClientId == Sessions.User.ClientId && a.IsDeleted == false)
+            //    .Select(a => new { a.Name, a.Id }).ToList().Select(a => new ViewByModel { Text = a.Name, Value = Convert.ToString(a.Id) }).ToList();
+
+
+            List<ViewByModel> lstColumnset = (from ColumnSet in db.Budget_ColumnSet
+                                              join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
+                                              where ColumnSet.ClientId == Sessions.User.ClientId && ColumnSet.IsDeleted == false
+                                              && Columns.IsDeleted == false
+                                              select new
+                                              {
+                                                  ColumnSet.Name,
+                                                  ColumnSet.Id,
+                                                  ColId = Columns.Id
+                                              }).ToList().GroupBy(g => new { Id = g.Id, Name = g.Name })
+                                              .Select(a => new { a.Key.Id, a.Key.Name, Count = a.Count() })
+                                              .Where(a => a.Count > 0)
+                                              .Select(a => new ViewByModel { Text = a.Name, Value = Convert.ToString(a.Id) }).ToList();
+
+            //return Json(lstColumnset, JsonRequestBehavior.AllowGet);
+            return lstColumnset;
+        }
+
+        public JsonResult GetColumns(int ColumnSetId = 0)
+        {
+            List<ViewByModel> lstColumns = db.Budget_Columns.Where(a => a.Column_SetId == ColumnSetId && a.IsDeleted == false)
+                .Select(a => new { a.CustomField.Name, a.CustomField.CustomFieldId }).ToList()
+                .Select(a => new ViewByModel { Text = a.Name, Value = Convert.ToString(a.CustomFieldId) }).ToList();
+
+            return Json(lstColumns, JsonRequestBehavior.AllowGet);
+            //return lstColumnset;
         }
         #endregion
 
@@ -907,10 +1181,89 @@ namespace RevenuePlanner.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "")
+        public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "", int ColumnSetId = 0, string BudgetCreateEdit = "", string ForecastCreateEdit = "", string ListofCheckedColums = "")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
-            var MinParentid = 0;
+            StringBuilder setHeader = new StringBuilder();
+            StringBuilder attachHeader = new StringBuilder();
+            StringBuilder setInitWidths = new StringBuilder();
+            StringBuilder setColAlign = new StringBuilder();
+            StringBuilder setColValidators = new StringBuilder();
+            StringBuilder setColumnIds = new StringBuilder();
+            StringBuilder setColTypes = new StringBuilder();
+            StringBuilder setColumnsVisibility = new StringBuilder();
+
+            bool _isBudgetCreateEdit = false;
+            bool _isForecastCreateEdit = false;
+
+            var Listofcheckedcol = ListofCheckedColums.Split(',');
+            #region Set coulmn base on columnset
+            //List<Budget_Columns> objColumns = db.Budget_Columns.Where(a => a.Column_SetId == ColumnSetId && a.IsDeleted == false).Select(a => a).ToList();
+            List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
+                                               join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
+                                               where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
+                                               && ColumnSet.ClientId == Sessions.User.ClientId
+                                               select Columns).ToList();
+            var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
+            var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a).ToList();
+
+            #endregion
+
+            budgetMain.BudgetColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && a.IsDeleted == false && a.IsTimeFrame == true
+                    && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+            budgetMain.ForecastColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && a.IsDeleted == false && a.IsTimeFrame == true
+                    && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+            budgetMain.PlanColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.None && a.IsDeleted == false && a.IsTimeFrame == true
+                    && a.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+            budgetMain.ActualColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.None && a.IsDeleted == false && a.IsTimeFrame == true
+                    && a.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+            if (EditLevel == "Budget")
+            {
+                if (!string.IsNullOrEmpty(BudgetCreateEdit) && Convert.ToString(BudgetCreateEdit).ToLower() == "true")
+                {
+                    _isBudgetCreateEdit = true;
+                    budgetMain.enableTreeCellEdit = true;
+                }
+                else
+                {
+                    budgetMain.enableTreeCellEdit = false;
+                }
+
+                if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
+                {
+                    setColumnsVisibility.Append("false,true,true,");
+                }
+                else
+                {
+                    setColumnsVisibility.Append("false,false,true,");
+                }
+                budgetMain.ColumneditLevel = budgetMain.BudgetColName;
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(ForecastCreateEdit) && Convert.ToString(ForecastCreateEdit).ToLower() == "true")
+                {
+                    _isForecastCreateEdit = true;
+                    budgetMain.enableTreeCellEdit = true;
+                }
+                else
+                {
+                    budgetMain.enableTreeCellEdit = false;
+                }
+
+                if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
+                {
+                    setColumnsVisibility.Append("false,true,false,");
+                }
+                else
+                {
+                    setColumnsVisibility.Append("false,false,false,");
+                }
+                budgetMain.ColumneditLevel = budgetMain.ForecastColName;
+            }
+
+
+            var MinBudgetid = 0; var MinParentid = 0;
 
             #region "Set Create/Edit or View permission for Budget and Forecast to Global varialble."
             _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
@@ -926,15 +1279,383 @@ namespace RevenuePlanner.Controllers
             dataTableMain.Columns.Add("AddRow", typeof(String));
             //  dataTableMain.Columns.Add("Selection", typeof(String));
             dataTableMain.Columns.Add("LineItemCount", typeof(Int32));
-            dataTableMain.Columns.Add("Budget", typeof(List<Double?>));
-            dataTableMain.Columns.Add("ForeCast", typeof(List<Double?>));
-            dataTableMain.Columns.Add("Plan", typeof(List<Double?>));
-            dataTableMain.Columns.Add("Actual", typeof(List<Double?>));
-            dataTableMain.Columns.Add("BudgetTotal", typeof(Double));
-            dataTableMain.Columns.Add("ForeCastTotal", typeof(Double));
-            dataTableMain.Columns.Add("PlanTotal", typeof(Double));
-            dataTableMain.Columns.Add("ActualTotal", typeof(Double));
+
+            #region set dynamic columns in dataTable
+            var IntegerColumnValidation = new string[] { Enums.ColumnValidation.ValidInteger.ToString() };
+            var DoubleColumnValidation = new string[] { Enums.ColumnValidation.ValidCurrency.ToString(), Enums.ColumnValidation.ValidNumeric.ToString() };
+            //var StringColumnValidation = new string[] { Enums.ColumnValidation.CustomNameValid.ToString(), Enums.ColumnValidation.Empty.ToString(), 
+            //    Enums.ColumnValidation.None.ToString(), Enums.ColumnValidation.NotEmpty.ToString(),
+            //    Enums.ColumnValidation.ValidAplhaNumeric.ToString(),Enums.ColumnValidation.ValidEmail.ToString(),Enums.ColumnValidation.ValidSIN.ToString(),
+            //    Enums.ColumnValidation.ValidIPv4.ToString()
+            //};
+            var boolColumnValidation = new string[] { Enums.ColumnValidation.ValidBoolean.ToString() };
+            var DateTimeColumnValidation = new string[] { Enums.ColumnValidation.ValidDate.ToString(), Enums.ColumnValidation.ValidDatetime.ToString(),
+                Enums.ColumnValidation.ValidTime.ToString() };
+
+            // Add TimeFrame columns
+            foreach (var timeFrameCol in objTimeFrameColumns)
+            {
+                Type ColumnType = typeof(List<String>);
+                if (IntegerColumnValidation.Contains(timeFrameCol.ValidationType))
+                {
+                    ColumnType = typeof(List<int?>);
+                }
+                else if (DoubleColumnValidation.Contains(timeFrameCol.ValidationType))
+                {
+                    ColumnType = typeof(List<Double?>);
+                }
+                else if (boolColumnValidation.Contains(timeFrameCol.ValidationType))
+                {
+                    ColumnType = typeof(List<bool?>);
+                }
+                else if (DateTimeColumnValidation.Contains(timeFrameCol.ValidationType))
+                {
+                    ColumnType = typeof(List<DateTime?>);
+                }
+
+                dataTableMain.Columns.Add(Convert.ToString(timeFrameCol.CustomField.Name), ColumnType);
+            }
+            // Add Total columns of timeframe columns
+            foreach (var timeFrameCol in objTimeFrameColumns)
+            {
+                Type ColumnType = typeof(String);
+                // add total columns if the value is integer or double
+                if (IntegerColumnValidation.Contains(timeFrameCol.ValidationType) || DoubleColumnValidation.Contains(timeFrameCol.ValidationType))
+                {
+                    if (IntegerColumnValidation.Contains(timeFrameCol.ValidationType))
+                    {
+                        ColumnType = typeof(int);
+                    }
+                    else if (DoubleColumnValidation.Contains(timeFrameCol.ValidationType))
+                    {
+                        ColumnType = typeof(Double);
+                    }
+                    dataTableMain.Columns.Add(Convert.ToString(timeFrameCol.CustomField.Name) + "Total", ColumnType);
+                }
+            }
+
+            // Add Custom columns
+            foreach (var custcol in objCustomColumns)
+            {
+                Type ColumnType = typeof(String);
+                if (IntegerColumnValidation.Contains(custcol.ValidationType))
+                {
+                    ColumnType = typeof(int);
+                }
+                else if (DoubleColumnValidation.Contains(custcol.ValidationType))
+                {
+                    ColumnType = typeof(Double);
+                }
+                else if (boolColumnValidation.Contains(custcol.ValidationType))
+                {
+                    ColumnType = typeof(bool);
+                }
+                else if (DateTimeColumnValidation.Contains(custcol.ValidationType))
+                {
+                    ColumnType = typeof(DateTime);
+                }
+
+                dataTableMain.Columns.Add(Convert.ToString(custcol.CustomField.Name), ColumnType);
+            }
+            #endregion
+            //dataTableMain.Columns.Add("Budget", typeof(List<Double?>));
+            //dataTableMain.Columns.Add("ForeCast", typeof(List<Double?>));
+            //dataTableMain.Columns.Add("Plan", typeof(List<Double?>));
+            //dataTableMain.Columns.Add("Actual", typeof(List<Double?>));
+            //dataTableMain.Columns.Add("BudgetTotal", typeof(Double));
+            //dataTableMain.Columns.Add("ForeCastTotal", typeof(Double));
+            //dataTableMain.Columns.Add("PlanTotal", typeof(Double));
+            //dataTableMain.Columns.Add("ActualTotal", typeof(Double));
             dataTableMain.Columns.Add("lstLineItemIds", typeof(List<int>));
+
+            #region Set Tree Grid Properties and methods
+            setHeader.Append(",,,");// Default 1st 3 columns header
+            attachHeader.Append("Task Name,,Line Items,");
+            setInitWidths.Append("200,65,65,");
+            setColAlign.Append("left,center,center,");
+            setColValidators.Append(Enums.ColumnValidation.CustomNameValid.ToString() + ",,,");
+            setColumnIds.Append("Title,,LineItems,");
+            setColTypes.Append("tree,ro,ro,");
+
+
+            #region Time Frame Columns
+            if (objTimeFrameColumns != null)
+            {
+                //foreach (var timeframecol in objTimeFrameColumns)
+                string HeaderPerfix = "";
+                int loopStartLength = 1;
+                int loopEndLength = 0;
+                List<string> listQuarter = Enums.Quarters.Select(a => a.Key).ToList();
+                if (IsQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
+                {
+                    loopEndLength = 4;
+                    HeaderPerfix = "Q";
+                }
+                else if (IsQuaterly == Enums.PlanAllocatedBy.months.ToString())
+                {
+                    loopEndLength = 12;
+                }
+                else if (listQuarter.Contains(IsQuaterly))
+                {
+                    // here loop start length as month start and same as end month
+                    if (IsQuaterly == Enums.QuarterWithSpace.Quarter1.ToString())
+                    {
+                        loopStartLength = 1;
+                    }
+                    else if (IsQuaterly == Enums.QuarterWithSpace.Quarter2.ToString())
+                    {
+                        loopStartLength = 4;
+                    }
+                    else if (IsQuaterly == Enums.QuarterWithSpace.Quarter3.ToString())
+                    {
+                        loopStartLength = 7;
+                    }
+                    else if (IsQuaterly == Enums.QuarterWithSpace.Quarter4.ToString())
+                    {
+                        loopStartLength = 10;
+                    }
+                    loopEndLength = loopStartLength + 2;
+
+                }
+
+                for (int j = loopStartLength; j <= loopEndLength; j++)
+                {
+                    if (IsQuaterly == Enums.PlanAllocatedBy.months.ToString() || listQuarter.Contains(IsQuaterly))
+                    {
+                        HeaderPerfix = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(j);
+                        HeaderPerfix = HeaderPerfix.Substring(0, 3);
+                        for (int i = 0; i < objTimeFrameColumns.Count; i++)
+                        {
+                            setHeader.Append(HeaderPerfix + ","); // Set month header
+                            attachHeader.Append(Convert.ToString(objTimeFrameColumns[i].CustomField.Name + ",")); // set attach header or column title
+                            setInitWidths.Append("65,");// set width of columns
+                            setColAlign.Append("center,"); //set column allignment
+                            setColValidators.Append((!string.IsNullOrEmpty(objTimeFrameColumns[i].ValidationType) ? (objTimeFrameColumns[i].ValidationType != Enums.ColumnValidation.None.ToString() ? objTimeFrameColumns[i].ValidationType : "") : "") + ","); // set column validation
+                            if (listQuarter.Contains(IsQuaterly))
+                            {
+                                setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + i + j + ",");
+                            }
+                            else
+                            {
+                                setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + "M" + j + ",");
+                            }
+
+                            if (EditLevel == "Budget")
+                            {
+                                if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget && _IsBudgetCreate_Edit)
+                                {
+                                    setColTypes.Append("ed,");
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                }
+                            }
+                            else
+                            {
+                                if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && _IsForecastCreate_Edit)
+                                {
+                                    setColTypes.Append("ed,");
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                }
+                            }
+
+                            if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Forecast || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Custom)
+                            {
+                                if (Listofcheckedcol.Contains(objTimeFrameColumns[i].CustomFieldId.ToString()))
+                                {
+                                    setColumnsVisibility.Append("false,");
+                                }
+                                else
+                                {
+                                    setColumnsVisibility.Append("true,");
+                                }
+                            }
+                            else
+                            {
+                                if (Listofcheckedcol.Contains(objTimeFrameColumns[i].CustomFieldId.ToString()))
+                                {
+                                    setColumnsVisibility.Append("false,");
+                                }
+                                else
+                                {
+                                    setColumnsVisibility.Append("true,");
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < objTimeFrameColumns.Count; i++)
+                        {
+                            setHeader.Append(HeaderPerfix + j + ","); // Set Quarter header
+                            attachHeader.Append(Convert.ToString(objTimeFrameColumns[i].CustomField.Name + ","));// set attach header or column title
+                            setInitWidths.Append("65,");// set width of columns
+                            setColAlign.Append("center,"); //set column allignment
+                            setColValidators.Append((!string.IsNullOrEmpty(objTimeFrameColumns[i].ValidationType) ? (objTimeFrameColumns[i].ValidationType != Enums.ColumnValidation.None.ToString() ? objTimeFrameColumns[i].ValidationType : "") : "") + ","); // set column validation
+                            setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + "Q" + j + ",");
+                            if (EditLevel == "Budget")
+                            {
+                                if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget && _IsBudgetCreate_Edit)
+                                {
+                                    setColTypes.Append("ed,");
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                }
+                            }
+                            else
+                            {
+                                if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && _IsForecastCreate_Edit)
+                                {
+                                    setColTypes.Append("ed,");
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                }
+                            }
+
+                            if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Forecast
+                                || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Custom || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.None)
+                            {
+                                if (Listofcheckedcol.Contains(objTimeFrameColumns[i].CustomFieldId.ToString()))
+                                {
+                                    setColumnsVisibility.Append("false,");
+                                }
+                                else
+                                {
+                                    setColumnsVisibility.Append("true,");
+                                }
+                            }
+                            else
+                            {
+                                if (Listofcheckedcol.Contains(objTimeFrameColumns[i].CustomFieldId.ToString()))
+                                {
+                                    setColumnsVisibility.Append("false,");
+                                }
+                                else
+                                {
+                                    setColumnsVisibility.Append("true,");
+                                }
+                            }
+                        }
+                    }
+                }
+
+                for (int i = 0; i < objTimeFrameColumns.Count; i++)
+                {
+                    setHeader.Append("Total,"); // Set Total as header
+                    attachHeader.Append(Convert.ToString(objTimeFrameColumns[i].CustomField.Name + ","));// set attach header or column title
+                    setInitWidths.Append("65,");// set width of columns
+                    setColAlign.Append("center,"); //set column allignment
+                    setColValidators.Append((!string.IsNullOrEmpty(objTimeFrameColumns[i].ValidationType) ? (objTimeFrameColumns[i].ValidationType != Enums.ColumnValidation.None.ToString() ? objTimeFrameColumns[i].ValidationType : "") : "") + ","); // set column validation
+                    setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + "Total,");
+                    setColTypes.Append("ro,");
+
+                    if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Forecast
+                        || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Custom || objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.None)
+                    {
+                        if (Listofcheckedcol.Contains(objTimeFrameColumns[i].CustomFieldId.ToString()))
+                        {
+                            setColumnsVisibility.Append("false,");
+                        }
+                        else
+                        {
+                            setColumnsVisibility.Append("true,");
+                        }
+                    }
+                    else
+                    {
+                        if (Listofcheckedcol.Contains(objTimeFrameColumns[i].CustomFieldId.ToString()))
+                        {
+                            setColumnsVisibility.Append("false,");
+                        }
+                        else
+                        {
+                            setColumnsVisibility.Append("true,");
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region Custom Columns
+            // set header for custom field 
+            if (objCustomColumns != null)
+            {
+                foreach (var custcol in objCustomColumns)
+                {
+                    setHeader.Append(Convert.ToString(custcol.CustomField.Name) + ",");
+                    attachHeader.Append(Convert.ToString(custcol.CustomField.Name) + ",");
+                    setColAlign.Append("center,"); //set column allignment
+                    setColValidators.Append((!string.IsNullOrEmpty(custcol.ValidationType) ? (custcol.ValidationType != Enums.ColumnValidation.None.ToString() ? custcol.ValidationType : "") : "") + ","); // set column validation
+                    setColumnIds.Append(custcol.CustomField.Name + ",");
+                    setInitWidths.Append("65,");
+                    if (EditLevel == "Budget")
+                    {
+                        if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsBudgetCreate_Edit)
+                        {
+                            setColTypes.Append("ed,");
+                        }
+                        else
+                        {
+                            setColTypes.Append("ro,");
+                        }
+                    }
+                    else
+                    {
+                        if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsForecastCreate_Edit)
+                        {
+                            setColTypes.Append("ed,");
+                        }
+                        else
+                        {
+                            setColTypes.Append("ro,");
+                        }
+                    }
+
+                    if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Budget || custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast
+                        || custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom || custcol.ValueOnEditable == (int)Enums.ValueOnEditable.None)
+                    {
+                        if (Listofcheckedcol.Contains(custcol.CustomFieldId.ToString()))
+                        {
+                            setColumnsVisibility.Append("false,");
+                        }
+                        else
+                        {
+                            setColumnsVisibility.Append("true,");
+                        }
+                    }
+                    else
+                    {
+                        if (Listofcheckedcol.Contains(custcol.CustomFieldId.ToString()))
+                        {
+                            setColumnsVisibility.Append("false,");
+                        }
+                        else
+                        {
+                            setColumnsVisibility.Append("true,");
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            string trimSetheader = setHeader.ToString().TrimEnd(',');
+            string trimAttachheader = attachHeader.ToString().TrimEnd(',');
+            string trimSetInitWidths = setInitWidths.ToString().TrimEnd(',');
+            string trimSetColAlign = setColAlign.ToString().TrimEnd(',');
+            string trimSetColValidators = setColValidators.ToString().TrimEnd(',');
+            string trimSetColumnIds = setColumnIds.ToString().TrimEnd(',');
+            string trimSetColTypes = setColTypes.ToString().TrimEnd(',');
+            string trimSetColumnsVisibility = setColumnsVisibility.ToString().TrimEnd(',');
+
+            #endregion
 
             //var Query = db.Budget_Detail.Where(a => a.BudgetId == (BudgetId > 0 ? BudgetId : a.BudgetId)).Select(a => new { a.Id, a.ParentId, a.Name }).ToList();
             var varBudgetIds = db.Budget_Detail.Where(a => a.Id == (BudgetId > 0 ? BudgetId : a.BudgetId) && a.IsDeleted == false).Select(a => new { a.BudgetId, a.ParentId }).FirstOrDefault();
@@ -974,7 +1695,16 @@ namespace RevenuePlanner.Controllers
                                                                                      select Actual).ToList();
 
             // foreach (var item in Query)
+            var columnNames = dataTableMain.Columns.Cast<DataColumn>()
+                    .Select(x => x)
+                    .ToList();
             int OtherBudgetid = Common.GetOtherBudgetId();
+            var DefaultColumnList = Enums.DefaultGridColumnValues.Select(a => a.Key).ToList();
+            var CustomCoulmnsId = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && a.IsTimeFrame == false
+                && a.MapTableName == Enums.MapTableName.CustomField_Entity.ToString()).Select(a => a.CustomFieldId).ToList();
+
+            var CustomColumnsValue = db.CustomField_Entity.Where(a => CustomCoulmnsId.Contains(a.CustomFieldId)).Select(a => new { a.Value, a.CustomFieldId, a.CustomFieldEntityId, a.EntityId }).ToList();
+
             Query.ForEach(
                 item =>
                 {
@@ -985,30 +1715,194 @@ namespace RevenuePlanner.Controllers
                     {
                         if (item.Id != varBudgetIds.ParentId && item.ParentId != null)
                         {
-                            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                            dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                            #region when child budget selectd
+                            var BudgetDetailAmountValue = BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList();
+                            var PlanDetailAmountValue = PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList();
+                            var ActualDetailAmountValue = ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList();
+                            var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
+                            objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
+                            //dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                            string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "");
+                            Dictionary<string, object> variables = new Dictionary<string, object>();
+
+                            DataRow row = dataTableMain.NewRow();
+
+                            row[Enums.DefaultGridColumn.Id.ToString()] = (Int32)item.Id;
+
+                            row[Enums.DefaultGridColumn.ParentId.ToString()] = item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId);
+
+                            row[Enums.DefaultGridColumn.Name.ToString()] = item.Name;
+
+                            row[Enums.DefaultGridColumn.AddRow.ToString()] = Addrow;
+
+                            row[Enums.DefaultGridColumn.LineItemCount.ToString()] = PlanLineItemsId.Count();
+
+                            foreach (var col in objColumns)
+                            {
+                                string colname = col.CustomField.Name;
+
+                                if (!DefaultColumnList.Contains(col.CustomField.Name))
+                                {
+
+                                    if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.Budget;
+                                    }
+                                    else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.ForeCast;
+                                    }
+                                    else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.None && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.Plan;
+                                    }
+                                    else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.None && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.Actual;
+                                    }
+                                    else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && col.IsTimeFrame == false && col.MapTableName == Enums.MapTableName.CustomField_Entity.ToString())
+                                    {
+                                        var CustomValue = CustomColumnsValue.Where(a => a.EntityId == item.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
+                                        row[colname] = CustomValue != null ? CustomValue : "0";
+                                    }
+                                }
+                            }
+                            foreach (var colTotal in objColumns)
+                            {
+                                string colname = colTotal.CustomField.Name + "Total";
+
+                                if (!DefaultColumnList.Contains(colTotal.CustomField.Name))
+                                {
+                                    if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && colTotal.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.Budget.Sum() > 0 ? objBudgetAmount.Budget.Sum() : 0;
+                                    }
+                                    else if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && colTotal.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.ForeCast.Sum() > 0 ? objBudgetAmount.ForeCast.Sum() : 0;
+                                    }
+                                    else if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.None && colTotal.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.Plan.Sum() > 0 ? objBudgetAmount.Plan.Sum() : 0;
+                                    }
+                                    else if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.None && colTotal.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString())
+                                    {
+                                        row[colname] = objBudgetAmount.Actual.Sum() > 0 ? objBudgetAmount.Actual.Sum() : 0;
+                                    }
+                                }
+
+                            }
+                            row[Enums.DefaultGridColumn.lstLineItemIds.ToString()] = PlanLineItemsId;
+
+                            dataTableMain.Rows.Add(row);
+                            //dataTableMain.AcceptChanges();
+
+                            //dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                            #endregion
                         }
                     }
                     else
                     {
-                        objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
-                        dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                        #region When Parent Budget seelcted
+                        var BudgetDetailAmountValue = BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList();
+                        var PlanDetailAmountValue = PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList();
+                        var ActualDetailAmountValue = ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList();
+                        var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
+                        objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
+                        //dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                        string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "");
+                        Dictionary<string, object> variables = new Dictionary<string, object>();
+
+                        DataRow row = dataTableMain.NewRow();
+
+                        row[Enums.DefaultGridColumn.Id.ToString()] = (Int32)item.Id;
+
+                        row[Enums.DefaultGridColumn.ParentId.ToString()] = item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId);
+
+                        row[Enums.DefaultGridColumn.Name.ToString()] = item.Name;
+
+                        row[Enums.DefaultGridColumn.AddRow.ToString()] = Addrow;
+
+                        row[Enums.DefaultGridColumn.LineItemCount.ToString()] = PlanLineItemsId.Count();
+
+                        foreach (var col in objColumns)
+                        {
+                            string colname = col.CustomField.Name;
+
+                            if (!DefaultColumnList.Contains(col.CustomField.Name))
+                            {
+
+                                if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.Budget;
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.ForeCast;
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.None && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.Plan;
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.None && col.IsTimeFrame == true && col.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.Actual;
+                                }
+                                else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && col.IsTimeFrame == false && col.MapTableName == Enums.MapTableName.CustomField_Entity.ToString())
+                                {
+                                    var CustomValue = CustomColumnsValue.Where(a => a.EntityId == item.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
+                                    row[colname] = CustomValue != null ? CustomValue : "0";
+                                }
+                            }
+                        }
+                        foreach (var colTotal in objColumns)
+                        {
+                            string colname = colTotal.CustomField.Name + "Total";
+
+                            if (!DefaultColumnList.Contains(colTotal.CustomField.Name))
+                            {
+                                if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && colTotal.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.Budget.Sum() > 0 ? objBudgetAmount.Budget.Sum() : 0;
+                                }
+                                else if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && colTotal.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.ForeCast.Sum() > 0 ? objBudgetAmount.ForeCast.Sum() : 0;
+                                }
+                                else if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.None && colTotal.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.Plan.Sum() > 0 ? objBudgetAmount.Plan.Sum() : 0;
+                                }
+                                else if (colTotal.ValueOnEditable == (int)Enums.ValueOnEditable.None && colTotal.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString())
+                                {
+                                    row[colname] = objBudgetAmount.Actual.Sum() > 0 ? objBudgetAmount.Actual.Sum() : 0;
+                                }
+                            }
+
+                        }
+                        row[Enums.DefaultGridColumn.lstLineItemIds.ToString()] = PlanLineItemsId;
+
+                        dataTableMain.Rows.Add(row);
+                        //objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmount.Where(a => a.BudgetDetailId == item.Id).ToList(), PlanDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), ActualDetailAmount.Where(a => PlanLineItemsId.Contains(a.PlanLineItemId)).ToList(), LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList());
+                        //dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "'  onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
+                        #endregion
                     }
                 });
 
 
             var items = GetTopLevelRows(dataTableMain, MinParentid)
-                        .Select(row => CreateItem(dataTableMain, row, EditLevel))
+                        .Select(row => CreateItem(dataTableMain, row, EditLevel, columnNames, objColumns))
                         .ToList();
 
-            var temp = items.Where(a => a.id == Convert.ToString(BudgetId)).Select(a => a.data).FirstOrDefault();
+            var temp = items.Where(a => a.id == Convert.ToString(BudgetId)).Select(a => a.FinanemodelheaderObj).FirstOrDefault();
+
             FinanceModelHeaders objFinanceHeader = new FinanceModelHeaders();
             if (temp != null)
             {
-                objFinanceHeader.Budget = Convert.ToDouble(temp[temp.Count - 4]);
-                objFinanceHeader.Forecast = Convert.ToDouble(temp[temp.Count - 3]);
-                objFinanceHeader.Planned = Convert.ToDouble(temp[temp.Count - 2]);
-                objFinanceHeader.Actual = Convert.ToDouble(temp[temp.Count - 1]);
+                objFinanceHeader.Budget = Convert.ToDouble(temp.Budget);
+                objFinanceHeader.Forecast = Convert.ToDouble(temp.Forecast);
+                objFinanceHeader.Planned = Convert.ToDouble(temp.Planned);
+                objFinanceHeader.Actual = Convert.ToDouble(temp.Actual);
             }
             else
             {
@@ -1024,7 +1918,15 @@ namespace RevenuePlanner.Controllers
             TempData["FinanceHeader"] = objFinanceHeader;
 
             budgetMain.rows = items;
-
+            budgetMain.setHeader = trimSetheader;
+            budgetMain.attachHeader = trimAttachheader;
+            budgetMain.setInitWidths = trimSetInitWidths;
+            budgetMain.setColAlign = trimSetColAlign;
+            budgetMain.setColValidators = trimSetColValidators;
+            budgetMain.setColumnIds = trimSetColumnIds;
+            budgetMain.setColTypes = trimSetColTypes;
+            budgetMain.setColumnsVisibility = trimSetColumnsVisibility;
+            budgetMain.CustColumnsList = objCustomColumns.Select(a => a.CustomField.Name).ToList();
             return Json(budgetMain, JsonRequestBehavior.AllowGet);
         }
 
@@ -1154,27 +2056,55 @@ namespace RevenuePlanner.Controllers
 
             return Sum;
         }
-        DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row, string EditLevel)
+        DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row, string EditLevel, List<DataColumn> DataTablecolumnNames, List<Budget_Columns> objColumns)
         {
-            var id = row.Field<Int32>("Id");
-            var name = row.Field<String>("Name");
-            var addRow = row.Field<String>("AddRow");
+            Dictionary<string, object> variables = new Dictionary<string, object>();
+            //var columnNames = dataTable.Columns.Cast<DataColumn>()
+            //         .Select(x => new { x.ColumnName, x.DataType })
+            //         .ToList();
+
+            var BudgetCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget).Select(a => a.CustomField.Name).FirstOrDefault();
+            var ForecastCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast).Select(a => a.CustomField.Name).FirstOrDefault();
+            var PlannedCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Cost.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.None).Select(a => a.CustomField.Name).FirstOrDefault();
+            var ActualCol = objColumns.Where(a => a.IsTimeFrame == true && a.MapTableName == Enums.MapTableName.Plan_Campaign_Program_Tactic_LineItem_Actual.ToString()
+                && a.ValueOnEditable == (int)Enums.ValueOnEditable.None).Select(a => a.CustomField.Name).FirstOrDefault();
+
+            var BudgetTotalCol = DataTablecolumnNames.Where(a => a.ColumnName == Convert.ToString(BudgetCol) + "Total").Select(a => a.ColumnName).FirstOrDefault();
+            var ForecastTotalCol = DataTablecolumnNames.Where(a => a.ColumnName == Convert.ToString(ForecastCol) + "Total").Select(a => a.ColumnName).FirstOrDefault();
+            var PlannedTotalCol = DataTablecolumnNames.Where(a => a.ColumnName == Convert.ToString(PlannedCol) + "Total").Select(a => a.ColumnName).FirstOrDefault();
+            var ActualTotalCol = DataTablecolumnNames.Where(a => a.ColumnName == Convert.ToString(ActualCol) + "Total").Select(a => a.ColumnName).FirstOrDefault();
+
+            foreach (var col in DataTablecolumnNames)
+            {
+                variables.Add(col.ColumnName.ToString(), row[col.ColumnName.ToString()]);
+            }
+            var id = variables.Where(a => a.Key == Enums.DefaultGridColumn.Id.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
+            var name = variables.Where(a => a.Key == Enums.DefaultGridColumn.Name.ToString()).Select(a => Convert.ToString(a.Value)).FirstOrDefault();
+            var addRow = variables.Where(a => a.Key == Enums.DefaultGridColumn.AddRow.ToString()).Select(a => Convert.ToString(a.Value)).FirstOrDefault();
             //  var SelectBox = row.Field<String>("Selection");
-            var lineitemcount = row.Field<Int32>("LineItemCount");
-            var budget = row.Field<List<Double?>>("Budget");
-            var forcast = row.Field<List<Double?>>("ForeCast");
-            var plan = row.Field<List<Double?>>("Plan");
-            var actual = row.Field<List<Double?>>("Actual");
-            var budgetTotal = row.Field<Double>("BudgetTotal");
-            var forcastTotal = row.Field<Double?>("ForeCastTotal");
-            var plantotal = row.Field<Double?>("PlanTotal");
-            var actualtotal = row.Field<Double?>("ActualTotal");
+            var lineitemcount = variables.Where(a => a.Key == Enums.DefaultGridColumn.LineItemCount.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
+            var parentid = variables.Where(a => a.Key == Enums.DefaultGridColumn.ParentId.ToString()).Select(a => int.Parse(a.Value.ToString())).FirstOrDefault();
+
+            var budget = variables.Where(a => a.Key == BudgetCol).Select(a => (List<Double?>)a.Value).ToList();
+            var forcast = variables.Where(a => a.Key == ForecastCol).Select(a => (List<Double?>)a.Value).ToList();
+            var plan = variables.Where(a => a.Key == PlannedCol).Select(a => (List<Double?>)a.Value).ToList();
+            var actual = variables.Where(a => a.Key == ActualCol).Select(a => (List<Double?>)a.Value).ToList();
+
+            var budgetTotal = variables.Where(a => a.Key == BudgetTotalCol).Select(a => Double.Parse(a.Value.ToString())).FirstOrDefault();
+            var forcastTotal = variables.Where(a => a.Key == ForecastTotalCol).Select(a => Double.Parse(a.Value.ToString())).FirstOrDefault();
+            var plantotal = variables.Where(a => a.Key == PlannedTotalCol).Select(a => Double.Parse(a.Value.ToString())).FirstOrDefault();
+            var actualtotal = variables.Where(a => a.Key == ActualTotalCol).Select(a => Double.Parse(a.Value.ToString())).FirstOrDefault();
             List<int> lstLineItemIds = row.Field<List<int>>("lstLineItemIds");
+            //variables.Where(a => a.Key == Enums.DefaultGridColumn.lstLineItemIds.ToString()).Select(a => int.Parse(a.Value.ToString())).ToList();
+
             var lstChildren = GetChildren(dataTable, id);
             if (lstChildren != null && lstChildren.Count() > 0)
                 lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name")).ToList();
             var children = lstChildren
-              .Select(r => CreateItem(dataTable, r, EditLevel))
+              .Select(r => CreateItem(dataTable, r, EditLevel, DataTablecolumnNames, objColumns))
               .ToList();
             userdata objuserData = new userdata();
             List<row_attrs> rows_attrData = new List<row_attrs>();
@@ -1267,55 +2197,158 @@ namespace RevenuePlanner.Controllers
             //ParentData.Add(string.Join(",", forcast));
 
             int i = 0;
+            int TimeFrameLoopLength = budget != null && budget.Count > 0 ? budget[0].Count : (forcast != null && forcast.Count > 0 ? forcast[0].Count : (
+                plan != null && plan.Count > 0 ? plan[0].Count : (actual != null && actual.Count > 0 ? actual[0].Count : 0)
+                ));
 
-            for (i = 0; i < budget.Count; i++)
+            for (i = 0; i < TimeFrameLoopLength; i++)
             {
-                ParentData.Add(Convert.ToString(budget[i].Value.ToString(formatThousand)));
+                //#,#0.##
+                //0:0.##
+                if (budget.Count > 0)
+                {
+                    if (budget[0].Count > 0)
+                    {
+                        ParentData.Add(String.Format("{0:#,##0.##}", Convert.ToDouble(Convert.ToString(budget[0][i]))));
+                    }
+                }
                 if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
                 {
                     //var CheckIsparentZero=dataTable
                     //    .Rows
                     //    .Cast<DataRow>()
                     //    .Where(rw => rw.Field<Int32>("Id") == id).Select(a=>a.Field<List<Int32?>>)
-
-                    var tempforcast = GetSumofPeriodValue(dataTable, id, i, "ForeCast");
-
-                    var tempPlan = GetSumofPeriodValue(dataTable, id, i, "Plan");
-
-                    var tempActual = GetSumofPeriodValue(dataTable, id, i, "Actual");
-
+                    if (forcast.Count > 0)
+                    {
+                        if (forcast[0].Count > 0)
+                        {
+                            var tempforcast = GetSumofPeriodValue(dataTable, id, i, ForecastCol);
                     ParentData.Add(Convert.ToString(tempforcast.Value.ToString(formatThousand)));
+                        }
+                    }
+
+                    if (plan.Count > 0)
+                    {
+                        if (plan[0].Count > 0)
+                        {
+                            var tempPlan = GetSumofPeriodValue(dataTable, id, i, PlannedCol);
                     ParentData.Add(Convert.ToString(tempPlan.Value.ToString(formatThousand)));
+                        }
+                    }
+
+                    if (actual.Count > 0)
+                    {
+                        if (actual[0].Count > 0)
+                        {
+                            var tempActual = GetSumofPeriodValue(dataTable, id, i, ActualCol);
                     ParentData.Add(Convert.ToString(tempActual.Value.ToString(formatThousand)));
+                        }
+                    }
+
                     //ParentData.Add(Convert.ToString(forcast[i]));
                 }
                 else
                 {
-                    ParentData.Add(Convert.ToString(forcast[i].Value.ToString(formatThousand)));
-                    ParentData.Add(Convert.ToString(plan[i].Value.ToString(formatThousand)));
-                    ParentData.Add(Convert.ToString(actual[i].Value.ToString(formatThousand)));
+                    if (forcast.Count > 0)
+                    {
+                        if (forcast[0].Count > 0)
+                        {
+                            ParentData.Add(String.Format("{0:#,##0.##}", Convert.ToDouble(Convert.ToString(forcast[0][i]))));
+                        }
+                    }
+                    if (plan.Count > 0)
+                    {
+                        if (plan[0].Count > 0)
+                        {
+                            ParentData.Add(String.Format("{0:#,##0.##}", Convert.ToDouble(Convert.ToString(plan[0][i]))));
+                        }
+                    }
+                    if (actual.Count > 0)
+                    {
+                        if (actual[0].Count > 0)
+                        {
+                            ParentData.Add(String.Format("{0:#,##0.##}", Convert.ToDouble(Convert.ToString(actual[0][i]))));
+                        }
+                    }
                 }
 
             }
-
+            FinanceModelHeaders objHeader = new FinanceModelHeaders();
+            objHeader.BudgetTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Budget.ToString()].ToString();
+            objHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
+            objHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
+            objHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
+            if (budget.Count > 0)
+            {
+                if (budget[0].Count > 0)
+                {
             ParentData.Add(Convert.ToString(budgetTotal.ToString(formatThousand)));
+                    objHeader.Budget = budgetTotal;
+                }
+            }
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))
             {
-                var tempforcastTotal = GetSumofValue(dataTable, id, "ForeCastTotal");
-
-                var tempPlanTotal = GetSumofValue(dataTable, id, "PlanTotal");
-
-                var tempActualTotal = GetSumofValue(dataTable, id, "ActualTotal");
-
+                if (forcast.Count > 0)
+                {
+                    if (forcast[0].Count > 0)
+                    {
+                        var tempforcastTotal = GetSumofValue(dataTable, id, ForecastTotalCol);
                 ParentData.Add(Convert.ToString(tempforcastTotal.Value.ToString(formatThousand)));
+                        objHeader.Forecast = Convert.ToDouble(tempforcastTotal);
+                    }
+                }
+                if (plan.Count > 0)
+                {
+                    if (plan[0].Count > 0)
+                    {
+                        var tempPlanTotal = GetSumofValue(dataTable, id, PlannedTotalCol);
                 ParentData.Add(Convert.ToString(tempPlanTotal.Value.ToString(formatThousand)));
+                        objHeader.Planned = Convert.ToDouble(tempPlanTotal);
+                    }
+                }
+                if (actual.Count > 0)
+                {
+                    if (actual[0].Count > 0)
+                    {
+                        var tempActualTotal = GetSumofValue(dataTable, id, ActualTotalCol);
                 ParentData.Add(Convert.ToString(tempActualTotal.Value.ToString(formatThousand)));
+                        objHeader.Actual = Convert.ToDouble(tempActualTotal);
+                    }
+                }
+
             }
             else
             {
-                ParentData.Add(Convert.ToString(forcastTotal.Value.ToString(formatThousand)));
-                ParentData.Add(Convert.ToString(plantotal.Value.ToString(formatThousand)));
-                ParentData.Add(Convert.ToString(actualtotal.Value.ToString(formatThousand)));
+                if (forcast.Count > 0)
+                {
+                    if (forcast[0].Count > 0)
+                    {
+                        ParentData.Add(Convert.ToString(forcastTotal.ToString(formatThousand)));
+                        objHeader.Forecast = Convert.ToDouble(forcastTotal);
+                    }
+                }
+                if (plan.Count > 0)
+                {
+                    if (plan[0].Count > 0)
+                    {
+                        ParentData.Add(Convert.ToString(plantotal.ToString(formatThousand)));
+                        objHeader.Planned = Convert.ToDouble(plantotal);
+                    }
+                }
+                if (actual.Count > 0)
+                {
+                    if (actual[0].Count > 0)
+                    {
+                        ParentData.Add(Convert.ToString(actualtotal.ToString(formatThousand)));
+                        objHeader.Actual = Convert.ToDouble(actualtotal);
+                    }
+                }
+            }
+            var CustColList = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && a.IsTimeFrame == false && a.MapTableName == Enums.MapTableName.CustomField_Entity.ToString()).ToList();
+            foreach (var custCol in CustColList)
+            {
+                var custval = variables.Where(a => a.Key == custCol.CustomField.Name).Select(a => a.Value).FirstOrDefault();
+                ParentData.Add(Convert.ToString(custval));
             }
 
             //List<userdata> objuserData = new List<userdata>();
@@ -1326,7 +2359,7 @@ namespace RevenuePlanner.Controllers
 
             rows_attrData.Add(new row_attrs { id = Convert.ToString(id) });
             //return new FinanceParentChildModel { Id = id, Name = name, Children = children, Budget = budget, ForeCast = forcast, BudgetTotal = budgetTotal, ForeCastTotal = forcastTotal };
-            return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = ParentData, rows = children, userdata = objuserData, row_attrs = rows_attrData };
+            return new DhtmlxGridRowDataModel { id = Convert.ToString(id), data = ParentData, rows = children, userdata = objuserData, row_attrs = rows_attrData, FinanemodelheaderObj = objHeader };
         }
 
         IEnumerable<DataRow> GetTopLevelRows(DataTable dataTable, int minParentId = 0)
@@ -1673,6 +2706,20 @@ namespace RevenuePlanner.Controllers
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
             nValue = HttpUtility.HtmlDecode(nValue.Trim());
+
+            List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
+                                               join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
+                                               where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
+                                               && ColumnSet.ClientId == Sessions.User.ClientId
+                                               select Columns).ToList();
+            var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
+            var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a).ToList();
+
+            var CustomCol = objCustomColumns.Where(a => a.CustomField.Name == ColumnName.Trim()).Select(a => a).FirstOrDefault();
+            string BudgetColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && a.IsDeleted == false && a.IsTimeFrame == true
+                   && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
+            string ForecastColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && a.IsDeleted == false && a.IsTimeFrame == true
+                    && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
             if (ColumnName == "Task Name")
             {
                 Budget objBudget = new Budget();
@@ -1814,11 +2861,11 @@ namespace RevenuePlanner.Controllers
                 objBudAmount = new Budget_DetailAmount();
                 if (ColumnName != "Task Name")
                 {
-                    if (ColumnName == "Budget")
+                    if (ColumnName == BudgetColName)
                     {
                         objBudAmount.Budget = Convert.ToDouble(nValue);
                     }
-                    else if (ColumnName == "Forecast")
+                    else if (ColumnName == ForecastColName)
                     {
                         objBudAmount.Forecast = Convert.ToDouble(nValue);
                     }
@@ -1844,10 +2891,10 @@ namespace RevenuePlanner.Controllers
                     double? FirstNew = 0, SecondNew = 0, ThirdNew = 0;
                     if (BudgetAmountList.Count > 0)
                     {
-                        QuaterSum = (ColumnName == "Budget" ? Convert.ToDouble(BudgetAmountList.Select(a => a.Budget).Sum()) : Convert.ToDouble(BudgetAmountList.Select(a => a.Forecast).Sum()));
-                        FirstNew = FirstOld = Convert.ToDouble(ColumnName == "Budget" ? BudgetAmountList[0].Budget : BudgetAmountList[0].Forecast);
-                        SecondNew = SecondOld = Convert.ToDouble(BudgetAmountList.Count >= 2 ? (ColumnName == "Budget" ? BudgetAmountList[1].Budget : BudgetAmountList[1].Forecast) : 0);
-                        ThirdNew = ThirdOld = Convert.ToDouble(BudgetAmountList.Count >= 3 ? (ColumnName == "Budget" ? BudgetAmountList[2].Budget : BudgetAmountList[2].Forecast) : 0);
+                        QuaterSum = (ColumnName == BudgetColName ? Convert.ToDouble(BudgetAmountList.Select(a => a.Budget).Sum()) : Convert.ToDouble(BudgetAmountList.Select(a => a.Forecast).Sum()));
+                        FirstNew = FirstOld = Convert.ToDouble(ColumnName == BudgetColName ? BudgetAmountList[0].Budget : BudgetAmountList[0].Forecast);
+                        SecondNew = SecondOld = Convert.ToDouble(BudgetAmountList.Count >= 2 ? (ColumnName == BudgetColName ? BudgetAmountList[1].Budget : BudgetAmountList[1].Forecast) : 0);
+                        ThirdNew = ThirdOld = Convert.ToDouble(BudgetAmountList.Count >= 3 ? (ColumnName == BudgetColName ? BudgetAmountList[2].Budget : BudgetAmountList[2].Forecast) : 0);
 
                         if (Convert.ToDouble(nValue) > QuaterSum)
                         {
@@ -1946,23 +2993,23 @@ namespace RevenuePlanner.Controllers
                         Budget_DetailAmount objBudAmountUpdate = db.Budget_DetailAmount.Where(a => a.Id == data.Id).FirstOrDefault();
                         if (Count == 1)
                         {
-                            if (ColumnName == "Budget")
+                            if (ColumnName == BudgetColName)
                             { objBudAmountUpdate.Budget = FirstNew; }
-                            else if (ColumnName == "Forecast")
+                            else if (ColumnName == ForecastColName)
                             { objBudAmountUpdate.Forecast = FirstNew; }
                         }
                         if (Count == 2)
                         {
-                            if (ColumnName == "Budget")
+                            if (ColumnName == BudgetColName)
                             { objBudAmountUpdate.Budget = SecondNew; }
-                            else if (ColumnName == "Forecast")
+                            else if (ColumnName == ForecastColName)
                             { objBudAmountUpdate.Forecast = SecondNew; }
                         }
                         if (Count == 3)
                         {
-                            if (ColumnName == "Budget")
+                            if (ColumnName == BudgetColName)
                             { objBudAmountUpdate.Budget = ThirdNew; }
-                            else if (ColumnName == "Forecast")
+                            else if (ColumnName == ForecastColName)
                             { objBudAmountUpdate.Forecast = ThirdNew; }
                         }
                         db.Entry(objBudAmountUpdate).State = EntityState.Modified;
@@ -1978,13 +3025,37 @@ namespace RevenuePlanner.Controllers
                     {
                         if (ColumnName != "Task Name")
                         {
-                            if (ColumnName == "Budget")
+                            if (ColumnName == BudgetColName)
                             { objBudAmountUpdate.Budget = Convert.ToDouble(nValue); }
-                            else if (ColumnName == "Forecast")
+                            else if (ColumnName == ForecastColName)
                             { objBudAmountUpdate.Forecast = Convert.ToDouble(nValue); }
                             db.Entry(objBudAmountUpdate).State = EntityState.Modified;
                             db.SaveChanges();
                         }
+                    }
+                }
+                if (CustomCol != null)
+                {
+                    if (ColumnName == CustomCol.CustomField.Name)
+                    {
+                        CustomField_Entity objCustomFieldEnity = new CustomField_Entity();
+                        objCustomFieldEnity = db.CustomField_Entity.Where(a => a.EntityId == (BudgetId != null ? BudgetId : 0) && a.CustomFieldId == CustomCol.CustomFieldId).FirstOrDefault();
+                        if (objCustomFieldEnity != null)
+                        {
+                            objCustomFieldEnity.Value = nValue;
+                            db.Entry(objCustomFieldEnity).State = EntityState.Modified;
+                        }
+                        else
+                        {
+                            objCustomFieldEnity = new CustomField_Entity();
+                            objCustomFieldEnity.CustomFieldId = CustomCol.CustomFieldId;
+                            objCustomFieldEnity.EntityId = (BudgetId != null ? BudgetId : 0);
+                            objCustomFieldEnity.Value = nValue;
+                            objCustomFieldEnity.CreatedBy = Sessions.User.UserId;
+                            objCustomFieldEnity.CreatedDate = System.DateTime.Now;
+                            db.Entry(objCustomFieldEnity).State = EntityState.Added;
+                        }
+                        db.SaveChanges();
                     }
                 }
             }

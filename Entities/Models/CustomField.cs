@@ -23,6 +23,7 @@ namespace RevenuePlanner.Models
             this.CustomField_Entity = new HashSet<CustomField_Entity>();
             this.CustomFieldDependencies = new HashSet<CustomFieldDependency>();
             this.CustomFieldDependencies1 = new HashSet<CustomFieldDependency>();
+            this.Budget_Columns = new HashSet<Budget_Columns>();
         }
     
         public int CustomFieldId { get; set; }
@@ -50,5 +51,6 @@ namespace RevenuePlanner.Models
         public virtual ICollection<CustomField_Entity> CustomField_Entity { get; set; }
         public virtual ICollection<CustomFieldDependency> CustomFieldDependencies { get; set; }
         public virtual ICollection<CustomFieldDependency> CustomFieldDependencies1 { get; set; }
+        public virtual ICollection<Budget_Columns> Budget_Columns { get; set; }
     }
 }

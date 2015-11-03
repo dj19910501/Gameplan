@@ -4,8 +4,8 @@ DECLARE @MRPDBName nvarchar(50) = 'MRPDev'
 
 DECLARE @SQLString nvarchar(max)=''
 
-SET @SQLString = @SQLString + N'INSERT INTO ' + @MRPDBName + '.dbo.Budget ([ClientId], [Name], [CreatedDate], [CreatedBy],[IsOther])
-SELECT C.ClientId,''Other'',GETDATE(),C.CreatedBy,1 FROM ' + @BDSAUTHDBName + '.dbo.Client C
+SET @SQLString = @SQLString + N'INSERT INTO ' + @MRPDBName + '.dbo.Budget ([ClientId], [Name], [CreatedDate], [CreatedBy],[IsOther],[IsDeleted])
+SELECT C.ClientId,''Other'',GETDATE(),C.CreatedBy,1,0 FROM ' + @BDSAUTHDBName + '.dbo.Client C
 WHERE C.ClientId NOT IN (SELECT ClientId FROM ' + @MRPDBName + '.dbo.Budget WHERE IsOther = 1)'
 
 Exec(@SQLString)
