@@ -4777,7 +4777,7 @@ a.link-gray {
 }
 
 .permission-inner {
-    padding: 0 20px;
+    padding: 0 -8px;
     width: auto;
 }
 
