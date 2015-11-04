@@ -81,6 +81,7 @@ namespace RevenuePlanner.Models
         public int? LineItemTypeId { get; set; }
         public int Weightage { get; set; }
         public string CustomFieldType { get; set; }
+        public int CustomFieldID { get; set; }
         
     }
     public class BudgetedValue

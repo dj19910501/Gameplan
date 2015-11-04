@@ -1975,6 +1975,8 @@ namespace RevenuePlanner.Controllers
             string parentPlanId = "0", parentCampaignId = "0", parentProgramId = "0", parentTacticId = "0";
             string parentMainId = "main_0";
             bool IsCustomFieldViewBy = false;
+            bool IsViewByLineItem = false;
+            bool IsViewByTactic = false;
             if (Tab == ReportTabType.Plan.ToString())
             {
 
@@ -2089,13 +2091,19 @@ namespace RevenuePlanner.Controllers
                 IsCustomFieldViewBy = true;
                 string customFieldType = string.Empty;
                 if (Tab.Contains(Common.TacticCustomTitle))
+                {
+                    IsViewByTactic = true;
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.TacticCustomTitle, ""));
+                }
                 else if (Tab.Contains(Common.ProgramCustomTitle))
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.ProgramCustomTitle, ""));
                 else if (Tab.Contains(Common.CampaignCustomTitle))
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.CampaignCustomTitle, ""));
                 else if (Tab.Contains(Common.LineitemCustomTitle))
+                {
+                    IsViewByLineItem = true;
                     customfieldId = Convert.ToInt32(Tab.Replace(Common.LineitemCustomTitle, ""));
+                }
 
                 customFieldType = db.CustomFields.Where(c => c.CustomFieldId == customfieldId).Select(c => c.CustomFieldType.Name).FirstOrDefault();
                 planobj = GetCustomFieldOptionMappinglist(Tab, customfieldId, customFieldType, tacticList);
@@ -2173,6 +2181,7 @@ namespace RevenuePlanner.Controllers
                             //// Add Campaign data to BudgetModelReport.
                             obj = new BudgetModelReport();
                             obj.Id = c.PlanCampaignId.ToString();
+                            obj.CustomFieldID = customfieldId;
                             obj.ActivityId = "c_" + p.Id + c.PlanCampaignId.ToString();
                             obj.ActivityName = c.Title;
                             obj.ActivityType = ActivityType.ActivityCampaign;
@@ -2190,6 +2199,7 @@ namespace RevenuePlanner.Controllers
                                 //// Add Program data to BudgetModelReport.
                                 obj = new BudgetModelReport();
                                 obj.Id = pr.PlanProgramId.ToString();
+                                obj.CustomFieldID = customfieldId;
                                 obj.ActivityId = "cp_" + p.Id + pr.PlanProgramId.ToString();
                                 obj.ActivityName = pr.Title;
                                 obj.ActivityType = ActivityType.ActivityProgram;
@@ -2207,6 +2217,7 @@ namespace RevenuePlanner.Controllers
                                     //// Add Tactic data to BudgetModelReport.
                                     obj = new BudgetModelReport();
                                     obj.Id = t.PlanTacticId.ToString();
+                                    obj.CustomFieldID = customfieldId;
                                     obj.ActivityId = "cpt_" + p.Id + t.PlanTacticId.ToString();
                                     obj.ActivityName = t.Title;
                                     obj.ActivityType = ActivityType.ActivityTactic;
@@ -2234,6 +2245,7 @@ namespace RevenuePlanner.Controllers
                                         //// Add LineItem data to BudgetModelReport.
                                         obj = new BudgetModelReport();
                                         obj.Id = l.PlanLineItemId.ToString();
+                                        obj.CustomFieldID = customfieldId;
                                         obj.ActivityId = "cptl_" + l.PlanLineItemId.ToString();
                                         obj.ActivityName = l.Title;
                                         obj.LineItemTypeId = l.LineItemTypeId;
@@ -2254,7 +2266,7 @@ namespace RevenuePlanner.Controllers
             }
 
             model = SetTacticWeightage(model, IsCustomFieldViewBy);
-            model = ManageLineItems(model);
+            model = ManageLineItems(model, IsViewByLineItem, IsViewByTactic);
 
             //Set actual for quarters
             if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString())  // Modified by Sohel Pathan on 08/09/2014 for PL ticket #642.
@@ -2322,6 +2334,8 @@ namespace RevenuePlanner.Controllers
                     }
                 }
             }
+
+
 
 
             model = CalculateBottomUpReport(model, ActivityType.ActivityTactic, ActivityType.ActivityLineItem, IsCustomFieldViewBy);
@@ -2879,60 +2893,169 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private List<BudgetModelReport> ManageLineItems(List<BudgetModelReport> model)
+        private List<BudgetModelReport> ManageLineItems(List<BudgetModelReport> model, bool IsViewByLineItem, bool IsViewByTactic)
         {
-            foreach (BudgetModelReport _budgModel in model.Where(mdl => mdl.ActivityType == ActivityType.ActivityTactic))
+            var Weightage = 100;
+            List<BudgetModelReport> lineItems = new List<BudgetModelReport>();
+            var TacticID = model.Where(_budgModel => _budgModel.ActivityType == ActivityType.ActivityTactic).Select(_budgModel => _budgModel.ActivityId).ToList();
+            foreach (BudgetModelReport _budgModel in model)
             {
                 BudgetMonth lineDiffPlanned = new BudgetMonth();
                 List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId).ToList();
+                //  List<BudgetModelReport> lines = model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && TacticID.Contains(line.ParentActivityId)).ToList();
+                if (lines.Count() > 0)
+                {
+                    lineItems = lines;
+                }
+
+                if (_budgModel.Weightage != 100)
+                {
+                    Weightage = _budgModel.Weightage;
+                }
                 BudgetModelReport otherLine = lines.Where(ol => ol.LineItemTypeId == null).FirstOrDefault();
                 lines = lines.Where(ol => ol.LineItemTypeId != null).ToList();
-                if (otherLine != null)
+                if (_budgModel.ActivityType == ActivityType.ActivityTactic)
                 {
-                    //// Set monthly line Items values.
-                    if (lines.Count > 0)
+                    if (otherLine != null)
                     {
-                        lineDiffPlanned.Jan = _budgModel.MonthPlanned.Jan - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jan) ?? 0;
-                        lineDiffPlanned.Feb = _budgModel.MonthPlanned.Feb - lines.Sum(lmon => (double?)lmon.MonthPlanned.Feb) ?? 0;
-                        lineDiffPlanned.Mar = _budgModel.MonthPlanned.Mar - lines.Sum(lmon => (double?)lmon.MonthPlanned.Mar) ?? 0;
-                        lineDiffPlanned.Apr = _budgModel.MonthPlanned.Apr - lines.Sum(lmon => (double?)lmon.MonthPlanned.Apr) ?? 0;
-                        lineDiffPlanned.May = _budgModel.MonthPlanned.May - lines.Sum(lmon => (double?)lmon.MonthPlanned.May) ?? 0;
-                        lineDiffPlanned.Jun = _budgModel.MonthPlanned.Jun - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jun) ?? 0;
-                        lineDiffPlanned.Jul = _budgModel.MonthPlanned.Jul - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jul) ?? 0;
-                        lineDiffPlanned.Aug = _budgModel.MonthPlanned.Aug - lines.Sum(lmon => (double?)lmon.MonthPlanned.Aug) ?? 0;
-                        lineDiffPlanned.Sep = _budgModel.MonthPlanned.Sep - lines.Sum(lmon => (double?)lmon.MonthPlanned.Sep) ?? 0;
-                        lineDiffPlanned.Oct = _budgModel.MonthPlanned.Oct - lines.Sum(lmon => (double?)lmon.MonthPlanned.Oct) ?? 0;
-                        lineDiffPlanned.Nov = _budgModel.MonthPlanned.Nov - lines.Sum(lmon => (double?)lmon.MonthPlanned.Nov) ?? 0;
-                        lineDiffPlanned.Dec = _budgModel.MonthPlanned.Dec - lines.Sum(lmon => (double?)lmon.MonthPlanned.Dec) ?? 0;
+                        //// Set monthly line Items values.
+                        if (lines.Count > 0)
+                        {
+                            lineDiffPlanned.Jan = _budgModel.MonthPlanned.Jan - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jan) ?? 0;
+                            lineDiffPlanned.Feb = _budgModel.MonthPlanned.Feb - lines.Sum(lmon => (double?)lmon.MonthPlanned.Feb) ?? 0;
+                            lineDiffPlanned.Mar = _budgModel.MonthPlanned.Mar - lines.Sum(lmon => (double?)lmon.MonthPlanned.Mar) ?? 0;
+                            lineDiffPlanned.Apr = _budgModel.MonthPlanned.Apr - lines.Sum(lmon => (double?)lmon.MonthPlanned.Apr) ?? 0;
+                            lineDiffPlanned.May = _budgModel.MonthPlanned.May - lines.Sum(lmon => (double?)lmon.MonthPlanned.May) ?? 0;
+                            lineDiffPlanned.Jun = _budgModel.MonthPlanned.Jun - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jun) ?? 0;
+                            lineDiffPlanned.Jul = _budgModel.MonthPlanned.Jul - lines.Sum(lmon => (double?)lmon.MonthPlanned.Jul) ?? 0;
+                            lineDiffPlanned.Aug = _budgModel.MonthPlanned.Aug - lines.Sum(lmon => (double?)lmon.MonthPlanned.Aug) ?? 0;
+                            lineDiffPlanned.Sep = _budgModel.MonthPlanned.Sep - lines.Sum(lmon => (double?)lmon.MonthPlanned.Sep) ?? 0;
+                            lineDiffPlanned.Oct = _budgModel.MonthPlanned.Oct - lines.Sum(lmon => (double?)lmon.MonthPlanned.Oct) ?? 0;
+                            lineDiffPlanned.Nov = _budgModel.MonthPlanned.Nov - lines.Sum(lmon => (double?)lmon.MonthPlanned.Nov) ?? 0;
+                            lineDiffPlanned.Dec = _budgModel.MonthPlanned.Dec - lines.Sum(lmon => (double?)lmon.MonthPlanned.Dec) ?? 0;
 
-                        lineDiffPlanned.Jan = lineDiffPlanned.Jan < 0 ? 0 : lineDiffPlanned.Jan;
-                        lineDiffPlanned.Feb = lineDiffPlanned.Feb < 0 ? 0 : lineDiffPlanned.Feb;
-                        lineDiffPlanned.Mar = lineDiffPlanned.Mar < 0 ? 0 : lineDiffPlanned.Mar;
-                        lineDiffPlanned.Apr = lineDiffPlanned.Apr < 0 ? 0 : lineDiffPlanned.Apr;
-                        lineDiffPlanned.May = lineDiffPlanned.May < 0 ? 0 : lineDiffPlanned.May;
-                        lineDiffPlanned.Jun = lineDiffPlanned.Jun < 0 ? 0 : lineDiffPlanned.Jun;
-                        lineDiffPlanned.Jul = lineDiffPlanned.Jul < 0 ? 0 : lineDiffPlanned.Jul;
-                        lineDiffPlanned.Aug = lineDiffPlanned.Aug < 0 ? 0 : lineDiffPlanned.Aug;
-                        lineDiffPlanned.Sep = lineDiffPlanned.Sep < 0 ? 0 : lineDiffPlanned.Sep;
-                        lineDiffPlanned.Oct = lineDiffPlanned.Oct < 0 ? 0 : lineDiffPlanned.Oct;
-                        lineDiffPlanned.Nov = lineDiffPlanned.Nov < 0 ? 0 : lineDiffPlanned.Nov;
-                        lineDiffPlanned.Dec = lineDiffPlanned.Dec < 0 ? 0 : lineDiffPlanned.Dec;
+                            lineDiffPlanned.Jan = lineDiffPlanned.Jan < 0 ? 0 : lineDiffPlanned.Jan;
+                            lineDiffPlanned.Feb = lineDiffPlanned.Feb < 0 ? 0 : lineDiffPlanned.Feb;
+                            lineDiffPlanned.Mar = lineDiffPlanned.Mar < 0 ? 0 : lineDiffPlanned.Mar;
+                            lineDiffPlanned.Apr = lineDiffPlanned.Apr < 0 ? 0 : lineDiffPlanned.Apr;
+                            lineDiffPlanned.May = lineDiffPlanned.May < 0 ? 0 : lineDiffPlanned.May;
+                            lineDiffPlanned.Jun = lineDiffPlanned.Jun < 0 ? 0 : lineDiffPlanned.Jun;
+                            lineDiffPlanned.Jul = lineDiffPlanned.Jul < 0 ? 0 : lineDiffPlanned.Jul;
+                            lineDiffPlanned.Aug = lineDiffPlanned.Aug < 0 ? 0 : lineDiffPlanned.Aug;
+                            lineDiffPlanned.Sep = lineDiffPlanned.Sep < 0 ? 0 : lineDiffPlanned.Sep;
+                            lineDiffPlanned.Oct = lineDiffPlanned.Oct < 0 ? 0 : lineDiffPlanned.Oct;
+                            lineDiffPlanned.Nov = lineDiffPlanned.Nov < 0 ? 0 : lineDiffPlanned.Nov;
+                            lineDiffPlanned.Dec = lineDiffPlanned.Dec < 0 ? 0 : lineDiffPlanned.Dec;
 
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = lineDiffPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = lineDiffPlanned;
+                            model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = lineDiffPlanned;
+                            model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = lineDiffPlanned;
 
-                        double planned = _budgModel.Planned - lines.Sum(l1 => l1.Planned);
-                        planned = planned < 0 ? 0 : planned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Planned = planned;
+                            double planned = _budgModel.Planned - lines.Sum(l1 => l1.Planned);
+                            planned = planned < 0 ? 0 : planned;
+                            model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Planned = planned;
+                        }
+                        else
+                        {
+                            model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = _budgModel.MonthPlanned;
+                            model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = _budgModel.MonthPlanned;
+                            model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Planned = _budgModel.Planned < 0 ? 0 : _budgModel.Planned;
+                        }
                     }
-                    else
+                    //Modified BY Komal Rawal for #1688 to evenly distribute the values if weightage is not assigned in case of lineitems,programs,campaignss
+                    if (!IsViewByLineItem && !IsViewByTactic)
                     {
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().MonthPlanned = _budgModel.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().ParentMonthPlanned = _budgModel.MonthPlanned;
-                        model.Where(line => line.ActivityType == ActivityType.ActivityLineItem && line.ParentActivityId == _budgModel.ActivityId && line.LineItemTypeId == null).FirstOrDefault().Planned = _budgModel.Planned < 0 ? 0 : _budgModel.Planned;
+                        foreach (BudgetModelReport line in lineItems)
+                        {
+                            BudgetMonth linePlannedBudget = new BudgetMonth();
+                            linePlannedBudget.Jan = (double)(line.MonthPlanned.Jan * Weightage) / 100;
+                            linePlannedBudget.Feb = (double)(line.MonthPlanned.Feb * Weightage) / 100;
+                            linePlannedBudget.Mar = (double)(line.MonthPlanned.Mar * Weightage) / 100;
+                            linePlannedBudget.Apr = (double)(line.MonthPlanned.Apr * Weightage) / 100;
+                            linePlannedBudget.May = (double)(line.MonthPlanned.May * Weightage) / 100;
+                            linePlannedBudget.Jun = (double)(line.MonthPlanned.Jun * Weightage) / 100;
+                            linePlannedBudget.Jul = (double)(line.MonthPlanned.Jul * Weightage) / 100;
+                            linePlannedBudget.Aug = (double)(line.MonthPlanned.Aug * Weightage) / 100;
+                            linePlannedBudget.Sep = (double)(line.MonthPlanned.Sep * Weightage) / 100;
+                            linePlannedBudget.Oct = (double)(line.MonthPlanned.Oct * Weightage) / 100;
+                            linePlannedBudget.Nov = (double)(line.MonthPlanned.Nov * Weightage) / 100;
+                            linePlannedBudget.Dec = (double)(line.MonthPlanned.Dec * Weightage) / 100;
+
+                            line.MonthPlanned = linePlannedBudget;
+
+                            BudgetMonth lineActualBudget = new BudgetMonth();
+                            lineActualBudget.Jan = (double)(line.MonthActual.Jan * Weightage) / 100;
+                            lineActualBudget.Feb = (double)(line.MonthActual.Feb * Weightage) / 100;
+                            lineActualBudget.Mar = (double)(line.MonthActual.Mar * Weightage) / 100;
+                            lineActualBudget.Apr = (double)(line.MonthActual.Apr * Weightage) / 100;
+                            lineActualBudget.May = (double)(line.MonthActual.May * Weightage) / 100;
+                            lineActualBudget.Jun = (double)(line.MonthActual.Jun * Weightage) / 100;
+                            lineActualBudget.Jul = (double)(line.MonthActual.Jul * Weightage) / 100;
+                            lineActualBudget.Aug = (double)(line.MonthActual.Aug * Weightage) / 100;
+                            lineActualBudget.Sep = (double)(line.MonthActual.Sep * Weightage) / 100;
+                            lineActualBudget.Oct = (double)(line.MonthActual.Oct * Weightage) / 100;
+                            lineActualBudget.Nov = (double)(line.MonthActual.Nov * Weightage) / 100;
+                            lineActualBudget.Dec = (double)(line.MonthActual.Dec * Weightage) / 100;
+                            line.MonthActual = lineActualBudget;
+
+
+
+
+                            //  }
+                        }
                     }
+
+
                 }
+                else
+                {
+                    if (IsViewByLineItem && _budgModel.ActivityType == ActivityType.ActivityLineItem)
+                    {
+                        foreach (BudgetModelReport line in lineItems)
+                        {
+                            BudgetMonth linePlannedBudget = new BudgetMonth();
+                            linePlannedBudget.Jan = (double)(line.MonthPlanned.Jan * Weightage) / 100;
+                            linePlannedBudget.Feb = (double)(line.MonthPlanned.Feb * Weightage) / 100;
+                            linePlannedBudget.Mar = (double)(line.MonthPlanned.Mar * Weightage) / 100;
+                            linePlannedBudget.Apr = (double)(line.MonthPlanned.Apr * Weightage) / 100;
+                            linePlannedBudget.May = (double)(line.MonthPlanned.May * Weightage) / 100;
+                            linePlannedBudget.Jun = (double)(line.MonthPlanned.Jun * Weightage) / 100;
+                            linePlannedBudget.Jul = (double)(line.MonthPlanned.Jul * Weightage) / 100;
+                            linePlannedBudget.Aug = (double)(line.MonthPlanned.Aug * Weightage) / 100;
+                            linePlannedBudget.Sep = (double)(line.MonthPlanned.Sep * Weightage) / 100;
+                            linePlannedBudget.Oct = (double)(line.MonthPlanned.Oct * Weightage) / 100;
+                            linePlannedBudget.Nov = (double)(line.MonthPlanned.Nov * Weightage) / 100;
+                            linePlannedBudget.Dec = (double)(line.MonthPlanned.Dec * Weightage) / 100;
+
+                            line.MonthPlanned = linePlannedBudget;
+
+                            BudgetMonth lineActualBudget = new BudgetMonth();
+                            lineActualBudget.Jan = (double)(line.MonthActual.Jan * Weightage) / 100;
+                            lineActualBudget.Feb = (double)(line.MonthActual.Feb * Weightage) / 100;
+                            lineActualBudget.Mar = (double)(line.MonthActual.Mar * Weightage) / 100;
+                            lineActualBudget.Apr = (double)(line.MonthActual.Apr * Weightage) / 100;
+                            lineActualBudget.May = (double)(line.MonthActual.May * Weightage) / 100;
+                            lineActualBudget.Jun = (double)(line.MonthActual.Jun * Weightage) / 100;
+                            lineActualBudget.Jul = (double)(line.MonthActual.Jul * Weightage) / 100;
+                            lineActualBudget.Aug = (double)(line.MonthActual.Aug * Weightage) / 100;
+                            lineActualBudget.Sep = (double)(line.MonthActual.Sep * Weightage) / 100;
+                            lineActualBudget.Oct = (double)(line.MonthActual.Oct * Weightage) / 100;
+                            lineActualBudget.Nov = (double)(line.MonthActual.Nov * Weightage) / 100;
+                            lineActualBudget.Dec = (double)(line.MonthActual.Dec * Weightage) / 100;
+                            line.MonthActual = lineActualBudget;
+
+                            //  }
+                        }
+
+                    }
+                    //End
+
+
+                }
+
             }
+
+
+
             return model;
         }
 
@@ -2947,6 +3070,8 @@ namespace RevenuePlanner.Controllers
             List<CustomField_Entity> lstCustomFieldEntities = new List<CustomField_Entity>();
             lstCustomFieldEntities = db.CustomField_Entity.Where(list => list.CustomField.ClientId == Sessions.User.ClientId).ToList();
             int PlanTacticId = 0;
+            int ActivityId = 0;
+            int weightage = 100;
             string CustomFieldOptionID = string.Empty;
             foreach (BudgetModelReport obj in lstModel)
             {
@@ -2958,7 +3083,7 @@ namespace RevenuePlanner.Controllers
                     {
                         PlanTacticId = !string.IsNullOrEmpty(obj.Id) ? Convert.ToInt32(obj.Id.ToString()) : 0; // Get PlanTacticId from Tactic ActivityId.
                         CustomFieldOptionID = obj.TabActivityId.ToString(); // Get CustomfieldOptionId from Tactic ActivityId.
-                        int weightage = 100;
+
                         if (lstCustomFieldEntities != null && lstCustomFieldEntities.Count > 0)
                         {
                             //// Get CustomFieldEntity based on EntityId and CustomFieldOptionId from CustomFieldEntities.
@@ -2973,8 +3098,37 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
+
                         obj.Weightage = 100;
                     }
+                }
+                else
+                {
+                    ActivityId = !string.IsNullOrEmpty(obj.Id) ? Convert.ToInt32(obj.Id.ToString()) : 0;
+
+                    var LastItemsId = lstModel.Where(_ent => _ent.Id.Equals(obj.Id.ToString())).Select(list => list.TabActivityId).LastOrDefault();
+                    var SelectedOptionsCount = lstCustomFieldEntities.Where(_ent => _ent.EntityId.Equals(ActivityId) && _ent.CustomFieldId.Equals(obj.CustomFieldID)).ToList().Count();
+                    if (SelectedOptionsCount > 0)
+                    {
+                        var wt = weightage / SelectedOptionsCount;
+                        var residual = weightage % SelectedOptionsCount;
+                        if (obj.TabActivityId == LastItemsId && residual > 0)
+                        {
+                            weightage = wt + 1;
+                        }
+                        else
+                        {
+                            weightage = wt;
+
+                        }
+
+                    }
+                    else
+                    {
+                        weightage = 100;
+                    }
+                    obj.Weightage = weightage;
+
                 }
             }
             return lstModel;
@@ -3029,6 +3183,7 @@ namespace RevenuePlanner.Controllers
                     lineActualBudget.Nov = (double)(line.MonthActual.Nov * weightage) / 100;
                     lineActualBudget.Dec = (double)(line.MonthActual.Dec * weightage) / 100;
                     line.MonthActual = lineActualBudget;
+
                 }
             }
             return model;
