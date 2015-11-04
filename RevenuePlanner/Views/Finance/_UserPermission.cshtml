@@ -300,7 +300,7 @@
 
         var row;
         $('#userTable').on('click', '#deletemember', function () {
-            debugger;
+           
             var Name = $(this).closest('tr').find('td').eq(1).text() + " " + $(this).closest('tr').find('td').eq(2).text() + ".";
             $("#divDeletePopup h2").text('Deleteing a user');
             $("#lipname").html(Name);
@@ -395,7 +395,7 @@
                     dataType: "json",
                     data: { Id: _userid },
                     success: function (data) {
-                        debugger;
+                       
                         $("#SaveMsg").hide();
                         $("#Selectuser").val('');
                         $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
@@ -482,7 +482,7 @@
     function InspectBudgetPermissionRow() {
         $("#nl-formUserChildFinance li").each(function () {
             $("#userTable tbody tr").each(function () {
-                debugger;
+          
 
                 var Id = $(this).find('td:first').text();
                 var CreatedbyId = $(this).find('td').eq(1).text();
