@@ -351,10 +351,12 @@
             return false;
         })
 
+       var imageurl = '@Url.Content("~/Content/images/icon-plus_in_circle.png")';
 
         $('#Selectuser').autocomplete({
             source: function (request, response) {
-                $.getJSON("/Finance/getData?term=" + request.term, function (data) {
+			var urlcontent = '@Url.Content("~/Finance/getData/")';
+                $.getJSON(urlcontent + "?term=" + request.term, function (data) {
                     myApp.hidePleaseWait();
                     response($.map(data, function (item) {
 
@@ -373,7 +375,7 @@
             }
         }).data('ui-autocomplete')._renderItem = function (ul, item) {
             return $("<li>")
-                .append("<div><div class='add-interest'><div>" + item.value + "</div><div>" + item.title + "</div><div>" + " " + '<img src="/Content/images/icon-plus_in_circle.png" style="float:right"></div>' + "</div>")
+          .append("<div><div class='add-interest'><div>" + item.value + "</div><div>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
                 .appendTo(ul.addClass('user_permission_list'));
         };
 
