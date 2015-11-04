@@ -1,6 +1,6 @@
 GO 
-DECLARE @BDSAUTHDBName nvarchar(50) = 'BDSAuthDev'
-DECLARE @MRPDBName nvarchar(50) = 'MRPDev'
+DECLARE @BDSAUTHDBName nvarchar(50) = 'BDSAuthQA'
+DECLARE @MRPDBName nvarchar(50) = 'MRPQA'
 
 DECLARE @SQLString nvarchar(max)=''
 
@@ -80,7 +80,7 @@ BEGIN
 SET @SQLString=''
 SET @SQLString = @SQLString + N'INSERT INTO ' + @MRPDBName + '.dbo.CustomField([Name],[CustomFieldTypeId],[IsRequired],[EntityType],
 [ClientId],[CreatedDate],[CreatedBy],[IsDisplayForFilter],[AbbreviationForMulti],[IsDefault],[IsGet])
-SELECT '''+@BudgetCol+''' as Name,1,0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
+SELECT '''+@BudgetCol+''' as Name,(SELECT CustomFieldTypeId From '+@MRPDBName+'.dbo.CustomFieldType where Name=''TextBox''),0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
 WHERE C.ClientId NOT IN(SELECT ClientId FROM ' + @MRPDBName + '.dbo.CustomField Cust
 Where Cust.IsDeleted=0 AND EntityType=''Budget'' AND Name='''+@BudgetCol+''') AND  C.CreatedBy IS NOT NULL'
 EXEC(@SQLString)
@@ -113,7 +113,7 @@ BEGIN
 SET @SQLString=''
 SET @SQLString = @SQLString + N'INSERT INTO ' + @MRPDBName + '.dbo.CustomField([Name],[CustomFieldTypeId],[IsRequired],[EntityType],
 [ClientId],[CreatedDate],[CreatedBy],[IsDisplayForFilter],[AbbreviationForMulti],[IsDefault],[IsGet])
-SELECT '''+@ForecastCol+''' as Name,1,0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
+SELECT '''+@ForecastCol+''' as Name,(SELECT CustomFieldTypeId From '+@MRPDBName+'.dbo.CustomFieldType where Name=''TextBox''),0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
 WHERE C.ClientId NOT IN(SELECT ClientId FROM ' + @MRPDBName + '.dbo.CustomField Cust
 Where Cust.IsDeleted=0 AND EntityType=''Budget'' AND Name='''+@ForecastCol+''') AND  C.CreatedBy IS NOT NULL'
 EXEC(@SQLString)
@@ -145,7 +145,7 @@ BEGIN
 SET @SQLString=''
 SET @SQLString = @SQLString + N'INSERT INTO ' + @MRPDBName + '.dbo.CustomField([Name],[CustomFieldTypeId],[IsRequired],[EntityType],
 [ClientId],[CreatedDate],[CreatedBy],[IsDisplayForFilter],[AbbreviationForMulti],[IsDefault],[IsGet])
-SELECT '''+@PlannedCol+''' as Name,1,0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
+SELECT '''+@PlannedCol+''' as Name,(SELECT CustomFieldTypeId From '+@MRPDBName+'.dbo.CustomFieldType where Name=''TextBox''),0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
 WHERE C.ClientId NOT IN(SELECT ClientId FROM ' + @MRPDBName + '.dbo.CustomField Cust
 Where Cust.IsDeleted=0 AND EntityType=''Budget'' AND Name='''+@PlannedCol+''') AND  C.CreatedBy IS NOT NULL'
 EXEC(@SQLString)
@@ -177,7 +177,7 @@ BEGIN
 SET @SQLString=''
 SET @SQLString = @SQLString + N'INSERT INTO ' + @MRPDBName + '.dbo.CustomField([Name],[CustomFieldTypeId],[IsRequired],[EntityType],
 [ClientId],[CreatedDate],[CreatedBy],[IsDisplayForFilter],[AbbreviationForMulti],[IsDefault],[IsGet])
-SELECT '''+@ActualCol+''' as Name,1,0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
+SELECT '''+@ActualCol+''' as Name,(SELECT CustomFieldTypeId From '+@MRPDBName+'.dbo.CustomFieldType where Name=''TextBox''),0,''Budget'',C.ClientId,GETDATE(),C.CreatedBy,1,''MULTI'',0,0 FROM #client C
 WHERE C.ClientId NOT IN(SELECT ClientId FROM ' + @MRPDBName + '.dbo.CustomField Cust
 Where Cust.IsDeleted=0 AND EntityType=''Budget''  AND Name='''+@ActualCol+''') AND  C.CreatedBy IS NOT NULL'
 EXEC(@SQLString)
