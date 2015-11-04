@@ -2903,7 +2903,7 @@ namespace RevenuePlanner.Helpers
             TacticIds = tlist.Select(t => t.PlanTacticId).ToList();
             if (!isSinglePlan)
             {
-                
+
                 actualTacticList = (from t in TacticIds
                                     join ta in dbStage.Plan_Campaign_Program_Tactic_Actual on t equals ta.PlanTacticId
                                     select ta).ToList();
@@ -2912,9 +2912,9 @@ namespace RevenuePlanner.Helpers
             if (IsReport)
             {
                 string EntTacticType = Enums.EntityType.Tactic.ToString();
-                
+
                 var customfiedlids = dbStage.CustomFields.Where(c => c.ClientId == Sessions.User.ClientId && c.EntityType == EntTacticType && c.IsDeleted == false).Select(c => c.CustomFieldId).ToList();
-                
+
                 tblCustomFieldEntities = dbStage.CustomField_Entity.Where(CustEnt => TacticIds.Contains(CustEnt.EntityId) && customfiedlids.Contains(CustEnt.CustomFieldId)).Select(c => c).ToList();
             }
             List<StageRelation> stageRelation;
@@ -2953,13 +2953,13 @@ namespace RevenuePlanner.Helpers
                     tacticStageValueObj.TacticYear = tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
 
                     #region "Get Tactic Stage-Weightage"
-                    tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId == tactic.PlanTacticId).Select(_customfield => 
-                                                                                                  new TacticCustomFieldStageWeightage() 
-                                                                                                  { 
-                                                                                                    CustomFieldId = _customfield.CustomFieldId, 
-                                                                                                    Value = _customfield.Value, 
-                                                                                                    CostWeightage = _customfield.CostWeightage != null ? _customfield.CostWeightage.Value : 0,
-                                                                                                    CVRWeightage = _customfield.Weightage != null ? _customfield.Weightage.Value : 0 
+                    tacticStageValueObj.TacticStageWeightages = tblCustomFieldEntities.Where(CustEnt => CustEnt.EntityId == tactic.PlanTacticId).Select(_customfield =>
+                                                                                                  new TacticCustomFieldStageWeightage()
+                                                                                                  {
+                                                                                                      CustomFieldId = _customfield.CustomFieldId,
+                                                                                                      Value = _customfield.Value,
+                                                                                                      CostWeightage = _customfield.CostWeightage != null ? _customfield.CostWeightage.Value : 0,
+                                                                                                      CVRWeightage = _customfield.Weightage != null ? _customfield.Weightage.Value : 0
                                                                                                   }).ToList();
                     #endregion
                 }
@@ -3620,7 +3620,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities dbStage = new MRPEntities();
             var planids = tacticPlanList.Select(t => t.PlanId).Distinct().ToList();
             var modelids = dbStage.Plans.Where(p => planids.Contains(p.PlanId)).Select(p => p.ModelId).Distinct();
-            var ModelList = dbStage.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => new { m.ModelId, m.ParentModelId, m.EffectiveDate}).ToList();
+            var ModelList = dbStage.Models.Where(m => m.ClientId == Sessions.User.ClientId && m.IsDeleted == false).Select(m => new { m.ModelId, m.ParentModelId, m.EffectiveDate }).ToList();
             List<ModelDateList> modelDateList = new List<ModelDateList>();
             foreach (var modelid in modelids)
             {
@@ -4571,7 +4571,7 @@ namespace RevenuePlanner.Helpers
             }
             else
             {
-            lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabTactic).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabCampaign).ToList();
+                lstCustomFieldsViewByTab = lstCustomFieldsViewByTab.Concat(lstCustomFieldsViewByTabTactic).Concat(lstCustomFieldsViewByTabProgram).Concat(lstCustomFieldsViewByTabCampaign).ToList();
             }
             return lstCustomFieldsViewByTab;
         }
@@ -4583,18 +4583,19 @@ namespace RevenuePlanner.Helpers
         public static List<ViewByModel> GetParentBudgetlist(int BudgetId = 0)
         {
             MRPEntities db = new MRPEntities();
+            System.Diagnostics.Debug.WriteLine("start 2 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
             List<ViewByModel> lstBudget = new List<ViewByModel>();
-            //var customfieldlist = (from parent in db.Budgets
-            //                       join child in db.Budget_Detail on parent.Id equals child.ParentId
-            //                       orderby parent.Name
-            //                       select new { child.Name, child.Id }).Distinct().ToList();
+          
             var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
+            var tblBudgetDetail = db.Budget_Detail.Where(a => a.IsDeleted == false && budgeparentids.Contains(a.BudgetId)).Select(a => a).ToList();
             int? ParentId = 0;
-            var checkParent = db.Budget_Detail.Where(a => a.Id == BudgetId && (a.IsDeleted == false || a.IsDeleted == false)).Select(a => a.ParentId).ToList();
+            var checkParent = tblBudgetDetail.Where(a => a.Id == BudgetId && (a.IsDeleted == false || a.IsDeleted == null)).Select(a => a.ParentId).ToList();
             ParentId = checkParent.Count > 0 ? checkParent[0] : 0;
 
-            var customfieldlist = db.Budget_Detail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && budgeparentids.Contains(a.BudgetId) && (a.IsDeleted == false || a.IsDeleted == false) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
+            var customfieldlist = tblBudgetDetail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && (a.IsDeleted == false || a.IsDeleted == null) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
+
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            System.Diagnostics.Debug.WriteLine("End 2 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
             return lstBudget;
         }
         /// <summary>
@@ -4618,7 +4619,7 @@ namespace RevenuePlanner.Helpers
             //                       orderby parent.Name
             //                       select new { child.Name, child.Id }).Distinct().ToList();
 
-            var customfieldlist = db.Budget_Detail.Where(a => a.ParentId == ParentId && (a.IsDeleted == false || a.IsDeleted==null) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
+            var customfieldlist = db.Budget_Detail.Where(a => a.ParentId == ParentId && (a.IsDeleted == false || a.IsDeleted == null) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
             return lstBudget;
         }
@@ -6155,7 +6156,7 @@ namespace RevenuePlanner.Helpers
             Dictionary<int, string> dicTactic_ActualCost = new Dictionary<int, string>();
             List<int> lstLineItems = new List<int>();
             List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemActuals = new List<Plan_Campaign_Program_Tactic_LineItem_Actual>();
-            
+
 
             List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
             try
@@ -6165,7 +6166,7 @@ namespace RevenuePlanner.Helpers
                     List<Plan_Campaign_Program_Tactic_LineItem> tblLineItems = db.Plan_Campaign_Program_Tactic_LineItem.Where(li => PlanTacticIds.Contains(li.PlanTacticId) && li.IsDeleted.Equals(false)).ToList();
                     var lineitemids = tblLineItems.Select(line => line.PlanLineItemId).ToList();
                     List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lia => lineitemids.Contains(lia.PlanLineItemId)).ToList();
-                 
+
                     TacticActualCostModel objTacticActualCost;
                     List<BudgetedValue> lstActulalValue;
                     foreach (int keyTactic in PlanTacticIds)
@@ -6187,7 +6188,7 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                            
+
                             var lstPlanTacticsActuals = Tacticdata.Where(pta => pta.TacticObj.PlanTacticId.Equals(keyTactic)).Select(pta => pta.ActualTacticList).FirstOrDefault();
                             lstActulalValue = new List<BudgetedValue>();
                             if (lstPlanTacticsActuals.Any())
@@ -6242,7 +6243,7 @@ namespace RevenuePlanner.Helpers
             ////}
             ////double actulaTotal= actualLineItem.Sum(tot => tot.Value);
 
-            
+
             //actualCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
             //{
             //    Period = m,
@@ -6299,6 +6300,8 @@ namespace RevenuePlanner.Helpers
         public static LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0)
         {
             MRPEntities db = new MRPEntities();
+            System.Diagnostics.Debug.WriteLine("start 1 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
+
             List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
             tblBudgetDetails = db.Budget_Detail.Where(a => a.IsDeleted == false).ToList();
             List<ViewByModel> lstParentItems = new List<ViewByModel>();
@@ -6307,9 +6310,11 @@ namespace RevenuePlanner.Helpers
             ParentId = tblBudgetDetails.Where(dtl => dtl.Id == BudgetDetailId).Select(dtl => dtl.ParentId).FirstOrDefault();
             mostParentId = tblBudgetDetails.Where(dtl => dtl.Id == ParentId).Select(dtl => dtl.ParentId).FirstOrDefault();
             var filterParentList = (from detail1 in tblBudgetDetails
-                                   where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
-                                   select new { detail1.Name, detail1.Id }).Distinct().ToList();
+                                    where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
+                                    select new { detail1.Name, detail1.Id }).Distinct().ToList();
             lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
+            System.Diagnostics.Debug.WriteLine("End 1 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
+
             objParentListModel.list = lstParentItems;
             objParentListModel.parentId = ParentId.HasValue ? ParentId.Value : 0;
             return objParentListModel;
@@ -6331,7 +6336,7 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
 
-        
+
     }
 
     /// <summary>

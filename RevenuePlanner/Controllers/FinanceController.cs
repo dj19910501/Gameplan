@@ -101,7 +101,7 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
-             
+
                 int budgetId = SaveNewBudget(budgetName);
                 return RefreshMainGridData(budgetId, "Yearly", ListofCheckedColums);
             }
@@ -501,7 +501,7 @@ namespace RevenuePlanner.Controllers
                 string trimHeaderStyle = HeaderStyle.ToString().TrimEnd(',');
                 #endregion
                 //budgetId = 8;
-                List<Budget_Detail> tblBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && bdgt.Budget.IsDeleted == false && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
+                List<Budget_Detail> tblBudgetDetails = db.Budget_Detail.Where(bdgt => bdgt.Budget.ClientId.Equals(Sessions.User.ClientId) && (bdgt.Budget.IsDeleted == false || bdgt.Budget.IsDeleted == null) && bdgt.BudgetId.Equals(budgetId) && bdgt.IsDeleted == false).ToList();
                 var lstBudgetDetails = tblBudgetDetails.Select(a => new { a.Id, a.ParentId, a.Name, a.IsForecast, a.CreatedBy }).ToList();
                 List<string> tacticStatus = Common.GetStatusListAfterApproved();// Add By Nishant Sheth
 
@@ -2430,7 +2430,7 @@ namespace RevenuePlanner.Controllers
                 lineitemcount = lstLineItemIds != null ? lstLineItemIds.Distinct().Count() : 0;
                 row.SetField<Int32>("LineItemCount", lineitemcount); // Update LineItemCount in DataTable. 
                 #endregion
-                
+
 
                 if (EditLevel.ToUpper().Equals("BUDGET"))
                 {
@@ -2456,9 +2456,9 @@ namespace RevenuePlanner.Controllers
                         strLineItemLink = lineitemcount.ToString();
                 }
 
-                
 
-                
+
+
                 //lineitemcount = dataTable
                 // .Rows
                 // .Cast<DataRow>()
@@ -2519,7 +2519,7 @@ namespace RevenuePlanner.Controllers
                         if (forcast[0].Count > 0)
                         {
                             var tempforcast = GetSumofPeriodValue(dataTable, id, i, ForecastCol);
-                    ParentData.Add(Convert.ToString(tempforcast.Value.ToString(formatThousand)));
+                            ParentData.Add(Convert.ToString(tempforcast.Value.ToString(formatThousand)));
                         }
                     }
 
@@ -2528,7 +2528,7 @@ namespace RevenuePlanner.Controllers
                         if (plan[0].Count > 0)
                         {
                             var tempPlan = GetSumofPeriodValue(dataTable, id, i, PlannedCol);
-                    ParentData.Add(Convert.ToString(tempPlan.Value.ToString(formatThousand)));
+                            ParentData.Add(Convert.ToString(tempPlan.Value.ToString(formatThousand)));
                         }
                     }
 
@@ -2537,7 +2537,7 @@ namespace RevenuePlanner.Controllers
                         if (actual[0].Count > 0)
                         {
                             var tempActual = GetSumofPeriodValue(dataTable, id, i, ActualCol);
-                    ParentData.Add(Convert.ToString(tempActual.Value.ToString(formatThousand)));
+                            ParentData.Add(Convert.ToString(tempActual.Value.ToString(formatThousand)));
                         }
                     }
 
@@ -2578,7 +2578,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (budget[0].Count > 0)
                 {
-            ParentData.Add(Convert.ToString(budgetTotal.ToString(formatThousand)));
+                    ParentData.Add(Convert.ToString(budgetTotal.ToString(formatThousand)));
                     objHeader.Budget = budgetTotal;
                 }
             }
@@ -2589,7 +2589,7 @@ namespace RevenuePlanner.Controllers
                     if (forcast[0].Count > 0)
                     {
                         var tempforcastTotal = GetSumofValue(dataTable, id, ForecastTotalCol);
-                ParentData.Add(Convert.ToString(tempforcastTotal.Value.ToString(formatThousand)));
+                        ParentData.Add(Convert.ToString(tempforcastTotal.Value.ToString(formatThousand)));
                         objHeader.Forecast = Convert.ToDouble(tempforcastTotal);
                     }
                 }
@@ -2598,7 +2598,7 @@ namespace RevenuePlanner.Controllers
                     if (plan[0].Count > 0)
                     {
                         var tempPlanTotal = GetSumofValue(dataTable, id, PlannedTotalCol);
-                ParentData.Add(Convert.ToString(tempPlanTotal.Value.ToString(formatThousand)));
+                        ParentData.Add(Convert.ToString(tempPlanTotal.Value.ToString(formatThousand)));
                         objHeader.Planned = Convert.ToDouble(tempPlanTotal);
                     }
                 }
@@ -2607,7 +2607,7 @@ namespace RevenuePlanner.Controllers
                     if (actual[0].Count > 0)
                     {
                         var tempActualTotal = GetSumofValue(dataTable, id, ActualTotalCol);
-                ParentData.Add(Convert.ToString(tempActualTotal.Value.ToString(formatThousand)));
+                        ParentData.Add(Convert.ToString(tempActualTotal.Value.ToString(formatThousand)));
                         objHeader.Actual = Convert.ToDouble(tempActualTotal);
                     }
                 }
