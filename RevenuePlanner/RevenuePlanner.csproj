@@ -310,7 +310,7 @@
     <Content Include="Content\css\bootstrap-responsive.min.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
-    <Content Include="Content\css\style_min_Oct13.css" />
+    <Content Include="Content\css\style_min_Oct14.css" />
     <Content Include="Content\css\datepicker.css" />
     <Content Include="Content\css\dhtmlxchart.css" />
     <Content Include="Content\css\dhtmlxchart_1.css" />
