@@ -1046,7 +1046,7 @@
         var url = '@Url.Content("~/Finance/EditPermission/")';
         $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel + '&FlagCondition=' + _flagCondition);
     }
-    function EditBudget(BudgetId, childChange, level) {
+    function EditBudget(BudgetId, childChange, level,EditPermission) {
         myTreeGrid.editStop();
         $('#btnSettings').css('display', 'none')
         $('#errorMsg').css('display', 'none');
@@ -1091,7 +1091,7 @@
         valueTimeFrame = $("#ddlRevenueTimeFrame").val();
         $("#ddlRevenueTimeFrame").val(valueTimeFrame);
         var url = '@Url.Content("~/Finance/EditBudget/")';
-        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel);
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel+'&EditPermission='+EditPermission);
 
     }
 

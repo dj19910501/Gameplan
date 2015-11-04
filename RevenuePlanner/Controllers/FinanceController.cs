@@ -447,13 +447,14 @@ namespace RevenuePlanner.Controllers
                 dataTable.Columns.Add("lstLineItemIds", typeof(List<int>));
                 dataTable.Columns.Add("User", typeof(String)); // Add By Nishant
                 dataTable.Columns.Add("Owner", typeof(String)); // Add By Nishant
+                dataTable.Columns.Add("Permission", typeof(String)); // Add By Nishant
                 #region Set Tree Grid Properties and methods
 
                 setHeader.Append("Task Name,,,");// Default 1st 4 columns header
                 setInitWidths.Append("200,100,50,");
                 setColAlign.Append("left,center,center,");
                 setColTypes.Append("tree,ro,ro,");
-                setColValidators.Append("NameValid,,,");
+                setColValidators.Append("CustomNameValid,,,");
                 setColumnIds.Append("title,action,addrow,");
                 HeaderStyle.Append("text-align:center;border-right:0px solid #d4d4d4;,border-left:0px solid #d4d4d4;,,");
                 if (!_IsBudgetCreate_Edit && !_IsForecastCreate_Edit)
@@ -579,17 +580,7 @@ namespace RevenuePlanner.Controllers
                         // Get Owner name
                         var OwnerName = lstUser.Where(a => a.UserId == i.CreatedBy).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds, Convert.ToString(OwnerName) });
-                        DataRow Datarow = dataTable.NewRow();
-                        Datarow[Enums.DefaultGridColumn.Id.ToString()] = i.Id;
-                        Datarow[Enums.DefaultGridColumn.ParentId.ToString()] = i.ParentId == null ? 0 : i.ParentId;
-                        Datarow[Enums.DefaultGridColumn.RowId.ToString()] = rowId;
-                        Datarow[Enums.DefaultGridColumn.Name.ToString()] = i.Name;
-                        Datarow[Enums.DefaultGridColumn.AddRow.ToString()] = string.Empty;
-                        Datarow[Enums.DefaultGridColumn.Owner.ToString()] = Convert.ToString(OwnerName);
-                        Datarow[Enums.DefaultGridColumn.lstLineItemIds.ToString()] = lstLineItemIds;
-                        Datarow[Enums.DefaultGridColumn.IsForcast.ToString()] = i.IsForecast;
-                        Datarow[Enums.DefaultGridColumn.LineItemCount.ToString()] = cntlineitem;
-                        Datarow[Enums.DefaultGridColumn.Action.ToString()] = "";
+                       
 
                         int count = 0;
                         var CountUser = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id).Select(t => t.UserId).Distinct().ToList();
@@ -597,12 +588,19 @@ namespace RevenuePlanner.Controllers
                         {
                             count = CountUser.Count;
                         }
-                        var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id && a.UserId == Sessions.User.UserId).Select(a => a.PermisssionCode).ToList();
+                        var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id && a.UserId == Sessions.User.UserId).ToList();
                         string isEdit = "";
                         string strUserAction = string.Empty;
                         if (CheckUserPermission.Count > 0)
                         {
-                            isEdit = CheckUserPermission.ToString() == "0" ? "Edit" : "View";
+                            if (CheckUserPermission.First().PermisssionCode == 0)
+                            {
+                                isEdit = "Edit";
+                            }
+                            else
+                            {
+                                isEdit = "View";
+                            }
                         }
                         else
                         {
@@ -617,6 +615,19 @@ namespace RevenuePlanner.Controllers
                         {
                             strUserAction = string.Format("<div onclick='Edit({0},false,{1},this)' class='finance_link'><a>" + count + "</a>&nbsp;&nbsp;&nbsp;<span style='border-left:1px solid #000;height:20px'></span><span>&nbsp;&nbsp;<span style='text-decoration: underline;'>" + isEdit + "</div>", i.Id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'User'")));
                         }
+
+                        DataRow Datarow = dataTable.NewRow();
+                        Datarow[Enums.DefaultGridColumn.Id.ToString()] = i.Id;
+                        Datarow[Enums.DefaultGridColumn.ParentId.ToString()] = i.ParentId == null ? 0 : i.ParentId;
+                        Datarow[Enums.DefaultGridColumn.RowId.ToString()] = rowId;
+                        Datarow[Enums.DefaultGridColumn.Name.ToString()] = i.Name;
+                        Datarow[Enums.DefaultGridColumn.AddRow.ToString()] = string.Empty;
+                        Datarow[Enums.DefaultGridColumn.Owner.ToString()] = Convert.ToString(OwnerName);
+                        Datarow[Enums.DefaultGridColumn.lstLineItemIds.ToString()] = lstLineItemIds;
+                        Datarow[Enums.DefaultGridColumn.IsForcast.ToString()] = i.IsForecast;
+                        Datarow[Enums.DefaultGridColumn.LineItemCount.ToString()] = cntlineitem;
+                        Datarow[Enums.DefaultGridColumn.Action.ToString()] = "";
+                        Datarow[Enums.DefaultGridColumn.Permission.ToString()] = isEdit;
 
                         Datarow[Enums.DefaultGridColumn.User.ToString()] = strUserAction;
                         foreach (var col in objColumns)
@@ -723,6 +734,7 @@ namespace RevenuePlanner.Controllers
             var Owner = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.Owner.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
             //var User = row.Field<String>("User");  // Add By Nishant
             var User = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.User.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
+            var Permission = Convert.ToString(variables.Where(a => a.Key == Enums.DefaultGridColumn.Permission.ToString()).Select(a => a.Value.ToString()).FirstOrDefault());
             //var action = row.Field<String>("Action");
             //var budget = row.Field<List<Double?>>("Budget");
             //var forcast = row.Field<List<Double?>>("ForeCast");
@@ -770,22 +782,50 @@ namespace RevenuePlanner.Controllers
                     //  SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "' onclick='CheckboxClick(this)' type='checkbox' />";
                     if (Convert.ToBoolean(IsForcast))
                     {
-                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
+                        if (Permission != null)
+                        {
+                            if (Permission == "Edit")
+                            {
+                                strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                            }
+                            else
+                            {
+                                strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                            }
+                        }
+                        else
+                        {
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                        }
                     }
                     else
                     {
-                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
+                        if (Permission != null)
+                        {
+                            if (Permission == "Edit")
+                            {
+                                strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                            }
+                            else
+                            {
+                                strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                            }
+                        }
+                        else
+                        {
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                        }
                     }
                 }
                 else
                 {
                     if (Convert.ToBoolean(IsForcast))
                     {
-                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
                     }
                     else
                     {
-                        strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")));
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
                     }
                 }
                 if ((lstChildren != null && lstChildren.Count() > 0) && parentId > 0) // LineItem count will be not set for Most Parent Item & last Child Item.
@@ -832,13 +872,29 @@ namespace RevenuePlanner.Controllers
                 }
                 if (_IsForecastCreate_Edit)
                 {
-                    addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
-                    //  SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "'  onclick='CheckboxClick(this)' type='checkbox' />";
-                    strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
+                    if (Permission != null)
+                    {
+                        if (Permission == "Edit")
+                        {
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                            //  SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "'  onclick='CheckboxClick(this)' type='checkbox' />";
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                        }
+                        else
+                        {
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                        }
+                    }
+                    else
+                    {
+                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        //  SelectCheckbox = "<input id='cb" + rowId + "' row-id='" + rowId + "'  onclick='CheckboxClick(this)' type='checkbox' />";
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                    }
                 }
                 else
                 {
-                    strAction = string.Format("<div onclick='EditBudget({0},false,{1})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")));
+                    strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
                 }
             }
             //forecast = forecast.ToString(new c
@@ -995,6 +1051,7 @@ namespace RevenuePlanner.Controllers
                 user.LastName = objUser.LastName;
                 user.Role = objUser.RoleTitle;
                 user.Permission = UserList[i].PermisssionCode;
+                user.createdby = UserList[i].CreatedBy.ToString();
                 _user.Add(user);
             }
             if (UserList.Count == 0)
@@ -1057,13 +1114,27 @@ namespace RevenuePlanner.Controllers
         public JsonResult getData(string term)
         {
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            List<User> lstUserDetails = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).OrderBy(teamlist => teamlist.FirstName, new AlphaNumericComparer()).ToList();
+            List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
+            List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+
+            string strUserList = string.Join(",", lstClientUsers);
+            List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
+
+            List<User> lstUserDetail = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).ToList();
+            lstUserDetail.Add(new User
+            {
+                UserId = Sessions.User.UserId,
+                FirstName = Sessions.User.FirstName,
+                LastName = Sessions.User.LastName,
+                JobTitle = Sessions.User.JobTitle
+            });
 
             List<User> Getvalue = new List<User>();
             if (lstUserDetails.Count > 0)
             {
-                lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                Getvalue = lstUserDetails.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
             }
             else
             {
@@ -1477,7 +1548,7 @@ namespace RevenuePlanner.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "", int ColumnSetId = 0, string BudgetCreateEdit = "", string ForecastCreateEdit = "", string ListofCheckedColums = "")
+        public JsonResult EditBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string EditLevel = "", int ColumnSetId = 0, string BudgetCreateEdit = "", string ForecastCreateEdit = "", string ListofCheckedColums = "", string EditPermission = "")
         {
             DhtmlXGridRowModel budgetMain = new DhtmlXGridRowModel();
             StringBuilder setHeader = new StringBuilder();
@@ -1740,7 +1811,15 @@ namespace RevenuePlanner.Controllers
                             {
                                 if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget && _IsBudgetCreate_Edit)
                                 {
-                                    setColTypes.Append("ed,");
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
+                                    
                                 }
                                 else
                                 {
@@ -1751,7 +1830,15 @@ namespace RevenuePlanner.Controllers
                             {
                                 if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && _IsForecastCreate_Edit)
                                 {
-                                    setColTypes.Append("ed,");
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
+                                  
                                 }
                                 else
                                 {
@@ -1797,7 +1884,14 @@ namespace RevenuePlanner.Controllers
                             {
                                 if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget && _IsBudgetCreate_Edit)
                                 {
-                                    setColTypes.Append("ed,");
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
                                 }
                                 else
                                 {
@@ -1808,7 +1902,14 @@ namespace RevenuePlanner.Controllers
                             {
                                 if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && _IsForecastCreate_Edit)
                                 {
-                                    setColTypes.Append("ed,");
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
                                 }
                                 else
                                 {
@@ -1896,7 +1997,14 @@ namespace RevenuePlanner.Controllers
                     {
                         if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsBudgetCreate_Edit)
                         {
-                            setColTypes.Append("ed,");
+                            if (EditPermission == "Edit")
+                            {
+                                setColTypes.Append("ed,");
+                            }
+                            else
+                            {
+                                setColTypes.Append("ro,");
+                            }
                         }
                         else
                         {
@@ -1907,7 +2015,14 @@ namespace RevenuePlanner.Controllers
                     {
                         if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsForecastCreate_Edit)
                         {
-                            setColTypes.Append("ed,");
+                            if (EditPermission == "Edit")
+                            {
+                                setColTypes.Append("ed,");
+                            }
+                            else
+                            {
+                                setColTypes.Append("ro,");
+                            }
                         }
                         else
                         {
@@ -2018,7 +2133,7 @@ namespace RevenuePlanner.Controllers
                             var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
                             objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
                             //dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
-                            string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "");
+                            string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
                             Dictionary<string, object> variables = new Dictionary<string, object>();
 
                             DataRow row = dataTableMain.NewRow();
@@ -2106,7 +2221,7 @@ namespace RevenuePlanner.Controllers
                         var LineItemBudhgetListValue = LineItemidBudgetList.Where(l => l.BudgetDetailId == item.Id).ToList();
                         objBudgetAmount = GetAmountValue(IsQuaterly, BudgetDetailAmountValue, PlanDetailAmountValue, ActualDetailAmountValue, LineItemBudhgetListValue);
                         //dataTableMain.Rows.Add(new Object[] { item.Id, item.ParentId == null ? 0 : (item.Id == BudgetId ? 0 : item.ParentId), item.Name, (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : ""), PlanLineItemsId.Count(), objBudgetAmount.Budget, objBudgetAmount.ForeCast, objBudgetAmount.Plan, objBudgetAmount.Actual, objBudgetAmount.Budget.Sum(), objBudgetAmount.ForeCast.Sum(), objBudgetAmount.Plan.Sum(), objBudgetAmount.Actual.Sum(), PlanLineItemsId });
-                        string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "");
+                        string Addrow = (Convert.ToString(item.Id) != Convert.ToString(OtherBudgetid) ? (EditPermission == "Edit" ? "<div id='dv" + item.Id + "' row-id='" + item.Id + "' onclick='AddRow(this)'  class='finance_grid_add' style='float:none !important' parentId='" + (item.ParentId.HasValue ? item.ParentId.ToString() : Convert.ToString(0)) + "'></div><div  id='cb" + item.Id + "' row-id='" + item.Id + "' Name='" + HttpUtility.HtmlEncode(item.Name) + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>" : "") : "");
                         Dictionary<string, object> variables = new Dictionary<string, object>();
 
                         DataRow row = dataTableMain.NewRow();
@@ -2226,12 +2341,12 @@ namespace RevenuePlanner.Controllers
             return Json(budgetMain, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult EditBudget(int BudgetId = 0, string level = "")
+        public ActionResult EditBudget(int BudgetId = 0, string level = "", string EditPermission = "")
         {
             FinanceModel objFinanceModel = new FinanceModel();
             ViewBag.BudgetId = BudgetId;
             ViewBag.EditLevel = level;
-
+            ViewBag.EditPermission = EditPermission;
             ViewBag.IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
             //ViewBag.IsBudgetView = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetView);
             ViewBag.IsForecastCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.ForecastCreateEdit);

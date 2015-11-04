@@ -45,7 +45,7 @@
         GetListOfBudgetName();
         // Add By Nishant Sheth
         // Desc :: handle for same name or empty string
-        dhtmlxValidation.isNameValid = function (data) {
+        dhtmlxValidation.isCustomNameValid = function (data) {
             var childitems = newTreeGrid.getSubItems(ValidParentId).split(',');
             var isrepeat = true;
             if (data.trim() == '' || data.trim() == null) {
@@ -83,7 +83,7 @@
         newTreeGrid.setColTypes("tree,ro,ron,ron,ron,ron,ro");
         //newTreeGrid.setNumberFormat("0,000.00", 2, ".", ",");
         newTreeGrid.enableValidation(true);
-        newTreeGrid.setColValidators("NameValid,,,,,,");
+        newTreeGrid.setColValidators("CustomNameValid,,,,,,");
         newTreeGrid.setColumnIds("title,action,budget,forecast,planned,actual,lineitems");
         //newTreeGrid.setColSorting("str,na,str,str,na,str");
         newTreeGrid.attachEvent("onEditCell", OnEditCell);

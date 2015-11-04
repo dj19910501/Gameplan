@@ -68,14 +68,44 @@
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
                             <td>@Html.DisplayFor(model => item.Role)</td>
-                            <td class="userDelete">
+                              @if (item.Permission == 0)
+                              {
+                                     <td class="userDelete">
+                                    <p>
+                                        <input type="radio" id="vew-edit'@item.id'" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="view-only'@item.id'"  name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
+                                    </p>
+                                    <a href="#">
+                                        <span title="Delete Member" class="x-icon hide pull-right"></span>
+                                    </a>
+                                </td>
+                              }
+                              else
+                              {
+                                 <td class="userDelete">
+                                    <p>
+                                        <input type="radio" id="vew-edit'@item.id'"  name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
+                                    </p>
+                                    <p>
+                                        <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
+                                    </p>
+                                    <a href="#">
+                                        <span title="Delete Member" class="x-icon hide pull-right"></span>
+                                    </a>
+
+                                </td>
+
+                              }
+                         @*   <td class="userDelete">
                                 <p>
-                                    <input type="radio" id="vew-edit'@item.id'" checked="checked" name="@item.id" par="0"><label for="vew-edit">View/Edit</label>
+                                    <input type="radio" id="vew-edit'@item.id'" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                 </p>
                                 <p>
-                                    <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only">view only</label>
+                                    <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
                                 </p>
-                            </td>
+                            </td>*@
                         </tr>
                         }
                     }
@@ -86,6 +116,7 @@
                         <tr class="userrow">
                           
                             <td title="@item.id" class="selectrec" style="display: none">@Html.DisplayFor(model => item.id)</td>
+                            <td title="@item.createdby" class="selectrec" style="display: none">@Html.DisplayFor(model => item.createdby)</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
                             <td>@Html.DisplayFor(model => item.Role)</td>
@@ -93,10 +124,10 @@
                             {
                                 <td class="userDelete">
                                     <p>
-                                        <input type="radio" id="vew-edit'@item.id'" checked="checked" name="@item.id" par="0"><label for="vew-edit">View/Edit</label>
+                                        <input type="radio" id="vew-edit'@item.id'" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only'@item.id'"  name="@item.id" par="1"><label for="view-only">view only</label>
+                                        <input type="radio" id="view-only'@item.id'"  name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
                                     </p>
                                     <a href="#" onclick="DeleteUsers('@item.id','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
@@ -108,10 +139,10 @@
                                 
                                 <td class="userDelete">
                                     <p>
-                                        <input type="radio" id="vew-edit'@item.id'"  name="@item.id" par="0"><label for="vew-edit">View/Edit</label>
+                                        <input type="radio" id="vew-edit'@item.id'"  name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only">view only</label>
+                                        <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
                                     </p>
                                     <a href="#" onclick="DeleteUsers('@item.id','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
@@ -200,23 +231,9 @@
 
         nlformUserChildFinance = new NLForm(document.getElementById('nl-formUserChildFinance'));
 
-        $("#nl-formUserChildFinance li").each(function () {
-            $("#userTable tbody tr").each(function () {
-                var Id = $(this).find('td:first').text();
-                if (Id == '@Sessions.User.UserId') {
-                    $(this).find('td,input,span,a').attr("disabled", "disabled");
-                    $(this).find('a').removeAttr("onclick");
-                }
+        InspectBudgetPermissionRow();
 
-            })
 
-            var y = $(this).val();
-            $(this).removeClass('nl-dd-checked');
-            if (_UserBudgetId == $(this).val()) {
-                $(this).addClass('nl-dd-checked');
-                $(this).parent().parent().find('a').text($(this).text());
-            }
-        });
         //var width = $(".user-list").width();
         //setwidth = width +"px";
 
@@ -254,10 +271,10 @@
                         for (var i = 0; i < data.length; i++) {
                             var html = "";
                             if (data[i].Permission == 0) {
-                                html = '<p><input type="radio" id="vew-edit' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit">View/Edit</label></p><p> <input type="radio" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only">view only</label></p>';
+                                html = '<p><input type="radio" id="vew-edit' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edi' + data[i].id + 't">View/Edit</label></p><p> <input type="radio" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only' + data[i].id + '">view only</label></p>';
                             }
                             else {
-                                html = '<p><input type="radio" id="vew-edit' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit">View/Edit</label></p><p> <input type="radio" checked="checked" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only">view only</label></p>';
+                                html = '<p><input type="radio" id="vew-edit' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit' + data[i].id + '">View/Edit</label></p><p> <input type="radio" checked="checked" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only' + data[i].id + '">view only</label></p>';
                             }
                             $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
                              '</td><td class="userDelete">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
@@ -283,6 +300,7 @@
 
         var row;
         $('#userTable').on('click', '#deletemember', function () {
+            debugger;
             var Name = $(this).closest('tr').find('td').eq(1).text() + " " + $(this).closest('tr').find('td').eq(2).text() + ".";
             $("#divDeletePopup h2").text('Deleteing a user');
             $("#lipname").html(Name);
@@ -377,11 +395,12 @@
                     dataType: "json",
                     data: { Id: _userid },
                     success: function (data) {
-                        //  debugger;
+                        debugger;
                         $("#SaveMsg").hide();
                         $("#Selectuser").val('');
                         $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
-                            '</td><td class="userDelete"> <p><input type="radio" id="vew-edit" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit">View/Edit</label></p><p> <input type="radio" id="view-only"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only">view only</label></p><a href="Finance/DeleteUser/' + data.UserId + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                            '</td><td class="userDelete"> <p><input type="radio" id="vew-edit" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit' + data.UserId + '">View/Edit</label></p><p> <input type="radio" id="view-only"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only' + data.UserId + '">view only</label></p><a href="Finance/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                        InspectBudgetPermissionRow();
                     }
                 })
 
@@ -460,7 +479,34 @@
         checklogedUser();
     })
 
+    function InspectBudgetPermissionRow() {
+        $("#nl-formUserChildFinance li").each(function () {
+            $("#userTable tbody tr").each(function () {
+                debugger;
 
+                var Id = $(this).find('td:first').text();
+                var CreatedbyId = $(this).find('td').eq(1).text();
+                if (Id == '@Sessions.User.UserId') {
+
+                    $(this).find('td,input,span,a').attr("disabled", "disabled");
+                    $(this).find('a').removeAttr("onclick");
+                    $(this).find('a').removeAttr('href', '')
+                    $(this).find('span').attr('id', '')
+                }
+                if (CreatedbyId == Id) {
+                    $(this).find('td,input,span,a').attr("disabled", "disabled");
+                    $(this).find('a').removeAttr("onclick");
+                }
+
+            })
+            var y = $(this).val();
+            $(this).removeClass('nl-dd-checked');
+            if (_UserBudgetId == $(this).val()) {
+                $(this).addClass('nl-dd-checked');
+                $(this).parent().parent().find('a').text($(this).text());
+            }
+        });
+    }
 
 
     function Userdelete(id, budgetID) {

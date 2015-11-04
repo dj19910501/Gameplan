@@ -1251,7 +1251,8 @@ namespace RevenuePlanner.Helpers
             IsForcast = 8,
             Owner = 9,
             RowId = 10,
-            User = 11
+            User = 11,
+            Permission = 12
         }
 
         public static Dictionary<string, string> DefaultGridColumnValues = new Dictionary<string, string>()

@@ -35,6 +35,7 @@ namespace RevenuePlanner.Models
         public string BusssinessUnit { get; set; }
         public string Region { get; set; }
         public int Permission { get; set; }
+        public string createdby { get; set; }
 
     }
     //public class FinanceParentChildModel

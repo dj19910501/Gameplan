@@ -54,11 +54,12 @@
     var PlanColName;
     var ActualColName;
     var GridData = "";
+    var EditPermission = "";
     $(document).ready(function () {
 
         GlobalBudgetId = '@ViewBag.BudgetId';
         GlobalEditLevel = '@ViewBag.EditLevel';
-
+        EditPermission = '@ViewBag.EditPermission';
         if (GlobalEditLevel == "Budget") {
             GetListOfBudgetName();
         }
@@ -110,7 +111,7 @@
         RevnueTimeFrameChange = true;
 
 
-        dhtmlxValidation.isNameValid = function (data) {
+        dhtmlxValidation.isCustomNameValid = function (data) {
             var isrepeat = true;
             if (ValidParentId != 0) {
 
@@ -172,7 +173,8 @@
                 ColumnSetId: Columnsetval,
                 BudgetCreateEdit: _isBudgetCreateEdit,
                 ForecastCreateEdit: _isForecastCreateEdit,
-                ListofCheckedColums: CheckedColumns
+                ListofCheckedColums: CheckedColumns,
+                EditPermission: EditPermission
             },
             success: function (data) {
 

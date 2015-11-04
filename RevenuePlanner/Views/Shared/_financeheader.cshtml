@@ -74,21 +74,24 @@
     function FinanceBack() {
         //Modified for #1721
         myTreeGrid.editStop();
-        if (pageName == "EditBudget") {
-
+        var _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
+        var Columnsetval = $("#ddlColumnSet").val();
+        var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
+        var CheckedColumns = "";
+        $.each(ColumnsCheckBox, function () {
+            var a = $(this).attr("aria-selected");
+            if (a != undefined && a == "true") {
+                CheckedColumns += $(this).val() + ",";
+            }
+            CheckedColumns.slice(0, -1);
+        });
+        if (pageName == "EditBudget" || pageName == "UserPermission") {
+            if (pageName == "UserPermission") {
+                $("#DivFilter").css('display', 'block');
+            }
             // Add BY Nishant Sheth
             // Desc : display selected columns
-            var _mainTimeFrame = $('#ddlMainGridTimeFrame').val();
-            var Columnsetval = $("#ddlColumnSet").val();
-            var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
-            var CheckedColumns = "";
-            $.each(ColumnsCheckBox, function () {
-                var a = $(this).attr("aria-selected");
-                if (a != undefined && a == "true") {
-                    CheckedColumns += $(this).val() + ",";
-                }
-                CheckedColumns.slice(0, -1);
-            });
+          
             // End by nishant sheth
         RefreshBudgetDropdown();
         pageName = "MainGrid";
@@ -98,7 +101,7 @@
            
         GetFinanceHeaderValue(backBudgetid, true);
         }
-        else if (pageName = "UserPermission") {
+    @*    else if (pageName = "UserPermission") {
             RefreshBudgetDropdown();
             pageName = "MainGrid";
             var url = '@Url.Content("~/Finance/RefreshMainGridData/")';
@@ -106,12 +109,12 @@
             ShowHideControls("MainGrid");
             $("#DivFilter").css('display', 'block');
             GetFinanceHeaderValue(backBudgetid, true);
-        }
+        }*@
         else {
             //RefreshBudgetDropdown();
             pageName = "EditBudget";
             var budgetDetailId = backlineBudgetDetailId;
-            EditBudget(budgetDetailId, false);
+            EditBudget(budgetDetailId, false, GlobalLevel, EditPermission);
             //var url = '@Url.Content("~/Finance/EditBudget/")';
             //$('#divGridView').load(url + '?budgetId=' + backBudgetid);
             ShowHideControls("EditBudget");
