@@ -4583,7 +4583,7 @@ namespace RevenuePlanner.Helpers
         public static List<ViewByModel> GetParentBudgetlist(int BudgetId = 0)
         {
             MRPEntities db = new MRPEntities();
-            System.Diagnostics.Debug.WriteLine("start 2 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
+            
             List<ViewByModel> lstBudget = new List<ViewByModel>();
           
             var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
@@ -4595,7 +4595,7 @@ namespace RevenuePlanner.Helpers
             var customfieldlist = tblBudgetDetail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && (a.IsDeleted == false || a.IsDeleted == null) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
 
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
-            System.Diagnostics.Debug.WriteLine("End 2 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
+            
             return lstBudget;
         }
         /// <summary>
@@ -6300,8 +6300,7 @@ namespace RevenuePlanner.Helpers
         public static LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0)
         {
             MRPEntities db = new MRPEntities();
-            System.Diagnostics.Debug.WriteLine("start 1 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
-
+            
             List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
             tblBudgetDetails = db.Budget_Detail.Where(a => a.IsDeleted == false).ToList();
             List<ViewByModel> lstParentItems = new List<ViewByModel>();
@@ -6313,8 +6312,7 @@ namespace RevenuePlanner.Helpers
                                     where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
                                     select new { detail1.Name, detail1.Id }).Distinct().ToList();
             lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
-            System.Diagnostics.Debug.WriteLine("End 1 section" + DateTime.Now.ToString("hh.mm.ss.ffffff"));
-
+            
             objParentListModel.list = lstParentItems;
             objParentListModel.parentId = ParentId.HasValue ? ParentId.Value : 0;
             return objParentListModel;
