@@ -1011,7 +1011,7 @@
     }
 
     function Edit(BudgetId, childChange, level, e) {
-        debugger;
+        
         var budgetIDMain = $("#ddlParentFinanceMain").val();
         backBudgetid = budgetIDMain;
         //$("#hdn_BudgetDetailId").val(BudgetId);
@@ -1116,7 +1116,7 @@
         $("#gridbox").find("table").css("width", GridWidth);
     }
     function ShowHideColumns(chekbox) {
-        debugger;
+        
         $('#errorMsg').css('display', 'none');
         $('#SuccessMsg').css('display', 'none');
         var GridWidth = $("#gridbox").width();
@@ -1534,7 +1534,7 @@
     });
 
     $("#chkBudget, #chkForeCast, #chkPlan, #chkActual").change(function () {
-        debugger;
+        
        if (pageName == 'LineItemGrid') {
             ShowHideLineItemsColumns(this);
         }
