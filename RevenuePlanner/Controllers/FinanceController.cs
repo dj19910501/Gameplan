@@ -154,7 +154,7 @@ namespace RevenuePlanner.Controllers
         #region  Main Grid related Methods
 
         #region "Delete MainGrid"
-        public ActionResult DeleteMainGrid(string SelectedRowIDs, string mainTimeFrame, string curntBudgetId)
+        public ActionResult DeleteMainGrid(string SelectedRowIDs, string mainTimeFrame, string curntBudgetId, string ListofCheckedColums = "")
         {
             ViewBag.isDelete = true;
             //Added By Komal Rawal for #1639
@@ -282,7 +282,7 @@ namespace RevenuePlanner.Controllers
                     _budgetId = !string.IsNullOrEmpty(strbudgetId) ? Int32.Parse(strbudgetId) : 0;
                 }
             }
-            return RefreshMainGridData(_budgetId, mainTimeFrame);
+            return RefreshMainGridData(_budgetId, mainTimeFrame, ListofCheckedColums);
 
 
             #endregion
