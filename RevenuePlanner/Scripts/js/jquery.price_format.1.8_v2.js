@@ -139,6 +139,11 @@
                 // End - Modified by Arpita Soni on 01/17/2015 for Ticket #1071
                 var thousandsFormatted = '';
                 var thousandsCount = 0;
+                // Added by Rahul Shah on 04/11/2015 for PL#1729
+                var cent = str.split('.')[1];
+                if (cent > 0) {
+                    centsLimit = cent.length + 1;
+                }
 
                 // Checking CentsLimit
                 if (centsLimit == 0) {
