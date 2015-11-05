@@ -853,6 +853,11 @@
             menu.find('.advance_a').attr('mode', 'Multi');
             menu.find('input[type=checkbox]').toggle();
             menu.find('p').removeClass('single-p');
+            //added by Rahul Shah on 05/11/2015 - by default multi mode of Custom dropdown then hide the "Please Select"
+            if ($(this).find('tbody').children(':first-child').find('p').text() == "Please Select") {
+                $(this).find('tbody').children(':first-child').hide();
+                $(this).find('tbody').children(':first-child').find('input[type=checkbox]').removeAttr('checked');
+            }
         }
     });
 </script>

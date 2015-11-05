@@ -459,6 +459,9 @@ namespace RevenuePlanner.Models
         public string value { get; set; }
         public int ParentOptionId { get; set; }
         public int customFieldId { get; set; }
+        //Added by Rahul shah on 05/11/2015 for PL #1731
+        private bool isDefaultOption = false;
+        public bool IsDefaultOption { get { return isDefaultOption; } set { isDefaultOption = value; } }
     }
 
     /// <summary>

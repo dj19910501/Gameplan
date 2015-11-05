@@ -8,11 +8,13 @@
             pageErrorDivId: 'noPageErrorId'
         },
         _create: function () {
+           
             this._namespaceID = this.eventNamespace || ('multiselectWeight' + multiselectID);
             this._bindEventsM();
             multiselectID++;
         },
         _bindEventsM: function () {
+          
             var o = this.options;
             var Button = this.element;
             var dropdownMenu = Button.parent().find('.dropdown-wrapper');
@@ -29,12 +31,13 @@
                     e.stopPropagation();
                 });
                 $(this).find('.advance_a').on('click', function () {
+
                     if ($(this).attr('mode').toString() == singleMode) {
                         menu.toggleClass('dropdown-block minimum-width215');
                         menu.find('.text_ellipsis').toggleClass('minmax-width200');
                         menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
                         $('.first_hide').find('input').each(function () {
-                           if($(this).hasClass('multiselect-input-text-color-grey')) {
+                            if ($(this).hasClass('multiselect-input-text-color-grey')) {
                                 $(this).val("");
                             }
                         });
@@ -44,9 +47,19 @@
                         menu.find('p').removeClass('single-p');
                         menu.find('tr').removeClass('trdropdownhover setfocusTr');
                         menu.find('#aclose_tag').css('display', 'block');
+                        //added by Rahul Shah on 05/11/2015 - when user click on multiMode of Custom dropdown then hide the "Please Select"
+                        if ($(this).parent().parent().parent().parent().find('tbody').children(':first-child').find('p').text() == "Please Select") {
+                            $(this).parent().parent().parent().parent().find('tbody').children(':first-child').hide();
+                            $(this).parent().parent().parent().parent().find('tbody').children(':first-child').find('input[type=checkbox]').removeAttr('checked');
+                        }
+
                         var title = DivideEqualInputValue(menu);
                     }
                     else {
+                        //added by Rahul Shah on 05/11/2015 - when user click on SingleMode of Custom dropdown then Show the "Please Select"
+                        if ($(this).parent().parent().parent().parent().find('tbody').children(':first-child').find('p').text() == "Please Select") {
+                            $(this).parent().parent().parent().parent().find('tbody').children(':first-child').show();
+                        }
                         if (o.errorDivId != 'noId') {
                             var errorDivId = o.errorDivId;
                             var isAllColumnInputBlank = true;
@@ -91,6 +104,7 @@
                                     }
                                 });
                             }
+
                         }
                         else {
                             menu.toggleClass('dropdown-block minimum-width215');
@@ -211,7 +225,7 @@
                             }
                         }
                         else {
-                            
+
                             if ($(this).attr('parentid') == ParentValue) {
                                 var maindiv = $(this);
                                 var isSelected = false;
@@ -219,10 +233,9 @@
                                 $(this).css("display", "inline-block");
                                 $(this).find('tbody tr').css("display", "none");
                                 maindiv.find('tbody tr').each(function () {
-                                    var checkbox=$(this).find('input[type=checkbox]');
-                                    
-                                    if (checkbox.attr('checked') == 'checked' && $.inArray($(this).attr('parentid'), filters.chekboxIds) > -1)
-                                    {
+                                    var checkbox = $(this).find('input[type=checkbox]');
+
+                                    if (checkbox.attr('checked') == 'checked' && $.inArray($(this).attr('parentid'), filters.chekboxIds) > -1) {
                                         Selectedvalue += $(this).find(' p:first').text() + ', ';
                                         isSelected = true;
                                     }
@@ -243,26 +256,24 @@
                                     $(this).find('.dropdown_new_btn p:first').text('Please Select');
 
                                 }
-                                else
-                                {
+                                else {
                                     if (Selectedvalue.indexOf(',') > 0) {
                                         Selectedvalue = Selectedvalue.slice(0, -2);
                                     }
                                     $(this).find('.dropdown_new_btn p:first').text(Selectedvalue);
                                 }
-                                if (cnt == 0)
-                                {
+                                if (cnt == 0) {
                                     maindiv.css("display", "none");
                                     $(this).find('.dropdown_new_btn p:first').text('Please Select');
                                     $(this).find('tbody tr').find('input:checkbox').removeAttr('checked');
-                                    $(this).find('input[type=checkbox]').css("display","none");
+                                    $(this).find('input[type=checkbox]').css("display", "none");
                                     $(this).find('.advance_a').text("> Multi-selection");
                                     $(this).find('.advance_a').attr('mode', singleMode);
                                     $(this).find('input[type=text]').val('');
                                     $(this).find('p').addClass('single-p');
                                     $(this).find('tr').addClass('trdropdownhover');
                                     $(this).find('#aclose_tag').css('display', 'none');
-                                
+
                                 }
                             }
                         }
