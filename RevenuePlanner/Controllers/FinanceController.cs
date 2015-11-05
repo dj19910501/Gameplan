@@ -1287,7 +1287,7 @@ namespace RevenuePlanner.Controllers
                 objFinanceHeader.ActualTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Actual.ToString()].ToString();
                 objFinanceHeader.ForecastTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Forecast.ToString()].ToString();
                 objFinanceHeader.PlannedTitle = Enums.FinanceHeader_LabelValues[Enums.FinanceHeader_Label.Planned.ToString()].ToString();
-                if (TempData["FinanceHeader"] != null)
+                if (TempData["FinanceHeader"] == null)
                 {
                     gridRowModel = GetFinanceMainGridData(budgetId, mainTimeFrame);
                     var DetailId = db.Budget_Detail.Where(a => a.BudgetId == budgetId && a.ParentId == null && a.IsDeleted == false).Select(a => a.Id).FirstOrDefault();
