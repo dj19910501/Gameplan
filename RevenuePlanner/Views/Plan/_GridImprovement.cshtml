@@ -7,7 +7,7 @@
         ImprovementPlanProgramId = Model.ImprovementPlanProgramId;
     }
 
-    //var isTacticExist = Model.IsTacticExists;
+    var isTacticExist = Model.IsTacticExists;
     var TotalCost = Model.TotalCost;
     var TotalMqls = Model.TotalMqls;
     var NoOfPrograms = Model.Progrmas;
@@ -56,6 +56,7 @@
 <script type="text/javascript">
     var ImprovementTactic = null;
     ImprovementPlanProgramId = '@ImprovementPlanProgramId';
+    var isTacticExist = '@isTacticExist';
     var RecommendedImprovementTacticType = null;
     var SuggestionIMPTacticIdList = [];
     var sortText = null;
@@ -99,29 +100,6 @@
         });
     }
 
-    @*function sds() {
-        alert('click');
-    $(document).on("click", "#divimpTactic #divPanelImp", function (e) {
-        
-        if (isTacticExist == "False") {
-            ismsg = '@Common.objCached.AddMarketingActivitiesBeforeAddImprovementActivities';
-            hdnisError = 'True';
-            Showmsg();
-            return false;
-        }
-        e.stopPropagation();
-        $.ajaxSetup({ cache: false });
-        var idTactic = $(this).parent().attr("index");
-
-        if (idTactic == 0) {
-            $("a#divimpTactic").removeClass('1');
-            $(this).parent().addClass('1');
-                var improvementTacticId = $("a#divimpTactic.1").attr('data-id-program');
-        }
-
-            displayConfirmCommonImprovement('impTacticCommonClick(' + idTactic + ',' + improvementTacticId + ');');
-    });
-    }*@
 
     $(document).on('click', '#divimpTactic #delimpTactic', function (e) {
 
@@ -165,6 +143,9 @@
 
     function LoadImprovementTactic(CurrentPlanId) {
         $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
             type: 'POST',
             url: '@Url.Content("~/Plan/GetImprovementTactic/")',
             data: {
@@ -297,6 +278,9 @@
     function FillGrayImprovementContainer(impcount) {
 
         $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
             type: 'POST',
             url: '@Url.Content("~/Plan/GetImprovementContainerValue/")',
             data: {
@@ -1243,14 +1227,6 @@
     }
 
 
-    @*function CloseIconClick() {
-        $('.close-x-big-icon').click(function () {
-            addDefaultModalPopupBackgroungColor();
-            $('body').removeClass('bodyOverflow');
-            var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
-            $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
-        });
-    }*@
 
 
 </script>

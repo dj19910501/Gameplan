@@ -1,9 +1,6 @@
 ﻿@model RevenuePlanner.Models.Plangrid
 
-@{
-    var isTacticExist = Model.ImprovementObj.IsTacticExists;
-}
-<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid1_min.css")" rel="stylesheet" type="text/css" />
+@*<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid1_min.css")" rel="stylesheet" type="text/css" />*@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>*@
 
 
@@ -46,7 +43,7 @@
 
 @*Added by Komal Rawal for #1432*@
 <div id="ImprovementGrid" class="improvement-grid-wrapper">
-    @Html.Partial("_GridImprovement", Model.ImprovementObj)
+  @*  @Html.Partial("_GridImprovement", Model.ImprovementObj)*@
 </div>
 <div class="row-fluid calc-height">
     <div class="span12">
@@ -73,7 +70,7 @@
 <p style="display:none;">Scrolled <span id="spanscroll">0</span> times.</p>
 <script type="text/javascript">
     var HomeGrid;
-    var isTacticExist = '@isTacticExist';
+    
     var revenue = "Revenue : $" + number_format('@Model.Revenue', 0, '.', ',');
     $("#spnrevenue").html(revenue);
     var mql = '@Model.MQLLable' + " : " + number_format('@Model.MQLValue', 0, '.', ',');

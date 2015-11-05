@@ -1029,8 +1029,6 @@
             isCopyTactic = 0;
             isEditTactic = 0;
             LoadPlanGrid();
-            //  LoadImprovementGrid(CurrentPlanId);
-
 
         }
     });
@@ -1206,10 +1204,21 @@
     }
 
     //Added By Komal Rawal for #1432
+    //Update by Bhavesh 05-Nov-2015.
     function LoadImprovementGrid(PlanID) {
-        var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
-        // $("#ImprovementGrid").empty();
-        $("#ImprovementGrid").load(url + '?id=' + PlanID);
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            url: '@Url.Content("~/Plan/LoadImprovementGrid/")',
+             data: {
+                 id: PlanID
+             },
+             success: function (result) {
+                 $("#ImprovementGrid").html('');
+                 $("#ImprovementGrid").html(result);
+             }
+        });
     }
     //End
 
@@ -1267,6 +1276,7 @@
             success: function (result) {
                 $("#divgridview").html('');
                 $("#divgridview").html(result);
+                LoadImprovementGrid(CurrentPlanId)
             }
         });
 
