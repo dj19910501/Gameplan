@@ -314,7 +314,7 @@
     <Content Include="Content\css\JquryUI\images\ui-bg_glass_85_dfeffc_1x400.png" />
     <Content Include="Content\css\JquryUI\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
     <Content Include="Content\css\JquryUI\images\ui-icons_6da8d5_256x240.png" />
-    <Content Include="Content\css\style_min_Oct14.css" />
+    <Content Include="Content\css\style_min_Oct15.css" />
     <Content Include="Content\css\datepicker.css" />
     <Content Include="Content\css\dhtmlxchart.css" />
     <Content Include="Content\css\dhtmlxchart_1.css" />

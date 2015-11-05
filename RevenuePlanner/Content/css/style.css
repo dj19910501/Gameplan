@@ -9174,7 +9174,7 @@ li.close-list {
 
 .sidebarliwidth {
     display: inline-block !important;
-    font-size: 12px !important;
+    font-size: 14px !important; /*by bheru 05-11-2015*/
     height: auto;
     padding-bottom: 0 !important;
     width: 85% !important;
@@ -13469,7 +13469,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 
 
 .brandlogo { float:left;}
-.planheader-title {margin-top: 27px; width:auto; display:inline-block;}
+.planheader-title {margin-top: 27px; width:auto;}/*by bheru 05-11-2015*/
 .plancart-box { display:inline;}
 /************************************************ Responsive css start here **********************************************************/
  @media (max-width: 1600px) {
