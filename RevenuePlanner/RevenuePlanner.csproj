@@ -310,6 +310,10 @@
     <Content Include="Content\css\bootstrap-responsive.min.css" />
     <Content Include="Content\css\bootstrap.css" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\DHTMLX\imgs\dhxgrid_skyblue\sort_desc.gif" />
+    <Content Include="Content\css\JquryUI\images\ui-bg_glass_85_dfeffc_1x400.png" />
+    <Content Include="Content\css\JquryUI\images\ui-bg_inset-hard_100_fcfdfd_1x100.png" />
+    <Content Include="Content\css\JquryUI\images\ui-icons_6da8d5_256x240.png" />
     <Content Include="Content\css\style_min_Oct14.css" />
     <Content Include="Content\css\datepicker.css" />
     <Content Include="Content\css\dhtmlxchart.css" />
@@ -617,7 +621,9 @@
     <Content Include="RevenuePlanner.wpp.targets" />
     <None Include="Service References\BDSService\BDSService1.disco" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid_min.js" />
+    <Content Include="Scripts\js\DHTMLX\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
+    <Content Include="Scripts\js\jquery-ui-1.11.4.min.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

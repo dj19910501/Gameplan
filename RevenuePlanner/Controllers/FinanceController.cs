@@ -1015,7 +1015,6 @@ namespace RevenuePlanner.Controllers
             if (lstchildbudget.Count > 0)
             {
                 ViewBag.childbudgetlist = lstchildbudget;
-
             }
             else
             {
@@ -1063,30 +1062,6 @@ namespace RevenuePlanner.Controllers
         }
 
 
-        //public JsonResult LoadUser(string term, string UserId)
-        //{
-        //    BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-        //    List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
-        //    lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList();
-        //    List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
-
-        //    string strUserList = string.Join(",", lstClientUsers);
-        //    List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); 
-        //    var result = (object)null;
-        //    if (lstUserDetails.Count > 0)
-        //    {
-        //        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-        //        result = lstUserDetails.Where(user => user.FirstName.ToLower().StartsWith(term.ToLower())).Select(r => new { id = r.UserId, firstName = r.FirstName, lastName = r.LastName });
-
-        //    }
-        //    else
-        //    {
-        //        result = new List<User>();
-        //    }
-        //    return Json(result, JsonRequestBehavior.AllowGet);
-        //}
-
-
         /// <summary>
         /// Added by Dashrath Prajapati for PL ticket #1679
         /// Delete record from Budget_Permission table
@@ -1114,14 +1089,8 @@ namespace RevenuePlanner.Controllers
         public JsonResult getData(string term)
         {
             BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
-            lstUsers = lstUsers.Where(i => !i.IsDeleted).ToList(); // PL #1532 Dashrath Prajapati
-            List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
-
-            string strUserList = string.Join(",", lstClientUsers);
-            List<User> lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId); //PL #1532 Dashrath Prajapati
-
             List<User> lstUserDetail = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).ToList();
+
             lstUserDetail.Add(new User
             {
                 UserId = Sessions.User.UserId,
@@ -1131,7 +1100,7 @@ namespace RevenuePlanner.Controllers
             });
 
             List<User> Getvalue = new List<User>();
-            if (lstUserDetails.Count > 0)
+            if (lstUserDetail.Count > 0)
             {
                 lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
                 Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
@@ -1143,11 +1112,7 @@ namespace RevenuePlanner.Controllers
             return Json(Getvalue, JsonRequestBehavior.AllowGet);
         }
 
-        //public ActionResult DeleteUser(string Id)
-        //{
-
-        //    return Json(null, JsonRequestBehavior.AllowGet);
-        //}
+   
         /// <summary>
         /// Added by Dashrath Prajapati for PL ticket #1679
         /// Get specific of user record on selection of dropdown list
@@ -3717,19 +3682,4 @@ namespace RevenuePlanner.Controllers
 
         #endregion
     }
-    #region "Budget Permission"
-    public class UserBudgetPermission
-    {
-        public string UserId { get; set; }
-        public int PermisssionCode { get; set; }
-    }
-    public class Budget_Permissions
-    {
-        public Guid UserId { get; set; }
-        public int BudgetDetailId { get; set; }
-        public int CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public int PermisssionCode { get; set; }
-    }
-    #endregion
 }
