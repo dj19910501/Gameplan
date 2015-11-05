@@ -580,7 +580,7 @@ namespace RevenuePlanner.Controllers
                         // Get Owner name
                         var OwnerName = lstUser.Where(a => a.UserId == i.CreatedBy).Select(a => a.FirstName + " " + a.LastName).FirstOrDefault();
                         //dataTable.Rows.Add(new Object[] { i.Id, i.ParentId == null ? 0 : i.ParentId, rowId, i.Name, string.Empty, objBudgetAmount.Budget.Sum().Value.ToString(formatThousand), objBudgetAmount.ForeCast.Sum().Value.ToString(formatThousand), objBudgetAmount.Plan.Sum().Value.ToString(formatThousand), objBudgetAmount.Actual.Sum().Value.ToString(formatThousand), "", cntlineitem, i.IsForecast, lstLineItemIds, Convert.ToString(OwnerName) });
-                       
+
 
                         int count = 0;
                         var CountUser = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)i.Id).Select(t => t.UserId).Distinct().ToList();
@@ -1112,7 +1112,7 @@ namespace RevenuePlanner.Controllers
             return Json(Getvalue, JsonRequestBehavior.AllowGet);
         }
 
-   
+
         /// <summary>
         /// Added by Dashrath Prajapati for PL ticket #1679
         /// Get specific of user record on selection of dropdown list
@@ -1528,6 +1528,22 @@ namespace RevenuePlanner.Controllers
             bool _isBudgetCreateEdit = false;
             bool _isForecastCreateEdit = false;
 
+            #region CheckPermission for user
+            // For Handle user is change the Edit permission from inspect element browser
+            var objBudgetPermission = db.Budget_Permission.Where(a => a.UserId == Sessions.User.UserId && a.BudgetDetailId == BudgetId).Select(a => a.PermisssionCode).FirstOrDefault();
+            if (objBudgetPermission != null)
+            {
+                if (Convert.ToInt32(objBudgetPermission) == 0)
+                {
+                    EditPermission = "Edit";
+                }
+                else
+                {
+                    EditPermission = "View";
+                }
+            }
+            #endregion
+
             var Listofcheckedcol = ListofCheckedColums.Split(',');
             #region Set coulmn base on columnset
             //List<Budget_Columns> objColumns = db.Budget_Columns.Where(a => a.Column_SetId == ColumnSetId && a.IsDeleted == false).Select(a => a).ToList();
@@ -1554,7 +1570,14 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(BudgetCreateEdit) && Convert.ToString(BudgetCreateEdit).ToLower() == "true")
                 {
                     _isBudgetCreateEdit = true;
-                    budgetMain.enableTreeCellEdit = true;
+                    if (EditPermission == "Edit")
+                    {
+                        budgetMain.enableTreeCellEdit = true;
+                    }
+                    else
+                    {
+                        budgetMain.enableTreeCellEdit = false;
+                    }
                 }
                 else
                 {
@@ -1576,7 +1599,14 @@ namespace RevenuePlanner.Controllers
                 if (!string.IsNullOrEmpty(ForecastCreateEdit) && Convert.ToString(ForecastCreateEdit).ToLower() == "true")
                 {
                     _isForecastCreateEdit = true;
-                    budgetMain.enableTreeCellEdit = true;
+                    if (EditPermission == "Edit")
+                    {
+                        budgetMain.enableTreeCellEdit = true;
+                    }
+                    else
+                    {
+                        budgetMain.enableTreeCellEdit = false;
+                    }
                 }
                 else
                 {
@@ -1784,7 +1814,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         setColTypes.Append("ro,");
                                     }
-                                    
+
                                 }
                                 else
                                 {
@@ -1803,7 +1833,7 @@ namespace RevenuePlanner.Controllers
                                     {
                                         setColTypes.Append("ro,");
                                     }
-                                  
+
                                 }
                                 else
                                 {
