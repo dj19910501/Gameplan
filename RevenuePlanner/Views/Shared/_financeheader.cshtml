@@ -114,7 +114,7 @@
             //RefreshBudgetDropdown();
             pageName = "EditBudget";
             var budgetDetailId = backlineBudgetDetailId;
-            EditBudget(budgetDetailId, false, GlobalLevel, EditPermission);
+            EditBudget(budgetDetailId, false, GlobalLevel, GlobalEditPermission);
             //var url = '@Url.Content("~/Finance/EditBudget/")';
             //$('#divGridView').load(url + '?budgetId=' + backBudgetid);
             ShowHideControls("EditBudget");
@@ -133,7 +133,7 @@
 
     function HeaderSectionName()
     {
-        //debugger;
+        
         if (pageName == "MainGrid") {
             $("#divFinanceBack").css("display", "none");
             //Added by Rahul shah on 13/10/2015 for PL#1667

@@ -59,7 +59,7 @@
 
         GlobalBudgetId = '@ViewBag.BudgetId';
         GlobalEditLevel = '@ViewBag.EditLevel';
-        EditPermission = '@ViewBag.EditPermission';
+        
         if (GlobalEditLevel == "Budget") {
             GetListOfBudgetName();
         }
@@ -174,7 +174,7 @@
                 BudgetCreateEdit: _isBudgetCreateEdit,
                 ForecastCreateEdit: _isForecastCreateEdit,
                 ListofCheckedColums: CheckedColumns,
-                EditPermission: EditPermission
+                EditPermission: GlobalEditPermission
             },
             success: function (data) {
 
@@ -303,7 +303,7 @@
             IsValid = true;
         });
         myTreeGrid.attachEvent("onEditCancel", function (id, value) {
-            //debugger;
+            
             //myTreeGrid.cells(id, 0).setCValue("invalid");
             //alert('');
             RevnueTimeFrameChange = true;

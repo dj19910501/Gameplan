@@ -194,6 +194,7 @@
     var objCustomColumns = [];		
     var objTimeFrameColumns = [];
     var objTimeFrameColumns = [];
+    var GlobalEditPermission="";
     //$('#AddSettings').click(function () {
     //    $('#errorMsg').css('display', 'none');
     //    $('#SuccessMsg').css('display', 'none');
@@ -441,7 +442,7 @@
                                 var budgetID = $(this).attr('value');
                                 if (pageName == "EditBudget") {
 
-                                    EditBudget(budgetID, false);
+                                    EditBudget(budgetID, false,'',GlobalEditPermission);
                                     //GetFinanceHeaderValue(budgetID);
                                 }
                                 //addded by Rahul Shah
@@ -936,11 +937,11 @@
             if (pageName == "EditBudget") {
                 if (ChildbudgetID > 0) {
 
-                    EditBudget(ChildbudgetID, true);
+                    EditBudget(ChildbudgetID, true,'',GlobalEditPermission);
                     //GetFinanceHeaderValue(ChildbudgetID);
                 } else {
 
-                    EditBudget(parentid, true);
+                    EditBudget(parentid, true,'',GlobalEditPermission);
                     //GetFinanceHeaderValue(parentid);
                 }
             }
@@ -1001,7 +1002,7 @@
             var budgetID = $(this).attr('value');
             if (pageName == "EditBudget") {
 
-                EditBudget(budgetID, false);
+                EditBudget(budgetID, false,'',GlobalEditPermission);
                 //GetFinanceHeaderValue(budgetID);
             }
             //addded by Rahul Shah
@@ -1101,10 +1102,12 @@
             BindChildBudgetDrp(parseInt(BudgetId));
         }
         BindTimeFrameForChild(AllocatedBy);
+
+        GlobalEditPermission=EditPermission;
         valueTimeFrame = $("#ddlRevenueTimeFrame").val();
         $("#ddlRevenueTimeFrame").val(valueTimeFrame);
         var url = '@Url.Content("~/Finance/EditBudget/")';
-        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel+'&EditPermission='+EditPermission);
+        $('#divGridView').load(url + '?BudgetId=' + BudgetId + '&IsQuaterly=' + AllocatedBy + '&level=' + GlobalLevel+'&EditPermission='+GlobalEditPermission);
 
     }
 
@@ -1599,7 +1602,7 @@
                 }
             }
         });
-        // debugger;
+        
         //var parentBudgetDetailId = $("#hdn_BudgetDetailId").val();
         $("#ddlParentFinance").val(parentBudgetDetailId);
         $("#hdn_BudgetDetailId").val(parentBudgetDetailId);
@@ -1646,7 +1649,7 @@
 
     }
     function BindChildLineItemDropdown(childBudgetDetailId) {
-        //debugger;
+        
         var parentId = $("#hdn_BudgetDetailId").val();
         var ChildID = 0;
         var budgetDetailId = 0;
@@ -1658,7 +1661,7 @@
             data: { BudgetDetailId: parentId },
             success: function (data) {
                 $("#ddlChildFinance").html("");
-                //debugger;
+                
                 if (data == null || data.length == 0) {
                     $('#ddlChildFinance').append($('<option></option>').attr('value', '0').text('Please Select'));
 
@@ -1678,7 +1681,7 @@
                 }
                 $("#ddlChildFinance").val(ChildID);
                 //var ChildID = $('#nl-formChildFinance .nl-dd-checked ').attr('value');
-                //debugger;
+                
                 if (ChildID > 0) {
                     budgetDetailId = ChildID;
                     $("#ddlChildFinance option[value='" + ChildID + "']").attr("selected", "selected");
