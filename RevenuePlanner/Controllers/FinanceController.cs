@@ -1952,7 +1952,7 @@ namespace RevenuePlanner.Controllers
             {
                 foreach (var custcol in objCustomColumns)
                 {
-                    setHeader.Append(Convert.ToString(custcol.CustomField.Name) + ",");
+                    setHeader.Append(Convert.ToString("Custom field") + ",");
                     attachHeader.Append(Convert.ToString(custcol.CustomField.Name) + ",");
                     setColAlign.Append("center,"); //set column allignment
                     setColValidators.Append((!string.IsNullOrEmpty(custcol.ValidationType) ? (custcol.ValidationType != Enums.ColumnValidation.None.ToString() ? custcol.ValidationType : "") : "") + ","); // set column validation
