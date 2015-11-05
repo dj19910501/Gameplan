@@ -4702,18 +4702,25 @@ a.link-gray {
 
 .fin-head-right {
     float: right;
-    width: 450px;
+    width: 455px;/*by bheru 1678 05-11-2015*/
     text-align: right;
 }
 
     .fin-head-right .quarter_selection {
         width: auto;
         line-height: 1.1;
-        margin-left: 20px;
+        margin-left: 15px;/*by bheru 1678 05-11-2015*/
         float: right;
-        margin-right: 0px;
+        margin-right: 0;/*by bheru 1678 05-11-2015*/
+        margin-left: 17px;
     }
-
+  .fin-head-right  .filter-columns /*by bheru 1678 05-11-2015 start*/
+    {
+        display:inline-block;
+        float:left;
+        margin-left:27px;
+    }
+  /*by bheru 1678 05-11-2015 end*/
 .finance-header {
     display: flex;
     padding: 20px 20px 10px;
@@ -4752,7 +4759,7 @@ a.link-gray {
 }
 
 #btnMultiselect_budget-select {
-    margin-left: 15px;
+    margin-left: 0;/*by bheru 1678 05-11-2015*/
     margin-right: 0;
 }
 
@@ -13472,7 +13479,11 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 .planheader-title {margin-top: 27px; width:auto;}/*by bheru 05-11-2015*/
 .plancart-box { display:inline;}
 /************************************************ Responsive css start here **********************************************************/
- @media (max-width: 1600px) {
+@media (max-width: 1600px) {
+
+    .grid_Delete{margin-right:0;} /*by bheru 1678 05-11-2015*/
+} 
+@media (max-width: 1600px) {
 .row-fluid .hierarchy_wrapper {
  overflow: auto;
  width: 1045px;
@@ -13499,7 +13510,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
  height: 82%;
 }
  .finance_grid_add {
- margin: 0 0 0 16%;
+ margin: 0;/*by bheru 1678 05-11-2015*/
 }
  .grid_Delete {
  margin-right: 6px;
@@ -13709,7 +13720,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
  width: 830px;
 }
  .finance_grid_add {
- margin: 0 0 0 9%;
+ margin: 0 0 0;
 }
  .grid_Delete {
  margin-right: 6px;
