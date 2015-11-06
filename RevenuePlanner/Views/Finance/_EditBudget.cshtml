@@ -923,8 +923,8 @@
             var ColumnsVisibility = "";
 
             AddRowString.push("New item");
-            AddRowString.push("<div id='dv" + _newrowid + "' class='finance_grid_add' onclick='AddRow(this)' row-id='" + _newrowid + "' style='float:none !important'></div><div title='" + "" + "' id='cb" + _newrowid + "' row-id='" + _newrowid + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>");
-            for (var k = 0; k < TotalColumn; k++) {
+            AddRowString.push("");
+            for (var k = 0; k <= TotalColumn; k++) {
                 ColumnsVisibility += myTreeGrid.isColumnHidden(k) + ",";
                 if (k > 2) {
                     AddRowString.push("0");
