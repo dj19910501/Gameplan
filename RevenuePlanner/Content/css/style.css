@@ -4949,7 +4949,7 @@ border:none;
 
 .user-table .alert-success span.x-icon,
 .user-table table.myteam tbody tr > td:last-child span.x-icon {
-    background: url(../images/delete-icon.png) no-repeat;
+    /*background: url(../images/delete-icon.png) no-repeat;*/
     cursor: pointer;
     display: block;
     height: 15px;
@@ -10257,7 +10257,7 @@ li.close-list {
         background: #f6d87f!important;
        color:#000 !important;
        font-weight:normal !important;
-       border: none;
+         border: none !important;
     }
   .user_permission_list
     {

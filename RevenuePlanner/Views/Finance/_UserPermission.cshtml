@@ -30,7 +30,11 @@
         <div class="user-list">
             <p>Add user to list</p>
             <div class="search-user">
-                @Html.TextBox("Selectuser")
+                @Html.TextBox("Selectuser",null, new  { placeholder = "Search..." })
+                 @*@Html.TextBoxFor(model => model.Password, new { placeholder = "Password (8 char. min)", type = "password" })*@
+               @* @Html.TextBox("Selectuser", new { placeholder = "Username" })*@
+
+                @*@Html.TextBox("Selectuser", new  { @placeholder="Serach"})*@
             </div>
         </div>
         <div id="tableNoData" style="width: 100%; clear: both; display: none; font-weight: bold; text-align: center">
@@ -39,11 +43,11 @@
         <div class="user-table">
             <div id="SaveMsg" class="alert alert-success">
                 <span class="x-icon pull-right" id="aclose"></span>
-                <span>Changes saved.</span>
+                <span>Changes Saved.</span>
             </div>
 
             <p>Users with permission</p>
-            <table id="userTable" class="table table-striped table-hover myteam">
+            <table id="userTable" class="table table-striped table-hover myteam" >
                 <thead>
                     <tr>
                         <th title="First Name">First Name
@@ -53,7 +57,7 @@
 
                         <th title="Role">Role
                         </th>
-                        <th>Permission</th>
+                        <th style="border-right:none">Permission</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -70,12 +74,13 @@
                             <td>@Html.DisplayFor(model => item.Role)</td>
                               @if (item.Permission == 0)
                               {
-                                     <td class="userDelete">
+                                     <td class="userDelete" >
+                                          
                                     <p>
                                         <input type="radio" id="vew-edit'@item.id'" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only'@item.id'"  name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
+                                        <input type="radio" id="view-only'@item.id'"  name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
                                     </p>
                                     <a href="#">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
@@ -84,12 +89,12 @@
                               }
                               else
                               {
-                                 <td class="userDelete">
+                                 <td class="userDelete" >
                                     <p>
                                         <input type="radio" id="vew-edit'@item.id'"  name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
+                                        <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
                                     </p>
                                     <a href="#">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
@@ -122,12 +127,13 @@
                             <td>@Html.DisplayFor(model => item.Role)</td>
                             @if (item.Permission == 0)
                             {
-                                <td class="userDelete">
+                                <td class="userDelete" style="border-right:none">
+                                     @*<input id="349" type="radio" value="1" name="question1"><label for="349">Abe</label>*@
                                     <p>
                                         <input type="radio" id="vew-edit'@item.id'" class="redinput" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only'@item.id'" class="redinput" name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
+                                        <input type="radio" id="view-only'@item.id'" class="redinput" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
                                     </p>
                                     <a href="#" onclick="DeleteUsers('@item.id','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
@@ -137,12 +143,12 @@
                             else
                             {
                                 
-                                <td class="userDelete">
+                                <td class="userDelete" style="border-right:none">
                                     <p>
                                         <input type="radio" id="vew-edit'@item.id'"  name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                     </p>
                                     <p>
-                                        <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
+                                        <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
                                     </p>
                                     <a href="#" onclick="DeleteUsers('@item.id','@item.budgetID','@item.FirstName','@item.LastName');">
                                         <span title="Delete Member" class="x-icon hide pull-right"></span>
@@ -170,7 +176,7 @@
         <form>
             <h2 class="primary-title source-sans-prosemibold resubmission_header">Deleting an item</h2>
             <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to delete </label>
-            <label id="lipname" style="text-align: center; width: 100%;" class="resubmission_content"></label>
+            <label id="lipname" style="text-align: center; width: 100%;font-weight: bold;" class="resubmission_content"></label>
             <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
             <input type="hidden" id="hdnsourceid" />
             <input type="hidden" id="hdndestid" />
@@ -182,7 +188,7 @@
 <div id="divCancelPopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div>
         <form>
-            <label style="text-align: center; width: 100%;" class="resubmission_content">You have unsaved changes. Do you wish to leave this page and lose your work?</label>
+            <label style="text-align: center; width: 100%;" class="resubmission_content">Error! You have unsaved changes. Do you wish to leave this page and lose your work?</label>
             <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_Continue">Continue</button>
             <button id="cancel-button_Cancel" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
         </form>
@@ -227,6 +233,7 @@
         $('#SaveMsg').hide();
         $("#DivFilter").css('display', 'none');
         $('#divDeletePopup').modal("hide");
+        $('.white-chart').hide();
 
 
         nlformUserChildFinance = new NLForm(document.getElementById('nl-formUserChildFinance'));
@@ -234,7 +241,7 @@
         InspectBudgetPermissionRow();
 
 
-       
+
         //var width = $(".user-list").width();
         //setwidth = width +"px";
 
@@ -272,16 +279,17 @@
                         for (var i = 0; i < data.length; i++) {
                             var html = "";
                             if (data[i].Permission == 0) {
-                                html = '<p><input type="radio" class="redinput" id="vew-edit' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edi' + data[i].id + 't">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only' + data[i].id + '">view only</label></p>';
+                                html = '<p><input type="radio" class="redinput" id="vew-edit' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edi' + data[i].id + 't">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only' + data[i].id + '">View Only</label></p>';
                             }
                             else {
-                                html = '<p><input type="radio" class="redinput" id="vew-edit' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only' + data[i].id + '">view only</label></p>';
+                                html = '<p><input type="radio" class="redinput" id="vew-edit' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only' + data[i].id + '">View Only</label></p>';
                             }
                             $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
-                             '</td><td class="userDelete">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                             '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                         }
                         $("#tableNoData").hide();
                         $(".user-table").show();
+                        InspectBudgetPermissionRow();
                     }
                 },
                 error: function () {
@@ -301,9 +309,9 @@
 
         var row;
         $('#userTable').on('click', '#deletemember', function () {
-           
+
             var Name = $(this).closest('tr').find('td').eq(1).text() + " " + $(this).closest('tr').find('td').eq(2).text() + ".";
-            $("#divDeletePopup h2").text('Deleteing a user');
+            $("#divDeletePopup h2").text('Deleting a user');
             $("#lipname").html(Name);
             $("#divDeletePopup").modal('show');
             row = $(this).closest('tr');
@@ -352,12 +360,13 @@
             return false;
         })
 
-       var imageurl = '@Url.Content("~/Content/images/icon-plus_in_circle.png")';
+        var imageurl = '@Url.Content("~/Content/images/icon-plus_in_circle.png")';
 
         $('#Selectuser').autocomplete({
             source: function (request, response) {
-			var urlcontent = '@Url.Content("~/Finance/getData/")';
+                var urlcontent = '@Url.Content("~/Finance/getData/")';
                 $.getJSON(urlcontent + "?term=" + request.term, function (data) {
+
                     myApp.hidePleaseWait();
                     response($.map(data, function (item) {
 
@@ -398,11 +407,11 @@
                     dataType: "json",
                     data: { Id: _userid },
                     success: function (data) {
-                       
+
                         $("#SaveMsg").hide();
                         $("#Selectuser").val('');
                         $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
-                            '</td><td class="userDelete"> <p><input type="radio" id="vew-edit" class="redinput" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit' + data.UserId + '">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only' + data.UserId + '">view only</label></p><a href="Finance/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                            '</td><td class="userDelete" style="border-right:none"> <p><input type="radio" id="vew-edit" class="redinput" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit' + data.UserId + '">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only' + data.UserId + '">View Only</label></p><a href="Finance/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                         InspectBudgetPermissionRow();
                     }
                 })
@@ -431,13 +440,18 @@
             $("#userTable tbody tr").each(function () {
                 var Id = $(this).find('td:first').text();
                 if (Id == '@Sessions.User.UserId') {
-
-                    $(this).css("cursor", 'not-allowed');
+                    $(this).find('td,input,span,a').attr("disabled", "disabled");
+                    $(this).find('a').removeAttr("onclick");
+                    $(this).find('a').removeAttr('href', '')
+                    // $(this).find('span').attr('id', '')
+                    $(this).find('span').removeClass('x-icon');
+                    // $(this).hide();
+                    //$(this).css("cursor", 'not-allowed');
                 }
             })
         }
 
-  
+
 
 
         $("#btnsave").click(function () {
@@ -472,7 +486,7 @@
                 data: emp,
                 success: function (data) {
                     if (data) {
-                        $("#SaveMsg").find('span').last().text('Changes saved.');
+                        $("#SaveMsg").find('span').last().text('Changes Saved.');
                         $('#SaveMsg').show();
                     }
                 },
@@ -491,20 +505,25 @@
     function InspectBudgetPermissionRow() {
         $("#nl-formUserChildFinance li").each(function () {
             $("#userTable tbody tr").each(function () {
-          
+
 
                 var Id = $(this).find('td:first').text();
                 var CreatedbyId = $(this).find('td').eq(1).text();
                 if (Id == '@Sessions.User.UserId') {
-
+                    //alert('user');  
+                    // $(this).hide();
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
                     $(this).find('a').removeAttr('href', '')
-                    $(this).find('span').attr('id', '')
+                    //$(this).find('span').attr('id', '')
+                    //x-icon hide pull-right
+                    $(this).find('span').removeClass('x-icon');
                 }
                 if (CreatedbyId == Id) {
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
+                    // $(this).find('span').hide();
+                    $(this).find('span').removeClass('x-icon');
                 }
 
             })
@@ -543,8 +562,8 @@
 
     function DeleteUsers(id, budgetID, firsname, lastname) {
         _isDatabase = "Fromdatabase";
-        var name = firsname + " " + lastname + " " + ".";
-        $("#divDeletePopup h2").text('Deleteing a user');
+        var name = firsname + lastname + ".";
+        $("#divDeletePopup h2").text('Deleting a user');
         $("#lipname").html(name);
         $("#divDeletePopup").modal('show');
         _id = id;

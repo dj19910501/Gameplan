@@ -560,7 +560,7 @@ table.myteam {
 }
 /* End - Added by Sohel Pathan on 16/07/2014 for Internal Functional Review Points #62 */
     table.myteam tbody tr:hover {
-        cursor: pointer;
+        /*cursor: pointer;*/
     }
 
     table.myteam.table-striped tbody > tr:nth-child(2n+1) > td, table.myteam.table-striped tbody > tr:nth-child(2n+1) > th {

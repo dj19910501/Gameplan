@@ -32,6 +32,19 @@ namespace RevenuePlanner.Controllers
 
         public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Finance)
         {
+            //store userlist data into tempdata
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            List<User> lstUserDetail = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).ToList();
+
+            lstUserDetail.Add(new User
+            {
+                UserId = Sessions.User.UserId,
+                FirstName = Sessions.User.FirstName,
+                LastName = Sessions.User.LastName,
+                JobTitle = Sessions.User.JobTitle
+            });
+            TempData["Userlist"] = lstUserDetail;
+            //
             //Added by Rahul Shah on 02/10/2015 for PL #1650
             bool IsBudgetCreateEdit, IsBudgetView, IsForecastCreateEdit, IsForecastView;
             IsBudgetCreateEdit = _IsBudgetCreate_Edit = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.BudgetCreateEdit);
@@ -821,11 +834,25 @@ namespace RevenuePlanner.Controllers
                 {
                     if (Convert.ToBoolean(IsForcast))
                     {
-                        strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                        if (Permission == "Edit")
+                        {
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                        }
+                        else
+                        {
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                        }
                     }
                     else
                     {
-                        strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                        if (Permission == "Edit")
+                        {
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                        }
+                        else
+                        {
+                            strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Budget</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'Budget'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                        }
                     }
                 }
                 if ((lstChildren != null && lstChildren.Count() > 0) && parentId > 0) // LineItem count will be not set for Most Parent Item & last Child Item.
@@ -894,7 +921,14 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                    if (Permission == "Edit")
+                    {
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>Edit Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'Edit'")));
+                    }
+                    else
+                    {
+                        strAction = string.Format("<div onclick='EditBudget({0},false,{1},{2})' class='finance_link'>View Forecast</div>", id.ToString(), HttpUtility.HtmlEncode(Convert.ToString("'ForeCast'")), HttpUtility.HtmlEncode(Convert.ToString("'View'")));
+                    }
                 }
             }
             //forecast = forecast.ToString(new c
@@ -1057,7 +1091,14 @@ namespace RevenuePlanner.Controllers
             {
                 ViewBag.NoRecord = "NoRecord";
             }
-            objFinanceModel.Userpermission = _user;
+
+            objFinanceModel.Userpermission = _user.OrderBy(i => i.FirstName, new AlphaNumericComparer()).ToList();
+            var index = _user.FindIndex(x => x.id == Sessions.User.UserId.ToString());
+            var item = _user[index];
+            _user[index] = _user[0];
+            _user[0] = item;
+            objFinanceModel.Userpermission = _user.ToList();
+           // objFinanceModel.Userpermission = _user;
             return PartialView("_UserPermission", objFinanceModel);
         }
 
@@ -1088,27 +1129,23 @@ namespace RevenuePlanner.Controllers
         /// <returns>User list</returns>
         public JsonResult getData(string term)
         {
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
-            List<User> lstUserDetail = objBDSServiceClient.GetTeamMemberList(Sessions.User.ClientId, Sessions.ApplicationId, Sessions.User.UserId, true).ToList();
-
-            lstUserDetail.Add(new User
-            {
-                UserId = Sessions.User.UserId,
-                FirstName = Sessions.User.FirstName,
-                LastName = Sessions.User.LastName,
-                JobTitle = Sessions.User.JobTitle
-            });
-
+            List<BDSService.User> lstUserDetail = new List<BDSService.User>();
             List<User> Getvalue = new List<User>();
-            if (lstUserDetail.Count > 0)
+            if (TempData["Userlist"] != null)
             {
-                lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                lstUserDetail = TempData["Userlist"] as List<BDSService.User>;
+                if (lstUserDetail.Count > 0)
+                {
+                    lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                    Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                }
+                else
+                {
+                    Getvalue = new List<User>();
+                }
+                TempData["Userlist"] = lstUserDetail;
             }
-            else
-            {
-                Getvalue = new List<User>();
-            }
+
             return Json(Getvalue, JsonRequestBehavior.AllowGet);
         }
 
