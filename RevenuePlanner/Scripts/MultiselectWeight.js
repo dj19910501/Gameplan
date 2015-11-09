@@ -3,18 +3,19 @@
     var $doc = $(document);
     var StageCodeOfWeight = 'weight';
     $.widget("ech.multiselectWeight", {
+       
         options: {
             errorDivId: 'noId',
             pageErrorDivId: 'noPageErrorId'
         },
         _create: function () {
-           
+            
             this._namespaceID = this.eventNamespace || ('multiselectWeight' + multiselectID);
             this._bindEventsM();
             multiselectID++;
         },
         _bindEventsM: function () {
-          
+            
             var o = this.options;
             var Button = this.element;
             var dropdownMenu = Button.parent().find('.dropdown-wrapper');
@@ -26,6 +27,7 @@
                 e.stopPropagation();
             });
             this.element.parent().find('.dropdown-wrapper').each(function () {
+               
                 var menu = $(this);
                 menu.on('click', function (e) {
                     e.stopPropagation();
@@ -75,6 +77,7 @@
                             }
                             if (!isAllColumnInputBlank) {
                                 if (label != '' && typeof label != 'undefined') {
+                                    
                                     $('#' + errorDivId).attr('proccedObject', label);
                                     $('#' + errorDivId).slideDown(400);
                                     $('#' + errorDivId + ' span').find('attributetext').text(label);
@@ -82,6 +85,10 @@
                                         $('#' + pageErrorDivId).css('display', 'none');
                                     }
                                     window.location = '#' + errorDivId;//'#MultiSelectProcced';
+                                    if ($(this).parent().parent().parent().parent().find('tbody').children(':first-child').find('p').text() == "Please Select") {
+                                        $(this).parent().parent().parent().parent().find('tbody').children(':first-child').hide();
+                                        $(this).parent().parent().parent().parent().find('tbody').children(':first-child').find('input[type=checkbox]').removeAttr('checked');
+                                    }
                                 }
                             }
                             else {
@@ -128,9 +135,11 @@
                     })
                 }
                 menu.find('.close_btn,.cncl_btn').on('click', function () {
+                    
                     menu.find('.innerpopup').css('display', 'none');
                 });
                 menu.find('.close_a').on('click', function () {
+                   
                     $('.dropdown-wrapper').css('display', 'none');
                 });
                 menu.find('input[type=text]').on('keydown', function (e) {
@@ -191,6 +200,7 @@
 
                 });
                 menu.find('.first_show').on('click', function (e) {
+                    
                     filters.chekboxIds = [];
                     var checkbx = $(this).find('input:checkbox');
                     var ParentValue = checkbx.attr('name');
@@ -227,6 +237,7 @@
                         else {
 
                             if ($(this).attr('parentid') == ParentValue) {
+                               
                                 var maindiv = $(this);
                                 var isSelected = false;
                                 var Selectedvalue = ""
@@ -235,14 +246,16 @@
                                 maindiv.find('tbody tr').each(function () {
                                     var checkbox = $(this).find('input[type=checkbox]');
 
-                                    if (checkbox.attr('checked') == 'checked' && $.inArray($(this).attr('parentid'), filters.chekboxIds) > -1) {
+                                    if ((checkbox.attr('checked') == 'checked' && $.inArray($(this).attr('parentid'), filters.chekboxIds) > -1)) {
                                         Selectedvalue += $(this).find(' p:first').text() + ', ';
                                         isSelected = true;
                                     }
                                     var ParentOptionId = $(this).attr('parentid');
                                     var i;
                                     for (i = 0 ; i < filters.chekboxIds.length; i++) {
-                                        if (ParentOptionId == filters.chekboxIds[i]) {
+                                       
+                                        if (ParentOptionId == filters.chekboxIds[i] || $(this).find('.lable_inline').text() == "Please Select") {
+                                            
                                             if ($(this).css("display") == "none") {
                                                 $(this).css("display", "block");
                                                 cnt++;
@@ -262,7 +275,7 @@
                                     }
                                     $(this).find('.dropdown_new_btn p:first').text(Selectedvalue);
                                 }
-                                if (cnt == 0) {
+                                if (cnt == 1) {
                                     maindiv.css("display", "none");
                                     $(this).find('.dropdown_new_btn p:first').text('Please Select');
                                     $(this).find('tbody tr').find('input:checkbox').removeAttr('checked');

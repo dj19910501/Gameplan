@@ -450,7 +450,7 @@
 
     $(document).ready(
       function () {
-
+         
 
           /*Added by Mitesh Vaishnav for PL ticket #1073
           Register events of new multiselect dropdown customfields*/
@@ -1355,6 +1355,12 @@
                 menu.find('p').addClass('single-p');
                 menu.find('tr').addClass('trdropdownhover');
                 menu.find('#aclose_tag').css('display', 'none');
+                //added by Rahul Shah on 05/11/2015 - by default multi mode of Custom dropdown then hide the "Please Select"
+                
+                if ($(this).next().children().children().find('tbody').children(':first-child').find('p').text() == "Please Select") {
+                    $(this).next().children().children().find('tbody').children(':first-child').show();
+            
+                }
             }
         });
         $('#MultiSelectProcced').slideUp(400);
