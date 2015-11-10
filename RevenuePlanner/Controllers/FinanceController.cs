@@ -1073,16 +1073,19 @@ namespace RevenuePlanner.Controllers
                             where c.BudgetDetailId == BudgetId
                             orderby c.UserId
                             select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
-
-            for (int i = 0; i < UserList.Count; i++)
-            {
                 UserPermission user = new UserPermission();
-                objUser = objBDSServiceClient.GetTeamMemberDetails(userId = Guid.Parse(UserList[i].UserId.ToString()), Sessions.ApplicationId);
+            // Add By Nishant Sheth
+            // Desc : To avoid multiple service trip and db trip
+            var BDSuserList = objBDSServiceClient.GetMultipleTeamMemberDetails(String.Join(",", UserList.Select(a => a.UserId).ToList()).ToString(), Sessions.ApplicationId);
+            for (int i = 0; i < BDSuserList.Count; i++)
+            {
+                user = new UserPermission();
+                //    objUser = objBDSServiceClient.GetTeamMemberDetails(userId = Guid.Parse(UserList[i].UserId.ToString()), Sessions.ApplicationId);
                 user.budgetID = BudgetId;
-                user.id = objUser.UserId.ToString();
-                user.FirstName = objUser.FirstName;
-                user.LastName = objUser.LastName;
-                user.Role = objUser.RoleTitle;
+                user.id = BDSuserList[i].UserId.ToString();
+                user.FirstName = BDSuserList[i].FirstName;
+                user.LastName = BDSuserList[i].LastName;
+                user.Role = BDSuserList[i].RoleTitle;
                 user.Permission = UserList[i].PermisssionCode;
                 user.createdby = UserList[i].CreatedBy.ToString();
                 _user.Add(user);
