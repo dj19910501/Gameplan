@@ -636,8 +636,13 @@ namespace RevenuePlanner.Controllers
             bool isInstanceSalesforce = false;
             if (_inspectmodel.IsDeployedToIntegration && _inspectmodel.IsIntegrationInstanceExist == "Yes")
             {
+                //modified by Rahul shah On 10/11/2015 for Pl #1630
+                string integrationType = string.Empty;
                 int? integrationInstanceId = db.Plan_Campaign.FirstOrDefault(t => t.PlanCampaignId == _inspectmodel.PlanCampaignId).Plan.Model.IntegrationInstanceId;
-                string integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                if (integrationInstanceId != null)
+                {
+                    integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                }
                 if (integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
                 {
                     isInstanceSalesforce = true;
@@ -1973,8 +1978,13 @@ namespace RevenuePlanner.Controllers
             bool isInstanceSalesforce = false;
             if (im.IsDeployedToIntegration && im.IsIntegrationInstanceExist == "Yes")
             {
+                //modified by Rahul shah On 10/11/2015 for Pl #1630
+                string integrationType = string.Empty;
                 int? integrationInstanceId = db.Plan_Campaign.FirstOrDefault(t => t.PlanCampaignId == im.PlanCampaignId).Plan.Model.IntegrationInstanceId;
-                string integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                if (integrationInstanceId != null)
+                {
+                    integrationType = db.IntegrationInstances.FirstOrDefault(instance => instance.IntegrationInstanceId == integrationInstanceId).IntegrationType.Code;
+                }
                 if (integrationType.Equals(Integration.Helper.Enums.IntegrationType.Salesforce.ToString()))
                 {
                     isInstanceSalesforce = true;
