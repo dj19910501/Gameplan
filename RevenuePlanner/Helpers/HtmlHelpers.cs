@@ -4459,7 +4459,7 @@ namespace RevenuePlanner.Helpers
 
                                     if (item.isChild == true)
                                     {
-                                        if (objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString()))
+                                        if ((objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString())) || objOption.value.ToString()=="Please Select")
                                         {
                                             DisplayStyle += "display:block;";
                                         }
@@ -4565,7 +4565,7 @@ namespace RevenuePlanner.Helpers
                                     DisplayStyle = " style=\"";
                                     if (item.isChild == true)
                                     {
-                                        if (objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString()))
+                                        if ((objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString())) || objOption.value.ToString()=="Please Select")
                                         {
                                             DisplayStyle += "display:block;";
                                         }
