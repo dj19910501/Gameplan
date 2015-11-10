@@ -1094,9 +1094,12 @@ namespace RevenuePlanner.Controllers
 
             objFinanceModel.Userpermission = _user.OrderBy(i => i.FirstName, new AlphaNumericComparer()).ToList();
             var index = _user.FindIndex(x => x.id == Sessions.User.UserId.ToString());
-            var item = _user[index];
-            _user[index] = _user[0];
-            _user[0] = item;
+            if (index != -1)
+            {
+                var item = _user[index];
+                _user[index] = _user[0];
+                _user[0] = item;
+            }
             objFinanceModel.Userpermission = _user.ToList();
            // objFinanceModel.Userpermission = _user;
             return PartialView("_UserPermission", objFinanceModel);

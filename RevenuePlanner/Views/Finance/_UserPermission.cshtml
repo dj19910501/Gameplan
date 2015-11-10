@@ -35,9 +35,7 @@
               <div id="NoSearch" style="display:none;clear: both;font-weight: bold;">No data found.</div>
         </div>
        
-        <div id="tableNoData" style="width: 100%; clear: both; display: none; font-weight: bold; text-align: center">
-            No data found.
-        </div>
+       
       
         <div class="user-table">
             <div id="SaveMsg" class="alert alert-success">
@@ -167,6 +165,9 @@
             <input id="btnsave" type="submit" class="btn btn-blue btn-save text-shadow-blue source-sans-proregular" title="Save Changes" value="Save Changes">
             <button id="btncancel" class="btn-link Cancel-button-center-popups" type="button">Cancel</button>
         </div>
+         <div id="tableNoData" style="width: 100%; clear: both; display: none; font-weight: bold; text-align: center">
+            No data found.
+        </div>
     </div>
      
 </div>
@@ -269,7 +270,10 @@
                 success: function (Data) {
                     $("#userTable tbody").html("");
                     if (Data.length == "0") {
-                        $(".user-table").hide();
+                        //$(".user-table").hide();
+                        $("#userTable").hide();
+                        $("#btnsave").hide();
+                        $("#btncancel").hide();
                         $("#tableNoData").show();
                         return false;
                     }
@@ -289,6 +293,10 @@
                         }
                         $("#tableNoData").hide();
                         $(".user-table").show();
+
+                        $("#userTable").show();
+                        $("#btnsave").show();
+                        $("#btncancel").show();
                         InspectBudgetPermissionRow();
                     }
                 },
@@ -299,7 +307,11 @@
 
 
         if ('@ViewBag.NoRecord' == "NoRecord") {
-            $('.user-table').hide();
+            //$('.user-table').hide();
+            $("#userTable").hide();
+            $("#btnsave").hide();
+            $("#btncancel").hide();
+           // alert("df");
             $("#tableNoData").css('display', 'block');
         }
         $(".x-icon").click(function (e) {
@@ -399,6 +411,9 @@
         $("#divFinanceBack").css("display", "block");
         function getrecord(_userid) {
             $('.user-table').show();
+            $("#userTable").show();
+            $("#btnsave").show();
+            $("#btncancel").show();
             $('#tableNoData').hide();
             checkExistingUser(_userid);
             var t = _UserBudgetId;
