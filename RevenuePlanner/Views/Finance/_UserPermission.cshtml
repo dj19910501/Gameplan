@@ -239,15 +239,14 @@
 
         nlformUserChildFinance = new NLForm(document.getElementById('nl-formUserChildFinance'));
 
-        InspectBudgetPermissionRow();
-
-
-
         //var width = $(".user-list").width();
         //setwidth = width +"px";
+       
+
 
         var PrevSelectVal = $("#nl-formUserChildFinance option:selected");
         $('#nl-formUserChildFinance').find('li').click(function (e) {
+          
             var $thisId = $(this).val();
             $("#nl-formUserChildFinance li").each(function () {
                 if ($(this).val().toString() != $(PrevSelectVal).val()) {
@@ -255,12 +254,16 @@
 
                 }
             });
+            
+            //$(this).removeClass('nl-dd-checked');
             $(this).addClass('nl-dd-checked');
+            $(this).parent().parent().find('a').text($(this).text());
             Bindtable($thisId);
             $("#divFinanceBack").show();
-
+           
         });
-
+        getselection();
+        InspectBudgetPermissionRow();
         function Bindtable($thisId) {
             $.ajax({
                 url: '@Url.Content("~/Finance/DrpFilterByBudget/")',
@@ -524,7 +527,10 @@
     });
 
     function InspectBudgetPermissionRow() {
+        
         $("#nl-formUserChildFinance li").each(function () {
+
+           
             $("#userTable tbody tr").each(function () {
 
 
@@ -548,15 +554,30 @@
                 }
 
             })
-            var y = $(this).val();
-            $(this).removeClass('nl-dd-checked');
-            if (_UserBudgetId == $(this).val()) {
-                $(this).addClass('nl-dd-checked');
-                $(this).parent().parent().find('a').text($(this).text());
-            }
+          
+            //var y = $(this).val();
+            ////$(this).removeClass('nl-dd-checked');
+            //var selectedval = $("#nl-formUserChildFinance option:selected").val();
+            //if (_UserBudgetId == y) {
+            //    debugger;
+            //    alert('match');
+            //    $(this).siblings().removeClass('nl-dd-checked')
+            //   $(this).addClass('nl-dd-checked');
+            //   $(this).parent().parent().find('a').text($(this).text());
+            //}
         });
     }
 
+    function getselection() {
+        $("#nl-formUserChildFinance li").each(function () {
+                var y = $(this).val();
+                if (_UserBudgetId == y) {
+                    $(this).siblings().removeClass('nl-dd-checked')
+                    $(this).addClass('nl-dd-checked');
+                    $(this).parent().parent().find('a').text($(this).text());
+                }
+            });
+    }
 
     function Userdelete(id, budgetID) {
         $.ajax({
