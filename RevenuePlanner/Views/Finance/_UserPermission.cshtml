@@ -378,7 +378,6 @@
             source: function (request, response) {
                 var urlcontent = '@Url.Content("~/Finance/getData/")';
                 $.getJSON(urlcontent + "?term=" + request.term, function (data) {
-                    debugger;
                     var t = data;
                     if (data.length > 0) {
                         $("#NoSearch").hide();

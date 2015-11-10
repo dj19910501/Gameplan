@@ -12183,6 +12183,7 @@ div.clue-bottom-default .cluetip-arrows {
     width: 100%;
     min-width: 800px;
     margin-top: 26px;
+    height:90%; /*PL 1492 Issue(2)*/
 }
 
 .PopupDiv {
