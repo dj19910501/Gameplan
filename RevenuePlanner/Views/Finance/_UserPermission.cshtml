@@ -32,10 +32,13 @@
             <div class="search-user">
                 @Html.TextBox("Selectuser",null, new  { placeholder = "Search..." })
             </div>
+              <div id="NoSearch" style="display:none;clear: both;font-weight: bold;">No data found.</div>
         </div>
+       
         <div id="tableNoData" style="width: 100%; clear: both; display: none; font-weight: bold; text-align: center">
             No data found.
         </div>
+      
         <div class="user-table">
             <div id="SaveMsg" class="alert alert-success">
                 <span class="x-icon pull-right" id="aclose">x</span>
@@ -165,6 +168,7 @@
             <button id="btncancel" class="btn-link Cancel-button-center-popups" type="button">Cancel</button>
         </div>
     </div>
+     
 </div>
 
 <div id="divDeletePopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -362,12 +366,19 @@
             source: function (request, response) {
                 var urlcontent = '@Url.Content("~/Finance/getData/")';
                 $.getJSON(urlcontent + "?term=" + request.term, function (data) {
+                    debugger;
+                    var t = data;
+                    if (data.length > 0) {
+                        $("#NoSearch").hide();
+                        myApp.hidePleaseWait();
+                        response($.map(data, function (item) {
 
-                    myApp.hidePleaseWait();
-                    response($.map(data, function (item) {
-
-                        return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
-                    }))
+                            return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
+                        }))
+                    }
+                    else {
+                        $("#NoSearch").show();
+                    }
 
                 });
                 myApp.hidePleaseWait();
@@ -381,7 +392,7 @@
             }
         }).data('ui-autocomplete')._renderItem = function (ul, item) {
             return $("<li>")
-          .append("<div><div class='add-interest'><div>" + item.value + "</div><div>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
+          .append("<div><div class='add-interest'><div>" + item.value + "</div><div title="+item.title+">" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
                 .appendTo(ul.addClass('user_permission_list'));
         };
 
@@ -403,12 +414,12 @@
                     dataType: "json",
                     data: { Id: _userid },
                     success: function (data) {
-
                         $("#SaveMsg").hide();
                         $("#Selectuser").val('');
                         $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
                             '</td><td class="userDelete" style="border-right:none"> <p><input type="radio" id="vew-edit_'+data.UserId+'" class="redinput" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit_'+data.UserId+'">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only_'+data.UserId+'"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only_'+data.UserId+'">View Only</label></p><a href="Finance/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                         InspectBudgetPermissionRow();
+
                     }
                 })
 
