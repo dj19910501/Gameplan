@@ -292,7 +292,7 @@ function FormatNumber(value, isPercentage) {
     }
     else {
 
-        return '$' + (value != 0 ? GetAbberiviatedValue(value) : 0);
+        return '$' + (parseFloat(value) != 0 ? GetAbberiviatedValue(value) : 0);
     }
 }
 
@@ -309,6 +309,7 @@ function FormatNumber(value, isPercentage) {
 //// PL 491 : Report Rouding Errors - Qualified
 //// Change logic previous logic not correct.
 function GetAbberiviatedValue(value) {
+    value = parseFloat(value);
     var absValue = Math.abs(parseFloat(value));
     absValue = absValue.toFixed();
     var isNegative = value < 0;

@@ -3476,29 +3476,31 @@ function Quarter() {
                       $('body').removeClass('bodyOverflow');
                       if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                           if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
-                              
+
                               if (isDataModified) {
-                              if (gridSearchFlag == 1) {
-                                  LoadPlanGrid();
-                                  gridSearchFlag = 0;
-                              }
-                              else {
-                                  var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
+                                  if (gridSearchFlag == 1) {
+                                      LoadPlanGrid();
+                                      gridSearchFlag = 0;
+                                  }
+                                  else {
+                                      var url = "@Url.Content("~/Plan/LoadImprovementGrid")";
                                       $("#ImprovementGrid").load(url + '?id=' + CurrentPlanId);
-                                     
+
                                   }
                               }
-                                          if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
-                                              $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
-                                          }
-                        return true;
-                             
+                              if (typeof inspectCloseFocus != 'undefined' && inspectCloseFocus != '') {
+                                  $("html, body").animate({ scrollTop: inspectCloseFocus }, 100);
+                              }
+                              return true;
+
                           }
-                          else if (isDataModified) {
-                      RefreshCurrentTab();
-                      }
-                      else {
-                              gantt.refreshData();
+                          else {
+                              if (isDataModified) {
+                                  RefreshCurrentTab();
+                              }
+                              else {
+                                  gantt.refreshData();
+                              }
                           }
                       }
                       else {
@@ -5247,7 +5249,7 @@ function () {
 
 function DisplayEditablePopup(id, type) {
         isEditTactic = id;
-
+        isDataModified = false;
     if (type == "PlanPopup") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, 0, '@RequestedModule');
     }

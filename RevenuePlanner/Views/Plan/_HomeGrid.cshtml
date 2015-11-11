@@ -80,7 +80,13 @@
 
     var cw = '@Model.CWLable' + " : " + number_format('@Model.CWValue', 0, '.', ',');
     $("#spncw").html(cw);
-
+    // Variable added by bhavesh - 11-Nov-2015
+    // Apply distributed Parsing - variable for event id
+    var eventiddrag = 0;
+    var eventidonedit = 0;
+    var eventidonbeforedrag = 0;
+    var eventidonscroll = 0;
+    var editidonOpenEnd = 0;
 
 
     $(document).ready(function () {
@@ -108,24 +114,26 @@
 
         //End
 
-        $(".orange-corner-grid").hover(function () {
-            $("#divTacticReqMsg").css('display', 'block');
-            var position = $(this).offset();
-            var targetOffset = $(this).offset().top;
-            var targetHeight = $(this).height();
-            var contentHeight = $('#divTacticReqMsg').outerHeight();
-            var targetBottomOffset = targetOffset + targetHeight - contentHeight;
+        // Commented by bhavesh - 11-Nov-2015
+        // Comment not showing Flag on grid for required field
+        //$(".orange-corner-grid").hover(function () {
+        //    $("#divTacticReqMsg").css('display', 'block');
+        //    var position = $(this).offset();
+        //    var targetOffset = $(this).offset().top;
+        //    var targetHeight = $(this).height();
+        //    var contentHeight = $('#divTacticReqMsg').outerHeight();
+        //    var targetBottomOffset = targetOffset + targetHeight - contentHeight;
 
-            $('#divTacticReqMsg').css({
-                'top': targetBottomOffset,
-                'left': position.left,
-            });
-            $('#popupType').css('display', 'none');
-            $('#dhx_combo_select').css('display', 'none');
-            $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
-        }, function () {
-            $("#divTacticReqMsg").css('display', 'none');
-        });
+        //    $('#divTacticReqMsg').css({
+        //        'top': targetBottomOffset,
+        //        'left': position.left,
+        //    });
+        //    $('#popupType').css('display', 'none');
+        //    $('#dhx_combo_select').css('display', 'none');
+        //    $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+        //}, function () {
+        //    $("#divTacticReqMsg").css('display', 'none');
+        //});
     });
 
     var $doc = $(document);
@@ -334,28 +342,76 @@
         HomeGrid.enableAutoWidth(false);
 
         HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
-
+       
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, 8);
 
         HomeGrid.setCustomSorting(sort_TacticType, 7);
         HomeGrid.csvParser = HomeGrid.csvExtParser;
         HomeGrid.init();
-        HomeGrid.attachEvent("onEditCell", doOnEditCell);
-        HomeGrid.attachEvent("onDrag", doOnDrag);
-        HomeGrid.attachEvent("onScroll", function (sLeft, sTop) {
+        // added by bhavesh - 11-Nov-2015
+        // Apply Distributed Parsing
+        HomeGrid.attachEvent("onDistributedEnd", function () {
+            // your code here
+            LoadAfterParsing();
+            if ($("#gridbox").find(".rowselected").length >= 1) {
+                var scrolltop = $(".rowselected").offset().top;
+                $(window).scrollTop(scrolltop - 100);
+            }
+        });
+        HomeGrid.enableDistributedParsing(true, 10, 0.1);
+        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
+        LoadAfterParsing();
+        
+       
+       // HomeGrid.sortRows(1, 'str', 'asc');
+       
+        //Added by Rahul shah for PL #1683
+       
+      
+        //End
+       
+        
+        // Comment by bhavesh - 11-Nov-2015
+        // Comment not showing Flag on grid for required field
+        //$('#gridbox').find('tbody tr').each(function () {
+        //    var spnerror = $(this).find("#tacticIsRequired");
+        //    if (typeof spnerror != 'undefined' && spnerror != null) {
+        //        var div = $(spnerror).parent().parent();
+        //        //if ($(this).hasClass('ev_dhx_skyblue') || $(this).hasClass('odd_dhx_skyblue')) {
+        //        //    var div = $(this).find('.treegrid_cell');
+        //        if (typeof div != 'undefined') {
+        //            $(spnerror).remove();
+        //            $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
+        //        }
+        //    }
+        //});
+
+    }
+
+    // Create funtion to load grid view event - Apply Distributed Parsing
+    // Added By Bhavesh - Date: 11-Nov-2015
+    function LoadAfterParsing() {
+        if (eventidonedit != 0) {
+            HomeGrid.detachEvent(eventidonedit);
+        }
+        eventidonedit = HomeGrid.attachEvent("onEditCell", doOnEditCell);
+        if (eventiddrag != 0) {
+            HomeGrid.detachEvent(eventiddrag);
+        }
+        eventiddrag = HomeGrid.attachEvent("onDrag", doOnDrag);
+        if (eventidonscroll != 0) {
+            HomeGrid.detachEvent(eventidonscroll);
+        }
+        eventidonscroll = HomeGrid.attachEvent("onScroll", function (sLeft, sTop) {
             $(".dhx_combo_select").css("display", "none");
             $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
             $("#popupType").css("display", "none");
         });
-        //Commented by Rahul Shah on 20/10/2015 for PL#1683
-        //HomeGrid.attachEvent("onOpenEnd", function (rowid) {
-
-        //    callsearch();
-
-        //    return true;
-        //});
-        HomeGrid.attachEvent("onBeforeDrag", function (id) {
+        if (eventidonbeforedrag != 0) {
+            HomeGrid.detachEvent(eventidonbeforedrag);
+        }
+        eventidonbeforedrag = HomeGrid.attachEvent("onBeforeDrag", function (id) {
             if (id.split(".")[0].toString() != "tact") return false;//denies dragging if user data exists
             var locked = HomeGrid.cells(id, 1).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
@@ -363,11 +419,34 @@
             return true;                                          //allows dragging in any other case
         });
 
-        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
-        if (isCopyTactic != 0) {
-            HomeGrid.collapseAll();
-        }
-        HomeGrid.sortRows(1, 'str', 'asc');
+
+        //if (isCopyTactic != 0) {
+        //    HomeGrid.collapseAll();
+        //}
+        $(".grid_Search").off("click");
+        $(".grid_Search").click(function (e) {
+            inspectCloseFocus = $(this).position().top;
+            var id = $(this).attr('alt');
+            var type = $(this).attr('id');
+            gridSearchFlag = 1;
+            DisplayEditablePopup(id, type);
+        });
+        $(".grid_add").click(function (e) {
+            $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
+            gridSearchFlag = 1;
+            var type = $(this).attr('id');
+            var name = $(this).attr('alt');
+            var title = $(this).attr('data-title');
+            /*Modified by Mitesh for PL ticket 1570
+            combination of title and permission conflict when title has "\" separator*/
+            var permission = $(this).attr('permission');
+            //title = chk_permission[0];
+            //var permission = chk_permission[1];
+            var linetype = $(this).attr('lineitemtype');
+            DisplayPopUpMenu(type, name, title, permission, linetype, e);
+
+        });
+
         HomeGrid.forEachRow(function (rowid) {
             //Added by Rahul Shah on 20/10/2015 for PL #1683
             //if (rowid.split(".")[0] == "tact") {
@@ -376,11 +455,13 @@
 
             //}
             var MQL = HomeGrid.cells(rowid, 10).getValue();
-            if (MQL != "--")
-                HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
+            if (MQL != "--" && !isNaN(MQL)) {
+                    HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
+            }
             var Revenue = HomeGrid.cells(rowid, 11).getValue();
-            if (Revenue != "--")
+            if (Revenue != "--" && !isNaN(Revenue)) {
                 HomeGrid.cells(rowid, 11).setValue(FormatNumber(Revenue, false));
+            }
 
             var psv = HomeGrid.cells(rowid, 9).getValue().split("_");
             if (psv.length > 1) {
@@ -390,9 +471,9 @@
             //HomeGrid.closeItem(rowid);
             var id = HomeGrid.cells(rowid, 3).getValue();
             var pid = HomeGrid.getParentId(rowid);
-            
+
             if (isCopyTactic != 0) {
-               
+
                 //if (HomeGrid.getOpenState(rowid) == true)
                 //    HomeGrid.closeItem(rowid);
                 if (id == isCopyTactic) {
@@ -424,10 +505,10 @@
 
                     }
                     HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-                    var scrolltop = $(".cellselected").offset().top;
-                    $(window).scrollTop(scrolltop - 100);
+                 //   var scrolltop = $(".cellselected").offset().top;
+                 //   $(window).scrollTop(scrolltop - 100);
                     ///  HomeGrid.showRow((pid));
-
+                    isCopyTactic = 0;
                 }
 
             }
@@ -436,13 +517,16 @@
                 if (id == isEditTactic) {
                     HomeGrid.openItem(HomeGrid.getParentId(rowid));
                     HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-                    var scrolltop = $(".rowselected").offset().top;
-                    $(window).scrollTop(scrolltop - 100);
+                    //var scrolltop = $(".rowselected").offset().top;
+                  //  $(window).scrollTop(scrolltop - 100);
+                    isEditTactic = 0;
                 }
             }
         });
-        //Added by Rahul shah for PL #1683
-        HomeGrid.attachEvent("onOpenEnd", function (rowid) {
+        if (editidonOpenEnd != 0) {
+            HomeGrid.detachEvent(editidonOpenEnd);
+        }
+        editidonOpenEnd = HomeGrid.attachEvent("onOpenEnd", function (rowid) {
             //Modified by komal Rawal for #1553
             $(".grid_Search").off("click");
             $(".grid_Search").click(function (e) {
@@ -466,38 +550,13 @@
                 //title = chk_permission[0];
                 //var permission = chk_permission[1];
                 var linetype = $(this).attr('lineitemtype');
-                DisplayPopUpMenu(type, name, title, permission,linetype, e);
+                DisplayPopUpMenu(type, name, title, permission, linetype, e);
 
             });
 
         });
-        
-        $(".grid_Search").off("click");
-        $(".grid_Search").click(function (e) {
-            inspectCloseFocus = $(this).position().top;
-            var id = $(this).attr('alt');
-            var type = $(this).attr('id');
-            gridSearchFlag = 1;
-            DisplayEditablePopup(id, type);
 
-        });
-        //End
-        isCopyTactic = 0;
-        isEditTactic = 0;
-
-        $('#gridbox').find('tbody tr').each(function () {
-            var spnerror = $(this).find("#tacticIsRequired");
-            if (typeof spnerror != 'undefined' && spnerror != null) {
-                var div = $(spnerror).parent().parent();
-                //if ($(this).hasClass('ev_dhx_skyblue') || $(this).hasClass('odd_dhx_skyblue')) {
-                //    var div = $(this).find('.treegrid_cell');
-                if (typeof div != 'undefined') {
-                    $(spnerror).remove();
-                    $('<span class="orange-corner-grid" id="spnError"></span>').insertAfter(div);
-                }
-            }
-        });
-
+       
     }
 
     function sort_Owner(a, b, ord, a_id, b_id) {
@@ -533,6 +592,7 @@
     function ResizeGrid(wid) {
         $("#gridbox").attr("width", wid);
         HomeGrid.setSizes();
+        LoadAfterParsing();
     }
     function doOnDrag(sid, tid) {
 
