@@ -242,6 +242,30 @@
         //var width = $(".user-list").width();
         //setwidth = width +"px";
        
+       
+        //var checkinput = $("#Selectuser").val().toString().trim();
+        //if (checkinput == "")
+        //{
+           
+        //    $("#NoSearch").hide();
+        //}
+        //$("#Selectuser").keypress(function () {
+        //    alert("sdddd");
+        //});
+        
+        //var input = document.getElementById('Selectuser');
+        //var checkinput = $("#Selectuser").val().toString().trim();
+        //input.onkeydown = function () {
+        //    var key = event.keyCode || event.charCode;
+
+        //    if (key == 8 || key == 46) {
+        //        if (checkinput == "")
+        //        {
+        //            $("#NoSearch").hide();
+        //        }
+        //    }
+        //        //return false;
+        //};
 
 
         var PrevSelectVal = $("#nl-formUserChildFinance option:selected");
@@ -379,6 +403,7 @@
 
         $('#Selectuser').autocomplete({
             source: function (request, response) {
+              
                 var urlcontent = '@Url.Content("~/Finance/getData/")';
                 $.getJSON(urlcontent + "?term=" + request.term, function (data) {
                     var t = data;
@@ -406,7 +431,7 @@
             }
         }).data('ui-autocomplete')._renderItem = function (ul, item) {
             return $("<li>")
-          .append("<div><div class='add-interest'><div>" + item.value + "</div><div title="+item.title+">" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
+          .append("<div><div class='add-interest'><div>" + item.value + "</div><div title='"+item.title+"'>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
                 .appendTo(ul.addClass('user_permission_list'));
         };
 
