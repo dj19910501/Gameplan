@@ -4612,27 +4612,66 @@ function Quarter() {
             PlanId = name_Id[0].replace("L", "");
         }
         else if (name_Id.length == 2) {
+            // Chaneg By Nishant Sheth 
+            // Desc:: To resolve issue with change view by dropdown
+            var nameindex = name.indexOf("Z");
+            if (nameindex >= 0) {
+                PlanId = name_Id[1].replace("L", "");
+                CampaignId = name_Id[1].replace("C", "");
+            } else {
             PlanId = name_Id[0].replace("L", "");
             CampaignId = name_Id[1].replace("C", "");
+            }
         }
         else if (name_Id.length == 3) {
+            // Chaneg By Nishant Sheth 
+            // Desc:: To resolve issue with change view by dropdown
+            var nameindex = name.indexOf("Z");
+            if (nameindex >= 0) {
+                PlanId = name_Id[1].replace("L", "");
+                CampaignId = name_Id[2].replace("C", "");
+                //ProgramId = name_Id[2].replace("P", "");
+            } else {
             PlanId = name_Id[0].replace("L", "");
             CampaignId = name_Id[1].replace("C", "");
             ProgramId = name_Id[2].replace("P", "");
+            }
         }
         else if (name_Id.length == 4) {
+            // Chaneg By Nishant Sheth 
+            // Desc:: To resolve issue with change view by dropdown
+            var nameindex = name.indexOf("Z");
+            if (nameindex >= 0) {
+                PlanId = name_Id[1].replace("L", "");
+                CampaignId = name_Id[2].replace("C", "");
+                ProgramId = name_Id[3].replace("P", "");
+                //TacticId = name_Id[3].replace("T", "");
+            } else {
             PlanId = name_Id[0].replace("L", "");
             CampaignId = name_Id[1].replace("C", "");
             ProgramId = name_Id[2].replace("P", "");
             TacticId = name_Id[3].replace("T", "");
         }
+        }
         else {
+            
+            // Chaneg By Nishant Sheth 
+            // Desc:: To resolve issue with change view by dropdown
+            var nameindex = name.indexOf("Z");
+            if (nameindex >= 0) {
+                PlanId = name_Id[1].replace("L", "");
+                CampaignId = name_Id[2].replace("C", "");
+                ProgramId = name_Id[3].replace("P", "");
+                TacticId = name_Id[4].replace("T", "");
+                //LineId = name_Id[4];
+            } else {
             PlanId = name_Id[0].replace("L", "");
             CampaignId = name_Id[1].replace("C", "");
             ProgramId = name_Id[2].replace("P", "");
             TacticId = name_Id[3].replace("T", "");
             LineId = name_Id[4];
         }
+        } 
 
         var ul;
         if (type == "Plan") {
@@ -4692,8 +4731,13 @@ function Quarter() {
                 $('#popupType').css('display', 'none');
             }
             if (name_Id.length != 1 && name_Id.length != 0) {
+                var nameindex = name.indexOf("Z");
+                if (nameindex >= 0) {
+                    ImpTacticId = name_Id[2].replace("M", "");
+                } else {
                 ImpTacticId = name_Id[1].replace("M", "");
             }
+        }
         }
         if (permission == "true") {
             $('#popupType').css('display', 'block');
