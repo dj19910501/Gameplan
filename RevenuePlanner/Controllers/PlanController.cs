@@ -8946,10 +8946,11 @@ namespace RevenuePlanner.Controllers
                 int intmodelId = (int)modelId;
                 var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == intmodelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                 string strLineType = string.Empty;
-                foreach (var typelist in lstLineItemType)
-                {
-                    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
-                }
+				// Comment by bhavesh TO load line item type later
+                //foreach (var typelist in lstLineItemType)
+                //{
+                //    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
+                //}
                 List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
@@ -9060,8 +9061,6 @@ namespace RevenuePlanner.Controllers
                         {
                             var lstcampaignTaskData = Campaignfilterlst.Select((taskdata, index) => new
                             {
-
-
                                 totalcost = LineItemList.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Cost),
                                 totalmql = ListTacticMQLValue.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.MQL),
 
@@ -9134,18 +9133,18 @@ namespace RevenuePlanner.Controllers
                                     }
                                     //End
 
-                                    GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell>Campaign</cell><cell  bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Campaignitem.Title) + "</cell> ");
-                                    GridString.Append("<cell bgColor='#C6EBF3'><![CDATA[<div  class='grid_Search' id='CampaignPopup' alt=\"" + Campaignitem.PlanCampaignId + "\"></div> ");
+                                    GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell>Campaign</cell><cell   locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Campaignitem.Title) + "</cell> ");
+                                    GridString.Append("<cell ><![CDATA[<div  class='grid_Search' id='CampaignPopup' alt=\"" + Campaignitem.PlanCampaignId + "\"></div> ");
                                     if (Campaignitem.IsPlanCreateAll)
                                     {
                                         GridString.Append("<div class='grid_add' id='Campaign'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" data-title=\"" + HttpUtility.HtmlEncode(Campaignitem.Title) + "\" permission=\"" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
                                     }
                                     GridString.Append("]]></cell>");
-                                    GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                                    GridString.Append(" <cell bgColor='#C6EBF3' style='color:#999' actval=\"" + Campaignitem.totalcost.ToString() + "\">" + Campaignitem.totalcost.ToString() + "</cell>");
-                                    GridString.Append("<cell bgColor='#C6EBF3' type='ro' style='color:#999'>--</cell> <cell bgColor='#C6EBF3' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
-                                    GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999'>--</cell> <cell bgColor='#C6EBF3' style='color:#999' actval=\"" + Campaignitem.totalmql.ToString() + "\">" + Campaignitem.totalmql.ToString() + "</cell>");
-                                    GridString.Append("<cell  bgColor='#C6EBF3' style='color:#999' actval=\"" + Campaignitem.totalrevenue.ToString() + "\">" + Campaignitem.totalrevenue.ToString() + "</cell> ");
+                                    GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell> <cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell> <cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
+                                    GridString.Append(" <cell  style='color:#999' actval=\"" + Campaignitem.totalcost.ToString() + "\">" + Campaignitem.totalcost.ToString() + "</cell>");
+                                    GridString.Append("<cell  type='ro' style='color:#999'>--</cell> <cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
+                                    GridString.Append("<cell   style='color:#999'>--</cell> <cell  style='color:#999' actval=\"" + Campaignitem.totalmql.ToString() + "\">" + Campaignitem.totalmql.ToString() + "</cell>");
+                                    GridString.Append("<cell   style='color:#999' actval=\"" + Campaignitem.totalrevenue.ToString() + "\">" + Campaignitem.totalrevenue.ToString() + "</cell> ");
 
 
                                     Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
@@ -9222,15 +9221,15 @@ namespace RevenuePlanner.Controllers
                                                 //End
                                                 GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'><cell>Program</cell>");
 
-                                                GridString.Append("<cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Programitem.Title) + "</cell><cell bgColor='#DFF0F8'><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
+                                                GridString.Append("<cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Programitem.Title) + "</cell><cell ><![CDATA[<div  class='grid_Search' id='ProgramPopup' alt=\"" + Programitem.PlanProgramId + "\"></div> ");
                                                 if (Programitem.IsPlanCreateAll)
                                                 {
                                                     GridString.Append("<div class='grid_add' id='Program'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" data-title=\"" + HttpUtility.HtmlEncode(Programitem.Title) + "\" permission=\"" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
                                                 }
                                                 GridString.Append("]]></cell>");
-                                                GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
-                                                GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + Programitem.totalcost.ToString() + "\">" + Programitem.totalcost + "</cell> <cell bgColor='#DFF0F8' type='ro' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8' locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Programitem.CreatedBy.ToString()) + "</cell> ");
-                                                GridString.Append(" <cell bgColor='#DFF0F8' style='color:#999'>--</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + Programitem.totalmql.ToString() + "\">" + Programitem.totalmql + "</cell>  <cell bgColor='#DFF0F8' style='color:#999' actval=\"" + Programitem.totalrevenue.ToString() + "\">" + Programitem.totalrevenue + "</cell> ");
+                                                GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell> <cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell>  <cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell> ");
+                                                GridString.Append(" <cell  style='color:#999' actval=\"" + Programitem.totalcost.ToString() + "\">" + Programitem.totalcost + "</cell> <cell  type='ro' style='color:#999'>--</cell>  <cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Programitem.CreatedBy.ToString()) + "</cell> ");
+                                                GridString.Append(" <cell  style='color:#999'>--</cell>  <cell  style='color:#999' actval=\"" + Programitem.totalmql.ToString() + "\">" + Programitem.totalmql + "</cell>  <cell  style='color:#999' actval=\"" + Programitem.totalrevenue.ToString() + "\">" + Programitem.totalrevenue + "</cell> ");
 
 
 
@@ -9272,17 +9271,17 @@ namespace RevenuePlanner.Controllers
                                                     foreach (var tactic in lsttacticTaskData)
                                                     {
                                                         cellTextColor = tactic.IstactEditable == "1" ? "style='color:#999;'" : "style='color:#000;'";
-                                                        GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "' bgColor='#E4F1E1'><cell>Tactic</cell>");
+                                                        GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "'  bgColor='#E4F1E1' ><cell>Tactic</cell>");
 
-                                                        GridString.Append("<cell bgColor='#E4F1E1' locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? new XCData("<span id='tacticIsRequired'></span>") : null) + "</cell><cell bgColor='#E4F1E1'><![CDATA[<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> ");
+                                                        GridString.Append("<cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? new XCData("<span id='tacticIsRequired'></span>") : null) + "</cell><cell ><![CDATA[<div  class='grid_Search' id='TacticPopup' alt=\"" + tactic.PlanTacticId + "\"></div> ");
                                                         if (tactic.IsPlanCreateAll)
                                                         {
                                                             GridString.Append("<div class='grid_add' id='Tactic'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" data-title=\"" + HttpUtility.HtmlEncode(tactic.title) + "\" permission=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
                                                         }
                                                         GridString.Append("]]></cell>");
-                                                        GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell bgColor='#E4F1E1' locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell>  <cell bgColor='#E4F1E1' locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell> ");
-                                                        GridString.Append(" <cell bgColor='#E4F1E1' " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\"  actval=\"" + tactic.totalcost.ToString() + "\" type='edn' >" + tactic.totalcost + "</cell> <cell bgColor='#E4F1E1' " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\" >" + tactic.tactictypeid + "</cell>  <cell bgColor='#E4F1E1' locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell> ");
-                                                        GridString.Append(" <cell bgColor='#E4F1E1'  " + cellTextColor + "  type='edn' stage=\"" + tactic.ProjectStage + "\" locked=\"" + tactic.IstactEditable + "\" tactictype=\"" + tactic.tactictypeid + "\">" + tactic.projectedstagevalue + "_" + tactic.ProjectStage + "</cell>  <cell bgColor='#E4F1E1' style='color:#999' actval=\"" + tactic.totalmql.ToString() + "\">" + tactic.totalmql + "</cell>  <cell bgColor='#E4F1E1' style='color:#999' actval=\"" + tactic.totalrevenue.ToString() + "\">" + tactic.totalrevenue + "</cell> ");
+                                                        GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell>  <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell> ");
+                                                        GridString.Append(" <cell  " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\"  actval=\"" + tactic.totalcost.ToString() + "\" type='edn' >" + tactic.totalcost + "</cell> <cell  " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\" >" + tactic.tactictypeid + "</cell>  <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell> ");
+                                                        GridString.Append(" <cell   " + cellTextColor + "  type='edn' stage=\"" + tactic.ProjectStage + "\" locked=\"" + tactic.IstactEditable + "\" tactictype=\"" + tactic.tactictypeid + "\">" + tactic.projectedstagevalue + "_" + tactic.ProjectStage + "</cell>  <cell  style='color:#999' actval=\"" + tactic.totalmql.ToString() + "\">" + tactic.totalmql + "</cell>  <cell  style='color:#999' actval=\"" + tactic.totalrevenue.ToString() + "\">" + tactic.totalrevenue + "</cell> ");
                                                         finalLineitem = DBLineItemList.Where(lintitem => lintitem.PlanTacticId == tactic.PlanTacticId).ToList();
                                                         if (finalLineitem != null && finalLineitem.Count > 0)
                                                         {
@@ -9293,8 +9292,8 @@ namespace RevenuePlanner.Controllers
                                                                 lineitemtype = taskdata.LineItemTypeId,
                                                                 PlanLineItemId = taskdata.PlanLineItemId,
                                                                 title = taskdata.Title,
-                                                                Type = taskdata.LineItemTypeId,
-                                                                // Type = taskdata.LineItemType.Title,
+                                                                Typeid = taskdata.LineItemTypeId,
+                                                                Type = taskdata.LineItemTypeId!=null ? taskdata.LineItemType.Title : "",
                                                                 CreatedBy = taskdata.CreatedBy,
                                                                 IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                                                 IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1"
@@ -9305,19 +9304,19 @@ namespace RevenuePlanner.Controllers
 
                                                                 GridString.Append("<row id='line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index + "' bgColor='#ffffff' ><cell>LineItem</cell>");
 
-                                                                GridString.Append("<cell bgColor='#ffffff' locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.title) + "</cell><cell bgColor='#ffffff'><![CDATA[<div  class='grid_Search' id='LinePopup' alt=\"" + lineitem.PlanLineItemId + "\"></div> ");
+                                                                GridString.Append("<cell  locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.title) + "</cell><cell ><![CDATA[<div  class='grid_Search' id='LinePopup' alt=\"" + lineitem.PlanLineItemId + "\"></div> ");
                                                                 if (tactic.IsPlanCreateAll)
                                                                 {
                                                                     //GridString.Append("<div class='grid_add' id='Line'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" data-title=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" permission=\"" + lineitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
                                                                     GridString.Append("<div class='grid_add' id='Line' lineitemtype=\"" + lineitem.lineitemtype + "\" " + " alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" data-title=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" permission=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Rahul : change Persmission on Tactic level for PL #1705
                                                                 }
                                                                 GridString.Append("]]></cell>");
-                                                                GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell bgColor='#ffffff' locked='1' style='color:#999'></cell>  <cell bgColor='#ffffff' locked='1' style='color:#999'></cell> ");
-                                                                GridString.Append(" <cell bgColor='#ffffff'   type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " + "style='color:#999;'" : lineitem.IstactEditable + "\" " + cellTextColor) + " IsOther =\"" + (lineitem.Type == null ? true : false) + "\">" + lineitem.Cost + "</cell>"); //Modified by Rahul Shah on
-                                                                GridString.Append("<cell bgColor='#ffffff'  locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " xmlcontent='true'>" + lineitem.Type);
-                                                                GridString.Append(strLineType + "</cell>");
-                                                                GridString.Append("<cell bgColor='#ffffff' type='ro' style='color:#999'>" + lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault() + "</cell> ");
-                                                                GridString.Append(" <cell bgColor='#ffffff' type='ro' style='color:#999'>--</cell>  <cell bgColor='#ffffff' type='ro' style='color:#999'>--</cell>  <cell bgColor='#ffffff' type='ro' style='color:#999'>--</cell> ");
+                                                                GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell  locked='1' style='color:#999'></cell>  <cell  locked='1' style='color:#999'></cell> ");
+                                                                GridString.Append(" <cell    type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " + "style='color:#999;'" : lineitem.IstactEditable + "\" " + cellTextColor) + " IsOther =\"" + (lineitem.Type == null ? true : false) + "\">" + lineitem.Cost + "</cell>"); //Modified by Rahul Shah on
+                                                                GridString.Append("<cell type='ro' locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.Type));
+                                                                GridString.Append("</cell>");
+                                                                GridString.Append("<cell  type='ro' style='color:#999'>" + lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault() + "</cell> ");
+                                                                GridString.Append(" <cell  type='ro' style='color:#999'>--</cell>  <cell  type='ro' style='color:#999'>--</cell>  <cell  type='ro' style='color:#999'>--</cell> ");
                                                                 GridString.Append("</row>");
                                                             }
                                                         }
