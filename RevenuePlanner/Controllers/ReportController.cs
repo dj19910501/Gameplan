@@ -1196,28 +1196,28 @@ namespace RevenuePlanner.Controllers
                 List<Plan_Campaign_Program_Tactic> _lstTactic = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).ToList();
                 List<int> campaignIds = tacticlist.Where(t => t.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId).Select(t => t.Plan_Campaign_Program.PlanCampaignId).Distinct().ToList<int>();
                 var campaignList = db.Plan_Campaign.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
-                        .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title })
+                        .Select(pcp => new { PlanCampaignId = pcp.PlanCampaignId, Title = pcp.Title, IsDeleted = pcp.IsDeleted }).Where(pcp => pcp.IsDeleted==false)
                         .OrderBy(pcp => pcp.Title).ToList();
                 campaignList = campaignList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 var lstCampaignList = campaignList;
-                lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns" });
+                lstCampaignList.Insert(0, new { PlanCampaignId = 0, Title = "All Campaigns", IsDeleted = false });
 
                 List<TacticMappingItem> _cmpgnMappingList = new List<TacticMappingItem>();
                 _cmpgnMappingList = _lstTactic.GroupBy(pc => new { _campaignId = pc.Plan_Campaign_Program.PlanCampaignId, _tacticId = pc.PlanTacticId, _parentTitle = pc.Plan_Campaign_Program.Plan_Campaign.Title }).Select(pct => new TacticMappingItem { ParentId = pct.Key._campaignId, ChildId = pct.Key._tacticId, ParentTitle = pct.Key._parentTitle }).ToList();
                 //// Get Program list for dropdown
                 var programList = db.Plan_Campaign_Program.Where(pc => campaignIds.Contains(pc.PlanCampaignId))
-                       .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title })
+                       .Select(c => new { PlanProgramId = c.PlanProgramId, Title = c.Title, IsDeleted = c.IsDeleted }).Where(c=> c.IsDeleted==false)
                        .OrderBy(pcp => pcp.Title).ToList();
                 programList = programList.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 var lstProgramList = programList;
-                lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs" });
+                lstProgramList.Insert(0, new { PlanProgramId = 0, Title = "All Programs", IsDeleted=false });
 
                 //// Get tactic list for dropdown
-                var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title })
+                var tacticListinner = tacticlist.Select(t => new { PlanTacticId = t.PlanTacticId, Title = t.Title, IsDeleted = t.IsDeleted }).Where(t=> t.IsDeleted==false)
                     .OrderBy(pcp => pcp.Title).ToList();
                 tacticListinner = tacticListinner.Where(s => !string.IsNullOrEmpty(s.Title)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList();
                 var lstTacticList = tacticListinner;
-                lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
+                lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics", IsDeleted=false });
 
                 //// Set DDL List in ViewBag.
                 ViewBag.CampaignDropdownList = lstCampaignList;
