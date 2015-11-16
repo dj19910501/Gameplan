@@ -97,7 +97,11 @@
         BackId = '@TempData["BackId"]';*@
 
         var _carddata = "@cardsectionList";
-        var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
+        //Added by Rahul Shah on 11/11/2015 for PL #1741
+        _carddata = $('<div/>').html(_carddata.toString().replace(/[\\]/g, "\\\\")).text();
+        var _CardData = (_carddata.toString().replace(/&amp;lt;/g, '<').replace(/&amp;gt;/g, '>').replace(/amp;/g, ''));
+        //Commented by Rahul Shah on 11/11/2015 for PL #1741
+        //var _CardData = (_carddata.toString().replace(/&quot;/g, '"'));
         _CardData = JSON.parse(_CardData);
         var _cardhtml = '';
         var _masterParentLabel = '', _title = '', _Revact_proj = '', _Revgoal = '', _Revpercentange = '', _Costact_proj = '', _Costgoal = '', _Costpercentange = '', _ROIact_proj = '', _ROIgoal = '', _ROIpercentange = '';

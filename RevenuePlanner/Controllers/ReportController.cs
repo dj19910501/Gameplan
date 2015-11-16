@@ -1220,9 +1220,10 @@ namespace RevenuePlanner.Controllers
                 lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
 
                 //// Set DDL List in ViewBag.
-                ViewBag.CampaignDropdownList = lstCampaignList;
-                ViewBag.ProgramDropdownList = lstProgramList;
-                ViewBag.TacticDropdownList = lstTacticList;
+                //modified by Rahul Shah on 16/10/2015 for PL #1741
+                ViewBag.CampaignDropdownList = lstCampaignList.Select(a => new { Title = HttpUtility.HtmlDecode(a.Title), PlanCampaignId = a.PlanCampaignId }).ToList();
+                ViewBag.ProgramDropdownList = lstProgramList.Select(a => new { Title = HttpUtility.HtmlDecode(a.Title), PlanProgramId = a.PlanProgramId }).ToList();
+                ViewBag.TacticDropdownList = lstTacticList.Select(a => new { Title = HttpUtility.HtmlDecode(a.Title), PlanTacticId = a.PlanTacticId }).ToList();
                 #endregion
 
                 #endregion
@@ -7721,9 +7722,10 @@ namespace RevenuePlanner.Controllers
                 lstTacticList.Insert(0, new { PlanTacticId = 0, Title = "All Tactics" });
 
                 //// Set DDL List in ViewBag.
-                ViewBag.CampaignDropdownList = lstCampaignList;
-                ViewBag.ProgramDropdownList = lstProgramList;
-                ViewBag.TacticDropdownList = lstTacticList;
+                //modified by Rahul Shah on 16/10/2015 for PL #1741
+                ViewBag.CampaignDropdownList = lstCampaignList.Select(a => new { Title = HttpUtility.HtmlDecode(a.Title), PlanCampaignId = a.PlanCampaignId }).ToList();
+                ViewBag.ProgramDropdownList = lstProgramList.Select(a => new { Title = HttpUtility.HtmlDecode(a.Title), PlanProgramId = a.PlanProgramId }).ToList();
+                ViewBag.TacticDropdownList = lstTacticList.Select(a => new { Title = HttpUtility.HtmlDecode(a.Title), PlanTacticId = a.PlanTacticId }).ToList();
                 #endregion
 
                 bool IsQuarterly = false;
@@ -9103,7 +9105,8 @@ namespace RevenuePlanner.Controllers
                     objCardSection = new CardSectionListModel();
 
                     #region "Add Static Values to Model"
-                    objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
+                    //Modified by Rahul Shah on 11/11/2015 for PL#1741. To Encode the title for solving double quoted issue in String.
+                    objCardSection.title = HttpUtility.HtmlEncode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
 
                     objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
@@ -9523,8 +9526,8 @@ namespace RevenuePlanner.Controllers
                     #endregion
 
                     objCardSection = new CardSectionListModel();
-
-                    objCardSection.title = HttpUtility.HtmlDecode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
+                    //Modified by Rahul Shah on 11/11/2015 for PL#1741. To Encode the title for solving double quoted issue in String.
+                    objCardSection.title = HttpUtility.HtmlEncode(strParentTitle);      // Set ParentTitle Ex. (Campaign1) 
                     objCardSection.MasterParentlabel = ParentLabel;   // Set ParentLabel: Selected value from ViewBy Dropdownlist. Ex. (Campaign)
                     objCardSection.FieldId = _ParentId;       // Set ParentId: Card Item(Campaign, Program, Tactic or CustomfieldOption) Id.
 
