@@ -1313,7 +1313,7 @@
     });
     x = 0;
     $('#useless').click(function () {
-        HomeGrid.sortRows(0, 'str', 'asc');
+        HomeGrid.sortRows(1, 'str', 'asc');
         $("#spanscroll").text(x += 1);
         return true;
     });
@@ -1329,7 +1329,7 @@
         if (pageIsScroll == false) {
 
             pageIsScroll = true;
-            $("#useless").click();
+           // $("#useless").click();
         }
     });
 </script>
