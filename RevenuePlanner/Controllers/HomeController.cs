@@ -878,7 +878,8 @@ namespace RevenuePlanner.Controllers
                                                 Title = cfo.Value
                                             }).ToList();
                 var lstCustomFieldTactic = (from customfieldentity in cusomfieldEntity
-                                             join tactic in lstTactic on customfieldentity.EntityId equals tactic.objPlanTactic.PlanTacticId
+                                            //join tactic in lstTactic on customfieldentity.EntityId equals tactic.objPlanTactic.PlanTacticId   //Commenetd by Rahul Shah on 17/11/2015 for PL #1760. Bcz in this condition Campaign and Program data not displyed.
+                                            join tactic in lstTactic on customfieldentity.EntityId equals (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) //Added by Rahul Shah on 17/11/2015 for PL #1760. It Will Check Campaign And Program Field data 
                                              select new
                                              {
                                                  tactic = tactic,
