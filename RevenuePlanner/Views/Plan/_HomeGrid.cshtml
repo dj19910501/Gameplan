@@ -713,11 +713,53 @@
         var lineItemFlag = 0;
         UpdateColumn = HomeGrid.getColLabel(Colind, 1);
         if (stage == 0) {
+            if (updatetype == "line") {
+                var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                if (actval == "") {
+                    return false;
+                }
+                var combo = HomeGrid.getCombo(cellInd);
+                var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');
+                //  d = optionlist.filter(filterbyname);
+                combo.clear();
+                $.each(lineitemtype, function (i, item) {
+                    combo.put(item.LineItemTypeId, item.Title);
+                });
+            }
+            else {
+                var combo = HomeGrid.getCombo(cellInd);
+                var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
+                 combo.clear();
+                 $.each(tacticTypelist, function (i, item) {
+                     combo.put(item.TacticTypeId, item.Title);
+                 });
+            }
+            
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
         }
         if (stage == 1) {
+            if (updatetype == "line") {
+                var oldval = HomeGrid.cells(rowId, cellInd).getValue();
+                var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                if (cellInd != 1) {
+                        if (oldval == "")
+                            $('.dhx_combo_select option[value="' + oldval + '"]').remove();
+                        else {
+                            var v1 = parseInt(oldval);
+                            if (isNaN(v1)) {
+                                $('.dhx_combo_select option[value="' + oldval + '"]').remove();
+                                $('.dhx_combo_select').val(actval);
+                                //var v = $('.dhx_combo_select option:contains("' + oldval + '")').val();
+                                //if (v != "undefined")
+                                //    $('.dhx_combo_select').val(v);
+                            }
+                            else
+                                $('.dhx_combo_select').val(actval);
+                        }
+                }
+            }
             $(".dhx_combo_edit").off("keydown");
             if (UpdateColumn == "Planned Cost" || UpdateColumn == "Target Stage Goal") {
 
@@ -835,8 +877,11 @@
                     }
                 }
                 if (updatetype == "line") {
-                    if (nValue != oValue) {
-                       
+                    var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                    if (actval == null || actval == "")
+                        actval = oValue;
+                    if (nValue != oValue && nValue != actval) {
+
                         UpdateVal = nValue;
                         //Added By Rahul Shah on 16/10/2015 for PL 1559
                         tactid = HomeGrid.getParentId(rowId);
@@ -888,6 +933,8 @@
                                     //Commented By Rahul Shah on 16/10/2015 for PL 1559
                                     //LoadPlanGrid();
                                 }
+                                else if(UpdateColumn == "Type")
+                                    HomeGrid.cells(rowId, cellInd).setAttribute("actval",nValue);
                             }
                         });
                     }

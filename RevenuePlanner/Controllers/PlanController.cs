@@ -8845,8 +8845,12 @@ namespace RevenuePlanner.Controllers
                 MainPlanID = Convert.ToInt32(planIds[0].ToString());
                 List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
                 int modelId = lstplandetail.Where(p => p.PlanId == MainPlanID).Select(p => p.ModelId).FirstOrDefault();
-                GridString = GenerateXMHeader(GridString, MQLTitle, modelId, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
-
+                // Generate Tactic Type dropdown data on click of edit dropdown cell
+                // Get Tactic Type List : Added By Bhavesh : 17-Nov-2015 : Changes related to line item dropdown allow editable in grid view
+                List<TacticTypeModel> TacticTypeList = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && tactype.IsDeployedToModel && tactype.ModelId == modelId).Select(tacttype => new TacticTypeModel { TacticTypeId = tacttype.TacticTypeId, Title = tacttype.Title }).ToList().OrderBy(tactype => tactype.Title).ToList();
+                GridString = GenerateXMHeader(GridString, MQLTitle, TacticTypeList, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
+                // Store Tactic Type list in view bag
+                ViewBag.TacticTypelist = TacticTypeList;
                 GetGoalValue(lstplandetail, modelId, stageList, objplangrid); // for plan grid header to bind goal detail
 
 
@@ -8946,6 +8950,10 @@ namespace RevenuePlanner.Controllers
                 int intmodelId = (int)modelId;
                 var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == intmodelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                 string strLineType = string.Empty;
+                // Store Line item type list in Viewbag
+                // Generate dropdown for line item type on click of cell
+                // Added by bhavesh : 17-Nov-2015 : Allow line item type editable
+				ViewBag.lineitemtype = lstLineItemType;
 				// Comment by bhavesh TO load line item type later
                 //foreach (var typelist in lstLineItemType)
                 //{
@@ -9055,7 +9063,7 @@ namespace RevenuePlanner.Controllers
                         GridString.Append("]]></cell>");
                         GridString.Append("<cell>" + planitem.PlanId + "</cell> <cell locked='1' style='color:#999'>" + Startdate + "</cell> <cell locked='1' style='color:#999'>" + Enddate + "</cell>  <cell style='color:#999' actval=\"" + totalcost + "\">" + totalcost + "</cell> ");
                         GridString.Append(" <cell type='ro' style='color:#999'>--</cell> <cell type='ro' style='color:#999'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell> <cell type='ro' style='color:#999'>--</cell> <cell style='color:#999' actval=\"" + totalmql + "\">" + totalmql + "</cell> <cell style='color:#999' actval=\"" + totalrevenue + "\">" + totalrevenue + "</cell> ");
-                        Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).ToList();
+                        Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title
                         CampCnt = 1;
                         if (Campaignfilterlst.Count > 0)
                         {
@@ -9147,7 +9155,7 @@ namespace RevenuePlanner.Controllers
                                     GridString.Append("<cell   style='color:#999' actval=\"" + Campaignitem.totalrevenue.ToString() + "\">" + Campaignitem.totalrevenue.ToString() + "</cell> ");
 
 
-                                    Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).ToList();
+                                    Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title
                                     if (Programfilterlst != null && Programfilterlst.Count > 0)
                                     {
                                         Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
@@ -9233,7 +9241,7 @@ namespace RevenuePlanner.Controllers
 
 
 
-                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).ToList();
+                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Tactic title
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                                 {
 
@@ -9282,7 +9290,7 @@ namespace RevenuePlanner.Controllers
                                                         GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell>  <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell> ");
                                                         GridString.Append(" <cell  " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\"  actval=\"" + tactic.totalcost.ToString() + "\" type='edn' >" + tactic.totalcost + "</cell> <cell  " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\" >" + tactic.tactictypeid + "</cell>  <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell> ");
                                                         GridString.Append(" <cell   " + cellTextColor + "  type='edn' stage=\"" + tactic.ProjectStage + "\" locked=\"" + tactic.IstactEditable + "\" tactictype=\"" + tactic.tactictypeid + "\">" + tactic.projectedstagevalue + "_" + tactic.ProjectStage + "</cell>  <cell  style='color:#999' actval=\"" + tactic.totalmql.ToString() + "\">" + tactic.totalmql + "</cell>  <cell  style='color:#999' actval=\"" + tactic.totalrevenue.ToString() + "\">" + tactic.totalrevenue + "</cell> ");
-                                                        finalLineitem = DBLineItemList.Where(lintitem => lintitem.PlanTacticId == tactic.PlanTacticId).ToList();
+                                                        finalLineitem = DBLineItemList.Where(lintitem => lintitem.PlanTacticId == tactic.PlanTacticId).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
                                                         if (finalLineitem != null && finalLineitem.Count > 0)
                                                         {
                                                             var lstLineItemTaskData = finalLineitem.Select((taskdata, index) => new
@@ -9313,7 +9321,7 @@ namespace RevenuePlanner.Controllers
                                                                 GridString.Append("]]></cell>");
                                                                 GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell  locked='1' style='color:#999'></cell>  <cell  locked='1' style='color:#999'></cell> ");
                                                                 GridString.Append(" <cell    type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " + "style='color:#999;'" : lineitem.IstactEditable + "\" " + cellTextColor) + " IsOther =\"" + (lineitem.Type == null ? true : false) + "\">" + lineitem.Cost + "</cell>"); //Modified by Rahul Shah on
-                                                                GridString.Append("<cell type='ro' locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.Type));
+                                                                GridString.Append("<cell actval=\"" + lineitem.Typeid + "\" locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.Type));
                                                                 GridString.Append("</cell>");
                                                                 GridString.Append("<cell  type='ro' style='color:#999'>" + lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault() + "</cell> ");
                                                                 GridString.Append(" <cell  type='ro' style='color:#999'>--</cell>  <cell  type='ro' style='color:#999'>--</cell>  <cell  type='ro' style='color:#999'>--</cell> ");
@@ -10321,7 +10329,15 @@ namespace RevenuePlanner.Controllers
         #endregion
 
         #region method to generate grid header
-        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, int modelid, string PlanYear)
+        /// <summary>
+        /// Generate XML header for Plan grid view
+        /// </summary>
+        /// <param name="strHeader"></param>
+        /// <param name="MQLTitle"></param>
+        /// <param name="TacticTypeList"></param>
+        /// <param name="PlanYear"></param>
+        /// <returns></returns>
+        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, List<TacticTypeModel> TacticTypeList, string PlanYear)
         {
 
             string xmlUserlist = string.Empty;
@@ -10330,7 +10346,7 @@ namespace RevenuePlanner.Controllers
             {
                 //List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false).ToList();
                 //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
-                var lstTactic = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && tactype.IsDeployedToModel && tactype.ModelId == modelid).Select(tacttype => new { TacticTypeId = tacttype.TacticTypeId, Title = tacttype.Title }).ToList().OrderBy(tactype => tactype.Title).ToList();
+                
                 //var lstTactic = from tacType in tblTacticTypes
                 //                where tacType.IsDeployedToModel == true && tacType.IsDeleted
                 //                orderby tacType.Title
@@ -10363,18 +10379,13 @@ namespace RevenuePlanner.Controllers
                 strHeader.Append("<column width='110' type='dhxCalendar' sort='date' align='center' id='startdate' >#cspan</column>");
                 strHeader.Append("<column width='100' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
                 strHeader.Append("<column width='160' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
-                if (lstTactic != null && lstTactic.Count > 0)
-                {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "sort_TacticType"), "#cspan",
-                        lstTactic.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), HttpUtility.HtmlDecode(i.Title))));
-
-                    xmltactictype = xmlElements.ToString();
-
-                }
+                XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "sort_TacticType"), "#cspan",
+                    TacticTypeList.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), HttpUtility.HtmlDecode(i.Title))));
+                xmltactictype = xmlElements.ToString();
                 strHeader.Append(xmltactictype);
                 if (lstUserDetails != null)
                 {
-                    XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "sort_Owner"), "#cspan",
+                    xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "sort_Owner"), "#cspan",
                         lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlDecode(i.FirstName), HttpUtility.HtmlDecode(i.LastName)))));
                     xmlUserlist = xmlElements.ToString();
                 }
