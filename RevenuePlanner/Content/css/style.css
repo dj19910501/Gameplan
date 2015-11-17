@@ -10271,7 +10271,10 @@ li.close-list {
     overflow-x: hidden;
     width: 242px;
     }
-    
+ 
+.task-tbl div.gridbox .objbox{  /*PL #1758*/
+        overflow: auto !important;
+}
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;
