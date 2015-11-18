@@ -322,7 +322,7 @@
     <Content Include="Content\css\dhtmlxgantt.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgantt.css" />
     <Content Include="Content\css\DHTMLX\dhtmlxgrid.css" />
-    <Content Include="Content\css\DHTMLX\dhtmlxtreegrid1_min.css" />
+    <Content Include="Content\css\DHTMLX\dhtmlxtreegrid2_min.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\font-awesome.min.css" />
     <Content Include="Content\css\font.css" />
@@ -937,7 +937,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53490</DevelopmentServerPort>
+          <DevelopmentServerPort>65097</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:51115/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

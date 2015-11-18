@@ -22,7 +22,7 @@ namespace RevenuePlanner
                      "~/Content/css/dhtmlxgantt.css",
                      "~/Content/css/summernote.css",
                      "~/Content/css/jquery.multiselect.css"
-                     //"~/Content/css/DHTMLX/dhtmlxtreegrid1_min.css"
+                     //"~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css"
                     ));
 
             bundles.Add(new StyleBundle("~/Content/css/GetCSSForLogin").Include(

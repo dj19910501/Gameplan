@@ -53,7 +53,7 @@
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
-<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid1_min.css")" rel="stylesheet" type="text/css" />
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/dhtmlxchart.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/Scripts/js/ganttExportapi.js")"></script>*@
 <style type="text/css">
@@ -5295,19 +5295,19 @@ function () {
 function DisplayEditablePopup(id, type) {
         isEditTactic = id;
         isDataModified = false;
-    if (type == "PlanPopup") {
+    if (type == "PP") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", id, 0, '@RequestedModule');
     }
-    else if (type == "CampaignPopup") {
+    else if (type == "CP") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", id, 0, '@RequestedModule');
     }
-    else if (type == "ProgramPopup") {
+    else if (type == "PP") {
         ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", id, 0, '@RequestedModule');
        }
-       else if (type == "TacticPopup") {
+       else if (type == "TP") {
            ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", id, 0, '@RequestedModule');
         }
-        else if (type == "LinePopup") {
+        else if (type == "LP") {
             ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, 0, '@RequestedModule');
    }
 }
