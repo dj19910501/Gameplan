@@ -247,7 +247,7 @@
             });
             $(".grid_Search").click(function (e) {
                 inspectCloseFocus = $(this).position().top;
-                var id = $(this).attr('alt');
+                var id = $(this).parent().next().html();
                 var type = $(this).attr('id');
                 gridSearchFlag = 1;
                 DisplayEditablePopup(id, type);
@@ -257,13 +257,13 @@
                 gridSearchFlag = 1;
                 var type = $(this).attr('id');
                 var name = $(this).attr('alt');
-                var title = $(this).attr('data-title');
+                var title = $(this).parent().prev().attr('title');
                 /*Modified by Mitesh for PL ticket 1570
                 combination of title and permission conflict when title has "\" separator*/
-                var permission = $(this).attr('permission');
+                var permission = $(this).attr('per');
                 //title = chk_permission[0];
                 //var permission = chk_permission[1];
-                var linetype = $(this).attr('lineitemtype');
+                var linetype = $(this).attr('lt');
                 DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
             });
@@ -279,7 +279,7 @@
         $("#divgridview").find(".grid_Search").each(function () {
             $(this).click(function (e) {
                 inspectCloseFocus = $(this).position().top;
-                var id = $(this).attr('alt');
+                var id = $(this).parent().next().html();
                 var type = $(this).attr('id');
                 gridSearchFlag = 1;
                 DisplayEditablePopup(id, type);
@@ -292,9 +292,9 @@
                 gridSearchFlag = 1;
                 var type = $(this).attr('id');
                 var name = $(this).attr('alt');
-                var title = $(this).attr('data-title');
-                var permission = $(this).attr('permission');
-                var linetype = $(this).attr('lineitemtype');
+                var title = $(this).parent().prev().attr('title');
+                var permission = $(this).attr('per');
+                var linetype = $(this).attr('lt');
                 DisplayPopUpMenu(type, name, title, permission,linetype, e);
             });
         });
@@ -426,7 +426,7 @@
         $(".grid_Search").off("click");
         $(".grid_Search").click(function (e) {
             inspectCloseFocus = $(this).position().top;
-            var id = $(this).attr('alt');
+            var id = $(this).parent().next().html();
             var type = $(this).attr('id');
             gridSearchFlag = 1;
             DisplayEditablePopup(id, type);
@@ -436,13 +436,13 @@
             gridSearchFlag = 1;
             var type = $(this).attr('id');
             var name = $(this).attr('alt');
-            var title = $(this).attr('data-title');
+            var title = $(this).parent().prev().attr('title');
             /*Modified by Mitesh for PL ticket 1570
             combination of title and permission conflict when title has "\" separator*/
-            var permission = $(this).attr('permission');
+            var permission = $(this).attr('per');
             //title = chk_permission[0];
             //var permission = chk_permission[1];
-            var linetype = $(this).attr('lineitemtype');
+            var linetype = $(this).attr('lt');
             DisplayPopUpMenu(type, name, title, permission, linetype, e);
 
         });
@@ -531,7 +531,7 @@
             $(".grid_Search").off("click");
             $(".grid_Search").click(function (e) {
                 inspectCloseFocus = $(this).position().top;
-                var id = $(this).attr('alt');
+                var id = $(this).parent().next().html();
                 var type = $(this).attr('id');
                 gridSearchFlag = 1;
                 DisplayEditablePopup(id, type);
@@ -543,13 +543,13 @@
                 gridSearchFlag = 1;
                 var type = $(this).attr('id');
                 var name = $(this).attr('alt');
-                var title = $(this).attr('data-title');
+                var title = $(this).parent().prev().attr('title');
                 /*Modified by Mitesh for PL ticket 1570
                 combination of title and permission conflict when title has "\" separator*/
-                var permission = $(this).attr('permission');
+                var permission = $(this).attr('per');
                 //title = chk_permission[0];
                 //var permission = chk_permission[1];
-                var linetype = $(this).attr('lineitemtype');
+                var linetype = $(this).attr('lt');
                 DisplayPopUpMenu(type, name, title, permission, linetype, e);
 
             });
@@ -1253,20 +1253,20 @@
             gridSearchFlag = 1;
             var type = $(this).attr('id');
             var name = $(this).attr('alt');
-            var title = $(this).attr('data-title');
+            var title = $(this).parent().prev().attr('title');
             /*Modified by Mitesh for PL ticket 1570
             combination of title and permission conflict when title has "\" separator*/
-            var permission = $(this).attr('permission');
+            var permission = $(this).attr('per');
             //title = chk_permission[0];
             //var permission = chk_permission[1];
-            var linetype = $(this).attr('lineitemtype');
+            var linetype = $(this).attr('lt');
             DisplayPopUpMenu(type, name, title, permission,linetype, e);
 
         });
     });
     x = 0;
     $('#useless').click(function () {
-        HomeGrid.sortRows(0, 'str', 'asc');
+        HomeGrid.sortRows(1, 'str', 'asc');
         $("#spanscroll").text(x += 1);
         return true;
     });
@@ -1282,7 +1282,7 @@
         if (pageIsScroll == false) {
 
             pageIsScroll = true;
-            $("#useless").click();
+            //$("#useless").click();
         }
     });
 </script>
