@@ -445,8 +445,8 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
     else {
         $(lableId).removeAttr('original-title');
         $(lableId).removeClass('north');
-        if (iscurrency) {
-              $(lableId).text("$" + number_format(roundValue, 0, '.', ','));
+        if (iscurrency) {            
+            $(lableId).text("$" + number_format(roundValue, 0, '.', ','));
         }
         else {
               $(lableId).text(number_format(roundValue, 0, '.', ','));
@@ -476,7 +476,8 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency) {
     }
     else {
         if (iscurrency) {
-            $(lableId).text("$" + number_format(roundValue, 0, '.', ','));
+            //Modified by Ashish for PL #1656 - to allow decimal values.
+            $(lableId).text("$" + number_format(roundValue, 2, '.', ','));
         }
         else {
             $(lableId).text(number_format(roundValue, 0, '.', ','));

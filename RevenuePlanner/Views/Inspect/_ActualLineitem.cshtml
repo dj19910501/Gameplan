@@ -107,7 +107,7 @@
                 <tbody>
                     <tr class="height42" id="tr_rightCost">
                         <th id="cP" class="text-align-right projected font3F3F3F setBudget border-none"></th>
-                        <th class="border-r font3F3F3F text-align-right border-none setBudget" id="lblTotalCost">0</th>
+                        <th class="border-r font3F3F3F text-align-right border-none setBudget1" id="lblTotalCost">0</th>
                     </tr>
                 </tbody>
             </table>
@@ -195,7 +195,14 @@
                                 var indx = parseInt(i) + 1;
                                 var actVal = actualData[i].costValue;
                                 if (!isNaN(actVal) && actVal != '') {
-                                    $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
+                                    //Added by Ashish for PL #1656
+                                    if (actVal.toString().indexOf('.') != -1) {
+                                        $("#txtActual-Y" + indx).val(FormatCurrency(actVal, true));
+                                    }
+                                    else {
+                                        $("#txtActual-Y" + indx).val(FormatCurrency(actVal, false));
+                                    }
+                                    //Added by Ashish for PL #1656
                                 }
                                 else {
                                     $("#txtActual-Y" + indx).val("");
