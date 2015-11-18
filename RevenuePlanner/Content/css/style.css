@@ -12186,7 +12186,7 @@ div.clue-bottom-default .cluetip-arrows {
     width: 100%;
     min-width: 800px;
     margin-top: 26px;
-    height:90%; /*PL 1492 Issue(2)*/
+    max-height:600px; /*PL 1492 Issue(2)*//*by bheru 18-11-2015 #1619*/
 }
 
 .PopupDiv {
@@ -13496,7 +13496,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
  margin-left: 55px;
 }
  .pop-body-wraper {
- height: 90%;
+ height: 600px;/*by bheru 18-11-2015 #1619*/
 }
  finance_grid_add {
  margin: 0 0 0 19%;
@@ -13511,7 +13511,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
  width: 887px;
 }
  .pop-body-wraper {
- height: 82%;
+ height: 500px;/*by bheru 18-11-2015 #1619*/
 }
  .finance_grid_add {
  margin: 0;/*by bheru 1678 05-11-2015*/
