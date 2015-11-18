@@ -311,7 +311,8 @@
                             else {
                                 /// find search_text from current li to downward direction in dropdown list.
                                 var _nextdatas = '';
-                                _nextdatas = $('.setFocusli').nextAll("li");    // get next all "li" list from current "li".
+                                //_nextdatas = $('.setFocusli').nextAll("li");    // get next all "li" list from current "li". //Commented by Rahul shah on 18/11/2015 for PL#1742.
+                                _nextdatas = $this.find('.setFocusli').nextAll("li");    //added by Rahul Shah on 17/11/2015 for PL #1742 to get next all "li" list from current "DropDown".
                                 var cntr = 0; //// counter to check that any "li" exist or not that has search_text. if it's 0 then compare search_text from start of the dropdown list.
                                 $.each(_nextdatas, function (key, value) {
                                     var _anchor = $(value).find('a');
