@@ -81,7 +81,7 @@
         </li>
     </ul>
     <div id="CustomHtmlHelperfield" class="inspect-column-parent source-sans-proregular remove-bottom-border inspect_attribute_parent margin-left">
-        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(campaign.PlanCampaignId, Enums.EntityType.Campaign.ToString(),0)
+        @HtmlHelpers.GenerateCustomFieldsForInspectPopup(campaign.PlanCampaignId, Enums.EntityType.Campaign.ToString().ToLower(), 0)
     </div>     
     //End - Added by Mitesh Vaishnav for PL ticket #844 Inspect popup screen - Add custom field section    
                                         

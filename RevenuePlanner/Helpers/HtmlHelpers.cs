@@ -4262,7 +4262,7 @@ namespace RevenuePlanner.Helpers
                 var userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
                 MRPEntities db = new MRPEntities();
                 string TacticType = "";
-                if (section == Enums.EntityType.Tactic.ToString() && id != 0)
+                if (section == Enums.EntityType.Tactic.ToString().ToLower() && id != 0)
                 { 
                 Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
                 TacticType = pcpt.TacticTypeId.ToString();
@@ -4274,7 +4274,7 @@ namespace RevenuePlanner.Helpers
 
                 //// Start - Added by Sohel Pathan on 28/01/2015 for PL ticket #1140
                 List<Models.CustomRestriction> lstEditableRestrictions = new List<CustomRestriction>();
-                if (mode != Enums.InspectPopupMode.ReadOnly.ToString() && section == Enums.EntityType.Tactic.ToString())
+                if (mode != Enums.InspectPopupMode.ReadOnly.ToString() && section == Enums.EntityType.Tactic.ToString().ToLower())
                 {
                     lstEditableRestrictions = userCustomRestrictionList.Where(restriction => restriction.Permission == (int)Enums.CustomRestrictionPermission.ViewEdit).ToList();
                 }
@@ -4436,7 +4436,7 @@ namespace RevenuePlanner.Helpers
 
                             #region tactic inspect pop up
 
-                            if (section == Enums.EntityType.Tactic.ToString())
+                            if (section == Enums.EntityType.Tactic.ToString().ToLower())
                             {
 
                                 sb.Append("<div " + divPosition + "><a class=\"dropdown_new_btn " + addResubmissionClass + "\"" + require + "  label=\"" + item.name + "\"><p title=\"#HEADER_OF_DROPDOWN#\">#HEADER_OF_DROPDOWN#</p></a>");
@@ -4626,7 +4626,7 @@ namespace RevenuePlanner.Helpers
 
                                 #region tactic inspect pop up
 
-                                if (section == Enums.EntityType.Tactic.ToString() && item.value != null && item.value.Count > 1)
+                                if (section == Enums.EntityType.Tactic.ToString().ToLower() && item.value != null && item.value.Count > 1)
                                 {
                                     DropDownStyle = " style=\"position:absolute;";
                                     divPosition = "style=\"position:relative;\"";//modified by mitesh vaishnav for PL ticket 1497

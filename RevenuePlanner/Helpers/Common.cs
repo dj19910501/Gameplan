@@ -4368,7 +4368,7 @@ namespace RevenuePlanner.Helpers
             MRPEntities db = new MRPEntities();
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
             List<CustomFieldDependency> DependencyList = db.CustomFieldDependencies.Where(a => a.IsDeleted == false).Select(a => a).ToList();
-            var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true)).ToList().Select(a => new CustomFieldModel
+            var lstCustomFields = db.CustomFields.Where(customField => customField.EntityType.ToLower() == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false && (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true)).ToList().Select(a => new CustomFieldModel
             {
                 customFieldId = a.CustomFieldId,
                 name = a.Name,
@@ -4528,10 +4528,10 @@ namespace RevenuePlanner.Helpers
             List<int> LineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(tactic => tacticids.Contains(tactic.PlanTacticId)).Select(lineitem => lineitem.PlanLineItemId).ToList();
 
             List<ViewByModel> lstCustomFieldsViewByTab = new List<ViewByModel>();
-            string CampaignCustomText = Enums.EntityType.Campaign.ToString(),
-                ProgramCustomText = Enums.EntityType.Program.ToString(),
-                TacticCustomText = Enums.EntityType.Tactic.ToString(),
-               LineItemCustomText = Enums.EntityType.Lineitem.ToString();
+            string CampaignCustomText = Enums.EntityType.Campaign.ToString().ToLower(),
+                ProgramCustomText = Enums.EntityType.Program.ToString().ToLower(),
+                TacticCustomText = Enums.EntityType.Tactic.ToString().ToLower(),
+               LineItemCustomText = Enums.EntityType.Lineitem.ToString().ToLower();
 
             string DropDownList = Enums.CustomFieldType.DropDownList.ToString();
             var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId
@@ -4552,16 +4552,16 @@ namespace RevenuePlanner.Helpers
                                  select cf).Distinct().ToList();
 
             var campaigncustomids = customfieldentity.Where(cfe => campaignids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
-            List<ViewByModel> lstCustomFieldsViewByTabCampaign = customfieldlist.Where(cf => cf.EntityType == CampaignCustomText && campaigncustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = CampaignCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabCampaign = customfieldlist.Where(cf => cf.EntityType.ToLower() == CampaignCustomText && campaigncustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = CampaignCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabCampaign = lstCustomFieldsViewByTabCampaign.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             var programcustomids = customfieldentity.Where(cfe => programids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
-            List<ViewByModel> lstCustomFieldsViewByTabProgram = customfieldlist.Where(cf => cf.EntityType == ProgramCustomText && programcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = ProgramCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabProgram = customfieldlist.Where(cf => cf.EntityType.ToLower() == ProgramCustomText && programcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = ProgramCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabProgram = lstCustomFieldsViewByTabProgram.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             var tacticcustomids = customfieldentity.Where(cfe => tacticids.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
-            List<ViewByModel> lstCustomFieldsViewByTabTactic = customfieldlist.Where(cf => cf.EntityType == TacticCustomText && tacticcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = TacticCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabTactic = customfieldlist.Where(cf => cf.EntityType.ToLower() == TacticCustomText && tacticcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = TacticCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabTactic = lstCustomFieldsViewByTabTactic.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             var LineItemcustomids = customfieldentity.Where(cfe => LineItemIds.Contains(cfe.EntityId)).Select(cfe => cfe.CustomFieldId).Distinct().ToList();
-            List<ViewByModel> lstCustomFieldsViewByTabLineItem = customfieldlist.Where(cf => cf.EntityType == LineItemCustomText && LineItemcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = LineitemCustomTitle + cf.CustomFieldId.ToString() }).ToList();
+            List<ViewByModel> lstCustomFieldsViewByTabLineItem = customfieldlist.Where(cf => cf.EntityType.ToLower() == LineItemCustomText && LineItemcustomids.Contains(cf.CustomFieldId)).ToList().Select(cf => new ViewByModel { Text = cf.Name.ToString(), Value = LineitemCustomTitle + cf.CustomFieldId.ToString() }).ToList();
             lstCustomFieldsViewByTabLineItem = lstCustomFieldsViewByTabLineItem.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
 
             if (IsBudgetTab)

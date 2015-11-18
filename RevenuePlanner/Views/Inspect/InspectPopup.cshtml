@@ -890,4 +890,37 @@
             $this.addClass('source-sans-prosemibold statuscreated');
         }
     }
+
+
+    $('.proceed_btn').click(function (e) {
+        var label = $('#MultiSelectProcced').attr('proccedObject').toString();
+        //alert(label);
+        $('.dropdown_new_btn').each(function () {
+            if ($(this).attr('label').toString() == label) {
+                var menu = $(this).parent().find('.dropdown-wrapper');
+                menu.toggleClass('dropdown-block minimum-width215');
+                menu.find('.text_ellipsis').toggleClass('minmax-width200');
+                menu.find(".weight,.weight_header,.first_hide,.revenue_header,.cost_header,.value_header,.top_head_attribute").toggle();
+                menu.find('input[type=checkbox]').toggle();
+                menu.find('.advance_a').text("> Multi-selection");
+                menu.find('.advance_a').attr('mode', 'Single');
+                $(this).find('p:first').text("Please Select");
+                menu.find('input:checkbox').removeAttr('checked');
+                menu.find('input[type=text]').val('');
+                menu.find('input[type=text]').addClass('multiselect-input-text-color-grey');
+                menu.find('p').addClass('single-p');
+                menu.find('tr').addClass('trdropdownhover');
+                menu.find('#aclose_tag').css('display', 'none');
+                //added by Rahul Shah on 05/11/2015 - by default multi mode of Custom dropdown then hide the "Please Select"
+
+                if ($(this).next().children().children().find('tbody').children(':first-child').find('p').text() == "Please Select") {
+                    $(this).next().children().children().find('tbody').children(':first-child').show();
+
+                }
+            }
+        });
+        $('#MultiSelectProcced').slideUp(400);
+        e.stopPropagation();
+    });
+
 </script>
