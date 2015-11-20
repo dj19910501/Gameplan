@@ -47,7 +47,7 @@ namespace RevenuePlanner.Controllers
         List<Stage> stageList = new List<Stage>();
         List<User> lstUserDetails = new List<User>();
         List<int> lstCustomFieldsRequired = new List<int>();
-    //    List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
+        //    List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
         List<Plan_Campaign_Program_Tactic_LineItem> DBLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
 
         #endregion
@@ -8866,14 +8866,14 @@ namespace RevenuePlanner.Controllers
                 var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
                 //    lstCustomFieldsRequired = cusomfield.Where(customField => (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true) && customField.IsRequired == true).Select(customField => customField.CustomFieldId).ToList();
 
-                
-                
-                
+
+
+
                 // Commented by Bhavesh:  To False required flag display in grid view Date: 05/11/2015 Ticket : #1550
                 //List<CustomFieldDependency> DependencyListFinal = db.CustomFieldDependencies.Where(a => a.IsDeleted == false && a.CustomField.ClientId == Sessions.User.ClientId).Select(a => a).ToList();
                 //lstCustomFieldsRequired = cusomfield.Where(customField => (customField.CustomFieldType.Name.Equals(DropDownList) ? customField.CustomFieldOptions.Count() > 0 : true) && customField.IsRequired == true).Select(customField => customField.CustomFieldId).ToList();
 
-                
+
                 var lstAllTacticCustomFieldEntitiesanony = db.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
                                                                                                        .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
 
@@ -8886,13 +8886,13 @@ namespace RevenuePlanner.Controllers
                                                                 Value = tbl.Value
                                                             }).ToList();
 
-            //    tacticcustomfieldsentity = customfieldlist;
+                //    tacticcustomfieldsentity = customfieldlist;
 
                 //if (programtactic != null && programtactic.Count > 0)
                 //    IsTacticExist = true;
                 //objimprovement.IsTacticExists = IsTacticExist;
-               // var NoOfPrograms = lstprogramId.Count();
-               // objimprovement.Progrmas = NoOfPrograms;
+                // var NoOfPrograms = lstprogramId.Count();
+                // objimprovement.Progrmas = NoOfPrograms;
                 //int id = Convert.ToInt32(planIds[0].ToString());
                 //int improvementProgramId = db.Plan_Improvement_Campaign_Program.Where(prgrm => prgrm.Plan_Improvement_Campaign.ImprovePlanId == id).Select(prgrm => prgrm.ImprovementPlanProgramId).FirstOrDefault();
                 //if (improvementProgramId != 0)
@@ -8946,7 +8946,7 @@ namespace RevenuePlanner.Controllers
                 int intmodelId = (int)modelId;
                 var lstLineItemType = db.LineItemTypes.Where(litemtype => litemtype.ModelId == intmodelId).Select(lineitemtype => new { lineitemtype.LineItemTypeId, lineitemtype.Title }).ToList();
                 string strLineType = string.Empty;
-				// Comment by bhavesh TO load line item type later
+                // Comment by bhavesh TO load line item type later
                 //foreach (var typelist in lstLineItemType)
                 //{
                 //    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
@@ -9054,7 +9054,7 @@ namespace RevenuePlanner.Controllers
                         }
                         GridString.Append("]]></cell>");
                         GridString.Append("<cell>" + planitem.PlanId + "</cell><cell locked='1'>" + Startdate + "</cell><cell locked='1'>" + Enddate + "</cell><cell actval=\"" + totalcost + "\">" + totalcost + "</cell>");
-                        GridString.Append("<cell type='ro'>--</cell><cell type='ro'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell><cell type='ro'>--</cell><cell actval=\"" + totalmql + "\">" + totalmql + "</cell><cell actval=\"" + totalrevenue + "\">" + totalrevenue + "</cell>");
+                        GridString.Append("<cell type='ro'>--</cell><cell type='ro'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell><cell type='ro'>--</cell><cell actval=\"" + totalmql + "\">" + ConvertNumberToRoundFormate(totalmql) + "</cell><cell actval=\"" + totalrevenue + "\">$" + ConvertNumberToRoundFormate(totalrevenue) + "</cell>");
                         Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title
                         CampCnt = 1;
                         if (Campaignfilterlst.Count > 0)
@@ -9143,8 +9143,8 @@ namespace RevenuePlanner.Controllers
                                     GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell>");
                                     GridString.Append("<cell actval=\"" + Campaignitem.totalcost.ToString() + "\">" + Campaignitem.totalcost.ToString() + "</cell>");
                                     GridString.Append("<cell type='ro' style='color:#999'>--</cell><cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
-                                    GridString.Append("<cell>--</cell><cell actval=\"" + Campaignitem.totalmql.ToString() + "\">" + Campaignitem.totalmql.ToString() + "</cell>");
-                                    GridString.Append("<cell actval=\"" + Campaignitem.totalrevenue.ToString() + "\">" + Campaignitem.totalrevenue.ToString() + "</cell>");
+                                    GridString.Append("<cell>--</cell><cell actval=\"" + Campaignitem.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(Campaignitem.totalmql).ToString() + "</cell>");
+                                    GridString.Append("<cell actval=\"" + Campaignitem.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString() + "</cell>");
 
 
                                     Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title
@@ -9229,7 +9229,7 @@ namespace RevenuePlanner.Controllers
                                                 GridString.Append("]]></cell>");
                                                 GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell>");
                                                 GridString.Append("<cell actval=\"" + Programitem.totalcost.ToString() + "\">" + Programitem.totalcost + "</cell> <cell type='ro'>--</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Programitem.CreatedBy.ToString()) + "</cell>");
-                                                GridString.Append("<cell>--</cell><cell actval=\"" + Programitem.totalmql.ToString() + "\">" + Programitem.totalmql + "</cell><cell actval=\"" + Programitem.totalrevenue.ToString() + "\">" + Programitem.totalrevenue + "</cell>");
+                                                GridString.Append("<cell>--</cell><cell actval=\"" + Programitem.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(Programitem.totalmql) + "</cell><cell actval=\"" + Programitem.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(Programitem.totalrevenue) + "</cell>");
 
 
 
@@ -9261,7 +9261,7 @@ namespace RevenuePlanner.Controllers
                                                         tactictypetitle = taskdata.TacticType.Title,
                                                         CreatedBy = GetUserName(taskdata.CreatedBy),
                                                         tactictypeid = taskdata.TacticTypeId,
-                                                        projectedstagevalue = taskdata.ProjectedStageValue,
+                                                        projectedstagevalue = taskdata.ProjectedStageValue == null ? 0 : taskdata.ProjectedStageValue,
                                                         IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                                         ProjectStage = taskdata.Stage.Title,
                                                         IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == false ? lstSubordinatesIds.Contains(taskdata.CreatedBy) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1" : "0",
@@ -9281,7 +9281,7 @@ namespace RevenuePlanner.Controllers
                                                         GridString.Append("]]></cell>");
                                                         GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell>");
                                                         GridString.Append("<cell " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\"  actval=\"" + tactic.totalcost.ToString() + "\" type='edn' >" + tactic.totalcost + "</cell><cell " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\" >" + tactic.tactictypeid + "</cell><cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell>");
-                                                        GridString.Append("<cell " + cellTextColor + " type='edn' stage=\"" + tactic.ProjectStage + "\" locked=\"" + tactic.IstactEditable + "\" tactictype=\"" + tactic.tactictypeid + "\">" + tactic.projectedstagevalue + "_" + tactic.ProjectStage + "</cell><cell actval=\"" + tactic.totalmql.ToString() + "\">" + tactic.totalmql + "</cell><cell actval=\"" + tactic.totalrevenue.ToString() + "\">" + tactic.totalrevenue + "</cell>");
+                                                        GridString.Append("<cell " + cellTextColor + " type='edn' stage=\"" + tactic.ProjectStage + "\" locked=\"" + tactic.IstactEditable + "\" tactictype=\"" + tactic.tactictypeid + "\">" + (Math.Round(Convert.ToDouble(tactic.projectedstagevalue)) > 0 ? Math.Round(Convert.ToDouble(tactic.projectedstagevalue)).ToString("#,#") : "0") + " " + tactic.ProjectStage + "</cell><cell actval=\"" + tactic.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(tactic.totalmql) + "</cell><cell actval=\"" + tactic.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(tactic.totalrevenue) + "</cell>");
                                                         finalLineitem = DBLineItemList.Where(lintitem => lintitem.PlanTacticId == tactic.PlanTacticId).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
                                                         if (finalLineitem != null && finalLineitem.Count > 0)
                                                         {
@@ -9293,7 +9293,7 @@ namespace RevenuePlanner.Controllers
                                                                 PlanLineItemId = taskdata.PlanLineItemId,
                                                                 title = taskdata.Title,
                                                                 Typeid = taskdata.LineItemTypeId,
-                                                                Type = taskdata.LineItemTypeId!=null ? taskdata.LineItemType.Title : "",
+                                                                Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
                                                                 CreatedBy = taskdata.CreatedBy,
                                                                 IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                                                 IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1"
@@ -9308,7 +9308,7 @@ namespace RevenuePlanner.Controllers
                                                                 if (tactic.IsPlanCreateAll)
                                                                 {
                                                                     //GridString.Append("<div class='grid_add' id='Line'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" data-title=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" permission=\"" + lineitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
-                                                                    GridString.Append("<div class='grid_add' id='Line' lt=\"" + lineitem.lineitemtype + "\" " + " dt=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" per=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Rahul : change Persmission on Tactic level for PL #1705
+                                                                    GridString.Append("<div class='grid_add' id='Line' alt=\"___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" lt=\"" + lineitem.lineitemtype + "\" " + " dt=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" per=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Rahul : change Persmission on Tactic level for PL #1705
                                                                 }
                                                                 GridString.Append("]]></cell>");
                                                                 GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell locked='1'></cell><cell locked='1'></cell> ");
@@ -9353,7 +9353,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             objplangrid.xmlstring = GridString.ToString();
-           // objplangrid.ImprovementObj = objimprovement;
+            // objplangrid.ImprovementObj = objimprovement;
             await Task.Delay(1);
             return PartialView("_HomeGrid", objplangrid);
         }
@@ -10297,7 +10297,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 objplangrid.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
-               // objimprovement.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
+                // objimprovement.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
                 objplangrid.INQLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(INQLable);
                 objplangrid.MQLValue = MQLValue;
                 objplangrid.INQValue = INQValue;
@@ -10457,8 +10457,8 @@ namespace RevenuePlanner.Controllers
                 TotalCost = DBLineItemList.Sum(l => l.Cost);
                 //ViewBag.TotalCost = TotalCost;
                 //ViewBag.TotalMqls = TotalMqls;
-              //  objimprovement.TotalCost = TotalCost;
-              //  objimprovement.TotalMqls = TotalMqls;
+                //  objimprovement.TotalCost = TotalCost;
+                //  objimprovement.TotalMqls = TotalMqls;
 
                 //End
 
@@ -10709,5 +10709,37 @@ namespace RevenuePlanner.Controllers
             }
         }
         #endregion
+
+        #region method to convert number in k, m formate
+
+        /// <summary> 
+        /// Added By devanshi gandhi/ Bhavesh Dobariya to hadle format at server side and avoide at client side - Change made to improve performance of grid view 
+        /// </summary> 
+        /// <param name="num"></param> 
+        /// <returns></returns> 
+        public string ConvertNumberToRoundFormate(double num)
+        {
+            long i = (long)Math.Pow(10, (int)Math.Max(0, Math.Log10(num) - 2));
+            num = num / i * i;
+
+            if (num >= 100000000000000)
+                return (num / 100000000000000D).ToString("0.##") + "Q";
+            if (num >= 100000000000)
+                return (num / 100000000000D).ToString("0.##") + "T";
+            if (num >= 1000000000)
+                return (num / 1000000000D).ToString("0.##") + "B";
+            if (num >= 1000000)
+                return (num / 1000000D).ToString("0.##") + "M";
+            if (num >= 1000)
+                return (num / 1000D).ToString("0.##") + "K";
+
+            if (num != 0.0)
+                return num.ToString("#,#");
+            else
+                return "0";
+
+
+        }
+        #endregion 
     }
 }

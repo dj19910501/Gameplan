@@ -420,7 +420,7 @@
         });
 
 
-        //if (isCopyTactic != 0) {
+        //if (isCopyTacticHomeGrid != 0) {
         //    HomeGrid.collapseAll();
         //}
         $(".grid_Search").off("click");
@@ -447,82 +447,38 @@
 
         });
 
-        HomeGrid.forEachRow(function (rowid) {
-            //Added by Rahul Shah on 20/10/2015 for PL #1683
-            //if (rowid.split(".")[0] == "tact") {
-            //    var a = this.getRowById(rowid);
-            //    this.collapseKids(a);
+        // Open editable or copy entity in grid view.
+        if (isCopyTacticHomeGrid != 0) {
+            var selectedcell = HomeGrid.findCell(isCopyTacticHomeGrid, 3, true);
+            var id = selectedcell[0];
+            var rowid = id[0];
+            var SourcePtype = (rowid).split(".")[0];
+            alert(rowid);
+            // if (SourcePtype == "line") { 
+            // HomeGrid.openItem(HomeGrid.getParentId(rowid)); 
+            HomeGrid.openItem(rowid);
+            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
 
-            //}
-            var MQL = HomeGrid.cells(rowid, 10).getValue();
-            if (MQL != "--" && !isNaN(MQL)) {
-                    HomeGrid.cells(rowid, 10).setValue(GetAbberiviatedValue(MQL));
-            }
-            var Revenue = HomeGrid.cells(rowid, 11).getValue();
-            if (Revenue != "--" && !isNaN(Revenue)) {
-                HomeGrid.cells(rowid, 11).setValue(FormatNumber(Revenue, false));
-            }
+            isCopyTacticHomeGrid = 0;
+            isCopyTactic = 0;
+        }
+        else if (isEditTacticHomeGrid != 0) {
+            alert(isEditTacticHomeGrid);
+            // HomeGrid.expandAll(); 
+            var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, 3, true);
 
-            var psv = HomeGrid.cells(rowid, 9).getValue().split("_");
-            if (psv.length > 1) {
-                var psvnum = FormatCommas(psv[0], false);
-                HomeGrid.cells(rowid, 9).setValue(psvnum + " " + psv[1]);
-            }
-            //HomeGrid.closeItem(rowid);
-            var id = HomeGrid.cells(rowid, 3).getValue();
-            var pid = HomeGrid.getParentId(rowid);
+            //  HomeGrid.openItem(id[0]); 
 
-            if (isCopyTactic != 0) {
-
-                //if (HomeGrid.getOpenState(rowid) == true)
-                //    HomeGrid.closeItem(rowid);
-                if (id == isCopyTactic) {
-                    var SourcePtype = (rowid).split(".")[0];
-
-                    //var subids = HomeGrid.getSubItems(rowid).split(',');
-                    //for (var i = 0; i < subids.length; i++)
-                    //    HomeGrid.openItem(subids[i]);
-                    if (SourcePtype == "line") {
-                        HomeGrid.openItem(pid);
-                        HomeGrid.openItem(HomeGrid.getParentId(pid));
-                        HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(pid)));
-                    }
-                    if (SourcePtype == "tact") {
-                        HomeGrid.openItem(rowid);
-                        HomeGrid.openItem(pid);
-                        HomeGrid.openItem(HomeGrid.getParentId(pid));
-                        HomeGrid.openItem(HomeGrid.getParentId(HomeGrid.getParentId(pid)));
-                    }
-                    if (SourcePtype == "prog") {
-                        HomeGrid.openItem(rowid);
-                        HomeGrid.openItem(pid);
-                        HomeGrid.openItem(HomeGrid.getParentId(pid));
-
-                    }
-                    if (SourcePtype == "camp") {
-                        HomeGrid.openItem(rowid);
-                        HomeGrid.openItem(pid);
-
-                    }
-                    HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-                 //   var scrolltop = $(".cellselected").offset().top;
-                 //   $(window).scrollTop(scrolltop - 100);
-                    ///  HomeGrid.showRow((pid));
-                    isCopyTactic = 0;
-                }
-
-            }
-            else if (isEditTactic != 0) {
-                // HomeGrid.expandAll();
-                if (id == isEditTactic) {
-                    HomeGrid.openItem(HomeGrid.getParentId(rowid));
-                    HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
-                    //var scrolltop = $(".rowselected").offset().top;
-                  //  $(window).scrollTop(scrolltop - 100);
-                    isEditTactic = 0;
-                }
-            }
-        });
+            var id = selectedcell[0];
+            var rowid = id[0];
+            HomeGrid.openItem(HomeGrid.getParentId(rowid));
+            HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
+            //var scrolltop = $(".rowselected").offset().top; 
+            //  $(window).scrollTop(scrolltop - 100); 
+            isEditTacticHomeGrid = 0;
+            isEditTactic = 0;
+        }
+      
         if (editidonOpenEnd != 0) {
             HomeGrid.detachEvent(editidonOpenEnd);
         }
