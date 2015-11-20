@@ -961,6 +961,8 @@
     var PlanCount = 0, OwnerCount = 0;
     var isCopyTactic = 0;
     var isEditTactic = 0;
+    var isCopyTacticHomeGrid = 0;
+    var isEditTacticHomeGrid = 0;
     var inspectCloseFocus = "";
     //Added By Komal Rawal for #1376
     function toggleStatus(obj) {
@@ -3480,6 +3482,8 @@ function Quarter() {
 
                               if (isDataModified) {
                                   if (gridSearchFlag == 1) {
+                                      isCopyTacticHomeGrid = isCopyTactic;
+                                      isEditTacticHomeGrid = isEditTactic;
                                       LoadPlanGrid();
                                       gridSearchFlag = 0;
                                   }
@@ -4853,6 +4857,7 @@ function Quarter() {
                     }
                     else if (data.IsSuccess) {
                         isCopyTactic = data.Id;
+                        isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
                         ShowMessage(isError, data.msg);
 
@@ -4910,6 +4915,7 @@ function Quarter() {
                 }
                 else if (data.IsSuccess) {
                     isCopyTactic = data.Id;
+                    isCopyTacticHomeGrid = isCopyTactic;
                     RefreshCurrentTab();
                     ShowMessage(isError, data.msg);
                     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -4971,6 +4977,7 @@ function Quarter() {
                 }
                 else if (data.IsSuccess) {
                     isCopyTactic = data.Id;
+                    isCopyTacticHomeGrid = isCopyTactic;
                     RefreshCurrentTab();
                     ShowMessage(isError, data.msg);
                     if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -5043,6 +5050,7 @@ function Quarter() {
                     }
                     else if (data.IsSuccess) {
                         isCopyTactic = data.Id;
+                        isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
