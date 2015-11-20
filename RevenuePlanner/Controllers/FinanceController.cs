@@ -617,7 +617,8 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            isEdit = "Edit";
+                            isEdit = "View";
+                            //isEdit = "Edit";
                         }
 
                         if (_IsBudgetCreate_Edit)
@@ -780,13 +781,27 @@ namespace RevenuePlanner.Controllers
                 forecast = forcastVal.HasValue ? forcastVal.Value.ToString(formatThousand) : "0";
                 planned = pannedVal.HasValue ? pannedVal.Value.ToString(formatThousand) : "0";
                 actual = actualVal.HasValue ? actualVal.Value.ToString(formatThousand) : "0";
-                rowId = rowId + "_" + _IsBudgetCreate_Edit.ToString(); // Append Create/Edit flag value for Budget permission to RowId.
-
+               // rowId = rowId + "_" + _IsBudgetCreate_Edit.ToString(); // Append Create/Edit flag value for Budget permission to RowId.
+                if (Permission == "Edit")
+                {
+                    rowId = rowId + "_" + "True";
+                }
+                else
+                {
+                    rowId = rowId + "_" + "False";
+                }
                 if (_IsBudgetCreate_Edit)
                 {
                     if (id != OtherBudgetId)
                     {
-                        addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        if (Permission == "Edit")
+                        {
+                            addRow = "<div id='dv" + rowId + "' row-id='" + rowId + "' onclick='AddRow(this)' class='finance_grid_add' title='Add New Row'></div><div id='cb" + rowId + "' row-id='" + rowId + "' name='" + name + "' onclick='CheckboxClick(this)' class='grid_Delete'></div>";
+                        }
+                        else
+                        {
+                            addRow = "";
+                        }
                     }
                     else
                     {
@@ -879,7 +894,15 @@ namespace RevenuePlanner.Controllers
             }
             else
             {
-                rowId = rowId + "_" + _IsForecastCreate_Edit.ToString(); // Append Create/Edit flag value for Forecast permission to RowId.
+                if (Permission == "Edit")
+                {
+                    rowId = rowId + "_" + "True";
+                }
+                else
+                {
+                    rowId = rowId + "_" + "False";
+                }
+               // rowId = rowId + "_" + _IsForecastCreate_Edit.ToString(); // Append Create/Edit flag value for Forecast permission to RowId.
                 if (Convert.ToBoolean(IsForcast))
                 {
                     double? forcastVal = 0, pannedVal = 0, actualVal = 0;
@@ -1133,7 +1156,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="term">contains typed letter of textbox</param>
         /// <returns>User list</returns>
-        public JsonResult getData(string term)
+        public JsonResult getData(string term, string UserIds)
         {
             List<BDSService.User> lstUserDetail = new List<BDSService.User>();
             List<User> Getvalue = new List<User>();
@@ -1143,7 +1166,14 @@ namespace RevenuePlanner.Controllers
                 if (lstUserDetail.Count > 0)
                 {
                     lstUserDetail = lstUserDetail.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                    Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+                    //Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+
+                    Getvalue = lstUserDetail.Where(user => user.FirstName.ToLower().Contains(term.ToLower()) || user.LastName.ToLower().Contains(term.ToLower()) || user.JobTitle.ToLower().Contains(term.ToLower())).Select(user => new User { UserId = user.UserId, JobTitle = user.JobTitle, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
+
+                    string[] keepList = UserIds.Split(',');
+                    Getvalue = Getvalue.Where(i => !keepList.Contains(i.UserId.ToString())).ToList();
+
+
                 }
                 else
                 {
@@ -1208,7 +1238,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ID">contains user's id</param>
         /// <returns>if sucess then return true else false</returns>
         [HttpPost]
-        public JsonResult SaveDetail(List<UserBudgetPermission> UserData, int ID)
+        public JsonResult SaveDetail(List<UserBudgetPermission> UserData, int ID, string[] CreatedBy)
         {
             if (UserData != null)
             {
@@ -1233,7 +1263,7 @@ namespace RevenuePlanner.Controllers
 
                         BudgetDetailList.UserId = Guid.Parse(UserData[i].UserId);
                         BudgetDetailList.BudgetDetailId = Convert.ToInt32(ID);
-                        BudgetDetailList.CreatedBy = Sessions.User.UserId;
+                        BudgetDetailList.CreatedBy = Guid.Parse(CreatedBy[i]);
                         BudgetDetailList.CreatedDate = DateTime.Now;
                         BudgetDetailList.PermisssionCode = UserData[i].PermisssionCode;
                         db.Entry(BudgetDetailList).State = EntityState.Modified;
@@ -1258,7 +1288,34 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.BudgetId = BudgetId;
             List<UserPermission> _user = new List<UserPermission>();
-            if (FlagCondition == "Edit")
+
+            List<BDSService.User> lstUser = new List<BDSService.User>();
+            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            lstUser = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId).ToList();
+            var lstUserId = lstUser.Select(a => a.UserId).ToList();
+            var ListOfUserPermission = db.Budget_Permission.Where(a => lstUserId.Contains(a.UserId)).ToList();
+
+            var CheckUserPermission = ListOfUserPermission.Where(a => a.BudgetDetailId == (Int32)BudgetId && a.UserId == Sessions.User.UserId).ToList();
+            string isEdit = "";
+            string strUserAction = string.Empty;
+            if (CheckUserPermission.Count > 0)
+            {
+                if (CheckUserPermission.First().PermisssionCode == 0)
+                {
+                    isEdit = "Edit";
+                }
+                else
+                {
+                    isEdit = "View";
+                }
+            }
+            else
+            {
+                isEdit = "View";
+                //isEdit = "Edit";
+            }
+
+            if (isEdit == "Edit")
             {
                 ViewBag.FlagCondition = "Edit";
             }
@@ -1267,7 +1324,7 @@ namespace RevenuePlanner.Controllers
                 ViewBag.FlagCondition = "View";
 
             }
-            BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
+            //BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
             Guid userId = new Guid();
             BDSService.User objUser = new BDSService.User();
@@ -1286,9 +1343,11 @@ namespace RevenuePlanner.Controllers
                 user.LastName = objUser.LastName;
                 user.Role = objUser.RoleTitle;
                 user.Permission = UserList[i].PermisssionCode;
+                user.createdby = Convert.ToString(UserList[i].CreatedBy);
                 _user.Add(user);
             }
-            return Json(_user, JsonRequestBehavior.AllowGet);
+            //return Json(_user, JsonRequestBehavior.AllowGet);
+            return Json(new { _user = _user, Flag = ViewBag.FlagCondition }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -1573,10 +1632,11 @@ namespace RevenuePlanner.Controllers
 
             #region CheckPermission for user
             // For Handle user is change the Edit permission from inspect element browser
-            var objBudgetPermission = db.Budget_Permission.Where(a => a.UserId == Sessions.User.UserId && a.BudgetDetailId == BudgetId).Select(a => a.PermisssionCode).FirstOrDefault();
-            if (objBudgetPermission != null)
+            var objBudgetPermission = db.Budget_Permission.Where(a => a.UserId == Sessions.User.UserId && a.BudgetDetailId == BudgetId).ToList();
+
+            if (objBudgetPermission.Count > 0)
             {
-                if (Convert.ToInt32(objBudgetPermission) == 0)
+                if (Convert.ToInt32(objBudgetPermission.ToList()[0].PermisssionCode) == 0)
                 {
                     EditPermission = "Edit";
                 }
@@ -1584,6 +1644,10 @@ namespace RevenuePlanner.Controllers
                 {
                     EditPermission = "View";
                 }
+            }
+            else
+            {
+                EditPermission = "View";
             }
             #endregion
 
@@ -1624,7 +1688,14 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    budgetMain.enableTreeCellEdit = false;
+                    if (EditPermission == "Edit")
+                    {
+                        budgetMain.enableTreeCellEdit = true;
+                    }
+                    else
+                    {
+                        budgetMain.enableTreeCellEdit = false;
+                    }
                 }
 
                 if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
@@ -1653,7 +1724,14 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    budgetMain.enableTreeCellEdit = false;
+                    if (EditPermission == "Edit")
+                    {
+                        budgetMain.enableTreeCellEdit = true;
+                    }
+                    else
+                    {
+                        budgetMain.enableTreeCellEdit = false;
+                    }
                 }
 
                 if (!_isBudgetCreateEdit && !_isForecastCreateEdit)
@@ -1861,7 +1939,15 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    setColTypes.Append("ro,");
+
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
                                 }
                             }
                             else
@@ -1880,7 +1966,14 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    setColTypes.Append("ro,");
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
                                 }
                             }
 
@@ -1933,7 +2026,14 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    setColTypes.Append("ro,");
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
                                 }
                             }
                             else
@@ -1951,7 +2051,14 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else
                                 {
-                                    setColTypes.Append("ro,");
+                                    if (EditPermission == "Edit")
+                                    {
+                                        setColTypes.Append("ed,");
+                                    }
+                                    else
+                                    {
+                                        setColTypes.Append("ro,");
+                                    }
                                 }
                             }
 
@@ -2046,7 +2153,14 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            setColTypes.Append("ro,");
+                            if (EditPermission == "Edit")
+                            {
+                                setColTypes.Append("ed,");
+                            }
+                            else
+                            {
+                                setColTypes.Append("ro,");
+                            }
                         }
                     }
                     else
@@ -2064,7 +2178,14 @@ namespace RevenuePlanner.Controllers
                         }
                         else
                         {
-                            setColTypes.Append("ro,");
+                            if (EditPermission == "Edit")
+                            {
+                                setColTypes.Append("ed,");
+                            }
+                            else
+                            {
+                                setColTypes.Append("ro,");
+                            }
                         }
                     }
 
@@ -2562,12 +2683,13 @@ namespace RevenuePlanner.Controllers
 
             List<string> ParentData = new List<string>();
             ParentData.Add(HttpUtility.HtmlDecode(name));
+            string IsTitleEdit = "1";
             string strAddRow, strLineItemLink;
             strAddRow = strLineItemLink = string.Empty;
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
-                string IsTitleEdit = "1";
+               
 
                 #region "Get LineItem Count"
                 var LineItemIds = dataTable
@@ -2589,9 +2711,17 @@ namespace RevenuePlanner.Controllers
                 {
                     if (!_IsBudgetCreate_Edit)  // If user has not Create/Edit Budget permission then clear AddRow button Html.
                     {
+                        if (addRow == string.Empty)
+                        {
+                            IsTitleEdit = "0";
+                        }
+                        else
+                        {
+                            IsTitleEdit = "1";
+                        }
+
                         addRow = string.Empty;
                         //   SelectBox = string.Empty;
-                        IsTitleEdit = "0";
                     }
                     strLineItemLink = lineitemcount.ToString();
                 }
@@ -2599,9 +2729,16 @@ namespace RevenuePlanner.Controllers
                 {
                     if (!_IsForecastCreate_Edit)    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
                     {
+                        if (addRow == string.Empty)
+                        {
+                            IsTitleEdit = "0";
+                        }
+                        else
+                        {
+                            IsTitleEdit = "1";
+                        }
                         addRow = string.Empty;
                         //  SelectBox = string.Empty;
-                        IsTitleEdit = "0";
                     }
                     if (rwcount.Equals(1))
                         strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
@@ -2633,10 +2770,10 @@ namespace RevenuePlanner.Controllers
                 if (!_IsForecastCreate_Edit)    // If user has not Create/Edit Forecast permission then clear AddRow button Html.
                 {
                     addRow = string.Empty;
-                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = "0" });
+                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = IsTitleEdit });
                 }
                 else
-                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = "1" });
+                    objuserData = (new userdata { id = Convert.ToString(id), idwithName = "parent_" + Convert.ToString(id), row_attrs = "parent_" + Convert.ToString(id), row_locked = "0", isTitleEdit = IsTitleEdit });
                 strLineItemLink = string.Format("<div onclick='LoadLineItemGrid({0})' class='finance_lineItemlink'>{1}</div>", id.ToString(), lineitemcount.ToString());
             }
             ParentData.Add(addRow);

@@ -80,7 +80,7 @@
                                         <input type="radio" id="view-only_@item.id"  name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
                                     </p>
                                     <a href="#">
-                                        <span title="Delete Member" class="x-icon hide pull-right"></span>
+                                        @*<span title="Delete Member" class="x-icon hide pull-right"></span>*@
                                     </a>
                                 </td>
                               }
@@ -94,7 +94,7 @@
                                         <input type="radio" id="view-only_@item.id" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">View Only</label>
                                     </p>
                                     <a href="#">
-                                        <span title="Delete Member" class="x-icon hide pull-right"></span>
+                                       @* <span title="Delete Member" class="x-icon hide pull-right"></span>*@
                                     </a>
 
                                 </td>
@@ -117,11 +117,13 @@
                         {
                         <tr class="userrow">
                           
-                            <td title="@item.id" class="selectrec" style="display: none">@Html.DisplayFor(model => item.id)</td>
-                            <td title="@item.createdby" class="selectrec" style="display: none">@Html.DisplayFor(model => item.createdby)</td>
+                            <td title="UserID" class="selectrec" style="display: none">@Html.DisplayFor(model => item.id)</td>
+                            <td title="CreatedBy" class="selectrec" style="display: none">@Html.DisplayFor(model => item.createdby)</td>
                             <td title="@item.FirstName">@Html.DisplayFor(model => item.FirstName)</td>
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
                             <td>@Html.DisplayFor(model => item.Role)</td>
+
+
                             @if (item.Permission == 0)
                             {
                                 <td class="userDelete" style="border-right:none">
@@ -216,18 +218,21 @@
     var _id = '';
     var _budgetId = ''
     var _changedata = '';
+    var userIDs = [];
+    var Owneruser = '';
     //var setwidth = '';
     $(function () {
         pageName = "UserPermission";
 
         var isView = '@ViewBag.FlagCondition';
         if (isView == "View") {
-            $("#DivFilterPer").hide();
+            $("#DivFilterPer").show();
             $(".user-list").hide();
             $("#btnsave").hide();
             $("#btncancel").hide();
             $(".user-table").css("width", "100%");
-            $(".user-table input").attr("disabled", true);
+            //$(".user-table input").attr("disabled", true);
+            $(".user-table input[type=radio]").attr("disabled", true);
             $("#divFinanceBack").show();
         }
         $("#lblfinanceTitle").text('Finance (Permissions)');
@@ -239,20 +244,22 @@
 
         nlformUserChildFinance = new NLForm(document.getElementById('nl-formUserChildFinance'));
 
+        GetIds();
+
         //var width = $(".user-list").width();
         //setwidth = width +"px";
-       
-       
+
+
         //var checkinput = $("#Selectuser").val().toString().trim();
         //if (checkinput == "")
         //{
-           
+
         //    $("#NoSearch").hide();
         //}
         //$("#Selectuser").keypress(function () {
         //    alert("sdddd");
         //});
-        
+
         //var input = document.getElementById('Selectuser');
         //var checkinput = $("#Selectuser").val().toString().trim();
         //input.onkeydown = function () {
@@ -270,21 +277,23 @@
 
         var PrevSelectVal = $("#nl-formUserChildFinance option:selected");
         $('#nl-formUserChildFinance').find('li').click(function (e) {
-          
+            debugger;
+
             var $thisId = $(this).val();
+            //UserOwenrcheck($thisId);
             $("#nl-formUserChildFinance li").each(function () {
                 if ($(this).val().toString() != $(PrevSelectVal).val()) {
                     var tss = $(this).removeClass('nl-dd-checked');
 
                 }
             });
-            
+
             //$(this).removeClass('nl-dd-checked');
             $(this).addClass('nl-dd-checked');
             $(this).parent().parent().find('a').text($(this).text());
             Bindtable($thisId);
             $("#divFinanceBack").show();
-           
+
         });
         getselection();
         InspectBudgetPermissionRow();
@@ -305,26 +314,56 @@
                         return false;
                     }
                     else {
-                        var data = Data;
+                        debugger;
+                        //alert(Data.Flag);
+                        var data = Data._user;
                         var html = "";
-                        for (var i = 0; i < data.length; i++) {
+                        if (Data.Flag == "Edit") {
+                            debugger;
+                            var data = Data._user;
                             var html = "";
-                            if (data[i].Permission == 0) {
-                                html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + 't">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p>';
+                            for (var i = 0; i < data.length; i++) {
+                                var html = "";
+                                if (data[i].Permission == 0) {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p>';
+                                }
+                                else {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p>';
+                                }
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                             }
-                            else {
-                                html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p>';
-                            }
-                            $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
-                             '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
-                        }
-                        $("#tableNoData").hide();
-                        $(".user-table").show();
+                            $("#tableNoData").hide();
+                            $(".user-table").show();
 
-                        $("#userTable").show();
-                        $("#btnsave").show();
-                        $("#btncancel").show();
-                        InspectBudgetPermissionRow();
+                            $("#userTable").show();
+                            $("#btnsave").show();
+                            $("#btncancel").show();
+                            $(".user-list").show();
+                            $(".user-table").css("width", "1157px");
+                            InspectBudgetPermissionRow();
+                        }
+                        else {
+                            for (var i = 0; i < data.length; i++) {
+                                var html = "";
+                                if (data[i].Permission == 0) {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" checked="checked" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p>';
+                                }
+                                else {
+                                    html = '<p><input type="radio" class="redinput" id="vew-edit_' + data[i].id + '" name="permission' + "_" + data[i].id + '"  par=0><label for="vew-edit_' + data[i].id + '">View/Edit</label></p><p> <input type="radio" class="redinput" checked="checked" id="view-only_' + data[i].id + '"  name="permission' + "_" + data[i].id + '" par=1 /><label for="view-only_' + data[i].id + '">View Only</label></p>';
+                                }
+                                $("#userTable").append('<tr class="userrow"><td title="UserID" class="selectrec" style="display:none">' + data[i].id + '</td><td title="CreatedBy" class="selectrec" style="display:none">' + data[i].createdby + '</td><td title=' + data[i].FirstName + '>' + data[i].FirstName + '</td><td title=' + data[i].LastName + '>' + data[i].LastName + '</td><td>' + data[i].Role +
+                                 '</td><td class="userDelete" style="border-right:none">' + html + ' <a href="Finance/DeleteUser/' + data[i].id + '")"></a></td></tr>');
+                            }
+                            $("#DivFilterPer").show();
+                            $(".user-list").hide();
+                            $("#btnsave").hide();
+                            $("#btncancel").hide();
+                            $(".user-table").css("width", "100%");
+                            $(".user-table input[type=radio]").attr("disabled", true);
+                            $("#divFinanceBack").show();
+                        }
+
                     }
                 },
                 error: function () {
@@ -338,7 +377,7 @@
             $("#userTable").hide();
             $("#btnsave").hide();
             $("#btncancel").hide();
-           // alert("df");
+            // alert("df");
             $("#tableNoData").css('display', 'block');
         }
         $(".x-icon").click(function (e) {
@@ -367,6 +406,7 @@
             else {
                 var y = $(row).remove();
             }
+            GetIds();
             $('#divDeletePopup').modal("hide");
             $("#SaveMsg").show();
             $("#SaveMsg").find('span').last().text('User Deleted SuccessFully !');
@@ -401,11 +441,32 @@
 
         var imageurl = '@Url.Content("~/Content/images/icon-plus_in_circle.png")';
 
+        //// Load the cities straight from the server, passing the country as an extra param
+        //$("#Selectuser").autocomplete({
+        //    source: function(request, response) {
+        //        $.ajax({
+        //            url: src,
+        //            dataType: "json",
+        //            data: {
+        //                term : request.term,
+        //                country_id : $("#country_id").val()
+        //            },
+        //            success: function(data) {
+        //                response(data);
+        //            }
+        //        });
+        //    },
+
+        debugger;
+        var us = userIDs;
+
         $('#Selectuser').autocomplete({
             source: function (request, response) {
-              
                 var urlcontent = '@Url.Content("~/Finance/getData/")';
-                $.getJSON(urlcontent + "?term=" + request.term, function (data) {
+                //$.getJSON(urlcontent + "?term=" + request.term, function (data) {
+
+
+                $.getJSON(urlcontent, { 'term': request.term, 'UserIds': userIDs.toString() }, function (data) {
                     var t = data;
                     if (data.length > 0) {
                         $("#NoSearch").hide();
@@ -431,7 +492,7 @@
             }
         }).data('ui-autocomplete')._renderItem = function (ul, item) {
             return $("<li>")
-          .append("<div><div class='add-interest'><div>" + item.value + "</div><div title='"+item.title+"'>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
+          .append("<div><div class='add-interest'><div>" + item.value + "</div><div title='" + item.title + "'>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
                 .appendTo(ul.addClass('user_permission_list'));
         };
 
@@ -458,9 +519,10 @@
                     success: function (data) {
                         $("#SaveMsg").hide();
                         $("#Selectuser").val('');
-                        $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
-                            '</td><td class="userDelete" style="border-right:none"> <p><input type="radio" id="vew-edit_'+data.UserId+'" class="redinput" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit_'+data.UserId+'">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only_'+data.UserId+'"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only_'+data.UserId+'">View Only</label></p><a href="Finance/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
+                        $("#userTable").append('<tr class="userrow"><td titile="UserID" class="selectrec" style="display:none">' + data.UserId + '</td><td titile="CreatedBy" class="selectrec" style="display:none">' + '@Sessions.User.UserId' + '</td><td title=' + data.FirstName + '>' + data.FirstName + '</td><td title=' + data.LastName + '>' + data.LastName + '</td><td>' + data.RoleTitle +
+                            '</td><td class="userDelete" style="border-right:none"> <p><input type="radio" id="vew-edit_' + data.UserId + '" class="redinput" checked="checked" name="permission' + "_" + data.UserId + '"  par=0><label for="vew-edit_' + data.UserId + '">View/Edit</label></p><p> <input type="radio"  class="redinput" id="view-only_' + data.UserId + '"  name="permission' + "_" + data.UserId + '" par=1 /><label for="view-only_' + data.UserId + '">View Only</label></p><a href="Finance/DeleteUser/' + data.UserId + '"> <span id="deletemember" title="Delete Member" class="x-icon hide pull-right"></span></a></td></tr>');
                         InspectBudgetPermissionRow();
+                        GetIds();
 
                     }
                 })
@@ -487,6 +549,7 @@
 
         function checklogedUser() {
             $("#userTable tbody tr").each(function () {
+                // alert('2');
                 var Id = $(this).find('td:first').text();
                 if (Id == '@Sessions.User.UserId') {
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
@@ -505,6 +568,7 @@
 
         $("#btnsave").click(function () {
             var emp = [];
+            var _createdBy = [];
             var table = $("#userTable tbody");
 
             var DrpId = $("#nl-formUserChildFinance li.nl-dd-checked").val()
@@ -512,9 +576,12 @@
 
             if ($("#userTable tbody tr").length > 0) {
                 $("#userTable tbody tr").each(function () {
-
+                    debugger;
                     var _CodeFlag;
                     var userid = $(this).find('td:first').text();
+                    // $("#userTable tbody tr").find('td').eq(1).text()
+                    var createdby = $(this).find('td').eq(1).text()
+                    _createdBy.push(createdby);
                     $(this).find("input[type='radio']:checked").each(function () {
 
                         _CodeFlag = $(this).attr("par");
@@ -525,7 +592,7 @@
             else {
                 return false;
             }
-            emp = JSON.stringify({ 'UserData': emp, 'ID': DrpId });
+            emp = JSON.stringify({ 'UserData': emp, 'ID': DrpId, 'CreatedBy': _createdBy });
             $.ajax({
                 //traditional: true,
                 url: '@Url.Action("SaveDetail", "Finance")',
@@ -547,21 +614,30 @@
         checklogedUser();
     })
 
+
+    function GetIds() {
+        userIDs = [];
+        $("#userTable tbody tr").each(function () {
+            var Id = $(this).find('td:first').text();
+            userIDs.push(Id);
+        });
+
+    }
+
     $(document).on('click', '.redinput', function () {
         _changedata = 'Change';
     });
 
     function InspectBudgetPermissionRow() {
-        
-        $("#nl-formUserChildFinance li").each(function () {
-
-           
-            $("#userTable tbody tr").each(function () {
+        // alert('df');
+        // $("#nl-formUserChildFinance li").each(function () {
 
 
-                var Id = $(this).find('td:first').text();
-                var CreatedbyId = $(this).find('td').eq(1).text();
-                if (Id == '@Sessions.User.UserId') {
+        $("#userTable tbody tr").each(function () {
+            debugger;
+            var Id = $(this).find('td:first').text();
+            var CreatedbyId = $(this).find('td').eq(1).text();
+            if (Id == '@Sessions.User.UserId') {
                     //alert('user');  
                     // $(this).hide();
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
@@ -572,6 +648,13 @@
                     $(this).find('span').removeClass('x-icon');
                 }
                 if (CreatedbyId == Id) {
+                    debugger;
+                    $(this).find('td,input,span,a').attr("disabled", "disabled");
+                    $(this).find('a').removeAttr("onclick");
+                    // $(this).find('span').hide();
+                    $(this).find('span').removeClass('x-icon');
+                }
+                if (Id == Owneruser) {
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
                     // $(this).find('span').hide();
@@ -579,22 +662,22 @@
                 }
 
             })
-          
-            //var y = $(this).val();
-            ////$(this).removeClass('nl-dd-checked');
-            //var selectedval = $("#nl-formUserChildFinance option:selected").val();
-            //if (_UserBudgetId == y) {
-            //    debugger;
-            //    alert('match');
-            //    $(this).siblings().removeClass('nl-dd-checked')
-            //   $(this).addClass('nl-dd-checked');
-            //   $(this).parent().parent().find('a').text($(this).text());
-            //}
-        });
-    }
 
-    function getselection() {
-        $("#nl-formUserChildFinance li").each(function () {
+        //var y = $(this).val();
+        ////$(this).removeClass('nl-dd-checked');
+        //var selectedval = $("#nl-formUserChildFinance option:selected").val();
+        //if (_UserBudgetId == y) {
+        //    debugger;
+        //    alert('match');
+        //    $(this).siblings().removeClass('nl-dd-checked')
+        //   $(this).addClass('nl-dd-checked');
+        //   $(this).parent().parent().find('a').text($(this).text());
+        //}
+        //});
+        }
+
+        function getselection() {
+            $("#nl-formUserChildFinance li").each(function () {
                 var y = $(this).val();
                 if (_UserBudgetId == y) {
                     $(this).siblings().removeClass('nl-dd-checked')
@@ -602,11 +685,11 @@
                     $(this).parent().parent().find('a').text($(this).text());
                 }
             });
-    }
+        }
 
-    function Userdelete(id, budgetID) {
-        $.ajax({
-            url: '@Url.Action("Delete", "Finance")',
+        function Userdelete(id, budgetID) {
+            $.ajax({
+                url: '@Url.Action("Delete", "Finance")',
             type: 'POST',
             data: { id: id, budgetID: budgetID },
             success: function (data) {
@@ -619,13 +702,29 @@
                     });
 
                 }
-
+                GetIds();
             },
             error: function () {
 
             }
         });
+
     }
+
+   @* function UserOwenrcheck(budgetID) {
+        $.ajax({
+            url: '@Url.Action("OwnerCheck", "Finance")',
+            type: 'POST',
+            data: { budgetId: budgetID },
+            success: function (data) {
+                debugger;
+                Owneruser = data.user;
+            },
+            error: function () {
+
+            }
+        });
+    }*@
 
     function DeleteUsers(id, budgetID, firsname, lastname) {
         _isDatabase = "Fromdatabase";
