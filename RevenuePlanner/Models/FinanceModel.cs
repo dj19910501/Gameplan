@@ -80,6 +80,7 @@ namespace RevenuePlanner.Models
         public string PlanColName { get; set; }
         public string ActualColName { get; set; }
         public string HeaderStyle { get; set; }
+        public List<Head> head { get; set; }
     }
     public class DhtmlxGridRowDataModel
     {
@@ -90,8 +91,22 @@ namespace RevenuePlanner.Models
         public List<DhtmlxGridRowDataModel> rows { get; set; }
         public string Detailid { get; set; }
         public FinanceModelHeaders FinanemodelheaderObj { get; set; }
-    }
    
+    }
+    public class Head
+    {
+        public List<Options> options { get; set; }
+        public string value { get; set; }
+        public int width { get; set; }
+        public string align { get; set; }
+        public string type { get; set; }
+        public string id { get; set; }
+    }
+    public class Options
+    {
+        public int id { get; set; }
+        public string value { get; set; }
+    }
     public class userdata
     {
         public string id { get; set; }

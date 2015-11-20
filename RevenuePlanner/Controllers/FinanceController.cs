@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using RevenuePlanner.BDSService;
 using System.Globalization;
 using Elmah;
+using System.Web.UI.WebControls;
 
 namespace RevenuePlanner.Controllers
 {
@@ -423,6 +424,9 @@ namespace RevenuePlanner.Controllers
                 var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
                 var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a).ToList();
 
+                var ListOfCustomFieldId = objColumns.Select(a => a.CustomFieldId).ToList();
+                var ListOfCustomFieldOpt = db.CustomFieldOptions.Where(a => ListOfCustomFieldId.Contains(a.CustomFieldId)).Select(a => a).ToList();
+
                 #endregion
                 // End By Nishant Sheth
 
@@ -669,8 +673,18 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && col.IsTimeFrame == false && col.MapTableName == Enums.MapTableName.CustomField_Entity.ToString())
                                 {
+
                                     var CustomValue = CustomColumnsValue.Where(a => a.EntityId == i.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
-                                    Datarow[colname] = CustomValue != null ? CustomValue : "0";
+                                    if (col.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
+                                    {
+                                        Datarow[colname] = CustomValue != null ? CustomValue : "0";
+                                    }
+                                    else
+                                    {
+                                        var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
+
+                                        Datarow[colname] = Convert.ToString(DropDownVal);
+                                    }
                                 }
                             }
                         }
@@ -781,7 +795,7 @@ namespace RevenuePlanner.Controllers
                 forecast = forcastVal.HasValue ? forcastVal.Value.ToString(formatThousand) : "0";
                 planned = pannedVal.HasValue ? pannedVal.Value.ToString(formatThousand) : "0";
                 actual = actualVal.HasValue ? actualVal.Value.ToString(formatThousand) : "0";
-               // rowId = rowId + "_" + _IsBudgetCreate_Edit.ToString(); // Append Create/Edit flag value for Budget permission to RowId.
+                // rowId = rowId + "_" + _IsBudgetCreate_Edit.ToString(); // Append Create/Edit flag value for Budget permission to RowId.
                 if (Permission == "Edit")
                 {
                     rowId = rowId + "_" + "True";
@@ -902,7 +916,7 @@ namespace RevenuePlanner.Controllers
                 {
                     rowId = rowId + "_" + "False";
                 }
-               // rowId = rowId + "_" + _IsForecastCreate_Edit.ToString(); // Append Create/Edit flag value for Forecast permission to RowId.
+                // rowId = rowId + "_" + _IsForecastCreate_Edit.ToString(); // Append Create/Edit flag value for Forecast permission to RowId.
                 if (Convert.ToBoolean(IsForcast))
                 {
                     double? forcastVal = 0, pannedVal = 0, actualVal = 0;
@@ -1096,7 +1110,7 @@ namespace RevenuePlanner.Controllers
                             where c.BudgetDetailId == BudgetId
                             orderby c.UserId
                             select c).GroupBy(g => g.UserId).Select(x => x.FirstOrDefault()).ToList();
-                UserPermission user = new UserPermission();
+            UserPermission user = new UserPermission();
             // Add By Nishant Sheth
             // Desc : To avoid multiple service trip and db trip
             var BDSuserList = objBDSServiceClient.GetMultipleTeamMemberDetails(String.Join(",", UserList.Select(a => a.UserId).ToList()).ToString(), Sessions.ApplicationId);
@@ -1127,7 +1141,7 @@ namespace RevenuePlanner.Controllers
                 _user[0] = item;
             }
             objFinanceModel.Userpermission = _user.ToList();
-           // objFinanceModel.Userpermission = _user;
+            // objFinanceModel.Userpermission = _user;
             return PartialView("_UserPermission", objFinanceModel);
         }
 
@@ -1662,6 +1676,9 @@ namespace RevenuePlanner.Controllers
             var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
             var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a).ToList();
 
+            var ListOfCustomFieldId = objColumns.Select(a => a.CustomFieldId).ToList();
+            var ListOfCustomFieldOpt = db.CustomFieldOptions.Where(a => ListOfCustomFieldId.Contains(a.CustomFieldId)).Select(a => a).ToList();
+
             #endregion
 
             budgetMain.BudgetColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && a.IsDeleted == false && a.IsTimeFrame == true
@@ -1837,8 +1854,14 @@ namespace RevenuePlanner.Controllers
                 {
                     ColumnType = typeof(DateTime);
                 }
-
-                dataTableMain.Columns.Add(Convert.ToString(custcol.CustomField.Name), ColumnType);
+                if (custcol.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
+                {
+                    dataTableMain.Columns.Add(Convert.ToString(custcol.CustomField.Name), ColumnType);
+                }
+                else
+                {
+                    dataTableMain.Columns.Add(Convert.ToString(custcol.CustomField.Name), typeof(String));
+                }
             }
             #endregion
             //dataTableMain.Columns.Add("Budget", typeof(List<Double?>));
@@ -1860,6 +1883,42 @@ namespace RevenuePlanner.Controllers
             setColumnIds.Append("Title,,LineItems,");
             setColTypes.Append("tree,ro,ro,");
 
+            List<Options> optList = new List<Options>();
+            List<Head> ListHead = new List<Head>();
+            Head headObj = new Head();
+
+            for (int i = 0; i < 3; i++)
+            {
+                optList = new List<Options>();
+                // ListHead = new List<Head>();
+                headObj = new Head();
+                if (i == 0)
+                {
+                    headObj.value = "";
+                    headObj.width = 200;
+                    headObj.align = "left";
+                    headObj.type = "tree";
+                    headObj.id = "Title";
+                }
+                if (i == 1)
+                {
+                    headObj.value = "";
+                    headObj.width = 65;
+                    headObj.align = "center";
+                    headObj.type = "ro";
+                    headObj.id = "";
+                }
+                if (i == 2)
+                {
+                    headObj.value = "";
+                    headObj.width = 65;
+                    headObj.align = "center";
+                    headObj.type = "ro";
+                    headObj.id = "LineItems";
+                }
+                ListHead.Add(headObj);
+
+            }
 
             #region Time Frame Columns
             if (objTimeFrameColumns != null)
@@ -1909,6 +1968,14 @@ namespace RevenuePlanner.Controllers
                         HeaderPerfix = HeaderPerfix.Substring(0, 3);
                         for (int i = 0; i < objTimeFrameColumns.Count; i++)
                         {
+                            optList = new List<Options>();
+                            //ListHead = new List<Head>();
+                            headObj = new Head();
+
+                            headObj.value = HeaderPerfix;
+                            headObj.width = 65;
+                            headObj.align = "center";
+
                             setHeader.Append(HeaderPerfix + ","); // Set month header
                             attachHeader.Append(Convert.ToString(objTimeFrameColumns[i].CustomField.Name + ",")); // set attach header or column title
                             setInitWidths.Append("65,");// set width of columns
@@ -1917,10 +1984,12 @@ namespace RevenuePlanner.Controllers
                             if (listQuarter.Contains(IsQuaterly))
                             {
                                 setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + i + j + ",");
+                                headObj.id = objTimeFrameColumns[i].CustomField.Name + i + j;
                             }
                             else
                             {
                                 setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + "M" + j + ",");
+                                headObj.id = objTimeFrameColumns[i].CustomField.Name + "M" + j;
                             }
 
                             if (EditLevel == "Budget")
@@ -1930,10 +1999,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
 
                                 }
@@ -1943,10 +2014,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
                                 }
                             }
@@ -1957,10 +2030,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
 
                                 }
@@ -1969,10 +2044,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
                                 }
                             }
@@ -1999,6 +2076,9 @@ namespace RevenuePlanner.Controllers
                                     setColumnsVisibility.Append("true,");
                                 }
                             }
+
+                            ListHead.Add(headObj);
+                            //budgetMain.Head.Add(ListHead);
                         }
                     }
                     else
@@ -2011,6 +2091,14 @@ namespace RevenuePlanner.Controllers
                             setColAlign.Append("center,"); //set column allignment
                             setColValidators.Append((!string.IsNullOrEmpty(objTimeFrameColumns[i].ValidationType) ? (objTimeFrameColumns[i].ValidationType != Enums.ColumnValidation.None.ToString() ? objTimeFrameColumns[i].ValidationType : "") : "") + ","); // set column validation
                             setColumnIds.Append(objTimeFrameColumns[i].CustomField.Name + "Q" + j + ",");
+
+                            //ListHead = new List<Head>();
+                            headObj = new Head();
+                            headObj.value = HeaderPerfix + j;
+                            headObj.width = 65;
+                            headObj.align = "center";
+                            headObj.id = objTimeFrameColumns[i].CustomField.Name + "Q" + j;
+
                             if (EditLevel == "Budget")
                             {
                                 if (objTimeFrameColumns[i].ValueOnEditable == (int)Enums.ValueOnEditable.Budget && _IsBudgetCreate_Edit)
@@ -2018,10 +2106,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
                                 }
                                 else
@@ -2029,10 +2119,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
                                 }
                             }
@@ -2043,10 +2135,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
                                 }
                                 else
@@ -2054,10 +2148,12 @@ namespace RevenuePlanner.Controllers
                                     if (EditPermission == "Edit")
                                     {
                                         setColTypes.Append("ed,");
+                                        headObj.type = "ed";
                                     }
                                     else
                                     {
                                         setColTypes.Append("ro,");
+                                        headObj.type = "ro";
                                     }
                                 }
                             }
@@ -2085,6 +2181,9 @@ namespace RevenuePlanner.Controllers
                                     setColumnsVisibility.Append("true,");
                                 }
                             }
+
+                            ListHead.Add(headObj);
+                            //budgetMain.Head.Add(ListHead);
                         }
                     }
                 }
@@ -2122,6 +2221,17 @@ namespace RevenuePlanner.Controllers
                             setColumnsVisibility.Append("true,");
                         }
                     }
+
+                    //ListHead = new List<Head>();
+                    headObj = new Head();
+
+                    headObj.value = "Total";
+                    headObj.align = "center";
+                    headObj.type = "ro";
+                    headObj.width = 65;
+                    headObj.id = objTimeFrameColumns[i].CustomField.Name + "Total";
+
+                    ListHead.Add(headObj);
                 }
             }
             #endregion
@@ -2138,54 +2248,142 @@ namespace RevenuePlanner.Controllers
                     setColValidators.Append((!string.IsNullOrEmpty(custcol.ValidationType) ? (custcol.ValidationType != Enums.ColumnValidation.None.ToString() ? custcol.ValidationType : "") : "") + ","); // set column validation
                     setColumnIds.Append(custcol.CustomField.Name + ",");
                     setInitWidths.Append("65,");
+
+
+                    //ListHead = new List<Head>();
+                    headObj = new Head();
+
+                    headObj.value = "";
+                    headObj.align = "center";
+                    headObj.width = 65;
+                    headObj.id = custcol.CustomField.Name;
+
                     if (EditLevel == "Budget")
                     {
-                        if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsBudgetCreate_Edit)
+                        if (custcol.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
                         {
-                            if (EditPermission == "Edit")
+                            if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsBudgetCreate_Edit)
                             {
-                                setColTypes.Append("ed,");
+                                if (EditPermission == "Edit")
+                                {
+                                    setColTypes.Append("ed,");
+                                    headObj.type = "ed";
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                    headObj.type = "ro";
+                                }
                             }
                             else
                             {
-                                setColTypes.Append("ro,");
+                                if (EditPermission == "Edit")
+                                {
+                                    setColTypes.Append("ed,");
+                                    headObj.type = "ed";
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                    headObj.type = "ro";
+                                }
                             }
                         }
                         else
                         {
+                            optList = new List<Options>();
+                            //ListHead = new List<Head>();
+                            headObj = new Head();
+                            var DropDownList = ListOfCustomFieldOpt.Where(a => a.CustomFieldId == custcol.CustomFieldId).Select(a => a).ToList();
+                            foreach (var custval in DropDownList)
+                            {
+                                optList.Add(new Options { id = custval.CustomFieldOptionId, value = custval.Value });
+                            }
+                            headObj.options = optList;
+                            headObj.value = "";
                             if (EditPermission == "Edit")
                             {
-                                setColTypes.Append("ed,");
+                                headObj.type = "coro";
+                                setColTypes.Append("coro,");
                             }
                             else
                             {
+                                headObj.type = "ro";
                                 setColTypes.Append("ro,");
                             }
+                            headObj.width = 65;
+                            headObj.align = "center";
+                            //ListHead.Add(headObj);
+                            //budgetMain.Head.Add(headObj);
+
                         }
                     }
                     else
                     {
-                        if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsForecastCreate_Edit)
+                        if (custcol.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
                         {
-                            if (EditPermission == "Edit")
+
+                            // ListHead = new List<Head>();
+                            headObj = new Head();
+
+                            headObj.value = "";
+                            headObj.align = "center";
+                            headObj.width = 65;
+
+                            if (custcol.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && _IsForecastCreate_Edit)
                             {
-                                setColTypes.Append("ed,");
+                                if (EditPermission == "Edit")
+                                {
+                                    setColTypes.Append("ed,");
+                                    headObj.type = "ed";
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                    headObj.type = "ro";
+                                }
                             }
                             else
                             {
-                                setColTypes.Append("ro,");
+                                if (EditPermission == "Edit")
+                                {
+                                    setColTypes.Append("ed,");
+                                    headObj.type = "ed";
+                                }
+                                else
+                                {
+                                    setColTypes.Append("ro,");
+                                    headObj.type = "ro";
+                                }
                             }
                         }
                         else
                         {
+                            optList = new List<Options>();
+                            //ListHead = new List<Head>();
+                            headObj = new Head();
+                            var DropDownList = ListOfCustomFieldOpt.Where(a => a.CustomFieldId == custcol.CustomFieldId).Select(a => a).ToList();
+                            foreach (var custval in DropDownList)
+                            {
+                                optList.Add(new Options { id = custval.CustomFieldOptionId, value = custval.Value });
+                            }
+                            headObj.options = optList;
+                            headObj.value = "";
                             if (EditPermission == "Edit")
                             {
-                                setColTypes.Append("ed,");
+                                headObj.type = "coro";
+                                setColTypes.Append("coro,");
                             }
                             else
                             {
+                                headObj.type = "ro";
                                 setColTypes.Append("ro,");
                             }
+                            headObj.width = 65;
+                            headObj.align = "center";
+                            //ListHead.Add(headObj);
+                            //budgetMain.Head.Add(headObj);
+
                         }
                     }
 
@@ -2212,6 +2410,8 @@ namespace RevenuePlanner.Controllers
                             setColumnsVisibility.Append("true,");
                         }
                     }
+
+                    ListHead.Add(headObj);
                 }
             }
             #endregion
@@ -2333,7 +2533,16 @@ namespace RevenuePlanner.Controllers
                                     else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && col.IsTimeFrame == false && col.MapTableName == Enums.MapTableName.CustomField_Entity.ToString())
                                     {
                                         var CustomValue = CustomColumnsValue.Where(a => a.EntityId == item.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
-                                        row[colname] = CustomValue != null ? CustomValue : "0";
+                                        if (col.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
+                                        {
+                                            row[colname] = CustomValue != null ? CustomValue : "0";
+                                        }
+                                        else
+                                        {
+                                            var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
+
+                                            row[colname] = DropDownVal;
+                                        }
                                     }
                                 }
                             }
@@ -2421,7 +2630,16 @@ namespace RevenuePlanner.Controllers
                                 else if (col.ValueOnEditable == (int)Enums.ValueOnEditable.Custom && col.IsTimeFrame == false && col.MapTableName == Enums.MapTableName.CustomField_Entity.ToString())
                                 {
                                     var CustomValue = CustomColumnsValue.Where(a => a.EntityId == item.Id && a.CustomFieldId == col.CustomFieldId).Select(a => a.Value).FirstOrDefault();
-                                    row[colname] = CustomValue != null ? CustomValue : "0";
+                                    if (col.CustomField.CustomFieldType.Name == Enums.CustomFieldType.TextBox.ToString())
+                                    {
+                                        row[colname] = CustomValue != null ? CustomValue : "0";
+                                    }
+                                    else
+                                    {
+                                        var DropDownVal = ListOfCustomFieldOpt.Where(a => a.CustomFieldOptionId == Convert.ToInt32(CustomValue)).Select(a => a.Value).FirstOrDefault();
+
+                                        row[colname] = DropDownVal;
+                                    }
                                 }
                             }
                         }
@@ -2461,7 +2679,7 @@ namespace RevenuePlanner.Controllers
 
 
             var items = GetTopLevelRows(dataTableMain, MinParentid)
-                        .Select(row => CreateItem(dataTableMain, row, EditLevel, columnNames, objColumns))
+                        .Select(row => CreateItem(dataTableMain, row, EditLevel, columnNames, objColumns, ListOfCustomFieldOpt))
                         .ToList();
 
             var temp = items.Where(a => a.id == Convert.ToString(BudgetId)).Select(a => a.FinanemodelheaderObj).FirstOrDefault();
@@ -2497,6 +2715,8 @@ namespace RevenuePlanner.Controllers
             budgetMain.setColTypes = trimSetColTypes;
             budgetMain.setColumnsVisibility = trimSetColumnsVisibility;
             budgetMain.CustColumnsList = objCustomColumns.Select(a => a.CustomField.Name).ToList();
+            budgetMain.head = ListHead;
+
             return Json(budgetMain, JsonRequestBehavior.AllowGet);
         }
 
@@ -2626,7 +2846,7 @@ namespace RevenuePlanner.Controllers
 
             return Sum;
         }
-        DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row, string EditLevel, List<DataColumn> DataTablecolumnNames, List<Budget_Columns> objColumns)
+        DhtmlxGridRowDataModel CreateItem(DataTable dataTable, DataRow row, string EditLevel, List<DataColumn> DataTablecolumnNames, List<Budget_Columns> objColumns, List<CustomFieldOption> ListOfCustomFieldOpt)
         {
             Dictionary<string, object> variables = new Dictionary<string, object>();
             //var columnNames = dataTable.Columns.Cast<DataColumn>()
@@ -2674,7 +2894,7 @@ namespace RevenuePlanner.Controllers
             if (lstChildren != null && lstChildren.Count() > 0)
                 lstChildren = lstChildren.OrderBy(child => child.Field<String>("Name")).ToList();
             var children = lstChildren
-              .Select(r => CreateItem(dataTable, r, EditLevel, DataTablecolumnNames, objColumns))
+              .Select(r => CreateItem(dataTable, r, EditLevel, DataTablecolumnNames, objColumns, ListOfCustomFieldOpt))
               .ToList();
             userdata objuserData = new userdata();
             List<row_attrs> rows_attrData = new List<row_attrs>();
@@ -2689,7 +2909,7 @@ namespace RevenuePlanner.Controllers
             int rwcount = dataTable != null ? dataTable.Rows.Count : 0;
             if ((lstChildren != null && lstChildren.Count() > 0) || (rwcount.Equals(1)))  // if Grid has only single Budget record then set Edit Budget link.
             {
-               
+
 
                 #region "Get LineItem Count"
                 var LineItemIds = dataTable
@@ -3446,25 +3666,28 @@ namespace RevenuePlanner.Controllers
 
             if (objBudAmount == null)
             {
-                objBudAmount = new Budget_DetailAmount();
-                if (ColumnName != "Task Name")
+                if (CustomCol == null)
                 {
-                    if (ColumnName == BudgetColName)
+                    objBudAmount = new Budget_DetailAmount();
+                    if (ColumnName != "Task Name")
                     {
-                        objBudAmount.Budget = Convert.ToDouble(nValue);
-                    }
-                    else if (ColumnName == ForecastColName)
-                    {
-                        objBudAmount.Forecast = Convert.ToDouble(nValue);
-                    }
-                    if (BudgetId > 0)
-                    {
-                        objBudAmount.Period = dataPeriod;
-                        objBudAmount.BudgetDetailId = BudgetId;
-                        db.Entry(objBudAmount).State = EntityState.Added;
-                        db.SaveChanges();
-                    }
+                        if (ColumnName == BudgetColName)
+                        {
+                            objBudAmount.Budget = Convert.ToDouble(nValue);
+                        }
+                        else if (ColumnName == ForecastColName)
+                        {
+                            objBudAmount.Forecast = Convert.ToDouble(nValue);
+                        }
+                        if (BudgetId > 0)
+                        {
+                            objBudAmount.Period = dataPeriod;
+                            objBudAmount.BudgetDetailId = BudgetId;
+                            db.Entry(objBudAmount).State = EntityState.Added;
+                            db.SaveChanges();
+                        }
 
+                    }
                 }
             }
             else

@@ -55,6 +55,9 @@
     var ActualColName;
     var GridData = "";
     var EditPermission = "";
+    var mygrid;
+    var AllocatedBy;
+    var combo;
     $(document).ready(function () {
 
         GlobalBudgetId = '@ViewBag.BudgetId';
@@ -74,7 +77,7 @@
         $("#dvNoData").hide();
         //ShowHideColumns($("#chkPlan"));
         var GridData = "";
-        var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+        AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
         //    alert(AllocatedBy);
 
         //if (AllocatedBy == 'quarters') {
@@ -201,7 +204,7 @@
 
         ActualColName = GridData.ActualColName;
 
-        myTreeGrid.setHeader(GridData.setHeader);
+       // myTreeGrid.setHeader(GridData.setHeader);
 
         myTreeGrid.attachHeader(GridData.attachHeader);
 
@@ -209,15 +212,17 @@
 
         myTreeGrid.setColValidators(GridData.setColValidators);
 
-        myTreeGrid.setInitWidths(GridData.setInitWidths);
+        //myTreeGrid.setInitWidths(GridData.setInitWidths);
 
-        myTreeGrid.setColAlign(GridData.setColAlign);
+        //myTreeGrid.setColAlign(GridData.setColAlign);
 
-        myTreeGrid.setColTypes(GridData.setColTypes);
+        //myTreeGrid.setColTypes(GridData.setColTypes);
 
         myTreeGrid.enableTreeCellEdit(GridData.enableTreeCellEdit);
 
         myTreeGrid.setColumnsVisibility(GridData.setColumnsVisibility);
+
+        //myTreeGrid.setHeaderCol(GridData.Head);
 
         myTreeGrid.init();
         myTreeGrid.enableDistributedParsing(true, 10, 300);
@@ -334,7 +339,7 @@
             if (!_isNewRowAdd) {
                 RevnueTimeFrameChange = false;
             }
-
+            combo = myTreeGrid.getCombo(cInd);
             ValidParentId = myTreeGrid.getParentId(rId);
             ValidColumnId = cInd;
             ValidRowId = rId;
@@ -380,6 +385,15 @@
                 EditRowID = $("#dv" + rId + "").attr('id');
                 DeletIconID = $("#cb" + rId + "").attr('id');
 
+                var value = myTreeGrid.cells(rId, cInd).getValue();
+                var comboList = combo.getKeys();
+                $('.dhx_combo_select option[value="' + value + '"]').remove();
+                
+                $(".dhx_combo_select option").filter(function () {
+                    return this.text == value;
+                }).attr('selected', true);
+                combo.save();
+                
             }
             if (stage == 0 && cInd == 2) return true;
             var ParentID = $("#ddlParentFinance").val();
@@ -450,7 +464,20 @@
                                 myTreeGrid.cells(rId, cInd).setValue(oValue);
                                 return false;
                             }
+                            var checkComobo = myTreeGrid.getCombo(cInd);
+                            if (!(checkComobo.keys.length > 0)) {
                             myTreeGrid.cells(rId, cInd).setValue(Intl.NumberFormat().format(nValue));
+                            } else {
+                                var result;
+                                for (var i = 0, len = combo._save.length; i < len; i++) {
+                                    
+                                    if (combo._save[i][0].toString() === nValue) {
+                                        result = combo._save[i][1];
+                                        break;
+                                    }
+                                }
+                                myTreeGrid.cells(rId, cInd).setValue(result);
+                            }
                             if (ColumnName == BudgetColName) {
 
                                 if (AllocatedBy == "@Enums.PlanAllocatedBy.quarters.ToString()") {
@@ -653,7 +680,7 @@
                             $("#divFinanceBack").css("display", "block");
                             //}
                             if (ColumnName == "Task Name") {
-                                var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+                                 AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
                                 LoadBudgetGrid(AllocatedBy);
                                 //GetFinanceHeaderValue(rId, false);
                                 BindParentBudgetDrp(ParentID);
@@ -878,7 +905,7 @@
     }
     function AddNewRowbyType(itemType, cntrl) {
         if (_isNewRowAdd == false) {
-            var AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
+             AllocatedBy = $('#ddlRevenueTimeFrame option:selected').val();
             //if (AllocatedBy == 'quarters') {
             //    AllocatedBy = true;
             //}
