@@ -10273,7 +10273,15 @@ li.close-list {
     }
  
 .task-tbl div.gridbox .objbox{  /*PL #1758*/
-        overflow: auto !important;
+        overflow: visible !important;
+}
+.task-tbl div.gridbox { /*PL #1758*/
+    height: 100% !important;
+    overflow: auto !important;
+    max-width: 100% !important;
+}
+ .task-tbl div.gridbox .xhdr { /*PL #1758*/
+        overflow:visible !important;
 }
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
