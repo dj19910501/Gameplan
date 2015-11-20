@@ -257,7 +257,7 @@
         //    $("#NoSearch").hide();
         //}
         //$("#Selectuser").keypress(function () {
-        //    alert("sdddd");
+        //   
         //});
 
         //var input = document.getElementById('Selectuser');
@@ -277,7 +277,7 @@
 
         var PrevSelectVal = $("#nl-formUserChildFinance option:selected");
         $('#nl-formUserChildFinance').find('li').click(function (e) {
-            debugger;
+           
 
             var $thisId = $(this).val();
             //UserOwenrcheck($thisId);
@@ -305,7 +305,7 @@
                 data: { BudgetId: $thisId, level: 0, FlagCondition: 'Edit' },
                 success: function (Data) {
                     $("#userTable tbody").html("");
-                    if (Data.length == "0") {
+                    if (Data._user.length == "0") {
                         //$(".user-table").hide();
                         $("#userTable").hide();
                         $("#btnsave").hide();
@@ -314,12 +314,12 @@
                         return false;
                     }
                     else {
-                        debugger;
-                        //alert(Data.Flag);
+                      
+                      
                         var data = Data._user;
                         var html = "";
                         if (Data.Flag == "Edit") {
-                            debugger;
+                          
                             var data = Data._user;
                             var html = "";
                             for (var i = 0; i < data.length; i++) {
@@ -340,7 +340,8 @@
                             $("#btnsave").show();
                             $("#btncancel").show();
                             $(".user-list").show();
-                            $(".user-table").css("width", "1157px");
+                            //$(".user-table").css("width", "1157px");
+                            $(".user-table").css("width", "77%");
                             InspectBudgetPermissionRow();
                         }
                         else {
@@ -377,7 +378,7 @@
             $("#userTable").hide();
             $("#btnsave").hide();
             $("#btncancel").hide();
-            // alert("df");
+            
             $("#tableNoData").css('display', 'block');
         }
         $(".x-icon").click(function (e) {
@@ -457,7 +458,7 @@
         //        });
         //    },
 
-        debugger;
+       
         var us = userIDs;
 
         $('#Selectuser').autocomplete({
@@ -549,7 +550,7 @@
 
         function checklogedUser() {
             $("#userTable tbody tr").each(function () {
-                // alert('2');
+               
                 var Id = $(this).find('td:first').text();
                 if (Id == '@Sessions.User.UserId') {
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
@@ -576,7 +577,7 @@
 
             if ($("#userTable tbody tr").length > 0) {
                 $("#userTable tbody tr").each(function () {
-                    debugger;
+                  
                     var _CodeFlag;
                     var userid = $(this).find('td:first').text();
                     // $("#userTable tbody tr").find('td').eq(1).text()
@@ -629,12 +630,12 @@
     });
 
     function InspectBudgetPermissionRow() {
-        // alert('df');
+        
         // $("#nl-formUserChildFinance li").each(function () {
 
 
         $("#userTable tbody tr").each(function () {
-            debugger;
+           
             var Id = $(this).find('td:first').text();
             var CreatedbyId = $(this).find('td').eq(1).text();
             if (Id == '@Sessions.User.UserId') {
@@ -648,7 +649,7 @@
                     $(this).find('span').removeClass('x-icon');
                 }
                 if (CreatedbyId == Id) {
-                    debugger;
+                 
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
                     // $(this).find('span').hide();
@@ -668,7 +669,7 @@
         //var selectedval = $("#nl-formUserChildFinance option:selected").val();
         //if (_UserBudgetId == y) {
         //    debugger;
-        //    alert('match');
+        //   
         //    $(this).siblings().removeClass('nl-dd-checked')
         //   $(this).addClass('nl-dd-checked');
         //   $(this).parent().parent().find('a').text($(this).text());
