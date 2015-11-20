@@ -221,7 +221,9 @@
                     CalculateTotalCost();
                     $('.setBudget').each(function () {
                         var cntrlid = ("#" + $(this).attr('id'));
-                        setBootstrapTooltip(cntrlid, $(cntrlid).html(), 5, true);
+                        //Modified by Ashish for PL #1656
+                        setBootstrapTooltip(cntrlid, $(cntrlid).html(), 5, true, 2);
+                        //Modified by Ashish for PL #1656
                     });
                 },
                 error: function () {
@@ -253,7 +255,9 @@
             });
             $("#lblTotalCost").text(totalvalue);
             var cntrlid = "#lblTotalCost";
-            setBootstrapTooltip(cntrlid, totalvalue, 5, true);
+            //Modified by Ashish for PL #1656
+            setBootstrapTooltip(cntrlid, totalvalue, 5, true, 2);
+            //Modified by Ashish for PL #1656
         }
 
         //Start-Added by Viral Kadiya on 10/11/2014 to resolve PL ticket #946.

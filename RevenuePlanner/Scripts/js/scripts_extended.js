@@ -454,7 +454,11 @@ function setLabelToolTip(lableId, value, maxSize, iscurrency) {
     }
 }
 
-function setBootstrapTooltip(lableId, value, maxSize, iscurrency) {
+function setBootstrapTooltip(lableId, value, maxSize, iscurrency, decimaldigit) {
+    var digit = 0;
+    if (decimaldigit != null || decimaldigit != undefined || decimaldigit != 'undefined') {
+        digit = parseInt(decimaldigit);
+    }
     var numericval = RemoveExtraCharactersFromString(value.toString()); // Remove currency symbol($) and other characters from value.
     if (isNaN(numericval))   // check whether value is numeric or not : if illegal then return true.
         return value;
@@ -476,8 +480,9 @@ function setBootstrapTooltip(lableId, value, maxSize, iscurrency) {
     }
     else {
         if (iscurrency) {
-            //Modified by Ashish for PL #1656 - to allow decimal values.
-            $(lableId).text("$" + number_format(roundValue, 2, '.', ','));
+            //Modified by Ashish for PL #1656
+            $(lableId).text("$" + number_format(roundValue, digit, '.', ','));
+            //Modified by Ashish for PL #1656
         }
         else {
             $(lableId).text(number_format(roundValue, 0, '.', ','));
