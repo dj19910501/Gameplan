@@ -98,16 +98,7 @@
                                     </a>
 
                                 </td>
-
                               }
-                         @*   <td class="userDelete">
-                                <p>
-                                    <input type="radio" id="vew-edit'@item.id'" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
-                                </p>
-                                <p>
-                                    <input type="radio" id="view-only'@item.id'" checked="checked" name="@item.id" par="1"><label for="view-only_@item.id">view only</label>
-                                </p>
-                            </td>*@
                         </tr>
                         }
                     }
@@ -123,11 +114,9 @@
                             <td title="@item.LastName">@Html.DisplayFor(mode => item.LastName)</td>
                             <td>@Html.DisplayFor(model => item.Role)</td>
 
-
                             @if (item.Permission == 0)
                             {
                                 <td class="userDelete" style="border-right:none">
-                                     @*<input id="349" type="radio" value="1" name="question1"><label for="349">Abe</label>*@
                                     <p>
                                         <input type="radio" id="vew-edit_@item.id" class="redinput" checked="checked" name="@item.id" par="0"><label for="vew-edit_@item.id">View/Edit</label>
                                     </p>
@@ -195,11 +184,6 @@
             <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_Continue">Continue</button>
             <button id="cancel-button_Cancel" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
         </form>
-        @*  <form>
-            <label style="text-align: center; width: 100%;" class="resubmission_content">Want to save your changes?</label>
-            <button class="form-inspect-share-button btn btn-large bottom-margin-popups" type="button" id="proceed-button_Yes">Yes</button>
-            <button id="cancel-button_Cancel" class="btn-link Cancel-button-center-popups" style="margin-left: 10.5%" type="button">Cancel</button>
-        </form>*@
     </div>
 </div>
 
@@ -220,7 +204,6 @@
     var _changedata = '';
     var userIDs = [];
     var Owneruser = '';
-    //var setwidth = '';
     $(function () {
         pageName = "UserPermission";
 
@@ -231,7 +214,6 @@
             $("#btnsave").hide();
             $("#btncancel").hide();
             $(".user-table").css("width", "100%");
-            //$(".user-table input").attr("disabled", true);
             $(".user-table input[type=radio]").attr("disabled", true);
             $("#divFinanceBack").show();
         }
@@ -246,41 +228,10 @@
 
         GetIds();
 
-        //var width = $(".user-list").width();
-        //setwidth = width +"px";
-
-
-        //var checkinput = $("#Selectuser").val().toString().trim();
-        //if (checkinput == "")
-        //{
-
-        //    $("#NoSearch").hide();
-        //}
-        //$("#Selectuser").keypress(function () {
-        //   
-        //});
-
-        //var input = document.getElementById('Selectuser');
-        //var checkinput = $("#Selectuser").val().toString().trim();
-        //input.onkeydown = function () {
-        //    var key = event.keyCode || event.charCode;
-
-        //    if (key == 8 || key == 46) {
-        //        if (checkinput == "")
-        //        {
-        //            $("#NoSearch").hide();
-        //        }
-        //    }
-        //        //return false;
-        //};
-
-
         var PrevSelectVal = $("#nl-formUserChildFinance option:selected");
         $('#nl-formUserChildFinance').find('li').click(function (e) {
-           
 
             var $thisId = $(this).val();
-            //UserOwenrcheck($thisId);
             $("#nl-formUserChildFinance li").each(function () {
                 if ($(this).val().toString() != $(PrevSelectVal).val()) {
                     var tss = $(this).removeClass('nl-dd-checked');
@@ -288,7 +239,6 @@
                 }
             });
 
-            //$(this).removeClass('nl-dd-checked');
             $(this).addClass('nl-dd-checked');
             $(this).parent().parent().find('a').text($(this).text());
             Bindtable($thisId);
@@ -306,7 +256,6 @@
                 success: function (Data) {
                     $("#userTable tbody").html("");
                     if (Data._user.length == "0") {
-                        //$(".user-table").hide();
                         $("#userTable").hide();
                         $("#btnsave").hide();
                         $("#btncancel").hide();
@@ -314,8 +263,6 @@
                         return false;
                     }
                     else {
-                      
-                      
                         var data = Data._user;
                         var html = "";
                         if (Data.Flag == "Edit") {
@@ -340,7 +287,6 @@
                             $("#btnsave").show();
                             $("#btncancel").show();
                             $(".user-list").show();
-                            //$(".user-table").css("width", "1157px");
                             $(".user-table").css("width", "77%");
                             InspectBudgetPermissionRow();
                         }
@@ -374,7 +320,6 @@
 
 
         if ('@ViewBag.NoRecord' == "NoRecord") {
-            //$('.user-table').hide();
             $("#userTable").hide();
             $("#btnsave").hide();
             $("#btncancel").hide();
@@ -382,14 +327,13 @@
             $("#tableNoData").css('display', 'block');
         }
         $(".x-icon").click(function (e) {
-            //e.preventDefault();
             $(this).closest(".alert").slideUp(300);
         });
 
         var row;
         $('#userTable').on('click', '#deletemember', function () {
-
-            var Name = $(this).closest('tr').find('td').eq(1).text() + " " + $(this).closest('tr').find('td').eq(2).text() + ".";
+            var Name = $(this).closest('tr').find('td').eq('2').text() + " " + $(this).closest('tr').find('td').eq(3).text() + ".";
+         
             $("#divDeletePopup h2").text('Deleting a user');
             $("#lipname").html(Name);
             $("#divDeletePopup").modal('show');
@@ -405,6 +349,7 @@
                 Userdelete(_id, _budgetId);
             }
             else {
+               
                 var y = $(row).remove();
             }
             GetIds();
@@ -425,15 +370,7 @@
         $("#proceed-button_Continue").click(function () {
             FinanceBack();
             $("#divCancelPopup").modal('hide');
-            // return false;
         });
-
-        //$("#proceed-button_Yes").click(function () {
-        //    $("#btnsave").trigger('click');
-        //    FinanceBack();
-        //    $("#divCancelPopup").modal('hide');
-        //    // return false;
-        //});
 
         $("#cancel-button_Cancel").click(function () {
             $("#divCancelPopup").modal('hide');
@@ -441,61 +378,57 @@
         })
 
         var imageurl = '@Url.Content("~/Content/images/icon-plus_in_circle.png")';
-
-        //// Load the cities straight from the server, passing the country as an extra param
-        //$("#Selectuser").autocomplete({
-        //    source: function(request, response) {
-        //        $.ajax({
-        //            url: src,
-        //            dataType: "json",
-        //            data: {
-        //                term : request.term,
-        //                country_id : $("#country_id").val()
-        //            },
-        //            success: function(data) {
-        //                response(data);
-        //            }
-        //        });
-        //    },
-
        
         var us = userIDs;
+        var typingTimer;                //timer identifier
+        var doneTypingInterval = 500;  //time in ms, 5 second for example
+        $("#Selectuser").keyup(function () {
+            if ($("#Selectuser").val().trim().length > 0) {
+                clearTimeout(typingTimer);
+                $('#Selectuser').autocomplete({
+                    source: function (request, response) {
+                        if ($('#Selectuser').val) {
+                            typingTimer = setTimeout(function () {
+                                var urlcontent = '@Url.Content("~/Finance/getData/")';
+                                //$.getJSON(urlcontent + "?term=" + request.term, function (data) {
+                                $.getJSON(urlcontent, { 'term': request.term, 'UserIds': userIDs.toString() }, function (data) {
+                                    var t = data;
+                                    if (data.length > 0) {
+                                        $("#NoSearch").hide();
+                                        myApp.hidePleaseWait();
+                                        response($.map(data, function (item) {
 
-        $('#Selectuser').autocomplete({
-            source: function (request, response) {
-                var urlcontent = '@Url.Content("~/Finance/getData/")';
-                //$.getJSON(urlcontent + "?term=" + request.term, function (data) {
+                                            return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
+                                        }))
+                                    }
+                                    else {
+                                        $("#NoSearch").show();
+                                        $('.ui-autocomplete').html('');
+                                    }
 
+                                });
+                                myApp.hidePleaseWait();
+                            }, doneTypingInterval);
+                        }
+                    },
+                    minLength: 1,
+                    // delay: 50,
+                    select: function (event, ui) {
 
-                $.getJSON(urlcontent, { 'term': request.term, 'UserIds': userIDs.toString() }, function (data) {
-                    var t = data;
-                    if (data.length > 0) {
-                        $("#NoSearch").hide();
-                        myApp.hidePleaseWait();
-                        response($.map(data, function (item) {
-
-                            return { label: item.UserId, value: item.DisplayName, title: item.JobTitle };
-                        }))
+                        $this = ui.item.label;
+                        getrecord($this);
                     }
-                    else {
-                        $("#NoSearch").show();
-                    }
 
-                });
-                myApp.hidePleaseWait();
-            },
-            minLength: 1,
-            //delay: 50,
-            select: function (event, ui) {
-
-                $this = ui.item.label;
-                getrecord($this);
+                }).data('ui-autocomplete')._renderItem = function (ul, item) {
+                    return $("<li>")
+                  .append("<div><div class='add-interest'><div>" + item.value + "</div><div title='" + item.title + "'>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
+                        .appendTo(ul.addClass('user_permission_list'));
+                };
             }
-        }).data('ui-autocomplete')._renderItem = function (ul, item) {
-            return $("<li>")
-          .append("<div><div class='add-interest'><div>" + item.value + "</div><div title='" + item.title + "'>" + item.title + "</div><div>" + " " + '<img src="' + imageurl + '" style="float:right"></div>' + "</div>")
-                .appendTo(ul.addClass('user_permission_list'));
-        };
+            else {
+                $("#NoSearch").hide();
+            }
+        });
 
         $("#divFinanceBack").css("display", "block");
         function getrecord(_userid) {
@@ -556,35 +489,24 @@
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
                     $(this).find('a').removeAttr('href', '')
-                    // $(this).find('span').attr('id', '')
                     $(this).find('span').removeClass('x-icon');
-                    // $(this).hide();
-                    //$(this).css("cursor", 'not-allowed');
                 }
             })
         }
-
-
-
 
         $("#btnsave").click(function () {
             var emp = [];
             var _createdBy = [];
             var table = $("#userTable tbody");
-
             var DrpId = $("#nl-formUserChildFinance li.nl-dd-checked").val()
-
 
             if ($("#userTable tbody tr").length > 0) {
                 $("#userTable tbody tr").each(function () {
-                  
                     var _CodeFlag;
                     var userid = $(this).find('td:first').text();
-                    // $("#userTable tbody tr").find('td').eq(1).text()
                     var createdby = $(this).find('td').eq(1).text()
                     _createdBy.push(createdby);
                     $(this).find("input[type='radio']:checked").each(function () {
-
                         _CodeFlag = $(this).attr("par");
                     });
                     emp.push({ UserId: userid.toString(), PermisssionCode: parseInt(_CodeFlag) });
@@ -595,7 +517,6 @@
             }
             emp = JSON.stringify({ 'UserData': emp, 'ID': DrpId, 'CreatedBy': _createdBy });
             $.ajax({
-                //traditional: true,
                 url: '@Url.Action("SaveDetail", "Finance")',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
@@ -630,51 +551,28 @@
     });
 
     function InspectBudgetPermissionRow() {
-        
-        // $("#nl-formUserChildFinance li").each(function () {
-
-
         $("#userTable tbody tr").each(function () {
-           
             var Id = $(this).find('td:first').text();
             var CreatedbyId = $(this).find('td').eq(1).text();
             if (Id == '@Sessions.User.UserId') {
-                    //alert('user');  
-                    // $(this).hide();
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
                     $(this).find('a').removeAttr('href', '')
-                    //$(this).find('span').attr('id', '')
-                    //x-icon hide pull-right
                     $(this).find('span').removeClass('x-icon');
                 }
                 if (CreatedbyId == Id) {
                  
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
-                    // $(this).find('span').hide();
                     $(this).find('span').removeClass('x-icon');
                 }
                 if (Id == Owneruser) {
                     $(this).find('td,input,span,a').attr("disabled", "disabled");
                     $(this).find('a').removeAttr("onclick");
-                    // $(this).find('span').hide();
                     $(this).find('span').removeClass('x-icon');
                 }
 
             })
-
-        //var y = $(this).val();
-        ////$(this).removeClass('nl-dd-checked');
-        //var selectedval = $("#nl-formUserChildFinance option:selected").val();
-        //if (_UserBudgetId == y) {
-        //    debugger;
-        //   
-        //    $(this).siblings().removeClass('nl-dd-checked')
-        //   $(this).addClass('nl-dd-checked');
-        //   $(this).parent().parent().find('a').text($(this).text());
-        //}
-        //});
         }
 
         function getselection() {
@@ -712,24 +610,9 @@
 
     }
 
-   @* function UserOwenrcheck(budgetID) {
-        $.ajax({
-            url: '@Url.Action("OwnerCheck", "Finance")',
-            type: 'POST',
-            data: { budgetId: budgetID },
-            success: function (data) {
-                debugger;
-                Owneruser = data.user;
-            },
-            error: function () {
-
-            }
-        });
-    }*@
-
     function DeleteUsers(id, budgetID, firsname, lastname) {
         _isDatabase = "Fromdatabase";
-        var name = firsname + lastname + ".";
+        var name = firsname + " "+lastname + ".";
         $("#divDeletePopup h2").text('Deleting a user');
         $("#lipname").html(name);
         $("#divDeletePopup").modal('show');
