@@ -58,8 +58,30 @@
             CustomProgramName: "@Common.ProgramCustomTitle",
             CustomTacticName: "@Common.TacticCustomTitle",
         });
-        var Currenttime = $('#ddlUpComingActivites').val();
+        filters.SelectedPlans = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.SelectedPlans.push(chkid);
+                }
+            }
+        });
+
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+        }
+        var SelectedPlans = filters.SelectedPlans.toString();
+       
+        //Modified by komal rawal for #1750
+        if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+            BindUpcomingActivites(SelectedPlans);
+        }
+        Currenttime = $('#ddlUpComingActivites').val();
         isQuater = Currenttime;
+        //End
         onClickPlanTitle();
         SetAttributeData();
 
@@ -82,24 +104,8 @@
           
         }
         $('.request-icons').show();
-        filters.SelectedPlans = [];
-        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                var chkid = $(this).attr("id");
-                if (chkid != undefined && chkid != 'undefined') {
-                    filters.SelectedPlans.push(chkid);
-                }
-            }
-        });
-        if (filters.SelectedPlans.length == 1) {
-            CurrentPlanId = filters.SelectedPlans[0].toString();
-            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
-
-        }
-        var SelectedPlans = filters.SelectedPlans.toString();
-
-            GetHealderData(SelectedPlans);
-            GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime);
+        GetHealderData(SelectedPlans,filters.customFieldIds,filters.OwnerIds,filters.TacticTypeids, filters.StatusIds);
+        GetNumberOfActivityPerMonByPlanId(SelectedPlans, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
 
     $("#ddlTabViewBy").change(function () {

@@ -1758,6 +1758,7 @@ namespace RevenuePlanner.Helpers
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
                 List<int> lstTacticIds = new List<int>();
+            
 
                 //// Owner filter criteria.
                 List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
@@ -1785,10 +1786,9 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();// Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
 
-
+                lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
-                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                     planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
                                              (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
                                              (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
@@ -1805,6 +1805,22 @@ namespace RevenuePlanner.Helpers
                         }
 
                     }
+                }
+                else
+                {
+                    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                    List<Guid> lstSubordinatesIds = new List<Guid>();
+                    if (IsTacticAllowForSubordinates)
+                    {
+                        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+
+                    }
+                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+
+                    planTacticsList = planTacticsList.Where(tactic => tactic.objPlanTactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.objPlanTactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();
+
+
                 }
 
                 //End
@@ -1925,6 +1941,31 @@ namespace RevenuePlanner.Helpers
             }
             return newHomePlanModelHeader;
         }
+        #endregion
+
+
+
+        #region get all Collaborators of tactic
+        /// <summary>
+        /// Added By: KOmal Rawal.
+        /// Action to get all collaborators of tactic.
+        /// </summary>
+        /// <param name="PlanId">Plan Id</param>
+        public static List<string> GetAllCollaborators(List<int> tacticIds)
+        {
+            MRPEntities db = new MRPEntities();
+            List<string> collaboratorId = new List<string>();
+            var planTactic = db.Plan_Campaign_Program_Tactic.Where(t => tacticIds.Contains(t.PlanTacticId));
+            var planTacticModifiedBy = planTactic.ToList().Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+            var planTacticCreatedBy = planTactic.ToList().Select(t => t.CreatedBy.ToString()).ToList();
+            var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => tacticIds.Contains(pc.Plan_Campaign_Program_Tactic.PlanTacticId));
+            var planTacticCommentCreatedBy = planTacticComment.ToList().Select(pc => pc.CreatedBy.ToString()).ToList();
+            collaboratorId.AddRange(planTacticCreatedBy);
+            collaboratorId.AddRange(planTacticModifiedBy);
+            collaboratorId.AddRange(planTacticCommentCreatedBy);
+            return collaboratorId.Distinct().ToList<string>();
+        }
+
         #endregion
 
         #region DefaultRedirecr
@@ -6366,4 +6407,6 @@ namespace RevenuePlanner.Helpers
             // End
         }
     }
+
+
 }

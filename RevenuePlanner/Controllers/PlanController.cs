@@ -8959,6 +8959,8 @@ namespace RevenuePlanner.Controllers
                 //{
                 //    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
                 //}
+                List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                List<Guid> collaboratorIdsList = collaboratorIds.Select(Guid.Parse).ToList();
                 List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
@@ -9241,7 +9243,16 @@ namespace RevenuePlanner.Controllers
 
 
 
-                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Tactic title
+                                                if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0 )&& !IsFiltered )
+                                                {
+                                                    //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
+                                                    finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (tacticfilter.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tacticfilter.CreatedBy)) || (lstSubordinatesIds.Contains(tacticfilter.CreatedBy) == true ? lsteditableEntityIds.Contains(tacticfilter.PlanTacticId) : lstSubordinatesIds.Contains(tacticfilter.CreatedBy)))).OrderBy(t => t.Title).ToList();
+                                                }
+                                                else
+                                                {
+                                                    finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();
+
+                                                }
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                                 {
 

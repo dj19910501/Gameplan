@@ -256,6 +256,9 @@
     <Compile Include="Models\Plan_Team.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Plan_UserSavedViews.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Report_Share.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

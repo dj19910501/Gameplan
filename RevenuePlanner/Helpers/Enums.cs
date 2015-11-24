@@ -1265,6 +1265,14 @@ namespace RevenuePlanner.Helpers
             {DefaultGridColumn.lstLineItemIds.ToString(), "lstLineItemIds"}
             };
         #endregion
+
+        public enum FilterLabel
+        {
+            Plan,
+            Owner,
+            TacticType,
+            Status,
+        }
     }
 
     #region Authorization
@@ -1338,5 +1346,7 @@ namespace RevenuePlanner.Helpers
     {
         public const string Plan = "Plan";
     }
+
+   
 
 }

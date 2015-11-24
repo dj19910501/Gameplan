@@ -43,6 +43,7 @@ namespace RevenuePlanner.Models
     {
         public int PlanId { get; set; }
         public string Title { get; set; }
+        public string Checked { get; set; }
     }
     public class TacticTypeModel
     {
@@ -55,6 +56,7 @@ namespace RevenuePlanner.Models
         public string OwnerId { get; set; }
         public string Title { get; set; }
     }
+
     public class HomePlan
     {
         //public bool IsDirector { get; set; }
@@ -274,5 +276,14 @@ namespace RevenuePlanner.Models
         public int CustomFieldId { get; set; }
         public string Title { get; set; }
         public int? CustomFieldOptionId { get; set; }
+    }
+    public partial class   lastSeen
+    {
+        public int Id { get; set; }
+        public string ViewName { get; set; }
+        public string FilterName { get; set; }
+        public string FilterValues { get; set; }
+        public Nullable<System.Guid> Userid { get; set; }
+        public System.DateTime LastModifiedDate { get; set; }
     }
 }

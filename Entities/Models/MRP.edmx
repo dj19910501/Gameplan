@@ -909,6 +909,17 @@
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
+        <EntityType Name="Plan_UserSavedViews">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ViewName" Type="nvarchar(max)" />
+          <Property Name="FilterName" Type="nvarchar" MaxLength="250" />
+          <Property Name="FilterValues" Type="nvarchar(max)" />
+          <Property Name="Userid" Type="uniqueidentifier" />
+          <Property Name="LastModifiedDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="Report_Share">
           <Key>
             <PropertyRef Name="ReportShareId" />
@@ -2098,6 +2109,7 @@
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Comment" EntityType="Self.Plan_Improvement_Campaign_Program_Tactic_Comment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Plan_Improvement_Campaign_Program_Tactic_Share" EntityType="Self.Plan_Improvement_Campaign_Program_Tactic_Share" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Plan_Team" EntityType="Self.Plan_Team" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Plan_UserSavedViews" EntityType="Self.Plan_UserSavedViews" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Report_Share" EntityType="Self.Report_Share" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Stage" EntityType="Self.Stage" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SyncFrequency" EntityType="Self.SyncFrequency" Schema="dbo" store:Type="Tables" />
@@ -2894,6 +2906,7 @@
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
             <End Role="Budget_Permission" EntitySet="Budget_Permission" />
           </AssociationSet>
+          <EntitySet Name="Plan_UserSavedViews" EntityType="MRPModel.Plan_UserSavedViews" />
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -5131,6 +5144,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Plan_UserSavedViews">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ViewName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="FilterName" Type="String" MaxLength="250" FixedLength="false" Unicode="true" />
+          <Property Name="FilterValues" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Userid" Type="Guid" />
+          <Property Name="LastModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -6205,6 +6229,18 @@
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
                 <ScalarProperty Name="BudgetDetailId" ColumnName="BudgetDetailId" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Plan_UserSavedViews">
+            <EntityTypeMapping TypeName="MRPModel.Plan_UserSavedViews">
+              <MappingFragment StoreEntitySet="Plan_UserSavedViews">
+                <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
+                <ScalarProperty Name="Userid" ColumnName="Userid" />
+                <ScalarProperty Name="FilterValues" ColumnName="FilterValues" />
+                <ScalarProperty Name="FilterName" ColumnName="FilterName" />
+                <ScalarProperty Name="ViewName" ColumnName="ViewName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

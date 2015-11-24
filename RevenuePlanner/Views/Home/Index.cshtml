@@ -101,6 +101,7 @@
 
 @section Sidebar{
     <script type="text/javascript">
+        var GetLastview = true;
         var pageIsScroll = false;
         //Added By komal rawal for #1283
         //  var isTacticExist = false;
@@ -126,7 +127,11 @@
 
         }
 
-        function GetTacticTypelist(Planids) {
+        function GetTacticTypelist(Planids, async) {
+            var asyncval = false;
+            if (async != undefined && async != 'undefined' && async != '' && async != null) {
+                asyncval = async;
+            }
 
             $('#ulTacticType').html('');
 
@@ -138,12 +143,14 @@
                 },
                 type: "GET",
                 cache: false,
+                async: asyncval,
                 url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
                 data: {
                     PlanId: Planids.toString()
                 },
                 dataType: "json",
                 success: function (data) {
+                    
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                     }
@@ -155,6 +162,12 @@
                             $("#TacticTypeAllModule").css("display", "none");
                             $("#NoTTFound").show();
                         }
+                        //if (GetLastview == true) {
+                        //    LastSetofTT();
+                        //}
+
+                        async = true;
+                     
                     }
                 }
             });
@@ -163,6 +176,7 @@
 
 
         function BulkTTOperation(selection) {
+            GetLastview = false;
             filters.TacticTypeids = [];
             if (selection) {
                 $("#ulTacticType li").each(function (i) {
@@ -184,6 +198,7 @@
         }
 
         function toggleTacticType(obj) {
+            GetLastview = false;
             var id = $(obj).attr('id').toString().replace("CbTT", "");
             if ($(obj).is(':checked')) {
                 $("#liTT" + id).addClass("close-list");
@@ -264,6 +279,7 @@
 
                 CurrentPlanId = $(this).attr('value');
                 $("#CurrentPlanId").val(CurrentPlanId);
+               
                 SelectedPlanTitle = $(this).text();
 
                 if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -271,22 +287,36 @@
                         if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                             //EditPlanHome();
                             var pid = $("#CurrentPlanId").val();
+                         
                             var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
                             window.location.href = url;
                         }
                         else {
+                         //   SaveLastSetofViews();
                             var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
                             window.location.href = url;
                         }
                     }
+
+                  
                 }
                 
                 
             });
+            SaveLastSetofViews();
+           
         }
 
-        function GetOwnerListForFilter(Planids) {
-
+        function GetOwnerListForFilter(Planids,async) {
+            var asyncval = false;
+            if (async != undefined && async != 'undefined' && async != '' && async != null)
+            {
+                asyncval = async;
+            }
+            else
+            {
+                asyncval = false;
+            }
             $('#ulSelectedOwner').html('');
             filters.OwnerIds = [];
 
@@ -296,6 +326,7 @@
                 },
                 type: "GET",
                 cache: false,
+                async: asyncval,
                 url: '@Url.Action("GetOwnerListForFilter", "Home")',
                 data: {
                     PlanId: Planids.toString(),
@@ -315,9 +346,17 @@
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
+                                        var LoggedInOwner = data.LoggedInUser;
                                         //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                                        var checked = "checked";
-                                        var checkedclass = "close-list";
+                                        var checked = "";
+                                        var checkedclass = "";
+                                        if (OwnerItem.OwnerId == LoggedInOwner)
+                                        {
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
+                                        
+                                        
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
                                         // filters.OwnerIds.push(OwnerItem.OwnerId);
                                     });
@@ -331,8 +370,18 @@
                                 $("#ulOwnerAllModule").css("display", "none");
                                 $("#NoOwnerFound").show();
                             }
+
+
                         }
+                        //if (GetLastview == true)
+                        //{
+                        //    LastSetofowners();
+                        //}
+                      
+                     
                     }
+                    async = true;
+
                 }
             });
         }
@@ -543,13 +592,13 @@
                                     foreach (var objplan in planList)
                                     {
                                         liPlanid = "liPlan" + objplan.PlanId;
-                                        if (objplan.PlanId == CurrentPlanId)
+                                          if (objplan.Checked == "checked")
                                         {
                                                         <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
                                         }
                                         else
                                         {
-                                                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
+                                                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" ></input></li>
                                         }
                                     } 
                                 }
@@ -934,7 +983,7 @@
 <script type="text/javascript">
 
     var divPartial = "#divPartial";
-
+    var GetLastview = true;
     var InspectSuccMsg = "";
     var SelectedPlanTitle = "";
     var isCalenderView = true;
@@ -966,7 +1015,7 @@
     var inspectCloseFocus = "";
     //Added By Komal Rawal for #1376
     function toggleStatus(obj) {
-
+        GetLastview = false;
         var id = $(obj).attr('id');
         var liID = $(obj).parent().attr('id');
         if ($(obj).is(':checked')) {
@@ -985,6 +1034,7 @@
     }
 
     function BulkStatusOperation(selection) {
+        GetLastview = false;
         filters.StatusIds = [];
         if (selection) {
             $("#ulStatus li").each(function (i) {
@@ -1084,9 +1134,10 @@
     }
 
     //End
-
-
+    var isFiltered = false;
+    var IsUpdate = false;
     function UpdateResult() {
+        IsUpdate = true;
         // added by devanshi for #1431
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
@@ -1125,11 +1176,70 @@
         else {
             UpdateCalenderView();
         }
+
+        SaveLastSetofViews()
+    }
+
+    function SaveLastSetofViews() {
+        filters.customFieldIds = [];
+
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.customFieldIds.push(chkid);
+                }
+            }
+        });
+        filters.SelectedPlans = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.SelectedPlans.push(chkid);
+                }
+            }
+        });
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+        }
+        var Planid = filters.SelectedPlans;
+        var CustomFieldId = filters.customFieldIds;
+        var OwnerIds = filters.OwnerIds;
+        var TacticTypeids = filters.TacticTypeids; //Modified for #1283
+        var GetSelectedPlanNo = filters.SelectedPlans.length;
+        var StatusIds = filters.StatusIds;
+
+
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
+            Planid = CurrentPlanId;
+            GetSelectedPlanNo = 1;
+        }
+        $.ajax({
+            type: "GET",
+            cache: false,
+            async:false,
+            url: '@Url.Action("SaveLastSetofViews", "Home")',
+            data: {
+                PlanId: Planid.toString(),
+                customFieldIds: CustomFieldId.toString(),
+                ownerIds: OwnerIds.toString(),
+                TacticTypeid: TacticTypeids.toString(),
+                StatusIds: filters.StatusIds.toString(),
+            },
+            dataType: "json",
+            success: function (data) {
+            }
+
+        })
+
     }
 
     //Modified By komal Rawal 
     function UpdateCalenderView() {
-
         requestPlanActiveTab(false);
         var SelectedPlanIds;
 
@@ -1152,6 +1262,8 @@
                 }
             }
         });
+
+
         if (filters.SelectedPlans.length == 1) {
             CurrentPlanId = filters.SelectedPlans[0].toString();
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
@@ -1199,7 +1311,6 @@
                 }
             }
         });
-
         $("#content_wraper").removeClass("span10 padding-top40").addClass("span10 all-height");
         $('#errorMessageInspectPopup').slideUp(400);
 
@@ -1286,6 +1397,7 @@
     }
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function togglePlan(obj) {
+        GetLastview = false;
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liPlan" + id).addClass("close-list");
@@ -1302,12 +1414,21 @@
                 }
             }
         });
-        GetOwnerListForFilter(planids);
-        GetTacticTypelist(planids);
+        $("#ulStatus li input[type=checkbox]").attr('checked', 'checked');
+        $("#ulStatus li ").addClass("close-list");
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                $(this).removeAttr('checked');
+                $(this).parent().removeClass("close-list");
+            }
+        });
+        GetOwnerListForFilter(planids,true);
+        GetTacticTypelist(planids,true);
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function toggleCustomFields(obj) {
+        GetLastview = false;
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#li_" + id).addClass("close-list");
@@ -1319,6 +1440,7 @@
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function toggleOwner(obj) {
+        GetLastview = false;
         var id = $(obj).attr('id');
         if ($(obj).is(':checked')) {
             $("#liOwner" + id).addClass("close-list");
@@ -1548,6 +1670,7 @@
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkPlanOperation(selection) {
+        GetLastview = false;
         var planids = [];
 
         if (selection) {
@@ -1566,12 +1689,22 @@
             });
         }
 
-        GetOwnerListForFilter(planids);
-        GetTacticTypelist(planids);
+        $("#ulStatus li input[type=checkbox]").attr('checked', 'checked');
+        $("#ulStatus li ").addClass("close-list");
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                $(this).removeAttr('checked');
+                $(this).parent().removeClass("close-list");
+            }
+        });
+
+        GetOwnerListForFilter(planids,true);
+        GetTacticTypelist(planids,true);
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkCustomFieldOperation(selection, customFieldId) {
+        GetLastview = false;
         if (selection) {
             $('#ulSelected' + customFieldId + ' li').each(function (i) {
                 $(this).addClass("close-list");
@@ -1590,6 +1723,7 @@
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
     function BulkOwnerOperation(selection) {
+        GetLastview = false;
         filters.OwnerIds = [];
         if (selection) {
             $("#ulSelectedOwner li").each(function (i) {
@@ -2072,6 +2206,7 @@
     //// Global variable to hold quarter or year.
     var isQuater = Currenttime;//false;
 
+
     //// Global variable to hold current tab.
     var type = '@PlanGanttTypes.Tactic.ToString()';
     var isRequest = false;
@@ -2176,6 +2311,7 @@
         // End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
         filters.SelectedPlans.push(CurrentPlanId);
         PlanIdsCustom = filters.SelectedPlans.toString();
+     
         LoadPlan();
         getViewByList = true;
       
@@ -2186,15 +2322,34 @@
             $("#CalenderView").hide();
             $("#liGrid").click();
         }
-        GetTacticTypelist(CurrentPlanId);
-        GetOwnerListForFilter(CurrentPlanId);
-    });
+        var planids = [];
 
+        if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            planids.push(CurrentPlanId);
+        }
+        else {
+            $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+
+                if ($(this).attr('checked') == 'checked') {
+                    var chkid = $(this).attr("id");
+                    var Value = $(this).attr("planTitle");
+                    if (chkid != undefined && chkid != 'undefined') {
+                        planids.push(chkid);
+                    }
+                }
+    });
+        }
+        GetTacticTypelist(planids);
+        GetOwnerListForFilter(planids);
+        GetLastSetofViews();
+       // LastSetofowners();
+    });
     function LoadPlan() {
         var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
         populateNF(plans, "dropdown-plan-title");
         var nlform = new NLForm(document.getElementById('nl-form2'));
     }
+
 
     var appendtag = '';//uday
     function DuplicatePlanMessage() {
@@ -2568,7 +2723,8 @@ function AjaxRequest() {
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: filters.StatusIds.toString(),
                 activeMenu: $('#ActiveMenu').val(),
-                getViewByList: getViewByList
+                        getViewByList: getViewByList,
+                        isupdate: IsUpdate,
             },
             dataType: "json",
             success: function (data) {
@@ -4542,7 +4698,103 @@ function Quarter() {
             Currenttime = $('#ddlUpComingActivites').val();
             isQuater = Currenttime;
         }
+        //   GetLastSetofViews();
+
+
+
     });
+
+    function GetLastSetofViews() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LastSetOfViews", "Home")',
+            data: {},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
+                        $("#ulStatus li input[type=checkbox]").removeAttr('checked');
+                        $("#ulStatus li ").removeClass("close-list");
+                        for (i = 0 ; i < data.StatusNAmes.length; i++) {
+                            $("#ulStatus li input[type=checkbox]").each(function () {
+                                var Value = $(this).attr("id");
+                                if (Value == data.StatusNAmes[i]) {
+                                    filters.StatusIds.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+
+                            });
+
+                        }
+                    }
+
+                    if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
+                        for (i = 0 ; i < data.Customfields.length; i++) {
+                            var CustomFieldId = data.Customfields[i].ID.split('_')[1];
+                            var CustomFieldValues = data.Customfields[i].Value;
+                            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                                var chkid = $(this).attr("id");
+                                var chkfieldid = $(this).attr("id").split('_')[0];
+                                var chkOptionid = $(this).attr("id").split('_')[1];
+                                if (chkfieldid == CustomFieldId) {
+                                    if (CustomFieldValues.indexOf(chkOptionid) != -1) {
+                                        $(this).attr('checked', 'checked');
+                                        filters.customFieldIds.push(chkid);
+                                        $(this).parent().addClass("close-list");
+                                    }
+                                    else {
+                                        $(this).removeAttr('checked');
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+
+
+                    if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
+                        filters.OwnerIds = [];
+                        $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
+                        $("#ulSelectedOwner li ").removeClass("close-list");
+                        for (i = 0 ; i < data.OwnerNames.length; i++) {
+                            $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                                var Value = $(this).attr("id");
+                                if (Value == data.OwnerNames[i]) {
+                                    filters.OwnerIds.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+                            });
+                        }
+                    }
+
+
+                    if (data.TTList.length != 0 && data.TTList.length != undefined) {
+                        filters.TacticTypeids = [];
+                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
+                        $("#ulTacticType li ").removeClass("close-list");
+                        for (i = 0 ; i < data.TTList.length; i++) {
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                                var Value = $(this).attr("id").replace("CbTT", "");
+                                if (Value == data.TTList[i]) {
+                                    filters.TacticTypeids.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+                            });
+                        }
+                    }
+
+                }
+            }
+        });
+
+    }
 
 
     function RefershPlanHeaderCalc() {
