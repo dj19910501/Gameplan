@@ -6390,8 +6390,15 @@ namespace RevenuePlanner.Helpers
             int firstNumber, secondNumber;
 
             // Start - Check whether string starts with special character or not
-            bool first_IsSpecialChar = !Regex.IsMatch(first[0].ToString(), strRegExpPattern, RegexOptions.IgnoreCase);
-            bool second_IsSpecialChar = !Regex.IsMatch(second[0].ToString(), strRegExpPattern, RegexOptions.IgnoreCase);
+            bool first_IsSpecialChar = false;
+            bool second_IsSpecialChar = false;
+            if (!string.IsNullOrEmpty(first) && !string.IsNullOrEmpty(second))
+            {
+                first_IsSpecialChar = !Regex.IsMatch(first[0].ToString(), strRegExpPattern, RegexOptions.IgnoreCase);
+                second_IsSpecialChar = !Regex.IsMatch(second[0].ToString(), strRegExpPattern, RegexOptions.IgnoreCase);
+            }
+
+
             if (first_IsSpecialChar)
                 return second_IsSpecialChar ? first.CompareTo(second) : -1;
             if (second_IsSpecialChar)
@@ -6403,7 +6410,7 @@ namespace RevenuePlanner.Helpers
             bool secondIsNumber = int.TryParse(second, out secondNumber);
             if (firstIsNumber)
                 return secondIsNumber ? firstNumber.CompareTo(secondNumber) : -1;
-            return secondIsNumber ? 1 : first.CompareTo(second);
+            return secondIsNumber ? 1 : first != null ? first.CompareTo(second) : 0;
             // End
         }
     }

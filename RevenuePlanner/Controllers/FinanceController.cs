@@ -127,33 +127,36 @@ namespace RevenuePlanner.Controllers
         public int SaveNewBudget(string budgetName)
         {
             int budgetId = 0;
-            try
+            if (!string.IsNullOrEmpty(budgetName))
             {
-                Budget objBudget = new Budget();
-                objBudget.ClientId = Sessions.User.ClientId;
-                objBudget.Name = budgetName;
-                objBudget.Desc = string.Empty;
-                objBudget.CreatedBy = Sessions.User.UserId;
-                objBudget.CreatedDate = DateTime.Now;
-                objBudget.IsDeleted = false;
-                db.Entry(objBudget).State = EntityState.Added;
-                db.SaveChanges();
-                budgetId = objBudget.Id;
+                try
+                {
+                    Budget objBudget = new Budget();
+                    objBudget.ClientId = Sessions.User.ClientId;
+                    objBudget.Name = budgetName;
+                    objBudget.Desc = string.Empty;
+                    objBudget.CreatedBy = Sessions.User.UserId;
+                    objBudget.CreatedDate = DateTime.Now;
+                    objBudget.IsDeleted = false;
+                    db.Entry(objBudget).State = EntityState.Added;
+                    db.SaveChanges();
+                    budgetId = objBudget.Id;
 
-                Budget_Detail objBudgetDetail = new Budget_Detail();
-                objBudgetDetail.BudgetId = budgetId;
-                objBudgetDetail.Name = budgetName;
-                objBudgetDetail.IsDeleted = false;
-                objBudgetDetail.CreatedBy = Sessions.User.UserId;
-                objBudgetDetail.CreatedDate = DateTime.Now;
-                db.Entry(objBudgetDetail).State = EntityState.Added;
-                db.SaveChanges();
-                int _budgetid = objBudgetDetail.Id;
-                SaveUserBudgetpermission(_budgetid);
-            }
-            catch (Exception)
-            {
-                throw;
+                    Budget_Detail objBudgetDetail = new Budget_Detail();
+                    objBudgetDetail.BudgetId = budgetId;
+                    objBudgetDetail.Name = budgetName;
+                    objBudgetDetail.IsDeleted = false;
+                    objBudgetDetail.CreatedBy = Sessions.User.UserId;
+                    objBudgetDetail.CreatedDate = DateTime.Now;
+                    db.Entry(objBudgetDetail).State = EntityState.Added;
+                    db.SaveChanges();
+                    int _budgetid = objBudgetDetail.Id;
+                    SaveUserBudgetpermission(_budgetid);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
             return budgetId;
         }
@@ -354,41 +357,44 @@ namespace RevenuePlanner.Controllers
             try
             {
                 _budgetId = !string.IsNullOrEmpty(BudgetId) ? Int32.Parse(BudgetId) : 0;
-                if (isNewBudget)
+                if (_budgetId != 0)
                 {
-                    SaveNewBudget(BudgetDetailName);
-                }
-                else
-                {
-
-                    Budget_Detail objBudgetDetail = new Budget_Detail();
-                    objBudgetDetail.BudgetId = _budgetId;
-                    objBudgetDetail.Name = BudgetDetailName;
-                    objBudgetDetail.ParentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
-                    objBudgetDetail.CreatedBy = Sessions.User.UserId;
-                    objBudgetDetail.CreatedDate = DateTime.Now;
-                    objBudgetDetail.IsDeleted = false;
-                    db.Entry(objBudgetDetail).State = EntityState.Added;
-                    db.SaveChanges();
-                    int _budgetid = objBudgetDetail.Id;
-                    SaveUserBudgetpermission(_budgetid);
-
-                    #region Udate LineItem with child item
-                    //Add By Nishant Sheth
-                    int? BudgetDetailParentid = objBudgetDetail.ParentId;
-                    int BudgetDetailId = objBudgetDetail.Id;
-
-                    using (MRPEntities context = new MRPEntities())
+                    if (isNewBudget)
                     {
-                        IQueryable<LineItem_Budget> objLineItem = context.LineItem_Budget
-                            .Where(x => x.BudgetDetailId == BudgetDetailParentid);
-                        foreach (LineItem_Budget LineItem in objLineItem)
-                        {
-                            LineItem.BudgetDetailId = BudgetDetailId;
-                        }
-                        context.SaveChanges();
+                        SaveNewBudget(BudgetDetailName);
                     }
-                    #endregion
+                    else
+                    {
+
+                        Budget_Detail objBudgetDetail = new Budget_Detail();
+                        objBudgetDetail.BudgetId = _budgetId;
+                        objBudgetDetail.Name = BudgetDetailName;
+                        objBudgetDetail.ParentId = !string.IsNullOrEmpty(ParentId) ? Int32.Parse(ParentId) : 0;
+                        objBudgetDetail.CreatedBy = Sessions.User.UserId;
+                        objBudgetDetail.CreatedDate = DateTime.Now;
+                        objBudgetDetail.IsDeleted = false;
+                        db.Entry(objBudgetDetail).State = EntityState.Added;
+                        db.SaveChanges();
+                        int _budgetid = objBudgetDetail.Id;
+                        SaveUserBudgetpermission(_budgetid);
+
+                        #region Udate LineItem with child item
+                        //Add By Nishant Sheth
+                        int? BudgetDetailParentid = objBudgetDetail.ParentId;
+                        int BudgetDetailId = objBudgetDetail.Id;
+
+                        using (MRPEntities context = new MRPEntities())
+                        {
+                            IQueryable<LineItem_Budget> objLineItem = context.LineItem_Budget
+                                .Where(x => x.BudgetDetailId == BudgetDetailParentid);
+                            foreach (LineItem_Budget LineItem in objLineItem)
+                            {
+                                LineItem.BudgetDetailId = BudgetDetailId;
+                            }
+                            context.SaveChanges();
+                        }
+                        #endregion
+                    }
                 }
                 return RefreshMainGridData(_budgetId, mainTimeFrame, ListofCheckedColums);
             }
@@ -579,7 +585,7 @@ namespace RevenuePlanner.Controllers
                 lstBudgetDetails.ForEach(
                     i =>
                     {
-                        rowId = Regex.Replace(i.Name.Trim().Replace("_", ""), @"[^0-9a-zA-Z]+", "") + "_" + i.Id.ToString() + "_" + (i.ParentId == null ? "0" : i.ParentId.ToString());
+                        rowId = Regex.Replace((i.Name == null ? "" : i.Name.Trim().Replace("_", "")), @"[^0-9a-zA-Z]+", "") + "_" + i.Id.ToString() + "_" + (i.ParentId == null ? "0" : i.ParentId.ToString());
                         objBudgetAmount = new BudgetAmount();
                         PlanLineItemsId = new List<int>();
                         lstLineItemIds = new List<int>();
@@ -3202,9 +3208,10 @@ namespace RevenuePlanner.Controllers
             List<string> _curentActual = new List<string>();
 
             List<string> _commonQuarters = new List<string>();
-
-            List<int> LineItemIds = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
-
+            if (LineItemidBudgetList != null)
+            {
+                List<int> LineItemIds = LineItemidBudgetList.Select(a => a.PlanLineItemId).ToList();
+            }
             if (isQuaterly == Enums.PlanAllocatedBy.quarters.ToString())
             {
                 #region "Get Quarter list based on loop value"
@@ -3387,14 +3394,21 @@ namespace RevenuePlanner.Controllers
                 List<string> _curentActual = new List<string>();
 
                 int startIndex = 0, endIndex = 0;
-                if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter1.ToString()))
-                    startIndex = endIndex = 1;
-                else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter2.ToString()))
-                    startIndex = endIndex = 2;
-                else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter3.ToString()))
-                    startIndex = endIndex = 3;
-                else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter4.ToString()))
-                    startIndex = endIndex = 4;
+                if (!String.IsNullOrEmpty(strTimeFrame))
+                {
+                    if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter1.ToString()))
+                        startIndex = endIndex = 1;
+                    else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter2.ToString()))
+                        startIndex = endIndex = 2;
+                    else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter3.ToString()))
+                        startIndex = endIndex = 3;
+                    else if (strTimeFrame.Equals(Enums.QuarterFinance.Quarter4.ToString()))
+                        startIndex = endIndex = 4;
+                    else
+                    {
+                        startIndex = 1; endIndex = 4;
+                    }
+                }
                 else
                 {
                     startIndex = 1; endIndex = 4;
@@ -3431,29 +3445,37 @@ namespace RevenuePlanner.Controllers
                         _curentPlan = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                         _curentActual = Q4.Where(q4 => Convert.ToInt32(q4.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
                     }
-                    _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
+
+                    if (Budget_DetailAmountList != null)
+                    {
+                        _Budget = Budget_DetailAmountList.Where(a => _curentBudget.Contains(a.Period)).Sum(a => a.Budget);
+                        _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
+                        
+                    }
                     _budgetlist.Add(_Budget);
-
-                    _ForeCast = Budget_DetailAmountList.Where(a => _curentForeCast.Contains(a.Period)).Sum(a => a.Forecast);
                     _forecastlist.Add(_ForeCast);
-
-                    _Plan = (from plandetail in PlanDetailAmount
-                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
-                             where _curentPlan.Contains(plandetail.Period)
-                             from leftplanweightage in leftplan.DefaultIfEmpty()
-                             select new
-                             {
-                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
-                             }).ToList().Sum(a => a.Value);
-
-                    _Actual = (from actualdetail in ActualDetailAmount
-                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
-                               where _curentActual.Contains(actualdetail.Period)
-                               from leftactualweightage in leftactual.DefaultIfEmpty()
-                               select new
-                               {
-                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
-                               }).ToList().Sum(a => a.Value);
+                    if (PlanDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Plan = (from plandetail in PlanDetailAmount
+                                 join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                                 where _curentPlan.Contains(plandetail.Period)
+                                 from leftplanweightage in leftplan.DefaultIfEmpty()
+                                 select new
+                                 {
+                                     Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                                 }).ToList().Sum(a => a.Value);
+                    }
+                    if (ActualDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Actual = (from actualdetail in ActualDetailAmount
+                                   join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                                   where _curentActual.Contains(actualdetail.Period)
+                                   from leftactualweightage in leftactual.DefaultIfEmpty()
+                                   select new
+                                   {
+                                       Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                                   }).ToList().Sum(a => a.Value);
+                    }
 
                     //_Plan = PlanDetailAmount.Where(a => _curentPlan.Contains(a.Period)).Sum(a => a.Value);
                     _planlist.Add(_Plan);
@@ -3467,30 +3489,35 @@ namespace RevenuePlanner.Controllers
             {
                 for (int i = 1; i <= 12; i++)
                 {
-                    _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
+                    if (Budget_DetailAmountList != null)
+                    {
+                        _Budget = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Budget);
+                        _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
+                    }
                     _budgetlist.Add(_Budget);
-
-                    _ForeCast = Budget_DetailAmountList.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Forecast);
                     _forecastlist.Add(_ForeCast);
-
-                    _Plan = (from plandetail in PlanDetailAmount
-                             join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
-                             where plandetail.Period == PeriodPrefix + i.ToString()
-                             from leftplanweightage in leftplan.DefaultIfEmpty()
-                             select new
-                             {
-                                 Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
-                             }).ToList().Sum(a => a.Value);
-
-                    _Actual = (from actualdetail in ActualDetailAmount
-                               join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
-                               where actualdetail.Period == PeriodPrefix + i.ToString()
-                               from leftactualweightage in leftactual.DefaultIfEmpty()
-                               select new
-                               {
-                                   Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
-                               }).ToList().Sum(a => a.Value);
-
+                    if (PlanDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Plan = (from plandetail in PlanDetailAmount
+                                 join budgetweightage in LineItemidBudgetList on plandetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftplan
+                                 where plandetail.Period == PeriodPrefix + i.ToString()
+                                 from leftplanweightage in leftplan.DefaultIfEmpty()
+                                 select new
+                                 {
+                                     Value = (plandetail.Value * (leftplanweightage == null ? 100 : leftplanweightage.Weightage)) / 100,
+                                 }).ToList().Sum(a => a.Value);
+                    }
+                    if (ActualDetailAmount != null && LineItemidBudgetList != null)
+                    {
+                        _Actual = (from actualdetail in ActualDetailAmount
+                                   join budgetweightage in LineItemidBudgetList on actualdetail.PlanLineItemId equals budgetweightage.PlanLineItemId into leftactual
+                                   where actualdetail.Period == PeriodPrefix + i.ToString()
+                                   from leftactualweightage in leftactual.DefaultIfEmpty()
+                                   select new
+                                   {
+                                       Value = (actualdetail.Value * (leftactualweightage == null ? 100 : leftactualweightage.Weightage)) / 100,
+                                   }).ToList().Sum(a => a.Value);
+                    }
                     //_Plan = PlanDetailAmount.Where(a => a.Period == PeriodPrefix + i.ToString()).Sum(a => a.Value);
                     _planlist.Add(_Plan);
 
@@ -3511,8 +3538,15 @@ namespace RevenuePlanner.Controllers
         public ActionResult UpdateBudgetGridData(int BudgetId = 0, string IsQuaterly = "quarters", string nValue = "0", string oValue = "0", string ColumnName = "", string Period = "", int ParentRowId = 0, string GlobalEditLevel = "", bool isFromForecastChild = false)
         {
             Budget_DetailAmount objBudAmount = new Budget_DetailAmount();
-            nValue = HttpUtility.HtmlDecode(nValue.Trim());
-
+            if (!string.IsNullOrEmpty(nValue))
+            {
+                nValue = HttpUtility.HtmlDecode(nValue.Trim());
+            }
+            else
+            {
+                nValue = "0";
+                nValue = HttpUtility.HtmlDecode(nValue.Trim());
+            }
             List<Budget_Columns> objColumns = (from ColumnSet in db.Budget_ColumnSet
                                                join Columns in db.Budget_Columns on ColumnSet.Id equals Columns.Column_SetId
                                                where ColumnSet.IsDeleted == false && Columns.IsDeleted == false
@@ -3521,7 +3555,7 @@ namespace RevenuePlanner.Controllers
             var objCustomColumns = objColumns.Where(a => a.IsTimeFrame == false).Select(a => a).ToList();
             var objTimeFrameColumns = objColumns.Where(a => a.IsTimeFrame == true).Select(a => a).ToList();
 
-            var CustomCol = objCustomColumns.Where(a => a.CustomField.Name == ColumnName.Trim()).Select(a => a).FirstOrDefault();
+            var CustomCol = objCustomColumns.Where(a => a.CustomField.Name == (ColumnName != null ? ColumnName.Trim() : "")).Select(a => a).FirstOrDefault();
             string BudgetColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Budget && a.IsDeleted == false && a.IsTimeFrame == true
                    && a.MapTableName == Enums.MapTableName.Budget_DetailAmount.ToString()).Select(a => a.CustomField.Name).FirstOrDefault();
             string ForecastColName = objColumns.Where(a => a.ValueOnEditable == (int)Enums.ValueOnEditable.Forecast && a.IsDeleted == false && a.IsTimeFrame == true

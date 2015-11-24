@@ -151,33 +151,32 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-        //Commented by Rahul Shah. bcz its negative test 
-        //#region Save Budget Details with Null Values
+        #region Save Budget Details with Null Values
 
-        ///// <summary>
-        ///// Save Budget Details with Null Values
-        ///// </summary>
-        ///// <auther>Rahul Shah</auther>
-        ///// <createddate>08Oct2015</createddate>
+        /// <summary>
+        /// Save Budget Details with Null Values
+        /// </summary>
+        /// <auther>Rahul Shah</auther>
+        /// <createddate>08Oct2015</createddate>
 
-        //[TestMethod]
-        //public void Save_Budget_Details_with_Null_Value()
-        //{
-        //    //// Set session value
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        [TestMethod]
+        public void Save_Budget_Details_with_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
-        //    //// Call SaveNewBudgetDetail
-        //    FinanceController objFinanceController = new FinanceController();
-        //    var result = objFinanceController.SaveNewBudgetDetail(null, null, null, "") as JsonResult;
-        //    if (result != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNotNull(result);
-        //    }
+            //// Call SaveNewBudgetDetail
+            FinanceController objFinanceController = new FinanceController();
+            var result = objFinanceController.SaveNewBudgetDetail(null, null, null, "") as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
 
-        //}
+        }
 
-        //#endregion
+        #endregion
 
         #region Save Budget Details with Null BudgetId
 
@@ -208,35 +207,35 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-        //Commented by Rahul Shah. bcz its negative test 
-        //#region Save Budget Details with Null Budget Name
+       
+        #region Save Budget Details with Null Budget Name
 
-        ///// <summary>
-        ///// Save Budget Details with Null Budget Name
-        ///// </summary>
-        ///// <auther>Rahul Shah</auther>
-        ///// <createddate>08Oct2015</createddate>
+        /// <summary>
+        /// Save Budget Details with Null Budget Name
+        /// </summary>
+        /// <auther>Rahul Shah</auther>
+        /// <createddate>08Oct2015</createddate>
 
-        //[TestMethod]
-        //public void Save_Budget_Details_with_Null_BudgetName()
-        //{
-        //    //// Set session value
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    string BudgetID = "59";
+        [TestMethod]
+        public void Save_Budget_Details_with_Null_BudgetName()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            string BudgetID = "59";
            
-        //    string ParentId = "1138";
-        //    //// Call SaveNewBudgetDetail
-        //    FinanceController objFinanceController = new FinanceController();
-        //    var result = objFinanceController.SaveNewBudgetDetail(BudgetID, null, ParentId, "",true) as JsonResult;
-        //    if (result != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNotNull(result);
-        //    }
+            string ParentId = "1138";
+            //// Call SaveNewBudgetDetail
+            FinanceController objFinanceController = new FinanceController();
+            var result = objFinanceController.SaveNewBudgetDetail(BudgetID, null, ParentId, "",true) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
 
-        //}
+        }
 
-        //#endregion
+        #endregion
 
         #region Save Budget Details with Empty ParentId
 
@@ -325,35 +324,35 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-        //Commented by Rahul Shah. bcz its negative test   
-        //#region Save Budget Details with Empty Budget Name
-
-        ///// <summary>
-        ///// Save Budget Details with Empty Budget Name
-        ///// </summary>
-        ///// <auther>Rahul Shah</auther>
-        ///// <createddate>08Oct2015</createddate>
-
-        //[TestMethod]
-        //public void Save_Budget_Details_with_Empty_BudgetName()
-        //{
-        //    //// Set session value
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    string BudgetId = "59";
          
-        //    string ParentId = "1138";
-        //    //// Call SaveNewBudgetDetail
-        //    FinanceController objFinanceController = new FinanceController();
-        //    var result = objFinanceController.SaveNewBudgetDetail(BudgetId, "", ParentId, "",true) as JsonResult;
-        //    if (result != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNotNull(result);
-        //    }
+        #region Save Budget Details with Empty Budget Name
 
-        //}
+        /// <summary>
+        /// Save Budget Details with Empty Budget Name
+        /// </summary>
+        /// <auther>Rahul Shah</auther>
+        /// <createddate>08Oct2015</createddate>
 
-        //#endregion
+        [TestMethod]
+        public void Save_Budget_Details_with_Empty_BudgetName()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+            string BudgetId = "59";
+         
+            string ParentId = "1138";
+            //// Call SaveNewBudgetDetail
+            FinanceController objFinanceController = new FinanceController();
+            var result = objFinanceController.SaveNewBudgetDetail(BudgetId, "", ParentId, "",true) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+
+        #endregion
 
         #endregion
 
@@ -1056,33 +1055,32 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-        //Commented by Rahul Shah. bcz its negative test 
-        //#region Update Budget/Forecast Griddata With Null Value
-        ///// <summary>
-        ///// To Update Budget/Forecast Data With Null Value
-        ///// </summary>
-        ///// <auther>Rahul Shah</auther>
-        ///// <createddate>08Oct2015</createddate>
-        //[TestMethod]
-        //public void Update_BudgetForecast_Griddata_With_Null_Value()
-        //{
-        //    //// Set session value
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        #region Update Budget/Forecast Griddata With Null Value
+        /// <summary>
+        /// To Update Budget/Forecast Data With Null Value
+        /// </summary>
+        /// <auther>Rahul Shah</auther>
+        /// <createddate>08Oct2015</createddate>
+        [TestMethod]
+        public void Update_BudgetForecast_Griddata_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
-        //    //// Call UpdateBudgetGridData method
-        //    FinanceController objFinanceController = new FinanceController();
-        //    var result = objFinanceController.UpdateBudgetGridData(0, null, null, null, null, null, 0) as JsonResult;
+            //// Call UpdateBudgetGridData method
+            FinanceController objFinanceController = new FinanceController();
+            var result = objFinanceController.UpdateBudgetGridData(0, null, null, null, null, null, 0) as JsonResult;
 
-        //    if (result != null)
-        //    {
+            if (result != null)
+            {
 
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNotNull(result);
-        //    }
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
 
-        //}
+        }
 
-        //#endregion
+        #endregion
         //Commented by Rahul Shah. bcz we can not handle null condition for nValue.
         //#region Update Budget/Forecast Griddata With Null nValue
         ///// <summary>
@@ -1330,33 +1328,32 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        //Commented by Rahul Shah. bcz its negative test 
-        //#region Get Amount Value With Null Value
-        ///// <summary>
-        ///// To Get Amount value With Null Value
-        ///// </summary>
-        ///// <auther>Rahul Shah</auther>
-        ///// <createddate>08Oct2015</createddate>
-        //[TestMethod]
-        //public void Get_Amount_Value_With_Null_Value()
-        //{
-        //    //// Set session value
-        //    MRPEntities db = new MRPEntities();
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        #region Get Amount Value With Null Value
+        /// <summary>
+        /// To Get Amount value With Null Value
+        /// </summary>
+        /// <auther>Rahul Shah</auther>
+        /// <createddate>08Oct2015</createddate>
+        [TestMethod]
+        public void Get_Amount_Value_With_Null_Value()
+        {
+            //// Set session value
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
-        //    FinanceController objFinanceController = new FinanceController();
+            FinanceController objFinanceController = new FinanceController();
 
-        //    BudgetAmount obj = new BudgetAmount();
-        //    obj = objFinanceController.GetAmountValue(null, null, null, null, null);
+            BudgetAmount obj = new BudgetAmount();
+            obj = objFinanceController.GetAmountValue(null, null, null, null, null);
 
-        //    if (obj != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNotNull(obj);
-        //    }
+            if (obj != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(obj);
+            }
 
-        //}
-        //#endregion
+        }
+        #endregion
 
         #region Get MainGrid Amount Value With Valid Value
         /// <summary>
@@ -1413,33 +1410,32 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
-        //Commented by Rahul Shah. bcz its negative test 
-        //#region Get MainGrid Amount Value With Null Value
-        ///// <summary>
-        ///// To Get MainGrid Amount value With Null Value
-        ///// </summary>
-        ///// <auther>Rahul Shah</auther>
-        ///// <createddate>08Oct2015</createddate>
-        //[TestMethod]
-        //public void Get_MainGrid_Amount_Value_With_Null_Value()
-        //{
-        //    //// Set session value
-        //    MRPEntities db = new MRPEntities();
-        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+        #region Get MainGrid Amount Value With Null Value
+        /// <summary>
+        /// To Get MainGrid Amount value With Null Value
+        /// </summary>
+        /// <auther>Rahul Shah</auther>
+        /// <createddate>08Oct2015</createddate>
+        [TestMethod]
+        public void Get_MainGrid_Amount_Value_With_Null_Value()
+        {
+            //// Set session value
+            MRPEntities db = new MRPEntities();
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
 
-        //    FinanceController objFinanceController = new FinanceController();
+            FinanceController objFinanceController = new FinanceController();
 
-        //    BudgetAmount obj = new BudgetAmount();
-        //    obj = objFinanceController.GetMainGridAmountValue(true, null, null, null, null, null);
+            BudgetAmount obj = new BudgetAmount();
+            obj = objFinanceController.GetMainGridAmountValue(true, null, null, null, null, null);
 
-        //    if (obj != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNotNull(obj);
-        //    }
+            if (obj != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(obj);
+            }
 
-        //}
-        //#endregion
+        }
+        #endregion
 
         #endregion
 

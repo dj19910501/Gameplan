@@ -1038,7 +1038,8 @@ namespace RevenuePlanner.Test.Controllers
                 CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
             }
             string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(Sessions.User.UserId);
-            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, Year, CommaSeparatedCustomFields, OwnerIds, Activemenu, getViewByList, Tactictypeids, Statusids) as Task<JsonResult>;
+
+            var result = objHomeController.GetViewControlDetail(ViewBy, CommaSeparatedPlanId, Year, CommaSeparatedCustomFields, OwnerIds, Activemenu, getViewByList, Tactictypeids, Statusids,true) as Task<JsonResult>;
             return new JsonResult();
         }
 
