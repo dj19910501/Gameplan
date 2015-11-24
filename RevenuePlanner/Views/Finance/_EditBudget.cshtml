@@ -392,6 +392,8 @@
                 $(".dhx_combo_select option").filter(function () {
                     return this.text == value;
                 }).attr('selected', true);
+                $(".dhx_combo_select").css("right", "20px");
+                $(".dhx_combo_select").css("left", "auto");
                 combo.save();
                 
             }
