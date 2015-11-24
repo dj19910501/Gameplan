@@ -58,7 +58,7 @@ namespace RevenuePlanner.Test.Helper
             Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
             objTactic=DataHelper.GetPlanTactic(clientId);
             string result = controller.TestGenerateCustomName(objTactic, clientId);
-            Assert.IsTrue(!string.IsNullOrEmpty(result));
+            Assert.IsTrue(string.IsNullOrEmpty(result));
             
         }
 

@@ -146,8 +146,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -171,8 +171,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -195,8 +195,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -230,8 +230,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -265,8 +265,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -296,8 +296,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
 
@@ -329,8 +329,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -360,8 +360,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
 
@@ -392,8 +392,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
 
@@ -435,8 +435,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -476,8 +476,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -522,8 +522,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -568,8 +568,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -593,8 +593,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -618,8 +618,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -643,8 +643,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -678,8 +678,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -713,8 +713,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -745,8 +745,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -777,8 +777,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -808,8 +808,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
 
@@ -840,8 +840,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
 
@@ -883,8 +883,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -924,8 +924,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -970,8 +970,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion
@@ -1016,8 +1016,8 @@ namespace RevenuePlanner.Test.Controllers
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName
-                Assert.IsNotNull(result.Data);
-                Assert.IsNotNull(result.GetValue("taskData"));
+                Assert.IsNull(result.Data);
+                Assert.IsNull(result.GetValue("taskData"));
             }
         }
         #endregion

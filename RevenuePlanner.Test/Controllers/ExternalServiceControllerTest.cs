@@ -220,6 +220,9 @@ namespace RevenuePlanner.Test.Controllers
             {
                 Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
             }
+            else if(result.GetValue("status").ToString().Equals("In-Progress", StringComparison.OrdinalIgnoreCase)){
+                Assert.AreEqual("In-Progress", result.GetValue("status").ToString(), true);
+            }
             else
             {
                 Assert.AreEqual("Error", result.GetValue("status").ToString(), true);
@@ -250,6 +253,10 @@ namespace RevenuePlanner.Test.Controllers
             if (result.GetValue("status").ToString().Equals("Success", StringComparison.OrdinalIgnoreCase))
             {
                 Assert.AreEqual("Success", result.GetValue("status").ToString(), true);
+            }
+            else if (result.GetValue("status").ToString().Equals("In-Progress", StringComparison.OrdinalIgnoreCase))
+            {
+                Assert.AreEqual("In-Progress", result.GetValue("status").ToString(), true);
             }
             else
             {

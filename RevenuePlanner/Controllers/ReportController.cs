@@ -405,23 +405,27 @@ namespace RevenuePlanner.Controllers
             int startMonth = 1, EndMonth = currentMonth;
             foreach (string year in yearList)
             {
-                //// if year is current year.
-                if (year == currentYear)
+                if (!string.IsNullOrEmpty(year) && Convert.ToString(year).ToUpper() != "THISQUARTER") //Added by Rahul Shah. Because of unit test case fail.
                 {
-                    //// Add values to list till current month.
-                    for (int i = startMonth; i <= EndMonth; i++)
+                    //// if year is current year.
+                    if (year == currentYear)
                     {
-                        includeMonth.Add(year + PeriodPrefix + i);
+                        //// Add values to list till current month.
+                        for (int i = startMonth; i <= EndMonth; i++)
+                        {
+                            includeMonth.Add(year + PeriodPrefix + i);
+                        }
+                    }
+                    else if (Convert.ToInt32(year) < Convert.ToInt32(currentYear))
+                    {
+                        //// Add all months values to list.
+                        for (int i = 1; i <= 12; i++)
+                        {
+                            includeMonth.Add(year + PeriodPrefix + i);
+                        }
                     }
                 }
-                else if (Convert.ToInt32(year) < Convert.ToInt32(currentYear))
-                {
-                    //// Add all months values to list.
-                    for (int i = 1; i <= 12; i++)
-                    {
-                        includeMonth.Add(year + PeriodPrefix + i);
-                    }
-                }
+
             }
 
             return includeMonth;

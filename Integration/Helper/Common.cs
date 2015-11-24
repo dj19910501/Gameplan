@@ -320,46 +320,48 @@ namespace Integration.Helper
             if (objTactic != null)
             {
                 //Fetch custom name convention sequence
-
-                if (SequencialOrderedTableList.Count > 0)
+                if (SequencialOrderedTableList != null) //Added by rahul Shah
                 {
-                    foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
+                    if (SequencialOrderedTableList.Count > 0)
                     {
-                        if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.CustomField.ToString())
+                        foreach (CampaignNameConvention objCampaignNameConvention in SequencialOrderedTableList)
                         {
-                            var customobj = mappingCustomFields.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId && a.EntityId == objTactic.PlanTacticId).FirstOrDefault();
-                            if (customobj != null)
+                            if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.CustomField.ToString())
                             {
-                                customTacticName.Append(RemoveSpaceAndUppercaseFirst(customobj.CustomNameValue) + "_");
+                                var customobj = mappingCustomFields.Where(a => a.CustomFieldId == objCampaignNameConvention.CustomFieldId && a.EntityId == objTactic.PlanTacticId).FirstOrDefault();
+                                if (customobj != null)
+                                {
+                                    customTacticName.Append(RemoveSpaceAndUppercaseFirst(customobj.CustomNameValue) + "_");
+                                }
+                            }
+                            else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
+                            {
+                                string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
+                                customTacticName.Append(tacticTitle + "_");
+                            }
+                            else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.TacticType.ToString())
+                            {
+                                string tacticTypeTitle = !string.IsNullOrEmpty(objTactic.TacticType.Abbreviation) ? RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation) : RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Title);
+                                customTacticName.Append(tacticTypeTitle + "_");
                             }
                         }
-                        else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.Plan_Campaign_Program_Tactic.ToString())
+                        if (customTacticName.ToString().Length > 0)
                         {
-                            string tacticTitle = RemoveSpaceAndUppercaseFirst(System.Web.HttpUtility.HtmlDecode(objTactic.Title));
-                            customTacticName.Append(tacticTitle + "_");
-                        }
-                        else if (objCampaignNameConvention.TableName == Enums.CustomNamingTables.TacticType.ToString())
-                        {
-                            string tacticTypeTitle = !string.IsNullOrEmpty(objTactic.TacticType.Abbreviation) ? RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Abbreviation) : RemoveSpaceAndUppercaseFirst(objTactic.TacticType.Title);
-                            customTacticName.Append(tacticTypeTitle + "_");
+                            var index = customTacticName.ToString().LastIndexOf('_');
+                            if (index > 0)
+                            {
+                                customTacticName.Remove(index, 1);
+                                string replaceMultipleUnderscore = Regex.Replace(customTacticName.ToString(), "_+", "_");
+                                customTacticName.Clear();
+                                customTacticName.Append(replaceMultipleUnderscore);
+                            }
                         }
                     }
-                    if (customTacticName.ToString().Length > 0)
+                    else
                     {
-                        var index = customTacticName.ToString().LastIndexOf('_');
-                        if (index > 0)
-                        {
-                            customTacticName.Remove(index, 1);
-                            string replaceMultipleUnderscore = Regex.Replace(customTacticName.ToString(), "_+", "_");
-                            customTacticName.Clear();
-                            customTacticName.Append(replaceMultipleUnderscore);
-                        }
+                        objTactic.Title = RemoveSpaceAndUppercaseFirst(objTactic.Title);
+                        customTacticName.Append(objTactic.Title);
                     }
-                }
-                else
-                {
-                    objTactic.Title = RemoveSpaceAndUppercaseFirst(objTactic.Title);
-                    customTacticName.Append(objTactic.Title);
                 }
             }
 

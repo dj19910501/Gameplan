@@ -1796,8 +1796,11 @@ namespace RevenuePlanner.Controllers
                     //// Add new IntegrationInstanceDataTypeMappingPull entry for new GameplanDataTypeMappingPull
                     foreach (GameplanDataTypePullModel obj in form)
                     {
-                        if (obj.ActualFieldName.Equals("CW"))       // set TargetDataType for CW value.
-                            obj.TargetDataType = cwValue;
+                        if (!string.IsNullOrEmpty(obj.ActualFieldName)) // Added by rahul Shah on 21/11/2015. Because of unit test case failue
+                        {
+                            if (obj.ActualFieldName.Equals("CW"))       // set TargetDataType for CW value.
+                                obj.TargetDataType = cwValue;
+                        }
                         if (!string.IsNullOrEmpty(obj.TargetDataType))
                         {
                             IntegrationInstanceDataTypeMappingPull objMappingPull = new IntegrationInstanceDataTypeMappingPull();

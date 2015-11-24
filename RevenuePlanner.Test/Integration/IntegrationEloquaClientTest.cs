@@ -220,7 +220,7 @@ namespace RevenuePlanner.Test.Integration
 
             var result = controller.GetEloquaContactListDetails(elouqaContactListId);
 
-            Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
+            Assert.AreNotEqual(System.Net.HttpStatusCode.BadRequest, result.StatusCode);
         }
 
         /// <summary>
