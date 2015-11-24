@@ -169,6 +169,10 @@ namespace RevenuePlanner.Controllers
             {
                 try
                 {
+                    //Added by Ashish Mistry on 23/11/2015 for PL ticket #1772
+                    IsPlanEditable = true;
+                    ViewBag.IsPlanEditable = IsPlanEditable;
+                    //Added by Ashish Mistry on 23/11/2015 for PL ticket #1772
                     Plan currentPlan = new Plan();
                     Plan latestPlan = new Plan();
                     latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
