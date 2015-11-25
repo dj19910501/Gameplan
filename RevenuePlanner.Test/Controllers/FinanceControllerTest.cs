@@ -1437,6 +1437,280 @@ namespace RevenuePlanner.Test.Controllers
         }
         #endregion
 
+        #region Edit Permission With Null Value
+        /// <summary>
+        /// Edit Permission With Null Value
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void Edit_Permission_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+            var result = objFinanceController.EditPermission(0, "", "")as ViewResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region Delete Budget detail Permission with Null Value
+        /// <summary>
+        /// Delete Budget detail Permission with Null Value
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void Delete_Budget_Permission_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+            
+            var result = objFinanceController.Delete(Guid.Empty,0) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region Get specific of user record on selection of dropdown list with Null Value
+        /// <summary>
+        ///Get specific of user record on selection of dropdown list with Null Value
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void Get_Record_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.GetuserRecord(null) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region Save record in Budget_Permission table with Null Value
+        /// <summary>
+        ///Save record in Budget_Permission table with Null Value with Null Value
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void SaveDetail_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.SaveDetail(null,0,null) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region Get specific record based on dropdown selection value of budgetdetail id with Null Value 
+        /// <summary>
+        ///Get specific record based on dropdown selection value of budgetdetail id with Null Value 
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void DrpFilterByBudget_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.DrpFilterByBudget(0,null,null) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region Get Column with Null Value 
+        /// <summary>
+        ///Get Column with Null Value 
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void GetColumn_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.GetColumns(0) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region DeleteBudgetForecastData with Null Value
+        /// <summary>
+        ///DeleteBudgetForecastData with Null Value with Null Value 
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void DeleteBudgetForecastData_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.DeleteBudgetForecastData(null) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region EditBudget with Null Value
+        /// <summary>
+        /// EditBudget with Null Value
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void EditBudget_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.EditBudget(0,null,null);
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region GetParentLineItemList with Null Value
+        /// <summary>
+        /// GetParentLineItemList with Null Value
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void GetParentLineItemList_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.GetParentLineItemList(0) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        #region GetChildLineItemList with Null Value
+        /// <summary>
+        /// GetChildLineItemList with Null Value
+        /// </summary>
+        /// <auther>Dashrath Prajapati</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void GetChildLineItemList_With_Null_Value()
+        {
+            //// Set session value
+            System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+            //// Call CreateNewBudget
+            FinanceController objFinanceController = new FinanceController();
+
+            var result = objFinanceController.GetChildLineItemList(0) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNotNull(result);
+            }
+
+        }
+        #endregion
+
+        //#region DeleteMainGrid with Null Value
+        ///// <summary>
+        ///// DeleteMainGrid with Null Value
+        ///// </summary>
+        ///// <auther>Dashrath Prajapati</auther>
+        ///// <createddate>25Nov2015</createddate>
+        //[TestMethod]
+        //public void DeleteMainGrid_With_Null_Value()
+        //{
+        //    //// Set session value
+        //    System.Web.HttpContext.Current = DataHelper.SetUserAndPermission();
+
+        //    //// Call CreateNewBudget
+        //    FinanceController objFinanceController = new FinanceController();
+
+        //    var result = objFinanceController.DeleteMainGrid(null,null,null,null);
+        //    if (result != null)
+        //    {
+        //        //// ViewResult shoud not be null and should match with viewName
+        //        Assert.IsNotNull(result);
+        //    }
+
+        //}
+        //#endregion
+
         #endregion
 
 
