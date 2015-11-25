@@ -8959,8 +8959,19 @@ namespace RevenuePlanner.Controllers
                 //{
                 //    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
                 //}
-                List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                List<Guid> collaboratorIdsList = collaboratorIds.Select(Guid.Parse).ToList();
+            
+                //to improve performance logic changed
+                List<string> collaboratorIds = new List<string>();
+                var planTacticModifiedBy = programtactic.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+                var planTacticCreatedBy = programtactic.Select(t => t.CreatedBy.ToString()).ToList();
+                var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => lstTacticIds.Contains(pc.Plan_Campaign_Program_Tactic.PlanTacticId));
+                var planTacticCommentCreatedBy = programtactic.Select(pc => pc.CreatedBy.ToString()).ToList();
+                collaboratorIds.AddRange(planTacticCreatedBy);
+                collaboratorIds.AddRange(planTacticModifiedBy);
+                collaboratorIds.AddRange(planTacticCommentCreatedBy);
+              
+                List<Guid> collaboratorIdsList = collaboratorIds.Distinct().ToList<string>().Select(Guid.Parse).ToList();
+
                 List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
@@ -9057,7 +9068,7 @@ namespace RevenuePlanner.Controllers
                             GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>Plan</cell><cell locked='1'>" + HttpUtility.HtmlEncode(planitem.Title) + "</cell>");
 
                         }
-                        GridString.Append("<cell><![CDATA[<div class='grid_Search' id='PP'></div>");
+                        GridString.Append("<cell><![CDATA[<div class='grid_Search' id='Plan'></div>");
                         if (IsPlanCreateAll)
                         {
                             GridString.Append("<div class='grid_add' id='Plan' alt=\"" + planitem.PlanId + "\" per=\"" + IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity

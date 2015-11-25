@@ -451,7 +451,6 @@
             var id = selectedcell[0];
             var rowid = id[0];
             var SourcePtype = (rowid).split(".")[0];
-            alert(rowid);
            // if (SourcePtype == "line") {
                // HomeGrid.openItem(HomeGrid.getParentId(rowid));
                 HomeGrid.openItem(rowid);
@@ -463,7 +462,6 @@
             isCopyTactic = 0;
         }
         else if (isEditTacticHomeGrid != 0) {
-            alert(isEditTacticHomeGrid);
             // HomeGrid.expandAll();
             var selectedcell = HomeGrid.findCell(isEditTacticHomeGrid, 3, true);
 
