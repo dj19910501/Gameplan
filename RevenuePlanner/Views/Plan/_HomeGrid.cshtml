@@ -216,7 +216,7 @@
             HomeGrid.setSerializableColumns("false,false,true,true,true,true,true,false,false,true,true,true,true,true,true,true,true");
             var myCSVString = HomeGrid.serializeToCSV(true);
             var lines = myCSVString.split(",");
-            lines.splice(0, 12);
+            //lines.splice(0, 12);
             lines.splice(0, 1, "Plan");
             lines.splice(1, 1, "Campaign");
             lines.splice(2, 1, "Program");
@@ -334,6 +334,8 @@
         $('#errorMessageInspectPopup').css("display", "none");
     });
     function BindHomeGrid() {
+        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';
+        
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
@@ -360,12 +362,21 @@
             }
         });
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
-        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
-        LoadAfterParsing();
+//        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
         
-       
+        
+     
+        var mainGridData = JsonModel;
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        var GridData = (mainGridData.toString().replace(/&amp;/g, '&'));
+
+
+    
+    
+        HomeGrid.parse(JsonModel, "json");
+    
        // HomeGrid.sortRows(1, 'str', 'asc');
-       
+       LoadAfterParsing();
         //Added by Rahul shah for PL #1683
        
       
@@ -665,7 +676,7 @@
         var UpdateVal;
         var Colind = this.cell.cellIndex;
         var lineItemFlag = 0;
-        UpdateColumn = HomeGrid.getColLabel(Colind, 1);
+        UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
             if (updatetype == "line") {
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
@@ -799,7 +810,8 @@
                     var splitoval = oValue.split(" ");
                     if (nValue != splitoval[0].replace(/,/g, "")) {
                         var tactictypeindex = HomeGrid.getColIndexById('tactictype');
-                        var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
+                        //var tacticTypeId = HomeGrid.cells(rowId, cellInd).getAttribute("tactictype");
+                        var tacticTypeId = HomeGrid.getUserData(rowId, "tactictype");
                         GetConversionRate(Id, tacticTypeId, UpdateColumn, nValue, rowId, nValue, null);
                         return true;
                     }
@@ -822,8 +834,10 @@
                                     HomeGrid.cells(rowId, 9).setValue(FormatCommas(projectedStageValue.toString(), false) + " " + stagetitle);
                                 else
                                     HomeGrid.cells(rowId, 9).setValue(projectedStageValue + " " + stagetitle);
-                                HomeGrid.cells(rowId, 9).setAttribute("stage", stagetitle);
-                                HomeGrid.cells(rowId, 9).setAttribute("tactictype", tacticTypeId);
+                                //HomeGrid.cells(rowId, 9).setAttribute("stage", stagetitle);
+                                HomeGrid.setUserData(rowId, "stage", stagetitle);
+                                //HomeGrid.cells(rowId, 9).setAttribute("tactictype", tacticTypeId);
+                                HomeGrid.setUserData(rowId, "tactictype", tacticTypeId);
                                 GetConversionRate(Id, tacticTypeId, UpdateColumn, projectedStageValue, rowId, nValue, data.stageId);
                             }
                         });
@@ -867,7 +881,8 @@
                                         HomeGrid.cells(planid, 6).setValue((newPlanVal));
                                         HomeGrid.cells(tactid, 6).setValue((newTactVal));
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "true") {
 
                                                 HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
                                             }
@@ -876,7 +891,8 @@
                                     else {
 
                                         for (var i = 0; i < TotalRowIds.split(',').length; i++) {
-                                            if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                            if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "true") {
 
                                                 HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.otherLineItemCost));
 
@@ -947,7 +963,8 @@
                                         if (TotalRowIds != "") {
                                             for (var i = 0; i < TotalRowIds.split(',').length; i++) {
 
-                                                if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                                //if (HomeGrid.cells(TotalRowIds.split(',')[i], 6).getAttribute("IsOther") == "True") {
+                                                if (HomeGrid.getUserData(TotalRowIds.split(',')[i], "IsOther") == "true") {
                                                     HomeGrid.cells(TotalRowIds.split(',')[i], 6).setValue((states.OtherLineItemCost));
                                                 }
                                             }
@@ -1210,7 +1227,8 @@
                     success: function (states) {
                         //    LoadPlanGrid();
                         if (UpdateColumn == "Target Stage Goal") {
-                            var psv = HomeGrid.cells(rowid, 9).getAttribute("stage");
+                            var psv = HomeGrid.getUserData(rowid, "stage");
+                            //var psv = HomeGrid.cells(rowid, 9).getAttribute("stage");
                             HomeGrid.cells(rowid, 9).setValue(FormatCommas(UpdateVal.toString()) + " " + psv);
                         }
                     }

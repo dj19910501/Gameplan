@@ -286,4 +286,55 @@ namespace RevenuePlanner.Models
         public Nullable<System.Guid> Userid { get; set; }
         public System.DateTime LastModifiedDate { get; set; }
     }
+	public class PlanMainDHTMLXGrid
+    {
+        public List<PlanDHTMLXGridDataModel> rows { get; set; }
+        public List<PlanHead> head { get; set; }
+    }
+
+    public class PlanDHTMLXGridDataModel
+    {
+        public string id { get; set; }
+        public string open { get; set; }
+        public string bgColor { get; set; }
+        public List<Plandataobj> data { get; set; }
+        public Planuserdatagrid userdata { get; set; }
+        public List<PlanDHTMLXGridDataModel> rows { get; set; }
+    }
+
+    public class Planuserdatagrid
+    {
+        public string psdate { get; set; }
+        public string pedate { get; set; }
+        public string tsdate { get; set; }
+        public string tedate { get; set; }
+        public string stage { get; set; }
+        public string tactictype { get; set; }
+        public string IsOther { get; set; }
+    }
+
+    public class Plandataobj
+    {
+        public string value { get; set; }
+        public string locked { get; set; }
+        public string style { get; set; }
+        public string actval { get; set; }
+        public string type { get; set; }
+    }
+
+    public class PlanHead
+    {
+        public List<PlanOptions> options { get; set; }
+        public string value { get; set; }
+        public int width { get; set; }
+        public string align { get; set; }
+        public string type { get; set; }
+        public string id { get; set; }
+        public string sort { get; set; }
+    }
+    public class PlanOptions
+    {
+        public string id { get; set; }
+        public string value { get; set; }
+    }
 }

@@ -8805,8 +8805,11 @@ namespace RevenuePlanner.Controllers
             StringBuilder GridString = new StringBuilder();
             Plangrid objplangrid = new Plangrid();
             PlanImprovement objimprovement = new PlanImprovement();
-            bool IsTacticExist = false;
-
+            
+			//Declare json object list & variable
+            List<PlanDHTMLXGridDataModel> gridjsonlist = new List<PlanDHTMLXGridDataModel>();
+            PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
+            
             try
             {
                 List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -8848,9 +8851,10 @@ namespace RevenuePlanner.Controllers
                 // Generate Tactic Type dropdown data on click of edit dropdown cell
                 // Get Tactic Type List : Added By Bhavesh : 17-Nov-2015 : Changes related to line item dropdown allow editable in grid view
                 List<TacticTypeModel> TacticTypeList = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && tactype.IsDeployedToModel && tactype.ModelId == modelId).Select(tacttype => new TacticTypeModel { TacticTypeId = tacttype.TacticTypeId, Title = tacttype.Title }).ToList().OrderBy(tactype => tactype.Title).ToList();
-                GridString = GenerateXMHeader(GridString, MQLTitle, TacticTypeList, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
                 // Store Tactic Type list in view bag
                 ViewBag.TacticTypelist = TacticTypeList;
+				// Generate Json Header
+                objPlanMainDHTMLXGrid.head = GenerateJsonHeader(MQLTitle, modelId, TacticTypeList, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
                 GetGoalValue(lstplandetail, modelId, stageList, objplangrid); // for plan grid header to bind goal detail
 
 
@@ -9011,12 +9015,27 @@ namespace RevenuePlanner.Controllers
                     }
                 }
 
-
+			   // Declare Variable for XML to JSON
+                PlanDHTMLXGridDataModel gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
+                string openstateone ="1",lockedstateone ="1";
+                string openstatezero ="0",lockedstatezero ="0";
+                string bgcolorPlan = "#E6E6E6";
+                string bgcolorCampaign = "#C6EBF3";
+                string bgcolorProgram = "#DFF0F8";
+                string bgcolorTactic = "#E4F1E1";
+                string bgcolorLineItem = "#ffffff";
+                
+                
+                string stylecolorblack = "color:#000";
+                
+                string doubledesh = "--";
+                string typero = "ro";
+                string dollarsymbol = "$";
                 if (IsPlan)
                 {
                     foreach (var planitem in lstplandetail)
                     {
-
+                        gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
 
                         if (planitem.CreatedBy.Equals(Sessions.User.UserId))
                         {
@@ -9059,27 +9078,81 @@ namespace RevenuePlanner.Controllers
                             else
                                 IsPlanCreateAll = false;
                         }
-                        if (IsPlanEditable)
-                        {
-                            GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>Plan</cell><cell locked='0'>" + HttpUtility.HtmlEncode(planitem.Title) + "</cell> ");
-                        }
-                        else
-                        {
-                            GridString.Append("<row id='plan." + PlanCnt + "' open='1' bgColor='#E6E6E6'><cell>Plan</cell><cell locked='1'>" + HttpUtility.HtmlEncode(planitem.Title) + "</cell>");
+                        #region "Plan Json"
+                        #endregion
+                        // Added ID,open,bgcolor
+                        gridjsonlistplanobj.id = "plan." + PlanCnt;
+                        gridjsonlistplanobj.open = openstateone;
+                        gridjsonlistplanobj.bgColor = bgcolorPlan;
 
-                        }
-                        GridString.Append("<cell><![CDATA[<div class='grid_Search' id='Plan'></div>");
-                        if (IsPlanCreateAll)
-                        {
-                            GridString.Append("<div class='grid_add' id='Plan' alt=\"" + planitem.PlanId + "\" per=\"" + IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
-                        }
-                        GridString.Append("]]></cell>");
-                        GridString.Append("<cell>" + planitem.PlanId + "</cell><cell locked='1'>" + Startdate + "</cell><cell locked='1'>" + Enddate + "</cell><cell actval=\"" + totalcost + "\">" + totalcost + "</cell>");
-                        GridString.Append("<cell type='ro'>--</cell><cell type='ro'>" + Common.GetUserName(planitem.CreatedBy.ToString()) + "</cell><cell type='ro'>--</cell><cell actval=\"" + totalmql + "\">" + ConvertNumberToRoundFormate(totalmql) + "</cell><cell actval=\"" + totalrevenue + "\">$" + ConvertNumberToRoundFormate(totalrevenue) + "</cell>");
+                        // Declare Data List and Object variable
+                        List<Plandataobj> plandataobjlist = new List<Plandataobj>();
+                        Plandataobj plandataobj = new Plandataobj();
+
+                        plandataobj.value = "Plan";
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = HttpUtility.HtmlEncode(planitem.Title);
+                        plandataobj.locked = IsPlanEditable ? lockedstatezero : lockedstateone;
+                        plandataobjlist.Add(plandataobj);
+                      
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>" : "");
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = planitem.PlanId.ToString();
+                        plandataobjlist.Add(plandataobj);
+
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = Startdate;
+                        plandataobj.locked = lockedstateone;
+                        plandataobjlist.Add(plandataobj);
+                 
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = Enddate;
+                        plandataobj.locked = lockedstateone;
+                        plandataobjlist.Add(plandataobj);
+                 
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = totalcost.ToString();
+                        plandataobj.actval = totalcost.ToString();
+                        plandataobjlist.Add(plandataobj);
+                
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = doubledesh;
+                        plandataobj.type = typero;
+                        plandataobjlist.Add(plandataobj);
+                 
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = Common.GetUserName(planitem.CreatedBy.ToString());
+                        plandataobj.type = typero;
+                        plandataobjlist.Add(plandataobj);
+                
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = doubledesh;
+                        plandataobj.type = typero;
+                        plandataobjlist.Add(plandataobj);
+                
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = ConvertNumberToRoundFormate(totalmql).ToString();
+                        plandataobj.actval = totalmql.ToString();
+                        plandataobjlist.Add(plandataobj);
+                
+                        plandataobj = new Plandataobj();
+                        plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(totalrevenue).ToString();
+                        plandataobj.actval = totalrevenue.ToString();
+                        plandataobjlist.Add(plandataobj);
+                        
+                        gridjsonlistplanobj.data = plandataobjlist;
                         Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title
                         CampCnt = 1;
                         if (Campaignfilterlst.Count > 0)
                         {
+
+                            List<PlanDHTMLXGridDataModel> campaignrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                            PlanDHTMLXGridDataModel campaignrowsobj = new PlanDHTMLXGridDataModel();
                             var lstcampaignTaskData = Campaignfilterlst.Select((taskdata, index) => new
                             {
                                 totalcost = LineItemList.Where(l => l.CampaignId == taskdata.PlanCampaignId).Sum(l => l.Cost),
@@ -9128,19 +9201,19 @@ namespace RevenuePlanner.Controllers
                                             //Modified By Komal Rawal for #1545 to check custom restrictions.
                                             if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
                                             {
-                                                IsEditable = "1"; // readonly
+                                                IsEditable = lockedstateone; // readonly
                                                 cellTextColor = "";
                                             }
                                             else
                                             {
-                                                cellTextColor = "style='color:#000'";
-                                                IsEditable = "0";// editable
+                                                cellTextColor = stylecolorblack;
+                                                IsEditable = lockedstatezero;// editable
                                             }
 
                                         }
                                         else
                                         {
-                                            IsEditable = "1";
+                                            IsEditable = lockedstateone;
                                             cellTextColor = "";
 
                                         }
@@ -9148,24 +9221,92 @@ namespace RevenuePlanner.Controllers
                                     }
                                     else
                                     {
-
-                                        cellTextColor = "style='color:#000'";
-                                        IsEditable = "0";
+                                        cellTextColor = stylecolorblack;
+                                        IsEditable = lockedstatezero;
                                     }
                                     //End
 
-                                    GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell>Campaign</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Campaignitem.Title) + "</cell>");
-                                    GridString.Append("<cell><![CDATA[<div class='grid_Search' id='CP'></div>");
-                                    if (Campaignitem.IsPlanCreateAll)
-                                    {
-                                        GridString.Append("<div class='grid_add' id='Campaign' alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" per=\"" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
-                                    }
-                                    GridString.Append("]]></cell>");
-                                    GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell>");
-                                    GridString.Append("<cell actval=\"" + Campaignitem.totalcost.ToString() + "\">" + Campaignitem.totalcost.ToString() + "</cell>");
-                                    GridString.Append("<cell type='ro' style='color:#999'>--</cell><cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
-                                    GridString.Append("<cell>--</cell><cell actval=\"" + Campaignitem.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(Campaignitem.totalmql).ToString() + "</cell>");
-                                    GridString.Append("<cell actval=\"" + Campaignitem.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString() + "</cell>");
+                                    campaignrowsobj = new PlanDHTMLXGridDataModel();
+                                    campaignrowsobj.id = "camp." + PlanCnt + "." + CampCnt;
+                                    campaignrowsobj.open = openstateone;
+                                    campaignrowsobj.bgColor = bgcolorCampaign;
+                                    List<Plandataobj> campaigndataobjlist = new List<Plandataobj>();
+                                    Plandataobj campaigndataobj = new Plandataobj();
+
+                                    //GridString.Append("<row id='camp." + PlanCnt + "." + CampCnt + "' open='1' bgColor='#C6EBF3'><cell>Campaign</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Campaignitem.Title) + "</cell>");
+                                   // GridString.Append("<cell><![CDATA[<div class='grid_Search' id='CP'></div>");
+                                   // if (Campaignitem.IsPlanCreateAll)
+                                  //  {
+                                  //      GridString.Append("<div class='grid_add' id='Campaign' alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "\" per=\"" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
+                                  //  }
+                                  //  GridString.Append("]]></cell>");
+                                 //   GridString.Append("<cell>" + Campaignitem.PlanCampaignId + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.StartDate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Campaignitem.EndDate.ToString("MM/dd/yyyy") + "</cell>");
+                                 //   GridString.Append("<cell actval=\"" + Campaignitem.totalcost.ToString() + "\">" + Campaignitem.totalcost.ToString() + "</cell>");
+                                    //GridString.Append("<cell type='ro' style='color:#999'>--</cell><cell  locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Campaignitem.CreatedBy.ToString()) + "</cell>");
+                                   
+                                    campaigndataobj.value = "Campaign";
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = HttpUtility.HtmlEncode(Campaignitem.Title);
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.PlanCampaignId.ToString();
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.StartDate.ToString("MM/dd/yyyy");
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.EndDate.ToString("MM/dd/yyyy");
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.totalcost.ToString();
+                                    campaigndataobj.actval = Campaignitem.totalcost.ToString();
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = doubledesh;
+                                    campaigndataobj.type = typero;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = Campaignitem.CreatedBy.ToString();
+                                    campaigndataobj.locked = IsEditable;
+                                    campaigndataobj.style = cellTextColor;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = doubledesh;
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = ConvertNumberToRoundFormate(Campaignitem.totalmql).ToString();
+                                    campaigndataobj.actval = Campaignitem.totalmql.ToString();
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                  //  GridString.Append("<cell>--</cell><cell actval=\"" + Campaignitem.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(Campaignitem.totalmql).ToString() + "</cell>");
+                                 //   GridString.Append("<cell actval=\"" + Campaignitem.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString() + "</cell>");
+
+                                    campaigndataobj = new Plandataobj();
+                                    campaigndataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Campaignitem.totalrevenue).ToString();
+                                    campaigndataobj.actval = Campaignitem.totalrevenue.ToString();
+                                    campaigndataobjlist.Add(campaigndataobj);
+
+                                    campaignrowsobj.data = campaigndataobjlist;
 
 
                                     Programfilterlst = programdetail.Where(prog => prog.PlanCampaignId == Campaignitem.PlanCampaignId && prog.IsDeleted == false).OrderBy(p => p.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Program title
@@ -9173,16 +9314,36 @@ namespace RevenuePlanner.Controllers
                                     {
                                         Startdate = Programfilterlst.Min(r => r.StartDate).ToString("MM/dd/yyyy");
                                         Enddate = Programfilterlst.Max(r => r.EndDate).ToString("MM/dd/yyyy");
-                                        GridString.Append("<userdata name='psdate'>" + Startdate + "</userdata>");
-                                        GridString.Append("<userdata name='pedate'>" + Enddate + "</userdata>");
+                                       // GridString.Append("<userdata name='psdate'>" + Startdate + "</userdata>");
+                                       // GridString.Append("<userdata name='pedate'>" + Enddate + "</userdata>");
+                                    //    List<Planuserdatagrid> campaignuserdatalist = new List<Planuserdatagrid>();
+                                        Planuserdatagrid campaignuserdata = new Planuserdatagrid();
+                                       // campaignuserdata.name = "psdate";
+                                        campaignuserdata.psdate = Startdate;
+                                     //   campaignuserdatalist.Add(campaignuserdata);
+                                      //  campaignuserdata = new Planuserdatagrid();
+                                      //  campaignuserdata.name = "pedate";
+                                        campaignuserdata.pedate = Enddate;
+                                    //    campaignuserdatalist.Add(campaignuserdata);
+
                                         var CampaignTactic = programtactic.Where(tact => tact.Plan_Campaign_Program.PlanCampaignId == Campaignitem.PlanCampaignId).ToList();
                                         if (CampaignTactic != null && CampaignTactic.Count > 0)
                                         {
                                             Startdate = CampaignTactic.Min(r => r.StartDate).ToString("MM/dd/yyyy");
                                             Enddate = CampaignTactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
-                                            GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
-                                            GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
+                                           // GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
+                                          //  GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
+                                           // campaignuserdata = new Planuserdatagrid();
+                                        //    campaignuserdata.name = "tsdate";
+                                            campaignuserdata.tsdate = Startdate;
+                                       //     campaignuserdatalist.Add(campaignuserdata);
+                                        //    campaignuserdata = new Planuserdatagrid();
+                                        //    campaignuserdata.name = "tedate";
+                                            campaignuserdata.tedate = Enddate;
+                                        //    campaignuserdatalist.Add(campaignuserdata);
                                         }
+
+                                        campaignrowsobj.userdata = campaignuserdata;
                                         ProgCnt = 1;
 
                                         var lstprogramTaskData = Programfilterlst.Select((taskdata, index) => new
@@ -9201,13 +9362,14 @@ namespace RevenuePlanner.Controllers
                                             tacticids = !IsFiltered ? true : TacticfilterList.Where(t => t.PlanProgramId == taskdata.PlanProgramId).Any()
 
                                         });
-
+                                        List<PlanDHTMLXGridDataModel> programrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                                        PlanDHTMLXGridDataModel programrowsobj = new PlanDHTMLXGridDataModel();
                                         foreach (var Programitem in lstprogramTaskData)
                                         {
                                             if (Programitem.tacticids)
                                             {
-                                                cellTextColor = "style='color:#000'";
-                                                IsEditable = "0";
+                                                cellTextColor = stylecolorblack;
+                                                IsEditable = lockedstatezero;
                                                 //Modified By Komal Rawal for #1505
                                                 if (!Programitem.IsProgEditable)
                                                 {
@@ -9218,40 +9380,113 @@ namespace RevenuePlanner.Controllers
                                                         // if (CustomTacticids.Count > 0 &&  lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Any() == false)
                                                         if (CustomTacticids.Count > 0 && lsteditableEntityIds.Select(x => x).Intersect(CustomTacticids).Count() != CustomTacticids.Count)
                                                         {
-                                                            IsEditable = "1";
+                                                            IsEditable = lockedstateone;
                                                             cellTextColor = "";
                                                         }
                                                         else
                                                         {
-                                                            cellTextColor = "style='color:#000'";
-                                                            IsEditable = "0";
+                                                            cellTextColor = stylecolorblack;
+                                                            IsEditable = lockedstatezero;
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        IsEditable = "1";
+                                                        IsEditable = lockedstateone;
                                                         cellTextColor = "";
 
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    cellTextColor = "style='color:#000'";
-                                                    IsEditable = "0";
+                                                    cellTextColor = stylecolorblack;
+                                                    IsEditable = lockedstatezero;
                                                 }
                                                 //End
-                                                GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'><cell>Program</cell>");
 
-                                                GridString.Append("<cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Programitem.Title) + "</cell><cell><![CDATA[<div class='grid_Search' id='PP'></div>");
-                                                if (Programitem.IsPlanCreateAll)
-                                                {
-                                                    GridString.Append("<div class='grid_add' id='Program' alt=\"_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" per=\"" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
-                                                }
-                                                GridString.Append("]]></cell>");
-                                                GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell>");
-                                                GridString.Append("<cell actval=\"" + Programitem.totalcost.ToString() + "\">" + Programitem.totalcost + "</cell> <cell type='ro'>--</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Programitem.CreatedBy.ToString()) + "</cell>");
-                                                GridString.Append("<cell>--</cell><cell actval=\"" + Programitem.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(Programitem.totalmql) + "</cell><cell actval=\"" + Programitem.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(Programitem.totalrevenue) + "</cell>");
+                                                programrowsobj = new PlanDHTMLXGridDataModel();
+                                                programrowsobj.id = "prog." + PlanCnt + "." + CampCnt + "." + ProgCnt;
+                                                programrowsobj.open = openstateone;
+                                                programrowsobj.bgColor = bgcolorProgram;
+                                                List<Plandataobj> programdataobjlist = new List<Plandataobj>();
+                                                Plandataobj programdataobj = new Plandataobj();
 
+                                                programdataobj.value = "Program";
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = HttpUtility.HtmlEncode(Programitem.Title);
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                               // GridString.Append("<row id='prog." + PlanCnt + "." + CampCnt + "." + ProgCnt + "' bgColor='#DFF0F8' open='1'><cell>Program</cell>");
+
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.PlanProgramId.ToString();
+                                                programdataobjlist.Add(programdataobj);
+
+                                              //  GridString.Append("<cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(Programitem.Title) + "</cell><cell><![CDATA[<div class='grid_Search' id='PP'></div>");
+                                              //  if (Programitem.IsPlanCreateAll)
+                                              //  {
+                                              //      GridString.Append("<div class='grid_add' id='Program' alt=\"_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "\" per=\"" + Programitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
+                                             //   }
+                                             //   GridString.Append("]]></cell>");
+
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.StartDate.ToString("MM/dd/yyyy");
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.EndDate.ToString("MM/dd/yyyy");
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                             //   GridString.Append("<cell>" + Programitem.PlanProgramId + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.StartDate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + Programitem.EndDate.ToString("MM/dd/yyyy") + "</cell>");
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.totalcost.ToString();
+                                                programdataobj.actval = Programitem.totalcost.ToString();
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = doubledesh;
+                                                programdataobj.type = typero;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = Programitem.CreatedBy.ToString();
+                                                programdataobj.locked = IsEditable;
+                                                programdataobj.style = cellTextColor;
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = doubledesh;
+                                                programdataobjlist.Add(programdataobj);
+
+                                               
+                                               // GridString.Append("<cell actval=\"" + Programitem.totalcost.ToString() + "\">" + Programitem.totalcost + "</cell> <cell type='ro'>--</cell><cell locked=\"" + IsEditable + "\" " + cellTextColor + ">" + (Programitem.CreatedBy.ToString()) + "</cell>");
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = ConvertNumberToRoundFormate(Programitem.totalmql).ToString();
+                                                programdataobj.actval = Programitem.totalmql.ToString();
+                                                programdataobjlist.Add(programdataobj);
+
+                                                programdataobj = new Plandataobj();
+                                                programdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(Programitem.totalrevenue).ToString();
+                                                programdataobj.actval = Programitem.totalrevenue.ToString();
+                                                programdataobjlist.Add(programdataobj);
+
+                                             //   GridString.Append("<cell>--</cell><cell actval=\"" + Programitem.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(Programitem.totalmql) + "</cell><cell actval=\"" + Programitem.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(Programitem.totalrevenue) + "</cell>");
+                                                programrowsobj.data = programdataobjlist;
 
 
                                                 if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0 )&& !IsFiltered )
@@ -9266,7 +9501,7 @@ namespace RevenuePlanner.Controllers
                                                 }
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                                 {
-
+                                                    Startdate = Enddate = string.Empty;
                                                     var ProgramTactic = programtactic.Where(tact => tact.PlanProgramId == Programitem.PlanProgramId).ToList();
                                                     if (ProgramTactic != null && ProgramTactic.Count > 0)
                                                     {
@@ -9274,8 +9509,19 @@ namespace RevenuePlanner.Controllers
                                                         Enddate = ProgramTactic.Max(r => r.EndDate).ToString("MM/dd/yyyy");
 
                                                     }
-                                                    GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
-                                                    GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
+                                                  //  GridString.Append("<userdata name='tsdate'>" + Startdate + "</userdata>");
+                                                  //  GridString.Append("<userdata name='tedate'>" + Enddate + "</userdata>");
+                                                //    List<Planuserdatagrid> programuserdatalist = new List<Planuserdatagrid>();
+                                                    Planuserdatagrid programuserdata = new Planuserdatagrid();
+                                               //     programuserdata.name = "tsdate";
+                                                    programuserdata.tsdate = Startdate;
+                                               //     programuserdatalist.Add(programuserdata);
+                                                //    programuserdata = new Planuserdatagrid();
+                                                //    programuserdata.name = "tedate";
+                                                    programuserdata.tedate = Enddate;
+                                                //    programuserdatalist.Add(programuserdata);
+
+                                                    programrowsobj.userdata = programuserdata;
 
                                                     var lsttacticTaskData = finalTacticfilterList.Select((taskdata, index) => new
                                                     {
@@ -9298,20 +9544,114 @@ namespace RevenuePlanner.Controllers
                                                         IsRequiredfalse = false//CheckTacticRequiredfieldFinal(taskdata,DependencyListFinal, customfieldlist)//// Commented by Bhavesh:  To False required flag display in grid view Date: 05/11/2015 Ticket : #1550
                                                     });
 
+                                                    List<PlanDHTMLXGridDataModel> tacticrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                                                    PlanDHTMLXGridDataModel tacticrowsobj = new PlanDHTMLXGridDataModel();
                                                     foreach (var tactic in lsttacticTaskData)
                                                     {
-                                                        cellTextColor = tactic.IstactEditable == "1" ? "" : "style='color:#000;'";
-                                                        GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "'  bgColor='#E4F1E1'><cell>Tactic</cell>");
+                                                        cellTextColor = tactic.IstactEditable == lockedstateone ? "" : stylecolorblack;
 
-                                                        GridString.Append("<cell locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? new XCData("<span id='tacticIsRequired'></span>") : null) + "</cell><cell ><![CDATA[<div class='grid_Search' id='TP'></div> ");
-                                                        if (tactic.IsPlanCreateAll)
-                                                        {
-                                                            GridString.Append("<div class='grid_add' id='Tactic' alt=\"__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" per=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
-                                                        }
-                                                        GridString.Append("]]></cell>");
-                                                        GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell>");
-                                                        GridString.Append("<cell " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\"  actval=\"" + tactic.totalcost.ToString() + "\" type='edn' >" + tactic.totalcost + "</cell><cell " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\" >" + tactic.tactictypeid + "</cell><cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell>");
-                                                        GridString.Append("<cell " + cellTextColor + " type='edn' stage=\"" + tactic.ProjectStage + "\" locked=\"" + tactic.IstactEditable + "\" tactictype=\"" + tactic.tactictypeid + "\">" + (Math.Round(Convert.ToDouble(tactic.projectedstagevalue)) > 0 ? Math.Round(Convert.ToDouble(tactic.projectedstagevalue)).ToString("#,#"):"0") + " " + tactic.ProjectStage + "</cell><cell actval=\"" + tactic.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(tactic.totalmql) + "</cell><cell actval=\"" + tactic.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(tactic.totalrevenue) + "</cell>");
+                                                        tacticrowsobj = new PlanDHTMLXGridDataModel();
+                                                        tacticrowsobj.id = "tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index;
+                                                        tacticrowsobj.bgColor = bgcolorTactic;
+                                                        List<Plandataobj> tacticdataobjlist = new List<Plandataobj>();
+                                                        Plandataobj tacticdataobj = new Plandataobj();
+
+                                                        tacticdataobj.value = "Tactic";
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                       // GridString.Append("<row id='tact." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "'  bgColor='#E4F1E1'><cell>Tactic</cell>");
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.PlanTacticId.ToString();
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                      //  GridString.Append("<cell locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? new XCData("<span id='tacticIsRequired'></span>") : null) + "</cell><cell ><![CDATA[<div class='grid_Search' id='TP'></div> ");
+                                                      //  if (tactic.IsPlanCreateAll)
+                                                     //   {
+                                                     //       GridString.Append("<div class='grid_add' id='Tactic' alt=\"__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "\" per=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
+                                                     //   }
+                                                     //   GridString.Append("]]></cell>");
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.startdate.ToString("MM/dd/yyyy");
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.enddate.ToString("MM/dd/yyyy");
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        //GridString.Append("<cell>" + tactic.PlanTacticId + "</cell> <cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.startdate.ToString("MM/dd/yyyy") + "</cell><cell locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + tactic.enddate.ToString("MM/dd/yyyy") + "</cell>");
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.totalcost.ToString();
+                                                        tacticdataobj.actval = tactic.totalcost.ToString();
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.type = "edn";
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.tactictypeid.ToString();
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = tactic.CreatedBy.ToString();
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = (Math.Round(Convert.ToDouble(tactic.projectedstagevalue)) > 0 ? Math.Round(Convert.ToDouble(tactic.projectedstagevalue)).ToString("#,#") : "0") + " " + tactic.ProjectStage;
+                                                        tacticdataobj.locked = tactic.IstactEditable;
+                                                        tacticdataobj.style = cellTextColor;
+                                                        tacticdataobj.type = "edn";
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                       // GridString.Append("<cell " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\"  actval=\"" + tactic.totalcost.ToString() + "\" type='edn' >" + tactic.totalcost + "</cell><cell " + cellTextColor + " locked=\"" + tactic.IstactEditable + "\" >" + tactic.tactictypeid + "</cell><cell  locked=\"" + tactic.IstactEditable + "\" " + cellTextColor + ">" + (tactic.CreatedBy.ToString()) + "</cell>");
+                                                       // GridString.Append("<cell " + cellTextColor + " type='edn' stage=\"" + tactic.ProjectStage + "\" locked=\"" + tactic.IstactEditable + "\" tactictype=\"" + tactic.tactictypeid + "\">" + (Math.Round(Convert.ToDouble(tactic.projectedstagevalue)) > 0 ? Math.Round(Convert.ToDouble(tactic.projectedstagevalue)).ToString("#,#") : "0") + " " + tactic.ProjectStage + "</cell>";
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = ConvertNumberToRoundFormate(tactic.totalmql).ToString();
+                                                        tacticdataobj.actval = tactic.totalmql.ToString();
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        tacticdataobj = new Plandataobj();
+                                                        tacticdataobj.value = dollarsymbol + ConvertNumberToRoundFormate(tactic.totalrevenue).ToString();
+                                                        tacticdataobj.actval = tactic.totalrevenue.ToString();
+                                                        tacticdataobjlist.Add(tacticdataobj);
+
+                                                        //  + "<cell actval=\"" + tactic.totalmql.ToString() + "\">" + ConvertNumberToRoundFormate(tactic.totalmql) + "</cell><cell actval=\"" + tactic.totalrevenue.ToString() + "\">$" + ConvertNumberToRoundFormate(tactic.totalrevenue) + "</cell>");
+
+                                                        tacticrowsobj.data = tacticdataobjlist;
+
+                                                 //       List<Planuserdatagrid> tacticuserdatalist = new List<Planuserdatagrid>();
+                                                        Planuserdatagrid tacticuserdata = new Planuserdatagrid();
+                                                  //      tacticuserdata.name = "stage";
+                                                        tacticuserdata.stage = tactic.ProjectStage;
+                                                 //       tacticuserdatalist.Add(tacticuserdata);
+                                                 //       tacticuserdata = new Planuserdatagrid();
+                                                 //       tacticuserdata.name = "tactictype";
+                                                        tacticuserdata.tactictype = tactic.tactictypeid.ToString();
+                                                //        tacticuserdatalist.Add(tacticuserdata);
+
+                                                        tacticrowsobj.userdata = tacticuserdata;
+
                                                         finalLineitem = DBLineItemList.Where(lintitem => lintitem.PlanTacticId == tactic.PlanTacticId).OrderBy(l => l.Title).ToList(); // Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for line item title
                                                         if (finalLineitem != null && finalLineitem.Count > 0)
                                                         {
@@ -9323,53 +9663,143 @@ namespace RevenuePlanner.Controllers
                                                                 PlanLineItemId = taskdata.PlanLineItemId,
                                                                 title = taskdata.Title,
                                                                 Typeid = taskdata.LineItemTypeId,
-                                                                Type = taskdata.LineItemTypeId!=null ? taskdata.LineItemType.Title : "",
+                                                                Type = taskdata.LineItemTypeId != null ? taskdata.LineItemType.Title : "",
                                                                 CreatedBy = taskdata.CreatedBy,
                                                                 IsPlanCreateAll = IsPlanCreateAll == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : true,
                                                                 IstactEditable = (taskdata.CreatedBy.Equals(Sessions.User.UserId)) == true ? lsteditableEntityIds.Contains(taskdata.PlanTacticId) ? "0" : "1" : "1"
                                                             });
+
+                                                            List<PlanDHTMLXGridDataModel> lineitemrowsobjlist = new List<PlanDHTMLXGridDataModel>();
+                                                            PlanDHTMLXGridDataModel lineitemrowsobj = new PlanDHTMLXGridDataModel();
                                                             foreach (var lineitem in lstLineItemTaskData)
                                                             {
-                                                                cellTextColor = lineitem.IstactEditable == "1" ? "" : "style='color:#000;'";
+                                                                cellTextColor = lineitem.IstactEditable == lockedstateone ? "" : stylecolorblack;
 
-                                                                GridString.Append("<row id='line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index + "' bgColor='#ffffff'><cell>LineItem</cell>");
+                                                                lineitemrowsobj = new PlanDHTMLXGridDataModel();
+                                                                lineitemrowsobj.id = "line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index;
+                                                                lineitemrowsobj.bgColor = bgcolorLineItem;
+                                                                List<Plandataobj> lineitemdataobjlist = new List<Plandataobj>();
+                                                                Plandataobj lineitemdataobj = new Plandataobj();
 
-                                                                GridString.Append("<cell locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.title) + "</cell><cell><![CDATA[<div class='grid_Search' id='LP'></div>");
-                                                                if (tactic.IsPlanCreateAll)
-                                                                {
+                                                                lineitemdataobj.value = "LineItem";
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.title);
+                                                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                               // GridString.Append("<row id='line." + PlanCnt + "." + CampCnt + "." + ProgCnt + "." + tactic.index + "." + lineitem.index + "' bgColor='#ffffff'><cell>LineItem</cell>");
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = "<div class=grid_Search id=LP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Line alt=___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + " lt=" + lineitem.lineitemtype + " dt=" + HttpUtility.HtmlEncode(lineitem.title) + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = lineitem.PlanLineItemId.ToString();
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+
+                                                               // GridString.Append("<cell locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.title) + "</cell><cell><![CDATA[<div class='grid_Search' id='LP'></div>");
+                                                               // if (tactic.IsPlanCreateAll)
+                                                               // {
                                                                     //GridString.Append("<div class='grid_add' id='Line'  alt=\"" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" data-title=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" permission=\"" + lineitem.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Mitesh : Add new attribute permission to entity
-                                                                    GridString.Append("<div class='grid_add' id='Line' alt=\"___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" lt=\"" + lineitem.lineitemtype + "\" " + " dt=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" per=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Rahul : change Persmission on Tactic level for PL #1705
-                                                                }
-                                                                GridString.Append("]]></cell>");
-                                                                GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell locked='1'></cell><cell locked='1'></cell> ");
-                                                                GridString.Append("<cell type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " : lineitem.IstactEditable + "\" " + cellTextColor) + " IsOther =\"" + (lineitem.Type == null ? true : false) + "\">" + lineitem.Cost + "</cell>"); //Modified by Rahul Shah on
-                                                                GridString.Append("<cell actval=\"" + lineitem.Typeid + "\" locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.Type));
-                                                                GridString.Append("</cell>");
-                                                                GridString.Append("<cell>" + lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault() + "</cell> ");
-                                                                GridString.Append("<cell type='ro'>--</cell><cell type='ro'>--</cell><cell type='ro'>--</cell>");
-                                                                GridString.Append("</row>");
-                                                            }
-                                                        }
-                                                        GridString.Append("</row>");
+                                                               //     GridString.Append("<div class='grid_add' id='Line' alt=\"___" + tactic.PlanTacticId + "_" + lineitem.PlanLineItemId + "\" lt=\"" + lineitem.lineitemtype + "\" " + " dt=\"" + HttpUtility.HtmlEncode(lineitem.title) + "\" per=\"" + tactic.IsPlanCreateAll.ToString().ToLower() + "\"></div>");//Modified by Rahul : change Persmission on Tactic level for PL #1705
+                                                              //  }
+                                                              //  GridString.Append("]]></cell>");
 
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.locked = lockedstateone;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.locked = lockedstateone;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                //GridString.Append("<cell>" + lineitem.PlanLineItemId + "</cell> <cell locked='1'></cell><cell locked='1'></cell> ");
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = lineitem.Cost.ToString();
+                                                                lineitemdataobj.locked = ((lineitem.Type == null || lineitem.Type == "") ? lockedstateone : lineitem.IstactEditable);
+                                                                lineitemdataobj.type = "edn";
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = HttpUtility.HtmlEncode(lineitem.Type);
+                                                                lineitemdataobj.style = cellTextColor;
+                                                                lineitemdataobj.locked = lineitem.IstactEditable;
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault();
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                            //    GridString.Append("<cell type='edn' locked=\"" + (lineitem.Type == null ? "1" + "\" " : lineitem.IstactEditable + "\" " + cellTextColor) + " IsOther =\"" + (lineitem.Type == null ? true : false) + "\">" + lineitem.Cost + "</cell>"); //Modified by Rahul Shah on
+                                                            //    GridString.Append("<cell type='ro' locked=\"" + lineitem.IstactEditable + "\" " + cellTextColor + " >" + HttpUtility.HtmlEncode(lineitem.Type));
+                                                            //    GridString.Append("</cell>");
+                                                             //   GridString.Append("<cell>" + lstUserDetails.Where(lst => lst.UserId == lineitem.CreatedBy).Select(lst => string.Format("{0} {1}", HttpUtility.HtmlDecode(lst.FirstName), HttpUtility.HtmlDecode(lst.LastName))).FirstOrDefault() + "</cell> ");
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                                lineitemdataobj = new Plandataobj();
+                                                                lineitemdataobj.value = doubledesh;
+                                                                lineitemdataobj.type = typero;
+                                                                lineitemdataobjlist.Add(lineitemdataobj);
+
+                                                            //    GridString.Append("<cell type='ro'>--</cell><cell type='ro'>--</cell><cell type='ro'>--</cell>");
+                                                            //    GridString.Append("</row>");
+
+                                                                lineitemrowsobj.data = lineitemdataobjlist;
+
+                                                             //   List<Planuserdatagrid> lineitemuserdatalist = new List<Planuserdatagrid>();
+                                                                Planuserdatagrid lineitemuserdata = new Planuserdatagrid();
+                                                            //    lineitemuserdata.name = "IsOther";
+                                                                lineitemuserdata.IsOther = ((lineitem.Type == null || lineitem.Type == "") ? true : false).ToString();
+                                                           //     lineitemuserdatalist.Add(lineitemuserdata);
+
+                                                                lineitemrowsobj.userdata = lineitemuserdata;
+
+                                                                lineitemrowsobjlist.Add(lineitemrowsobj);
+                                                            }
+                                                            tacticrowsobj.rows = lineitemrowsobjlist;
+                                                        }
+                                                        //GridString.Append("</row>");
+                                                        tacticrowsobjlist.Add(tacticrowsobj);
                                                     }
+                                                    programrowsobj.rows = tacticrowsobjlist;
                                                 }
-                                                GridString.Append("</row>");
+                                                //GridString.Append("</row>");
                                                 ProgCnt = ProgCnt + 1;
                                             }
+                                            programrowsobjlist.Add(programrowsobj);
                                         }
+                                        campaignrowsobj.rows = programrowsobjlist;
                                     }
 
-                                    GridString.Append("</row>");
+                                    //GridString.Append("</row>");
                                     CampCnt = CampCnt + 1;
                                 }
+                                campaignrowsobjlist.Add(campaignrowsobj);
                             }
+                            gridjsonlistplanobj.rows = campaignrowsobjlist;
                         }
-                        GridString.Append("</row>");
+                        
                         PlanCnt = PlanCnt + 1;
+                        gridjsonlist.Add(gridjsonlistplanobj);
                     }
                 }
-                GridString.Append("</rows>");
+               // GridString.Append("</rows>");
 
             }
             catch (Exception objException)
@@ -9383,10 +9813,172 @@ namespace RevenuePlanner.Controllers
                 }
             }
             objplangrid.xmlstring = GridString.ToString();
-           // objplangrid.ImprovementObj = objimprovement;
+            objPlanMainDHTMLXGrid.rows = gridjsonlist;
+            objplangrid.PlanDHTMLXGrid = objPlanMainDHTMLXGrid;
+             objplangrid.ImprovementObj = objimprovement;
+             System.Diagnostics.Debug.WriteLine("Step 4:" + DateTime.Now.ToString("o"));
             await Task.Delay(1);
             return PartialView("_HomeGrid", objplangrid);
         }
+
+        #region method to generate grid header
+        protected List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid,List<TacticTypeModel> TacticTypeList, string PlanYear)
+        {
+            List<PlanHead> headobjlist = new List<PlanHead>();
+            PlanHead headobj = new PlanHead();
+            try
+            {
+                List<PlanOptions> lstTacticType = TacticTypeList.Select(tacttype => new PlanOptions { id = tacttype.TacticTypeId.ToString(), value = HttpUtility.HtmlDecode(tacttype.Title) }).ToList();
+
+                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = lstUsers.Where(i => i.IsDeleted == false).ToList();
+                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
+                List<PlanOptions> lstOwner = new List<PlanOptions>();
+
+                if (lstClientUsers.Count() > 0)
+                {
+                    string strUserList = string.Join(",", lstClientUsers);
+                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId);   //PL #1532 Grid View & Tactic Pop-up: Displaying Users which are not in Gameplan - Dashrath Prajapati                
+
+                    if (lstUserDetails.Count > 0)
+                    {
+                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
+                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.UserId.ToString(), value = string.Format("{0} {1}", HttpUtility.HtmlDecode(user.FirstName), HttpUtility.HtmlDecode(user.LastName)) }).ToList();
+                    }
+                }
+
+               
+
+                // First Column Activity Type
+                headobj.type = "ro";
+                headobj.align = "center";
+                headobj.id = "activitytype";
+                headobj.sort = "na";
+                headobj.width = 0;
+                headobj.value = "Activity Type";
+                headobjlist.Add(headobj);
+
+                //Second Column : Task Name
+                headobj = new PlanHead();
+                headobj.type = "tree";
+                headobj.align = "left";
+                headobj.id = "taskname";
+                headobj.sort = "str";
+                headobj.width = 330;
+                headobj.value = "Task Name";
+                headobjlist.Add(headobj);
+
+                // Third Column : Empty
+                headobj = new PlanHead();
+                headobj.type = "ro";
+                headobj.align = "center";
+                headobj.id = "add";
+                headobj.sort = "na";
+                headobj.width = 50;
+                headobj.value = "";
+                headobjlist.Add(headobj);
+
+                // Fourth Column : Id
+                headobj = new PlanHead();
+                headobj.type = "ro";
+                headobj.align = "center";
+                headobj.id = "id";
+                headobj.sort = "na";
+                headobj.width = 0;
+                headobj.value = "id";
+                headobjlist.Add(headobj);
+
+                // Fifth Column : Start Date
+                headobj = new PlanHead();
+                headobj.type = "dhxCalendar";
+                headobj.align = "center";
+                headobj.id = "startdate";
+                headobj.sort = "date";
+                headobj.width = 110;
+                headobj.value = "Start Date";
+                headobjlist.Add(headobj);
+
+                // Sixth Column : End Date
+                headobj = new PlanHead();
+                headobj.type = "dhxCalendar";
+                headobj.align = "center";
+                headobj.id = "enddate";
+                headobj.sort = "date";
+                headobj.width = 100;
+                headobj.value = "End Date";
+                headobjlist.Add(headobj);
+
+                // Seventh Column: Planned Cost
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "plannedcost";
+                headobj.sort = "int";
+                headobj.width = 160;
+                headobj.value = "Planned Cost";
+                headobjlist.Add(headobj);
+
+                // Eight Column : Type
+                headobj = new PlanHead();
+                headobj.type = "coro";
+                headobj.align = "center";
+                headobj.id = "tactictype";
+                headobj.sort = "sort_TacticType";
+                headobj.width = 150;
+                headobj.value = "Type";
+                headobj.options = lstTacticType;
+                headobjlist.Add(headobj);
+
+                //Nineth Column : Owner
+                headobj = new PlanHead();
+                headobj.type = "coro";
+                headobj.align = "center";
+                headobj.id = "owner";
+                headobj.sort = "sort_Owner";
+                headobj.width = 115;
+                headobj.value = "Owner";
+                headobj.options = lstOwner;
+                headobjlist.Add(headobj);
+
+                // Tenth Column : Target Stage Goal
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "inq";
+                headobj.sort = "int";
+                headobj.width = 150;
+                headobj.value = "Target Stage Goal";
+                headobjlist.Add(headobj);
+
+                // Eleventh Column: MQl
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "mql";
+                headobj.sort = "int";
+                headobj.width = 150;
+                headobj.value = MQLTitle;
+                headobjlist.Add(headobj);
+                // Twelveth Column : Revenue
+                headobj = new PlanHead();
+                headobj.type = "ron";
+                headobj.align = "center";
+                headobj.id = "revenue";
+                headobj.sort = "int";
+                headobj.width = 150;
+                headobj.value = "Revenue";
+                headobjlist.Add(headobj);
+              
+            }
+            catch (Exception objException)
+            {
+                ErrorSignal.FromCurrentContext().Raise(objException);
+
+            }
+            return headobjlist;
+        }
+        #endregion
+
         #endregion
         #region Check tactic required field condition
         /// <summary>
@@ -10060,7 +10652,7 @@ namespace RevenuePlanner.Controllers
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                     double totalLineitemCost1 = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                     var objOtherLineItemNew = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId == null);
-
+                    tacticostNew = objTactic.Cost;
                     return Json(new { lineItemCost = totalLineitemCost1, tacticCost = tacticostNew, otherLineItemCost = objOtherLineItemNew.Cost }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
@@ -10350,82 +10942,6 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        #region method to generate grid header
-        /// <summary>
-        /// Generate XML header for Plan grid view
-        /// </summary>
-        /// <param name="strHeader"></param>
-        /// <param name="MQLTitle"></param>
-        /// <param name="TacticTypeList"></param>
-        /// <param name="PlanYear"></param>
-        /// <returns></returns>
-        protected StringBuilder GenerateXMHeader(StringBuilder strHeader, string MQLTitle, List<TacticTypeModel> TacticTypeList, string PlanYear)
-        {
-
-            string xmlUserlist = string.Empty;
-            string xmltactictype = string.Empty;
-            try
-            {
-                //List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false).ToList();
-                //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
-                
-                //var lstTactic = from tacType in tblTacticTypes
-                //                where tacType.IsDeployedToModel == true && tacType.IsDeleted
-                //                orderby tacType.Title
-                //                select tacType;
-
-
-                List<User> lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
-                lstUsers = lstUsers.Where(i => i.IsDeleted == false).ToList();
-                List<Guid> lstClientUsers = Common.GetClientUserListUsingCustomRestrictions(Sessions.User.ClientId, lstUsers);
-                if (lstClientUsers.Count() > 0)
-                {
-                    string strUserList = string.Join(",", lstClientUsers);
-                    //lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberName(strUserList);
-                    lstUserDetails = objBDSServiceClient.GetMultipleTeamMemberNameByApplicationId(strUserList, Sessions.ApplicationId);   //PL #1532 Grid View & Tactic Pop-up: Displaying Users which are not in Gameplan - Dashrath Prajapati                
-
-                    if (lstUserDetails.Count > 0)
-                    {
-                        lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                    }
-                }
-                strHeader.Append("<?xml version='1.0' encoding='iso-8859-1'?>");
-                strHeader.Append("<rows>");
-
-                strHeader.Append(" <head><beforeInit><call command='attachHeader'><param>Activity Type,#rspan,#rspan,id,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal," + MQLTitle + ",Revenue</param>");
-                strHeader.Append(" </call></beforeInit>");
-                strHeader.Append("<column type='ro' align='center' id='activitytype' sort='na' width='0'></column>");
-                strHeader.Append("<column width='330' type='tree' align='left' sort='str' id='taskname'><![CDATA[ <div style='width:100%; text-align:center;'>Task Name</div> ]]></column>");
-                strHeader.Append("<column type='ro' align='center' id='add' width='50' sort='na' ></column>");
-                strHeader.Append("<column type='ro' align='center' id='id' sort='na' width='0' >" + PlanYear + "</column>");
-                strHeader.Append("<column width='110' type='dhxCalendar' sort='date' align='center' id='startdate' >#cspan</column>");
-                strHeader.Append("<column width='100' type='dhxCalendar' sort='date' align='center' id='enddate'>#cspan</column>");
-                strHeader.Append("<column width='160' type='ron' sort='int' align='center' id='plannedcost'>#cspan</column>");
-                XElement xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "150"), new XAttribute("align", "center"), new XAttribute("id", "tactictype"), new XAttribute("sort", "sort_TacticType"), "#cspan",
-                    TacticTypeList.Select(i => new XElement("option", new XAttribute("value", i.TacticTypeId), HttpUtility.HtmlDecode(i.Title))));
-                xmltactictype = xmlElements.ToString();
-                strHeader.Append(xmltactictype);
-                if (lstUserDetails != null)
-                {
-                    xmlElements = new XElement("column", new XAttribute("type", "coro"), new XAttribute("width", "115"), new XAttribute("align", "center"), new XAttribute("id", "owner"), new XAttribute("sort", "sort_Owner"), "#cspan",
-                        lstUserDetails.Select(i => new XElement("option", new XAttribute("value", i.UserId), string.Format("{0} {1}", HttpUtility.HtmlDecode(i.FirstName), HttpUtility.HtmlDecode(i.LastName)))));
-                    xmlUserlist = xmlElements.ToString();
-                }
-
-                strHeader.Append(xmlUserlist);
-                strHeader.Append("<column width='150' type='ron' sort='int'  align='center' id='inq'>#cspan</column>");
-                strHeader.Append("<column width='135' type='ron' sort='int' align='center' id='mql'>#cspan</column>");
-                strHeader.Append("<column width='125' type='ron' sort='int' align='center' id='revenue'>#cspan</column>");
-                strHeader.Append("</head>");
-            }
-            catch (Exception objException)
-            {
-                ErrorSignal.FromCurrentContext().Raise(objException);
-
-            }
-            return strHeader;
-        }
-        #endregion
         #region method to get owner full name by guid
         public string GetUserName(Guid UserGuid)
         {
