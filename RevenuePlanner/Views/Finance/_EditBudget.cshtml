@@ -55,7 +55,7 @@
     var ActualColName;
     var GridData = "";
     var EditPermission = "";
-    var mygrid;
+   // var mygrid;
     var AllocatedBy;
     var combo;
     $(document).ready(function () {
@@ -153,7 +153,7 @@
         myTreeGrid.setImagePath("@Url.Content("~/codebase/imgs/")");
         //myTreeGrid.setImageSize(1, 1);
         
-        var Columnsetval = $("#ddlColumnSet").val();
+       // var Columnsetval = $("#ddlColumnSet").val();
         var ColumnsCheckBox = $("#multipleselect_budget-select").find('label[class^="ui-corner-all"]').find("input");
         var CheckedColumns = "";
         $.each(ColumnsCheckBox, function () {
@@ -173,7 +173,7 @@
                 BudgetId: GlobalBudgetId,
                 IsQuaterly: AllocatedBy,
                 EditLevel: GlobalEditLevel,
-                ColumnSetId: Columnsetval,
+                //ColumnSetId: Columnsetval,
                 BudgetCreateEdit: _isBudgetCreateEdit,
                 ForecastCreateEdit: _isForecastCreateEdit,
                 ListofCheckedColums: CheckedColumns,
@@ -204,25 +204,16 @@
 
         ActualColName = GridData.ActualColName;
 
-       // myTreeGrid.setHeader(GridData.setHeader);
-
         myTreeGrid.attachHeader(GridData.attachHeader);
 
         myTreeGrid.setColumnIds(GridData.setColumnIds);
 
         myTreeGrid.setColValidators(GridData.setColValidators);
 
-        //myTreeGrid.setInitWidths(GridData.setInitWidths);
-
-        //myTreeGrid.setColAlign(GridData.setColAlign);
-
-        //myTreeGrid.setColTypes(GridData.setColTypes);
-
         myTreeGrid.enableTreeCellEdit(GridData.enableTreeCellEdit);
 
         myTreeGrid.setColumnsVisibility(GridData.setColumnsVisibility);
 
-        //myTreeGrid.setHeaderCol(GridData.Head);
 
         myTreeGrid.init();
         myTreeGrid.enableDistributedParsing(true, 10, 300);
