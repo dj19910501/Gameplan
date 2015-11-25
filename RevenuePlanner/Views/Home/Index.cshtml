@@ -303,7 +303,9 @@
                 
                 
             });
-            SaveLastSetofViews();
+            if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                SaveLastSetofViews();
+            }
            
         }
 

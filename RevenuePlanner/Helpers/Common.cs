@@ -1599,10 +1599,9 @@ namespace RevenuePlanner.Helpers
                     });
 
                 }
-
+                    lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
-                    lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                     planTacticIds = planTacticIds.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
                                              (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
                                              (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
@@ -1619,6 +1618,22 @@ namespace RevenuePlanner.Helpers
                         }
 
                     }
+                }
+                else
+                {
+                    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                    List<Guid> lstSubordinatesIds = new List<Guid>();
+                    if (IsTacticAllowForSubordinates)
+                    {
+                        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+
+                    }
+                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+
+                    planTacticIds = planTacticIds.Where(tactic => tactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+
+
                 }
 
                 //End

@@ -1340,7 +1340,7 @@ namespace RevenuePlanner.Controllers
                 }).ToList().Distinct().ToList();
                 #endregion
 
-                return Json(new
+                var jsonResult = Json(new
                 {
                     customFieldTactics = lstCustomFieldTactics,
                     customFields = lstCustomFields,
@@ -1352,10 +1352,13 @@ namespace RevenuePlanner.Controllers
                     ViewById = viewByListResult,
                     ViewBy = sourceViewBy
                 }, JsonRequestBehavior.AllowGet);
+                //Modified By Komal Rawal to solve maxlength Json problen in case of large number of tactics
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
             }
             else if (activemenu.Equals(Enums.ActiveMenu.Plan))
             {
-                return Json(new
+                  var jsonResult = Json(new
                 {
                     taskData = finalTaskData,
                     requestCount = requestCount,
@@ -1363,6 +1366,9 @@ namespace RevenuePlanner.Controllers
                     ViewById = viewByListResult,
                     ViewBy = sourceViewBy
                 }, JsonRequestBehavior.AllowGet);
+                  //Modified By Komal Rawal to solve maxlength Json problen in case of large number of tactics
+                  jsonResult.MaxJsonLength = int.MaxValue;
+                  return jsonResult;
             }
             else
             {
@@ -1416,7 +1422,7 @@ namespace RevenuePlanner.Controllers
                     ColorCode = TacticColor
                 }).Distinct().OrderBy(tactic => tactic.Title);
 
-                return Json(new
+                var jsonResult = Json(new
                 {
                     planCampaignProgramTactic = planCampaignProgramTactic.ToList(),
                     tacticType = tacticType.ToList(),
@@ -1428,10 +1434,13 @@ namespace RevenuePlanner.Controllers
                     ViewById = viewByListResult,
                     ViewBy = viewBy
                 }, JsonRequestBehavior.AllowGet);
+                //Modified By Komal Rawal to solve maxlength Json problen in case of large number of tactics
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
             }
             else if (activemenu.Equals(Enums.ActiveMenu.Plan))
             {
-                return Json(new
+                 var jsonResult = Json(new
                 {
                     taskData = tacticAndRequestTaskData,
                     requestCount = requestCount,
@@ -1439,6 +1448,9 @@ namespace RevenuePlanner.Controllers
                     ViewById = viewByListResult,
                     ViewBy = viewBy
                 }, JsonRequestBehavior.AllowGet);
+                //Modified By Komal Rawal to solve maxlength Json problen in case of large number of tactics
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
             }
             else
             {
