@@ -1269,5 +1269,76 @@ namespace RevenuePlanner.Test.Controllers
         #endregion
 
         #endregion
+
+        #region --Saving and rendering Last accessed data of Views---
+
+        /// <summary>
+        /// To Save last set data
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void SaveLastSetOfViews()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
+         
+            string ViewBy = PlanGanttTypes.Tactic.ToString();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tactic);
+
+            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
+
+            var UserID = Sessions.User.UserId;
+
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(UserID);
+
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+
+            string Status = string.Join(",", lststatus);
+
+            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNull(result.GetValue("taskData"));
+            }
+        }
+
+         /// <summary>
+        /// To Render last set of view
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void Render_LastSetofViews()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+
+            var result = objHomeController.LastSetOfViews() as JsonResult;
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNull(result.GetValue("taskData"));
+            }
+
+
+        }
+
+        #endregion
     }
 }
