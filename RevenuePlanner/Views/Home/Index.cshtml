@@ -4851,7 +4851,6 @@ function Quarter() {
 
 
     function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission,linetype, e) {
-
         var type = typeVal;
         var name = nameVal;
         // var chk_permission = titleVal.split("/");
@@ -4969,7 +4968,7 @@ function Quarter() {
         }
         else if (type == "Line") {
             if (permission == "true") {
-                if (LineType == "") {
+                if (LineType == "0") {
                     ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewLineItem'>New Line Item</li> </ul>";
                 }
                 else {

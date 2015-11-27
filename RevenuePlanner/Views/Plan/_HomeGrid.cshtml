@@ -38,7 +38,7 @@
 
 <div id="gridbox" style="background-color:white;width:100%;"></div>
 
-<textarea id="mytextarea1" style="width:0px;height:0px;display:none;">@Model.xmlstring</textarea>
+
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
 
 @*Added by Komal Rawal for #1432*@
@@ -678,26 +678,29 @@
         var lineItemFlag = 0;
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
-            if (updatetype == "line") {
-                var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
-                if (actval == "") {
-                    return false;
+            // Only check for type column
+            if (Colind == 7) {
+                if (updatetype == "line") {
+                    var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
+                    if (actval == "") {
+                        return false;
+                    }
+                    var combo = HomeGrid.getCombo(cellInd);
+                    var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');
+                    //  d = optionlist.filter(filterbyname);
+                    combo.clear();
+                    $.each(lineitemtype, function (i, item) {
+                        combo.put(item.LineItemTypeId, item.Title);
+                    });
                 }
-                var combo = HomeGrid.getCombo(cellInd);
-                var lineitemtype = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.lineitemtype))');
-                //  d = optionlist.filter(filterbyname);
-                combo.clear();
-                $.each(lineitemtype, function (i, item) {
-                    combo.put(item.LineItemTypeId, item.Title);
-                });
-            }
-            else {
-                var combo = HomeGrid.getCombo(cellInd);
-                var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
-                 combo.clear();
-                 $.each(tacticTypelist, function (i, item) {
-                     combo.put(item.TacticTypeId, item.Title);
-                 });
+                else {
+                    var combo = HomeGrid.getCombo(cellInd);
+                    var tacticTypelist = JSON.parse('@Html.Raw(Json.Encode(@ViewBag.TacticTypelist))');
+                    combo.clear();
+                    $.each(tacticTypelist, function (i, item) {
+                        combo.put(item.TacticTypeId, item.Title);
+                    });
+                }
             }
             
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");

@@ -520,8 +520,6 @@ namespace RevenuePlanner.Models
         public string INQValue { get; set; }
         public string Revenue { get; set; }
         public string CWValue { get; set; }
-        public PlanImprovement ImprovementObj { get; set; }
-        public string xmlstring { get; set; }
         public PlanMainDHTMLXGrid PlanDHTMLXGrid { get; set; }
     }
     public class PlanImprovement
