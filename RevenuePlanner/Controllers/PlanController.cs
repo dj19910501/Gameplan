@@ -9706,7 +9706,7 @@ namespace RevenuePlanner.Controllers
                     if (lstUserDetails.Count > 0)
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
-                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.UserId.ToString(), value = string.Format("{0} {1}", HttpUtility.HtmlDecode(user.FirstName), HttpUtility.HtmlDecode(user.LastName)) }).ToList();
+                        lstOwner = lstUserDetails.Select(user => new PlanOptions { id = user.UserId.ToString(), value = HttpUtility.HtmlEncode(string.Format("{0} {1}", user.FirstName, user.LastName)) }).ToList();
                     }
                 }
 
