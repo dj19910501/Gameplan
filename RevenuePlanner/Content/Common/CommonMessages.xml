@@ -173,14 +173,30 @@
 		<Name>ModelTacticEditSucess</Name>
 		<value>Model Tactic {0} modified successfully.</value>
 	</Field>
-	<Field>
+  <!--Commented by Rahul shah on 24/11/2015 for PL 1764.-->
+  <!--start-->
+
+  <!--<Field>
 		<Name>StartDateCurrentYear</Name>
 		<value>Start date must be selected of current plan year.</value>
 	</Field>
 	<Field>
 		<Name>EndDateCurrentYear</Name>
 		<value>End date must be selected of current plan year.</value>
-	</Field>
+	</Field>-->
+  <!--end-->
+
+  <!--Added by Rahul shah on 24/11/2015 for PL 1764.-->
+  <!--start-->
+  <Field>
+    <Name>StartDateCurrentYear</Name>
+    <value>Start date must be selected of {0} or {1} year.</value>
+  </Field>
+  <Field>
+    <Name>EndDateCurrentYear</Name>
+    <value>End date must be selected of {0} or {1} year.</value>
+  </Field>
+  <!--end-->
 	<Field>
 		<Name>NoTacticFound</Name>
 		<value>No tactic found.</value>

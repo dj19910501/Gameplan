@@ -254,10 +254,18 @@ function OnNLTextFocus(sender) {
 function CheckDateYear(sdate, hdnYear, msg) {
     sdate = sdate.split(" ")[0];
     var sYear = sdate.split("/")[2];
-    if (sYear != hdnYear) {
-        alert(msg);
+    //Added by Rahul Shah on 27/11/2015 for PL #1764  to extend year of date validation 
+    var diff = sYear - hdnYear
+    if (diff < 0 || diff > 1) {
+        alert(msg.replace('{0}', parseInt(hdnYear)).replace('{1}', parseInt(hdnYear) + 1));
         return false;
+
     }
+    //Commented by Rahul Shah on 27/11/2015 for PL #1764 
+    //if (sYear != hdnYear) {
+    //    alert(msg);
+    //    return false;
+    //}
     return true;
 }
 
