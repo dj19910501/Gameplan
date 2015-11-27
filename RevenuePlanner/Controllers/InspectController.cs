@@ -155,10 +155,22 @@ namespace RevenuePlanner.Controllers
             }
 
             double TotalAllocatedCampaignBudget = 0;
-            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == _inspectmodel.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(budget => budget.Value).ToList();
+            // Change by Nishant sheth
+            // Desc :: #1765 - add period condition to get value
+            var PlanCampaignBudgetList = db.Plan_Campaign_Budget.Where(pcb => pcb.Plan_Campaign.PlanId == _inspectmodel.PlanId && pcb.Plan_Campaign.IsDeleted == false).Select(budget => budget).ToList();
+
             if (PlanCampaignBudgetList.Count > 0)
             {
-                TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Sum();
+                TotalAllocatedCampaignBudget = PlanCampaignBudgetList.Select(a => a.Value).Sum();
+
+                ViewBag.YearDiffrence = PlanCampaignBudgetList.Select(a => Convert.ToInt32(Convert.ToInt32(a.Plan_Campaign.EndDate.Year) - Convert.ToInt32(a.Plan_Campaign.StartDate.Year))).Max();
+                ViewBag.StartYear = PlanCampaignBudgetList.Select(a => Convert.ToInt32(a.Plan_Campaign.StartDate.Year)).Min();
+            }
+            else
+            {
+                var PlanDetail = db.Plans.Where(a => a.PlanId == id).Select(a => a).FirstOrDefault();
+                ViewBag.YearDiffrence = 0;
+                ViewBag.StartYear = PlanDetail.Year;
             }
             ViewBag.TotalAllocatedCampaignBudget = TotalAllocatedCampaignBudget;
 
@@ -177,7 +189,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param> Added by Sohel Pathan on 07/08/2014 for PL ticket #672
         /// <returns></returns>
         [HttpPost]
-        public JsonResult SavePlanDetails(InspectModel objPlanModel, string BudgetInputValues = "", string planBudget = "", string RedirectType = "", string UserId = "")
+        public JsonResult SavePlanDetails(InspectModel objPlanModel, string BudgetInputValues = "", string planBudget = "", string RedirectType = "", string UserId = "", string AllocatedBy = "", int YearDiffrence = 0)
         {
             //// check whether UserId is current loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -223,8 +235,9 @@ namespace RevenuePlanner.Controllers
 
                                 //// Get Previous budget allocation data by PlanId.
                                 var PrevPlanBudgetAllocationList = db.Plan_Budget.Where(pb => pb.PlanId == objPlanModel.PlanId).Select(pb => pb).ToList();
-
-                                if (arrBudgetInputValues.Length == 12)  // if current input values are monthly.
+                                // Change by Nishant sheth
+                                // Desc :: #1765 - to replace the lenth of array to allocated by
+                                if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower()) // if current input values are monthly.
                                 {
                                     bool isExists;
                                     Plan_Budget updatePlanBudget, objPlanBudget;
@@ -272,15 +285,26 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
-                                else if (arrBudgetInputValues.Length == 4) //// if current input values are Quarterly.
+                                // Change by Nishant sheth
+                                // Desc :: #1765 - to replace the lenth of array to allocated by
+                                else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower()) //// if current input values are Quarterly.
                                 {
                                     int QuarterCnt = 1, j = 1;
+                                    // Change by Nishant sheth
+                                    // Desc :: #1765 - for add/update the multiple year period value
+                                    int m = 0;
+                                    for (int k = 1; k <= (YearDiffrence + 1); k++)
+                                    {
                                     bool isExists;
                                     List<Plan_Budget> thisQuartersMonthList;
                                     Plan_Budget thisQuarterFirstMonthBudget, objPlanBudget;
                                     double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
-                                    for (int i = 0; i < 4; i++)
-                                    {
+                                        for (int i = m; i < (4 * k); i++)
+                                        {
+                                            if ((i + 1) % 4 == 0)
+                                            {
+                                                m = i + 1;
+                                            }
                                         //// Start - Added by Sohel Pathan on 26/08/2014 for PL ticket #642
                                         isExists = false;
                                         if (PrevPlanBudgetAllocationList != null && PrevPlanBudgetAllocationList.Count > 0)
@@ -358,6 +382,7 @@ namespace RevenuePlanner.Controllers
                                         QuarterCnt = QuarterCnt + 3;
                                     }
                                 }
+                            }
                             }
                             #endregion
                         }
@@ -987,6 +1012,41 @@ namespace RevenuePlanner.Controllers
                             {
                                 #region "Update record into Plan_Campaign table"
                                 Plan_Campaign pcobj = db.Plan_Campaign.Where(pcobjw => pcobjw.PlanCampaignId.Equals(form.PlanCampaignId) && pcobjw.IsDeleted.Equals(false)).FirstOrDefault();
+                                // Add By Nishant Sheth
+                                // Desc::#1765 - To remove pervious data from db if end date year difference is less then to compare end date.
+                                int EndDateYear = pcobj.EndDate.Year;
+                                int FormEndDateYear = form.EndDate.Year;
+                                int EndDatediff = EndDateYear - FormEndDateYear;
+                                if (EndDatediff > 0)
+                                {
+                                    listMonthDynamic lstMonthlyDynamic = new listMonthDynamic();
+
+                                    List<string> lstMonthlyExtended = new List<string>();
+                                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcobj.EndDate.Year) - Convert.ToInt32(pcobj.StartDate.Year));
+                                    string periodPrefix = "Y";
+                                    int baseYear = 0;
+                                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                                    {
+                                        for (int j = 1; j <= 12; j++)
+                                        {
+                                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                                        }
+                                        baseYear = baseYear + 12;
+                                    }
+                                    lstMonthlyDynamic.Id = pcobj.PlanCampaignId;
+                                    lstMonthlyDynamic.listMonthly = lstMonthlyExtended.AsEnumerable().Reverse().ToList();
+
+                                    List<string> deleteperiodmonth = new List<string>();
+                                    for (int i = 0; i < EndDatediff; i++)
+                                    {
+                                        var listofperiod = lstMonthlyDynamic.listMonthly.Skip(i * 12).Take(12).ToList();
+                                        listofperiod.ForEach(a => { deleteperiodmonth.Add(a); });
+                                    }
+
+                                    var listBudget = db.Plan_Campaign_Budget.Where(a => a.PlanCampaignId == pcobj.PlanCampaignId && deleteperiodmonth.Contains(a.Period)).ToList();
+                                    listBudget.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
+                                }
+                                // End By Nishant Sheth
                                 pcobj.Title = title;
                                 Guid oldOwnerId = pcobj.CreatedBy;
                                 pcobj.Description = form.Description;
@@ -1117,6 +1177,10 @@ namespace RevenuePlanner.Controllers
             Plan_CampaignModel pcpm = new Plan_CampaignModel();
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
             pcpm.CampaignBudget = pcp.CampaignBudget;
+            // Add by Nishant sheth
+            // Desc :: #1765 - to get the year diffrence between item start date and end date
+            ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcp.EndDate.Year) - Convert.ToInt32(pcp.StartDate.Year));
+            ViewBag.StartYear = Convert.ToInt32(pcp.StartDate.Year);
 
             // Get Plan Allocated from Plan table by PlanId.
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == pcp.PlanId);
@@ -1142,7 +1206,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveCampaignBudgetAllocation(Plan_CampaignModel form, string BudgetInputValues, string UserId = "", string title = "")
+        public ActionResult SaveCampaignBudgetAllocation(Plan_CampaignModel form, string BudgetInputValues, string UserId = "", string title = "", string AllocatedBy = "", int YearDiffrence = 0)
         {
             //// check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -1188,7 +1252,9 @@ namespace RevenuePlanner.Controllers
                                 var PrevAllocationList = db.Plan_Campaign_Budget.Where(campBudget => campBudget.PlanCampaignId == form.PlanCampaignId).Select(campBudget => campBudget).ToList();
 
                                 //// Process for Monthly budget values.
-                                if (arrBudgetInputValues.Length == 12)
+                                // Change by Nishant sheth
+                                // Desc :: #1765 - to replace the lenth of array to allocated by
+                                if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower())
                                 {
                                     bool isExists;
                                     Plan_Campaign_Budget updatePlanCampaignBudget, objPlanCampaignBudget;
@@ -1235,15 +1301,26 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
-                                else if (arrBudgetInputValues.Length == 4)  //// Process for Quarterly budget values.
+                                // Change by Nishant sheth
+                                // Desc :: #1765 - to replace the lenth of array to allocated by
+                                else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower())  //// Process for Quarterly budget values.
                                 {
                                     int QuarterCnt = 1, j = 1;
+                                    int m = 0;
+
+                                    for (int k = 1; k <= (YearDiffrence + 1); k++)
+                                    {
+
                                     bool isExists;
                                     List<Plan_Campaign_Budget> thisQuartersMonthList;
                                     Plan_Campaign_Budget thisQuarterFirstMonthBudget, objPlanCampaignBudget;
                                     double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
-                                    for (int i = 0; i < 4; i++)
-                                    {
+                                        for (int i = m; i < (4 * k); i++)
+                                        {
+                                            if ((i + 1) % 4 == 0)
+                                            {
+                                                m = i + 1;
+                                            }
                                         // Start - Added by Sohel Pathan on 27/08/2014 for PL ticket #758
                                         isExists = false;
                                         if (PrevAllocationList != null && PrevAllocationList.Count > 0)
@@ -1320,6 +1397,7 @@ namespace RevenuePlanner.Controllers
                                         QuarterCnt = QuarterCnt + 3;
                                     }
                                 }
+                            }
                             }
 
                             db.SaveChanges();
@@ -1679,6 +1757,40 @@ namespace RevenuePlanner.Controllers
                             {
                                 #region "Update record to Plan_Campaign_Program table"
                                 Plan_Campaign_Program pcpobj = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(form.PlanProgramId)).FirstOrDefault();
+                                // Add By Nishant Sheth
+                                // Desc::#1765 - To remove pervious data from db if end date year difference is less then to compare end date.
+                                int EndDateYear = pcpobj.EndDate.Year;
+                                int FormEndDateYear = form.EndDate.Year;
+                                int EndDatediff = EndDateYear - FormEndDateYear;
+                                if (EndDatediff > 0)
+                                {
+                                    listMonthDynamic lstMonthlyDynamic = new listMonthDynamic();
+
+                                    List<string> lstMonthlyExtended = new List<string>();
+                                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcpobj.EndDate.Year) - Convert.ToInt32(pcpobj.StartDate.Year));
+                                    string periodPrefix = "Y";
+                                    int baseYear = 0;
+                                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                                    {
+                                        for (int j = 1; j <= 12; j++)
+                                        {
+                                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                                        }
+                                        baseYear = baseYear + 12;
+                                    }
+                                    lstMonthlyDynamic.Id = pcpobj.PlanProgramId;
+                                    lstMonthlyDynamic.listMonthly = lstMonthlyExtended.AsEnumerable().Reverse().ToList();
+
+                                    List<string> deleteperiodmonth = new List<string>();
+                                    for (int i = 0; i < EndDatediff; i++)
+                                    {
+                                        var listofperiod = lstMonthlyDynamic.listMonthly.Skip(i * 12).Take(12).ToList();
+                                        listofperiod.ForEach(a => { deleteperiodmonth.Add(a); });
+                                    }
+                                  
+                                    var listBudget = db.Plan_Campaign_Program_Budget.Where(a => a.PlanProgramId == pcpobj.PlanProgramId && deleteperiodmonth.Contains(a.Period)).ToList();
+                                    listBudget.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
+                                }
                                 pcpobj.Title = title;
                                 Guid oldOwnerId = pcpobj.CreatedBy;
                                 pcpobj.Description = form.Description;
@@ -2024,6 +2136,10 @@ namespace RevenuePlanner.Controllers
             pcpm.PlanCampaignId = pcp.PlanCampaignId;
 
             pcpm.ProgramBudget = pcp.ProgramBudget;
+            // Add by Nishant sheth
+            // Desc :: #1765 - to get the year diffrence between item start date and end date
+            ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcp.EndDate.Year) - Convert.ToInt32(pcp.StartDate.Year));
+            ViewBag.StartYear = Convert.ToInt32(pcp.StartDate.Year);
 
             var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == pcp.Plan_Campaign.PlanId);
             pcpm.AllocatedBy = objPlan.AllocatedBy;
@@ -2048,7 +2164,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="UserId"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form, string BudgetInputValues, string UserId = "", string title = "")
+        public ActionResult SaveProgramBudgetAllocation(Plan_Campaign_ProgramModel form, string BudgetInputValues, string UserId = "", string title = "", string AllocatedBy = "", int YearDiffrence = 0)
         {
             //// check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -2092,7 +2208,9 @@ namespace RevenuePlanner.Controllers
                             List<Plan_Campaign_Program_Budget> PrevAllocationList = db.Plan_Campaign_Program_Budget.Where(c => c.PlanProgramId == form.PlanProgramId).Select(c => c).ToList();    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #758
 
                             //// Process for Monthly budget values.
-                            if (arrBudgetInputValues.Length == 12)
+                            // Change by Nishant sheth
+                            // Desc :: #1765 - to replace the lenth of array to allocated by
+                            if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower())
                             {
                                 bool isExists = false;
                                 Plan_Campaign_Program_Budget objPlanCampaignProgramBudget, updatePlanProgramBudget;
@@ -2139,16 +2257,27 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                             }
-                            else if (arrBudgetInputValues.Length == 4)  //// Process for Quarterly budget values.
+                            // Change by Nishant sheth
+                            // Desc :: #1765 - to replace the lenth of array to allocated by
+                            else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower()) //// Process for Quarterly budget values.
                             {
                                 int BudgetInputValuesCounter = 1;
+                                int m = 0;
+                                for (int k = 1; k <= (YearDiffrence + 1); k++)
+                                {
                                 bool isExists = false;
                                 List<Plan_Campaign_Program_Budget> thisQuartersMonthList;
                                 Plan_Campaign_Program_Budget thisQuarterFirstMonthBudget, objPlanCampaignProgramBudget;
                                 double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
                                 int j;
-                                for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                {
+
+
+                                    for (int i = m; i < (4 * k); i++)
+                                    {
+                                        if ((i + 1) % 4 == 0)
+                                        {
+                                            m = i + 1;
+                                        }
                                     // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
                                     isExists = false;
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
@@ -2224,6 +2353,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                 }
+                            }
                             }
 
                             db.Entry(pcpobj).State = EntityState.Modified;
@@ -2716,13 +2846,43 @@ namespace RevenuePlanner.Controllers
             _inspectmodel.Revenues = Math.Round(tacticList.Where(_tactic => _tactic.PlanTacticId == id).Select(_tactic => _tactic.ProjectedRevenue).FirstOrDefault(), 2); // Modified by Sohel Pathan on 15/09/2014 for PL ticket #760
             tacticList = Common.ProjectedRevenueCalculateList(tid, true);
 
+            // Add By Nishant Sheth 
+            // Desc:: for add multiple years regarding #1765
+            // To create the period of the year dynamically base on tactic period
+            List<listMonthDynamic> lstMonthlyDynamic = new List<listMonthDynamic>();
+            tid.ForEach(tactic =>
+            {
+                List<string> lstMonthlyExtended = new List<string>();
+                int YearDiffrence = Convert.ToInt32(Convert.ToInt32(tactic.EndDate.Year) - Convert.ToInt32(tactic.StartDate.Year));
+                string periodPrefix = "Y";
+                int baseYear = 0;
+                for (int i = 0; i < (YearDiffrence + 1); i++)
+                {
+                    for (int j = 1; j <= 12; j++)
+                    {
+                        lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                    }
+                    baseYear = baseYear + 12;
+                }
+                lstMonthlyDynamic.Add(new listMonthDynamic { Id = tactic.PlanTacticId, listMonthly = lstMonthlyExtended });
+            });
+
+            var tatcicMonth = lstMonthlyDynamic.Select(a => a.listMonthly).FirstOrDefault();
+            ViewBag.StartYear = tid.Select(a => a.StartDate.Year).FirstOrDefault();// Add By Nishant sheth
+            ViewBag.YearDiffrence = tid.Select(a => (Convert.ToInt32(a.EndDate.Year) - Convert.ToInt32(a.StartDate.Year))).FirstOrDefault();
+
             string TitleProjectedStageValue = Enums.InspectStageValues[Enums.InspectStage.ProjectedStageValue.ToString()].ToString();
             string TitleCW = Enums.InspectStageValues[Enums.InspectStage.CW.ToString()].ToString();
             string TitleMQL = Enums.InspectStageValues[Enums.InspectStage.MQL.ToString()].ToString();
             string TitleRevenue = Enums.InspectStageValues[Enums.InspectStage.Revenue.ToString()].ToString();
 
             ////Modified by Mitesh Vaishnav for PL ticket #695
-            var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(planTacticActuals => planTacticActuals.PlanTacticId == id).ToList();
+            // Change by Nishant sheth
+            // Desc :: #1765 - add period condition to get value
+            var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(planTacticActuals => planTacticActuals.PlanTacticId == id
+                && tatcicMonth.Contains(planTacticActuals.Period)).ToList();
+            //tacticActualList = tacticActualList.Where(planTacticActuals => lstMonthlyDynamic.Select(a => a.listMonthly).FirstOrDefault().Contains(planTacticActuals.Period)).ToList();
+
             _inspectmodel.ProjectedStageValueActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleProjectedStageValue).Sum(planTacticActuals => planTacticActuals.Actualvalue);
             _inspectmodel.CWsActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleCW).Sum(planTacticActuals => planTacticActuals.Actualvalue);
             _inspectmodel.RevenuesActual = tacticActualList.Where(planTacticActuals => planTacticActuals.StageTitle == TitleRevenue).Sum(planTacticActuals => planTacticActuals.Actualvalue);
@@ -2762,8 +2922,11 @@ namespace RevenuePlanner.Controllers
             ////Start Modified by Mitesh Vaishnav For PL ticket #695
             double tacticCostActual = 0;
             //// Checking whether line item actuals exists.
+            // Change by Nishant sheth
+            // Desc :: #1765 - add period condition to get value
             var lineItemListActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineitemActual => lineitemActual.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId == id &&
-                                                                                            lineitemActual.Plan_Campaign_Program_Tactic_LineItem.IsDeleted == false)
+                                                                                            lineitemActual.Plan_Campaign_Program_Tactic_LineItem.IsDeleted == false
+                                                                                            && tatcicMonth.Contains(lineitemActual.Period))
                                                                                             .ToList();
             if (lineItemListActuals.Count != 0)
             {
@@ -2815,20 +2978,51 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Json Result of tactic Actual Value.</returns>
         public JsonResult GetActualTacticData(int id)
         {
+            listMonthDynamic listMonthDynamic = new listMonthDynamic();
+
             var dtTactic = (from tacActual in db.Plan_Campaign_Program_Tactic_Actual
                             where tacActual.PlanTacticId == id
-                            select new { tacActual.CreatedBy, tacActual.CreatedDate }).FirstOrDefault();
+                            select new { tacActual.CreatedBy, tacActual.CreatedDate, tacActual.Plan_Campaign_Program_Tactic }).FirstOrDefault();
+            // Add By Nishant Sheth 
+            // Desc:: for add multiple years regarding #1765
+            // To create the period of the year dynamically base on tactic period
+            if (dtTactic != null)
+            {
+                List<string> lstMonthlyExtended = new List<string>();
+                int YearDiffrence = Convert.ToInt32(Convert.ToInt32(dtTactic.Plan_Campaign_Program_Tactic.EndDate.Year) - Convert.ToInt32(dtTactic.Plan_Campaign_Program_Tactic.StartDate.Year));
+                string periodPrefix = "Y";
+                int baseYear = 0;
+                for (int i = 0; i < (YearDiffrence + 1); i++)
+                {
+                    for (int j = 1; j <= 12; j++)
+                    {
+                        lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                    }
+                    baseYear = baseYear + 12;
+                }
+
+                listMonthDynamic.Id = id;
+                listMonthDynamic.listMonthly = lstMonthlyExtended;
+            }
+            var tacticMonth = listMonthDynamic.listMonthly != null ? listMonthDynamic.listMonthly.Select(a => a).ToList() : null;
+
             var lineItemIds = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == id && lineItem.IsDeleted == false).Select(lineItem => lineItem.PlanLineItemId).ToList();
-            var dtlineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineActual => lineItemIds.Contains(lineActual.PlanLineItemId)).ToList();
+            // Change by Nishant sheth
+            // Desc :: #1765 - add period condition to get value
+            var dtlineItemActuals = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineActual => lineItemIds.Contains(lineActual.PlanLineItemId)).ToList()
+                .Where(lineActual => (tacticMonth != null ? tacticMonth.Contains(lineActual.Period) : lineActual.Period.Contains(lineActual.Period))).ToList();
             if (dtTactic != null || dtlineItemActuals != null)
             {
-                var ActualData = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == id).Select(tacActual => new
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
+                var ActualData = db.Plan_Campaign_Program_Tactic_Actual.Where(pcpta => pcpta.PlanTacticId == id)
+                    .Select(tacActual => new
                 {
                     id = tacActual.PlanTacticId,
                     stageTitle = tacActual.StageTitle,
                     period = tacActual.Period,
                     actualValue = tacActual.Actualvalue
-                });
+                }).ToList().Where(pcpta => (tacticMonth != null ? tacticMonth.Contains(pcpta.period) : pcpta.period.Contains(pcpta.period))).ToList();
 
                 ////// start-Added by Mitesh Vaishnav for PL ticket #571
                 //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
@@ -3510,7 +3704,42 @@ namespace RevenuePlanner.Controllers
                                 }
 
                                 Plan_Campaign_Program_Tactic pcpobj = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(form.PlanTacticId)).FirstOrDefault();
+                                // Add By Nishant Sheth
+                                // Desc::#1765 - To remove pervious data from db if end date year difference is less then to compare end date.
+                                int EndDateYear = pcpobj.EndDate.Year;
+                                int FormEndDateYear = form.EndDate.Year;
+                                int EndDatediff = EndDateYear - FormEndDateYear;
+                                if (EndDatediff > 0)
+                                {
+                                    listMonthDynamic lstMonthlyDynamic = new listMonthDynamic();
 
+                                    List<string> lstMonthlyExtended = new List<string>();
+                                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcpobj.EndDate.Year) - Convert.ToInt32(pcpobj.StartDate.Year));
+                                    string periodPrefix = "Y";
+                                    int baseYear = 0;
+                                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                                    {
+                                        for (int j = 1; j <= 12; j++)
+                                        {
+                                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                                        }
+                                        baseYear = baseYear + 12;
+                                    }
+                                    lstMonthlyDynamic.Id = pcpobj.PlanTacticId;
+                                    lstMonthlyDynamic.listMonthly = lstMonthlyExtended.AsEnumerable().Reverse().ToList();
+
+                                    List<string> deleteperiodmonth = new List<string>();
+                                    for (int i = 0; i < EndDatediff; i++)
+                                    {
+                                        var listofperiod = lstMonthlyDynamic.listMonthly.Skip(i * 12).Take(12).ToList();
+                                        listofperiod.ForEach(a => { deleteperiodmonth.Add(a); });
+                                    }
+                                    var listActual = db.Plan_Campaign_Program_Tactic_Actual.Where(a => a.PlanTacticId == pcpobj.PlanTacticId && deleteperiodmonth.Contains(a.Period)).ToList();
+                                    listActual.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
+                                    var listBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(a => a.PlanTacticId == pcpobj.PlanTacticId && deleteperiodmonth.Contains(a.Period)).ToList();
+                                    listBudget.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
+                                }
+                                // End By Nishant Sheth
                                 pcpobj.Title = form.TacticTitle;
                                 status = pcpobj.Status;
                                 pcpobj.Description = form.Description;
@@ -4081,6 +4310,11 @@ namespace RevenuePlanner.Controllers
             pcpm.PlanProgramId = pcp.PlanProgramId;
             pcpm.PlanTacticId = pcp.PlanTacticId;
 
+            // Add by Nishant sheth
+            // Desc :: #1765 - to get the year diffrence between item start date and end date
+            ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcp.EndDate.Year) - Convert.ToInt32(pcp.StartDate.Year));
+            ViewBag.StartYear = Convert.ToInt32(pcp.StartDate.Year);
+
             string statusAllocatedByNone = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString().ToLower();
             string statusAllocatedByDefault = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString().ToLower();
             //Modified BY komal Rawal
@@ -4107,7 +4341,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveTacticBudgetAllocation(Plan_Campaign_Program_TacticModel form, string BudgetInputValues, string UserId = "", string title = "")
+        public ActionResult SaveTacticBudgetAllocation(Plan_Campaign_Program_TacticModel form, string BudgetInputValues, string UserId = "", string title = "", string AllocatedBy = "", int YearDiffrence = 0)
         {
             //// check whether UserId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -4157,7 +4391,9 @@ namespace RevenuePlanner.Controllers
                             List<Plan_Campaign_Program_Tactic_Budget> PrevAllocationList = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => _tacCost.PlanTacticId == form.PlanTacticId).Select(_tacCost => _tacCost).ToList();  // Modified by Sohel Pathan on 04/09/2014 for PL ticket #759
 
                             //// Process for Monthly budget values.
-                            if (arrBudgetInputValues.Length == 12)
+                            // Change by Nishant sheth
+                            // Desc :: #1765 - to replace the lenth of array to allocated by
+                            if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower())
                             {
                                 bool isExists;
                                 Plan_Campaign_Program_Tactic_Budget updatePlanTacticBudget, obPlanCampaignProgramTacticBudget;
@@ -4205,33 +4441,43 @@ namespace RevenuePlanner.Controllers
                                     }
                                 }
                             }
-                            else if (arrBudgetInputValues.Length == 4)
+                            // Change by Nishant sheth
+                            // Desc :: #1765 - to replace the lenth of array to allocated by
+                            else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower())
                             {
-                                //Added by Komal Rawal for #1217
-                                if (startmonth >= 10)
-                                {
-                                    startmonth = 10;
-                                }
-                                else if (startmonth >= 7)
-                                {
-                                    startmonth = 7;
-                                }
-                                else if (startmonth >= 4)
-                                {
-                                    startmonth = 4;
-                                }
-                                else
-                                {
-                                    startmonth = 1;
-                                }
-                                //End
+                                int m = 0;
                                 int BudgetInputValuesCounter = 1, j = 1;
+                                for (int k = 1; k <= (YearDiffrence + 1); k++)
+                                {
+                                    //Added by Komal Rawal for #1217
+                                    if (startmonth >= 10 * k)
+                                    {
+                                        startmonth = 10 * k;
+                                    }
+                                    else if (startmonth >= 7 * k)
+                                    {
+                                        startmonth = 7 * k;
+                                    }
+                                    else if (startmonth >= 4 * k)
+                                    {
+                                        startmonth = 4 * k;
+                                    }
+                                    else
+                                    {
+                                        startmonth = 1 * k;
+                                    }
+                                    //End
+
                                 bool isExists;
                                 List<Plan_Campaign_Program_Tactic_Budget> thisQuartersMonthList;
                                 Plan_Campaign_Program_Tactic_Budget thisQuarterFirstMonthBudget, obPlanCampaignProgramTacticBudget;
                                 double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
-                                for (int i = 0; i < arrBudgetInputValues.Length; i++)
-                                {
+                                    for (int i = m; i < (4 * k); i++)
+                                    {
+                                        if ((i + 1) % 4 == 0)
+                                        {
+                                            m = i + 1;
+                                        }
                                     // Start - Added by Sohel Pathan on 03/09/2014 for PL ticket #758
                                     isExists = false;
                                     if (PrevAllocationList != null && PrevAllocationList.Count > 0)
@@ -4308,6 +4554,7 @@ namespace RevenuePlanner.Controllers
                                     }
                                     BudgetInputValuesCounter = BudgetInputValuesCounter + 3;
                                 }
+                            }
                             }
 
                             //Added by Komal Rawal for #1217
@@ -6573,6 +6820,12 @@ namespace RevenuePlanner.Controllers
                     isOtherLineItem = false;
 
                 ViewBag.IsOtherLineItem = isOtherLineItem;
+
+                // Add by Nishant sheth
+                // Desc :: #1765 - to get the year diffrence between item start date and end date
+                ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.EndDate.Year) - Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.StartDate.Year));
+                ViewBag.StartYear = Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.StartDate.Year);
+
                 return PartialView("_ActualLineitem");
             }
             catch (Exception ex)

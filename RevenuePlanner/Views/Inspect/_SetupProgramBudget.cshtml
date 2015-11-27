@@ -7,6 +7,9 @@
     {
         IsBudgetAllocated = true;
     }
+    var YearDiffrence = ViewBag.YearDiffrence;
+    var StartYear = ViewBag.StartYear;
+    var AllocatedBy = Model.AllocatedBy;
 }
 
 <style type="text/css">    
@@ -41,7 +44,7 @@
             </div>
             <div class="budget-collapse">
                 <div class="white-bg-edirProgram">
-                    @HtmlHelpers.GenerateBudgetAllocationControl(@Model.AllocatedBy)
+                        @HtmlHelpers.GenerateBudgetAllocationControl(@Model.AllocatedBy, @YearDiffrence, @StartYear)
                     <div class="budget-month">
                         <span class="month">@Common.UnallocatedBudgetLabelText</span>   @* Modified by Sohel Pathan on 04/08/2014 *@
                         <span class="unallocated-span">
@@ -484,7 +487,7 @@
              type: 'POST',
                 async : false,
              url: '@Url.Content("~/Inspect/SaveProgramBudgetAllocation")',
-             data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
+            data: $("form").serialize() + '&BudgetInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title)+ '&AllocatedBy=' + '@AllocatedBy' + '&YearDiffrence=' + '@YearDiffrence',
              success: function (data) {
                  if (data.IsSaved) {
                        // CancelEvent();

@@ -2113,8 +2113,61 @@ namespace RevenuePlanner.Controllers
                 var lstAllProgram = db.Plan_Campaign_Program.Where(_prgram => _prgram.PlanCampaignId == id && _prgram.IsDeleted == false).ToList();
                 var ProgramId = lstAllProgram.Select(_prgram => _prgram.PlanProgramId);
 
+                // Add By Nishant Sheth 
+                // Desc:: for add multiple years regarding #1765
+                // To create the period of the year dynamically base on item period
+                int GlobalYearDiffrence = 0;
+                List<listMonthDynamic> lstMonthlyDynamicProgram = new List<listMonthDynamic>();
+                List<listMonthDynamic> lstMonthlyDynamicCampaign = new List<listMonthDynamic>();
+
+                lstAllProgram.ForEach(program =>
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(program.EndDate.Year) - Convert.ToInt32(program.StartDate.Year));
+
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamicProgram.Add(new listMonthDynamic { Id = program.PlanProgramId, listMonthly = lstMonthlyExtended });
+                });
+
+
+                lstAllCampaign.ForEach(camp =>
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(camp.EndDate.Year) - Convert.ToInt32(camp.StartDate.Year));
+                    if (camp.PlanCampaignId == id)
+                    {
+                        GlobalYearDiffrence = YearDiffrence;
+                    }
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamicCampaign.Add(new listMonthDynamic { Id = camp.PlanCampaignId, listMonthly = lstMonthlyExtended });
+                });
+
+
+
+
                 //// Get list of Budget.
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstCampaignBudget = db.Plan_Campaign_Budget.Where(_campgnBdgt => planCampaignId.Contains(_campgnBdgt.PlanCampaignId)).ToList()
+                    .Where(_campgnBdgt => lstMonthlyDynamicCampaign.Where(a => a.Id == _campgnBdgt.PlanCampaignId).Select(a => a.listMonthly).FirstOrDefault().Contains(_campgnBdgt.Period))
                                                                .Select(_campgnBdgt => new
                                                                {
                                                                    _campgnBdgt.PlanCampaignBudgetId,
@@ -2122,7 +2175,11 @@ namespace RevenuePlanner.Controllers
                                                                    _campgnBdgt.Period,
                                                                    _campgnBdgt.Value
                                                                }).ToList();
+
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(_prgrmBdgt => ProgramId.Contains(_prgrmBdgt.PlanProgramId)).ToList()
+                    .Where(_prgrmBdgt => lstMonthlyDynamicProgram.Where(a => a.Id == _prgrmBdgt.PlanProgramId).Select(a => a.listMonthly).FirstOrDefault().Contains(_prgrmBdgt.Period))
                                                                .Select(_prgrmBdgt => new
                                                                {
                                                                    _prgrmBdgt.PlanProgramBudgetId,
@@ -2143,7 +2200,7 @@ namespace RevenuePlanner.Controllers
                     //// Calculate Quarterly Budget Allocation Value.
                     List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
                     string[] quarterPeriods = Common.quarterPeriods;
-                    for (int i = 0; i < 12; i++)
+                    for (int i = 0; i < (12 * (GlobalYearDiffrence + 1)); i++)
                     {
                         if ((i + 1) % 3 == 0)
                         {
@@ -2167,13 +2224,21 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     //// Set Budget Data.
-                    var budgetData = lstMonthly.Select(period => new
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    var budgetData = lstMonthlyDynamicCampaign.FirstOrDefault().listMonthly != null ? (lstMonthlyDynamicCampaign.Where(a => a.Id == id).FirstOrDefault().listMonthly.Select(period => new
                     {
                         periodTitle = period,
                         budgetValue = lstCampaignBudget.FirstOrDefault(_campBdgt => _campBdgt.Period == period && _campBdgt.PlanCampaignId == id) == null ? "" : lstCampaignBudget.FirstOrDefault(_campBdgt => _campBdgt.Period == period && _campBdgt.PlanCampaignId == id).Value.ToString(),
                         remainingMonthlyBudget = (lstPlanBudget.FirstOrDefault(_plnBdgt => _plnBdgt.Period == period) == null ? 0 : lstPlanBudget.FirstOrDefault(_plnBdgt => _plnBdgt.Period == period).Value) - (lstCampaignBudget.Where(_campgnBdgt => _campgnBdgt.Period == period).Sum(_campgnBdgt => _campgnBdgt.Value)),
                         programMonthlyBudget = lstProgramBudget.Where(_prgrmBdgt => _prgrmBdgt.Period == period).Sum(_prgrmBdgt => _prgrmBdgt.Value)
-                    });
+                    })) : (lstMonthly.Select(period => new
+                    {
+                        periodTitle = period,
+                        budgetValue = lstCampaignBudget.FirstOrDefault(_campBdgt => _campBdgt.Period == period && _campBdgt.PlanCampaignId == id) == null ? "" : lstCampaignBudget.FirstOrDefault(_campBdgt => _campBdgt.Period == period && _campBdgt.PlanCampaignId == id).Value.ToString(),
+                        remainingMonthlyBudget = (lstPlanBudget.FirstOrDefault(_plnBdgt => _plnBdgt.Period == period) == null ? 0 : lstPlanBudget.FirstOrDefault(_plnBdgt => _plnBdgt.Period == period).Value) - (lstCampaignBudget.Where(_campgnBdgt => _campgnBdgt.Period == period).Sum(_campgnBdgt => _campgnBdgt.Value)),
+                        programMonthlyBudget = lstProgramBudget.Where(_prgrmBdgt => _prgrmBdgt.Period == period).Sum(_prgrmBdgt => _prgrmBdgt.Value)
+                    }));
 
                     var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget };
                     return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
@@ -4445,6 +4510,59 @@ namespace RevenuePlanner.Controllers
                 List<string> lstMonthly = Common.lstMonthly;
                 var objPlan = db.Plans.FirstOrDefault(p => p.PlanId == id && p.IsDeleted == false);    // Modified by Sohel Pathan on 04/09/2014 for PL ticket #642
 
+                var lstAllCampaign = db.Plan_Campaign.Where(_camp => _camp.PlanId == id && _camp.IsDeleted == false).ToList();
+
+                // Add By Nishant Sheth 
+                // Desc:: for add multiple years regarding #1765
+                // To create the period of the year dynamically base on item period
+                var maxdateCampaign = lstAllCampaign.OrderByDescending(a => a.EndDate).FirstOrDefault();
+                int GlobalYearDiffrence = 0;
+
+                listMonthDynamic MonthlyDynamicCampaign = new listMonthDynamic();
+                List<listMonthDynamic> lstMonthlyDynamicCampaign = new List<listMonthDynamic>();
+                if (maxdateCampaign != null)
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(maxdateCampaign.EndDate.Year) - Convert.ToInt32(maxdateCampaign.StartDate.Year));
+                    GlobalYearDiffrence = YearDiffrence;
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    MonthlyDynamicCampaign.listMonthly = lstMonthlyExtended;
+                    MonthlyDynamicCampaign.Id = maxdateCampaign.PlanCampaignId;
+                }
+
+                if (lstAllCampaign != null && lstAllCampaign.Count > 0)
+                {
+                    lstAllCampaign.ForEach(camp =>
+                    {
+                        List<string> lstMonthlyExtended = new List<string>();
+                        int YearDiffrence = Convert.ToInt32(Convert.ToInt32(camp.EndDate.Year) - Convert.ToInt32(camp.StartDate.Year));
+
+                        string periodPrefix = "Y";
+                        int baseYear = 0;
+                        for (int i = 0; i < (YearDiffrence + 1); i++)
+                        {
+                            for (int j = 1; j <= 12; j++)
+                            {
+                                lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                            }
+                            baseYear = baseYear + 12;
+                        }
+
+                        lstMonthlyDynamicCampaign.Add(new listMonthDynamic { Id = camp.PlanCampaignId, listMonthly = lstMonthlyExtended });
+                    });
+                }
+
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstPlanBudget = db.Plan_Budget.Where(pb => pb.PlanId == id)
                                                                .Select(pb => new
                                                                {
@@ -4452,9 +4570,12 @@ namespace RevenuePlanner.Controllers
                                                                    pb.PlanId,
                                                                    pb.Period,
                                                                    pb.Value
-                                                               }).ToList();
-                var lstAllCampaign = db.Plan_Campaign.Where(_camp => _camp.PlanId == id && _camp.IsDeleted == false).ToList();
+                                                               }).ToList()
+                                                               .Where(a => (MonthlyDynamicCampaign.listMonthly != null ? MonthlyDynamicCampaign.listMonthly.Contains(a.Period) : lstMonthly.Contains(a.Period))).ToList();
+
                 var planCampaignId = lstAllCampaign.Select(_camp => _camp.PlanCampaignId);
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstCampaignBudget = db.Plan_Campaign_Budget.Where(_budgt => planCampaignId.Contains(_budgt.PlanCampaignId)).ToList()
                                                                .Select(_budgt => new
                                                                {
@@ -4462,7 +4583,11 @@ namespace RevenuePlanner.Controllers
                                                                    _budgt.PlanCampaignId,
                                                                    _budgt.Period,
                                                                    _budgt.Value
-                                                               }).ToList();
+                                                               }).ToList()
+                        .Where(_budget => (lstMonthlyDynamicCampaign.FirstOrDefault().listMonthly != null ?
+                            lstMonthlyDynamicCampaign.Where(a => a.Id == _budget.PlanCampaignId).Select(a => a.listMonthly).FirstOrDefault().Contains(_budget.Period) :
+                            lstMonthly.Contains(_budget.Period)))
+                            .ToList();
 
                 double allCampaignBudget = lstAllCampaign.Sum(_cmpagn => _cmpagn.CampaignBudget);
                 double planBudget = objPlan.Budget;
@@ -4474,7 +4599,7 @@ namespace RevenuePlanner.Controllers
                     //// Set Quarterly Budget Allcation value.
                     List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
                     string[] quarterPeriods = Common.quarterPeriods;
-                    for (int i = 0; i < 12; i++)
+                    for (int i = 0; i < (12 * (GlobalYearDiffrence + 1)); i++)
                     {
                         if ((i + 1) % 3 == 0)
                         {
@@ -4496,12 +4621,19 @@ namespace RevenuePlanner.Controllers
                 // End - Added by Sohel Pathan on 27/08/2014 for PL ticket #642
                 else
                 {
-                    var budgetData = lstMonthly.Select(period => new
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    var budgetData = MonthlyDynamicCampaign.listMonthly != null ? (MonthlyDynamicCampaign.listMonthly.Select(period => new
                     {
                         periodTitle = period,
                         budgetValue = lstPlanBudget.FirstOrDefault(pb => pb.Period == period && pb.PlanId == id) == null ? "" : lstPlanBudget.FirstOrDefault(pb => pb.Period == period && pb.PlanId == id).Value.ToString(),
                         campaignMonthlyBudget = lstCampaignBudget.Where(c => c.Period == period).Sum(c => c.Value)
-                    });
+                    })) : (lstMonthly.Select(period => new
+                    {
+                        periodTitle = period,
+                        budgetValue = lstPlanBudget.FirstOrDefault(pb => pb.Period == period && pb.PlanId == id) == null ? "" : lstPlanBudget.FirstOrDefault(pb => pb.Period == period && pb.PlanId == id).Value.ToString(),
+                        campaignMonthlyBudget = lstCampaignBudget.Where(c => c.Period == period).Sum(c => c.Value)
+                    }));
 
                     var objBudgetAllocationData = new { budgetData = budgetData, planRemainingBudget = planRemainingBudget };
                     return Json(objBudgetAllocationData, JsonRequestBehavior.AllowGet);
@@ -7925,9 +8057,79 @@ namespace RevenuePlanner.Controllers
 
                 var lstSelectedProgram = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.PlanCampaignId == CampaignId && _prgrm.IsDeleted == false).ToList();
 
+                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanProgramId == PlanProgramId && _tac.IsDeleted == false).Select(_tac => _tac).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
+
+                var lstPlanProgramTacticsId = lstPlanProgramTactics.Select(_tac => _tac.PlanTacticId);
+                // Add By Nishant Sheth 
+                // Desc:: for add multiple years regarding #1765
+                // To create the period of the year dynamically base on tactic period
+                int GlobalYearDiffrence = 0;
+                List<listMonthDynamic> lstMonthlyDynamicProgram = new List<listMonthDynamic>();
+                List<listMonthDynamic> lstMonthlyDynamicCampaign = new List<listMonthDynamic>();
+                List<listMonthDynamic> lstMonthlyDynamicTactic = new List<listMonthDynamic>();
+                lstSelectedProgram.ForEach(program =>
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(program.EndDate.Year) - Convert.ToInt32(program.StartDate.Year));
+                    if (program.PlanProgramId == PlanProgramId)
+                    {
+                        GlobalYearDiffrence = YearDiffrence;
+                    }
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamicProgram.Add(new listMonthDynamic { Id = program.PlanProgramId, listMonthly = lstMonthlyExtended });
+                });
+
+                if (objPlanCampaign != null)
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(objPlanCampaign.EndDate.Year) - Convert.ToInt32(objPlanCampaign.StartDate.Year));
+
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamicCampaign.Add(new listMonthDynamic { Id = objPlanCampaign.PlanCampaignId, listMonthly = lstMonthlyExtended });
+                }
+
+                lstPlanProgramTactics.ForEach(tactic =>
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(tactic.EndDate.Year) - Convert.ToInt32(tactic.StartDate.Year));
+
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamicTactic.Add(new listMonthDynamic { Id = tactic.PlanTacticId, listMonthly = lstMonthlyExtended });
+                });
+
                 var planProgramIds = lstSelectedProgram.Select(_prgrm => _prgrm.PlanProgramId);
 
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstCampaignBudget = db.Plan_Campaign_Budget.Where(_budgt => _budgt.PlanCampaignId == CampaignId).ToList()
+                    .Where(_budget => lstMonthlyDynamicCampaign.Where(a => a.Id == _budget.PlanCampaignId).Select(a => a.listMonthly).FirstOrDefault().Contains(_budget.Period))
                                                                .Select(_budgt => new
                                                                {
                                                                    _budgt.PlanCampaignBudgetId,
@@ -7936,7 +8138,10 @@ namespace RevenuePlanner.Controllers
                                                                    _budgt.Value
                                                                }).ToList();
 
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(_budgt => planProgramIds.Contains(_budgt.PlanProgramId)).ToList()
+                    .Where(_budget => lstMonthlyDynamicProgram.Where(a => a.Id == _budget.PlanProgramId).Select(a => a.listMonthly).FirstOrDefault().Contains(_budget.Period))
                                                                .Select(_budgt => new
                                                                {
                                                                    _budgt.PlanProgramBudgetId,
@@ -7945,9 +8150,11 @@ namespace RevenuePlanner.Controllers
                                                                    _budgt.Value
                                                                }).ToList();
 
-                var lstPlanProgramTactics = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanProgramId == PlanProgramId && _tac.IsDeleted == false).Select(_tac => _tac.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
-                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => lstPlanProgramTactics.Contains(_tacCost.PlanTacticId)).ToList()
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
+                var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Cost.Where(_tacCost => lstPlanProgramTacticsId.Contains(_tacCost.PlanTacticId)).ToList()
+                    .Where(_tacCost => lstMonthlyDynamicTactic.Where(a => a.Id == _tacCost.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(_tacCost.Period))
                                                                .Select(_tacCost => new
                                                                {
                                                                    _tacCost.PlanTacticBudgetId,
@@ -7965,7 +8172,7 @@ namespace RevenuePlanner.Controllers
                     //// Set Quarterly Budget Allocation value.
                     List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
                     string[] quarterPeriods = Common.quarterPeriods;
-                    for (int i = 0; i < 12; i++)
+                    for (int i = 0; i < (12 * (GlobalYearDiffrence + 1)); i++)
                     {
                         if ((i + 1) % 3 == 0)
                         {
@@ -7987,7 +8194,9 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    var budgetData = lstMonthly.Select(period => new
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    var budgetData = lstMonthlyDynamicProgram.Where(a => a.Id == PlanProgramId).Select(a => a.listMonthly).FirstOrDefault().Select(period => new
                     {
                         periodTitle = period,
                         budgetValue = lstProgramBudget.FirstOrDefault(c => c.Period == period && c.PlanProgramId == PlanProgramId) == null ? "" : lstProgramBudget.FirstOrDefault(c => c.Period == period && c.PlanProgramId == PlanProgramId).Value.ToString(),
@@ -8019,6 +8228,36 @@ namespace RevenuePlanner.Controllers
             {
                 List<string> lstMonthly = Common.lstMonthly;
 
+
+                var lstTactic = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanProgramId == PlanProgramId && _tac.IsDeleted == false)
+                    .ToList();
+
+                // Add By Nishant Sheth 
+                // Desc:: for add multiple years regarding #1765
+                // To create the period of the year dynamically base on tactic period
+                int GlobalYearDiffrence = 0;
+                List<listMonthDynamic> lstMonthlyDynamic = new List<listMonthDynamic>();
+                lstTactic.ForEach(tactic =>
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(tactic.EndDate.Year) - Convert.ToInt32(tactic.StartDate.Year));
+                    if (tactic.PlanTacticId == PlanTacticId)
+                    {
+                        GlobalYearDiffrence = YearDiffrence;
+                    }
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamic.Add(new listMonthDynamic { Id = tactic.PlanTacticId, listMonthly = lstMonthlyExtended });
+                });
+
                 ////// start-Added by Mitesh Vaishnav for PL ticket #571
                 //// Actual cost portion added exact under "lstMonthly" array because Actual cost portion is independent from the monthly/quarterly selection made by the user at the plan level.
                 var tacticLineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == PlanTacticId && l.IsDeleted == false).Select(l => l.PlanLineItemId).ToList();
@@ -8028,18 +8267,27 @@ namespace RevenuePlanner.Controllers
                 {
                     ////object for filling input of Actual Cost Allocation
                     string costTitle = Enums.InspectStage.Cost.ToString();
-                    actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId && ta.StageTitle == costTitle).ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    actualCostAllocationData = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == PlanTacticId && ta.StageTitle == costTitle)
+                        .ToList().Select(ta => new Plan_Campaign_Program_Tactic_LineItem_Actual
                     {
                         PlanLineItemId = 0,
                         Period = ta.Period,
                         Value = ta.Actualvalue
-                    }).ToList();
+                    }).ToList()
+                    .Where(ta => lstMonthlyDynamic.Where(a => a.Id == ta.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(ta.Period))
+                    .ToList();
                 }
                 else
                 {
-                    var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => tacticLineItemList.Contains(al.PlanLineItemId)).ToList();
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    var actualLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(al => tacticLineItemList.Contains(al.PlanLineItemId)).ToList()
+                        .Where(al => lstMonthlyDynamic.Where(a => a.Id == al.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(al.Period))
+                        .ToList();
                     ////object for filling input of Actual Cost Allocation
-                    actualCostAllocationData = lstMonthly.Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
+                    actualCostAllocationData = lstMonthlyDynamic.Where(a => a.Id == PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Select(m => new Plan_Campaign_Program_Tactic_LineItem_Actual
                     {
                         PlanLineItemId = 0,
                         Period = m,
@@ -8056,8 +8304,10 @@ namespace RevenuePlanner.Controllers
                 var lstSelectedProgram = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.PlanProgramId == PlanProgramId && _prgrm.IsDeleted == false).ToList();
 
                 var planProgramIds = lstSelectedProgram.Select(_prgrm => _prgrm.PlanProgramId);
-
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstProgramBudget = db.Plan_Campaign_Program_Budget.Where(_prgBdgt => planProgramIds.Contains(_prgBdgt.PlanProgramId)).ToList()
+                    .Where(_prgBdgt => lstMonthlyDynamic.Where(a => a.Id == PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(_prgBdgt.Period))
                                                                .Select(_prgBdgt => new
                                                                {
                                                                    _prgBdgt.PlanProgramBudgetId,
@@ -8066,12 +8316,14 @@ namespace RevenuePlanner.Controllers
                                                                    _prgBdgt.Value
                                                                }).ToList();
 
-                var lstTactic = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanProgramId == PlanProgramId && _tac.IsDeleted == false).ToList();
+                //var lstTactic = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanProgramId == PlanProgramId && _tac.IsDeleted == false).ToList();
                 var lstPlanProgramTactics = lstTactic.Select(_tac => _tac.PlanTacticId).ToList();  // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
 
                 var CostTacticsBudget = lstTactic.Sum(c => c.TacticBudget); // Modified by :- Sohel Pathan on 01/09/2014 for PL ticket #745
-
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstTacticsBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(_tacCost => lstPlanProgramTactics.Contains(_tacCost.PlanTacticId)).ToList()
+                    .Where(_tacCost => lstMonthlyDynamic.Where(a => a.Id == _tacCost.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(_tacCost.Period))
                                                                .Select(_tacCost => new
                                                                {
                                                                    _tacCost.PlanTacticBudgetId,
@@ -8079,8 +8331,10 @@ namespace RevenuePlanner.Controllers
                                                                    _tacCost.Period,
                                                                    _tacCost.Value
                                                                }).ToList();
-
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
                 var lstTacticsLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(lineCost => tacticLineItemList.Contains(lineCost.PlanLineItemId)).ToList()
+                    .Where(lineCost => lstMonthlyDynamic.Where(a => a.Id == lineCost.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(lineCost.Period))
                                                                .Select(lineCost => new
                                                                {
                                                                    lineCost.PlanLineItemBudgetId,
@@ -8102,7 +8356,8 @@ namespace RevenuePlanner.Controllers
                     List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
                     string[] quarterPeriods = Common.quarterPeriods;
                     PlanBudgetAllocationValue objPlanBudgetAllocationValue;
-                    for (int i = 0; i < 12; i++)
+
+                    for (int i = 0; i < (12 * (GlobalYearDiffrence + 1)); i++)
                     {
                         if ((i + 1) % 3 == 0)
                         {
@@ -8125,7 +8380,9 @@ namespace RevenuePlanner.Controllers
                 else
                 {
                     // End - Added by Sohel Pathan on 04/09/2014 for PL ticket #759
-                    var budgetData = lstMonthly.Select(period => new
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    var budgetData = lstMonthlyDynamic.Where(a => a.Id == PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Select(period => new
                     {
                         periodTitle = period,
                         budgetValue = lstTacticsBudget.FirstOrDefault(_tacBdgt => _tacBdgt.Period == period && _tacBdgt.PlanTacticId == PlanTacticId) == null ? "" : lstTacticsBudget.FirstOrDefault(_tacBdgt => _tacBdgt.Period == period && _tacBdgt.PlanTacticId == PlanTacticId).Value.ToString(),
@@ -8204,7 +8461,59 @@ namespace RevenuePlanner.Controllers
 
                 //// Get LineItem monthly Actual data.
                 List<string> lstActualAllocationMonthly = Common.lstMonthly;
-                var lstActualLineItemCost = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(actl => actl.PlanLineItemId.Equals(planLineItemId)).ToList()
+                // Add By Nishant Sheth 
+                // Desc:: for add multiple years regarding #1765
+                // To create the period of the year dynamically base on tactic period
+                var lstActualLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(actl => actl.PlanLineItemId.Equals(planLineItemId)).ToList();
+
+                int GlobalYearDiffrence = 0;
+                List<listMonthDynamic> lstMonthlyDynamicActual = new List<listMonthDynamic>();
+
+                lstActualLineItemActualList.ForEach(lineItem =>
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(lineItem.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.EndDate.Year) - Convert.ToInt32(lineItem.Plan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.StartDate.Year));
+                    if (lineItem.PlanLineItemId == planLineItemId)
+                    {
+                        GlobalYearDiffrence = YearDiffrence;
+                    }
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamicActual.Add(new listMonthDynamic { Id = lineItem.PlanLineItemId, listMonthly = lstMonthlyExtended });
+                });
+
+                if (lstActualLineItemActualList.Count == 0)
+                {
+                    var LineItemTactic = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.PlanLineItemId == planLineItemId).FirstOrDefault();
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(LineItemTactic.Plan_Campaign_Program_Tactic.EndDate.Year) - Convert.ToInt32(LineItemTactic.Plan_Campaign_Program_Tactic.StartDate.Year));
+                    if (LineItemTactic.PlanLineItemId == planLineItemId)
+                    {
+                        GlobalYearDiffrence = YearDiffrence;
+                    }
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamicActual.Add(new listMonthDynamic { Id = LineItemTactic.PlanLineItemId, listMonthly = lstMonthlyExtended });
+                }
+
+                var lstActualLineItemCost = lstActualLineItemActualList.Where(actl => actl.PlanLineItemId.Equals(planLineItemId)).ToList()
+                    .Where(actl => lstMonthlyDynamicActual.Where(a => a.Id == actl.PlanLineItemId).Select(a => a.listMonthly).FirstOrDefault().Contains(actl.Period))
                                                               .Select(actl => new
                                                               {
                                                                   actl.PlanLineItemId,
@@ -8213,7 +8522,9 @@ namespace RevenuePlanner.Controllers
                                                               }).ToList();
 
                 //Set the custom array for fecthed Line item Actual data .
-                var ActualCostData = lstActualAllocationMonthly.Select(period => new
+                // Change by Nishant sheth
+                // Desc :: #1765 - add period condition to get value
+                var ActualCostData = lstMonthlyDynamicActual.Where(a => a.Id == planLineItemId).Select(a => a.listMonthly).FirstOrDefault().Select(period => new
                 {
                     periodTitle = period,
                     costValue = lstActualLineItemCost.FirstOrDefault(c => c.Period == period && c.PlanLineItemId == planLineItemId) == null ? "" : lstActualLineItemCost.FirstOrDefault(lineCost => lineCost.Period == period && lineCost.PlanLineItemId == planLineItemId).Value.ToString()
@@ -8418,7 +8729,9 @@ namespace RevenuePlanner.Controllers
 
                 //// Retrive Custom Fields and CustomFieldOptions list
                 GetCustomFieldAndOptions(out lstCustomField, out lstCustomFieldOption);
-
+                // 1765
+                planmodel.SelectedPlanYear = objPlan.Year;
+                // 1765
                 planmodel.lstCustomFields = lstCustomField;
                 planmodel.lstCustomFieldOptions = lstCustomFieldOption;
                 planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(Planid);

@@ -38,6 +38,9 @@ namespace RevenuePlanner.Models
         public List<OwnerModel> lstOwner { get; set; }
         public List<TacticTypeModel> lstTacticType { get; set; }
         public List<PlanListModel> lstPlan { get; set; }
+        // Add By Nishant Sheth 
+        // #1765 - to set the item selected plan year
+        public string SelectedPlanYear { get; set; }
     }
     public class PlanListModel
     {
@@ -336,5 +339,12 @@ namespace RevenuePlanner.Models
     {
         public string id { get; set; }
         public string value { get; set; }
+    }	  
+    // Add By Nishant Sheth 
+    // #1765 - to add list of monthly period.
+    public class listMonthDynamic
+    {
+        public int Id { get; set; }
+        public List<string> listMonthly { get; set; }
     }
 }

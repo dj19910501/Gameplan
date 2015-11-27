@@ -845,7 +845,7 @@
                 for (i in actuals) {
                     indexValue = indexValue + 1;
                     isFilterFound = true;
-                    addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable, actuals[i].LineItemsData, actuals[i].costActualData);
+                    addRowActual(indexValue, actuals[i].id, actuals[i].title, actuals[i].projectedStageValue, actuals[i].projectedStageValueActual, actuals[i].mqlProjected, actuals[i].mqlActual, actuals[i].cwProjected, actuals[i].cwActual, actuals[i].revenueProjected, actuals[i].revenueActual, actuals[i].costProjected, actuals[i].costActual, actuals[i].roiProjected, actuals[i].roiActual, actuals[i].actualData, actuals[i].modifiedBy, actuals[i].LastSync, actuals[i].stageTitle, actuals[i].tacticStageId, actuals[i].tacticStageTitle, actuals[i].IsTacticEditable, actuals[i].LineItemsData, actuals[i].costActualData, actuals[i].YearDiffrence, actuals[i].StartYear);
                 }
                 if (!isFilterFound) {
                     $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticFound';
@@ -897,7 +897,7 @@
     }
         //add row in actuals table
         //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-        function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData) {
+    function addRowActual(_index, _id, _title, _projectedStageValue, _projectedStageValueActual, _mqlProjected, _mqlActual, _cwProjected, _cwActual, _revenueProjected, _revenueActual, _costProjected, _costActual, _roiProjected, _roiActual, _actualData, _modifiedBy, _LastSync, stageTitle, tacticStageId, tacticStageTitle, IsTacticEditable, _LineItemsData, _costActualData, _YearDiffrence, _StartYear) {
             var $tableActuals = $('.accordion-actuals');
             var num = parseInt(_index);
             var $html = '<div class="accordion-group">' +
@@ -921,27 +921,31 @@
             '<div id="divTable' + _id + '">' +
                '<table id="table_actuals" class="table" tableTacticId="tableActual' + _id + '">' +
                 '<thead>' +
-                    '<tr>' +
-                        '<th>Jan</th>' +
-                        '<th>Feb</th>' +
-                        '<th>Mar</th>' +
-                        '<th>Apr</th>' +
-                        '<th>May</th>' +
-                        '<th>Jun</th>' +
-                        '<th>Jul</th>' +
-                        '<th>Aug</th>' +
-                        '<th>Sep</th>' +
-                        '<th>Oct</th>' +
-                        '<th>Nov</th>' +
-                        '<th>Dec</th>' +
-                    '</tr>' +
+                '<tr>';
+        for (var i = 0; i < parseInt(_YearDiffrence + 1) ; i++) {
+
+            $html += '<th>Jan - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Feb - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Mar - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Apr - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>May - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Jun - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Jul - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Aug - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Sep - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Oct - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Nov - ' + (parseInt(_StartYear) + i) + '  </th>' +
+                        '<th>Dec - ' + (parseInt(_StartYear) + i) + '  </th>'
+        }
+        
+        $html += '</tr>' +
                 '</thead>' +
                 '<tbody>';
             var arrStage = stageTitle;
             for (var p = 0; p < arrStage.length; p = p + 1) {
                 var idtr = "tr" + _id + arrStage[p];
                 $html += '<tr id=' + idtr + '>';
-                for (var j = 1; j <= 12; j = j + 1) {
+            for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
                     var tdId = _id + "-" + arrStage[p] + "-Y" + j;
                     $html += '<td><input id="' + tdId + '" placeholder="---" ';     // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     if (arrStage[p] == 'Revenue') {
@@ -967,7 +971,7 @@
 
             //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
             $html += '<tr id=' + "tr" + _id + "Cost" + ' TacticId=' + _id + '>';
-            for (var j = 1; j <= 12; j = j + 1) {
+        for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
                 var newCounterTactic = j - 1;
                 var tdId = _id + "-" + "Cost" + "-Y" + j;
                 var divId = _id+"Cost-Y" + j;
@@ -991,7 +995,7 @@
                     var TacticId = _id;
                     var idtr = "tr" + _LineItemsData[p].id + TacticId;
                 $html += '<tr id=' + idtr + ' TacticId='+_id +'>';
-                for (var j = 1; j <= 12; j = j + 1) {
+            for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
                     var tdId = _LineItemsData[p].id + "-" + TacticId + "-Y" + j;
                     var ClassName = "currency_dollar" + " "+_id+"Line-Y" + j;
                     $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point

@@ -4,6 +4,8 @@
     var lineItemList = ViewBag.LineItemList as List<RevenuePlanner.Models.Plan_Campaign_Program_Tactic_LineItem>;
     string planLineItemIds = string.Empty;
     string MQlTitle = string.Empty;
+    int StartYear = Convert.ToInt32(ViewBag.StartYear);
+    int YearDiffrence = Convert.ToInt32(ViewBag.YearDiffrence);
 }
 <style type="text/css">
     .disabled-row >th {
@@ -100,18 +102,21 @@
             <table class="table table-striped mystats table-style " id="tblActual">
                 <thead>
                     <tr class="text-align-right height42">
-                        <th class="border-r font908D88 padding-left55 text-align-right">Jan</th>
-                        <th class="font908D88 padding-left55 text-align-right">Feb</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Mar</th>
-                        <th class="font908D88 padding-left55 text-align-right">Apr</th>
-                        <th class="font908D88 padding-left55 text-align-right">May</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Jun</th>
-                        <th class="font908D88 padding-left55 text-align-right">Jul</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Aug</th>
-                        <th class="font908D88 padding-left55 text-align-right">Sept</th>
-                        <th class="font908D88 padding-left55 text-align-right">Oct</th>
-                        <th class="border-r font908D88 padding-left55 text-align-right">Nov</th>
-                        <th class="font908D88 padding-left55 text-align-right">Dec</th>
+                        @for (var i = 0; i < (YearDiffrence + 1); i++)
+                        {
+                            <th class="border-r font908D88 text-align-right">Jan - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="font908D88 text-align-right">Feb - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="border-r font908D88 text-align-right">Mar - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="font908D88 text-align-right">Apr - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="font908D88 text-align-right">May - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="border-r font908D88 text-align-right">Jun - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="font908D88 text-align-right">Jul - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="border-r font908D88 text-align-right">Aug - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="font908D88 text-align-right">Sept - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="font908D88 text-align-right">Oct - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="border-r font908D88 text-align-right">Nov - @Convert.ToInt32(StartYear + i)</th>
+                            <th class="font908D88 text-align-right">Dec - @Convert.ToInt32(StartYear + i)</th>
+                        }
                     </tr>
                 </thead>
                 <tbody>
@@ -119,7 +124,7 @@
                     {
                         string idtr = "tr" + @s;
                         <tr class="height42" id="@idtr">
-                            @for (int j = 1; j <= 12; j++)
+                            @for (int j = 1; j <= (12 * (YearDiffrence + 1)); j++)
                             {
                                 string ids = s + "-Y" + j;
                                 string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
@@ -135,7 +140,7 @@
                         </tr>
                     }
                     <tr class="height42" id="trCost">
-                        @for (int j = 1; j <= 12; j++)
+                        @for (int j = 1; j <= (12 * (YearDiffrence + 1)); j++)
                         {
                             string costIds = "Cost-Y" + j;
                             var costPeriod="Y"+j.ToString();
@@ -162,7 +167,7 @@
                             planLineItemIds += item.PlanLineItemId + ",";
                             string rawId="trLine"+item.PlanLineItemId;
                              <tr class="height42 lines" id="@rawId">
-                                 @for (int j = 1; j <= 12; j++)
+                                @for (int j = 1; j <= (12 * (YearDiffrence + 1)); j++)
                         {
                             string lineItemIds = @item.PlanLineItemId+"-Y" + j;
                             string maxL = RevenuePlanner.Helpers.Common.maxLengthPriceValue;
@@ -177,6 +182,8 @@
                         planLineItemIds = planLineItemIds.Remove(planLineItemIds.Length - 1, 1);
                     }
                     <tr class="height42">
+                        @for (var i = 0; i < (YearDiffrence + 1); i++)
+                        {
                         <th class="border-r font3F3F3F"></th>
                         <th class="font3F3F3F"></th>
                         <th class="border-r font3F3F3F"></th>
@@ -189,6 +196,7 @@
                         <th class="font3F3F3F"></th>
                         <th class="border-r font3F3F3F"></th>
                         <th class="font3F3F3F"></th>
+                        }
                     </tr>
                 </tbody>
 

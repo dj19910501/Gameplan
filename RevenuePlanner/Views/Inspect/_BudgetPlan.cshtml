@@ -10,6 +10,8 @@
         IsBudgetAllocated = true;
     }
     var TotalAllocatedCampaignBudget = ViewBag.TotalAllocatedCampaignBudget != null ? (double)ViewBag.TotalAllocatedCampaignBudget : 0;
+    int StartYear = Convert.ToInt32(ViewBag.StartYear);
+    int YearDiffrence = Convert.ToInt32(ViewBag.YearDiffrence);
 }
 @using (Html.BeginForm())
 {
@@ -37,7 +39,7 @@
                     </div>
                     <div class="budget-collapse">
                         <div class="white-bg-InspectPopup-Budget">
-                            @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy)
+                        @HtmlHelpers.GenerateBudgetAllocationControl(AllocatedBy, YearDiffrence, StartYear)
                             <div class="budget-month">
                                 <span class="month">@Common.UnallocatedBudgetLabelText</span>
                                 <span class="unallocated-span"><input id="lblUnallocatedBudget" class="unallocated-text" readonly="true" /></span>
@@ -370,7 +372,7 @@
                 type: 'POST',
                     async : false,
                 url: '@Url.Content("~/Inspect/SavePlanDetails")',
-                data: formData + '&BudgetInputValues=' + allocationValue.toString() + '&planBudget=' + planBudget + '&RedirectType=' + RedirectType + '&UserId=' + uId,
+                data: formData + '&BudgetInputValues=' + allocationValue.toString() + '&planBudget=' + planBudget + '&RedirectType=' + RedirectType + '&UserId=' + uId+ '&AllocatedBy=' + '@AllocatedBy' + '&YearDiffrence=' + '@YearDiffrence',
                 success: function (data) {
                     if (data.returnURL != 'undefined' && data.returnURL == '#') {
                         window.location = '@Url.Content("~/Login/Index")';

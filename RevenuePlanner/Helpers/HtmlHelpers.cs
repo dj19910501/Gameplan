@@ -132,27 +132,56 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="isMonthlyAllocation"></param>
         /// <returns></returns>
-        public static MvcHtmlString GenerateBudgetAllocationControl(string isMonthlyAllocation)
+        public static MvcHtmlString GenerateBudgetAllocationControl(string isMonthlyAllocation, int YearDiffrence = 0, int StartYear = 0)
         {
             string[] lstMonths = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec".Split(',');
 
             string[] lstQuarters = "Q1,Q2,Q3,Q4".Split(',');
 
+            string QuarterPrefix = "Q";
+
             string sb = string.Empty;
+
+            int month = 0;
+
+            int baseYear = StartYear;
 
             if (isMonthlyAllocation == Enums.PlanAllocatedBy.months.ToString())
             {
-                for (int i = 0; i < 12; i++)
+                // Change by Nishant Sheth
+                // Desc ::#1765- to create month/quarter view as per year diffrence
+                for (int i = 0; i < ((YearDiffrence + 1)); i++)
                 {
-                    sb += "<div class=\"budget-month\"><span class=\"month\">" + lstMonths[i] + "</span><span class=\"light-blue-background\"><input id=\"Y" + (i + 1) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    if ((i + 1) % 2 == 0)
+                    {
+                        month = month + 12;
+                    }
+                    baseYear = baseYear + i;
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Jan.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Jan) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Feb.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Feb) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Mar.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Mar) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Apr.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Apr) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.May.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.May) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Jun.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Jun) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Jul.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Jul) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Aug.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Aug) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Sep.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Sep) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Oct.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Oct) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Nov.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Nov) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Enums.ReportMonthDisplayFinance.Dec.ToString() + " - " + baseYear + "</span><span class=\"light-blue-background\"><input id=\"Y" + ((Convert.ToInt32(Enums.ReportMonthDisplayFinance.Dec) + 1) + month) + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\"  /></span></div>";
+
+                   
+
                 }
             }
             else
             {
                 int quarterCounter = 1;
-                for (int i = 0; i < 4; i++)
+                // Change by Nishant Sheth
+                // Desc ::#1765- to create month/quarter view as per year diffrence
+                for (int i = 0; i < (4 * (YearDiffrence + 1)); i++)
                 {
-                    sb += "<div class=\"budget-month\"><span class=\"month\">" + lstQuarters[i] + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
+                    sb += "<div class=\"budget-month\"><span class=\"month\">" + Convert.ToString(QuarterPrefix + (i + 1)) + "</span><span class=\"light-blue-background\"><input id=\"Y" + quarterCounter + "\" class=\"priceValueAllowNull\" placeholder=\"- - -\" maxlength=\"" + Common.maxLengthPriceValue + "\" /></span></div>";
                     quarterCounter = quarterCounter + 3;
                 }
             }

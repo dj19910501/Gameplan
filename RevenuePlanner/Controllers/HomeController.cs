@@ -3495,7 +3495,28 @@ namespace RevenuePlanner.Controllers
 
                 List<int> lstViewEditEntities = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, TacticIds, true);
 
-                List<string> lstMonthly = Common.lstMonthly;
+                // Add By Nishant Sheth 
+                // Desc:: for add multiple years regarding #1765
+                // To create the period of the year dynamically base on tactic period
+                                
+                List<listMonthDynamic> lstMonthlyDynamic = new List<listMonthDynamic>();
+                TacticList.ForEach(tactic =>
+                {
+                    List<string> lstMonthlyExtended = new List<string>();
+                    int YearDiffrence = Convert.ToInt32(Convert.ToInt32(tactic.EndDate.Year) - Convert.ToInt32(tactic.StartDate.Year));
+                    string periodPrefix = "Y";
+                    int baseYear = 0;
+                    for (int i = 0; i < (YearDiffrence + 1); i++)
+                    {
+                        for (int j = 1; j <= 12; j++)
+                        {
+                            lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                        }
+                        baseYear = baseYear + 12;
+                    }
+                    lstMonthlyDynamic.Add(new listMonthDynamic { Id = tactic.PlanTacticId, listMonthly = lstMonthlyExtended });
+                });
+
 
                 var tacticLineItem = objDbMrpEntities.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => TacticIds.Contains(lineItem.PlanTacticId) && lineItem.IsDeleted == false).ToList();
                 List<int> LineItemsIds = tacticLineItem.Select(lineItem => lineItem.PlanLineItemId).ToList();
@@ -3507,21 +3528,45 @@ namespace RevenuePlanner.Controllers
                     id = tactic.PlanTacticId,
                     title = tactic.Title,
                     mqlProjected = MQLTacticList.Where(mqlTactic => mqlTactic.PlanTacticId == tactic.PlanTacticId).Select(mqlTactic => mqlTactic.MQL),
-                    mqlActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleMQL).Sum(tacticActual => tacticActual.Actualvalue),
+
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    mqlActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleMQL
+                    && lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(tacticActual.Period))
+                    .Sum(tacticActual => tacticActual.Actualvalue),
+
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
                     cwProjected = Math.Round(tacticListCW.Where(cwTactic => cwTactic.PlanTacticId == tactic.PlanTacticId).Select(cwTactic => cwTactic.ProjectedRevenue).FirstOrDefault(), 1),
-                    cwActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleCW).Sum(tacticActual => tacticActual.Actualvalue),
+                    cwActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleCW
+                    && lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(tacticActual.Period)
+                    ).Sum(tacticActual => tacticActual.Actualvalue),
+
                     revenueProjected = Math.Round(tacticList.Where(planTactic => planTactic.PlanTacticId == tactic.PlanTacticId).Select(planTactic => planTactic.ProjectedRevenue).FirstOrDefault(), 1),
-                    revenueActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleRevenue).Sum(tacticActual => tacticActual.Actualvalue),
+
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    revenueActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleRevenue
+                    && lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(tacticActual.Period)
+                    ).Sum(tacticActual => tacticActual.Actualvalue),
+
                     costProjected = (tacticLineItem.Where(lineItem => lineItem.PlanTacticId == tactic.PlanTacticId)).Count() > 0 ? (tacticLineItem.Where(lineItem => lineItem.PlanTacticId == lineItem.PlanTacticId)).Sum(lineItem => lineItem.Cost) : tactic.Cost,
                     //// Get the sum of Tactic line item actuals
                     costActual = (tacticLineItem.Where(lineItem => lineItem.PlanTacticId == tactic.PlanTacticId)).Count() > 0 ?
                     (tacticLineItem.Where(lineItem => lineItem.PlanTacticId == tactic.PlanTacticId)).Select(lineItem => new
                     {
-                        LineItemActualCost = tacticLineItemActual.Where(lineItemActual => lineItemActual.PlanLineItemId == lineItem.PlanLineItemId).Sum(lineItemActual => lineItemActual.Value)
+                        // Change by Nishant sheth
+                        // Desc :: #1765 - add period condition to get value
+                        LineItemActualCost = tacticLineItemActual.Where(lineItemActual => lineItemActual.PlanLineItemId == lineItem.PlanLineItemId
+                        && lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(lineItemActual.Period)
+                        ).Sum(lineItemActual => lineItemActual.Value)
                     }).Sum(lineItemActual => lineItemActual.LineItemActualCost) : (tacticActuals.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == Enums.InspectStageValues[Enums.InspectStage.Cost.ToString()].ToString())).Sum(tacticActual => tacticActual.Actualvalue),
 
                     //// First check that if tactic has a single line item at that time we need to get the cost actual data from the respective table. 
-                    costActualData = lstMonthly.Select(month => new
+
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    costActualData = lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Select(month => new
                     {
                         period = month,
                         Cost = (tacticLineItem.Where(lineItem => lineItem.PlanTacticId == tactic.PlanTacticId)).Count() > 0 ?
@@ -3538,7 +3583,12 @@ namespace RevenuePlanner.Controllers
                     tacticTypeId = tactic.TacticTypeId,
                     ////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
                     modifiedBy = Common.TacticModificationMessage(tactic.PlanTacticId, userName),
-                    actualData = (tacticActuals.Where(tacticActual => tacticActual.PlanTacticId.Equals(tactic.PlanTacticId)).Select(tacticActual => tacticActual).ToList()).Select(planTactic => new
+                    
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    actualData = (tacticActuals.Where(tacticActual => tacticActual.PlanTacticId.Equals(tactic.PlanTacticId)
+                    && lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(tacticActual.Period)
+                    ).Select(tacticActual => tacticActual).ToList()).Select(planTactic => new
                     {
                         title = planTactic.StageTitle,
                         period = planTactic.Period,
@@ -3551,7 +3601,12 @@ namespace RevenuePlanner.Controllers
                     tacticStageId = tactic.Stage.StageId,
                     tacticStageTitle = tactic.Stage.Title,
                     projectedStageValue = tactic.ProjectedStageValue,
-                    projectedStageValueActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleProjectedStageValue).Sum(tacticActual => tacticActual.Actualvalue),
+                    // Change by Nishant sheth
+                    // Desc :: #1765 - add period condition to get value
+                    projectedStageValueActual = lstTacticActual.Where(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.StageTitle == TitleProjectedStageValue
+                    && lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(tacticActual.Period)
+                    ).Sum(tacticActual => tacticActual.Actualvalue),
+
                     IsTacticEditable = ((tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? (lstViewEditEntities.Contains(tactic.PlanTacticId)) : false),
                     //// Set Line Item data with it's actual values and Sum
                     LineItemsData = (tacticLineItem.Where(lineItem => lineItem.PlanTacticId.Equals(tactic.PlanTacticId)).ToList()).Select(lineItem => new
@@ -3560,13 +3615,20 @@ namespace RevenuePlanner.Controllers
                         Title = lineItem.Title,
                         LineItemCost = lineItem.Cost,
                         //// Get the sum of actual
-                        LineItemActualCost = (tacticLineItemActual.Where(lineItemActual => lineItemActual.PlanLineItemId == lineItem.PlanLineItemId)).ToList().Sum(lineItemActual => lineItemActual.Value),
-                        LineItemActual = lstMonthly.Select(month => new
+                        // Change by Nishant sheth
+                        // Desc :: #1765 - add period condition to get value
+                        LineItemActualCost = (tacticLineItemActual.Where(lineItemActual => lineItemActual.PlanLineItemId == lineItem.PlanLineItemId
+                        && lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Contains(lineItemActual.Period))).ToList().Sum(lineItemActual => lineItemActual.Value),
+                        LineItemActual = lstMonthlyDynamic.Where(a => a.Id == tactic.PlanTacticId).Select(a => a.listMonthly).FirstOrDefault().Select(month => new
                         {
                             period = month,
                             Cost = tacticLineItemActual.Where(lineItemActual => lineItemActual.PlanLineItemId == lineItem.PlanLineItemId && lineItemActual.Period == month).Select(lineItemActual => lineItemActual.Value)
                         }),
-                    })
+                    }),
+                    //Add By Nishant Sheth
+                    // Desc:: 1765 get year difrrence
+                    YearDiffrence = Convert.ToInt32(Convert.ToInt32(tactic.EndDate.Year) - Convert.ToInt32(tactic.StartDate.Year)),
+                    StartYear = Convert.ToInt32(tactic.StartDate.Year)
                 });
 
                 //// Prepare final Tactic Actual list
@@ -3598,7 +3660,9 @@ namespace RevenuePlanner.Controllers
                     projectedStageValue = tacticActual.projectedStageValue,
                     projectedStageValueActual = tacticActual.projectedStageValueActual,
                     IsTacticEditable = tacticActual.IsTacticEditable,
-                    LineItemsData = tacticActual.LineItemsData
+                    LineItemsData = tacticActual.LineItemsData,
+                    YearDiffrence = tacticActual.YearDiffrence,
+                    StartYear = tacticActual.StartYear
                 });
 
                 var openTactics = lstTactic.Where(tactic => tactic.actualData.ToList().Count == 0).OrderBy(tactic => tactic.title);
