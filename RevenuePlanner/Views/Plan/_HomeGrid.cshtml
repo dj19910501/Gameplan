@@ -334,7 +334,8 @@
         $('#errorMessageInspectPopup').css("display", "none");
     });
     function BindHomeGrid() {
-        var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';
+        @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
+        var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
         
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
@@ -373,7 +374,7 @@
 
     
     
-        HomeGrid.parse(JsonModel, "json");
+        HomeGrid.parse(mainGridData, "json");
     
        // HomeGrid.sortRows(1, 'str', 'asc');
        LoadAfterParsing();
