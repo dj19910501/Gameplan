@@ -1,0 +1,233 @@
+﻿@model RevenuePlanner.Models.CopyEntiyBetweenPlanModel
+@using Newtonsoft.Json;
+@{
+    var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
+    var headerTitle = Model.HeaderTitle != null ? Model.HeaderTitle : string.Empty;
+    var srcSectionType = Model.srcSectionType != null ? Model.srcSectionType : string.Empty;
+    var srcEntityId = Model.srcEntityId != null ? Model.srcEntityId : string.Empty;
+    var srcPlanId = Model.srcPlanId != null ? Model.srcPlanId : string.Empty;
+    var constPlan = RevenuePlanner.Helpers.Enums.Section.Plan;
+        var constCampaign = RevenuePlanner.Helpers.Enums.Section.Campaign;
+        var constProgram = RevenuePlanner.Helpers.Enums.Section.Program;
+        var constTactic = RevenuePlanner.Helpers.Enums.Section.Tactic;
+}
+
+<!-- Modal -->
+<div class=" modal modal-copytactic" id="copytactic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close closeCopyEntity" data-dismiss="modal" aria-label="Close" id="btnClose"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title  source-sans-proregular" id="myModalLabel">Copying - <span class=" source-sans-probold" id="hdrTitle"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div id="nl-formPlan" class="nl-form-plan-title without-margin plantitle financetitle">
+                    @Html.DropDownList("ddlPlans", new SelectList((System.Collections.IEnumerable)ViewBag.plans, "Value", "Text"))
+                    <div class="nl-overlay"></div>
+                </div>
+                <div id="successMessage1" class="alert alert-success hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Success.</strong> <span id="spanMessageSuccess1"></span>
+                </div>
+                <div id="errorMessage1" class="alert alert-error hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Error!</strong> <span id="spanMessageError1"></span>
+                </div>
+                <div id="warningMessage1" class="alert msgWarning hide">
+                    <a class="close closemessage">×</a>
+                    <strong>Warning!</strong> <span id="spanMessageWarning1"></span>
+                </div>
+                <div class="modal-content-grid">
+                    <div id="dvParentEntitySelection" style="width:100%; height:450px;"></div>
+                </div>
+                <button type="button" class="btn btn-blue text-shadow-blue source-sans-proregular pull-left" data-dismiss="modal" onclick="CopyEntity()">confirm</button>
+                <button type="button" class="btn btn-grey without-text-shadow source-sans-prolight btnEdit pull-left closeCopyEntity">cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var myTreeGrid;
+    $(document).ready(function () {
+        nlformUserChildFinance = new NLForm(document.getElementById('nl-formPlan'));
+        $('#nl-formPlan > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            $("#warningMessage1").css("display", "block");
+            $("#spanMessageWarning1").empty();
+            $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
+            $("#SuccessMsg").css("display", "none");
+            //$("#warningMessage1").css('color', '#D2B276');
+            $("#errorMessage1").css("display", "none");
+            //$('#errorMsg').css('display', 'none');
+            //$('#SuccessMsg').css('display', 'none');
+            var planId = $(this).attr('value');
+            //$("#ddlParentFinanceMain").val(budgetIDMain);
+            //$('#hdn_BudgetId').val(budgetIDMain);
+            if (planId != null && planId != 'undefined' && planId != '0') {
+                RefreshParentEntitySelectionList(planId);
+            }
+            else {
+                //$("#divGridView").hide();
+                //$("#dvNoData").show();
+            }
+            $('#nl-formPlan .nl-field-toggle').text($(this).text());
+        });
+        var hdrTitle = '@headerTitle';
+        $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&"));
+        $(".closeCopyEntity").click(function () {
+            $('#dvCopyEntity').empty();
+        });
+        var mainGridData = "@_mainGridData";
+        mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        //var GridData = (mainGridData.toString().replace(/&quot;/g, '"'));
+        var GridData = (mainGridData.toString().replace(/&amp;/g, "&"));
+        BindParentEntitySelectionList(GridData);
+        $("#SuccessMsg").css("display", "none");
+    });
+    function RefreshParentEntitySelectionList(planId) {
+        //$("#divGridView").show();
+        //$("#dvNoData").hide();
+        var url = '@Url.Content("~/Plan/RefreshParentEntitySelectionList/")';
+        //$('#dvParentEntitySelection').load(url + '?planId=' + planId);
+        $.ajax({
+            url: url,
+            data: {
+                    planId: planId
+                  },
+            datatype: 'json',
+            type: 'POST',
+            async:false,
+            success: function (griddata) {
+                BindParentEntitySelectionList(griddata);
+            }
+        });
+    }
+    function BindParentEntitySelectionList(GridData) {
+        
+        myTreeGrid = new dhtmlXGridObject('dvParentEntitySelection');
+        myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
+        myTreeGrid.setImageSize(1, 1);
+        myTreeGrid.enableTreeCellEdit(false);
+        myTreeGrid.setHeader("");
+        myTreeGrid.setNoHeader(true);
+        //myTreeGrid.setInitWidths("200");
+        myTreeGrid.setColAlign("left");
+        myTreeGrid.setColTypes("tree");
+        myTreeGrid.init();
+        myTreeGrid.parse(GridData, "json");
+        myTreeGrid.expandAll();
+        $(".modal-content-grid .objbox").css("height", 450);
+        $('#copytactic .nl-field').css('border-right', 'none');
+        $("#dvParentEntitySelection table").css('color', 'black');
+        //$("#copytactic .nl-field-toggle").css('font-weight', 'bold');
+        $("div.objbox table").delegate('tr', 'click', function () {
+            $(this).removeClass('rowselected');
+            $(this).find('td').removeClass('cellselected');
+            $(this).addClass('selectiontr');
+
+            $(this).siblings().removeClass('selectiontr');
+
+        });
+    }
+    function CopyEntity() {
+        var selectedRowId = myTreeGrid.getSelectedRowId();
+        if (selectedRowId != null && selectedRowId != 'undefined') {
+            var arrElements = selectedRowId.split('_'); // selectedRowWIdFormat: [entityname]_[EntityId]_[prntEntityId]_[sectionType]_[destPlanId]
+            var srcSectionType = '@srcSectionType';
+            var selectedSectionType = arrElements != null && arrElements[3] != null && arrElements[3] != 'undefined' ? arrElements[3] : "";
+            var errorMsg = '';
+
+            if (srcSectionType.toLowerCase() == ('@constCampaign').toLowerCase() && selectedSectionType.toLowerCase() !== '@constPlan'.toLowerCase()) {
+                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constPlan.ToString())';
+            }
+            else if (srcSectionType.toLowerCase() == ('@constProgram').toLowerCase() && selectedSectionType.toLowerCase() !== '@constCampaign'.toLowerCase()) {
+                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constCampaign.ToString())';
+            }
+            else if (srcSectionType.toLowerCase() == ('@constTactic').toLowerCase() && selectedSectionType.toLowerCase() !== '@constProgram'.toLowerCase()) {
+                errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityErrorMessage.Replace("{0}", srcSectionType.ToString()).Replace("{1}", constProgram.ToString())';
+            }
+        }
+        else {
+            errorMsg = '@RevenuePlanner.Helpers.Common.objCached.CloneEntityNonSelctionErrorMessage.ToString()';
+        }
+            if (errorMsg != '') {
+                ShowError(false, errorMsg);
+            }
+            else {
+                var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
+                var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
+                CloneEntityToOtherPlan(destEntityId, destPlanId);
+            }
+        
+        //alert(selectedRowId);
+    }
+
+    function CloneEntityToOtherPlan(destEntityId,destPlanId) {
+        var srcEntityID = '@srcEntityId';
+        var srcPlanID = '@srcPlanId';
+        var cloneType = '@srcSectionType';
+        var destEntityID = destEntityId;
+        var srcEntityTitle = '@headerTitle';
+        $.ajax({
+            url: '@Url.Content("~/Plan/ClonetoOtherPlan/")',
+            data: {
+                CloneType: cloneType,
+                srcEntityId: srcEntityID,
+                destEntityID: destEntityId,
+                srcPlanID: srcPlanID,
+                destPlanID: destPlanId,
+                sourceEntityTitle: srcEntityTitle
+            },
+            datatype: 'json',
+            type: 'GET',
+            async:false,
+            success: function (result) {
+                if (result != null && result != undefined) {
+                    var issuccess = result.isSuccess;
+                    if (issuccess != null && issuccess != 'undefined' && issuccess) {
+                        $('#copytactic').hide();
+                        $("#errorMsg").css("display", "none");
+                        $("#SuccessMsg").css("display", "block");
+                        $("#spanMsgSuccess").empty();
+                        $("#spanMsgSuccess").text(result.msg);
+                        $("#errorMessage1").css("display", "none");
+                        $("#successMessage1").css("display", "none");
+                    }
+                    else {
+                        ShowError(issuccess, result.msg);
+                    }
+
+                }
+            }
+        });
+    }
+
+    function ShowError(isSuccess, value) {
+        if (isSuccess != null && isSuccess != 'undefined' && isSuccess) {
+            //$("#modal-container-1864701").scrollTop(0);
+            $("#errorMsg").css("display", "none");
+            $("#SuccessMsg").css("display", "block");
+            $("#spanMsgSuccess").empty();
+            $("#spanMsgSuccess").text(value);
+            $("#errorMessage1").css("display", "none");
+            $("#successMessage1").css("display", "none");
+            //$("#spanMessageSuccess1").empty();
+            //$("#spanMessageSuccess1").text(Message);
+
+            //if (time != 'undefined') {
+            //    $('#successMessage1').slideDown(time);
+            //}
+        }
+        else {
+            //$('#copytactic').show();
+            $("#warningMessage1").css("display", "none");
+            $("#successMessage1").css("display", "none");
+            $("#errorMessage1").css("display", "block");
+            $("#errorMessage1").slideDown(400);
+            $("#spanMessageError1").empty();
+            $("#spanMessageError1").html(value);
+        }
+    }
+    $(".closemessage").click(function () {
+        $(this).parent().closest('div').css("display", "none");
+    });
+</script>

@@ -15085,3 +15085,62 @@ tbody.column2 {
 }
 /*End by Device 320 Mukesh 25-9-2015*/
 /************************************************ Responsive css End here **********************************************************/
+
+/*by Bheru Mehta 23-11-2015 #1748 start*/
+    .modal-copytactic {
+    z-index:2501;
+  padding-bottom:20px;
+  min-height:600px;
+    }
+        .modal-copytactic .btn-grey
+     {
+         color:#000;
+         margin-left:15px;
+         background: -webkit-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Safari 5.1 to 6.0 */
+            background: -o-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to bottom, #efefef, #bbbbbb); /* Standard syntax */
+  border:1px solid #cccccc;
+     }
+        .modal-copytactic .btn-blue
+        {
+            min-width: 90px;
+        }
+   .modal-copytactic .modal-header .close,.modal-copytactic .modal-header .close:hover
+   {
+       opacity:1;
+       line-height: 34px;
+   }
+.modal-copytactic  .modal-header
+   {
+       border-bottom: 1px solid #ccc;
+   }
+.modal-copytactic .modal-content-grid
+{
+     margin:20px 0;
+}
+.modal-copytactic .modal-title
+{
+     font-weight:normal;
+     font-size:24px;
+     color:#000;
+}
+.modal-copytactic  .modal-body h4 {
+margin:10px 0;
+font-size:24px;
+font-weight:normal;
+  color:#000;
+}
+        .modal-copytactic .modal-body
+        {
+            max-height:none;
+        }
+/*by Bheru Mehta 23-11-2015 #1748 end*/
+.msgWarning
+{
+    color:#D2B276;
+}
+.selectiontr
+{
+    background-color:#F0BE29;
+}

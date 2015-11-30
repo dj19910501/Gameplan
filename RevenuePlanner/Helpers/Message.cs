@@ -2383,6 +2383,90 @@ namespace RevenuePlanner.Helpers
             }
         }
         ////End - Added by Viral Kadiya for PL ticket #1220
+        ////Start - Added by Viral Kadiya for PL ticket #1748
+        private string _CloneEntityErrorMessage;
+        public string CloneEntityErrorMessage
+        {
+            get
+            {
+                return _CloneEntityErrorMessage;
+            }
+            set
+            {
+                _CloneEntityErrorMessage = value;
+            }
+        }
+        ////End - Added by Viral Kadiya for PL ticket #1748
+        ////Start - Added by Viral Kadiya for PL ticket #1748
+        private string _ExceptionErrorMessage;
+        public string ExceptionErrorMessage
+        {
+            get
+            {
+                return _ExceptionErrorMessage;
+            }
+            set
+            {
+                _ExceptionErrorMessage = value;
+            }
+        }
+        ////End - Added by Viral Kadiya for PL ticket #1748
+        ////Start - Added by Viral Kadiya for PL ticket #1748
+        private string _CloneEntitySuccessMessage;
+        public string CloneEntitySuccessMessage
+        {
+            get
+            {
+                return _CloneEntitySuccessMessage;
+            }
+            set
+            {
+                _CloneEntitySuccessMessage = value;
+            }
+        }
+        ////End - Added by Viral Kadiya for PL ticket #1748
+        ////Start - Added by Viral Kadiya for PL ticket #1748
+        private string _TacticTypeConflictMessage;
+        public string TacticTypeConflictMessage
+        {
+            get
+            {
+                return _TacticTypeConflictMessage;
+            }
+            set
+            {
+                _TacticTypeConflictMessage = value;
+            }
+        }
+        ////End - Added by Viral Kadiya for PL ticket #1748
+        ////Start - Added by Dashrath Prajapati for PL ticket #1776
+        private string _CloneEntityNonSelctionErrorMessage;
+        public string CloneEntityNonSelctionErrorMessage
+        {
+            get
+            {
+                return _CloneEntityNonSelctionErrorMessage;
+            }
+            set
+            {
+                _CloneEntityNonSelctionErrorMessage = value;
+            }
+        }
+        ////End - Added by Dashrath Prajapati for PL ticket #1776
+        ////Start - Added by Dashrath Prajapati for PL ticket #1776
+        private string _CloneEntityMetaDataErrorMessage;
+        public string CloneEntityMetaDataErrorMessage
+        {
+            get
+            {
+                return _CloneEntityMetaDataErrorMessage;
+            }
+            set
+            {
+                _CloneEntityMetaDataErrorMessage = value;
+            }
+        }
+        ////End - Added by Dashrath Prajapati for PL ticket #1776
         #endregion
 
         #region  Functions
@@ -3133,6 +3217,36 @@ namespace RevenuePlanner.Helpers
                                             _RevenueSparklineChartHeader = strMsgValue;
                                             break;
                                         ////End - Added by Viral Kadiya for PL ticket #1220
+                                        ////Start - Added by Viral Kadiya for PL ticket #1748
+                                        case "CloneEntityErrorMessage":
+                                            _CloneEntityErrorMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for PL ticket #1748
+                                        ////Start - Added by Viral Kadiya for PL ticket #1748
+                                        case "ExceptionErrorMessage":
+                                            _ExceptionErrorMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for PL ticket #1748
+                                        ////Start - Added by Viral Kadiya for PL ticket #1748
+                                        case "CloneEntitySuccessMessage":
+                                            _CloneEntitySuccessMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for PL ticket #1748
+                                        ////Start - Added by Viral Kadiya for PL ticket #1748
+                                        case "TacticTypeConflictMessage":
+                                            _TacticTypeConflictMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for PL ticket #1748
+                                        ////Start - Added by Dashrath Prajapati for PL ticket #1776
+                                        case "CloneEntityNoneSelectiontMessage":
+                                            _CloneEntityNonSelctionErrorMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Dashrath Prajapati for PL ticket #1776
+                                        ////Start - Added by Dashrath Prajapati for PL ticket #1776
+                                        case "CloneEntityMetaDataMessage":
+                                            _CloneEntityMetaDataErrorMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Dashrath Prajapati for PL ticket #1776
                                     }
                                 }
                                 i = i + 1;

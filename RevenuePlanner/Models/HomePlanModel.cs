@@ -347,4 +347,31 @@ namespace RevenuePlanner.Models
         public int Id { get; set; }
         public List<string> listMonthly { get; set; }
     }
+
+    #region "Move Entity from one plan to other"
+    // Added by Viral Kadiya : PL ticket #1748
+    public class PlanTactic_TacticTypeMapping
+    {
+        public int PlanTacticId { get; set; }
+        public int TacticTypeId { get; set; }
+    }
+    public class CopyEntiyBetweenPlanModel
+    {
+        public List<DhtmlxGridRowDataModel> rows { get; set; }
+        public string HeaderTitle { get; set; }
+        public string srcSectionType { get; set; }
+        public string srcEntityId { get; set; }
+        public string srcPlanId { get; set; }
+        public string destPlanId { get; set; }
+        public string destEntityId { get; set; }
+    }
+
+    public class ParentChildEntityMapping
+    {
+        public int Id { get; set; }
+        public int ParentId { get; set; }
+        public string Name { get; set; }
+        public string RowId { get; set; }
+    } 
+    #endregion
 }
