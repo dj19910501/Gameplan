@@ -858,6 +858,7 @@
 <!--error message Inspect Popup-->
 @* End - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021 *@
 
+<div id="dvCopyEntity"></div>
 
 <script>
     var pid = $('#PlanId').val();
@@ -4942,7 +4943,7 @@ function Quarter() {
 
         else if (type == "Program") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram1'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>Child Tactic</li> </ul>";
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram1'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>Child Tactic</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + ProgramId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -4951,7 +4952,7 @@ function Quarter() {
 
         else if (type == "Tactic") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> </ul>";
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -4960,7 +4961,7 @@ function Quarter() {
 
         else if (type == "Campaign") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign1'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>Child Program</li> </ul>";
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign1'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>Child Program</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + CampaignId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -5572,4 +5573,11 @@ function DisplayEditablePopup(id, type) {
             ShowModels("@Enums.InspectPopupMode.Edit.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", id, 0, '@RequestedModule');
    }
 }
+    function OpentCopyPopup(obj) {
+        var sectionType = $(obj).attr('sectionType');
+        var entityId = $(obj).attr('entityId');
+        $("#dvCopyEntity").empty();
+        var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
+        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
+    }
 </script>
