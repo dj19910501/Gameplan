@@ -275,7 +275,12 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.Tactic_Share = null;
                     objPlanCampaign.CreatedBy = UserId;
                     objPlanCampaign.CreatedDate = DateTime.Now;
-                    objPlanCampaign.Title = (objPlanCampaign.Title + Suffix);
+                    var Title = objPlanCampaign.Title;
+                    if (objPlanCampaign.Title.Length > 234)
+                    {
+                        Title = objPlanCampaign.Title.Substring(0, 234);
+                    }
+                    objPlanCampaign.Title = (Title + Suffix);
                     objPlanCampaign.Plan_Campaign_Program_Tactic_Comment = null;
                     objPlanCampaign.Plan = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
@@ -432,7 +437,12 @@ namespace RevenuePlanner.Helpers
                     HttpContext.Current.Session["CampaignID"] = objPlanCampaignPrograms.Plan_Campaign.PlanCampaignId;
                     objPlanCampaignPrograms.CreatedBy = UserId;
                     objPlanCampaignPrograms.CreatedDate = DateTime.Now;
-                    objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
+                    var Title = objPlanCampaignPrograms.Title;
+                    if (objPlanCampaignPrograms.Title.Length > 234)
+                    {
+                        Title = objPlanCampaignPrograms.Title.Substring(0, 234);
+                    }
+                    objPlanCampaignPrograms.Title = (Title + Suffix);
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic_Comment = null;
                     objPlanCampaignPrograms.Plan_Campaign = null;
                     objPlanCampaignPrograms.Tactic_Share = null;
@@ -563,6 +573,13 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.Status = TacticStatus;
                     objPlanCampaignProgramTactic.CreatedBy = UserId;
                     objPlanCampaignProgramTactic.CreatedDate = DateTime.Now;
+                    var Length = objPlanCampaignProgramTactic.Title.Length;
+                    var Title = objPlanCampaignProgramTactic.Title;
+                    if (objPlanCampaignProgramTactic.Title.Length > 234)
+                    {
+                        Title = objPlanCampaignProgramTactic.Title.Substring(0, 234);
+                    }
+                    objPlanCampaignProgramTactic.Title = Title;
                     objPlanCampaignProgramTactic.Title = (objPlanCampaignProgramTactic.Title + Suffix);
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Comment = null;
                     objPlanCampaignProgramTactic.Plan_Campaign_Program_Tactic_Actual = null;
@@ -668,7 +685,12 @@ namespace RevenuePlanner.Helpers
                     HttpContext.Current.Session["TacticID"] = TacticId;
                     objPlanCampaignProgramTacticLineItem.CreatedBy = UserId;
                     objPlanCampaignProgramTacticLineItem.CreatedDate = DateTime.Now;
-                    objPlanCampaignProgramTacticLineItem.Title = (objPlanCampaignProgramTacticLineItem.Title + Suffix);
+                    var Title = objPlanCampaignProgramTacticLineItem.Title;
+                    if (objPlanCampaignProgramTacticLineItem.Title.Length > 234)
+                    {
+                        Title = objPlanCampaignProgramTacticLineItem.Title.Substring(0, 234);
+                    }
+                    objPlanCampaignProgramTacticLineItem.Title = (Title + Suffix);
                     objPlanCampaignProgramTacticLineItem.LineItemType = null;
                     objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic = null;
                     //// Start - Added by Arpita Soni on 01/15/2015 for PL ticket #1128
