@@ -273,8 +273,8 @@
 
     function KeyPressOnDropdown() {
         $(document).keypress(function (e) {
-            
-           // alert('2');
+
+            // alert('2');
             var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
             var $this = $('#dropdown_Table').find('.top_spacing_geography');
 
@@ -287,11 +287,11 @@
                 var lastElement = $select.find('tbody');
 
                 $this.find(".trdropdownhover").each(function () {
-                    
+
                     var p = $(this).find('p');
                     var text = jQuery(p).text().toLowerCase();
                     var _checkdiv = $(this).css('display');
-                    
+
                     if ($prevtext == '' || cur_check.length > 1) {
                         if (text.indexOf(cur_check) == 0) {
                             if (_checkdiv == "none") {
@@ -311,8 +311,8 @@
                             $select.find('input:checkbox').removeAttr('checked');
                             var checkbx = $(this).find('input:checkbox');
                             $(checkbx).attr('checked', 'checked');
-                                
-                           // var x = $(this).position().top;
+
+                            // var x = $(this).position().top;
                             //lastElement.animate({ scrollTop: x }, 200);
 
                             var scrollTo = $(this);
@@ -324,7 +324,7 @@
                         }
                     }
                     else {
-                       
+
                         /// find search_text from current li to downward direction in dropdown list.
                         var _nextdatas = '';
                         _nextdatas = $('.setfocusTr').nextAll();    // get next all "li" list from current "li".
@@ -333,10 +333,10 @@
                         _nextdatas.each(function (key, value) {
                             var _anchor = $(value).find('p');
                             var _atext = $(_anchor).text().toLowerCase();
-                          
+
                             //// Compare current "li" anchor text is with previous selected anchor text.
                             if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                           
+
                                 $prevtext = _atext; // set previous text variable with selected text.
                                 $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                 $_prevdata = jQuery(this);
@@ -364,16 +364,16 @@
                         });
                         /// find search_text from start of the dropdown list.
                         if (cntr == 0) {
-                         
+
                             _nextdatas = $('#dropdown_Table').find('.top_spacing_geography').find('tr');
                             $.each(_nextdatas, function (key, value) {
-                            
+
                                 var _anchor = $(value).find('p');
                                 var _atext = $(_anchor).text().toLowerCase();
 
                                 //// Compare current "li" anchor text is with previous selected anchor text.
                                 if (_atext != $prevtext && _atext.indexOf(cur_check) == 0) {
-                                  
+
                                     $prevtext = _atext;
                                     $($_prevdata).removeClass('setfocusTr');   // remove class 'setFocusli' from previously selected list object.
                                     $_prevdata = jQuery(this);
@@ -404,7 +404,7 @@
                     }
                 });
                 if ($nextdata != -1) {
-               
+
                     $nextdata.removeClass('trdropdownhover');
                     $nextdata.addClass('trdropdownhover').focus();
                     $("#dropdown_btn p:first").text($nextdata.text());
@@ -450,7 +450,7 @@
 
     $(document).ready(
       function () {
-         
+
 
           /*Added by Mitesh Vaishnav for PL ticket #1073
           Register events of new multiselect dropdown customfields*/
@@ -689,7 +689,7 @@
               $('#' + customFieldsValues[i].optionId + '_cvr').val(customFieldsValues[i].Weight);
           }
           $(".table_drpdwn").each(function () {
-              
+
               var chekcedCount = $(this).find('input:checked').length;
               if (chekcedCount > 1) {
                   var menu = $(this).parents('.dropdown-wrapper');
@@ -870,7 +870,7 @@
 
         if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
         if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
-
+        if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;  //Added by Rahul Shah on 30/11/2015 for PL #1764. 
         $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
         if ($("#txtmql").val() == 'N/A') {
             $("#txtmql").val(0);
@@ -1170,7 +1170,7 @@
                 var maindiv = $(this);
                 var InputType = $(this).find("input").attr('type');
                 var Count = 0;
-                if (InputType == "text" ) {
+                if (InputType == "text") {
                     var ParentOptionID = $(this).find("input").parent().attr('parentoptionid');
                     if (ParentOptionID == tacticTypeId) {
                         maindiv.css("display", "inline-block");
@@ -1188,10 +1188,8 @@
                         }
                     });
                 }
-                if(Count == 0)
-                {
-                    if (maindiv.attr('parentfield') == "TacticType")
-                        {
+                if (Count == 0) {
+                    if (maindiv.attr('parentfield') == "TacticType") {
                         maindiv.css("display", "none");
                     }
                 }
@@ -1336,7 +1334,7 @@
         });
         return isError;
     };
-   
+
 
     // Modified by Komal Rawal for ticket #1196
     function isEmpty(el) {

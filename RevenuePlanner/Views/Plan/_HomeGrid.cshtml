@@ -1,9 +1,6 @@
 ﻿@model RevenuePlanner.Models.Plangrid
-
 @*<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />*@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>*@
-
-
 
 <style>
     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
@@ -23,7 +20,6 @@
         height: 100% !important;
     }
 </style>
-
 <div class="goals-wrapper" id="goalwrapper">
     <span class="goal-text">Goals</span>
     <span id="spnrevenue"></span>
@@ -33,27 +29,21 @@
     <a class="btn btn-blue-grid text-shadow-blue source-sans-proregular" id="exportcsv" onclick="return ExportToCSV();">
         <img src="~/Content/images/grid-export.png" /> Export .csv
     </a>
-
 </div>
-
 <div id="gridbox" style="background-color:white;width:100%;"></div>
 
-
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
-
 @*Added by Komal Rawal for #1432*@
 <div id="ImprovementGrid" class="improvement-grid-wrapper">
-  @*  @Html.Partial("_GridImprovement", Model.ImprovementObj)*@
+    @*  @Html.Partial("_GridImprovement", Model.ImprovementObj)*@
 </div>
 <div class="row-fluid calc-height">
     <div class="span12">
         <div id="divMovetacticPopup" class="form-inspect-share hide fade height-auto popup-block margin_top0" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div>
                 <form>
-
                     <h2 class="primary-title source-sans-prosemibold resubmission_header">Moving a Tactic</h2>
                     <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to move a tactic to </label>
-
 
                     <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
                     <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
@@ -70,7 +60,7 @@
 <p style="display:none;">Scrolled <span id="spanscroll">0</span> times.</p>
 <script type="text/javascript">
     var HomeGrid;
-    
+
     var revenue = "Revenue : $" + number_format('@Model.Revenue', 0, '.', ',');
     $("#spnrevenue").html(revenue);
     var mql = '@Model.MQLLable' + " : " + number_format('@Model.MQLValue', 0, '.', ',');
@@ -149,9 +139,9 @@
     $(".grid_ver_scroll").scroll(function () {
         $('#popupType').css('display', 'none');
     });
-   //Added by Rahul shah on 23/10/2015 for PL #1693 : set grid size after performing any operation
+    //Added by Rahul shah on 23/10/2015 for PL #1693 : set grid size after performing any operation
     $(document).ajaxComplete(function () {
-        HomeGrid.setSizes();        
+        HomeGrid.setSizes();
     });
 
     function ExportToCSV() {
@@ -207,7 +197,7 @@
                     ParentCampaignid = HomeGrid.getParentId(ParentProgramid);
                     ParentCampaignname = HomeGrid.cells(ParentCampaignid, 1).getValue();
                     HomeGrid.cellByIndex(i, 3).setValue(ParentCampaignname);
-                   HomeGrid.cellByIndex(i, 6).setValue(Taskname);
+                    HomeGrid.cellByIndex(i, 6).setValue(Taskname);
                 }
             }
 
@@ -336,7 +326,7 @@
     function BindHomeGrid() {
         @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
-        
+
         HomeGrid = new dhtmlXGridObject('gridbox');
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
@@ -345,7 +335,7 @@
         HomeGrid.enableAutoWidth(false);
 
         HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
-       
+
         HomeGrid.setImageSize(1, 1);
         HomeGrid.setCustomSorting(sort_Owner, 8);
 
@@ -363,27 +353,27 @@
             }
         });
         HomeGrid.enableDistributedParsing(true, 10, 0.1);
-//        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
-        
-        
-     
+        //        HomeGrid.loadXMLString(document.getElementById("mytextarea1").value);
+
+
+
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridData = (mainGridData.toString().replace(/&amp;/g, '&'));
 
 
-    
-    
+
+
         HomeGrid.parse(GridData, "json");
-    
-       // HomeGrid.sortRows(1, 'str', 'asc');
-       LoadAfterParsing();
+
+        // HomeGrid.sortRows(1, 'str', 'asc');
+        LoadAfterParsing();
         //Added by Rahul shah for PL #1683
-       
-      
+
+
         //End
-       
-        
+
+
         // Comment by bhavesh - 11-Nov-2015
         // Comment not showing Flag on grid for required field
         //$('#gridbox').find('tbody tr').each(function () {
@@ -463,11 +453,11 @@
             var id = selectedcell[0];
             var rowid = id[0];
             var SourcePtype = (rowid).split(".")[0];
-           // if (SourcePtype == "line") {
-               // HomeGrid.openItem(HomeGrid.getParentId(rowid));
-                HomeGrid.openItem(rowid);
+            // if (SourcePtype == "line") {
+            // HomeGrid.openItem(HomeGrid.getParentId(rowid));
+            HomeGrid.openItem(rowid);
             //}
-           
+
             HomeGrid.selectRow(HomeGrid.getRowIndex(rowid), true, true, true);
 
             isCopyTacticHomeGrid = 0;
@@ -488,7 +478,7 @@
             isEditTacticHomeGrid = 0;
             isEditTactic = 0;
         }
-        
+
         if (editidonOpenEnd != 0) {
             HomeGrid.detachEvent(editidonOpenEnd);
         }
@@ -522,7 +512,7 @@
 
         });
 
-       
+
     }
 
     function sort_Owner(a, b, ord, a_id, b_id) {
@@ -677,6 +667,9 @@
         var UpdateVal;
         var Colind = this.cell.cellIndex;
         var lineItemFlag = 0;
+        //Added by Rahul Shah on 30/11/2015 for PL #1764.
+        var hdnYear;
+        hdnYear= @ViewBag.Year;
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
             // Only check for type column
@@ -703,7 +696,7 @@
                     });
                 }
             }
-            
+
             var locked = HomeGrid.cells(rowId, cellInd).getAttribute("locked");
             if ((locked != null && locked != "") && locked == "1")
                 return false;
@@ -713,20 +706,20 @@
                 var oldval = HomeGrid.cells(rowId, cellInd).getValue();
                 var actval = HomeGrid.cells(rowId, cellInd).getAttribute("actval");
                 if (cellInd != 1) {
-                        if (oldval == "")
+                    if (oldval == "")
+                        $('.dhx_combo_select option[value="' + oldval + '"]').remove();
+                    else {
+                        var v1 = parseInt(oldval);
+                        if (isNaN(v1)) {
                             $('.dhx_combo_select option[value="' + oldval + '"]').remove();
-                        else {
-                            var v1 = parseInt(oldval);
-                            if (isNaN(v1)) {
-                                $('.dhx_combo_select option[value="' + oldval + '"]').remove();
-                                $('.dhx_combo_select').val(actval);
-                                //var v = $('.dhx_combo_select option:contains("' + oldval + '")').val();
-                                //if (v != "undefined")
-                                //    $('.dhx_combo_select').val(v);
-                            }
-                            else
-                                $('.dhx_combo_select').val(actval);
+                            $('.dhx_combo_select').val(actval);
+                            //var v = $('.dhx_combo_select option:contains("' + oldval + '")').val();
+                            //if (v != "undefined")
+                            //    $('.dhx_combo_select').val(v);
                         }
+                        else
+                            $('.dhx_combo_select').val(actval);
+                    }
                 }
             }
             $(".dhx_combo_edit").off("keydown");
@@ -766,7 +759,7 @@
 
                     var startyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], sdateindex).getValue()).getFullYear();
                     var edate = HomeGrid.cells(rowId, edateindex).getValue();
-                    if (!CheckDateYear(nValue, startyear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
+                    if (!CheckDateYear(nValue, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false; //Modified by Rahul Shah on 30/11/2015 for PL #1764.
                     if (!validateDateCompare(nValue, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
 
                     if (updatetype == "prog") {
@@ -790,7 +783,7 @@
                     var endyear = new Date(HomeGrid.cells("plan." + rowId.split(".")[1], edateindex).getValue()).getFullYear();
                     var sdate = HomeGrid.cells(rowId, sdateindex).getValue();
 
-                    if (!CheckDateYear(nValue, endyear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
+                    if (!CheckDateYear(nValue, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;  //Modified by Rahul Shah on 30/11/2015 for PL #1764.
                     if (!validateDateCompare(sdate, nValue, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;
 
                     if (updatetype == "prog") {
@@ -873,7 +866,7 @@
                                     return false;
                                 }
                                 else if (UpdateColumn == "Planned Cost") {
-                                    
+
                                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                                     diff = parseInt(nValue) - parseInt(oValue);
                                     diffLineAndTactic = states.lineItemCost - states.tacticCost
@@ -914,7 +907,7 @@
                     }
                     return true;
                 }
-                if (nValue != oValue) {
+                if (htmlDecode(nValue) != oValue) {  //Modified by Rahul Shah on 30/11/2015 for PL #1778. here in special character nValue data carry with Extra character.
                     if (UpdateColumn != "Type" && UpdateColumn.toString().trim() != "Target Stage Goal") {
                         progid = HomeGrid.getParentId(rowId);
                         campid = HomeGrid.getParentId(progid);
@@ -1019,6 +1012,7 @@
         });
     }
     function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
+        var newDate = new Date(formatDate(nValue)); //Modified by Rahul Shah on 30/11/2015 for PL #1764.
         if (updatetype == "tact") {
 
             progid = HomeGrid.getParentId(rowId);
@@ -1026,17 +1020,19 @@
             planid = HomeGrid.getParentId(campid);
             var programid = HomeGrid.cells(progid, 3).getValue();
             var campaignid = HomeGrid.cells(campid, 3).getValue();
+            //Modified by Rahul Shah on 30/11/2015 for PL #1764.
+            var ProgstartDate = new Date(formatDate(HomeGrid.cells(progid, dateindex).getValue()));
+            var Campstartdate = new Date(formatDate(HomeGrid.cells(campid, dateindex).getValue()));
+            var Planstartdate = new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
 
-            var ProgstartDate = HomeGrid.cells(progid, dateindex).getValue();
-            var Campstartdate = HomeGrid.cells(campid, dateindex).getValue();
-            var Planstartdate = HomeGrid.cells(planid, dateindex).getValue();
             if (Updatecolumn == "Start Date") {
-                if (formatDate(ProgstartDate) > formatDate(nValue))
+                //Modified by Rahul Shah on 30/11/2015 for PL #1764.
+                if (ProgstartDate > newDate)
                     HomeGrid.cells(progid, dateindex).setValue(formatDate(nValue));
-                if (formatDate(Campstartdate) > formatDate(nValue)) {
+                if (Campstartdate > newDate) {
                     HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
                 }
-                if (formatDate(Planstartdate) > formatDate(nValue)) {
+                if (Planstartdate > newDate) {
                     HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
                 }
                 var tactActMinDate = HomeGrid.getUserData(progid, "tsdate");
@@ -1059,12 +1055,13 @@
 
             }
             else if (Updatecolumn == "End Date") {
-                if (formatDate(ProgstartDate) < formatDate(nValue))
+                //Modified by Rahul Shah on 30/11/2015 for PL #1764.
+                if (ProgstartDate < newDate)
                     HomeGrid.cells(progid, dateindex).setValue(formatDate(nValue));
-                if (formatDate(Campstartdate) < formatDate(nValue)) {
+                if (Campstartdate< newDate) {
                     HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
                 }
-                if (formatDate(Planstartdate) < formatDate(nValue)) {
+                if (Planstartdate < newDate) {
                     HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
                 }
                 var tactActMaxDate = HomeGrid.getUserData(progid, "tedate");
@@ -1093,14 +1090,14 @@
             planid = HomeGrid.getParentId(campid);
             var programid = HomeGrid.cells(rowId, 3).getValue();
             var campaignid = HomeGrid.cells(campid, 3).getValue();
-
-            var Campstartdate = HomeGrid.cells(campid, dateindex).getValue();
-            var Planstartdate = HomeGrid.cells(planid, dateindex).getValue();
+            //Modified by Rahul Shah on 30/11/2015 for PL #1764.
+            var Campstartdate = new Date(formatDate(HomeGrid.cells(campid, dateindex).getValue()));
+            var Planstartdate = new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
             if (Updatecolumn == "Start Date") {
-                if (formatDate(Campstartdate) > formatDate(nValue)) {
+                if (Campstartdate > newDate) {
                     HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
                 }
-                if (formatDate(Planstartdate) > formatDate(nValue)) {
+                if (Planstartdate > newDate) {
                     HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
                 }
                 var progMinDate = HomeGrid.getUserData(campid, "psdate");
@@ -1120,10 +1117,10 @@
                 });
             }
             else if (Updatecolumn == "End Date") {
-                if (formatDate(Campstartdate) < formatDate(nValue)) {
+                if (Campstartdate < newDate) {
                     HomeGrid.cells(campid, dateindex).setValue(formatDate(nValue));
                 }
-                if (formatDate(Planstartdate) < formatDate(nValue)) {
+                if (Planstartdate < newDate) {
                     HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
                 }
                 var progMaxDate = HomeGrid.getUserData(campid, "pedate");
@@ -1144,15 +1141,16 @@
             }
         }
         else if (updatetype == "camp") {
+            //Modified by Rahul Shah on 30/11/2015 for PL #1764.
             planid = HomeGrid.getParentId(rowId);
-            var Planstartdate = HomeGrid.cells(planid, dateindex).getValue();
+            var Planstartdate =  new Date(formatDate(HomeGrid.cells(planid, dateindex).getValue()));
             if (Updatecolumn == "Start Date") {
-                if (formatDate(Planstartdate) > formatDate(nValue)) {
+                if (Planstartdate > newDate) {
                     HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
                 }
             }
-            else if (Updatecolumn == "Start Date") {
-                if (formatDate(Planstartdate) < formatDate(nValue)) {
+            else if (Updatecolumn == "End Date") {
+                if (Planstartdate < newDate) {
                     HomeGrid.cells(planid, dateindex).setValue(formatDate(nValue));
                 }
             }
@@ -1305,7 +1303,7 @@
         if (pageIsScroll == false) {
 
             pageIsScroll = true;
-           // $("#useless").click();
+            // $("#useless").click();
         }
     });
 </script>

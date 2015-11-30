@@ -9160,11 +9160,13 @@ namespace RevenuePlanner.Controllers
                 MainPlanID = Convert.ToInt32(planIds[0].ToString());
                 List<Plan> lstplandetail = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
                 int modelId = lstplandetail.Where(p => p.PlanId == MainPlanID).Select(p => p.ModelId).FirstOrDefault();
+                string Year = lstplandetail.Where(p => p.PlanId == MainPlanID).Select(p => p.Year).FirstOrDefault(); //Added by Rahul Shah on 30/11/2015 for PL#1764. 
                 // Generate Tactic Type dropdown data on click of edit dropdown cell
                 // Get Tactic Type List : Added By Bhavesh : 17-Nov-2015 : Changes related to line item dropdown allow editable in grid view
                 List<TacticTypeModel> TacticTypeList = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && tactype.IsDeployedToModel && tactype.ModelId == modelId).Select(tacttype => new TacticTypeModel { TacticTypeId = tacttype.TacticTypeId, Title = tacttype.Title }).ToList().OrderBy(tactype => tactype.Title).ToList();
                 // Store Tactic Type list in view bag
                 ViewBag.TacticTypelist = TacticTypeList;
+                ViewBag.Year = Year; //Added by Rahul Shah on 30/11/2015 for PL#1764. 
 				// Generate Json Header
                 objPlanMainDHTMLXGrid.head = GenerateJsonHeader(MQLTitle, modelId, TacticTypeList, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
                 GetGoalValue(lstplandetail, modelId, stageList, objplangrid); // for plan grid header to bind goal detail
