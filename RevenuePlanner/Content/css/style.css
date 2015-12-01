@@ -10272,17 +10272,38 @@ li.close-list {
     width: 242px;
     }
  
-.task-tbl div.gridbox .objbox{  /*PL #1758*/
-        overflow: visible !important;
+  /*by bheru mehta 01-12-2015 #1758 start*/
+ .task-tbl div.gridbox
+ {
+     border-top: 1px solid #d4d4d4;
+      border-bottom: 1px solid #d4d4d4;
+ }
+.task-tbl div.gridbox  table
+        {
+    border-collapse:separate;
+        }
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td,.task-tbl div.gridbox_dhx_skyblue table.obj.row20px tr td{
+ border-left:none;   
 }
-.task-tbl div.gridbox { /*PL #1758*/
-    height: 100% !important;
-    overflow: auto !important;
-    max-width: 100% !important;
+.task-tbl div.gridbox_dhx_skyblue table.obj.row20px tr td
+{
+    border-bottom:none;
 }
- .task-tbl div.gridbox .xhdr { /*PL #1758*/
-        overflow:visible !important;
+.task-tbl div.gridbox_dhx_skyblue table.obj.row20px tr:last-child td
+{
+    border-bottom:1px solid #d4d4d4;
 }
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr td[colspan='9']
+{
+    border-bottom:none;
+    border-top:none;
+}
+.task-tbl div.gridbox_dhx_skyblue.gridbox table.hdr tr:nth-child(2) td
+{
+    border-top:none;
+}
+/*by bheru mehta 01-12-2015 #1758 end*/
+
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;

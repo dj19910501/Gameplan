@@ -16,9 +16,9 @@
         width: 100% !important;
     }
     /*Added by Rahul Shah on 29/09/2015 for PL #1618*/
-    div.gridbox {
+    /*div.gridbox {
         height: 100% !important;
-    }
+    }*/
 </style>
 <div class="goals-wrapper" id="goalwrapper">
     <span class="goal-text">Goals</span>
@@ -92,7 +92,7 @@
         window.focus();
 
         pageIsScroll = false;
-        $('.task-tbl div.gridbox').css('max-height', $(window).height() - 200); //PL #1758 H9_QA - Grid View Scrolling - Added by Dashrath Prajapati
+        $('.task-tbl div.gridbox').css('height', $(window).height() - 200); //PL #1758 H9_QA - Grid View Scrolling - Added by Dashrath Prajapati
         //Commented by Rahul Shah for #1683
         //$(".grid_Search").click(function (e) {
         //    inspectCloseFocus = $(this).position().top;
@@ -331,7 +331,7 @@
         var imgpath = '@Url.Content("~/codebase/imgs/")';
         HomeGrid.setImagePath(imgpath);
         HomeGrid.enableDragAndDrop(true);
-        HomeGrid.enableAutoHeight(true);
+        HomeGrid.enableAutoHeight(false);
         HomeGrid.enableAutoWidth(false);
 
         HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
