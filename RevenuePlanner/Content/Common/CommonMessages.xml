@@ -945,7 +945,7 @@
   <!--start Added by Viral Kadiya for PL ticket #1748-->
   <Field>
     <Name>TacticTypeConflictMessage</Name>
-    <value>Copy process can't proceed due to source and destination plan uses different TacticType. Please check Tactic Type under Model.</value>
+    <value>Copy process cannot proceed due to source and destination plan uses different Tactic Type. Please check Tactic Type under Model.</value>
   </Field>
   <!--end Added by Viral Kadiya for PL ticket #1748-->
  <!--start Added by Viral Kadiya for PL ticket #1748-->
@@ -957,13 +957,13 @@
   <!--start Added by Dashrath Prajapati for PL ticket #1776-->
   <Field>
     <Name>CloneEntityNoneSelectiontMessage</Name>
-    <value>Please select parent entity.</value>
+    <value>Please select Task Name.</value>
   </Field>
   <!--End Added by Dashrath Prajapati for PL ticket #1776-->
   <!--start Added by Dashrath Prajapati for PL ticket #1776-->
   <Field>
     <Name>CloneEntityMetaDataMessage</Name>
-    <value>Some META Data will be lost if this plan users a different model.</value>
+    <value>Some META Data will be lost if this plan uses a different model.</value>
   </Field>
   <!--End Added by Dashrath Prajapati for PL ticket #1776-->
 </Messages>
