@@ -11513,7 +11513,7 @@ namespace RevenuePlanner.Controllers
                 }
             }
             #endregion
-            objModel.HeaderTitle = HttpUtility.HtmlEncode(srcEntityTitle);
+            objModel.HeaderTitle = HttpUtility.HtmlDecode(srcEntityTitle);
             #endregion
 
             return PartialView("~/Views/Plan/_CopyEntity.cshtml", objModel);

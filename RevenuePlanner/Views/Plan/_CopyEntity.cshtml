@@ -18,7 +18,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close closeCopyEntity" data-dismiss="modal" aria-label="Close" id="btnClose"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title  source-sans-proregular" id="myModalLabel">Copying - <span class=" source-sans-probold" id="hdrTitle"></span></h4>
+                <h4 class="modal-title  source-sans-proregular" id="myModalLabel">Copying - <span class=" source-sans-probold tipsyTitle" id="hdrTitle"></span></h4>
             </div>
             <div class="modal-body">
                 <div id="nl-formPlan" class="nl-form-plan-title without-margin plantitle financetitle">
@@ -55,24 +55,16 @@
             $("#spanMessageWarning1").empty();
             $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
             $("#SuccessMsg").css("display", "none");
-            //$("#warningMessage1").css('color', '#D2B276');
             $("#errorMessage1").css("display", "none");
-            //$('#errorMsg').css('display', 'none');
-            //$('#SuccessMsg').css('display', 'none');
             var planId = $(this).attr('value');
-            //$("#ddlParentFinanceMain").val(budgetIDMain);
-            //$('#hdn_BudgetId').val(budgetIDMain);
             if (planId != null && planId != 'undefined' && planId != '0') {
                 RefreshParentEntitySelectionList(planId);
             }
-            else {
-                //$("#divGridView").hide();
-                //$("#dvNoData").show();
-            }
             $('#nl-formPlan .nl-field-toggle').text($(this).text());
         });
-        var hdrTitle = '@headerTitle';
-        $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&"));
+        var hdrTitle = '@(headerTitle)';
+        $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"));
+        NumberFormatterTipsyTitle(".tipsyTitle", 28);
         $(".closeCopyEntity").click(function () {
             $('#dvCopyEntity').empty();
         });
@@ -84,10 +76,8 @@
         $("#SuccessMsg").css("display", "none");
     });
     function RefreshParentEntitySelectionList(planId) {
-        //$("#divGridView").show();
-        //$("#dvNoData").hide();
+        
         var url = '@Url.Content("~/Plan/RefreshParentEntitySelectionList/")';
-        //$('#dvParentEntitySelection').load(url + '?planId=' + planId);
         $.ajax({
             url: url,
             data: {

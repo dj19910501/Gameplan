@@ -15273,5 +15273,8 @@ font-weight:normal;
 /*Notify animation css end*/
 
 /*by Bheru Mehta #1746 23-11-2015 end*/
-
+.modal-copytactic .modal-title span
+{
+    display:inline;
+}
 
