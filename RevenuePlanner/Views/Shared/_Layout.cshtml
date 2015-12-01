@@ -13,7 +13,7 @@
     @Styles.Render("~/Content/css/GetCSS")
     @*@Styles.Render("~/Content/css/GetCSSStyle")*@
     <link rel="stylesheet" href="@Url.Content("~/Content/css/bootstrap-responsive.css")" type="text/css" />
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Nov4.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Nov5.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Oct1.css")" type="text/css" />
 
     @Scripts.Render("~/bundles/GetJS")
@@ -23,6 +23,9 @@
         var logErrorUrl = '@Url.Action("LogJavaScriptError", "Error")';
     </script>
    @* <script src="@Url.Content("~/Scripts/js/errorhandler.js")" type="text/javascript"></script>*@
+    <!-- #1746-->
+    <script src="http://files.hive9.com/style-guide/js/bootstrap-notify.min.js"></script>
+    <!-- #1746-->
 </head>
 <body>
     <div class="container-fluid all-height">
@@ -256,19 +259,118 @@
         });
     }
 
+    //var myApp;
+    //myApp = myApp || (function () {
+    //    var pleaseWaitDiv = $('<div style="z-index:99999" class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header">Please wait...</div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
+    //    return {
+    //        showPleaseWait: function () {
+    //            pleaseWaitDiv.modal();
+    //        },
+    //        hidePleaseWait: function () {
+    //            pleaseWaitDiv.modal('hide');
+    //        },
+
+    //    };
+    //})();
+
+    //Added by Ashish Mistry for PL #1746
+
     var myApp;
+    var pleaseWaitDiv;
     myApp = myApp || (function () {
-        var pleaseWaitDiv = $('<div style="z-index:99999" class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header">Please wait...</div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
         return {
             showPleaseWait: function () {
-                pleaseWaitDiv.modal();
+                //alert('show');
+                if (resp != undefined) {
+                    if (resp.state() === 'pending') {
+                        //alert('if1');
+                        //pleaseWaitDiv.modal();
+                    }
+                    else {
+                        countplease = 0;
+                        var counter = $('[data-notify="container"]').length;
+                        if (counter == 0) {
+                            pleaseWaitDiv = $.notify({
+                            }, {
+                                element: 'body',
+                                type: "info",
+                                allow_dismiss: false,
+                                showProgressbar: true,
+                                z_index: 2500,
+                                delay: 1000,
+                                animate: {
+                                    enter: 'animated fadeInDown',
+                                    exit: 'animated fadeOutUp'
+                                },
+                                icon_type: 'class',
+                                template: '<div data-notify="container" class="span4 alert alert-{0} notify-load" role="alert">' +
+                                    '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+                                    '<span data-notify="icon"></span> ' +
+                                    '<span data-notify="message"><strong>Please Wait...</strong></span>' +
+                                    '<div class="progress" data-notify="progressbar">' +
+                                        '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                                    '</div>' +
+                                '</div>'
+                            });
+                        }
+                    }
+                } else {
+                    countplease = 0;
+                    //alert('else1');
+                    var counter = $('[data-notify="container"]').length;
+                    if (counter == 0) {
+                        pleaseWaitDiv = $.notify({
+                        }, {
+                            element: 'body',
+                            type: "info",
+                            allow_dismiss: false,
+                            showProgressbar: true,
+                            z_index: 2500,
+                            delay: 2000,
+                            animate: {
+                                enter: 'animated fadeInDown',
+                                exit: 'animated fadeOutUp'
+                            },
+                            icon_type: 'class',
+                            template: '<div data-notify="container" class="span4 alert alert-{0} notify-load" role="alert">' +
+                                '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+                                '<span data-notify="icon"></span> ' +
+                                '<span data-notify="message"><strong>Please Wait...</strong></span>' +
+                                '<div class="progress" data-notify="progressbar">' +
+                                    '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+                                '</div>' +
+                            '</div>'
+                        });
+                    }
+                    else {
+                        alert("CLOSE");
+                        // pleaseWaitDiv.close();
+                    }
+                }
             },
             hidePleaseWait: function () {
-                pleaseWaitDiv.modal('hide');
-            },
+                if (resp.state() === 'resolved') {
+                    countplease = countplease + 1;
+                    //alert('resolved');
+                    if (countplease == 1) {
 
+                        pleaseWaitDiv.update({
+                            'type': 'success',
+                            'message': '<strong>Loaded Successfully...</strong>',
+                        });
+                    }
+
+                } else {
+                    //alert('continue');
+                }
+
+            },
         };
     })();
+    var countplease = 0;
+    var resp = $.ajax({});
+    //Added by Ashish Mistry for PL #1746
+
 
     //Added By Komal Rawal for new home page ui
     function ShowMessage(IsError, Message, time) {
