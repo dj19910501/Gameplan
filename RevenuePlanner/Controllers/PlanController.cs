@@ -9965,15 +9965,17 @@ namespace RevenuePlanner.Controllers
                                                     programrowsobj.rows = tacticrowsobjlist;
                                                 }
                                                 ProgCnt = ProgCnt + 1;
+                                                programrowsobjlist.Add(programrowsobj);//Add for : To resolve filter issue for display grid
                                             }
-                                            programrowsobjlist.Add(programrowsobj);
+                                            //programrowsobjlist.Add(programrowsobj); //Comment for : To resolve filter issue for display grid
                                         }
-                                        campaignrowsobj.rows = programrowsobjlist;
+                                        campaignrowsobj.rows = programrowsobjlist;//Add for : To resolve filter issue for display grid
                                     }
 
                                     CampCnt = CampCnt + 1;
+                                    campaignrowsobjlist.Add(campaignrowsobj);
                                 }
-                                campaignrowsobjlist.Add(campaignrowsobj);
+                                //campaignrowsobjlist.Add(campaignrowsobj); //Comment for : To resolve filter issue for display grid
                             }
                             gridjsonlistplanobj.rows = campaignrowsobjlist;
                         }

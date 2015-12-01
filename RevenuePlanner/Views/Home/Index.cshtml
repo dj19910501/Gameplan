@@ -2321,10 +2321,7 @@
         $('#hdnSelectedPlanIds').val(PlanIdsCustom);
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
         
-        if ($('#IsGridView').val() == "True") {
-            $("#CalenderView").hide();
-            $("#liGrid").click();
-        }
+       
         var planids = [];
 
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -2345,6 +2342,11 @@
         GetTacticTypelist(planids);
         GetOwnerListForFilter(planids);
         GetLastSetofViews();
+
+        if ($('#IsGridView').val() == "True") {
+            $("#CalenderView").hide();
+            $("#liGrid").click();
+        }
        // LastSetofowners();
     });
     function LoadPlan() {
