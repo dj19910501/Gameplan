@@ -223,6 +223,7 @@ namespace RevenuePlanner.Controllers
                             {
                                 currentPlan = latestPlan;
                             }
+                            
                         }
                         else
                         {
@@ -232,8 +233,11 @@ namespace RevenuePlanner.Controllers
                             {
                                 currentPlan = latestPlan;
                             }
+                           
                         }
                     }
+                    isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
+                    ViewBag.IsPublished = isPublished;
             }
 
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
