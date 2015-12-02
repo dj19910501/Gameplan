@@ -1161,7 +1161,8 @@ namespace RevenuePlanner.Helpers
                 //// Plan
                 int month = System.DateTime.Now.Month;
                 startDate = new DateTime(startDate.Year, month, 1);
-                endDate = startDate.AddMonths(month).AddTicks(-1);
+                //endDate = startDate.AddMonths(month).AddTicks(-1); // Commented By Nishant Sheth Desc:: Give wrong enddate
+                endDate = startDate.AddMonths(1).AddDays(-1); // Add By Nishant Sheth Desc :: Get Month EndDate
             }
             else if (currentView == Enums.UpcomingActivities.nextyear.ToString())
             {
@@ -1179,6 +1180,12 @@ namespace RevenuePlanner.Helpers
             {
                 startDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
                 endDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
+            }
+            else
+            {
+                string[] PlanYears = currentView.Split('-');
+                startDate = new DateTime(Convert.ToInt32(PlanYears[0]), 1, 1);
+                endDate = new DateTime(Convert.ToInt32(PlanYears[1]), 12, 31);
             }
         }
 

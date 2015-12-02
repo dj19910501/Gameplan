@@ -3374,7 +3374,7 @@ namespace RevenuePlanner.Controllers
             ippctm.StageTitle = tblStage.FirstOrDefault(varS => varS.StageId == pcpt.StageId).Title;
             ippctm.ProjectedStageValue = Convert.ToDouble(pcpt.ProjectedStageValue);
 
-            var modelTacticStageType = lstTactic.Where(_tacType => _tacType.TacticTypeId == pcpt.TacticTypeId).FirstOrDefault().StageId;
+            var modelTacticStageType = lstTactic.Where(_tacType => _tacType.TacticTypeId == pcpt.TacticTypeId).Select(a => a.StageId).FirstOrDefault();
             var plantacticStageType = pcpt.StageId;
             if (modelTacticStageType == plantacticStageType)
             {

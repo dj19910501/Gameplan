@@ -3198,6 +3198,38 @@ function renderGantt(taskData) {
 
         gantt.parse(tasks);
     }
+    else {
+
+        // Add By Nishant Sheth 
+        // Desc :: For 24 months 
+        var PlanYears = isQuater.split("-");
+        var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+        gantt.config.scale_unit = "year";
+        gantt.config.step = 1;
+        gantt.config.date_scale = "%Y";
+        gantt.config.scale_height = 60;
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 44 }];
+        gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
+
+        var date = new Date();
+        gantt.config.start_date = new Date(planYear, 00, 01);
+        gantt.config.end_date = new Date(planYear + yearDiffrence, 00, 01);
+        gantt.init("gantt_here");
+
+        var json_length = tasks.data.length;
+        var gantt_div = document.getElementById("gantt_here");
+
+        // Added by KAPIL - #454 - to resolve extra space
+        CalGanntHeight();
+
+        //// Function to add class to each task bar.
+        ////Modified By Maninder Singh Wadhva PL Ticket#47, 337
+        gantt.templates.task_class = function (start, end, task) {
+            return getCSSForTask(task);
+        };
+
+        gantt.parse(tasks);
+    }
 
 
     //// Hide/Show Tabulated data shown below gantt of request tab.

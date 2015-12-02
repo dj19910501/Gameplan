@@ -446,7 +446,7 @@ namespace RevenuePlanner.Controllers
             }
 
             //// Get list of planIds from filtered plans
-            var filteredPlanIds = lstPlans.Where(plan => plan.Year == planYear).ToList().Select(plan => plan.PlanId).ToList();
+            var filteredPlanIds = lstPlans.Where(plan => plan.Year == planYear || planId.Split(',').Contains(plan.PlanId.ToString())).ToList().Select(plan => plan.PlanId).ToList();
 
             CalendarStartDate = CalendarEndDate = DateTime.Now;
             Common.GetPlanGanttStartEndDate(planYear, timeFrame, ref CalendarStartDate, ref CalendarEndDate);
@@ -1911,19 +1911,19 @@ namespace RevenuePlanner.Controllers
 
             #region Prepare Campaign Task Data
             //// Prepare task data campaign list for gantt chart
-            var taskDataCampaign = lstTactic.Select(tactic => new
+                var taskDataCampaign = lstCampaign.Select(camp => new
             {
-                id = string.Format("L{0}_C{1}", tactic.PlanId, tactic.PlanCampaignId),
-                text = tactic.objPlanTacticCampaign.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTacticCampaign.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.objPlanTacticCampaign.StartDate, tactic.objPlanTacticCampaign.EndDate),
-                progress = GetCampaignProgress(lstTactic, tactic.objPlanTacticCampaign, EffectiveDateListByPlanIds, tactic.PlanId),
+                    id = string.Format("L{0}_C{1}", camp.PlanId, camp.PlanCampaignId),
+                    text = camp.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, camp.StartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, camp.StartDate, camp.EndDate),
+                    progress = GetCampaignProgress(lstTactic, camp, EffectiveDateListByPlanIds, camp.PlanId),
                 open = false,
-                parent = string.Format("L{0}", tactic.PlanId),
+                    parent = string.Format("L{0}", camp.PlanId),
                 color = CampaignColor,
-                plancampaignid = tactic.PlanCampaignId,
-                Status = tactic.objPlanTacticCampaign.Status,
-                CreatedBy = tactic.CreatedBy
+                    plancampaignid = camp.PlanCampaignId,
+                    Status = camp.Status,
+                    CreatedBy = camp.CreatedBy
             }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
 
             //// Finalize task data campaign list for gantt chart
@@ -1955,7 +1955,7 @@ namespace RevenuePlanner.Controllers
 
                 #region Plan
                 //Modified by Komal Rawal for #1537 to get Plan according to year.
-                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear)
+                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false))
                                                   .ToList()
                                                    .Select(plan => new
                                                    {
@@ -4192,9 +4192,36 @@ namespace RevenuePlanner.Controllers
 
             //// Fetch the active plan based of plan ids
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
+            List<int> lstplanid = activePlan.Select(a => a.PlanId).ToList();
+            var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(a => lstplanid.Contains(a.PlanId) && a.IsDeleted == false).ToList();
+            List<int> lstCamppid = lstCampaign.Select(a => a.PlanCampaignId).ToList();
+            var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(a => lstCamppid.Contains(a.PlanCampaignId) && a.IsDeleted == false).ToList();
+            List<int> lstProgid = lstProgram.Select(a => a.PlanProgramId).ToList();
+            var lstTact = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(a => lstProgid.Contains(a.PlanProgramId) && a.IsDeleted == false).ToList();
+            DateTime campmaxDate, progmaxDate, tactmaxDate;
+            campmaxDate = progmaxDate = tactmaxDate = DateTime.Now.Date;
+            if (lstCampaign.Count > 0)
+            {
+                campmaxDate = lstCampaign.Select(a => a.EndDate).Max();
+            }
+            if (lstProgram.Count > 0)
+            {
+                progmaxDate = lstProgram.Select(a => a.EndDate).Max();
+            }
+            if (lstTact.Count > 0)
+            {
+                tactmaxDate = lstTact.Select(a => a.EndDate).Max();
+            }
+
+            DateTime EndDate = DateTime.Now;
+
+            EndDate = campmaxDate > progmaxDate ? campmaxDate : progmaxDate;
+            EndDate = tactmaxDate > EndDate ? tactmaxDate : EndDate;
+
 
             //// Get the Current year and Pre define Upcoming Activites.
             string currentYear = DateTime.Now.Year.ToString();
+            string EndYear = EndDate.Year.ToString();
             List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
 
             //// Fetch the pervious year and future year list and insert into the list object
@@ -4211,6 +4238,15 @@ namespace RevenuePlanner.Controllers
                 //// Add current year into the list
                 UpcomingActivityList.Add(new SelectListItem { Text = quartText, Value = strThisQuarter, Selected = false });
                 UpcomingActivityList.Add(new SelectListItem { Text = monthText, Value = strThisMonth, Selected = false });
+                if (currentYear != EndYear)
+                {
+                    int yearDiff = Convert.ToInt32(EndYear) - Convert.ToInt32(currentYear);
+                    for (int i = 1; i <= yearDiff; i++)
+                    {
+                        UpcomingActivityList.Add(new SelectListItem { Text = EndYear, Value = (Convert.ToInt32(currentYear) + i).ToString(), Selected = false });
+                    }
+                    UpcomingActivityList.Add(new SelectListItem { Text = currentYear + "-" + EndYear, Value = currentYear + "-" + EndYear, Selected = true });
+                }
                 UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
             }
 
