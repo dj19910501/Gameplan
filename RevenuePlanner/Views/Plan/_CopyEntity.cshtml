@@ -2,7 +2,8 @@
 @using Newtonsoft.Json;
 @{
     var _mainGridData = Model != null ? JsonConvert.SerializeObject(Model) : string.Empty;
-    var headerTitle = Model.HeaderTitle != null ? Model.HeaderTitle : string.Empty;
+    //var headerTitle = Model.HeaderTitle != null ? Model.HeaderTitle : string.Empty;
+    var headerTitle = (string)ViewBag.HeaderTitle;
     var srcSectionType = Model.srcSectionType != null ? Model.srcSectionType : string.Empty;
     var srcEntityId = Model.srcEntityId != null ? Model.srcEntityId : string.Empty;
     var srcPlanId = Model.srcPlanId != null ? Model.srcPlanId : string.Empty;
@@ -11,7 +12,7 @@
         var constProgram = RevenuePlanner.Helpers.Enums.Section.Program;
         var constTactic = RevenuePlanner.Helpers.Enums.Section.Tactic;
 }
-
+<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxgrid.css")" rel="stylesheet" type="text/css" />
 <!-- Modal -->
 <div class=" modal modal-copytactic" id="copytactic" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -21,7 +22,7 @@
                 <h4 class="modal-title  source-sans-proregular" id="myModalLabel">Copying - <span class=" source-sans-probold tipsyTitle" id="hdrTitle"></span></h4>
             </div>
             <div class="modal-body">
-                <div id="nl-formPlan" class="nl-form-plan-title without-margin plantitle financetitle">
+                <div id="nl-formCopyTacticPlan" class="nl-form-plan-title without-margin plantitle financetitle">
                     @Html.DropDownList("ddlPlans", new SelectList((System.Collections.IEnumerable)ViewBag.plans, "Value", "Text"))
                     <div class="nl-overlay"></div>
                 </div>
@@ -41,7 +42,7 @@
                     <div id="dvParentEntitySelection" style="width:100%; height:450px;"></div>
                 </div>
                 <button type="button" class="btn btn-blue text-shadow-blue source-sans-proregular pull-left" data-dismiss="modal" onclick="CopyEntity()">Confirm</button>
-                <button type="button" class="btn btn-grey without-text-shadow source-sans-prolight btnEdit pull-left closeCopyEntity">Cancel</button>
+                <button type="button" class="btn btn-grey without-text-shadow source-sans-proregular btnEdit pull-left closeCopyEntity">Cancel</button>
             </div>
         </div>
     </div>
@@ -49,21 +50,21 @@
 <script type="text/javascript">
     var myTreeGrid;
     $(document).ready(function () {
-        nlformUserChildFinance = new NLForm(document.getElementById('nl-formPlan'));
-        $('#nl-formPlan > div[class="nl-field nl-dd"]').find('li').click(function (e) {
-            $("#warningMessage1").css("display", "block");
-            $("#spanMessageWarning1").empty();
-            $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
-            $("#SuccessMsg").css("display", "none");
-            $("#errorMessage1").css("display", "none");
+        
+        nlformUserChildFinance = new NLForm(document.getElementById('nl-formCopyTacticPlan'));
+        showWarningMessage();   // show "METADETA" lost warning message when popup load first time.
+        $('#nl-formCopyTacticPlan > div[class="nl-field nl-dd"]').find('li').click(function (e) {
+            showWarningMessage();
             var planId = $(this).attr('value');
             if (planId != null && planId != 'undefined' && planId != '0') {
                 RefreshParentEntitySelectionList(planId);
             }
-            $('#nl-formPlan .nl-field-toggle').text($(this).text());
+            $('#nl-formCopyTacticPlan .nl-field-toggle').text($(this).text());
         });
-        var hdrTitle = '@(headerTitle)';
-        $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">"));
+        $('#nl-formCopyTacticPlan .nl-field-toggle').addClass('tipsyTitle');
+        var hdrTitle = '@headerTitle';
+        hdrTitle = $('<div/>').html(hdrTitle.toString().replace(/[\\]/g, "\\\\")).text();
+        $("#hdrTitle").text(hdrTitle.replace(/&amp;/g, "&").replace(/&gt;/g, ">").replace(/&lt;/g, "<"));
         NumberFormatterTipsyTitle(".tipsyTitle", 28);
         $(".closeCopyEntity").click(function () {
             $('#dvCopyEntity').empty();
@@ -93,6 +94,8 @@
     }
     function BindParentEntitySelectionList(GridData) {
         
+        //GridData = $('<div/>').html(GridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
+        //GridData = (GridData.toString().replace(/&amp;/g, "&"));
         myTreeGrid = new dhtmlXGridObject('dvParentEntitySelection');
         myTreeGrid.setImagePath('@Url.Content("~/codebase/imgs/")');
         myTreeGrid.setImageSize(1, 1);
@@ -103,6 +106,7 @@
         myTreeGrid.setColAlign("left");
         myTreeGrid.setColTypes("tree");
         myTreeGrid.init();
+        myTreeGrid.setSkin("dhx_skyblue");
         myTreeGrid.parse(GridData, "json");
         myTreeGrid.expandAll();
         $(".modal-content-grid .objbox").css("height", 450);
@@ -217,7 +221,19 @@
             $("#spanMessageError1").html(value);
         }
     }
+    function showWarningMessage() {
+        $("#warningMessage1").css("display", "block");
+        $("#spanMessageWarning1").empty();
+        $("#spanMessageWarning1").text('@RevenuePlanner.Helpers.Common.objCached.CloneEntityMetaDataErrorMessage.ToString()');
+            $("#SuccessMsg").css("display", "none");
+            $("#errorMessage1").css("display", "none");
+    }
     $(".closemessage").click(function () {
+        //$("#divBackground").css("display", "none");
         $(this).parent().closest('div').css("display", "none");
+        //$('#dvCopyEntity').empty();
+        //$(".modal-backdrop").css('display', 'none');
+
+        
     });
 </script>

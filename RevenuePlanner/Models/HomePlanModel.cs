@@ -354,6 +354,7 @@ namespace RevenuePlanner.Models
     {
         public int PlanTacticId { get; set; }
         public int TacticTypeId { get; set; }
+        public int? TargetStageId { get; set; }
     }
     public class CopyEntiyBetweenPlanModel
     {

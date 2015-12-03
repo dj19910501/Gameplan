@@ -848,10 +848,19 @@ namespace RevenuePlanner.Helpers
             if (entityId == 0)
                 return returnFlag;
             string Suffix = Common.copySuffix + Common.GetTimeStamp();
+            DateTime startDate = new DateTime(), endDate=new DateTime();
             try
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
-
+                //Plan_Campaign_Program objParentProgram =new Plan_Campaign_Program();
+                //if (parentEntityId > 0)
+                //    objParentProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == parentEntityId).FirstOrDefault();
+                //if(objParentProgram != null)
+                //{
+                //    startDate = objParentProgram.StartDate;
+                //    endDate = objParentProgram.EndDate;
+                //}
+                
                 Plan_Campaign_Program_Tactic objPlanTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().First(p => p.PlanTacticId == entityId && p.IsDeleted == false);
 
                 if (objPlanTactic != null)
@@ -877,6 +886,8 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.LastSyncDate = null;
                     objPlanTactic.ModifiedDate = null;
                     objPlanTactic.ModifiedBy = null;
+                    //objPlanTactic.StartDate = startDate;
+                    //objPlanTactic.EndDate = endDate;
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
@@ -886,10 +897,18 @@ namespace RevenuePlanner.Helpers
                         });
                     if (isdifferModel)
                     {
-                        int tacticTypeId = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == objPlanTactic.PlanTacticId).Select(tac => tac.TacticTypeId).FirstOrDefault(); // Get destination model TacticTypeId.
-                        objPlanTactic.TacticTypeId = tacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
-                    }
+                        PlanTactic_TacticTypeMapping objTacticTypeMapping = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == objPlanTactic.PlanTacticId).FirstOrDefault();
+                        int destTacticTypeId = objTacticTypeMapping.TacticTypeId; // Get destination model TacticTypeId.
+                        objPlanTactic.TacticTypeId = destTacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
 
+                        // Handle Tactic TargetStage scenario.
+                        int? destTargetStageId = objTacticTypeMapping.TargetStageId;
+                        if (!destTargetStageId.HasValue || !objPlanTactic.StageId.Equals(destTargetStageId.Value)) 
+                        {
+                            objPlanTactic.ProjectedStageValue = null; // if destination Model TargetStage value null Or Source & Destionation Model Target Stage are different then update ProjectedStageValue to be null.
+                            objPlanTactic.StageId = destTargetStageId.HasValue? destTargetStageId.Value : 0; // Update Target StageId with destination model value.
+                        }
+                    }
                 }
                 objPlanTactic.Plan_Campaign_Program_Tactic_Cost = null; //objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
                 objPlanTactic.Plan_Campaign_Program_Tactic_Budget = null;//objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
@@ -958,6 +977,16 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
+                //Plan objPlan = new Plan();
+                //if (parentEntityId > 0)
+                //    objPlan = db.Plans.Where(pln => pln.PlanId == parentEntityId).FirstOrDefault();
+                //if (objPlan != null)
+                //{
+                //    int count = 
+                //    startDate = objParentProgram.StartDate;
+                //    endDate = objParentProgram.EndDate;
+                //}
+
                 Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanCampaignId == entityId && p.IsDeleted == false);
                 if (objPlanCampaign != null)
                 {
@@ -1014,8 +1043,17 @@ namespace RevenuePlanner.Helpers
                                 });
                                 if (isdifferModel)
                                 {
-                                    int tacticTypeId = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == pcpt.PlanTacticId).Select(tac => tac.TacticTypeId).FirstOrDefault(); // Get destination model TacticTypeId.
-                                    pcpt.TacticTypeId = tacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
+                                    PlanTactic_TacticTypeMapping objTacticTypeMapping = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == pcpt.PlanTacticId).FirstOrDefault(); // Get destination model TacticTypeId.
+                                    int destTacticTypeId = objTacticTypeMapping.TacticTypeId; // Get destination model TacticTypeId.
+                                    pcpt.TacticTypeId = destTacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
+
+                                    // Handle Tactic TargetStage scenario.
+                                    int? destTargetStageId = objTacticTypeMapping.TargetStageId;
+                                    if (!destTargetStageId.HasValue || !pcpt.StageId.Equals(destTargetStageId.Value))
+                                    {
+                                        pcpt.ProjectedStageValue = null; // if destination Model TargetStage value null Or Source & Destionation Model Target Stage are different then update ProjectedStageValue to be null.
+                                        pcpt.StageId = destTargetStageId.HasValue ? destTargetStageId.Value : 0; // Update Target StageId with destination model value.
+                                    }
                                 }
                             });
                             t.Plan_Campaign_Program_Tactic = t.Plan_Campaign_Program_Tactic.Where(_tac => _tac.IsDeleted == false).ToList();
@@ -1099,10 +1137,20 @@ namespace RevenuePlanner.Helpers
             if (entityId == 0)
                 return returnFlag;
             string Suffix = Common.copySuffix + Common.GetTimeStamp();
+            DateTime startDate = new DateTime(), endDate = new DateTime();
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
             try
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
+
+                //Plan_Campaign objParentCampaign = new Plan_Campaign();
+                //if (parentEntityId > 0)
+                //    objParentCampaign = db.Plan_Campaign.Where(cmpgn => cmpgn.PlanCampaignId == parentEntityId).FirstOrDefault();
+                //if (objParentCampaign != null)
+                //{
+                //    startDate = objParentCampaign.StartDate;
+                //    endDate = objParentCampaign.EndDate;
+                //}
 
                 Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().First(p => p.PlanProgramId == entityId && p.IsDeleted == false);
 
@@ -1122,6 +1170,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.ModifiedDate = null;
                     objPlanCampaignPrograms.ModifiedBy = null;
                     objPlanCampaignPrograms.PlanCampaignId = parentEntityId;
+                    //objPlanCampaignPrograms.StartDate = startDate;
+                    //objPlanCampaignPrograms.EndDate = endDate;
                     objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -1144,6 +1194,8 @@ namespace RevenuePlanner.Helpers
                             t.LastSyncDate = null;
                             t.Plan_Campaign_Program_Tactic_Cost = null;//t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_Budget = null; //t.Plan_Campaign_Program_Tactic_Budget.ToList();
+                            //t.StartDate = startDate;
+                            //t.EndDate = endDate;
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
@@ -1152,8 +1204,17 @@ namespace RevenuePlanner.Helpers
                             });
                             if (isdifferModel)
                             {
-                                int tacticTypeId = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == t.PlanTacticId).Select(tac => tac.TacticTypeId).FirstOrDefault(); // Get destination model TacticTypeId.
-                                t.TacticTypeId = tacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
+                                PlanTactic_TacticTypeMapping objTacticTypeMapping = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == t.PlanTacticId).FirstOrDefault(); // Get destination model TacticTypeId.
+                                int destTacticTypeId = objTacticTypeMapping.TacticTypeId; // Get destination model TacticTypeId.
+                                t.TacticTypeId = destTacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
+
+                                // Handle Tactic TargetStage scenario.
+                                int? destTargetStageId = objTacticTypeMapping.TargetStageId;
+                                if (!destTargetStageId.HasValue || !t.StageId.Equals(destTargetStageId.Value))
+                                {
+                                    t.ProjectedStageValue = null; // if destination Model TargetStage value null Or Source & Destionation Model Target Stage are different then update ProjectedStageValue to be null.
+                                    t.StageId = destTargetStageId.HasValue ? destTargetStageId.Value : 0; // Update Target StageId with destination model value.
+                                }
                             }
                         });
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic = objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(_tac => _tac.IsDeleted == false).ToList();

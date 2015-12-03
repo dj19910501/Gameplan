@@ -11515,7 +11515,9 @@ namespace RevenuePlanner.Controllers
                 }
             }
             #endregion
-            objModel.HeaderTitle = HttpUtility.HtmlDecode(srcEntityTitle);
+            //objModel.HeaderTitle = HttpUtility.HtmlDecode(srcEntityTitle);
+            objModel.HeaderTitle = string.Empty;
+            ViewBag.HeaderTitle = srcEntityTitle;
             #endregion
 
             return PartialView("~/Views/Plan/_CopyEntity.cshtml", objModel);
@@ -11526,30 +11528,18 @@ namespace RevenuePlanner.Controllers
             PlanId = !string.IsNullOrEmpty(planId) ? Convert.ToInt32(planId) : 0;
             #region "Get Model"
             CopyEntiyBetweenPlanModel objModel = new CopyEntiyBetweenPlanModel();
-            objModel = GetParentEntitySelectionList(PlanId);
+            objModel = GetParentEntitySelectionList(PlanId,true);
             #endregion
 
             return Json(objModel, JsonRequestBehavior.AllowGet);
         }
-        private CopyEntiyBetweenPlanModel GetParentEntitySelectionList(int planId)
+        private CopyEntiyBetweenPlanModel GetParentEntitySelectionList(int planId,bool isAjaxCall = false)
         {
 
             CopyEntiyBetweenPlanModel mainGridData = new CopyEntiyBetweenPlanModel();
             List<DhtmlxGridRowDataModel> gridRowData = new List<DhtmlxGridRowDataModel>();
             try
             {
-                // Add By Nishant Sheth
-                // Desc #1678 
-                //StringBuilder setHeader = new StringBuilder();
-                //StringBuilder attachHeader = new StringBuilder();
-                //StringBuilder setInitWidths = new StringBuilder();
-                //StringBuilder setColAlign = new StringBuilder();
-                //StringBuilder setColValidators = new StringBuilder();
-                //StringBuilder setColumnIds = new StringBuilder();
-                //StringBuilder setColTypes = new StringBuilder();
-                //StringBuilder setColumnsVisibility = new StringBuilder();
-                //StringBuilder HeaderStyle = new StringBuilder();
-
 
                 #region "GetFinancial Parent-Child Data"
 
@@ -11616,26 +11606,17 @@ namespace RevenuePlanner.Controllers
                 Plan objPlan = db.Plans.Where(plan => plan.PlanId == planId).FirstOrDefault();
                 ParentChildEntityMapping objPlanMapping = new ParentChildEntityMapping();
                 objPlanMapping.Id = objPlan.PlanId;
-                objPlanMapping.Name = HttpUtility.HtmlEncode(objPlan.Title);
+                objPlanMapping.Name = isAjaxCall?HttpUtility.HtmlDecode(objPlan.Title):HttpUtility.HtmlEncode(objPlan.Title);
                 objPlanMapping.ParentId = 0;
                 objPlanMapping.RowId = Regex.Replace(objPlan.Title.Trim().Replace("_", ""), @"[^0-9a-zA-Z]+", "") + "_" + objPlan.PlanId.ToString() + "_" + "0" + "_" + Enums.Section.Plan.ToString() + "_" + objPlan.PlanId.ToString();
 
                 List<DhtmlxGridRowDataModel> lstData = new List<DhtmlxGridRowDataModel>();
                 DhtmlxGridRowDataModel objModeldata = new DhtmlxGridRowDataModel();
-                objModeldata = CreateSubItem(objPlanMapping, objPlan.PlanId, Enums.Section.Campaign, objPlan.PlanId);
+                objModeldata = CreateSubItem(objPlanMapping, objPlan.PlanId, Enums.Section.Campaign, objPlan.PlanId, isAjaxCall);
                 lstData.Add(objModeldata);
 
                 #endregion
 
-                //mainGridData.setHeader = trimSetheader;
-                //mainGridData.attachHeader = trimAttachheader;
-                //mainGridData.setInitWidths = trimSetInitWidths;
-                //mainGridData.setColAlign = trimSetColAlign;
-                //mainGridData.setColValidators = trimSetColValidators;
-                //mainGridData.setColumnIds = trimSetColumnIds;
-                //mainGridData.setColTypes = trimSetColTypes;
-                //mainGridData.setColumnsVisibility = trimSetColumnsVisibility;
-                //mainGridData.HeaderStyle = trimHeaderStyle;
                 mainGridData.rows = lstData;
             }
             catch (Exception ex)
@@ -11644,13 +11625,13 @@ namespace RevenuePlanner.Controllers
             }
             return mainGridData;
         }
-        private DhtmlxGridRowDataModel CreateSubItem(ParentChildEntityMapping row, int parentId, Enums.Section section, int destPlanId)
+        private DhtmlxGridRowDataModel CreateSubItem(ParentChildEntityMapping row, int parentId, Enums.Section section, int destPlanId, bool isAjaxCall)
         {
             List<DhtmlxGridRowDataModel> children = new List<DhtmlxGridRowDataModel>();
             List<ParentChildEntityMapping> lstChildren = new List<ParentChildEntityMapping>();
             if (section != Enums.Section.Tactic)
             {
-                lstChildren = GetChildrenEntityList(parentId, section, destPlanId);
+                lstChildren = GetChildrenEntityList(parentId, section, destPlanId, isAjaxCall);
             }
             if (lstChildren != null && lstChildren.Count() > 0)
                 lstChildren = lstChildren.OrderBy(child => child.Name, new AlphaNumericComparer()).ToList();
@@ -11661,13 +11642,13 @@ namespace RevenuePlanner.Controllers
                 childSection = Enums.Section.Tactic;
 
             children = lstChildren
-              .Select(r => CreateSubItem(r, r.Id, childSection, destPlanId))
+              .Select(r => CreateSubItem(r, r.Id, childSection, destPlanId, isAjaxCall))
               .ToList();
             List<string> ParentData = new List<string>();
             ParentData.Add(row.Name);
             return new DhtmlxGridRowDataModel { id = row.RowId, data = ParentData, rows = children };
         }
-        private List<ParentChildEntityMapping> GetChildrenEntityList(int parentId, Enums.Section section, int destPlanId)
+        private List<ParentChildEntityMapping> GetChildrenEntityList(int parentId, Enums.Section section, int destPlanId, bool isAjaxCall)
         {
             List<ParentChildEntityMapping> lstMapping = null;
             ParentChildEntityMapping objCampaign = null;
@@ -11683,7 +11664,7 @@ namespace RevenuePlanner.Controllers
                         objCampaign = new ParentChildEntityMapping();
                         objCampaign.Id = cmpgn.PlanCampaignId;
                         objCampaign.ParentId = parentId;
-                        objCampaign.Name = HttpUtility.HtmlEncode(cmpgn.Title);
+                        objCampaign.Name = isAjaxCall ? HttpUtility.HtmlDecode(cmpgn.Title) : HttpUtility.HtmlEncode(cmpgn.Title); 
                         objCampaign.RowId = Regex.Replace(cmpgn.Title.Trim().Replace("_", ""), @"[^0-9a-zA-Z]+", "") + "_" + cmpgn.PlanCampaignId.ToString() + "_" + parentId.ToString() + "_" + section.ToString() + "_" + destPlanId.ToString();
                         lstMapping.Add(objCampaign);
                     });
@@ -11697,7 +11678,7 @@ namespace RevenuePlanner.Controllers
                         objProgram = new ParentChildEntityMapping();
                         objProgram.Id = prgrm.PlanProgramId;
                         objProgram.ParentId = parentId;
-                        objProgram.Name = HttpUtility.HtmlEncode(prgrm.Title);
+                        objProgram.Name = isAjaxCall ? HttpUtility.HtmlDecode(prgrm.Title) : HttpUtility.HtmlEncode(prgrm.Title); 
                         objProgram.RowId = Regex.Replace(prgrm.Title.Trim().Replace("_", ""), @"[^0-9a-zA-Z]+", "") + "_" + prgrm.PlanProgramId.ToString() + "_" + parentId.ToString() + "_" + section.ToString() + "_" + destPlanId.ToString();
                         lstMapping.Add(objProgram);
                     });
@@ -11856,8 +11837,9 @@ namespace RevenuePlanner.Controllers
                     {
 
                         PlanTactic_TacticTypeMapping objTacticMapping = new PlanTactic_TacticTypeMapping();
-                        objTacticMapping.PlanTacticId = sourceEntityId;
-                        objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId;
+                        objTacticMapping.PlanTacticId = sourceEntityId; //Source PlanTacticId
+                        objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId; // Destination Model TacticTypeId.
+                        objTacticMapping.TargetStageId =lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
                         lstTacticTypeMapping.Add(objTacticMapping);
                     }
                 }
@@ -11896,6 +11878,7 @@ namespace RevenuePlanner.Controllers
                                     objTacticMapping = new PlanTactic_TacticTypeMapping();
                                     objTacticMapping.PlanTacticId = childTactic.PlanTacticId;
                                     objTacticMapping.TacticTypeId = objTacType.TacticTypeId;
+                                    objTacticMapping.TargetStageId = objTacType.StageId; // Destination Model StageId.
                                     lstTacticTypeMapping.Add(objTacticMapping);
                                 }
                             }

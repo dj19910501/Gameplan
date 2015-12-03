@@ -15122,6 +15122,7 @@ tbody.column2 {
   background: -moz-linear-gradient(to bottom, #efefef, #bbbbbb); /* For Firefox 3.6 to 15 */
   background: linear-gradient(to bottom, #efefef, #bbbbbb); /* Standard syntax */
   border:1px solid #cccccc;
+  font-size:14px;
      }
         .modal-copytactic .btn-blue
         {
