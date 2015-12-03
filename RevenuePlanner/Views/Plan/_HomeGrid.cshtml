@@ -235,13 +235,17 @@
             }, function () {
                 $("#divTacticReqMsg").css('display', 'none');
             });
-            $(".grid_Search").click(function (e) {
-                inspectCloseFocus = $(this).position().top;
-                var id = $(this).parent().next().html();
-                var type = $(this).attr('id');
-                gridSearchFlag = 1;
-                DisplayEditablePopup(id, type);
-            });
+            // Commented By Nishant Sheth
+            // Desc :: To resolve show popup isssue after export to csv feature. #1789
+
+            //$(".grid_Search").click(function (e) {
+            //    
+            //    inspectCloseFocus = $(this).position().top;
+            //    var id = $(this).parent().next().html();
+            //    var type = $(this).attr('id');
+            //    gridSearchFlag = 1;
+            //    DisplayEditablePopup(id, type);
+            //});
             $(".grid_add").click(function (e) {
                 $(".dhtmlxcalendar_dhx_skyblue").css("display", "none");
                 gridSearchFlag = 1;
