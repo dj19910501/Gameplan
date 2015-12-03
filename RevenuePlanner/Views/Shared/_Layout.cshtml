@@ -282,8 +282,10 @@
         return {
             showPleaseWait: function () {
                 //alert('show');
-                if (resp != undefined) {
-                    if (resp.state() === 'pending') {
+                //if (resp != undefined) {
+                if (true) {
+                    //if (resp.state() === 'pending') {
+                    if (false) {
                         //alert('if1');
                         //pleaseWaitDiv.modal();
                     }
@@ -344,13 +346,14 @@
                         });
                     }
                     else {
-                        alert("CLOSE");
+                        //alert("CLOSE");
                         // pleaseWaitDiv.close();
                     }
                 }
             },
             hidePleaseWait: function () {
-                if (resp.state() === 'resolved') {
+                //if (resp.state() === 'resolved') {
+                if (true) {
                     countplease = countplease + 1;
                     //alert('resolved');
                     if (countplease == 1) {
@@ -369,7 +372,7 @@
         };
     })();
     var countplease = 0;
-    var resp = $.ajax({});
+    //var resp = $.ajax({});
     //Added by Ashish Mistry for PL #1746
 
 
