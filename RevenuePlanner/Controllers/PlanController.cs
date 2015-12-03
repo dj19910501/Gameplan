@@ -9255,16 +9255,16 @@ namespace RevenuePlanner.Controllers
                 //}
             
                 //to improve performance logic changed
-                List<string> collaboratorIds = new List<string>();
-                var planTacticModifiedBy = programtactic.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
-                var planTacticCreatedBy = programtactic.Select(t => t.CreatedBy.ToString()).ToList();
-                var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => lstTacticIds.Contains(pc.Plan_Campaign_Program_Tactic.PlanTacticId));
-                var planTacticCommentCreatedBy = programtactic.Select(pc => pc.CreatedBy.ToString()).ToList();
-                collaboratorIds.AddRange(planTacticCreatedBy);
-                collaboratorIds.AddRange(planTacticModifiedBy);
-                collaboratorIds.AddRange(planTacticCommentCreatedBy);
+                //List<string> collaboratorIds = new List<string>();
+                //var planTacticModifiedBy = programtactic.Where(t => t.ModifiedBy != null).Select(t => t.ModifiedBy.ToString()).ToList();
+                //var planTacticCreatedBy = programtactic.Select(t => t.CreatedBy.ToString()).ToList();
+                //var planTacticComment = db.Plan_Campaign_Program_Tactic_Comment.Where(pc => lstTacticIds.Contains(pc.Plan_Campaign_Program_Tactic.PlanTacticId));
+                //var planTacticCommentCreatedBy = programtactic.Select(pc => pc.CreatedBy.ToString()).ToList();
+                //collaboratorIds.AddRange(planTacticCreatedBy);
+                //collaboratorIds.AddRange(planTacticModifiedBy);
+                //collaboratorIds.AddRange(planTacticCommentCreatedBy);
               
-                List<Guid> collaboratorIdsList = collaboratorIds.Distinct().ToList<string>().Select(Guid.Parse).ToList();
+                //List<Guid> collaboratorIdsList = collaboratorIds.Distinct().ToList<string>().Select(Guid.Parse).ToList();
 
                 List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
@@ -9731,16 +9731,16 @@ namespace RevenuePlanner.Controllers
                                                 programrowsobj.data = programdataobjlist;
 
 
-                                                if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0 )&& !IsFiltered )
-                                                {
-                                                    //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
-                                                    finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (tacticfilter.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tacticfilter.CreatedBy)) || (lstSubordinatesIds.Contains(tacticfilter.CreatedBy) == true ? lsteditableEntityIds.Contains(tacticfilter.PlanTacticId) : lstSubordinatesIds.Contains(tacticfilter.CreatedBy)))).OrderBy(t => t.Title).ToList();
-                                                }
-                                                else
-                                                {
-                                                    finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();
+                                                //if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0 )&& !IsFiltered )
+                                                //{
+                                                //    //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
+                                                //    finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (tacticfilter.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tacticfilter.CreatedBy)) || (lstSubordinatesIds.Contains(tacticfilter.CreatedBy) == true ? lsteditableEntityIds.Contains(tacticfilter.PlanTacticId) : lstSubordinatesIds.Contains(tacticfilter.CreatedBy)))).OrderBy(t => t.Title).ToList();
+                                                //}
+                                                //else
+                                                //{
+                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();
 
-                                                }
+                                                //}
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                                 {
                                                     Startdate = Enddate = string.Empty;

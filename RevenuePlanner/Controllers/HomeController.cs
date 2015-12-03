@@ -50,7 +50,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planProgramId">planProgramId used for notification email shared link</param>
         /// <param name="isImprovement">isImprovement flag used with planTacticId for ImprovementTactic of notification email shared link</param>
         /// <returns>returns view as per menu selected</returns>
-        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId =0)
+        public ActionResult Index(Enums.ActiveMenu activeMenu = Enums.ActiveMenu.Home, int currentPlanId = 0, int planTacticId = 0, int planCampaignId = 0, int planProgramId = 0, bool isImprovement = false, bool isGridView = false, int planLineItemId = 0)
         {
             //// To get permission status for Plan create, By dharmraj PL #519
             ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -76,7 +76,7 @@ namespace RevenuePlanner.Controllers
                 var lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
                 //// Check whether his own & SubOrdinate Plan editable or Not.
                 var objPlan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId == currentPlanId);
-              
+
                 if (objPlan.CreatedBy.Equals(Sessions.User.UserId)) // 
                 {
                     IsPlanEditable = true;
@@ -95,7 +95,7 @@ namespace RevenuePlanner.Controllers
 
                 Plan Plan = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(currentPlanId));
                 isPublished = Plan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString());
-                
+
 
 
             }
@@ -110,7 +110,7 @@ namespace RevenuePlanner.Controllers
             //// Check insepct popup shared link validation to open insepct pop up as per link
             if (activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
             {
-                currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement,planLineItemId);
+                currentPlanId = InspectPopupSharedLinkValidation(currentPlanId, planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
             }
             else if (activeMenu.Equals(Enums.ActiveMenu.Home) && currentPlanId > 0 && (planTacticId > 0 || planCampaignId > 0 || planProgramId > 0))
             {
@@ -153,111 +153,111 @@ namespace RevenuePlanner.Controllers
             List<int> modelIds = objDbMrpEntities.Models.Where(model => model.ClientId.Equals(Sessions.User.ClientId) && model.IsDeleted == false).Select(m => m.ModelId).ToList();
             //// Get list of active plan by selected modelId list
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(p => modelIds.Contains(p.Model.ModelId) && p.IsActive.Equals(true) && p.IsDeleted == false).ToList();
-			
-                    //Added by Ashish Mistry on 23/11/2015 for PL ticket #1772
-                    Plan currentPlan = new Plan();
-                    Plan latestPlan = new Plan();
+
+            //Added by Ashish Mistry on 23/11/2015 for PL ticket #1772
+            Plan currentPlan = new Plan();
+            Plan latestPlan = new Plan();
             string currentYear = DateTime.Now.Year.ToString();
             string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
             if (activePlan.Count() > 0)
-            {				
- //Added by Ashish Mistry on 23/11/2015 for PL ticket #1772
-                    IsPlanEditable = true;
-                    ViewBag.IsPlanEditable = IsPlanEditable;
+            {
+                //Added by Ashish Mistry on 23/11/2015 for PL ticket #1772
+                IsPlanEditable = true;
+                ViewBag.IsPlanEditable = IsPlanEditable;
 
-                    latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
-                    List<Plan> fiterActivePlan = new List<Plan>();
-                    fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
-                    if (fiterActivePlan != null && fiterActivePlan.Any())
+                latestPlan = activePlan.OrderBy(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).Select(plan => plan).FirstOrDefault();
+                List<Plan> fiterActivePlan = new List<Plan>();
+                fiterActivePlan = activePlan.Where(plan => Convert.ToInt32(plan.Year) < Convert.ToInt32(currentYear)).ToList();
+                if (fiterActivePlan != null && fiterActivePlan.Any())
+                {
+                    latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                }
+                if (currentPlanId != 0)
+                {
+                    currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
+                    if (currentPlan == null)
                     {
-                        latestPlan = fiterActivePlan.OrderByDescending(plan => Convert.ToInt32(plan.Year)).ThenBy(plan => plan.Title).FirstOrDefault();
+                        //// Based on currentPlanId, if currentPlan not found then pick first plan from list of activeplans
+                        currentPlan = latestPlan;
+                        currentPlanId = currentPlan.PlanId;
                     }
-                    if (currentPlanId != 0)
+                }
+                else if (!Common.IsPlanPublished(Sessions.PlanId))
+                {
+                    if (Sessions.PublishedPlanId == 0)
                     {
-                        currentPlan = activePlan.Where(p => p.PlanId.Equals(currentPlanId)).FirstOrDefault();
-                        if (currentPlan == null)
-                        {
-                            //// Based on currentPlanId, if currentPlan not found then pick first plan from list of activeplans
-                            currentPlan = latestPlan;
-                            currentPlanId = currentPlan.PlanId;
-                        }
-                    }
-                    else if (!Common.IsPlanPublished(Sessions.PlanId))
-                    {
-                        if (Sessions.PublishedPlanId == 0)
-                        {
-                            fiterActivePlan = new List<Plan>();
+                        fiterActivePlan = new List<Plan>();
                         fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
-                            //// Added by Bhavesh, Current year first plan select in dropdown
-                            if (fiterActivePlan != null && fiterActivePlan.Any())
-                            {
-                                currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
-                            }
-                            else
-                            {
-                                currentPlan = latestPlan;
-                            }
+                        //// Added by Bhavesh, Current year first plan select in dropdown
+                        if (fiterActivePlan != null && fiterActivePlan.Any())
+                        {
+                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
                         }
                         else
                         {
-                            currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(plan => plan.Title).FirstOrDefault();
-                            if (currentPlan == null)
-                            {
-                                currentPlan = latestPlan;
-                            }
+                            currentPlan = latestPlan;
                         }
                     }
                     else
                     {
-                        //// added by Nirav shah for TFS Point : 218
-                        if (Sessions.PlanId == 0)
+                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PublishedPlanId)).OrderBy(plan => plan.Title).FirstOrDefault();
+                        if (currentPlan == null)
                         {
-                            fiterActivePlan = new List<Plan>();
+                            currentPlan = latestPlan;
+                        }
+                    }
+                }
+                else
+                {
+                    //// added by Nirav shah for TFS Point : 218
+                    if (Sessions.PlanId == 0)
+                    {
+                        fiterActivePlan = new List<Plan>();
                         fiterActivePlan = activePlan.Where(plan => plan.Year == currentYear && plan.Status.Equals(planPublishedStatus)).ToList();
-                            //// Added by Bhavesh, Current year first plan select in dropdown
-                            if (fiterActivePlan != null && fiterActivePlan.Any())
-                            {
-                                currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
-                            }
-                            else
-                            {
-                                currentPlan = latestPlan;
-                            }
-                            
+                        //// Added by Bhavesh, Current year first plan select in dropdown
+                        if (fiterActivePlan != null && fiterActivePlan.Any())
+                        {
+                            currentPlan = fiterActivePlan.OrderBy(plan => plan.Title).FirstOrDefault();
                         }
                         else
                         {
-                            //// Select plan using planId from session
-                            currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PlanId)).FirstOrDefault();
-                            if (currentPlan == null)
-                            {
-                                currentPlan = latestPlan;
-                            }
-                           
+                            currentPlan = latestPlan;
                         }
+
                     }
-                    isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
-                    ViewBag.IsPublished = isPublished;
+                    else
+                    {
+                        //// Select plan using planId from session
+                        currentPlan = activePlan.Where(plan => plan.PlanId.Equals(Sessions.PlanId)).FirstOrDefault();
+                        if (currentPlan == null)
+                        {
+                            currentPlan = latestPlan;
+                        }
+
+                    }
+                }
+                isPublished = currentPlan.Status.Equals(Enums.PlanStatusValues[Enums.PlanStatus.Published.ToString()].ToString()); //Added by Dashrath Prajapati-PL #1758 Publish Plan: Unable to Publish Draft Plan 
+                ViewBag.IsPublished = isPublished;
             }
 
             if (Enums.ActiveMenu.Home.Equals(activeMenu))
             {
                 //// Get list of Active(published) plans for all above models
                 //Modified for #1750 by Komal Rawal
-                var LastSetOfPlanSelected = new List<string>();
-                var Label = Enums.FilterLabel.Plan.ToString();
-                var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-                if (SetOfPlanSelected != null)
-                {
-                    LastSetOfPlanSelected = SetOfPlanSelected.Split(',').ToList();
-                }
+                //var LastSetOfPlanSelected = new List<string>();
+                //var Label = Enums.FilterLabel.Plan.ToString();
+                //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+                //if (SetOfPlanSelected != null)
+                //{
+                //    LastSetOfPlanSelected = SetOfPlanSelected.Split(',').ToList();
+                //}
 
                 activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
                 planmodel.lstPlan = activePlan.Select(plan => new PlanListModel
                 {
                     PlanId = plan.PlanId,
                     Title = HttpUtility.HtmlDecode(plan.Title),
-                    Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == currentPlan.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
+                    //  Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == currentPlan.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
 
                 }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
             }
@@ -272,29 +272,29 @@ namespace RevenuePlanner.Controllers
                     //// added by Nirav for plan consistency on 14 apr 2014
                     planmodel.PlanTitle = currentPlan.Title;
                     planmodel.PlanId = currentPlan.PlanId;
-                   // planmodel.objplanhomemodelheader = new HomePlanModelHeader();
-                    planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId,onlyplan:true);
+                    // planmodel.objplanhomemodelheader = new HomePlanModelHeader();
+                    planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(currentPlan.PlanId, onlyplan: true);
 
                     Sessions.PlanId = planmodel.PlanId;
                     GetCustomAttributesIndex(ref planmodel);
 
 
                     //// Select Tactics of selected plans
-                //    var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && planmodel.PlanId == campaign.PlanId).Select(campaign => campaign.PlanCampaignId).ToList();
-               //     var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
-               //     var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic).ToList();
-                //    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                //    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                //    planmodel.lstOwner = GetOwnerList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
-                   
-                //    planmodel.lstTacticType = GetTacticTypeList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
-                   
+                    //    var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && planmodel.PlanId == campaign.PlanId).Select(campaign => campaign.PlanCampaignId).ToList();
+                    //     var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
+                    //     var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic).ToList();
+                    //    List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                    //    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                    //    planmodel.lstOwner = GetOwnerList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
+
+                    //    planmodel.lstTacticType = GetTacticTypeList(PlanGanttTypes.Tactic.ToString(), activeMenu.ToString(), tacticList, lstAllowedEntityIds);
+
                     // Start - Added by Sohel Pathan on 11/12/2014 for PL ticket #1021
                     if (ViewBag.ShowInspectPopup != null)
                     {
                         if ((bool)ViewBag.ShowInspectPopup == true && activeMenu.Equals(Enums.ActiveMenu.Plan) && currentPlanId > 0)
                         {
-                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement,planLineItemId);
+                            bool isCustomRestrictionPass = InspectPopupSharedLinkValidationForCustomRestriction(planCampaignId, planProgramId, planTacticId, isImprovement, planLineItemId);
                             ViewBag.ShowInspectPopup = isCustomRestrictionPass;
                             if (isCustomRestrictionPass.Equals(false))
                             {
@@ -419,9 +419,9 @@ namespace RevenuePlanner.Controllers
             //// Create plan list based on PlanIds of search filter
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
-          
+
             var lstPlans = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Model.ClientId.Equals(Sessions.User.ClientId)).Select(plan => new { plan.PlanId, plan.Model.ClientId, plan.Year }).ToList();
-         
+
 
 
             bool IsRequest = false;
@@ -480,7 +480,7 @@ namespace RevenuePlanner.Controllers
 
 
 
-            
+
             //// Applying filters to tactic (IsDelete, Individuals)
             List<Plan_Tactic> lstTactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
@@ -499,7 +499,7 @@ namespace RevenuePlanner.Controllers
                                                                            TacticType = tactic.TacticType,
                                                                            CreatedBy = tactic.CreatedBy
                                                                        }).ToList();
-            
+
 
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
             List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
@@ -510,12 +510,12 @@ namespace RevenuePlanner.Controllers
 
                 //// Start - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
                 //// Custom Field Filter Criteria.
-              //  List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
-                string[] filteredCustomFields =string.IsNullOrWhiteSpace(customFieldIds) ? null : customFieldIds.Split(',');
-                if (filteredCustomFields!=null)
+                //  List<string> filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? new List<string>() : customFieldIds.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                string[] filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? null : customFieldIds.Split(',');
+                if (filteredCustomFields != null)
                 {
-                  //  filteredCustomFields.ForEach(customField =>
-                    foreach(string customField in filteredCustomFields)
+                    //  filteredCustomFields.ForEach(customField =>
+                    foreach (string customField in filteredCustomFields)
                     {
                         string[] splittedCustomField = customField.Split('_');
                         lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
@@ -526,37 +526,37 @@ namespace RevenuePlanner.Controllers
                     lstTactic = lstTactic.Where(tactic => lstTacticIds.Contains(tactic.objPlanTactic.PlanTacticId)).ToList();
                 }
                 //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
-                //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
-                if (IsFiltered == false && customFieldIds == "" && ownerIds == "" && TacticTypeid == "" && StatusIds == "")
-                {
-                    //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
-                    List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    List<Guid> collaboratorIdsList = collaboratorIds.Select(Guid.Parse).ToList();
-                    List<Guid> lstSubordinatesIds = new List<Guid>();
-                    if (IsTacticAllowForSubordinates)
-                    {
-                        lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
-                    }
-                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-            
-                    //Modified By Komal Rawal for #1505
-                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
-                }
-                else
-                {
+                //    //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
+                //    if (IsFiltered == false && customFieldIds == "" && ownerIds == "" && TacticTypeid == "" && StatusIds == "")
+                //    {
+                //        //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
+                //        List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                //        List<Guid> collaboratorIdsList = collaboratorIds.Select(Guid.Parse).ToList();
+                //        List<Guid> lstSubordinatesIds = new List<Guid>();
+                //        if (IsTacticAllowForSubordinates)
+                //        {
+                //            lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                //        }
+                //        List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+
+                //        //Modified By Komal Rawal for #1505
+                //        lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+                //    }
+                //    else
+                //    {
                 List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                 //Modified By Komal Rawal for #1505
-                lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) || tactic.CreatedBy  == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                //}
             }
-            }
-         
+
             //// Modified By Maninder Singh Wadhva PL Ticket#47
             //// Get list of Improvement tactics based on selected plan ids
             List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic = objDbMrpEntities.Plan_Improvement_Campaign_Program_Tactic.Where(improvementTactic => filteredPlanIds.Contains(improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId) &&
                                                                                       improvementTactic.IsDeleted.Equals(false) &&
                                                                                       (improvementTactic.EffectiveDate > CalendarEndDate).Equals(false))
                                                                                .Select(improvementTactic => improvementTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
-            
+
             var lstSubordinatesWithPeers = new List<Guid>();
             try
             {
@@ -595,7 +595,7 @@ namespace RevenuePlanner.Controllers
                 lstTactic = subordinatesTactic;
                 lstImprovementTactic = subordinatesImprovementTactic;
             }
-           
+
             object improvementTacticForAccordion = new object();
             object improvementTacticTypeForAccordion = new object();
 
@@ -618,7 +618,7 @@ namespace RevenuePlanner.Controllers
                     //List<string> improvementTacticStatus = GetStatusAsPerSelectedType(viewBy, objactivemenu);
                     lstImprovementTactic = lstImprovementTactic.Where(improvementTactic => status.Contains(improvementTactic.Status) || ((improvementTactic.CreatedBy == Sessions.User.UserId && !viewBy.Equals(PlanGanttTypes.Request.ToString())) ? statusCD.Contains(improvementTactic.Status) : false))
                                                                .Select(improvementTactic => improvementTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
-                   
+
 
                 }
                 else
@@ -633,11 +633,11 @@ namespace RevenuePlanner.Controllers
                     }
                     else
                     {
-                    lstImprovementTactic = lstImprovementTactic.Where(improvementTactic => improvementTactic.IsDeleted == false && !viewBy.Equals(PlanGanttTypes.Request.ToString()))
-                                                               .Select(improvementTactic => improvementTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+                        lstImprovementTactic = lstImprovementTactic.Where(improvementTactic => improvementTactic.IsDeleted == false && !viewBy.Equals(PlanGanttTypes.Request.ToString()))
+                                                                   .Select(improvementTactic => improvementTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
 
                     }
-                
+
                 }
 
             }
@@ -660,15 +660,15 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                lstImprovementTactic = lstImprovementTactic.Where(improveTactic => status.Contains(improveTactic.Status) || (!viewBy.Equals(PlanGanttTypes.Request.ToString()) ? statusCD.Contains(improveTactic.Status) : false))
-                                                           .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
+                    lstImprovementTactic = lstImprovementTactic.Where(improveTactic => status.Contains(improveTactic.Status) || (!viewBy.Equals(PlanGanttTypes.Request.ToString()) ? statusCD.Contains(improveTactic.Status) : false))
+                                                               .Select(improveTactic => improveTactic).ToList<Plan_Improvement_Campaign_Program_Tactic>();
 
                 }
                 //// Prepare objects for ImprovementTactic section of Left side accordian pane
                 improvementTacticForAccordion = GetImprovementTacticForAccordion(lstImprovementTactic);
                 improvementTacticTypeForAccordion = GetImprovementTacticTypeForAccordion(lstImprovementTactic);
             }
-          
+
             //// Start - Added by Sohel Pathan on 28/10/2014 for PL ticket #885
             //// Prepare viewBy option list based on obtained tactic list
             List<ViewByModel> viewByListResult = prepareViewByList(getViewByList, tacticForAllTabs);
@@ -689,7 +689,7 @@ namespace RevenuePlanner.Controllers
                     {
                         viewBy = PlanGanttTypes.Tactic.ToString();
                     }
-                    return PrepareTacticAndRequestTabResult(filteredPlanIds, viewBy,IsFiltered, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
+                    return PrepareTacticAndRequestTabResult(filteredPlanIds, viewBy, IsFiltered, IsRequest, objactivemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic, requestCount, planYear, improvementTacticForAccordion, improvementTacticTypeForAccordion, viewByListResult);
                 }
                 else
                 {
@@ -801,7 +801,7 @@ namespace RevenuePlanner.Controllers
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
                         Tactic = tacticItem.objPlanTactic,
-                       CreatedBy= tacticItem.CreatedBy,
+                        CreatedBy = tacticItem.CreatedBy,
                         CustomFieldId = tacticstageId.ToString(),
                         CustomFieldTitle = tacticItem.objPlanTactic.Stage.Title,
                         TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstageId, tacticPlanId, tacticItem.objPlanTacticProgram.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
@@ -933,16 +933,16 @@ namespace RevenuePlanner.Controllers
                 var lstCustomFieldTactic = (from customfieldentity in cusomfieldEntity
                                             //join tactic in lstTactic on customfieldentity.EntityId equals tactic.objPlanTactic.PlanTacticId   //Commenetd by Rahul Shah on 17/11/2015 for PL #1760. Bcz in this condition Campaign and Program data not displyed.
                                             join tactic in lstTactic on customfieldentity.EntityId equals (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) //Added by Rahul Shah on 17/11/2015 for PL #1760. It Will Check Campaign And Program Field data 
-                                             select new
-                                             {
-                                                 tactic = tactic,
-                                                 masterCustomFieldId = CustomTypeId,
-                                                 customFieldId = customFieldType == DropDownList ? (customoptionlisttest.Count() == 0 ? 0 : Convert.ToInt32(customfieldentity.Value)) : customfieldentity.CustomFieldEntityId,
-                                                 customFieldTitle = customFieldType == DropDownList ? customoptionlisttest.Where(c => c.CustomFieldOptionId.ToString() == customfieldentity.Value).Select(c => c.Title).FirstOrDefault() : customfieldentity.Value,
-                                                 customFieldTYpe = customFieldType,
-                                                 EntityId = customfieldentity.EntityId,
-                                                 CreatedBy = customfieldentity.CreatedBy
-                                             }).ToList().Where(fltr => (fltr.customFieldTYpe == DropDownList ? (!(lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(fltr.masterCustomFieldId)).Any()) || lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(fltr.masterCustomFieldId)).Select(custmlst => custmlst.OptionId).Contains(fltr.customFieldId.ToString())) : true)).Distinct().ToList();
+                                            select new
+                                            {
+                                                tactic = tactic,
+                                                masterCustomFieldId = CustomTypeId,
+                                                customFieldId = customFieldType == DropDownList ? (customoptionlisttest.Count() == 0 ? 0 : Convert.ToInt32(customfieldentity.Value)) : customfieldentity.CustomFieldEntityId,
+                                                customFieldTitle = customFieldType == DropDownList ? customoptionlisttest.Where(c => c.CustomFieldOptionId.ToString() == customfieldentity.Value).Select(c => c.Title).FirstOrDefault() : customfieldentity.Value,
+                                                customFieldTYpe = customFieldType,
+                                                EntityId = customfieldentity.EntityId,
+                                                CreatedBy = customfieldentity.CreatedBy
+                                            }).ToList().Where(fltr => (fltr.customFieldTYpe == DropDownList ? (!(lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(fltr.masterCustomFieldId)).Any()) || lstCustomFieldFilter.Where(custmlst => custmlst.CustomFieldId.Equals(fltr.masterCustomFieldId)).Select(custmlst => custmlst.OptionId).Contains(fltr.customFieldId.ToString())) : true)).Distinct().ToList();
                 //Commented By Bhavesh because it lake more time and give timeout expire error : End Date: 30-10-2015 #1726
 
                 //Commented By Bhavesh because it lake more time and give timeout expire error Date: 30-10-2015 #1726
@@ -972,7 +972,7 @@ namespace RevenuePlanner.Controllers
                 var lstProcessedCustomFieldTactics = lstCustomFieldTactic.Select(customFieldTactic => new
                 {
                     tactic = customFieldTactic.tactic,
-                   CreatedBy = customFieldTactic.CreatedBy,
+                    CreatedBy = customFieldTactic.CreatedBy,
                     masterCustomFieldId = customFieldTactic.masterCustomFieldId,
                     customFieldId = lstCustomFieldTactic.Where(customTactic => customTactic.masterCustomFieldId == customFieldTactic.masterCustomFieldId && customTactic.customFieldTitle.Trim() == customFieldTactic.customFieldTitle.Trim()).Select(customTactic => customTactic.customFieldId).First(),
                     customFieldTitle = customFieldTactic.customFieldTitle,
@@ -1083,7 +1083,7 @@ namespace RevenuePlanner.Controllers
                 duration = tacticTask.Duration,
                 progress = tacticTask.Progress,
                 open = tacticTask.Open,
-                color = tacticTask.Color ,
+                color = tacticTask.Color,
                 CreatedBy = tacticTask.CreatedBy
 
             }).Select(v => v).Distinct().OrderBy(tacticTask => tacticTask.text);
@@ -1144,9 +1144,9 @@ namespace RevenuePlanner.Controllers
                 open = false,
                 parent = string.Format("Z{0}", taskdata.MainParentId),
                 color = PlanColor,
-                planid = taskdata.PlanId    ,
+                planid = taskdata.PlanId,
                 CreatedBy = taskdata.CreatedBy
-             
+
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
 
             //// Finalize Plan task data to be render in gantt chart
@@ -1362,17 +1362,17 @@ namespace RevenuePlanner.Controllers
             }
             else if (activemenu.Equals(Enums.ActiveMenu.Plan))
             {
-                  var jsonResult = Json(new
-                {
-                    taskData = finalTaskData,
-                    requestCount = requestCount,
-                    planYear = planYear,
-                    ViewById = viewByListResult,
-                    ViewBy = sourceViewBy
-                }, JsonRequestBehavior.AllowGet);
-                  //Modified By Komal Rawal to solve maxlength Json problen in case of large number of tactics
-                  jsonResult.MaxJsonLength = int.MaxValue;
-                  return jsonResult;
+                var jsonResult = Json(new
+              {
+                  taskData = finalTaskData,
+                  requestCount = requestCount,
+                  planYear = planYear,
+                  ViewById = viewByListResult,
+                  ViewBy = sourceViewBy
+              }, JsonRequestBehavior.AllowGet);
+                //Modified By Komal Rawal to solve maxlength Json problen in case of large number of tactics
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
             }
             else
             {
@@ -1397,13 +1397,13 @@ namespace RevenuePlanner.Controllers
         /// <param name="improvementTacticTypeForAccordion">list of improvement tactic type for accrodian(left side pane)</param>
         /// <param name="viewByListResult">list of viewBy dropdown options</param>
         /// <returns>Json result, list of task to be rendered in Gantt chart</returns>
-        private JsonResult PrepareTacticAndRequestTabResult(List<int> filterplanId, string viewBy,bool IsFiltered,bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
+        private JsonResult PrepareTacticAndRequestTabResult(List<int> filterplanId, string viewBy, bool IsFiltered, bool IsRequest, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult)
         {
             Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
             List<object> tacticAndRequestTaskData = GetTaskDetailTactic(ColorCodelist, filterplanId, viewBy, IsFiltered, IsRequest, planYear, activemenu, lstCampaign.ToList(), lstProgram.ToList(), lstTactic.ToList(), lstImprovementTactic);
-         //   Debug.WriteLine("Step 7.1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
+            //   Debug.WriteLine("Step 7.1: " + DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss.fff tt"));
             //Added By komal Rawal for #1282
-            
+
             var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
 
 
@@ -1444,14 +1444,14 @@ namespace RevenuePlanner.Controllers
             }
             else if (activemenu.Equals(Enums.ActiveMenu.Plan))
             {
-                 var jsonResult = Json(new
-                {
-                    taskData = tacticAndRequestTaskData,
-                    requestCount = requestCount,
-                    planYear = planYear,
-                    ViewById = viewByListResult,
-                    ViewBy = viewBy
-                }, JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(new
+               {
+                   taskData = tacticAndRequestTaskData,
+                   requestCount = requestCount,
+                   planYear = planYear,
+                   ViewById = viewByListResult,
+                   ViewBy = viewBy
+               }, JsonRequestBehavior.AllowGet);
                 //Modified By Komal Rawal to solve maxlength Json problen in case of large number of tactics
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
@@ -1631,10 +1631,14 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns object list of tasks for GANNT CHART</returns>
         public List<object> GetTaskDetailTactic(Dictionary<string, string> ColorCodelist, List<int> filterplanId, string viewBy, bool IsFiltered, bool IsRequest, string planYear, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic)
         {
+
+            DateTime StartDate = new DateTime(Convert.ToInt32(planYear), 1, 1);
+            DateTime EndDate = new DateTime(Convert.ToInt32(planYear) + 1, 1, 1).AddTicks(-1);
+
             string tacticStatusSubmitted = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
             string tacticStatusDeclined = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
             //Added By komal Rawal for #1282
-           // Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            // Dictionary<string, string> ColorCodelist = objDbMrpEntities.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
             var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
             var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
             var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
@@ -1671,8 +1675,8 @@ namespace RevenuePlanner.Controllers
             if (IsRequest || IsFiltered) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
             {
 
-            #region Prepare Plan Task Data
-            //// Prepare task data plan list for gantt chart
+                #region Prepare Plan Task Data
+                //// Prepare task data plan list for gantt chart
 
                 var planall = lstTactic.Select(tactic => tactic.objPlanTacticCampaignPlan).Distinct().ToList();
 
@@ -1680,13 +1684,13 @@ namespace RevenuePlanner.Controllers
             {
                 id = string.Format("L{0}", objplan.PlanId),
                 text = objplan.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.Tactic,  objplan.PlanId, lstCampaign, lstProgram, lstTactic)),
+                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.Tactic, objplan.PlanId, lstCampaign, lstProgram, lstTactic)),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
                                                           GetMinStartDateForPlan(GanttTabs.Tactic, objplan.PlanId, lstCampaign, lstProgram, lstTactic),
                                                           GetMaxEndDateForPlan(GanttTabs.Tactic, objplan.PlanId, lstCampaign, lstProgram, lstTactic)),
                 progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.Tactic, objplan.PlanId, lstCampaign, lstProgram, lstTactic)),
                                                 Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
-                                                          GetMinStartDateForPlan(GanttTabs.Tactic,  objplan.PlanId, lstCampaign, lstProgram, lstTactic),
+                                                          GetMinStartDateForPlan(GanttTabs.Tactic, objplan.PlanId, lstCampaign, lstProgram, lstTactic),
                                                           GetMaxEndDateForPlan(GanttTabs.Tactic, objplan.PlanId, lstCampaign, lstProgram, lstTactic)),
                                                lstTactic, lstImprovementTactic, objplan.PlanId),
                 open = false,
@@ -1695,257 +1699,257 @@ namespace RevenuePlanner.Controllers
                 CreatedBy = objplan.CreatedBy
             }).Select(objplan => objplan).OrderBy(objplan => objplan.text);
 
-            //// Finalize task data plan list for gantt chart
-            var newTaskDataPlan = taskDataPlan.Select(plan => new
-            {
-                id = plan.id,
-                text = plan.text,
-                start_date = plan.start_date,
-                duration = plan.duration,
-                progress = plan.progress,
-                open = plan.open,
-                color = (plan.progress > 0 ? "stripe" : string.Empty),
-                colorcode = plan.color,
-                planid = plan.planid,
-                type = "Plan",
-                Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-            });
-            #endregion
+                //// Finalize task data plan list for gantt chart
+                var newTaskDataPlan = taskDataPlan.Select(plan => new
+                {
+                    id = plan.id,
+                    text = plan.text,
+                    start_date = plan.start_date,
+                    duration = plan.duration,
+                    progress = plan.progress,
+                    open = plan.open,
+                    color = (plan.progress > 0 ? "stripe" : string.Empty),
+                    colorcode = plan.color,
+                    planid = plan.planid,
+                    type = "Plan",
+                    Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                });
+                #endregion
 
-            //// Get list of plan Ids
-            var planIdList = lstTactic.Select(tactic => tactic.PlanId).ToList().Distinct();
+                //// Get list of plan Ids
+                var planIdList = lstTactic.Select(tactic => tactic.PlanId).ToList().Distinct();
 
 
-            #region Prepare Plan data for Improvement
-            //// Prepate task data improvement Tacic list for gantt chart
-            var taskDataPlanForImprovement = lstImprovementTactic.Where(improvementTactic => !planIdList.Contains(improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(improvementTactic => new
-            {
-                id = string.Format("L{0}", improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-                text = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
-                                                          GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic),
-                                                          GetMaxEndDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
-                progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
-                                                Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
-                                                          GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic),
-                                                          GetMaxEndDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
-                                               lstTactic, lstImprovementTactic, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-                open = false,
-                color = PlanColor,
-                planid = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId,
-                CreatedBy = improvementTactic.CreatedBy
+                #region Prepare Plan data for Improvement
+                //// Prepate task data improvement Tacic list for gantt chart
+                var taskDataPlanForImprovement = lstImprovementTactic.Where(improvementTactic => !planIdList.Contains(improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(improvementTactic => new
+                {
+                    id = string.Format("L{0}", improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                    text = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
+                                                              GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic),
+                                                              GetMaxEndDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
+                    progress = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
+                                                    Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
+                                                              GetMinStartDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic),
+                                                              GetMaxEndDateForPlan(GanttTabs.None, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, lstCampaign, lstProgram, lstTactic)),
+                                                   lstTactic, lstImprovementTactic, improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                    open = false,
+                    color = PlanColor,
+                    planid = improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId,
+                    CreatedBy = improvementTactic.CreatedBy
 
-            }).Select(improvementTactic => improvementTactic).Distinct().OrderBy(improvementTactic => improvementTactic.text);
+                }).Select(improvementTactic => improvementTactic).Distinct().OrderBy(improvementTactic => improvementTactic.text);
 
-            //// Finalize task data Improvement Tactic list for gantt chart
-            var newTaskDataPlanForImprovement = taskDataPlanForImprovement.Select(improvementTactic => new
-            {
-                id = improvementTactic.id,
-                text = improvementTactic.text,
-                start_date = improvementTactic.start_date,
-                duration = improvementTactic.duration,
-                progress = improvementTactic.progress,
-                open = improvementTactic.open,
-                color = (improvementTactic.progress > 0 ? "stripe" : string.Empty),
-                colorcode = improvementTactic.color,
-                planid = improvementTactic.planid,
-                type = "Plan",
-                Permission = IsPlanCreateAllAuthorized == false ? (improvementTactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(improvementTactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-            });
-            #endregion
+                //// Finalize task data Improvement Tactic list for gantt chart
+                var newTaskDataPlanForImprovement = taskDataPlanForImprovement.Select(improvementTactic => new
+                {
+                    id = improvementTactic.id,
+                    text = improvementTactic.text,
+                    start_date = improvementTactic.start_date,
+                    duration = improvementTactic.duration,
+                    progress = improvementTactic.progress,
+                    open = improvementTactic.open,
+                    color = (improvementTactic.progress > 0 ? "stripe" : string.Empty),
+                    colorcode = improvementTactic.color,
+                    planid = improvementTactic.planid,
+                    type = "Plan",
+                    Permission = IsPlanCreateAllAuthorized == false ? (improvementTactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(improvementTactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                });
+                #endregion
 
-            //// Concat list of Plan task objects and Improvement Tactic task objects
-            var taskDataPlanMerged = newTaskDataPlan.Concat<object>(newTaskDataPlanForImprovement).ToList().Distinct();
+                //// Concat list of Plan task objects and Improvement Tactic task objects
+                var taskDataPlanMerged = newTaskDataPlan.Concat<object>(newTaskDataPlanForImprovement).ToList().Distinct();
 
-            #region Improvement Activities & Tactics
-            //// Prepare list of Improvement Tactic and Activities list for gantt chart
-            var improvemntTacticList = lstImprovementTactic.Select(improvementTactic => new
-            {
-                ImprovementTactic = improvementTactic,
-                CreatedBy = improvementTactic.CreatedBy,
-                //// Get start date for improvement activity task.
-                minStartDate = lstImprovementTactic.Where(impTactic => impTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impTactic => impTactic.EffectiveDate).Min(),
-            }).Select(improvementTactic => improvementTactic).ToList().Distinct().ToList();
+                #region Improvement Activities & Tactics
+                //// Prepare list of Improvement Tactic and Activities list for gantt chart
+                var improvemntTacticList = lstImprovementTactic.Select(improvementTactic => new
+                {
+                    ImprovementTactic = improvementTactic,
+                    CreatedBy = improvementTactic.CreatedBy,
+                    //// Get start date for improvement activity task.
+                    minStartDate = lstImprovementTactic.Where(impTactic => impTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impTactic => impTactic.EffectiveDate).Min(),
+                }).Select(improvementTactic => improvementTactic).ToList().Distinct().ToList();
 
-            //// Prepare task data Improvement Activities list for gantt chart
-            var taskDataImprovementActivity = improvemntTacticList.Select(improvementTactic => new
-            {
-                id = string.Format("L{0}_M{1}", improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId),
-                text = improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, improvementTactic.minStartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTactic.minStartDate, CalendarEndDate) - 1,
-                progress = 0,
-                open = true,
-                color = string.Empty,
-                colorcode = ImprovementTacticColor,
-                ImprovementActivityId = improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
-                isImprovement = true,
-                IsHideDragHandleLeft = improvementTactic.minStartDate < CalendarStartDate,
-                IsHideDragHandleRight = true,
-                parent = string.Format("L{0}", improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
-                type = "Imp Tactic",
-                Permission = IsPlanCreateAllAuthorized == false ? (improvementTactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(improvementTactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                //// Prepare task data Improvement Activities list for gantt chart
+                var taskDataImprovementActivity = improvemntTacticList.Select(improvementTactic => new
+                {
+                    id = string.Format("L{0}_M{1}", improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId),
+                    text = improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, improvementTactic.minStartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTactic.minStartDate, CalendarEndDate) - 1,
+                    progress = 0,
+                    open = true,
+                    color = string.Empty,
+                    colorcode = ImprovementTacticColor,
+                    ImprovementActivityId = improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.ImprovementPlanCampaignId,
+                    isImprovement = true,
+                    IsHideDragHandleLeft = improvementTactic.minStartDate < CalendarStartDate,
+                    IsHideDragHandleRight = true,
+                    parent = string.Format("L{0}", improvementTactic.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
+                    type = "Imp Tactic",
+                    Permission = IsPlanCreateAllAuthorized == false ? (improvementTactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(improvementTactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
 
-            }).Select(improvementTactic => improvementTactic).Distinct().ToList();
+                }).Select(improvementTactic => improvementTactic).Distinct().ToList();
 
-            //// Finalize task data Improvement Activities list for gantt chart
-            var taskDataImprovementTactic = improvemntTacticList.Select(improvementTacticActivty => new
-            {
-                id = string.Format("L{0}_M{1}_I{2}_Y{3}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, improvementTacticActivty.ImprovementTactic.ImprovementPlanTacticId, improvementTacticActivty.ImprovementTactic.ImprovementTacticTypeId),
-                text = improvementTacticActivty.ImprovementTactic.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, improvementTacticActivty.ImprovementTactic.EffectiveDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTacticActivty.ImprovementTactic.EffectiveDate, CalendarEndDate) - 1,
-                progress = 0,
-                open = true,
-                parent = string.Format("L{0}_M{1}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
-                color = string.Empty,
-                colorcode = ImprovementTacticColor,
-                isSubmitted = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
-                isDeclined = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusDeclined),
-                inqs = 0,
-                mqls = 0,
-                cost = improvementTacticActivty.ImprovementTactic.Cost,
-                cws = 0,
-                improvementTacticActivty.ImprovementTactic.ImprovementPlanTacticId,
-                isImprovement = true,
-                IsHideDragHandleLeft = improvementTacticActivty.ImprovementTactic.EffectiveDate < CalendarStartDate,
-                IsHideDragHandleRight = true,
-                Status = improvementTacticActivty.ImprovementTactic.Status,
-                type = "Imp Tactic",
-                Permission = IsPlanCreateAllAuthorized == false ? (improvementTacticActivty.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(improvementTacticActivty.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                //// Finalize task data Improvement Activities list for gantt chart
+                var taskDataImprovementTactic = improvemntTacticList.Select(improvementTacticActivty => new
+                {
+                    id = string.Format("L{0}_M{1}_I{2}_Y{3}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId, improvementTacticActivty.ImprovementTactic.ImprovementPlanTacticId, improvementTacticActivty.ImprovementTactic.ImprovementTacticTypeId),
+                    text = improvementTacticActivty.ImprovementTactic.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, improvementTacticActivty.ImprovementTactic.EffectiveDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, improvementTacticActivty.ImprovementTactic.EffectiveDate, CalendarEndDate) - 1,
+                    progress = 0,
+                    open = true,
+                    parent = string.Format("L{0}_M{1}", improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.PlanId, improvementTacticActivty.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovementPlanCampaignId),
+                    color = string.Empty,
+                    colorcode = ImprovementTacticColor,
+                    isSubmitted = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusSubmitted),
+                    isDeclined = improvementTacticActivty.ImprovementTactic.Status.Equals(tacticStatusDeclined),
+                    inqs = 0,
+                    mqls = 0,
+                    cost = improvementTacticActivty.ImprovementTactic.Cost,
+                    cws = 0,
+                    improvementTacticActivty.ImprovementTactic.ImprovementPlanTacticId,
+                    isImprovement = true,
+                    IsHideDragHandleLeft = improvementTacticActivty.ImprovementTactic.EffectiveDate < CalendarStartDate,
+                    IsHideDragHandleRight = true,
+                    Status = improvementTacticActivty.ImprovementTactic.Status,
+                    type = "Imp Tactic",
+                    Permission = IsPlanCreateAllAuthorized == false ? (improvementTacticActivty.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(improvementTacticActivty.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
 
-            }).OrderBy(improvementTacticActivty => improvementTacticActivty.text);
-            #endregion
+                }).OrderBy(improvementTacticActivty => improvementTacticActivty.text);
+                #endregion
 
-            taskDataPlanMerged = taskDataPlanMerged.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic);
+                taskDataPlanMerged = taskDataPlanMerged.Concat<object>(taskDataImprovementActivity).Concat<object>(taskDataImprovementTactic);
 
-           
 
-            #region Prepare Tactic Task Data
-            List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
-            List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
-            //// Prepare task data tactic list for gantt chart
-            var taskDataTactic = lstTactic.Select(tactic => new
-            {
-                id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", tactic.PlanId, tactic.PlanCampaignId, tactic.objPlanTactic.PlanProgramId, tactic.objPlanTactic.PlanTacticId, tactic.objPlanTactic.TacticTypeId),
-                text = tactic.objPlanTactic.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTactic.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.objPlanTactic.StartDate, tactic.objPlanTactic.EndDate),
-                progress = GetTacticProgress((tactic.objPlanTactic.StartDate != null ? tactic.objPlanTactic.StartDate : new DateTime()), EffectiveDateListByPlanIds, tactic.PlanId),
-                open = false,
-                parent = string.Format("L{0}_C{1}_P{2}", tactic.PlanId, tactic.PlanCampaignId, tactic.objPlanTactic.PlanProgramId),
-                color = TacticColor,
-                isSubmitted = tactic.objPlanTactic.Status == tacticStatusSubmitted,
-                isDeclined = tactic.objPlanTactic.Status == tacticStatusDeclined,
-                projectedStageValue = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == tactic.objPlanTactic.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tm => tm.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).INQValue) : "N/A" : "0",
-                mqls = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == tactic.objPlanTactic.StageId).Level <= mqlLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).MQLValue) : "N/A" : "0",
-                cost = tactic.objPlanTactic.Cost,
-                cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? tactic.objPlanTactic.Status == tacticStatusSubmitted || tactic.objPlanTactic.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).RevenueValue, 1) : 0 : 0,
-                plantacticid = tactic.objPlanTactic.PlanTacticId,
-                Status = tactic.objPlanTactic.Status,
-                CreatedBy = tactic.CreatedBy
-            }).OrderBy(tactic => tactic.text);
 
-            //// Finalize task data tactic list for gantt chart
-            var NewTaskDataTactic = taskDataTactic.Select(tactic => new
-            {
-                id = tactic.id,
-                text = tactic.text,
-                start_date = tactic.start_date,
-                duration = tactic.duration,
-                progress = tactic.progress,
-                open = tactic.open,
-                parent = tactic.parent,
-                color = (tactic.progress == 1 ? " stripe" : string.Empty),
-                colorcode = tactic.color,
-                isSubmitted = tactic.isSubmitted,
-                isDeclined = tactic.isDeclined,
-                projectedStageValue = tactic.projectedStageValue,
-                mqls = tactic.mqls,
-                cost = tactic.cost,
-                cws = tactic.cws,
-                plantacticid = tactic.plantacticid,
-                Status = tactic.Status,
-                type = "Tactic",
-                Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-            });
-            #endregion
+                #region Prepare Tactic Task Data
+                List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
+                List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
+                //// Prepare task data tactic list for gantt chart
+                var taskDataTactic = lstTactic.Select(tactic => new
+                {
+                    id = string.Format("L{0}_C{1}_P{2}_T{3}_Y{4}", tactic.PlanId, tactic.PlanCampaignId, tactic.objPlanTactic.PlanProgramId, tactic.objPlanTactic.PlanTacticId, tactic.objPlanTactic.TacticTypeId),
+                    text = tactic.objPlanTactic.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTactic.StartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.objPlanTactic.StartDate, tactic.objPlanTactic.EndDate),
+                    progress = GetTacticProgress((tactic.objPlanTactic.StartDate != null ? tactic.objPlanTactic.StartDate : new DateTime()), EffectiveDateListByPlanIds, tactic.PlanId),
+                    open = false,
+                    parent = string.Format("L{0}_C{1}_P{2}", tactic.PlanId, tactic.PlanCampaignId, tactic.objPlanTactic.PlanProgramId),
+                    color = TacticColor,
+                    isSubmitted = tactic.objPlanTactic.Status == tacticStatusSubmitted,
+                    isDeclined = tactic.objPlanTactic.Status == tacticStatusDeclined,
+                    projectedStageValue = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == tactic.objPlanTactic.StageId).Level <= inqLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tm => tm.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).INQValue) : "N/A" : "0",
+                    mqls = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? stageList.FirstOrDefault(s => s.StageId == tactic.objPlanTactic.StageId).Level <= mqlLevel ? Convert.ToString(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).MQLValue) : "N/A" : "0",
+                    cost = tactic.objPlanTactic.Cost,
+                    cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? tactic.objPlanTactic.Status == tacticStatusSubmitted || tactic.objPlanTactic.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).RevenueValue, 1) : 0 : 0,
+                    plantacticid = tactic.objPlanTactic.PlanTacticId,
+                    Status = tactic.objPlanTactic.Status,
+                    CreatedBy = tactic.CreatedBy
+                }).OrderBy(tactic => tactic.text);
 
-            #region Prepare Program Task Data
-            //// Prepare task data program list for gantt chart
-            var taskDataProgram = lstTactic.Select(tactic => new
-            {
-                id = string.Format("L{0}_C{1}_P{2}", tactic.PlanId, tactic.PlanCampaignId, tactic.objPlanTactic.PlanProgramId),
-                text = tactic.objPlanTacticProgram.Title,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTacticProgram.StartDate),
-                duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.objPlanTacticProgram.StartDate, tactic.objPlanTacticProgram.EndDate),
-                progress = GetProgramProgress(lstTactic, tactic.objPlanTacticProgram, EffectiveDateListByPlanIds, tactic.PlanId),
-                open = false,
-                parent = string.Format("L{0}_C{1}", tactic.PlanId, tactic.PlanCampaignId),
-                color = ProgramColor,
-                planprogramid = tactic.objPlanTactic.PlanProgramId,
-                Status = tactic.objPlanTacticProgram.Status,
-                CreatedBy = tactic.CreatedBy
+                //// Finalize task data tactic list for gantt chart
+                var NewTaskDataTactic = taskDataTactic.Select(tactic => new
+                {
+                    id = tactic.id,
+                    text = tactic.text,
+                    start_date = tactic.start_date,
+                    duration = tactic.duration,
+                    progress = tactic.progress,
+                    open = tactic.open,
+                    parent = tactic.parent,
+                    color = (tactic.progress == 1 ? " stripe" : string.Empty),
+                    colorcode = tactic.color,
+                    isSubmitted = tactic.isSubmitted,
+                    isDeclined = tactic.isDeclined,
+                    projectedStageValue = tactic.projectedStageValue,
+                    mqls = tactic.mqls,
+                    cost = tactic.cost,
+                    cws = tactic.cws,
+                    plantacticid = tactic.plantacticid,
+                    Status = tactic.Status,
+                    type = "Tactic",
+                    Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                });
+                #endregion
 
-            }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
+                #region Prepare Program Task Data
+                //// Prepare task data program list for gantt chart
+                var taskDataProgram = lstTactic.Select(tactic => new
+                {
+                    id = string.Format("L{0}_C{1}_P{2}", tactic.PlanId, tactic.PlanCampaignId, tactic.objPlanTactic.PlanProgramId),
+                    text = tactic.objPlanTacticProgram.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTacticProgram.StartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.objPlanTacticProgram.StartDate, tactic.objPlanTacticProgram.EndDate),
+                    progress = GetProgramProgress(lstTactic, tactic.objPlanTacticProgram, EffectiveDateListByPlanIds, tactic.PlanId),
+                    open = false,
+                    parent = string.Format("L{0}_C{1}", tactic.PlanId, tactic.PlanCampaignId),
+                    color = ProgramColor,
+                    planprogramid = tactic.objPlanTactic.PlanProgramId,
+                    Status = tactic.objPlanTacticProgram.Status,
+                    CreatedBy = tactic.CreatedBy
 
-            //// Finalize task data program list for gantt chart
-            var newTaskDataProgram = taskDataProgram.Select(program => new
-            {
-                id = program.id,
-                text = program.text,
-                start_date = program.start_date,
-                duration = program.duration,
-                progress = program.progress,
-                open = program.open,
-                parent = program.parent,
-                color = (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : string.Empty)),
-                colorcode = program.color,
-                planprogramid = program.planprogramid,
-                Status = program.Status,
-                type = "Program",
-                Permission = IsPlanCreateAllAuthorized == false ? (program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(program.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-            });
-            #endregion
+                }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
 
-            #region Prepare Campaign Task Data
-            //// Prepare task data campaign list for gantt chart
-                var taskDataCampaign = lstCampaign.Select(camp => new
-            {
-                    id = string.Format("L{0}_C{1}", camp.PlanId, camp.PlanCampaignId),
-                    text = camp.Title,
-                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, camp.StartDate),
-                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, camp.StartDate, camp.EndDate),
-                    progress = GetCampaignProgress(lstTactic, camp, EffectiveDateListByPlanIds, camp.PlanId),
-                open = false,
-                    parent = string.Format("L{0}", camp.PlanId),
-                color = CampaignColor,
-                    plancampaignid = camp.PlanCampaignId,
-                    Status = camp.Status,
-                    CreatedBy = camp.CreatedBy
-            }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
+                //// Finalize task data program list for gantt chart
+                var newTaskDataProgram = taskDataProgram.Select(program => new
+                {
+                    id = program.id,
+                    text = program.text,
+                    start_date = program.start_date,
+                    duration = program.duration,
+                    progress = program.progress,
+                    open = program.open,
+                    parent = program.parent,
+                    color = (program.progress == 1 ? " stripe stripe-no-border " : (program.progress > 0 ? "partialStripe" : string.Empty)),
+                    colorcode = program.color,
+                    planprogramid = program.planprogramid,
+                    Status = program.Status,
+                    type = "Program",
+                    Permission = IsPlanCreateAllAuthorized == false ? (program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(program.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                });
+                #endregion
 
-            //// Finalize task data campaign list for gantt chart
-            var newTaskDataCampaign = taskDataCampaign.Select(campaign => new
-            {
-                id = campaign.id,
-                text = campaign.text,
-                start_date = campaign.start_date,
-                duration = campaign.duration,
-                progress = campaign.progress,
-                open = campaign.open,
-                parent = campaign.parent,
-                color = (campaign.progress == 1 ? " stripe" : (campaign.progress > 0 ? "stripe" : string.Empty)),
-                colorcode = campaign.color,
-                plancampaignid = campaign.plancampaignid,
-                Status = campaign.Status,
-                type = "Campaign",
-                Permission = IsPlanCreateAllAuthorized == false ? (campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(campaign.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-            });
-            #endregion
-            taskDataPlanMerged = taskDataPlanMerged.Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram);
-            return taskDataPlanMerged.ToList<object>();
+                #region Prepare Campaign Task Data
+                //// Prepare task data campaign list for gantt chart
+                var taskDataCampaign = lstTactic.Select(tactic => new
+                {
+                    id = string.Format("L{0}_C{1}", tactic.PlanId, tactic.PlanCampaignId),
+                    text = tactic.objPlanTacticCampaign.Title,
+                    start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTacticCampaign.StartDate),
+                    duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, tactic.objPlanTacticCampaign.StartDate, tactic.objPlanTacticCampaign.EndDate),
+                    progress = GetCampaignProgress(lstTactic, tactic.objPlanTacticCampaign, EffectiveDateListByPlanIds, tactic.PlanId),
+                    open = false,
+                    parent = string.Format("L{0}", tactic.PlanId),
+                    color = CampaignColor,
+                    plancampaignid = tactic.PlanCampaignId,
+                    Status = tactic.objPlanTacticCampaign.Status,
+                    CreatedBy = tactic.CreatedBy
+                }).Select(tactic => tactic).Distinct().OrderBy(tactic => tactic.text);
+
+                //// Finalize task data campaign list for gantt chart
+                var newTaskDataCampaign = taskDataCampaign.Select(campaign => new
+                {
+                    id = campaign.id,
+                    text = campaign.text,
+                    start_date = campaign.start_date,
+                    duration = campaign.duration,
+                    progress = campaign.progress,
+                    open = campaign.open,
+                    parent = campaign.parent,
+                    color = (campaign.progress == 1 ? " stripe" : (campaign.progress > 0 ? "stripe" : string.Empty)),
+                    colorcode = campaign.color,
+                    plancampaignid = campaign.plancampaignid,
+                    Status = campaign.Status,
+                    type = "Campaign",
+                    Permission = IsPlanCreateAllAuthorized == false ? (campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(campaign.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                });
+                #endregion
+                taskDataPlanMerged = taskDataPlanMerged.Concat<object>(newTaskDataCampaign).Concat<object>(NewTaskDataTactic).Concat<object>(newTaskDataProgram);
+                return taskDataPlanMerged.ToList<object>();
 
             }
             else
@@ -1955,13 +1959,21 @@ namespace RevenuePlanner.Controllers
 
                 #region Plan
                 //Modified by Komal Rawal for #1537 to get Plan according to year.
-                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false))
+                //                List<int> campplanid = new List<int>();
+                var planList = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+                List<int> campplanid = new List<int>();
+                if (planList.Count == 0)
+                {
+                    campplanid = objDbMrpEntities.Plan_Campaign.Where(camp => !(camp.StartDate > EndDate || camp.EndDate < StartDate) && filterplanId.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
+                }
+                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => plan.IsDeleted.Equals(false)
+                    && (campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planList.Contains(plan.PlanId)))
                                                   .ToList()
                                                    .Select(plan => new
                                                    {
                                                        id = string.Format("L{0}", plan.PlanId),
                                                        text = plan.Title,
-                                                       start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetStartDateForPlan(plan.PlanId, lstCampaign,plan.Year)),
+                                                       start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, GetStartDateForPlan(plan.PlanId, lstCampaign, plan.Year)),
                                                        duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
                                                                                                  GetStartDateForPlan(plan.PlanId, lstCampaign, plan.Year),
                                                                                                  GetEndDateForPlan(plan.PlanId, lstCampaign, plan.Year)),
@@ -1994,10 +2006,11 @@ namespace RevenuePlanner.Controllers
 
                 #endregion
 
-             
+
                 #region Improvement Activities & Tactics
                 //// Prepare list of Improvement Tactic and Activities list for gantt chart
-                var improvemntTacticList = lstImprovementTactic.Select(improvementTactic => new
+                var improvemntTacticList1 = lstImprovementTactic.Where(improvementTactic => improvementTactic.EffectiveDate > EndDate).ToList();
+                var improvemntTacticList = lstImprovementTactic.Where(improvementTactic => improvementTactic.EffectiveDate <= EndDate && improvementTactic.EffectiveDate >= StartDate).Select(improvementTactic => new
                 {
                     ImprovementTactic = improvementTactic,
                     CreatedBy = improvementTactic.CreatedBy,
@@ -2070,7 +2083,7 @@ namespace RevenuePlanner.Controllers
                                                                                                       CalendarEndDate,
                                                                                                       _campgn.StartDate,
                                                                                                       _campgn.EndDate),
-                                                          //  progress = GetCampaignProgress( _campgn, ImprovementTacticForTaskData),//progress = 0,
+                                                            //  progress = GetCampaignProgress( _campgn, ImprovementTacticForTaskData),//progress = 0,
                                                             progress = GetCampaignProgress(lstTactic, _campgn, EffectiveDateListByPlanIds, _campgn.PlanId),
                                                             open = false,
                                                             parent = string.Format("L{0}", _campgn.PlanId),
@@ -2105,16 +2118,16 @@ namespace RevenuePlanner.Controllers
                                                                                                                     prgrm.EndDate).Equals(false))
                                                             .Select(prgrm => new
                                                             {
-                                                                id = string.Format("L{0}_C{1}_P{2}",prgrm.Plan_Campaign.PlanId, prgrm.PlanCampaignId, prgrm.PlanProgramId),
+                                                                id = string.Format("L{0}_C{1}_P{2}", prgrm.Plan_Campaign.PlanId, prgrm.PlanCampaignId, prgrm.PlanProgramId),
                                                                 text = prgrm.Title,
                                                                 start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, prgrm.StartDate),
                                                                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate,
                                                                                                           CalendarEndDate,
                                                                                                           prgrm.StartDate,
                                                                                                           prgrm.EndDate),
-                                                               // progress = GetProgramProgress( prgrm, ImprovementTacticForTaskData),
+                                                                // progress = GetProgramProgress( prgrm, ImprovementTacticForTaskData),
                                                                 progress = GetProgramProgress(lstTactic, prgrm, EffectiveDateListByPlanIds, prgrm.Plan_Campaign.PlanId),
-                                                            // progress = 0,
+                                                                // progress = 0,
                                                                 open = false,
                                                                 parent = string.Format("L{0}_C{1}", prgrm.Plan_Campaign.PlanId, prgrm.PlanCampaignId),
                                                                 color = ProgramColor,
@@ -2157,7 +2170,7 @@ namespace RevenuePlanner.Controllers
                                                                                                                   CalendarEndDate,
                                                                                                                   _tac.objPlanTactic.StartDate,
                                                                                                                   _tac.objPlanTactic.EndDate),
-                                                                       //   progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
+                                                                        //   progress = GetTacticProgress( _tac, ImprovementTacticForTaskData),
                                                                         progress = GetTacticProgress((_tac.objPlanTactic.StartDate != null ? _tac.objPlanTactic.StartDate : new DateTime()), EffectiveDateListByPlanIds, _tac.PlanId),
                                                                         // progress = 0,
                                                                         open = false,
@@ -2172,7 +2185,7 @@ namespace RevenuePlanner.Controllers
                                                                         plantacticid = _tac.objPlanTactic.PlanTacticId,
                                                                         Status = _tac.objPlanTactic.Status,
                                                                         CreatedBy = _tac.CreatedBy
-                                                                        
+
                                                                     }).OrderBy(_tac => _tac.text).ToList();
 
                 List<int> lstAllowedEntityIds = new List<int>();
@@ -3393,7 +3406,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ownerId"></param>
         /// <param name="UserId"></param>
         /// <returns>Returns Json Result.</returns>
-        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId,  int PlanId,string UserId = "")
+        public JsonResult GetActualTactic(int status, string tacticTypeId, string customFieldId, string ownerId, int PlanId, string UserId = "")
         {
             if (!string.IsNullOrEmpty(UserId))
             {
@@ -3502,7 +3515,7 @@ namespace RevenuePlanner.Controllers
                 // Add By Nishant Sheth 
                 // Desc:: for add multiple years regarding #1765
                 // To create the period of the year dynamically base on tactic period
-                                
+
                 List<listMonthDynamic> lstMonthlyDynamic = new List<listMonthDynamic>();
                 TacticList.ForEach(tactic =>
                 {
@@ -3587,7 +3600,7 @@ namespace RevenuePlanner.Controllers
                     tacticTypeId = tactic.TacticTypeId,
                     ////Modified by Mitesh Vaishnav for PL ticket #743,When userId will be empty guid ,First name and last name combination will be display as Gameplan Integration Service
                     modifiedBy = Common.TacticModificationMessage(tactic.PlanTacticId, userName),
-                    
+
                     // Change by Nishant sheth
                     // Desc :: #1765 - add period condition to get value
                     actualData = (tacticActuals.Where(tacticActual => tacticActual.PlanTacticId.Equals(tactic.PlanTacticId)
@@ -3840,7 +3853,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 string strContatedIndividualList = string.Join(",", TacticUserList.Select(tactic => tactic.CreatedBy.ToString()));
-               // var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
+                // var individuals = bdsUserRepository.GetMultipleTeamMemberName(strContatedIndividualList);
                 var individuals = bdsUserRepository.GetMultipleTeamMemberNameByApplicationId(strContatedIndividualList, Sessions.ApplicationId); //PL 1569 Dashrath Prajapati
 
                 return individuals;
@@ -3961,7 +3974,7 @@ namespace RevenuePlanner.Controllers
                     {
                         planmodel.lstCustomFields = lstCustomField;
                         planmodel.lstCustomFieldOptions = lstCustomFieldOption;
-                       // return Json(new { isSuccess = true, lstCustomFields = lstCustomField, lstCustomFieldOptions = lstCustomFieldOption }, JsonRequestBehavior.AllowGet);
+                        // return Json(new { isSuccess = true, lstCustomFields = lstCustomField, lstCustomFieldOptions = lstCustomFieldOption }, JsonRequestBehavior.AllowGet);
                     }
                 }
 
@@ -4194,34 +4207,11 @@ namespace RevenuePlanner.Controllers
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
             List<int> lstplanid = activePlan.Select(a => a.PlanId).ToList();
             var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(a => lstplanid.Contains(a.PlanId) && a.IsDeleted == false).ToList();
-            List<int> lstCamppid = lstCampaign.Select(a => a.PlanCampaignId).ToList();
-            var lstProgram = objDbMrpEntities.Plan_Campaign_Program.Where(a => lstCamppid.Contains(a.PlanCampaignId) && a.IsDeleted == false).ToList();
-            List<int> lstProgid = lstProgram.Select(a => a.PlanProgramId).ToList();
-            var lstTact = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(a => lstProgid.Contains(a.PlanProgramId) && a.IsDeleted == false).ToList();
-            DateTime campmaxDate, progmaxDate, tactmaxDate;
-            campmaxDate = progmaxDate = tactmaxDate = DateTime.Now.Date;
-            if (lstCampaign.Count > 0)
-            {
-                campmaxDate = lstCampaign.Select(a => a.EndDate).Max();
-            }
-            if (lstProgram.Count > 0)
-            {
-                progmaxDate = lstProgram.Select(a => a.EndDate).Max();
-            }
-            if (lstTact.Count > 0)
-            {
-                tactmaxDate = lstTact.Select(a => a.EndDate).Max();
-            }
-
-            DateTime EndDate = DateTime.Now;
-
-            EndDate = campmaxDate > progmaxDate ? campmaxDate : progmaxDate;
-            EndDate = tactmaxDate > EndDate ? tactmaxDate : EndDate;
 
 
             //// Get the Current year and Pre define Upcoming Activites.
             string currentYear = DateTime.Now.Year.ToString();
-            string EndYear = EndDate.Year.ToString();
+
             List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
 
             //// Fetch the pervious year and future year list and insert into the list object
@@ -4236,23 +4226,40 @@ namespace RevenuePlanner.Controllers
             if (activePlan != null && activePlan.Any() && activePlan.Where(plan => plan.Year == currentYear).Any())
             {
                 //// Add current year into the list
+
                 UpcomingActivityList.Add(new SelectListItem { Text = quartText, Value = strThisQuarter, Selected = false });
                 UpcomingActivityList.Add(new SelectListItem { Text = monthText, Value = strThisMonth, Selected = false });
-                if (currentYear != EndYear)
+                foreach (var camp in lstCampaign)
                 {
-                    int yearDiff = Convert.ToInt32(EndYear) - Convert.ToInt32(currentYear);
-                    for (int i = 1; i <= yearDiff; i++)
+                    int campStYear = camp.StartDate.Year;
+                    int campEdYear = camp.EndDate.Year;
+                    int campYearDiffer = campEdYear - campStYear;
+                    string EndYear = camp.EndDate.Year.ToString();
+                    if (currentYear != EndYear)
                     {
-                        UpcomingActivityList.Add(new SelectListItem { Text = EndYear, Value = (Convert.ToInt32(currentYear) + i).ToString(), Selected = false });
+                        var checkYear = UpcomingActivityList.Where(a => a.Text == EndYear).Select(a => a.Text).FirstOrDefault();
+                        var checkFromTo = UpcomingActivityList.Where(a => a.Text == currentYear + "-" + EndYear).Select(a => a.Text).FirstOrDefault();
+                        int yearDiff = Convert.ToInt32(EndYear) - Convert.ToInt32(currentYear);
+                        for (int i = 1; i <= yearDiff; i++)
+                        {
+                            if (checkYear == null)
+                            {
+                                UpcomingActivityList.Add(new SelectListItem { Text = EndYear, Value = EndYear, Selected = false });
+                            }
+                        }
+                        if (campYearDiffer > 0)
+                        {
+                            UpcomingActivityList.Add(new SelectListItem { Text = currentYear + "-" + EndYear, Value = currentYear + "-" + EndYear, Selected = true });
+                        }
                     }
-                    UpcomingActivityList.Add(new SelectListItem { Text = currentYear + "-" + EndYear, Value = currentYear + "-" + EndYear, Selected = true });
                 }
                 UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
             }
+            UpcomingActivityList = UpcomingActivityList.GroupBy(a => a.Text).Select(x => x.First()).ToList();
 
             var yearlistAfter = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
-            return UpcomingActivityList;
+            return UpcomingActivityList.Distinct().ToList();
         }
 
         #endregion
@@ -4287,7 +4294,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="planTacticId">planTacticId from query string parameter of shared link</param>
         /// <param name="isImprovement">isImprovement flag from query string parameter of shared link</param>
         /// <returns>returns currentPlanId</returns>
-        private int InspectPopupSharedLinkValidation(int currentPlanId, int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId=0)
+        private int InspectPopupSharedLinkValidation(int currentPlanId, int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId = 0)
         {
             bool IsEntityDeleted = false;
             bool isValidLoginUser = true;
@@ -4375,7 +4382,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="ViewOnlyPermission">ViewOnlyPermission flag in form of int</param>
         /// <param name="ViewEditPermission">ViewEditPermission flag in form of int</param>
         /// <returns>returns flag for custom restriction as per custom restriction</returns>
-        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId=0)
+        private bool InspectPopupSharedLinkValidationForCustomRestriction(int planCampaignId, int planProgramId, int planTacticId, bool isImprovement, int planLineItemId = 0)
         {
             bool isValidEntity = false;
 
@@ -4444,7 +4451,7 @@ namespace RevenuePlanner.Controllers
         public List<TacticTypeModel> GetTacticTypeList(List<Plan_Campaign_Program_Tactic> tacticList, List<int> lstAllowedEntityIds)
         {
 
-           
+
             var TacticUserList = tacticList.ToList();
 
             if (TacticUserList.Count > 0)
@@ -4471,9 +4478,9 @@ namespace RevenuePlanner.Controllers
 
                 List<int> lstPlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
                 var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && lstPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => tactic).ToList();
-                   List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
-                    await Task.Delay(1);    
+                List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                await Task.Delay(1);
                 return Json(new { isSuccess = true, TacticTypelist = GetTacticTypeList(tacticList, lstAllowedEntityIds) }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception objException)
@@ -4503,7 +4510,7 @@ namespace RevenuePlanner.Controllers
             {
                 //List<int> queryPlanCampaignId = lstCampaign.Where(campaign => campaign.PlanId == planId).Select(campaign => campaign.PlanCampaignId).ToList<int>();
                 //minDate = queryPlanCampaignId.Count() > 0 ? lstCampaign.Where(campaign => queryPlanCampaignId.Contains(campaign.PlanCampaignId)).Select(campaign => campaign.StartDate).Min() : DateTime.MinValue;
-             
+
                 minDate = CampaignList.Select(campaign => campaign.StartDate).Min();
 
             }
@@ -4679,182 +4686,182 @@ namespace RevenuePlanner.Controllers
         }
 
         #endregion
-   
-        #region --Saving and rendering Last accessed data of Views--- 
-        /// <summary>
-        /// Added By: Komal Rawal.
-        /// Action to get last accessed data
-        /// </summary>
-        public JsonResult LastSetOfViews()
-        {
-            var StatusLabel = Enums.FilterLabel.Status.ToString();
-            var LastSetOfStatus = new List<string>();
-            //Modified for #1750 by Komal Rawal
-            var listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
-            var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-            if (SetOfStatus != null)
-            {
-                LastSetOfStatus = SetOfStatus.Split(',').ToList();
-            }
-            var OwnerLabel = Enums.FilterLabel.Owner.ToString();
 
-            var LastSetOfOwners = new List<string>();
+        //#region --Saving and rendering Last accessed data of Views--- 
+        ///// <summary>
+        ///// Added By: Komal Rawal.
+        ///// Action to get last accessed data
+        ///// </summary>
+        //public JsonResult LastSetOfViews()
+        //{
+        //    var StatusLabel = Enums.FilterLabel.Status.ToString();
+        //    var LastSetOfStatus = new List<string>();
+        //    //Modified for #1750 by Komal Rawal
+        //    var listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
+        //    var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+        //    if (SetOfStatus != null)
+        //    {
+        //        LastSetOfStatus = SetOfStatus.Split(',').ToList();
+        //    }
+        //    var OwnerLabel = Enums.FilterLabel.Owner.ToString();
 
-          
-            var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-            if (SetOfOwners != null)
-            {
-                LastSetOfOwners = SetOfOwners.Split(',').ToList();
-            }
-
-            var TTLabel = Enums.FilterLabel.TacticType.ToString();
-            var LastSetOfTacticType = new List<string>();
-          
-            var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-            if (SetOfTacticType != null)
-            {
-                LastSetOfTacticType = SetOfTacticType.Split(',').ToList();
-            }
-            var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF") && view.ViewName == null).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
-            return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
-        }
-
-        /// <summary>
-        /// Added By: KOmal Rawal.
-        /// Action to save last accessed data
-        /// </summary>
-        /// <param name="PlanId">Plan Id and filters</param>
-        public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds)
-        {
+        //    var LastSetOfOwners = new List<string>();
 
 
-            List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
-            List<Plan> ListofPlans = objDbMrpEntities.Plans.Where(p => planIds.Contains(p.PlanId)).ToList();
-            string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
-            planIds = ListofPlans.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => plan.PlanId).ToList();
-            // Added By Komal Rawal for #1750 to default users to their last view
-            List<Plan_UserSavedViews> NewCustomFieldData = new List<Plan_UserSavedViews>();
-            NewCustomFieldData = new List<Plan_UserSavedViews>();
-            List<string> tempFilterValues = new List<string>();
-            #region "Remove previous records by userid"
-            var prevCustomFieldList = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.UserId).ToList();
-            #endregion
+        //    var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+        //    if (SetOfOwners != null)
+        //    {
+        //        LastSetOfOwners = SetOfOwners.Split(',').ToList();
+        //    }
+
+        //    var TTLabel = Enums.FilterLabel.TacticType.ToString();
+        //    var LastSetOfTacticType = new List<string>();
+
+        //    var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+        //    if (SetOfTacticType != null)
+        //    {
+        //        LastSetOfTacticType = SetOfTacticType.Split(',').ToList();
+        //    }
+        //    var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF") && view.ViewName == null).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
+        //    return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
+        //}
+
+        ///// <summary>
+        ///// Added By: KOmal Rawal.
+        ///// Action to save last accessed data
+        ///// </summary>
+        ///// <param name="PlanId">Plan Id and filters</param>
+        //public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds)
+        //{
 
 
-            #region "Save filter values to Plan_UserSavedViews"
+        //    List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
+        //    List<Plan> ListofPlans = objDbMrpEntities.Plans.Where(p => planIds.Contains(p.PlanId)).ToList();
+        //    string planPublishedStatus = Enums.PlanStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.PlanStatus.Published.ToString())).Value;
+        //    planIds = ListofPlans.Where(plan => plan.Status.Equals(planPublishedStatus)).Select(plan => plan.PlanId).ToList();
+        //    // Added By Komal Rawal for #1750 to default users to their last view
+        //    List<Plan_UserSavedViews> NewCustomFieldData = new List<Plan_UserSavedViews>();
+        //    NewCustomFieldData = new List<Plan_UserSavedViews>();
+        //    List<string> tempFilterValues = new List<string>();
+        //    #region "Remove previous records by userid"
+        //    var prevCustomFieldList = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.UserId).ToList();
+        //    #endregion
 
 
-            if (planIds.Count != 0)
-            {
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                objFilterValues.FilterName = Enums.FilterLabel.Plan.ToString();
-                objFilterValues.FilterValues = planId;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                NewCustomFieldData.Add(objFilterValues);
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-
-            }
-            if (ownerIds != null && ownerIds != "")
-            {
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                objFilterValues.FilterName = Enums.FilterLabel.Owner.ToString();
-                objFilterValues.FilterValues = ownerIds;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                NewCustomFieldData.Add(objFilterValues);
-            }
-            if (TacticTypeid != null && TacticTypeid != "")
-            {
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                objFilterValues.FilterName = Enums.FilterLabel.TacticType.ToString();
-                objFilterValues.FilterValues = TacticTypeid;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                NewCustomFieldData.Add(objFilterValues);
-            }
-            if (StatusIds != null && StatusIds != "")
-            {
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();
-                objFilterValues.FilterValues = StatusIds;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                NewCustomFieldData.Add(objFilterValues);
-            }
-
-            if (customFieldIds != "")
-            {
-
-                string[] filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? null : customFieldIds.Split(',');
-                if (filteredCustomFields != null)
-                {
-                    Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                    List<Plan_UserSavedViews> listLineitem = objDbMrpEntities.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.UserId).Select(a => a).ToList();
-                    Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
-                    string FilterNameTemp = "";
-                    string Previousval = "";
-                    foreach (string customField in filteredCustomFields)
-                    {
-                        var PreviousValue = "CF" + "_" + customField.Split('_')[0].ToString();
-                        var ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
-                        FilterNameTemp += string.IsNullOrEmpty(FilterNameTemp) ? (ExistingFieldlist != null ? ExistingFieldlist.FilterValues : "") : "";
-                        if (FilterNameTemp == PreviousValue)
-                        {
-
-                            Previousval += ',' + customField.Split('_')[1];
-                            objFilterValues.FilterValues = Previousval;
-                        }
-
-                        else
-                        {
-                            objFilterValues = new Plan_UserSavedViews();
-                            objFilterValues.ViewName = null;
-                            objFilterValues.FilterName = "CF" + "_" + customField.Split('_')[0];
-                            objFilterValues.FilterValues = customField.Split('_')[1];
-                            objFilterValues.Userid = Sessions.User.UserId;
-                            objFilterValues.LastModifiedDate = DateTime.Now;
-                            FilterNameTemp = "";
-                            FilterNameTemp += "CF" + "_" + customField.Split('_')[0].ToString();
-                            Previousval = "";
-                            Previousval = customField.Split('_')[1];
-                            objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
-                        }
-
-                        NewCustomFieldData.Add(objFilterValues);
-                    }
+        //    #region "Save filter values to Plan_UserSavedViews"
 
 
-                }
-            }
+        //    if (planIds.Count != 0)
+        //    {
+        //        Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+        //        objFilterValues.ViewName = null;
+        //        objFilterValues.FilterName = Enums.FilterLabel.Plan.ToString();
+        //        objFilterValues.FilterValues = planId;
+        //        objFilterValues.Userid = Sessions.User.UserId;
+        //        objFilterValues.LastModifiedDate = DateTime.Now;
+        //        NewCustomFieldData.Add(objFilterValues);
+        //        objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
 
-            var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
-            var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
-            if (isCheckinPrev == true || isCheckinNew == true)
-            {
-                prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
-                objDbMrpEntities.SaveChanges();
-            }
-            else
-            {
-                if (prevCustomFieldList.Count == 0)
-                {
-                    objDbMrpEntities.SaveChanges();
-                }
-            }
-            #endregion
-            //End
-            return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
-        }
+        //    }
+        //    if (ownerIds != null && ownerIds != "")
+        //    {
+        //        Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+        //        objFilterValues.ViewName = null;
+        //        objFilterValues.FilterName = Enums.FilterLabel.Owner.ToString();
+        //        objFilterValues.FilterValues = ownerIds;
+        //        objFilterValues.Userid = Sessions.User.UserId;
+        //        objFilterValues.LastModifiedDate = DateTime.Now;
+        //        objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+        //        NewCustomFieldData.Add(objFilterValues);
+        //    }
+        //    if (TacticTypeid != null && TacticTypeid != "")
+        //    {
+        //        Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+        //        objFilterValues.ViewName = null;
+        //        objFilterValues.FilterName = Enums.FilterLabel.TacticType.ToString();
+        //        objFilterValues.FilterValues = TacticTypeid;
+        //        objFilterValues.Userid = Sessions.User.UserId;
+        //        objFilterValues.LastModifiedDate = DateTime.Now;
+        //        objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+        //        NewCustomFieldData.Add(objFilterValues);
+        //    }
+        //    if (StatusIds != null && StatusIds != "")
+        //    {
+        //        Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+        //        objFilterValues.ViewName = null;
+        //        objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();
+        //        objFilterValues.FilterValues = StatusIds;
+        //        objFilterValues.Userid = Sessions.User.UserId;
+        //        objFilterValues.LastModifiedDate = DateTime.Now;
+        //        objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+        //        NewCustomFieldData.Add(objFilterValues);
+        //    }
 
-        #endregion
+        //    if (customFieldIds != "")
+        //    {
+
+        //        string[] filteredCustomFields = string.IsNullOrWhiteSpace(customFieldIds) ? null : customFieldIds.Split(',');
+        //        if (filteredCustomFields != null)
+        //        {
+        //            Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+        //            List<Plan_UserSavedViews> listLineitem = objDbMrpEntities.Plan_UserSavedViews.Where(a => a.Userid == Sessions.User.UserId).Select(a => a).ToList();
+        //            Plan_UserSavedViews objLineitem = new Plan_UserSavedViews();
+        //            string FilterNameTemp = "";
+        //            string Previousval = "";
+        //            foreach (string customField in filteredCustomFields)
+        //            {
+        //                var PreviousValue = "CF" + "_" + customField.Split('_')[0].ToString();
+        //                var ExistingFieldlist = listLineitem.Where(pcpobjw => pcpobjw.FilterName.Equals(PreviousValue)).FirstOrDefault();
+        //                FilterNameTemp += string.IsNullOrEmpty(FilterNameTemp) ? (ExistingFieldlist != null ? ExistingFieldlist.FilterValues : "") : "";
+        //                if (FilterNameTemp == PreviousValue)
+        //                {
+
+        //                    Previousval += ',' + customField.Split('_')[1];
+        //                    objFilterValues.FilterValues = Previousval;
+        //                }
+
+        //                else
+        //                {
+        //                    objFilterValues = new Plan_UserSavedViews();
+        //                    objFilterValues.ViewName = null;
+        //                    objFilterValues.FilterName = "CF" + "_" + customField.Split('_')[0];
+        //                    objFilterValues.FilterValues = customField.Split('_')[1];
+        //                    objFilterValues.Userid = Sessions.User.UserId;
+        //                    objFilterValues.LastModifiedDate = DateTime.Now;
+        //                    FilterNameTemp = "";
+        //                    FilterNameTemp += "CF" + "_" + customField.Split('_')[0].ToString();
+        //                    Previousval = "";
+        //                    Previousval = customField.Split('_')[1];
+        //                    objDbMrpEntities.Plan_UserSavedViews.Add(objFilterValues);
+        //                }
+
+        //                NewCustomFieldData.Add(objFilterValues);
+        //            }
+
+
+        //        }
+        //    }
+
+        //    var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
+        //    var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
+        //    if (isCheckinPrev == true || isCheckinNew == true)
+        //    {
+        //        prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
+        //        objDbMrpEntities.SaveChanges();
+        //    }
+        //    else
+        //    {
+        //        if (prevCustomFieldList.Count == 0)
+        //        {
+        //            objDbMrpEntities.SaveChanges();
+        //        }
+        //    }
+        //    #endregion
+        //    //End
+        //    return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
+        //}
+
+        //#endregion
 
     }
 

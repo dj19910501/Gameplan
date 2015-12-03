@@ -1606,9 +1606,10 @@ namespace RevenuePlanner.Helpers
                     });
 
                 }
-                    lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                   
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
+                    lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                     planTacticIds = planTacticIds.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
                                              (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticType.TacticTypeId)) &&
                                              (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
@@ -1626,22 +1627,22 @@ namespace RevenuePlanner.Helpers
 
                     }
                 }
-                else
-                {
-                    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    List<Guid> lstSubordinatesIds = new List<Guid>();
-                    if (IsTacticAllowForSubordinates)
-                    {
-                        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+                //else
+                //{
+                //    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                //    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                //    List<Guid> lstSubordinatesIds = new List<Guid>();
+                //    if (IsTacticAllowForSubordinates)
+                //    {
+                //        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
 
-                    }
-                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                //    }
+                //    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
 
-                    planTacticIds = planTacticIds.Where(tactic => tactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+                //    planTacticIds = planTacticIds.Where(tactic => tactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
 
 
-                }
+                //}
 
                 //End
 
@@ -1808,9 +1809,10 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();// Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
 
-                lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
+              
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
+                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                     planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
                                              (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
                                              (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
@@ -1828,22 +1830,22 @@ namespace RevenuePlanner.Helpers
 
                     }
                 }
-                else
-                {
-                    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    List<Guid> lstSubordinatesIds = new List<Guid>();
-                    if (IsTacticAllowForSubordinates)
-                    {
-                        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+                //else
+                //{
+                //    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                //    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                //    List<Guid> lstSubordinatesIds = new List<Guid>();
+                //    if (IsTacticAllowForSubordinates)
+                //    {
+                //        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
 
-                    }
-                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                //    }
+                //    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
 
-                    planTacticsList = planTacticsList.Where(tactic => tactic.objPlanTactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.objPlanTactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();
+                //    planTacticsList = planTacticsList.Where(tactic => tactic.objPlanTactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.objPlanTactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();
 
 
-                }
+                //}
 
                 //End
 
