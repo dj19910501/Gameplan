@@ -1960,13 +1960,15 @@ namespace RevenuePlanner.Controllers
                 #region Plan
                 //Modified by Komal Rawal for #1537 to get Plan according to year.
                 //                List<int> campplanid = new List<int>();
+                // Change by Nishant Sheth for remove double db trip.
+                var planData = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
                 var planList = objDbMrpEntities.Plans.Where(plan => filterplanId.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
                 List<int> campplanid = new List<int>();
                 if (planList.Count == 0)
                 {
                     campplanid = objDbMrpEntities.Plan_Campaign.Where(camp => !(camp.StartDate > EndDate || camp.EndDate < StartDate) && filterplanId.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
                 }
-                var taskDataPlan = objDbMrpEntities.Plans.Where(plan => plan.IsDeleted.Equals(false)
+                var taskDataPlan = planData.Where(plan => plan.IsDeleted.Equals(false)
                     && (campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planList.Contains(plan.PlanId)))
                                                   .ToList()
                                                    .Select(plan => new
