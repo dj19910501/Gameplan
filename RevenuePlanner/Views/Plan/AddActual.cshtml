@@ -214,6 +214,7 @@
     var isQuater = '@IsQuarter';
     var CurrentPlanId = '@CurrentPlanId';
     var isError = false;
+    var _decmlRegex = '^(0|[1-9][0-9]*)[.]?[0-9]*$'; // Old: '^(0|[1-9][0-9]*)$';
     $(document).ready(function () {
         $("#lblMarkringActivitiesTitle").hide();
         $('#nl-form2').show();
@@ -561,8 +562,8 @@
             }
 
             // For Format Price & Total Input
-            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
-            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true });
+            $('.currency_dollar').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
+            $('.priceValue').priceFormat({ prefix: '', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isAllowNull: true, isDouble: true });
 
             $('.currency_dollarCost').each(function () {
                 var txtvalue = $(this).val();
@@ -579,13 +580,14 @@
                 $(this).attr('title', txtvalue);//uday 3-7-2014 internal poinmt to add tooltip title...
             });
 
-            $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0 });
+            $('.currency_dollarCost').priceFormat({ prefix: '$', centsSeparator: '', thousandsSeparator: ',', centsLimit: 0, isDouble: true });
             $('.accordion').find('input').each(function () {
 
                 $(this).keyup(function () {
                         var currentValue = $(this).val().trim().replace(/,/g, '').replace('$', '');
                         currentValue = currentValue == '' ? "0" : currentValue; // Added by Sohel Pathan on 03/09/2014 for Internal Review Points
-                        if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                    //if (currentValue.match('^(0|[1-9][0-9]*)$')) {
+                        if (currentValue.match(_decmlRegex)) {
                             var costlbl = (this).id.replace('ActuallblCCost', '');
                             if ((this).id.replace(costlbl, '') != "ActuallblCCost") {
                                 var arr = (this).id.split('-');
@@ -605,8 +607,8 @@
 
                                 if (arr[1] == 'Revenue') {
                                     document.getElementById(ida).innerHTML = totalvalue;
-                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
-                                    SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                                    //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
                                     $('#' + ida).attr('orignal-value', totalvalue);
                                 }
 
@@ -615,16 +617,16 @@
                                     costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
                                     var updateActalCost = "ActuallblCCost" + costlbl;
                                     document.getElementById(updateActalCost).innerHTML = totalvalue;
-                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, false);
-                                    SetBudget('#' + updateActalCost);
+                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
+                                    //SetBudget('#' + updateActalCost);
                                     $('#' + updateActalCost).attr('orignal-value', totalvalue);
                                 }
                                 else if (arr[1] != 'Revenue' && arr[1] != 'Cost' && arr[1] != 'ProjectedStageValue' && arr[1] != 'MQL' &&
                                     arr[1] != 'CW' && arr[1] != 'INQ') {
                                     //Update the Actual Cost and apply currency format.
                                     document.getElementById(ida).innerHTML = totalvalue;
-                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, false);
-                                    SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
+                                    document.getElementById(ida).innerHTML = FormatCurrency(document.getElementById(ida).innerHTML, true);
+                                    //SetBudget('#' + ida); // Added by Sohel Pathan on 26/08/2014 for Internal Review Points
 
                                     costlbl = $('#tr' + arr[0] + arr[1]).attr('tacticid');
 
@@ -642,14 +644,15 @@
 
                                     var lineId = costlbl+"Cost-" + arr[2];
                                     document.getElementById(lineId).innerHTML = lineItemTotal;
-                                    document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, false);
-                                    SetBudget('#' + lineId);
+                                    document.getElementById(lineId).innerHTML = FormatCurrency(document.getElementById(lineId).innerHTML, true);
+                                    //SetBudget('#' + lineId);
 
                                     //Update the Actual cost value based upon Line item actual sum.
                                     
                                     var updateActalCost = "ActuallblCCost" + costlbl;
                                     var updateActalCostValueTotal = 0;
-                                    $('.lineItemActualsValues').each(function () {
+                                    var currentTacticLineItemsDv = '.lineItemActualsValues' + costlbl;
+                                    $(currentTacticLineItemsDv).each(function () {
                                         var updateActalCostValue = parseFloat($(this).attr('linevalue').trim().replace(/,/g, '').replace('$', ''));
                                         if (!isNaN(updateActalCostValue)) {
                                             updateActalCostValueTotal = updateActalCostValue + parseFloat(updateActalCostValueTotal);
@@ -658,8 +661,8 @@
 
                                     //Update the value and apply currency formatter on it .
                                     document.getElementById(updateActalCost).innerHTML = updateActalCostValueTotal;
-                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, false);
-                                    SetBudget('#' + updateActalCost);
+                                    document.getElementById(updateActalCost).innerHTML = FormatCurrency(document.getElementById(updateActalCost).innerHTML, true);
+                                    //SetBudget('#' + updateActalCost);
                                     $('#' + updateActalCost).attr('orignal-value', updateActalCostValueTotal);
                                 }
                                 else {
@@ -704,8 +707,8 @@
         $("[id^='UpdateResult']").click(function () {
             $("#errorMsg").css("display", "none");
             $("#SuccessMsg").css("display", "none");
-
-
+            var _LineItems = [];
+            var title = htmlEncode($('#txtTacticTitle').val());
                 var _tactic = []
                 var tacticId = $(this).attr('tacticId');
                 var stageId = $(this).attr('stageId');
@@ -732,8 +735,12 @@
                 var tableId = "#divTable" + tacticId;
                 $(tableId).find('input').each(function () {
                     if ($(this).val().trim() != '') {
+                        var _isCurrency = $(this).hasClass("currency_dollar");
                         var thisValue = ReplaceCC($(this).val());
-                        if (thisValue.match('^(0|[1-9][0-9]*)$')) {
+                        if ((!_isCurrency) && thisValue.match('^(0|[1-9][0-9]*)$')) {
+                            $(this).removeClass("error");
+                        }
+                        else if ((_isCurrency) && thisValue.match(_decmlRegex)) {
                             $(this).removeClass("error");
                         }
                         else {
@@ -742,6 +749,8 @@
                         }
                         var arr = (this).id.split('-');
                         if (thisValue != '') {
+                            var lineitemclass = tacticId + '_Line';
+                            if (!$(this).hasClass(lineitemclass)) {
                             _tactic.push({
                                 PlanTacticId: tacticId,
                                 StageTitle: arr[1],
@@ -755,10 +764,19 @@
                                 ROI: totalROI,
                                 ROIActual: totalROIActual,
                                 IsActual: true,
-                                StageId: stageId,
-                                PlanLineItemId: arr[0]
+                                    StageId: stageId
+                                    //PlanLineItemId: arr[0]
                             });
                             isData = true;
+                        }
+                            else {
+                                _LineItems.push({
+                                    PlanLineItemId: arr[0],
+                                    Period: arr[2],
+                                    Value: thisValue
+                                });
+                                isLineItem = true;
+                            }
                         }
                     }
                     else {
@@ -794,18 +812,22 @@
                         ROI: totalROI,
                         ROIActual: totalROIActual,
                         IsActual: false,
-                        StageId: stageId,
-                        PlanLineItemId:0 
+                        StageId: stageId
                     });
                 }
                 $("#errorMsg").css("display", "none");
-                _tactic = JSON.stringify({ 'tacticactual': _tactic });
+            //_tactic = JSON.stringify({ 'tacticactual': _tactic });
+
+                var Tactic_title = $(".colTitle" + tacticId).attr('Tactitle');
                 $.ajax({
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
+                    async:false,
                     type: 'POST',
-                    url: '@Url.Content("~/Inspect/UploadResult/")?UserId=' + $(window).attr('name'),
-                    data: _tactic,
+                    //url: '@Url.Content("~/Inspect/UploadResult/")?UserId=' + $(window).attr('name'),
+                    url: '@Url.Content("~/Inspect/UploadResult/")',
+                    //data: _tactic,
+                    data: JSON.stringify({ tacticactual: _tactic, lineItemActual: _LineItems, tactictitle: Tactic_title }),
                     success: function (data) {
                         if (data.returnURL != 'undefined' && data.returnURL == '#') {
                             window.location = '@Url.Content("~/Login/Index")';
@@ -878,10 +900,12 @@
                 $tableActuals.append($html);
             }
 
-            $('.addFormatterActualCurrency').each(function () {
-                //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
-                SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points
-            });
+            //$('.addFormatterActualCurrency').each(function () {
+            //    //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
+            //    //SetBudget($(this)); // Modfified by Sohel Pathan on 10/09/2014 for Internal Review Points
+            //    //debugger;
+            //    //FormatCurrency($(this).innerHTML, true);
+            //});
 
             $('.addFormatterActualNumber').each(function () {
                 //Added By : Kalpesh Sharma Internal Review Points 07-18-2014
@@ -978,12 +1002,12 @@
                 $html += '<td>';
                 if (_LineItemsData.length <= 0) {
                     $html += '<input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
-                    $html += ' class="currency_dollar"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
-                    $html += 'value="' + _costActualData[newCounterTactic].Cost + '"';
+                    $html += ' class="currency_dollar "  maxlength="@RevenuePlanner.Helpers.Common.maxLengthDollar"';
+                    $html += 'value="' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '"';
                     $html += ' ></input>';
                 }
                 else {
-                    $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency" style="float: right;">' + _costActualData[newCounterTactic].Cost + '</div>';
+                    $html += '<div id="' + divId + '" class="table-info-actual-left addFormatterActualCurrency " style="float: right;">' + FormatCurrency(_costActualData[newCounterTactic].Cost, true) + '</div>';
                 }
                 $html += '</td>';
             }
@@ -998,6 +1022,7 @@
             for (var j = 1; j <= (12 * parseInt(_YearDiffrence + 1)) ; j = j + 1) {
                     var tdId = _LineItemsData[p].id + "-" + TacticId + "-Y" + j;
                     var ClassName = "currency_dollar" + " "+_id+"Line-Y" + j;
+                    ClassName = _id+"_Line "+ ClassName;
                     $html += '<td><input id="' + tdId + '" placeholder="---" '; // Modified by Sohel Pathan on 02/09/2014 for Internal Review Point
                     $html += ' class="' + ClassName + '"  maxlength="@RevenuePlanner.Helpers.Common.maxLengthPriceValue"';
                     
@@ -1005,7 +1030,7 @@
                     var Data = _LineItemsData[p].LineItemActual[newCounter];
 
                     if (typeof Data != 'undefined') {
-                        $html += 'value="' + _LineItemsData[p].LineItemActual[newCounter].Cost + '"';
+                        $html += 'value="' + FormatCurrency(_LineItemsData[p].LineItemActual[newCounter].Cost,true) + '"';
                     }
                     else {
                         $html += 'value="' + 0 + '"';
@@ -1025,7 +1050,7 @@
                 '</div>' +
             '</div>' +
         '</div>' +
-        '<div id="collapse' + _id + '" class="accordion-body collapse">' +
+        '<div id="collapse' + _id + '" class="accordion-body collapse colTitle' + _id + '" Tactitle="'+_title+'">' +
           '<div class="accordion-inner">';
 
             for (var i = 0; i < arrStage.length; i++) {
@@ -1098,7 +1123,7 @@
                                                  '<div class="table-info-actual-left truncate setBudget" id="lineItemProjectedCost' + _LineItemsData[line].id + '">' +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                      FormatCurrency(_LineItemsData[line].LineItemCost, true) +  // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                                  '</div>' +
-                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
+                                                 '<div lineValue="' + _LineItemsData[line].LineItemActualCost + '" class="table-info-actual-left table-info-actual-width setBudget lineItemActualsValues' + TacticId + '" style="float: right;" id="ActuallblP' + TacticId + _LineItemsData[line].id + '">' +  // Modified by Arpita Soni on 01/12/2015 for PL ticket #1093
                                                   FormatCurrency(_LineItemsData[line].LineItemActualCost, true) +   // Modified by Sohel Pathan on 12/09/2014 for PL ticket #760
                                     '</div>' +
                                 '</div>' +
