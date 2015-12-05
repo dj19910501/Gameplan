@@ -620,6 +620,7 @@
     <Content Include="Content\fonts\fontawesome-webfont.woff" />
     <Content Include="RevenuePlanner.wpp.targets" />
     <None Include="Service References\BDSService\BDSService1.disco" />
+    <Content Include="Scripts\js\bootstrap-notify.min.js" />
     <Content Include="Scripts\js\DHTMLX\dhtmlxtreegrid_min.js" />
     <Content Include="Scripts\js\DHTMLX\jquery-ui-1.11.4.min.js" />
     <Content Include="Scripts\js\errorhandler.js" />
