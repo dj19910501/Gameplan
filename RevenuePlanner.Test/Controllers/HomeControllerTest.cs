@@ -1270,75 +1270,75 @@ namespace RevenuePlanner.Test.Controllers
 
         #endregion
 
-        //#region --Saving and rendering Last accessed data of Views---
+        #region --Saving and rendering Last accessed data of Views---
 
-        ///// <summary>
-        ///// To Save last set data
-        ///// </summary>
-        ///// <auther>Komal Rawal</auther>
-        ///// <createddate>25Nov2015</createddate>
-        //[TestMethod]
-        //public void SaveLastSetOfViews()
-        //{
-        //    MRPEntities db = new MRPEntities();
-        //    //// Set session value
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    HomeController objHomeController = new HomeController();
-        //    string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
-         
-        //    string ViewBy = PlanGanttTypes.Tactic.ToString();
-        //    List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
-        //    List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
-        //    string tactictypeids = string.Join(",", tactic);
+        /// <summary>
+        /// To Save last set data
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void SaveLastSetOfViews()
+        {
+            MRPEntities db = new MRPEntities();
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
+            string CommaSeparatedPlanId = DataHelper.GetPlanId().ToString();
 
-        //    List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
-        //    string Ownerids = string.Join(",", Owner);
+            string ViewBy = PlanGanttTypes.Tactic.ToString();
+            List<int> lstPlanids = CommaSeparatedPlanId.Split(',').ToList().Select(id => Convert.ToInt32(id)).ToList();
+            List<int> tactic = db.Plan_Campaign_Program_Tactic.Where(id => lstPlanids.Contains(id.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactictype => tactictype.TacticTypeId).ToList();
+            string tactictypeids = string.Join(",", tactic);
 
-        //    var UserID = Sessions.User.UserId;
+            List<Guid> Owner = db.Plans.Where(id => lstPlanids.Contains(id.PlanId)).Select(plan => plan.CreatedBy).ToList();
+            string Ownerids = string.Join(",", Owner);
 
-        //    string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(UserID);
+            var UserID = Sessions.User.UserId;
 
-        //    List<string> lststatus = new List<string>();
-        //    lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
-        //    lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
-        //    lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
-        //    lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
-        //    lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
-        //    lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
+            string CommaSeparatedCustomFields = DataHelper.GetSearchFilterForCustomRestriction(UserID);
 
-        //    string Status = string.Join(",", lststatus);
+            List<string> lststatus = new List<string>();
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Created.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Approved.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString());
+            lststatus.Add(Enums.TacticStatusValues[Enums.TacticStatus.Decline.ToString()].ToString());
 
-        //    var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status) as JsonResult;
-        //    if (result != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNull(result.GetValue("taskData"));
-        //    }
-        //}
+            string Status = string.Join(",", lststatus);
 
-        // /// <summary>
-        ///// To Render last set of view
-        ///// </summary>
-        ///// <auther>Komal Rawal</auther>
-        ///// <createddate>25Nov2015</createddate>
-        //[TestMethod]
-        //public void Render_LastSetofViews()
-        //{
-        //    //// Set session value
-        //    HttpContext.Current = DataHelper.SetUserAndPermission();
-        //    HomeController objHomeController = new HomeController();
+            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status) as JsonResult;
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNull(result.GetValue("taskData"));
+            }
+        }
 
-        //    var result = objHomeController.LastSetOfViews() as JsonResult;
+        /// <summary>
+        /// To Render last set of view
+        /// </summary>
+        /// <auther>Komal Rawal</auther>
+        /// <createddate>25Nov2015</createddate>
+        [TestMethod]
+        public void Render_LastSetofViews()
+        {
+            //// Set session value
+            HttpContext.Current = DataHelper.SetUserAndPermission();
+            HomeController objHomeController = new HomeController();
 
-        //    if (result != null)
-        //    {
-        //        //// ViewResult shoud not be null and should match with viewName
-        //        Assert.IsNull(result.GetValue("taskData"));
-        //    }
+            var result = objHomeController.LastSetOfViews() as JsonResult;
+
+            if (result != null)
+            {
+                //// ViewResult shoud not be null and should match with viewName
+                Assert.IsNull(result.GetValue("taskData"));
+            }
 
 
-        //}
+        }
 
-        //#endregion
+        #endregion
     }
 }
