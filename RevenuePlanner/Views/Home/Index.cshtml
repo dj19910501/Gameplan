@@ -183,7 +183,7 @@
                     $(this).addClass("close-list");
                     var chkid = $(this).find("input[type=checkbox]").attr("id");
                     $("#" + chkid).attr("checked", "checked");
-                    //filters.TacticTypeids.push(chkid.replace("CbTT", "")); //Comment by Nishant For "if all selected then no record inserted for user default view"
+                    filters.TacticTypeids.push(chkid.replace("CbTT", ""));
 
                 });
             }
@@ -1046,7 +1046,7 @@
                 $(this).addClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).attr("checked", "checked");
-                //filters.StatusIds.push(chkid); //Comment by Nishant For "if all selected then no record inserted for user default view"
+                filters.StatusIds.push(chkid);
             });
         }
         else {
@@ -1187,7 +1187,16 @@
 
     function SaveLastSetofViews() {
         filters.customFieldIds = [];
-
+        //Add by Nishant For "if all selected then no record inserted for user default view"
+        var ulStatus = $("#ulStatus li");
+        var ulTacticType = $("#ulTacticType li");
+        if (ulStatus.length == filters.StatusIds.length) {
+            filters.StatusIds = [];
+        }
+        if (ulTacticType.length == filters.TacticTypeids.length) {
+            filters.TacticTypeids = [];
+        }
+        // End By Nishant Sheth
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
                 var chkid = $(this).attr("id");
@@ -1249,7 +1258,16 @@
         var SelectedPlanIds;
 
         filters.customFieldIds = [];
-
+        //Add by Nishant For "if all selected then no record inserted for user default view"
+        var ulStatus = $("#ulStatus li");
+        var ulTacticType = $("#ulTacticType li");
+        if (ulStatus.length == filters.StatusIds.length) {
+            filters.StatusIds = [];
+        }
+        if (ulTacticType.length == filters.TacticTypeids.length) {
+            filters.TacticTypeids = [];
+        }
+        // End By Nishant Sheth
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
                 var chkid = $(this).attr("id");
