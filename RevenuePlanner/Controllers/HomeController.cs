@@ -439,6 +439,16 @@ namespace RevenuePlanner.Controllers
                 planYear = DateTime.Now.Year.ToString();
             }
 
+            // Add By Nishant Sheth
+            // DESC:: For get default filter view after user log out #1750
+
+            var Label = Enums.FilterLabel.Plan.ToString();
+            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).ToList();
+            if (SetOfPlanSelected.Count > 0)
+            {
+                isupdate = true;
+            }
+
             if ((customFieldIds != "" || ownerIds != "" || TacticTypeid != "" || StatusIds != "") && isupdate)
             {
                 IsFiltered = true;
@@ -1676,11 +1686,10 @@ namespace RevenuePlanner.Controllers
 
             // Add By Nishant Sheth
             // DESC:: For get default filter view after user log out #1750
+            //var Label = Enums.FilterLabel.Plan.ToString();
+            //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).ToList();
 
-            var Label = Enums.FilterLabel.Plan.ToString();
-            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).ToList();
-
-            if (IsRequest || IsFiltered || SetOfPlanSelected.Count > 0) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
+            if (IsRequest || IsFiltered) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
             {
 
                 #region Prepare Plan Task Data

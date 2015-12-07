@@ -183,7 +183,7 @@
                     $(this).addClass("close-list");
                     var chkid = $(this).find("input[type=checkbox]").attr("id");
                     $("#" + chkid).attr("checked", "checked");
-                    filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+                    //filters.TacticTypeids.push(chkid.replace("CbTT", "")); //Comment by Nishant For "if all selected then no record inserted for user default view"
 
                 });
             }
@@ -1046,7 +1046,7 @@
                 $(this).addClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).attr("checked", "checked");
-                filters.StatusIds.push(chkid);
+                //filters.StatusIds.push(chkid); //Comment by Nishant For "if all selected then no record inserted for user default view"
             });
         }
         else {
