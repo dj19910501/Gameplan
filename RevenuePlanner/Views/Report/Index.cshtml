@@ -2,7 +2,8 @@
 @using RevenuePlanner.Helpers
 @{
     string SelectedYear = ViewBag.SelectedYear;
-    var ViewPlanSelectedValue = (List<SelectListItem>)ViewBag.ViewPlan;
+    //var ViewPlanSelectedValue = (List<SelectListItem>)ViewBag.ViewPlan;
+    List<RevenuePlanner.Models.PlanListModel> planList = ViewBag.ViewPlan;
     var ViewYearList = (List<SelectListItem>)ViewBag.ViewYear;
     // Start - Added by Arpita Soni on 01/19/2015 for Ticket #1148 
     var ViewCustomFields = (List<RevenuePlanner.Models.CustomField>)ViewBag.ViewCustomFields;
@@ -152,23 +153,23 @@
                         <ul class="scroll-list" id="ulSelectedPlans">
                          @{
                              string ddlId = string.Empty;
-                             foreach (SelectListItem item in ViewPlanSelectedValue)
+                             foreach (var item in planList)
                              {
-                                 ddlId = "liPlan" + item.Value;
-                                 if (item.Selected)
+                                 ddlId = "liPlan" + "_" + item.PlanId;
+                                 if (item.Checked == "checked")
                                  {
-                                    <li class="accordion-inner close-list" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" checked="checked" planTitle="@item.Text" id="@item.Value" onchange="OnPlanchange(this);"></input></li>
+                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" planTitle="@item.Title" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
                                  }
                                  else
                                  {
-                                     <li class="accordion-inner" title="@item.Text" id="@ddlId"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" planTitle="@item.Text" id="@item.Value" onchange="OnPlanchange(this);"></input></li>
+                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@item.Title" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
                                  }
 
                              }
                           }
                         </ul>
                         <div class="list-tab">
-                           @if (ViewPlanSelectedValue != null)
+                           @if (planList != null)
                            {
                             <ul id="PlanAllModule">
                                 <li><a onclick="BulkPlanOperation(true)">select all</a></li>
@@ -186,9 +187,9 @@
             </div>
              
 
-           
+           <div id="divCustomFieldsFilter">
             @{
-                string acordionId, acordionParentId, acordionElementId, acordionElementHref,liCustom,ulCustom,allCustom,noCustom;
+                string acordionId, acordionParentId, acordionElementId, acordionElementHref, liCustom, ulCustom, allCustom, noCustom, cutomoptioninputid;
                 acordionId = acordionParentId = acordionElementId = acordionElementHref =liCustom =ulCustom = allCustom = noCustom =string.Empty;
                 List<SelectListItem> lstCutomFieldOptions = new List<SelectListItem>();
                 List<CustomFieldOption> tblCustomFieldOption = ViewCustomFieldOptions;
@@ -213,7 +214,8 @@
                     foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                     {
                         liCustom = "liCustom" + item.Value;
-                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@item.Value" onchange="OnMultiselectchange(this);"></input></li>
+                        cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
+                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" cutomtitle="@item.Text" class="chkbxfilter" id="@cutomoptioninputid" onchange="OnMultiselectchange(this);"></input></li>
                     }
                                 }
                                </ul>
@@ -236,7 +238,7 @@
                    </div>
                 }
              }
-
+        </div>
            @* Added By komal Rawal*@
             <div id="accordion-Owner" class="dropdown-section accordion" > 
                 <div class="accordion-group">
@@ -397,10 +399,15 @@
 
 //End 
 
-var filters = {
-    OwnerIds: [],
-    TacticTypeids: []
-};
+    var filters = {
+        OwnerIds: [],
+        TacticTypeids: [],
+        customFieldIds: [],
+        PlanIDs: [],
+        SelectedPlans: [],
+        PlanTitles: [],
+        StatusIds: []
+    };
    
 function GetOwnerListForFilter(Planids, ifexists) {
     $('#ulSelectedOwner').html('');
@@ -498,7 +505,11 @@ function GetOwnerListForFilter(Planids, ifexists) {
         }
 
         function GetTacticTypelist(Planids, ifexists) {
-     
+            var asyncval = false;
+            if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
+                asyncval = ifexists;
+            }
+
             $('#ulTacticType').html('');
             if (!ifexists) {
                 filters.TacticTypeids = [];
@@ -509,6 +520,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
                 },
                 type: "GET",
                 cache: false,
+                async: asyncval,
                 url: '@Url.Action("GetTacticTypeListForFilter", "Report")',
             data: {
                 PlanId: Planids.toString(),
@@ -560,7 +572,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
                   $(this).addClass("close-list");
                   var chkid = $(this).find("input[type=checkbox]").attr("id");
                   $("#" + chkid).attr("checked", "checked");
-                  filters.TacticTypeids.push(chkid);
+                  filters.TacticTypeids.push(chkid.replace("CbTT", ""));
 
               });
           }
@@ -587,7 +599,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
           $("#ulTacticType li input[type=checkbox]").each(function () {
               var chkid = $(this).attr("id");
               if ($(this).is(':checked')) {
-                  filters.TacticTypeids.push(chkid);
+                  filters.TacticTypeids.push(chkid.replace("CbTT", ""));
               }
           });
       }
@@ -626,7 +638,9 @@ function GetOwnerListForFilter(Planids, ifexists) {
         loadBasedOnPlan();
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,false);
-        GetTacticTypelist(PlanIds,false);
+        GetTacticTypelist(PlanIds, false);
+        GetLastSetofViews();
+        GetselectionFilter();
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId);
         function toggleChevron(e) {
@@ -640,6 +654,240 @@ function GetOwnerListForFilter(Planids, ifexists) {
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
     });
 
+    function GetLastSetofViews() {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LastSetOfViews", "Home")',
+            data: {},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
+                        $("#ulStatus li input[type=checkbox]").removeAttr('checked');
+                        $("#ulStatus li ").removeClass("close-list");
+                        for (i = 0 ; i < data.StatusNAmes.length; i++) {
+                            $("#ulStatus li input[type=checkbox]").each(function () {
+                                var Value = $(this).attr("id");
+                                if (Value == data.StatusNAmes[i]) {
+                                    filters.StatusIds.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+
+                            });
+
+                        }
+                    }
+
+                    if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
+                        for (i = 0 ; i < data.Customfields.length; i++) {
+                            var CustomFieldId = data.Customfields[i].ID.split('_')[1];
+                            var CustomFieldValues = data.Customfields[i].Value;
+                            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                                var chkid = $(this).attr("id");
+                                var chkfieldid = $(this).attr("id").split('_')[0];
+                                var chkOptionid = $(this).attr("id").split('_')[1];
+                                if (chkfieldid == CustomFieldId) {
+                                    if (CustomFieldValues.indexOf(chkOptionid) != -1) {
+                                        $(this).attr('checked', 'checked');
+                                        filters.customFieldIds.push(chkid);
+                                        $(this).parent().addClass("close-list");
+                                    }
+                                    else {
+                                        $(this).removeAttr('checked');
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+
+
+                    if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
+                        filters.OwnerIds = [];
+                        $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
+                        $("#ulSelectedOwner li ").removeClass("close-list");
+                        for (i = 0 ; i < data.OwnerNames.length; i++) {
+                            $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                                var Value = $(this).attr("id");
+                                if (Value == data.OwnerNames[i]) {
+                                    filters.OwnerIds.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+                            });
+                        }
+                    }
+
+                   
+                    if (data.TTList.length != 0 && data.TTList.length != undefined) {
+                        filters.TacticTypeids = [];
+                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
+                        $("#ulTacticType li ").removeClass("close-list");
+                        for (i = 0 ; i < data.TTList.length; i++) {
+                           
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                               
+                                var Value = $(this).attr("id").replace("CbTT", "");
+                                if (Value == data.TTList[i]) {
+                                    filters.TacticTypeids.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+                            });
+                        }
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    function SaveLastSetofViews() {
+        filters.customFieldIds = [];
+
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.customFieldIds.push(chkid);
+                }
+            }
+        });
+        filters.SelectedPlans = [];
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                var chkplanid = chkid.split('_');
+                if (chkid != undefined && chkid != 'undefined') {
+
+                    filters.SelectedPlans.push(chkplanid[0]);
+                }
+            }
+        });
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+        }
+    
+        var Planid = filters.SelectedPlans;
+        var CustomFieldId = filters.customFieldIds;
+        var OwnerIds = filters.OwnerIds;
+        var TacticTypeids = filters.TacticTypeids; //Modified for #1283
+        var GetSelectedPlanNo = filters.SelectedPlans.length;
+        var StatusIds = filters.StatusIds;
+
+
+        @*if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+            // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
+            Planid = CurrentPlanId;
+            GetSelectedPlanNo = 1;
+        }*@
+
+        $.ajax({
+            type: "GET",
+            cache: false,
+            async: false,
+            url: '@Url.Action("SaveLastSetofViews", "Home")',
+            data: {
+                PlanId: Planid.toString(),
+                customFieldIds: CustomFieldId.toString(),
+                ownerIds: OwnerIds.toString(),
+                TacticTypeid: TacticTypeids.toString(),
+                StatusIds: filters.StatusIds.toString(),
+            },
+            dataType: "json",
+            success: function (data) {
+            }
+
+        })
+
+    }
+
+    function GetselectionFilter() {
+
+        var yy = $(this);
+        var arrOptionIds = new Array();
+        //// close multiselect
+        $(".budgetReportFilter-area").find(".multiselection-select").each(function () {
+            $(this).multiselect("close");//"Close" is function in multiselect.js which close the multiselect menu 
+        });
+
+        OptionMain = getYearSelectedValue(true);
+
+        //  Qurt_Month = getQuarterMonthlySelectedValue();
+
+        @foreach (var custField in ViewCustomFields)
+        {
+            string multiselectid = string.Concat("ul", custField.CustomFieldId);
+           @: var filterIds = GetCustomFilterIds('@multiselectid');
+           @: var arrFilterId = filterIds.split(',');
+           @: if (arrFilterId != "")
+           @: {
+           @: for (var i = 0; i < arrFilterId.length; i++) {
+           @: arrOptionIds.push({ CustomFieldId: '@custField.CustomFieldId', OptionId: arrFilterId[i] });
+           @:}
+           @:}
+
+            }
+
+        //// get selected value from multiselect 
+        PlanIds = GetFilterIdForPlan(multiselectPlanId);
+        //Mofied By Komal Rawal
+        var arrPlanIds = new Array();
+        arrPlanIds = PlanIds.split(',');
+        var GetSelectedPlanNo = arrPlanIds.length;
+        if (GetSelectedPlanNo > 1) {
+            $("#divAddActual").hide();
+
+        }
+        else {
+            $("#divAddActual").show();
+
+        }
+        //End
+        //
+
+        //
+
+        SortingId = '';
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            url: '@Url.Content("~/Report/SetReportData/")',
+            traditional: true,
+            data: {
+                planIds: PlanIds,
+                OwnerIDs: (filters.OwnerIds).toString(),
+                TactictypeIDs: (filters.TacticTypeids).toString(),
+                customIds: JSON.stringify(arrOptionIds),
+            },
+            success: function (data) {
+                if (data.status) {
+                    if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
+                            LoadSummary();
+                        }
+                        else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Revenue.ToString()') {
+                            LoadRevenueData();
+                        }
+                        else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Waterfall.ToString()') {
+                            LoadConversionData();
+                        }
+                        else if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Budget.ToString()') {
+                            LoadBudgetView();
+                        }
+            }
+
+                    //SaveLastSetofViews();
+                }
+        });
+}
     // <--- End document.ready Event --->
     function OnPlanchange(_plancheckbox) {
         var _checked = $(_plancheckbox).attr('checked');
@@ -1091,7 +1339,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
                         }
             }
 
-
+                    SaveLastSetofViews();
                 }
             });
         });

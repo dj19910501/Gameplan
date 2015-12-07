@@ -125,14 +125,14 @@ namespace RevenuePlanner.Controllers
                 TempData["ErrorMessage"] = Common.objCached.NoPublishPlanAvailableOnReport;
                 return RedirectToAction("PlanSelector", "Plan");
             }
-            List<SelectListItem> lstPlanList = new List<SelectListItem>();
+            //List<SelectListItem> lstPlanList = new List<SelectListItem>();
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
             string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
 
             // Start - Added by Arpita Soni for Ticket #1148 on 02/02/2015
             // to make default selected plan from session planId
             var selectedYear = tblPlan.Where(plan => plan.PlanId == Sessions.PlanId).Select(plan => plan.Year).FirstOrDefault();
-            lstPlanList = lstPlan.Where(plan => plan.Year == selectedYear).Select(plan => new SelectListItem { Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (plan.PlanId == Sessions.PlanId ? true : false) }).ToList();
+            //lstPlanList = lstPlan.Where(plan => plan.Year == selectedYear).Select(plan => new SelectListItem { Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (plan.PlanId == Sessions.PlanId ? true : false) }).ToList();
             ViewBag.SelectedYear = selectedYear;
             // End - Added by Arpita Soni for Ticket #1148 on 02/02/2015
 
@@ -149,7 +149,27 @@ namespace RevenuePlanner.Controllers
                 lstYear.Add(objYear);
             }
 
-            ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
+            //
+            var LastSetOfPlanSelected = new List<string>();
+            var Label = Enums.FilterLabel.Plan.ToString();
+            var SetOfPlanSelected = db.Plan_UserSavedViews.Where(i => i.FilterName == Label && i.Userid == Sessions.User.UserId && i.ViewName == null).Select(i => i.FilterValues).FirstOrDefault();
+            if (SetOfPlanSelected != null)
+            {
+                LastSetOfPlanSelected = SetOfPlanSelected.Split(',').ToList();
+            }
+
+            // activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
+            ViewBag.ViewPlan = lstPlan.Select(plan => new PlanListModel
+            {
+                PlanId = plan.PlanId,
+                Title = HttpUtility.HtmlDecode(plan.Title),
+                Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == Sessions.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
+
+            }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
+
+            //
+
+            //ViewBag.ViewPlan = lstPlanList.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             ViewBag.ViewYear = lstYear.Where(sort => !string.IsNullOrEmpty(sort.Text)).OrderBy(sort => sort.Text, new AlphaNumericComparer()).ToList();
             //End Added by Mitesh Vaishnav for PL ticket #846
             return View("Index");
