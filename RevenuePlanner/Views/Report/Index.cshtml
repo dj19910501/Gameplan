@@ -410,7 +410,11 @@
         StatusIDs: []
     };
    
-function GetOwnerListForFilter(Planids, ifexists) {
+    function GetOwnerListForFilter(Planids, ifexists) {
+        var asyncval = false;
+        if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
+            asyncval = ifexists;
+        }
     $('#ulSelectedOwner').html('');
     if (!ifexists) {
         filters.OwnerIds = [];
@@ -421,6 +425,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
         },
         type: "GET",
         cache: false,
+        async: asyncval,
         url: '@Url.Action("GetOwnerListForFilter", "Report")',
             data: {
                 PlanId: Planids.toString(),
@@ -692,13 +697,17 @@ function GetOwnerListForFilter(Planids, ifexists) {
 
 
                     if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
+                       
                         filters.OwnerIds = [];
                         $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
                         $("#ulSelectedOwner li ").removeClass("close-list");
                         for (i = 0 ; i < data.OwnerNames.length; i++) {
+                          
                             $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+                              
                                 var Value = $(this).attr("id");
                                 if (Value == data.OwnerNames[i]) {
+                                  
                                     filters.OwnerIds.push(Value);
                                     $(this).attr('checked', 'checked');
                                     $(this).parent().addClass("close-list");
