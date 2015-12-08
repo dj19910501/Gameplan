@@ -11777,9 +11777,8 @@ namespace RevenuePlanner.Controllers
 
                         //// Create Clone by CloneType e.g Plan,Campaign,Program,Tactic,LineItem
                         rtResult = objClonehelper.CloneToOtherPlan(lstTacticTypeMapping, CloneType, sourceEntityId, srcPlanId, destEntityId, isdifferModel);
-                        UpdateParentEntityStartEndData(sourceEntityId, destEntityId, CloneType);
+                        UpdateParentEntityStartEndData(sourceEntityId, destEntityId, CloneType, srcPlanId,destPlanId);
                     }
-
                 }
                 catch (Exception e)
                 {
@@ -11909,30 +11908,68 @@ namespace RevenuePlanner.Controllers
         /// <param name="destPlanEntityId">Destination EntityId: Under which source entity copied</param>
         /// <param name="CloneType">CloneType: Entity will be copied</param>
         /// <returns></returns>
-        public void UpdateParentEntityStartEndData(int srcPlanEntityId, int destPlanEntityId, string CloneType)
+        public void UpdateParentEntityStartEndData(int srcPlanEntityId, int destPlanEntityId, string CloneType,int srcPlanId, int destPlanId)
         {
             try
             {
+                bool isDifferPlanyear = false;
+                #region "Identify that source & destination point to different year or not"
+                if (srcPlanId != destPlanId)
+                {
+                    isDifferPlanyear = true;
+                }
+                #endregion
+
                 #region "Update Parent Entity Start-End Date"
+                Clonehelper objClonehelper = new Clonehelper();
                 if (CloneType == Enums.DuplicationModule.Tactic.ToString())
                 {
                     var srcTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(tac => tac.PlanTacticId == srcPlanEntityId);
                     var destProgram = db.Plan_Campaign_Program.FirstOrDefault(prg => prg.PlanProgramId == destPlanEntityId);
+                    
                     if (destProgram.StartDate > srcTactic.StartDate)
                     {
-                        destProgram.StartDate = srcTactic.StartDate;
+                        if (isDifferPlanyear)
+                        {
+                            destProgram.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.StartDate.Year); 
+                        }
+                        else
+                        {
+                            destProgram.StartDate = srcTactic.StartDate;
+                        }
                     }
                     if (destProgram.Plan_Campaign.StartDate > srcTactic.StartDate)
                     {
-                        destProgram.Plan_Campaign.StartDate = srcTactic.StartDate;
+                        if (isDifferPlanyear)
+                        {
+                            destProgram.Plan_Campaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.Plan_Campaign.StartDate.Year); 
+                        }
+                        else
+                        {
+                            destProgram.Plan_Campaign.StartDate = srcTactic.StartDate;
+                        }
                     }
                     if (srcTactic.EndDate > destProgram.EndDate)
                     {
-                        destProgram.EndDate = srcTactic.EndDate;
+                        if (isDifferPlanyear)
+                        {
+                            destProgram.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.EndDate.Year);
+                        }
+                        else
+                        {
+                            destProgram.EndDate = srcTactic.EndDate;
+                        }
                     }
                     if (srcTactic.EndDate > destProgram.Plan_Campaign.EndDate)
                     {
-                        destProgram.Plan_Campaign.EndDate = srcTactic.EndDate;
+                        if (isDifferPlanyear)
+                        {
+                            destProgram.Plan_Campaign.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.Plan_Campaign.EndDate.Year);
+                        }
+                        else
+                        {
+                            destProgram.Plan_Campaign.EndDate = srcTactic.EndDate;
+                        }
                     }
                     db.Entry(destProgram).State = EntityState.Modified;
                 }
@@ -11942,20 +11979,27 @@ namespace RevenuePlanner.Controllers
                     var destCampaign = db.Plan_Campaign.FirstOrDefault(cmpgn => cmpgn.PlanCampaignId == destPlanEntityId);
                     if (destCampaign.StartDate > srcTactic.StartDate)
                     {
-                        destCampaign.StartDate = srcTactic.StartDate;
+                        if (isDifferPlanyear)
+                        {
+                            destCampaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destCampaign.StartDate.Year);
+                        }
+                        else
+                        {
+                            destCampaign.StartDate = srcTactic.StartDate;
+                        }
+                        
                     }
-                    //if (destCampaign.Plan.StartDate > srcTactic.StartDate)
-                    //{
-                    //    destCampaign.Plan.StartDate = srcTactic.StartDate;
-                    //}
                     if (srcTactic.EndDate > destCampaign.EndDate)
                     {
-                        destCampaign.EndDate = srcTactic.EndDate;
+                        if (isDifferPlanyear)
+                        {
+                            destCampaign.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destCampaign.EndDate.Year);
+                        }
+                        else
+                        {
+                            destCampaign.EndDate = srcTactic.EndDate;
+                        }
                     }
-                    //if (srcTactic.EndDate > destCampaign.Plan.EndDate)
-                    //{
-                    //    destCampaign.Plan.EndDate = srcTactic.EndDate;
-                    //}
                     db.Entry(destCampaign).State = EntityState.Modified;
                 }
                 db.SaveChanges();

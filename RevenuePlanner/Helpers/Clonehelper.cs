@@ -852,14 +852,14 @@ namespace RevenuePlanner.Helpers
             try
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
-                //Plan_Campaign_Program objParentProgram =new Plan_Campaign_Program();
-                //if (parentEntityId > 0)
-                //    objParentProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == parentEntityId).FirstOrDefault();
-                //if(objParentProgram != null)
-                //{
-                //    startDate = objParentProgram.StartDate;
-                //    endDate = objParentProgram.EndDate;
-                //}
+                Plan_Campaign_Program objParentProgram =new Plan_Campaign_Program();
+                if (parentEntityId > 0)
+                    objParentProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == parentEntityId).FirstOrDefault();
+                if(objParentProgram != null)
+                {
+                    startDate = objParentProgram.StartDate;
+                    endDate = objParentProgram.EndDate;
+                }
                 
                 Plan_Campaign_Program_Tactic objPlanTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().First(p => p.PlanTacticId == entityId && p.IsDeleted == false);
 
@@ -886,8 +886,8 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.LastSyncDate = null;
                     objPlanTactic.ModifiedDate = null;
                     objPlanTactic.ModifiedBy = null;
-                    //objPlanTactic.StartDate = startDate;
-                    //objPlanTactic.EndDate = endDate;
+                    objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate.Year) : objPlanTactic.StartDate;
+                    objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDate(objPlanTactic.EndDate, endDate.Year) : objPlanTactic.EndDate;
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
@@ -977,16 +977,10 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
-                //Plan objPlan = new Plan();
-                //if (parentEntityId > 0)
-                //    objPlan = db.Plans.Where(pln => pln.PlanId == parentEntityId).FirstOrDefault();
-                //if (objPlan != null)
-                //{
-                //    int count = 
-                //    startDate = objParentProgram.StartDate;
-                //    endDate = objParentProgram.EndDate;
-                //}
-
+                Plan objPlan = new Plan();
+                if (parentEntityId > 0)
+                    objPlan = db.Plans.Where(pln => pln.PlanId == parentEntityId).FirstOrDefault();
+                int planyear = int.Parse(objPlan.Year);
                 Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanCampaignId == entityId && p.IsDeleted == false);
                 if (objPlanCampaign != null)
                 {
@@ -1003,6 +997,9 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.IntegrationInstanceCampaignId = null;
                     objPlanCampaign.LastSyncDate = null;
                     objPlanCampaign.PlanId = parentEntityId;
+                    objPlanCampaign.StartDate = (objPlanCampaign.StartDate.Year != planyear) ? GetResultDate(objPlanCampaign.StartDate, planyear) : objPlanCampaign.StartDate;
+                    objPlanCampaign.EndDate = (objPlanCampaign.EndDate.Year != planyear) ? GetResultDate(objPlanCampaign.EndDate, planyear) : objPlanCampaign.EndDate;
+                   
                     objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
                         {
@@ -1015,6 +1012,8 @@ namespace RevenuePlanner.Helpers
                             t.IntegrationInstanceProgramId = null;
                             t.LastSyncDate = null;
                             t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
+                            t.StartDate = (t.StartDate.Year != planyear) ? GetResultDate(t.StartDate, planyear) : t.StartDate;
+                            t.EndDate = (t.EndDate.Year != planyear) ? GetResultDate(t.EndDate, planyear) : t.EndDate;
                             t.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                             {
                                 pcpt.Plan_Campaign_Program_Tactic_Actual = null;
@@ -1033,6 +1032,8 @@ namespace RevenuePlanner.Helpers
                                 pcpt.IntegrationWorkFrontProjectID = null;
                                 pcpt.LastSyncDate = null;
                                 pcpt.Status = TacticStatus;
+                                pcpt.StartDate = (pcpt.StartDate.Year != planyear) ? GetResultDate(pcpt.StartDate, planyear) : pcpt.StartDate;
+                                pcpt.EndDate = (pcpt.EndDate.Year != planyear) ? GetResultDate(pcpt.EndDate, planyear) : pcpt.EndDate;
                                 pcpt.Plan_Campaign_Program_Tactic_Cost = null;//pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_Budget = null;//pcpt.Plan_Campaign_Program_Tactic_Budget.ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
@@ -1143,14 +1144,14 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
-                //Plan_Campaign objParentCampaign = new Plan_Campaign();
-                //if (parentEntityId > 0)
-                //    objParentCampaign = db.Plan_Campaign.Where(cmpgn => cmpgn.PlanCampaignId == parentEntityId).FirstOrDefault();
-                //if (objParentCampaign != null)
-                //{
-                //    startDate = objParentCampaign.StartDate;
-                //    endDate = objParentCampaign.EndDate;
-                //}
+                Plan_Campaign objParentCampaign = new Plan_Campaign();
+                if (parentEntityId > 0)
+                    objParentCampaign = db.Plan_Campaign.Where(cmpgn => cmpgn.PlanCampaignId == parentEntityId).FirstOrDefault();
+                if (objParentCampaign != null)
+                {
+                    startDate = objParentCampaign.StartDate;
+                    endDate = objParentCampaign.EndDate;
+                }
 
                 Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().First(p => p.PlanProgramId == entityId && p.IsDeleted == false);
 
@@ -1170,8 +1171,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.ModifiedDate = null;
                     objPlanCampaignPrograms.ModifiedBy = null;
                     objPlanCampaignPrograms.PlanCampaignId = parentEntityId;
-                    //objPlanCampaignPrograms.StartDate = startDate;
-                    //objPlanCampaignPrograms.EndDate = endDate;
+                    objPlanCampaignPrograms.StartDate = (objPlanCampaignPrograms.StartDate.Year != startDate.Year) ? GetResultDate(objPlanCampaignPrograms.StartDate, startDate.Year) : objPlanCampaignPrograms.StartDate;
+                    objPlanCampaignPrograms.EndDate = (objPlanCampaignPrograms.EndDate.Year != endDate.Year) ? GetResultDate(objPlanCampaignPrograms.EndDate, endDate.Year) : objPlanCampaignPrograms.EndDate;
                     objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -1194,8 +1195,8 @@ namespace RevenuePlanner.Helpers
                             t.LastSyncDate = null;
                             t.Plan_Campaign_Program_Tactic_Cost = null;//t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_Budget = null; //t.Plan_Campaign_Program_Tactic_Budget.ToList();
-                            //t.StartDate = startDate;
-                            //t.EndDate = endDate;
+                            t.StartDate = (t.StartDate.Year != startDate.Year) ? GetResultDate(t.StartDate, startDate.Year) : t.StartDate;
+                            t.EndDate = (t.EndDate.Year != endDate.Year) ? GetResultDate(t.EndDate, endDate.Year) : t.EndDate;
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
@@ -1265,6 +1266,38 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = true;
             }
+        }
+
+        public DateTime GetResultDate(DateTime srcDate, int destYear)
+        {
+            DateTime resultDate = new DateTime();
+            //resultDate = destDate;
+            try
+            {
+                if (srcDate.Month.Equals(2)) // identify source date's month name is Feb or not.
+                {
+                    if (DateTime.IsLeapYear(srcDate.Year) && srcDate.Day.Equals(DateTime.DaysInMonth(srcDate.Year, srcDate.Month))) // Identify that year of source date having leap year and it's last day of Feb month
+                    {
+                        if (DateTime.IsLeapYear(destYear)) // if destination year is leap year then copy the same day of month.
+                            resultDate = new DateTime(destYear, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                        else
+                            resultDate = new DateTime(destYear, srcDate.Month, srcDate.AddDays(-1).Day); // if destination year is not leap year and source date's year leap year then reduce the day of source date if last day of month copied to destination.
+                    }
+                    else
+                    {
+                        resultDate = new DateTime(destYear, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                    }
+                }
+                else
+                {
+                    resultDate = new DateTime(destYear, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return resultDate;
         }
 
         #endregion
