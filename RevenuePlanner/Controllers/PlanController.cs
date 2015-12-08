@@ -11813,7 +11813,7 @@ namespace RevenuePlanner.Controllers
                 return Json(new { msg = Common.objCached.ExceptionErrorMessage, isSuccess = false }, JsonRequestBehavior.AllowGet);
                // throw ex;
             }
-            return Json(new { msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityTitle).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
+            return Json(new { msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}",HttpUtility.HtmlDecode(sourceEntityTitle)).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
 
         public List<PlanTactic_TacticTypeMapping> CheckTacticTypeIdToDestinationModel(string CloneType, int sourceEntityId, int destModelId, ref string invalidTacticIds)

@@ -123,6 +123,7 @@
         });
     }
     function CopyEntity() {
+      
         var selectedRowId = myTreeGrid.getSelectedRowId();
         if (selectedRowId != null && selectedRowId != 'undefined') {
             var arrElements = selectedRowId.split('_'); // selectedRowWIdFormat: [entityname]_[EntityId]_[prntEntityId]_[sectionType]_[destPlanId]
@@ -160,7 +161,7 @@
         var srcPlanID = '@srcPlanId';
         var cloneType = '@srcSectionType';
         var destEntityID = destEntityId;
-        var srcEntityTitle = '@headerTitle';
+        var srcEntityTitle = '@HttpUtility.JavaScriptStringEncode(headerTitle)'; //PL#1794 Copy Tactic/Program/Campaign: Error Message & Validation Message -Added by Dashrath Prajapati
         $.ajax({
             url: '@Url.Content("~/Plan/ClonetoOtherPlan/")',
             data: {
@@ -169,7 +170,7 @@
                 destEntityID: destEntityId,
                 srcPlanID: srcPlanID,
                 destPlanID: destPlanId,
-                sourceEntityTitle: srcEntityTitle
+                sourceEntityTitle:srcEntityTitle
             },
             datatype: 'json',
             type: 'GET',
@@ -196,6 +197,7 @@
     }
 
     function ShowError(isSuccess, value) {
+       
         if (isSuccess != null && isSuccess != 'undefined' && isSuccess) {
             //$("#modal-container-1864701").scrollTop(0);
             $("#errorMsg").css("display", "none");
