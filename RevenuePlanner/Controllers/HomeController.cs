@@ -4874,12 +4874,18 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
+            if (StatusIds == "Report")
+            {
+                var statulist = prevCustomFieldList.Where(a => a.FilterName == Enums.FilterLabel.Status.ToString());
+                prevCustomFieldList = prevCustomFieldList.Except(statulist).ToList();
+            }
+
             var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
             var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
             if (isCheckinPrev == true || isCheckinNew == true)
             {
-                prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
-                objDbMrpEntities.SaveChanges();
+                    prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
+                    objDbMrpEntities.SaveChanges();
             }
             else
             {

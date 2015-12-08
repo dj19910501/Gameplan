@@ -399,6 +399,7 @@
 
 //End 
 
+   
     var filters = {
         OwnerIds: [],
         TacticTypeids: [],
@@ -406,7 +407,7 @@
         PlanIDs: [],
         SelectedPlans: [],
         PlanTitles: [],
-        StatusIds: []
+        StatusIDs: []
     };
    
 function GetOwnerListForFilter(Planids, ifexists) {
@@ -666,23 +667,6 @@ function GetOwnerListForFilter(Planids, ifexists) {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
-                        $("#ulStatus li input[type=checkbox]").removeAttr('checked');
-                        $("#ulStatus li ").removeClass("close-list");
-                        for (i = 0 ; i < data.StatusNAmes.length; i++) {
-                            $("#ulStatus li input[type=checkbox]").each(function () {
-                                var Value = $(this).attr("id");
-                                if (Value == data.StatusNAmes[i]) {
-                                    filters.StatusIds.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
-
-                            });
-
-                        }
-                    }
-
                     if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
                         for (i = 0 ; i < data.Customfields.length; i++) {
                             var CustomFieldId = data.Customfields[i].ID.split('_')[1];
@@ -765,7 +749,6 @@ function GetOwnerListForFilter(Planids, ifexists) {
                 var chkid = $(this).attr("id");
                 var chkplanid = chkid.split('_');
                 if (chkid != undefined && chkid != 'undefined') {
-
                     filters.SelectedPlans.push(chkplanid[0]);
                 }
             }
@@ -779,16 +762,8 @@ function GetOwnerListForFilter(Planids, ifexists) {
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
-        var TacticTypeids = filters.TacticTypeids; //Modified for #1283
+        var TacticTypeids = filters.TacticTypeids;
         var GetSelectedPlanNo = filters.SelectedPlans.length;
-        var StatusIds = filters.StatusIds;
-
-
-        @*if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
-            // #838 Showing Multiple Plans on Plan Page : Kalpesh Sharma
-            Planid = CurrentPlanId;
-            GetSelectedPlanNo = 1;
-        }*@
 
         $.ajax({
             type: "GET",
@@ -800,7 +775,7 @@ function GetOwnerListForFilter(Planids, ifexists) {
                 customFieldIds: CustomFieldId.toString(),
                 ownerIds: OwnerIds.toString(),
                 TacticTypeid: TacticTypeids.toString(),
-                StatusIds: filters.StatusIds.toString(),
+                StatusIds: "Report",
             },
             dataType: "json",
             success: function (data) {
@@ -820,8 +795,6 @@ function GetOwnerListForFilter(Planids, ifexists) {
         });
 
         OptionMain = getYearSelectedValue(true);
-
-        //  Qurt_Month = getQuarterMonthlySelectedValue();
 
         @foreach (var custField in ViewCustomFields)
         {
@@ -852,9 +825,6 @@ function GetOwnerListForFilter(Planids, ifexists) {
 
         }
         //End
-        //
-
-        //
 
         SortingId = '';
         $.ajax({
