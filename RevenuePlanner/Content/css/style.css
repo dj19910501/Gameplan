@@ -10288,6 +10288,7 @@ li.close-list {
 .task-tbl div.gridbox_dhx_skyblue table.obj.row20px tr td
 {
     border-bottom:none;
+    line-height:33px;/*by bheru mehta 09-12-2015*/ 
 }
 .task-tbl div.gridbox_dhx_skyblue table.obj.row20px tr:last-child td
 {
@@ -10305,7 +10306,7 @@ li.close-list {
 /*by bheru mehta 01-12-2015 #1758 end*/	 
 
  /*by Bheru Mehta 03-12-2015 #1762 start*/
-.honeycombbox-icon {
+/*.honeycombbox-icon {
   background-color: transparent;
   float: left;
   line-height: normal;
@@ -10314,6 +10315,7 @@ li.close-list {
   margin-left: -5px;
   position:relative;   
 }
+
    .honeycombbox-icon  .st1 {
      fill: transparent;
     stroke-width: 3px;
@@ -10321,25 +10323,26 @@ li.close-list {
         }
 
    .honeycombbox-icon-Active {
-  background-color: transparent;
+     background: rgba(0, 0, 0, 0) url("../images/honeycomb-icon-active.png") no-repeat scroll center center / 100%;
   float: left;
   line-height: normal;
   margin-top: -2px;
   width: 39px;
   margin-left: -5px;
 }
+
    .honeycombbox-icon-Active  .st1 {
      fill: transparent;
     stroke-width: 3px;
     stroke: #f77616;
-        }
+    }*/
 
       .honeycombbox-icon-gantt {
   background: rgba(0, 0, 0, 0) url("../images/honeycomb-icon.png")  no-repeat scroll center center / 100% ;
   float: left;
   line-height: normal;
   margin-left: 2px;
-  margin-top: 6px;
+    margin-top: 0;
   width: 20px;
   height:21px;
 }
@@ -10351,11 +10354,11 @@ li.close-list {
    
  .honeycombbox-icon-gantt-Active {
   background: rgba(0, 0, 0, 0) url("../images/honeycomb-icon-active.png") no-repeat scroll center center / 100% auto;
-  float: right;
+    float: left;
   height: 21px;
   line-height: normal;
   margin-left: 2px;
-  margin-top: 6px;
+    margin-top: 0;
   width: 20px;
 }
    /*.honeycombbox-icon-gantt-Active  .st1 {
@@ -10369,16 +10372,18 @@ li.close-list {
         position: fixed;
         bottom: 3%;
         right: 100px;
+    z-index:1;
     }
 
         .honeycombbox div[class*=span] {
             padding: 0 10px;
         }
-
+    /*by bheru mehta 09-12-2015 for #1762*/
         .honeycombbox .badge {
+        background-color: #3e3f37;
             position: absolute;
-            right: 10px;
-            top: 10px;
+        right: 15px;
+        top: 14px;
         }
 
       .honeycombbox .popover-content {
@@ -10387,6 +10392,7 @@ li.close-list {
   max-height: 400px;
   max-width: 240px;
   overflow: auto;
+        min-height: 450px;
 }
 
 
@@ -10402,12 +10408,13 @@ li.close-list {
         }
 
             .honeycombbox .hc-controls .btn {
-                width: 60px;
+            width: 35px;
                 height: 53px;
                 background: none transparent;
                 border: none;
                 color: #FFF;
                 box-shadow: 0 0 0;
+            font-size: 20px;
                 -webkit-box-shadow: 0 0 0;
             }
 
@@ -10439,22 +10446,46 @@ li.close-list {
             }
 
 .honeycombbox .popover {
-  background-color: #fff;
+        background-color: #ffffff;
+        bottom: 100px;
+        font-family: source_sans_proregular;
   min-width: 275px;
-}
+        top: auto !important;
+    }
+
+    .honeycombbox .dropdown-menu > li > a {
+        color: #000;
+        font-size: 14px;
+    }
+
+        .honeycombbox .dropdown-menu > li > a:hover, .honeycombbox .dropdown-menu > li > a:focus, .honeycombbox .dropdown-submenu:hover > a, .honeycombbox .dropdown-submenu:focus > a {
+            background-color: #3e3f37;
+            background-image: none;
+            color: #fff;
+        }
+
 .pophover-left{
      margin-bottom: 10px;
 }
+
 .pophover-left p{
+        color: #3e3f37;
+        font-family: source_sans_proregular;
+        font-size: 12px;
+        line-height: normal;
      margin-bottom: 0;
      line-height:normal;
-
 }
-.pophover-left h5
-{
-    margin-top:0px;
+
+    .pophover-left h5 {
+        color: #3e3f37;
+        font-family: source_sans_proregular;
+        font-size: 16px;
+        font-weight: normal;
+        margin-top: 0;
     word-break:break-all;
 }
+
  .honeycombbox  .st0 {
             fill: #F8710E;
         }
@@ -10462,9 +10493,27 @@ li.close-list {
      .honeycombbox   .st1 {
             fill: #FFFFFF;
         }
+
    .honeycombbox    #honeycomb:hover .st0{
     fill: #3e3f37;
-        }
+    cursor: pointer;
+}
+.honeycombbox .metadata > span {
+  padding: 0 7px;
+}
+.honeycombbox .metadata > span:first-child
+{
+    padding:0 7px 0 0;
+}
+.calender-view-honeycomb
+{
+    margin-top:6px;
+}
+.home-content-header .sbHolder,.home-content-header  .ui-multiselect .ui-icon
+{
+    z-index:0;
+}
+/*by bheru mehta 09-12-2015 for #1762*/
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;
@@ -13407,11 +13456,15 @@ div.clue-bottom-default .cluetip-arrows {
 .padding-bottom20 {
     padding-bottom: 20px;
 }
-
+.task-tbl .grid_add
+{
+    margin-top:0px;/*by bheru mehta 09-12-2015*/
+}
 .grid_Search {
     background-image: url(../../Content/images/magnifying_glass.png);
     width: 18px;
     float: left;
+    margin-top:0;/*by bheru mehta 09-12-2015*/
 }
 
 .finance_grid_add,

@@ -422,6 +422,8 @@
         //});
 
     }
+
+    // 1780
     //Added by Rahul shah for Honeycomb selection in grid
     function AddRemoveEntity(item) {
 
@@ -431,7 +433,7 @@
             //    var selectedRow = HomeGrid.findCell(planid, 3, true);
             //    HomeGrid.openItem(selectedRow[0][0]);
             //}
-            if ($(item).hasClass("honeycombbox-icon-Active")) {
+            if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
                 if (index >= 0) {
                     ExportSelectedIds.TaskID.splice(index, 1);
@@ -442,8 +444,8 @@
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                 }
 
-                $(item).removeClass("honeycombbox-icon-Active");
-                $(item).addClass("honeycombbox-icon");
+                $(item).removeClass("honeycombbox-icon-gantt-Active");
+                $(item).addClass("honeycombbox-icon-gantt");
 
                 //$($("div[altId^='" + $(item).attr('altId').split('_')[0] + "']")).each(function (index) {
                 //    //var campid = $(this).attr('altId').split('_')[1];
@@ -466,7 +468,7 @@
             }
             else {
 
-                $(item).addClass("honeycombbox-icon-Active");
+                $(item).addClass("honeycombbox-icon-gantt-Active");
 
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
@@ -509,7 +511,7 @@
             //    HomeGrid.openItem(campRow[0][0]);
             //}
 
-            if ($(item).hasClass("honeycombbox-icon-Active")) {
+            if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
                 if (index >= 0) {
                     ExportSelectedIds.TaskID.splice(index, 1);
@@ -519,8 +521,8 @@
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                 }
-                $(item).removeClass("honeycombbox-icon-Active");
-                $(item).addClass("honeycombbox-icon");
+                $(item).removeClass("honeycombbox-icon-gantt-Active");
+                $(item).addClass("honeycombbox-icon-gantt");
 
                 // Loop for Clear tactic on selecting Campaign
                 //$($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
@@ -534,7 +536,7 @@
                 // Loop for Clear tactic on selecting Campaign
             }
             else {
-                $(item).addClass("honeycombbox-icon-Active");
+                $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
                 ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
@@ -563,8 +565,8 @@
 
             //    HomeGrid.openItem(selectedRow[0][0]);
             //}
-            if ($(item).hasClass("honeycombbox-icon-Active")) {
-                $(item).removeClass("honeycombbox-icon-Active");
+            if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+                $(item).removeClass("honeycombbox-icon-gantt-Active");
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
                 if (index >= 0) {
                     ExportSelectedIds.TaskID.splice(index, 1);
@@ -574,12 +576,12 @@
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                 }
-                $(item).addClass("honeycombbox-icon");
+                $(item).addClass("honeycombbox-icon-gantt");
 
             }
             else {
 
-                $(item).addClass("honeycombbox-icon-Active");
+                $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
                 ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
@@ -591,8 +593,8 @@
         }
 
         if ($(item).attr('id') == 'TacticAdd') {
-            if ($(item).hasClass("honeycombbox-icon-Active")) {
-                $(item).removeClass("honeycombbox-icon-Active");
+            if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
+                $(item).removeClass("honeycombbox-icon-gantt-Active");
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
                 if (index >= 0) {
                     ExportSelectedIds.TaskID.splice(index, 1);
@@ -602,10 +604,10 @@
                     ExportSelectedIds.ColorCode.splice(index, 1);
                     ExportSelectedIds.PlanFlag.splice(index, 1);
                 }
-                $(item).addClass("honeycombbox-icon");
+                $(item).addClass("honeycombbox-icon-gantt");
             }
             else {
-                $(item).addClass("honeycombbox-icon-Active");
+                $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
                 ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
@@ -614,11 +616,11 @@
                 ExportSelectedIds.PlanFlag.push('Grid');
             }
         }
-        if ($('.honeycombbox-icon-Active').length == 0) {
+        if ($('.honeycombbox-icon-gantt-Active').length == 0) {
             $(".honeycombbox").hide();
         }
         else {
-        $("#totalEntity").text($('.honeycombbox-icon-Active').length);
+            $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
             $(".honeycombbox").show();
         }
     }

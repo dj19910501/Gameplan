@@ -2993,7 +2993,8 @@
                 $('#honeycomb_content').html("");
 
                 for (i = 0; i < (ExportSelectedIds.TaskID.length) ; i++) {
-                    htmlstring += '<div class="hc-block"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5>' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata">' + ExportSelectedIds.TacticType[i] + ' | ' + ExportSelectedIds.OwnerName[i] + '</p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+
+                    htmlstring += '<div class="hc-block"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5>' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
 
                 }
             }
