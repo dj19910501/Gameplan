@@ -745,6 +745,7 @@ namespace RevenuePlanner.Controllers
         private JsonResult PrepareCustomFieldTabResult(string viewBy, Enums.ActiveMenu activemenu, List<Plan_Campaign> lstCampaign, List<Plan_Campaign_Program> lstProgram, List<Plan_Tactic> lstTactic, List<Plan_Improvement_Campaign_Program_Tactic> lstImprovementTactic, string requestCount, string planYear, object improvementTacticForAccordion, object improvementTacticTypeForAccordion, List<ViewByModel> viewByListResult, List<CustomFieldFilter> lstCustomFieldFilter)
         {
             string sourceViewBy = viewBy;
+            string doubledesh = "--";
             int CustomTypeId = 0;
             bool IsCampaign = viewBy.Contains(Common.CampaignCustomTitle) ? true : false;
             bool IsProgram = viewBy.Contains(Common.ProgramCustomTitle) ? true : false;
@@ -1173,6 +1174,8 @@ namespace RevenuePlanner.Controllers
                 colorcode = taskdata.color,
                 planid = taskdata.planid,
                 type = "Plan",
+                TacticType = doubledesh,
+                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
 
             }).ToList().Distinct().ToList();
@@ -1209,6 +1212,8 @@ namespace RevenuePlanner.Controllers
                 plancampaignid = taskdata.plancampaignid,
                 Status = taskdata.Status,
                 type = "Campaign",
+                TacticType = doubledesh,
+                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).ToList().Distinct().ToList();
             #endregion
@@ -1244,6 +1249,8 @@ namespace RevenuePlanner.Controllers
                 planprogramid = taskdata.planprogramid,
                 Status = taskdata.Status,
                 type = "Program",
+                TacticType = doubledesh,
+                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).ToList().Distinct().ToList();
             #endregion
@@ -1263,6 +1270,7 @@ namespace RevenuePlanner.Controllers
                 color = taskdata.Color,
                 plantacticid = taskdata.Tactic.PlanTacticId,
                 Status = taskdata.Tactic.Status,
+                TacticTypeId = taskdata.Tactic.TacticTypeId,
                 CreatedBy = taskdata.CreatedBy
             }).Distinct().OrderBy(t => t.text);
 
@@ -1281,6 +1289,8 @@ namespace RevenuePlanner.Controllers
                 plantacticid = taskdata.plantacticid,
                 Status = taskdata.Status,
                 type = "Tactic",
+                TacticType = Gettactictype(taskdata.TacticTypeId),
+                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).Distinct().ToList();
             #endregion
@@ -1657,7 +1667,7 @@ namespace RevenuePlanner.Controllers
             var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
             var ImprovementTacticColor = ColorCodelist[Enums.EntityType.ImprovementTactic.ToString().ToLower()];
             //Emd
-
+            string doubledesh = "--";
             //Added BY Ravindra Singh Sisodiya, Get Subordinates Ids List #1433
             List<Guid> lstSubordinatesIds = new List<Guid>();
             bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
@@ -1729,6 +1739,8 @@ namespace RevenuePlanner.Controllers
                     colorcode = plan.color,
                     planid = plan.planid,
                     type = "Plan",
+                TacticType = doubledesh,
+                OwnerName = Common.GetUserName(plan.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -1865,6 +1877,7 @@ namespace RevenuePlanner.Controllers
                     cws = viewBy.Equals(strRequestPlanGanttTypes, StringComparison.OrdinalIgnoreCase) ? tactic.objPlanTactic.Status == tacticStatusSubmitted || tactic.objPlanTactic.Status == tacticStatusDeclined ? Math.Round(tacticStageRelationList.FirstOrDefault(tacticStage => tacticStage.TacticObj.PlanTacticId == tactic.objPlanTactic.PlanTacticId).RevenueValue, 1) : 0 : 0,
                     plantacticid = tactic.objPlanTactic.PlanTacticId,
                     Status = tactic.objPlanTactic.Status,
+                TacticTypeId = tactic.objPlanTactic.TacticTypeId,
                     CreatedBy = tactic.CreatedBy
                 }).OrderBy(tactic => tactic.text);
 
@@ -1889,6 +1902,8 @@ namespace RevenuePlanner.Controllers
                     plantacticid = tactic.plantacticid,
                     Status = tactic.Status,
                     type = "Tactic",
+                TacticType = Gettactictype(tactic.TacticTypeId),
+                OwnerName = Common.GetUserName(tactic.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -1926,6 +1941,8 @@ namespace RevenuePlanner.Controllers
                     planprogramid = program.planprogramid,
                     Status = program.Status,
                     type = "Program",
+                TacticType = doubledesh,
+                OwnerName = Common.GetUserName(program.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(program.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -1962,6 +1979,8 @@ namespace RevenuePlanner.Controllers
                     plancampaignid = campaign.plancampaignid,
                     Status = campaign.Status,
                     type = "Campaign",
+                TacticType = doubledesh,
+                OwnerName = Common.GetUserName(campaign.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(campaign.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2020,6 +2039,8 @@ namespace RevenuePlanner.Controllers
                     colorcode = plan.color,
                     planid = plan.planid,
                     type = "Plan",
+                    TacticType = doubledesh,
+                    OwnerName = Common.GetUserName(plan.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -2126,6 +2147,8 @@ namespace RevenuePlanner.Controllers
                     plancampaignid = _campgn.plancampaignid,
                     Status = _campgn.Status,
                     type = "Campaign",
+                    TacticType = doubledesh,
+                    OwnerName = Common.GetUserName(_campgn.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (_campgn.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(_campgn.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -2169,6 +2192,8 @@ namespace RevenuePlanner.Controllers
                     planprogramid = task.planprogramid,
                     Status = task.Status,
                     type = "Program",
+                    TacticType = doubledesh,
+                    OwnerName = Common.GetUserName(task.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2203,6 +2228,7 @@ namespace RevenuePlanner.Controllers
                                                                         color = TacticColor,
                                                                         plantacticid = _tac.objPlanTactic.PlanTacticId,
                                                                         Status = _tac.objPlanTactic.Status,
+                                                                        TacticTypeId = _tac.objPlanTactic.TacticTypeId,
                                                                         CreatedBy = _tac.CreatedBy
 
                                                                     }).OrderBy(_tac => _tac.text).ToList();
@@ -2233,6 +2259,8 @@ namespace RevenuePlanner.Controllers
                     plantacticid = task.plantacticid,
                     Status = task.Status,
                     type = "Tactic",
+                    TacticType = Gettactictype(task.TacticTypeId),
+                    OwnerName = Common.GetUserName(task.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -4897,6 +4925,16 @@ namespace RevenuePlanner.Controllers
             #endregion
             //End
             return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        #endregion
+				 
+        #region -- GetTacticType for Honeycomb list
+						 public string Gettactictype(int TacticTypeID)
+        {
+            var TacticType = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
+
+            return TacticType;
         }
 
         #endregion

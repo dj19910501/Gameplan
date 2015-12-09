@@ -1448,19 +1448,31 @@ gantt._render_grid_item = function (item) {
 		
 		if ("add" == col.name && i == columns.length - 1) {
 		    if (item.type == "Plan" && item.Permission == true) {
-		        value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>  ";
+		        // #1780		        
+		        //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div>  ";
+		        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt' name1='" + item.id + "' ColorCode= '" +item.colorcode+"' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "' aria-label='" + _item + "' Permission='" + item.Permission + "'>"+ "</div>  ";
+		        // #1780
 		    }
 
 		    else if (item.type == "Campaign" && item.Permission == true) {
-		        value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
+		        // #1780
+		        //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
+		        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt' name1='" + item.id + "' ColorCode= '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'   aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+		        // #1780
 		    }
 
 		    else if (item.type == "Program" && item.Permission == true) {
-		        value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
+		        // #1780
+		        //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
+		        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt' name1='" + item.id + "' ColorCode = '" + item.colorcode + "' TacticType= '" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+		        // #1780
 		    }
 
 		    else if (item.type == "Tactic" && item.Permission == true) {
-		        value = " <div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
+		        // #1780
+		        //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
+		        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+		        // #1780
 		    }
 
 		    else if (item.type == "Imp Tactic" && item.Permission == true) {
@@ -3754,10 +3766,35 @@ gantt._render_data = function(){
 
 	var data = this._get_tasks_data();
 
+  
+
 	var renderers = this._get_task_renderers();
 	for(var i=0; i < renderers.length; i++){
 		renderers[i].render_items(data);
 	}
+       
+    //#1780
+
+	if (ExportSelectedIds != null && ExportSelectedIds != [] && ExportSelectedIds != "") {
+	    if (ExportSelectedIds.TaskID.length > 0) {
+	        for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
+	            if (ExportSelectedIds.PlanFlag[i] == 'Calender') {
+	                $("div").find("[name1='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
+	            }
+	        }
+	    }
+	}
+
+	if ($('.honeycombbox-icon-gantt-Active').length == 0) {
+	    $(".honeycombbox").hide();
+	}
+	else {
+
+	    $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+	    $(".honeycombbox").show();
+	}
+
+    //#1780
 
 	var links = gantt._get_links_data();
 	renderers = this._get_link_renderers();

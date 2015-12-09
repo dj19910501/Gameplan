@@ -9118,6 +9118,12 @@ namespace RevenuePlanner.Controllers
             string stageMQL = Enums.Stage.MQL.ToString();
             Plangrid objplangrid = new Plangrid();
             
+            //Added By Komal rawal for honeycomb feature
+            Dictionary<string, string> ColorCodelist = db.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
+            var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
+            var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
+            var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
+            var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
 			//Declare json object list & variable
             List<PlanDHTMLXGridDataModel> gridjsonlist = new List<PlanDHTMLXGridDataModel>();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
@@ -9387,9 +9393,9 @@ namespace RevenuePlanner.Controllers
                         plandataobjlist.Add(plandataobj);
                       
                         plandataobj = new Plandataobj();
-                        //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>" : "");
+                        //#1780
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=add_Remove_Entity onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>";
-                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
+                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + Common.GetUserName(planitem.CreatedBy.ToString()) + "' TaskName='" + planitem.Title + "' ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
   "<g>" + " <path class=st1 d=M67.8,65.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,65.8z M59.1,64.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,64.2z/>" + "</g>" +
   "<g>" + "<path class=st1 d=M67.8,50.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,50.8z M59.1,49.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,49.2z />" + "</g>" +
   "<g>" + "<path class=st1 d=M54.7,43.2h-9.5L40.4,35l4.8-8.2h9.5l4.8,8.2L54.7,43.2z M46,41.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,35L46,41.8z/>" + "</g>" +
@@ -9540,9 +9546,8 @@ namespace RevenuePlanner.Controllers
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
-                                    //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
+                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + Common.GetUserName(Campaignitem.CreatedBy.ToString()) + "' TaskName='" + Campaignitem.Title + "' altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
  "<g>" + " <path class=st1 d=M67.8,65.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,65.8z M59.1,64.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,64.2z/>" + "</g>" +
  "<g>" + "<path class=st1 d=M67.8,50.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,50.8z M59.1,49.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,49.2z />" + "</g>" +
  "<g>" + "<path class=st1 d=M54.7,43.2h-9.5L40.4,35l4.8-8.2h9.5l4.8,8.2L54.7,43.2z M46,41.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,35L46,41.8z/>" + "</g>" +
@@ -9695,9 +9700,8 @@ namespace RevenuePlanner.Controllers
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
-                                                //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
+                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + Common.GetUserName(Programitem.CreatedBy.ToString()) + "'  TaskName='" + Programitem.Title + "'  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
 "<g>" + " <path class=st1 d=M67.8,65.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,65.8z M59.1,64.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,64.2z/>" + "</g>" +
 "<g>" + "<path class=st1 d=M67.8,50.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,50.8z M59.1,49.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,49.2z />" + "</g>" +
 "<g>" + "<path class=st1 d=M54.7,43.2h-9.5L40.4,35l4.8-8.2h9.5l4.8,8.2L54.7,43.2z M46,41.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,35L46,41.8z/>" + "</g>" +
@@ -9824,9 +9828,8 @@ namespace RevenuePlanner.Controllers
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
-                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "");
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=TacticAdd onclick=javascript:AddRemoveEntity(this) altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon id=TacticAdd onclick=javascript:AddRemoveEntity(this) altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon id=TacticAdd onclick=javascript:AddRemoveEntity(this)  TaskName='" + tactic.title + "' ColorCode='" + TacticColor + "'  TacticType= '" + Gettactictype(tactic.tactictypeid) + "' OwnerName= '" + Common.GetUserName(tactic.CreatedBy.ToString()) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + ">" + "<svg id=honeycomb version=1.1 id=Layer_1 xmlns=http://www.w3.org/2000/svg xmlns:xlink=http://www.w3.org/1999/xlink x=0px y=0px viewBox= '0 0 100 100' style=enable-background:new 0 0 100 100; xml:space=preserve>" + "<g>" + "<path class=st1 d=M54.7,58.2h-9.5L40.4,50l4.8-8.2h9.5l4.8,8.2L54.7,58.2z M46,56.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,50L46,56.8z/>" + "</g>" +
 "<g>" + " <path class=st1 d=M67.8,65.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,65.8z M59.1,64.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,64.2z/>" + "</g>" +
 "<g>" + "<path class=st1 d=M67.8,50.8h-9.5l-4.8-8.2l4.8-8.2h9.5l4.8,8.2L67.8,50.8z M59.1,49.2h7.8l3.9-6.8l-3.9-6.8h-7.8l-3.9,6.8L59.1,49.2z />" + "</g>" +
 "<g>" + "<path class=st1 d=M54.7,43.2h-9.5L40.4,35l4.8-8.2h9.5l4.8,8.2L54.7,43.2z M46,41.8h7.8l3.9-6.8l-3.9-6.8H46L42.1,35L46,41.8z/>" + "</g>" +
@@ -10085,7 +10088,7 @@ namespace RevenuePlanner.Controllers
                 headobj.align = "center";
                 headobj.id = "add";
                 headobj.sort = "na";
-                headobj.width = 85;
+                headobj.width = 85; //modified by Rahul shah on 04/12/2015-to increase width for honeycomb feature
                 headobj.value = "";
                 headobjlist.Add(headobj);
 
@@ -11501,7 +11504,15 @@ namespace RevenuePlanner.Controllers
            
 
         }
-        #endregion
+        #endregion	   
+
+
+    public string Gettactictype(int TacticTypeID)
+        {
+            var TacticType = db.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
+
+            return TacticType;
+        }
 
         #region "Feature: Copy Tactic/Program/Campaign between Plan"
 
