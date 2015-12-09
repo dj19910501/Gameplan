@@ -295,27 +295,28 @@
                     if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
 
                         for (i = 0 ; i < data.Customfields.length; i++) {
+                            if (data.Customfields[i].ID.split('_').length > 1) {
+                                var CustomFieldId = data.Customfields[i].ID.split('_')[1];
+                                var CustomFieldValues = data.Customfields[i].Value;
+                                $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
 
-                            var CustomFieldId = data.Customfields[i].ID.split('_')[1];
-                            var CustomFieldValues = data.Customfields[i].Value;
-                            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+                                    var chkid = $(this).attr("id");
+                                    var chkfieldid = $(this).attr("id").split('_')[0];
+                                    var chkOptionid = $(this).attr("id").split('_')[1];
+                                    if (chkfieldid == CustomFieldId) {
 
-                                var chkid = $(this).attr("id");
-                                var chkfieldid = $(this).attr("id").split('_')[0];
-                                var chkOptionid = $(this).attr("id").split('_')[1];
-                                if (chkfieldid == CustomFieldId) {
+                                        if (CustomFieldValues.indexOf(chkOptionid) != -1) {
+                                            $(this).attr('checked', 'checked');
+                                            filters.customFieldIds.push(chkid);
+                                            $(this).parent().addClass("close-list");
+                                        }
+                                        else {
+                                            $(this).removeAttr('checked');
+                                        }
 
-                                    if (CustomFieldValues.indexOf(chkOptionid) != -1) {
-                                        $(this).attr('checked', 'checked');
-                                        filters.customFieldIds.push(chkid);
-                                        $(this).parent().addClass("close-list");
                                     }
-                                    else {
-                                        $(this).removeAttr('checked');
-                                    }
-
-                                }
-                            });
+                                });
+                            }
                         }
                     }
 
