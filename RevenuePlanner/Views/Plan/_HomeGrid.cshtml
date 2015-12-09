@@ -128,11 +128,11 @@
 
         // added by Ashish for #1780
         BindEntityState();
-        if ($('.honeycombbox-icon-Active').length == 0) {
+        if ($('.honeycombbox-icon-gantt-Active').length == 0) {
             $(".honeycombbox").hide();
         }
         else {
-            $("#totalEntity").text($('.honeycombbox-icon-Active').length);
+            $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
             $(".honeycombbox").show();
         }
         //#1780
@@ -145,7 +145,7 @@
             if (ExportSelectedIds.TaskID.length > 0) {
                 for (var i = 0; i < ExportSelectedIds.TaskID.length; i++) {
                     if (ExportSelectedIds.PlanFlag[i] == 'Grid') {
-                        $("div[altid='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-Active");
+                        $("div[altid='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
                         //$("div").find("[altid='" + ExportSelectedIds.TaskID[i] + "']").addClass("honeycombbox-icon-gantt-Active");
                     }
                 }

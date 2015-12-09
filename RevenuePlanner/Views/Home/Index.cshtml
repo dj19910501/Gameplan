@@ -1350,9 +1350,9 @@
         };
         //#1780
        
-        $(".cpColor").removeClass();
+      
         $("#totalEntity").text(0);
-
+        $(".honeycombbox-icon-gantt-Active").removeClass();
         //#1780
         var activeTab = $("#PlanTab li.active a").parent(this).attr('id');
         $('#' + activeTab).removeClass("active");
@@ -3025,7 +3025,7 @@
 
         if ($('#IsGridView').val() == "True") {
 
-            $("div[class*='honeycombbox-icon-Active']").removeClass("honeycombbox-icon-Active")
+            $("div[class*='honeycombbox-icon-gantt-Active']").removeClass("honeycombbox-icon-gantt-Active")
         
 
         }
@@ -3053,7 +3053,7 @@
 
         if ($('#IsGridView').val() == "True") {
 
-            $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-Active")
+            $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
             Totallength = Totallength - 1;
             Height = Number(Height) + (Sum);
 
