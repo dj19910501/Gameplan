@@ -712,7 +712,7 @@
                 var _tactic = []
                 var tacticId = $(this).attr('tacticId');
                 var stageId = $(this).attr('stageId');
-               
+                isError = false;
                 var isData = false;
                 //// Modified by Sohel Pathan on 26/08/2014 for Internal Review Points
                 var totalProjectedStageValueActual = $("#hdnActuallblPProjectedStageValue" + tacticId).val();
@@ -737,7 +737,7 @@
                     if ($(this).val().trim() != '') {
                         var _isCurrency = $(this).hasClass("currency_dollar");
                         var thisValue = ReplaceCC($(this).val());
-                        if ((!_isCurrency) && thisValue.match('^(0|[1-9][0-9]*)$')) {
+                        if ((!_isCurrency) && thisValue.match('^(0|[0-9][0-9]*)$')) {
                             $(this).removeClass("error");
                         }
                         else if ((_isCurrency) && thisValue.match(_decmlRegex)) {
