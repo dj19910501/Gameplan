@@ -279,11 +279,11 @@
 
             $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
                 CloseClick = false;
-                var entityType = $(this).attr('id');
+                var entityType = $(this).attr('id').toUpperCase().toString();
                 var task_id = $(this).attr('name1');
                 //gantt.open(task_id);
                 switch (entityType) {
-                    case 'Plan':
+                    case 'PLAN':
                         if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
                             $(this).removeClass("honeycombbox-icon-gantt-Active");
                             var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
@@ -329,7 +329,7 @@
                             // gantt.render();
                         }
                         break;
-                    case 'Campaign':
+                    case 'CAMPAIGN':
                         if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
                             //var innertask = gantt.getChildren($(this).attr('name1'));
                             //gantt.eachTask(function (task) {
@@ -374,7 +374,7 @@
                             //  gantt.render();
                         }
                         break;
-                    case 'Program':
+                    case 'PROGRAM':
                         if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
                             //gantt.open($(this).attr('name1'));
 
@@ -401,7 +401,7 @@
                             //gantt.open($(this).attr('name1'));
                         }
                         break;
-                    case 'Tactic':
+                    case 'TACTIC':
                         if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
                             $(this).removeClass("honeycombbox-icon-gantt-Active");
                             var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
