@@ -1243,7 +1243,7 @@
                 <button class="btn btn-lg dropdown-toggle" type="button" id="exportMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-external-link"></i></button>
                 <ul class="dropdown-menu" aria-labelledby="exportMenu1">
                     <li><a href="#" onclick='CallPdfHoneyComb()'>Export .pdf</a></li>
-                    <li><a href="#">Export .csv</a></li>
+                    <li><a href="#" id="ExportCSVHoneyComb">Export .csv</a></li>
                 </ul>
             </div>
             <button class="btn btn-lg pull-right" onclick='RemoveAllHoneyCombData();'><i class="fa fa-trash"></i></button>
@@ -1368,6 +1368,8 @@
             $('.nav').removeClass('no-bottom-border');
             $("#btnPlanReport").css("display", "block");
             RefreshCurrentTab();
+            // 1762
+            $('#IsGridView').val("False");
 
         }
         else {
@@ -3050,13 +3052,13 @@
 
         if ($('#IsGridView').val() == "True") {
 
-            $("div[altid*='" + taskId + "']").removeClass("honeycombbox-icon-Active")
+            $("div[altid='" + taskId + "']").removeClass("honeycombbox-icon-Active")
             Totallength = Totallength - 1;
             Height = Number(Height) + (Sum);
 
         }
         else {
-            $("div[name1*='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
+            $("div[name1='" + taskId + "']").removeClass("honeycombbox-icon-gantt-Active");
             Totallength = Totallength - 1;
             Height = Number(Height) + (Sum);
         }
@@ -3082,6 +3084,88 @@
 
     };
 
+    @*function ExportCSVHoneyComb() {
+
+        HomeGrid.expandAll();
+        var count = HomeGrid.getRowsNum();
+        var parentid = 0;
+        var parentname = "";
+        if (count > 0) {
+           
+            //Modified BY Komal rawal for #1471
+            HomeGrid.insertColumn(2);
+           HomeGrid.setColumnHidden(2, true);
+            HomeGrid.insertColumn(3);
+          HomeGrid.setColumnHidden(3, true);
+            HomeGrid.insertColumn(4);
+          HomeGrid.setColumnHidden(4, true);
+            HomeGrid.insertColumn(5);
+          HomeGrid.setColumnHidden(5, true);
+            HomeGrid.insertColumn(6);
+           HomeGrid.setColumnHidden(6, true);
+            for (var i = 0; i < count; i++) {
+               
+                if ($(HomeGrid.cells2(i, 7).cell).find("div").last().attr("class") == "honeycombbox-icon honeycombbox-icon-Active") {
+                var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
+                var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
+                if (ActivityTypeName == "Plan") {
+
+                    HomeGrid.cellByIndex(i, 2).setValue(Taskname);
+                }
+                if (ActivityTypeName == "Campaign") {
+
+                    HomeGrid.cellByIndex(i, 3).setValue(Taskname);
+                }
+                if (ActivityTypeName == "Program") {
+                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
+                    HomeGrid.cellByIndex(i, 4).setValue(Taskname);
+                }
+                if (ActivityTypeName == "Tactic") {
+                    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 4).setValue(parentname);
+                    parentid = HomeGrid.getParentId(parentid);
+                    parentname = HomeGrid.cells(parentid, 1).getValue();
+                    HomeGrid.cellByIndex(i, 3).setValue(parentname);
+                    HomeGrid.cellByIndex(i, 5).setValue(Taskname);
+                }
+                //if (ActivityTypeName == "LineItem") {
+                //    parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                //    parentname = HomeGrid.cells(parentid, 1).getValue();
+                //    HomeGrid.cellByIndex(i, 5).setValue(parentname);
+                //    ParentProgramid = HomeGrid.getParentId(parentid);
+                //    ParentProgramname = HomeGrid.cells(ParentProgramid, 1).getValue();
+                //    HomeGrid.cellByIndex(i, 4).setValue(ParentProgramname);
+                //    ParentCampaignid = HomeGrid.getParentId(ParentProgramid);
+                //    ParentCampaignname = HomeGrid.cells(ParentCampaignid, 1).getValue();
+                //    HomeGrid.cellByIndex(i, 3).setValue(ParentCampaignname);
+                //    HomeGrid.cellByIndex(i, 6).setValue(Taskname);
+                //}
+
+                HomeGrid.cellByIndex(i, 6).setValue(HomeGrid.cellByIndex(i, 4).getValue());
+                }
+            }
+
+            HomeGrid.enableCSVAutoID(true);
+            HomeGrid.enableCSVHeader(true);
+            HomeGrid.setSerializableColumns("false,false,true,true,true,true,true,false,false,false,false,false,false,false,false,false,false");
+            var myCSVString = HomeGrid.serializeToCSV(true);
+            var lines = myCSVString.split(",");
+            //lines.splice(0, 12);
+            lines.splice(0, 1, "Plan");
+            lines.splice(1, 1, "Campaign");
+            lines.splice(2, 1, "Program");
+            lines.splice(3, 1, "Tactic");
+            lines.splice(4, 1, "Line Item");
+            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
+            $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv')
+            $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
+
+          //  BindHomeGrid();
+        }
+    }*@
     // End
 
 
