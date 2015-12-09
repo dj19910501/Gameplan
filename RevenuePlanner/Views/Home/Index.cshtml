@@ -271,6 +271,144 @@
             //      $('.gantt-padding').addClass('padding-top0');
             //     $('#DivloadPlan').addClass('no-bottom-border');
             // }
+            $(document).on("click", ".honeycombbox-icon-gantt", function (e) {
+                var entityType = $(this).attr('id');
+                var task_id = $(this).attr('name1');
+                //gantt.open(task_id);
+                switch (entityType) {
+                    case 'Plan':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                            }
+                            var innertask = gantt.getChildren(task_id);
+                            gantt.eachTask(function (task) {
+                                var tId = task.id;
+
+                                var index = innertask.indexOf(tId);
+                                if (index >= 0 || tId == task_id) {
+                                    task.$open = true;
+                                }
+                            });
+                            // gantt.render();
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+
+                            var innertask = gantt.getChildren(task_id);
+                            gantt.eachTask(function (task) {
+                                var tId = task.id;
+                                var index = innertask.indexOf(tId);
+                                if (index >= 0 || tId == task_id) {
+                                    task.$open = true;
+                                }
+                            });
+                            // gantt.render();
+                        }
+                        break;
+                    case 'Campaign':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            var innertask = gantt.getChildren($(this).attr('name1'));
+                            gantt.eachTask(function (task) {
+                                var tId = task.id;
+
+                                var index = innertask.indexOf(tId);
+                                if (index >= 0 || tId == task_id) {
+                                    task.$open = true;
+                                }
+                            });
+                            // gantt.render();
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                            }
+
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                            var innertask = gantt.getChildren($(this).attr('name1'));
+                            gantt.eachTask(function (task) {
+                                var tId = task.id;
+
+                                var index = innertask.indexOf(tId);
+                                if (index >= 0 || tId == task_id) {
+                                    task.$open = true;
+                                }
+                            });
+                            //  gantt.render();
+                        }
+                        break;
+                    case 'Program':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            //gantt.open($(this).attr('name1'));
+
+                            //gantt.render();
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                            }
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                            //gantt.open($(this).attr('name1'));
+                        }
+                        break;
+                    case 'Tactic':
+                        if ($(this).hasClass("honeycombbox-icon-gantt-Active")) {
+                            $(this).removeClass("honeycombbox-icon-gantt-Active");
+                            var index = ExportSelectedIds.TaskID.indexOf($(this).attr('name1'));
+                            if (index >= 0) {
+                                ExportSelectedIds.TaskID.splice(index, 1);
+                                ExportSelectedIds.Title.splice(index, 1);
+                                ExportSelectedIds.OwnerName.splice(index, 1);
+                                ExportSelectedIds.TacticType.splice(index, 1);
+                                ExportSelectedIds.ColorCode.splice(index, 1);
+                            }
+                            $(this).addClass("honeycombbox-icon-gantt");
+                        }
+                        else {
+                            $(this).addClass("honeycombbox-icon-gantt-Active");
+                            ExportSelectedIds.TaskID.push($(this).attr('name1'));
+                            ExportSelectedIds.Title.push($(this).attr('aria-label'));
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
+                        }
+                        break;
+                }
+                $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
+            });
         });
 
         function onClickPlanTitle() {
@@ -1010,6 +1148,13 @@
         OwnerIds: [],
         TacticTypeids: [],
         StatusIds: []
+    };
+    var ExportSelectedIds = {
+        TaskID: [],
+        Title: [],
+        ColorCode: [],
+        OwnerName: [],
+        TacticType: [],
     };
     var gridSearchFlag = 0;
     var PlanCount = 0, OwnerCount = 0;
@@ -2197,7 +2342,297 @@
             $('#errorMessageInspectPopup').removeClass('message-position');
         }
     }
+    function CallPdfHoney() {
 
+        var GanttTaskDataforHoney = {
+            data: new Array()
+        };
+        var GantTaskData1 = GanttTaskData;
+        var defaultParentArr = {
+            index: [],
+            parent: []
+        }
+        for (var i = 0; i < GantTaskData1.data.length; i++) {
+            for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
+                if (GantTaskData1.data[i].id == ExportSelectedIds.TaskID[j]) {
+                    var ganttData = GantTaskData1.data[i];
+
+                    GanttTaskDataforHoney.data.push(ganttData);
+                    var honeyDatalength = GanttTaskDataforHoney.data.length - 1;
+
+                    var defaultParent = GantTaskData1.data[i].parent;
+                    defaultParentArr.index.push(i);
+                    defaultParentArr.parent.push(defaultParent);
+                    GanttTaskDataforHoney.data[honeyDatalength].parent = 0;
+
+                }
+            }
+        }
+
+        gantt.clearAll();
+        gantt.init("gantt_honey");
+        gantt.parse(GanttTaskDataforHoney);
+        gantt.refreshData();
+        var htmltestdiv = '';
+        htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
+        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Timeframe: </label>';
+        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+        htmltestdiv += isQuater + '</span>';
+        htmltestdiv += '</p>';
+
+        var innerfiltervalueplan = "";
+        var isselectedplan = true;
+        var DropDownPlan = true;
+        $("#ulSelectedPlans").find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                isselectedplan = true;
+            }
+        });
+        if (PdfFilters.SelectedPlans.length > 0) {
+            $.each(PdfFilters.SelectedPlans, function () {
+                innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+
+            });
+        }
+
+        var isAvailablerecord = false;
+        var _noplandivMsg = $("#Notabcontent").css("display");
+        if (_noplandivMsg == "none") {
+            isAvailablerecord = true;
+        }
+        if (isAvailablerecord) {
+            if (PdfFilters.SelectedPlans.length > 0) {
+                DropDownPlan = false;
+            }
+            if (DropDownPlan == true) {
+                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+            }
+
+
+            if (innerfiltervalueplan != undefined && innerfiltervalueplan != 'undefined' && innerfiltervalueplan != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Plan: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueplan = DropDownPlan == true ? innerfiltervalueplan : innerfiltervalueplan.substring(0, innerfiltervalueplan.length - 1);
+                htmltestdiv += innerfiltervalueplan + '</span>';
+                htmltestdiv += '</p>';
+            }
+            var Parentid = "";
+            $.each($('#divCustomFieldsFilter').find('.dropdown-section'), function () {
+
+                var headertitle = $(this).find("h2 span").text();
+                var innerfiltervalue = "";
+
+                Parentid = this.id;
+                var sl = Parentid.lastIndexOf('-');
+                Parentid = Parentid.substring(sl + 1, sl.length).toString();
+
+                if (PdfFilters.customFieldIds.length > 0) {
+
+                    var a = PdfFilters.customFieldIds;
+                    $.each(a, function () {
+                        if (this != null && this != undefined && this != 'undefined') {
+
+                            var liId = this.toString();
+                            var splitIds = liId.split('_');
+                            if (Parentid == splitIds[0].toString()) {
+                                var actualId = "#li_" + Parentid + "_" + splitIds[1];
+                                var chkid = $(actualId).attr("title");
+                                innerfiltervalue += " " + chkid + ",";
+                            }
+
+                        }
+                    });
+                    if (innerfiltervalue != undefined && innerfiltervalue != 'undefined' && innerfiltervalue != '') {
+                        htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                        htmltestdiv += '<label style="color:#050708;font-weight: 600;">' + headertitle + ': </label>';
+                        htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                        innerfiltervalue = innerfiltervalue.substring(0, innerfiltervalue.length - 1);
+                        htmltestdiv += innerfiltervalue + '</span>';
+                        htmltestdiv += '</p>';
+                    }
+                }
+
+            });
+
+            var innerfiltervalueOwner = "";
+            var isselectedOwner = true;
+            if (PdfFilters.OwnerIds.length > 0) {
+                $.each(PdfFilters.OwnerIds, function () {
+                    innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
+
+                });
+            }
+
+            if (innerfiltervalueOwner != undefined && innerfiltervalueOwner != 'undefined' && innerfiltervalueOwner != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Owner: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueOwner = innerfiltervalueOwner.substring(0, innerfiltervalueOwner.length - 1);
+                htmltestdiv += innerfiltervalueOwner + '</span>';
+                htmltestdiv += '</p>';
+            }
+
+            var innerfiltervalueTacticType = "";
+            var isselectedTacticType = true;
+            if (PdfFilters.TacticTypeids.length > 0) {
+                $.each(PdfFilters.TacticTypeids, function () {
+                    innerfiltervalueTacticType += " " + $("#ulTacticType").find('#liTT' + this).attr("title") + ",";
+
+                });
+            }
+
+            if (innerfiltervalueTacticType != undefined && innerfiltervalueTacticType != 'undefined' && innerfiltervalueTacticType != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Tactic Type: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueTacticType = innerfiltervalueTacticType.substring(0, innerfiltervalueTacticType.length - 1);
+                htmltestdiv += innerfiltervalueTacticType + '</span>';
+                htmltestdiv += '</p>';
+            }
+
+            var innerfiltervalueStatus = "";
+            var isselectedStatus = true;
+            if (PdfFilters.StatusIds.length > 0) {
+                $.each(PdfFilters.StatusIds, function () {
+                    innerfiltervalueStatus += " " + $("#ulStatus").find('#' + this).parent().find("span").text() + ",";
+
+                });
+            }
+
+            if (innerfiltervalueStatus != undefined && innerfiltervalueStatus != 'undefined' && innerfiltervalueStatus != '') {
+                htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
+                htmltestdiv += '<label style="color:#050708;font-weight: 600;">Status: </label>';
+                htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
+                innerfiltervalueStatus = innerfiltervalueStatus.substring(0, innerfiltervalueStatus.length - 1);
+                htmltestdiv += innerfiltervalueStatus + '</span>';
+                htmltestdiv += '</p>';
+            }
+            $("#filterdiv").html('');
+            $("#filterdiv").append(htmltestdiv);
+            $("#mqllabeltest").text($("#pmqlLabel").text());
+            $("#mqlspanvalue").text($("#pMQLs").text());
+            $("#mqlspanpercentage").text($("#pMQLImproved").text());
+            $("#pMQLImproved").parent().find('.greenfont').each(function () {
+                $("#mqlspanpercentage").css("color", "#559659");
+            });
+            $("#pMQLImproved").parent().find('.redfont').each(function () {
+                $("#mqlspanpercentage").css("color", "#EF2240");
+            });
+
+            var originurl = document.location.origin;
+            var mypathurl = document.location.pathname.split('/')[1];
+            var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
+
+            $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
+            $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
+                $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
+                //  $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg.png")')");
+
+                $("#mqlmaindiv").css("background-position", "right bottom");
+                $("#mqlmaindiv").css("background-repeat", "no-repeat");
+            });
+
+            $("#DivBullhornbg").parent().find('.bullhorn-bg-disabled').each(function () {
+                $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg-disabled.png')");
+
+                $("#mqlmaindiv").css("background-position", "right bottom");
+                $("#mqlmaindiv").css("background-repeat", "no-repeat");
+            });
+
+            $("#DivBullhornbg").parent().find('.bulldoller-bg').each(function () {
+
+                $("#budgetmaindiv").css("background-image", "url('" + urlpdf + "Content/images/icon-dollar.png')");
+
+                $("#budgetmaindiv").css("background-position", "right bottom");
+                $("#budgetmaindiv").css("background-repeat", "no-repeat");
+            });
+
+
+            $("#budgetlabeltest").text($("#pcostLabel").text());
+            $("#budgetspanvalue").text($("#pbudget").text());
+            $("#ptacticcounttest").text($("#ptacticcount").text());
+
+            var ChartHtml = $("#chartCanvas").html();
+            var Canvas = $("#chart2").find(".dhx_canvas_text");
+            var i = 0;
+            var AttachChartHtml = ChartHtml;
+            $.each(Canvas, function () {
+
+                if (i > 4) {
+                    var left = $(this).css('left');
+                    var top = $(this).css('top');
+                    var text = $(this).text();
+                    var BarHeight = 55 - parseInt(top);
+                    AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                    AttachChartHtml += text;
+                    AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                    AttachChartHtml += "</div>";
+                }
+                i++;
+            });
+
+            $("#AttachChartCanvas").html('');
+            $("#AttachChartCanvas").html(AttachChartHtml);
+            var headerhtml = $("#testdiv").html();
+
+            var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
+
+            var datestart;
+            var dateend;
+
+            if ($.isNumeric(isQuater)) {
+                datestart = "01-01-" + isQuater;
+                dateend = "01-01-" + (parseInt(isQuater) + 1).toString();
+            }
+            else if (isQuater == 'thismonth') {
+
+                $('#mqlmaindiv,#budgetmaindiv,#tactmaindiv,#activitymaindiv').width('21.7%');
+
+                $('#testdiv #mqlmaindiv,#testdiv #budgetmaindiv,#testdiv #tactmaindiv,#testdiv #activitymaindiv').find('p').find('span').css('font-size', '18px');
+
+                var headerhtml = $("#testdiv").html();
+                var date = new Date(), m = date.getMonth();
+                datestart = "01-" + (m + 1).toString() + "-" + date.getFullYear().toString();
+                dateend = "01-" + (m + 2).toString() + "-" + date.getFullYear().toString();
+            }
+            else if (isQuater == 'thisquarter') {
+                var startDate = getQarterStartDate();
+                var m = startDate.getMonth();
+                datestart = "01-" + (m + 1).toString() + "-" + startDate.getFullYear().toString();
+                dateend = "01-" + (m + 4).toString() + "-" + startDate.getFullYear().toString();
+            }
+            else { //added by Rahul Shah on 03/12/2015 for PL #1766
+                var PlanYears = isQuater.split("-");
+                var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
+                datestart = "01-01-" + isQuater.split("-")[0];
+                dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
+            }
+            gantt.exportToPDF({
+                header: headerhtml,
+                start: datestart,
+                end: dateend
+
+            });
+            for (var m = 0; m < defaultParentArr.index.length; m++) {
+                var indexdef = defaultParentArr.index[m];
+                var parentdef = defaultParentArr.parent[m];
+                GanttTaskData.data[indexdef].parent = parentdef;
+            }
+            gantt.clearAll();
+
+            gantt.init("gantt_here");
+            gantt.parse(GanttTaskData);
+            gantt.refreshData();
+            //AjaxRequest();
+        }
+        else {
+            $('#cErrorInspectPopup').html('No plan exists to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
+            $('#errorMessageInspectPopup').css("display", "block");
+            $('#errorMessageInspectPopup').removeClass('message-position');
+        }
+    }
 
     //End
     function AddActuals() {
@@ -3064,7 +3499,7 @@ function renderGantt(taskData) {
         gantt.config.date_scale = " %Y";
 
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize:true }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize:true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         //// Getting quarter
@@ -3129,7 +3564,7 @@ function renderGantt(taskData) {
         gantt.config.step = 12;
         gantt.config.date_scale = " %Y";
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: '*', resize: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date(), m = date.getMonth();
@@ -3195,7 +3630,7 @@ function renderGantt(taskData) {
         gantt.config.step = 1;
         gantt.config.date_scale = "%Y";
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();
@@ -3227,7 +3662,7 @@ function renderGantt(taskData) {
         gantt.config.step = 1;
         gantt.config.date_scale = "%Y";
         gantt.config.scale_height = 60;
-        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 44 }];
+        gantt.config.columns = [{ name: "text", label: "Task name", tree: true, width: "*", resize: true }, { name: "add", label: "", width: 70 }];
         gantt.config.subscales = [{ unit: "month", step: 1, date: "%M" }];
 
         var date = new Date();

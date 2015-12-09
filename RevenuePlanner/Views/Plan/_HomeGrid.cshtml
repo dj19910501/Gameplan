@@ -394,7 +394,192 @@
         //});
 
     }
+    //Added by Rahul shah for Honeycomb selection in grid
+    function AddRemoveEntity(item) {
 
+        if ($(item).attr('id') == 'PlanAdd') {
+            var planid = $(item).attr('altId').split('_')[0];
+            if (planid != undefined) {
+                var selectedRow = HomeGrid.findCell(planid, 3, true);
+                HomeGrid.openItem(selectedRow[0][0]);
+            }
+            if ($(item).hasClass("honeycombbox-icon-Active")) {
+                var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
+                if (index >= 0) {
+                    ExportSelectedIds.TaskID.splice(index, 1);
+                    ExportSelectedIds.Title.splice(index, 1);
+                    ExportSelectedIds.OwnerName.splice(index, 1);
+                    ExportSelectedIds.TacticType.splice(index, 1);
+                    ExportSelectedIds.ColorCode.splice(index, 1);
+                }
+
+                $(item).removeClass("honeycombbox-icon-Active");
+                $(item).addClass("honeycombbox-icon");
+
+                $($("div[altId^='" + $(item).attr('altId').split('_')[0] + "']")).each(function (index) {
+                    var campid = $(this).attr('altId').split('_')[1];
+                    if (campid != undefined) {
+                        var campRow = HomeGrid.findCell(campid, 3, true);
+                        HomeGrid.openItem(campRow[0][0]);
+                    }
+
+                    $($("div[altId^='_" + $(this).attr('altId').split('_')[1] + "']")).each(function (index) {
+                        var progid = $(this).attr('altId').split('_')[2];
+                        if (progid != undefined) {
+                            var progRow = HomeGrid.findCell(progid, 3, true);
+                            HomeGrid.openItem(progRow[0][0]);
+                        }
+
+                    });
+                    // Loop for selecting Tactic on selecting Plan/Campaign/Program
+                });
+                // Loop for selecting Program on selecting Plan
+            }
+            else {
+
+                $(item).addClass("honeycombbox-icon-Active");
+
+                ExportSelectedIds.TaskID.push($(item).attr('altId'));
+                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+                // Loop for selecting Program on selecting Plan
+                $($("div[altId^='" + $(item).attr('altId').split('_')[0] + "']")).each(function (index) {
+                    var campid = $(this).attr('altId').split('_')[1];
+                    if (campid != undefined) {
+                        var campRow = HomeGrid.findCell(campid, 3, true);
+                        HomeGrid.openItem(campRow[0][0]);
+                    }
+
+
+                    $($("div[altId^='_" + $(this).attr('altId').split('_')[1] + "']")).each(function (index) {
+
+                        var progid = $(this).attr('altId').split('_')[2];
+                        if (progid != undefined) {
+                            var progRow = HomeGrid.findCell(progid, 3, true);
+                            HomeGrid.openItem(progRow[0][0]);
+                        }
+
+
+                    });
+
+
+                    // Loop for selecting Tactic on selecting Plan/Campaign/Program
+                });
+                // Loop for selecting Program on selecting Plan
+            }
+        }
+
+
+        if ($(item).attr('id') == 'CampaignAdd') {
+            var campid = $(item).attr('altId').split('_')[1];
+            if (campid != undefined) {
+                var campRow = HomeGrid.findCell(campid, 3, true);
+                HomeGrid.openItem(campRow[0][0]);
+            }
+
+            if ($(item).hasClass("honeycombbox-icon-Active")) {
+                var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
+                if (index >= 0) {
+                    ExportSelectedIds.TaskID.splice(index, 1);
+                    ExportSelectedIds.Title.splice(index, 1);
+                    ExportSelectedIds.OwnerName.splice(index, 1);
+                    ExportSelectedIds.TacticType.splice(index, 1);
+                    ExportSelectedIds.ColorCode.splice(index, 1);
+                }
+                $(item).removeClass("honeycombbox-icon-Active");
+                $(item).addClass("honeycombbox-icon");
+
+                // Loop for Clear tactic on selecting Campaign
+                $($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
+                    var progid = $(this).attr('altId').split('_')[2];
+                    if (progid != undefined) {
+                        var progRow = HomeGrid.findCell(progid, 3, true);
+                        HomeGrid.openItem(progRow[0][0]);
+                    }
+
+                });
+                // Loop for Clear tactic on selecting Campaign
+            }
+            else {
+                $(item).addClass("honeycombbox-icon-Active");
+                ExportSelectedIds.TaskID.push($(item).attr('altId'));
+                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+
+                // Loop for selecting tactin on selecting Campaign
+                $($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
+                    var progid = $(this).attr('altId').split('_')[2];
+                    if (progid != undefined) {
+                        var progRow = HomeGrid.findCell(progid, 3, true);
+                        HomeGrid.openItem(progRow[0][0]);
+                    }
+
+                });
+                // Loop for selecting tactin on selecting Campaign
+            }
+        }
+
+
+        if ($(item).attr('id') == 'ProgramAdd') {
+            var progid = $(item).attr('altId').split('_')[2];
+            if (progid != undefined) {
+                var selectedRow = HomeGrid.findCell(progid, 3, true);
+
+                HomeGrid.openItem(selectedRow[0][0]);
+            }
+            if ($(item).hasClass("honeycombbox-icon-Active")) {
+                $(item).removeClass("honeycombbox-icon-Active");
+                var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
+                if (index >= 0) {
+                    ExportSelectedIds.TaskID.splice(index, 1);
+                    ExportSelectedIds.Title.splice(index, 1);
+                    ExportSelectedIds.OwnerName.splice(index, 1);
+                    ExportSelectedIds.TacticType.splice(index, 1);
+                    ExportSelectedIds.ColorCode.splice(index, 1);
+                }
+                $(item).addClass("honeycombbox-icon");
+
+            }
+            else {
+
+                $(item).addClass("honeycombbox-icon-Active");
+                ExportSelectedIds.TaskID.push($(item).attr('altId'));
+                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+
+            }
+        }
+
+        if ($(item).attr('id') == 'TacticAdd') {
+            if ($(item).hasClass("honeycombbox-icon-Active")) {
+                $(item).removeClass("honeycombbox-icon-Active");
+                var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
+                if (index >= 0) {
+                    ExportSelectedIds.TaskID.splice(index, 1);
+                    ExportSelectedIds.Title.splice(index, 1);
+                    ExportSelectedIds.OwnerName.splice(index, 1);
+                    ExportSelectedIds.TacticType.splice(index, 1);
+                    ExportSelectedIds.ColorCode.splice(index, 1);
+                }
+                $(item).addClass("honeycombbox-icon");
+            }
+            else {
+                $(item).addClass("honeycombbox-icon-Active");
+                ExportSelectedIds.TaskID.push($(item).attr('altId'));
+                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
+            }
+        }
+        $("#totalEntity").text($('.honeycombbox-icon-Active').length);
+    }
     // Create funtion to load grid view event - Apply Distributed Parsing
     // Added By Bhavesh - Date: 11-Nov-2015
     function LoadAfterParsing() {
