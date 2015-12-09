@@ -11519,21 +11519,11 @@ namespace RevenuePlanner.Controllers
         #region "Bind Planlist & Tree list"
         public ActionResult LoadCopyEntityPopup(string entityId, string section)
         {
-            HomePlanModelHeader planmodel = new Models.HomePlanModelHeader();
-            var PlanId = Sessions.PlanId;
-            planmodel = Common.GetPlanHeaderValue(PlanId, onlyplan: true);
-            List<SelectListItem> lstPlans = planmodel.plans;
-            ViewBag.plans = lstPlans;
-            #region "Get Model"
             CopyEntiyBetweenPlanModel objModel = new CopyEntiyBetweenPlanModel();
-            int selectedPlanId = lstPlans != null ? Convert.ToInt32(lstPlans.FirstOrDefault().Value) : 0;
-            //selectedPlanId = 14832;
-            objModel = GetParentEntitySelectionList(selectedPlanId);
-            objModel.srcSectionType = section;
+            try
+            {
             string planId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[0] : string.Empty;
             entityId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[1] : string.Empty;
-            objModel.srcEntityId = entityId;
-            objModel.srcPlanId = planId;
 
             // Get Source Entity Title to display on Popup & success message.
             #region "Get Source Entity Title"
@@ -11544,25 +11534,67 @@ namespace RevenuePlanner.Controllers
                 if (section == Enums.Section.Campaign.ToString())
                 {
                     Plan_Campaign objCampaign = db.Plan_Campaign.Where(campagn => campagn.PlanCampaignId == sourceEntityId).FirstOrDefault();
+                        if (objCampaign != null)
+                        {
                     srcEntityTitle = objCampaign.Title;
+                            planId = string.IsNullOrEmpty(planId) ? objCampaign.PlanId.ToString() : planId;    // if planId value is null then set through Entity.
+                        }
                 }
                 else if (section == Enums.Section.Program.ToString())
                 {
                     Plan_Campaign_Program objProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == sourceEntityId).FirstOrDefault();
+                        if (objProgram != null)
+                        {
                     srcEntityTitle = objProgram.Title;
+                            planId = string.IsNullOrEmpty(planId) ? objProgram.Plan_Campaign.PlanId.ToString() : planId;    // if planId value is null then set through Entity.
+                        }
                 }
                 else if (section == Enums.Section.Tactic.ToString())
                 {
                     Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
+                        if (objTactic != null)
+                        {
                     srcEntityTitle = objTactic.Title;
+                            planId = string.IsNullOrEmpty(planId) ? objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.ToString() : planId;    // if planId value is null then set through Entity.
+                        }
                 }
             }
             #endregion
+
+                #region "Get Plan List"
+                HomePlanModelHeader planmodel = new Models.HomePlanModelHeader();
+                // var PlanId = Sessions.PlanId;
+                planmodel = Common.GetPlanHeaderValue(int.Parse(planId), onlyplan: true);
+                List<SelectListItem> lstPlans = planmodel.plans;
+                #endregion
+
+                // Handle user can not copy entity (Tactic/Program/Campaign) to the source Plan.
+                if (lstPlans != null && lstPlans.Count > 0 && !string.IsNullOrEmpty(planId))
+                {
+                    var objPlan = lstPlans.Where(plan => plan.Value == planId).FirstOrDefault();
+                    if (objPlan != null)
+                        lstPlans.Remove(objPlan);
+                }
+
+                ViewBag.plans = lstPlans;
+                #region "Get Model"
+                
+                int selectedPlanId = lstPlans != null ? Convert.ToInt32(lstPlans.FirstOrDefault().Value) : 0;
+                //selectedPlanId = 14832;
+                objModel = GetParentEntitySelectionList(selectedPlanId);
+                objModel.srcSectionType = section;
+                objModel.srcEntityId = entityId;
+                objModel.srcPlanId = planId;
             //objModel.HeaderTitle = HttpUtility.HtmlDecode(srcEntityTitle);
             objModel.HeaderTitle = string.Empty;
             ViewBag.HeaderTitle = srcEntityTitle;
             #endregion
 
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
             return PartialView("~/Views/Plan/_CopyEntity.cshtml", objModel);
         }
         public JsonResult RefreshParentEntitySelectionList(string planId)
@@ -11664,7 +11696,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return mainGridData;
         }
@@ -11729,7 +11761,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return lstMapping;
         }
@@ -11935,13 +11967,14 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
+                
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
                 return lstTacticTypeMapping;
             }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
 
         /// <summary>
         /// Created By: Viral Kadiya on 11/23/2015 for PL ticket #1748: Abiliy to move a tactic/program/campign between different plans.
@@ -12050,7 +12083,7 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
-                throw ex;
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
         }
 

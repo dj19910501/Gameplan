@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using RevenuePlanner.Models;
+using Elmah;
 
 namespace RevenuePlanner.Helpers
 {
@@ -72,7 +73,7 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
-                Plan proj = db.Plans.AsNoTracking().First(p => p.PlanId == PlanId && p.IsDeleted == false);
+                Plan proj = db.Plans.AsNoTracking().FirstOrDefault(p => p.PlanId == PlanId && p.IsDeleted == false);
                 if (proj != null)
                 {
                     proj.CreatedBy = UserId;
@@ -269,7 +270,7 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
-                Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanId == PlanId && p.PlanCampaignId == ID && p.IsDeleted == false);
+                Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().FirstOrDefault(p => p.PlanId == PlanId && p.PlanCampaignId == ID && p.IsDeleted == false);
                 if (objPlanCampaign != null)
                 {
                     objPlanCampaign.Tactic_Share = null;
@@ -429,7 +430,7 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
-                Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().First(p => p.PlanProgramId == ID && p.IsDeleted == false);
+                Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().FirstOrDefault(p => p.PlanProgramId == ID && p.IsDeleted == false);
 
                 if (objPlanCampaignPrograms != null)
                 {
@@ -562,7 +563,7 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
-                Plan_Campaign_Program_Tactic objPlanCampaignProgramTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().First(p => p.PlanTacticId == ID && p.IsDeleted == false);
+                Plan_Campaign_Program_Tactic objPlanCampaignProgramTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().FirstOrDefault(p => p.PlanTacticId == ID && p.IsDeleted == false);
 
                 if (objPlanCampaignProgramTactic != null)
                 {
@@ -675,7 +676,7 @@ namespace RevenuePlanner.Helpers
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
 
-                Plan_Campaign_Program_Tactic_LineItem objPlanCampaignProgramTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().First(p => p.PlanLineItemId == ID && p.IsDeleted == false);
+                Plan_Campaign_Program_Tactic_LineItem objPlanCampaignProgramTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.AsNoTracking().FirstOrDefault(p => p.PlanLineItemId == ID && p.IsDeleted == false);
                 if (objPlanCampaignProgramTacticLineItem != null)
                 {
                     planid = objPlanCampaignProgramTacticLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
@@ -860,14 +861,14 @@ namespace RevenuePlanner.Helpers
                     startDate = objParentProgram.StartDate;
                     endDate = objParentProgram.EndDate;
                 }
-                
-                Plan_Campaign_Program_Tactic objPlanTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().First(p => p.PlanTacticId == entityId && p.IsDeleted == false);
+
+                Plan_Campaign_Program_Tactic objPlanTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().FirstOrDefault(p => p.PlanTacticId == entityId && p.IsDeleted == false);
 
                 if (objPlanTactic != null)
                 {
                     planid = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
-                    HttpContext.Current.Session["ProgramID"] = objPlanTactic.Plan_Campaign_Program.PlanProgramId;
-                    HttpContext.Current.Session["CampaignID"] = objPlanTactic.Plan_Campaign_Program.PlanCampaignId;
+                    //HttpContext.Current.Session["ProgramID"] = objPlanTactic.Plan_Campaign_Program.PlanProgramId;
+                    //HttpContext.Current.Session["CampaignID"] = objPlanTactic.Plan_Campaign_Program.PlanCampaignId;
                     objPlanTactic.Stage = null;
                     objPlanTactic.Status = TacticStatus;
                     objPlanTactic.CreatedBy = UserId;
@@ -916,7 +917,7 @@ namespace RevenuePlanner.Helpers
                 db.SaveChanges();
 
                 int planTacticId = objPlanTactic.PlanTacticId;
-                HttpContext.Current.Session["TacticID"] = planTacticId;
+                //HttpContext.Current.Session["TacticID"] = planTacticId;
                 ////cloning custom field values for particular tactic.
                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
 
@@ -981,7 +982,7 @@ namespace RevenuePlanner.Helpers
                 if (parentEntityId > 0)
                     objPlan = db.Plans.Where(pln => pln.PlanId == parentEntityId).FirstOrDefault();
                 int planyear = int.Parse(objPlan.Year);
-                Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().First(p => p.PlanCampaignId == entityId && p.IsDeleted == false);
+                Plan_Campaign objPlanCampaign = db.Plan_Campaign.AsNoTracking().FirstOrDefault(p => p.PlanCampaignId == entityId && p.IsDeleted == false);
                 if (objPlanCampaign != null)
                 {
                     objPlanCampaign.Tactic_Share = null;
@@ -1064,7 +1065,7 @@ namespace RevenuePlanner.Helpers
                     db.Plan_Campaign.Add(objPlanCampaign);
                     db.SaveChanges();
                     var PlanCampaignId = objPlanCampaign.PlanCampaignId;
-                    HttpContext.Current.Session["CampaignID"] = PlanCampaignId;
+                    //HttpContext.Current.Session["CampaignID"] = PlanCampaignId;
                     ////cloning custom field values for particular campaign,program of particular campaign and tactic of particular program
                     string entityTypeCampaign = Enums.EntityType.Campaign.ToString();
                     var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == entityId && a.CustomField.EntityType == entityTypeCampaign).ToList();
@@ -1153,12 +1154,12 @@ namespace RevenuePlanner.Helpers
                     endDate = objParentCampaign.EndDate;
                 }
 
-                Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().First(p => p.PlanProgramId == entityId && p.IsDeleted == false);
+                Plan_Campaign_Program objPlanCampaignPrograms = db.Plan_Campaign_Program.AsNoTracking().FirstOrDefault(p => p.PlanProgramId == entityId && p.IsDeleted == false);
 
                 if (objPlanCampaignPrograms != null)
                 {
                     planid = objPlanCampaignPrograms.Plan_Campaign.PlanId;
-                    HttpContext.Current.Session["CampaignID"] = objPlanCampaignPrograms.Plan_Campaign.PlanCampaignId;
+                    //HttpContext.Current.Session["CampaignID"] = objPlanCampaignPrograms.Plan_Campaign.PlanCampaignId;
                     objPlanCampaignPrograms.CreatedBy = UserId;
                     objPlanCampaignPrograms.CreatedDate = DateTime.Now;
                     objPlanCampaignPrograms.Title = (objPlanCampaignPrograms.Title + Suffix);
@@ -1223,7 +1224,7 @@ namespace RevenuePlanner.Helpers
                     db.SaveChanges();
 
                     int PlanProgramId = objPlanCampaignPrograms.PlanProgramId;
-                    HttpContext.Current.Session["ProgramID"] = PlanProgramId;
+                    //HttpContext.Current.Session["ProgramID"] = PlanProgramId;
                     ////cloning custom field values for particular program and tactic of particular program
                     string entityTypeProgram = Enums.EntityType.Program.ToString();
                     string entityTypeTactic = Enums.EntityType.Tactic.ToString();
@@ -1295,7 +1296,7 @@ namespace RevenuePlanner.Helpers
             }
             catch (Exception ex)
             {
-                throw ex;
+                ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return resultDate;
         }
