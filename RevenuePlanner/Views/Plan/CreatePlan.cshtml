@@ -212,7 +212,7 @@
     var IsPlanSelecter = '@isPlanSelecter';
     var isError = false;
 
-    jQuery(document).ready(function ($) { //event of browser back button
+ @*   jQuery(document).ready(function ($) { //event of browser back button
         if (window.history && window.history.pushState) {
             window.history.pushState('forward', null, './#forward');
             $(window).on('popstate', function () {
@@ -229,7 +229,7 @@
                 return false;
             }
 
-    });
+    });*@
 
     $(document).ready(function () {
         var hdnPlanId = $("#hdnPlanId").val();
