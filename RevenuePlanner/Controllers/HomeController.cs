@@ -4845,16 +4845,19 @@ namespace RevenuePlanner.Controllers
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
                 NewCustomFieldData.Add(objFilterValues);
             }
-            if (StatusIds != null && StatusIds != "")
+            if (StatusIds != "AddActual")
             {
-                Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
-                objFilterValues.ViewName = null;
-                objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();
-                objFilterValues.FilterValues = StatusIds;
-                objFilterValues.Userid = Sessions.User.UserId;
-                objFilterValues.LastModifiedDate = DateTime.Now;
-                objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
-                NewCustomFieldData.Add(objFilterValues);
+                if (StatusIds != null && StatusIds != "")
+                {
+                    Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
+                    objFilterValues.ViewName = null;
+                    objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();
+                    objFilterValues.FilterValues = StatusIds;
+                    objFilterValues.Userid = Sessions.User.UserId;
+                    objFilterValues.LastModifiedDate = DateTime.Now;
+                    objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
+                    NewCustomFieldData.Add(objFilterValues);
+                }
             }
 
             if (customFieldIds != "")
@@ -4902,10 +4905,13 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-            if (StatusIds == "Report")
+            if (StatusIds != null && StatusIds != "")
             {
-                var statulist = prevCustomFieldList.Where(a => a.FilterName == Enums.FilterLabel.Status.ToString());
-                prevCustomFieldList = prevCustomFieldList.Except(statulist).ToList();
+                if (StatusIds == "Report" || StatusIds == "AddActual")
+                {
+                    var statulist = prevCustomFieldList.Where(a => a.FilterName == Enums.FilterLabel.Status.ToString());
+                    prevCustomFieldList = prevCustomFieldList.Except(statulist).ToList();
+                }
             }
 
             var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();

@@ -211,8 +211,27 @@
     var isQuater = '@IsQuarter';
     var IsPlanSelecter = '@isPlanSelecter';
     var isError = false;
-    $(document).ready(function () {
 
+    jQuery(document).ready(function ($) { //event of browser back button
+        if (window.history && window.history.pushState) {
+            window.history.pushState('forward', null, './#forward');
+            $(window).on('popstate', function () {
+                var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+                window.location.href = url;
+            });
+        }
+      });
+
+    $(document).on("keydown", function (e) {
+        if (e.which == 8) {
+            // var url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+                //window.location.href = url;
+                return false;
+            }
+
+    });
+
+    $(document).ready(function () {
         var hdnPlanId = $("#hdnPlanId").val();
         changeBudgetValues();
 

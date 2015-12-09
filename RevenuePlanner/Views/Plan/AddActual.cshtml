@@ -67,7 +67,8 @@
                                 foreach (var item in ((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList))
                                 {
                                     string id = "li" + item.TacticTypeId;
-                                    <li class="accordion-inner" id="@id" title="@item.Title"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.TacticTypeId" onchange="toggleTacticType(this)"/></li>
+                                    string _id = "CbTT" + item.TacticTypeId;
+                                    <li class="accordion-inner" id="@id" title="@item.Title"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@_id" onchange="toggleTacticType(this)"/></li>
                                 }
                             }
                         </ul>
@@ -88,7 +89,7 @@
                     </div>
                 </div>
             </div>
-
+             <div id="divCustomFieldsFilter">
             @if (Model.lstCustomFields.Count > 0)
             {
                 foreach (var CustomField in Model.lstCustomFields)
@@ -126,7 +127,7 @@
                     </div>   
                 }
             }
-
+</div>
             <div id="accordion-Owner" class="dropdown-section accordion">
                 <div class="accordion-group">
                     <div class="accordion-heading">
@@ -215,6 +216,15 @@
     var CurrentPlanId = '@CurrentPlanId';
     var isError = false;
     var _decmlRegex = '^(0|[0-9][0-9]*)[.]?[0-9]*$'; // Old: '^(0|[1-9][0-9]*)$';
+    var filters = {
+        OwnerIds: [],
+        TacticTypeids: [],
+        customFieldIds: [],
+        PlanIDs: [],
+        SelectedPlans: [],
+        PlanTitles: [],
+        StatusIDs: []
+    };
     $(document).ready(function () {
         $("#lblMarkringActivitiesTitle").hide();
         $('#nl-form2').show();
@@ -264,8 +274,152 @@
 
         LoadPlan();
         onClickPlanTitle();
+        GetLastSetofViews();
          CallAjax();
     });//document ready
+
+    function GetLastSetofViews() {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LastSetOfViews", "Home")',
+            data: {},
+            dataType: "json",
+            async: false,
+            success: function (data) {
+
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content("~/Login/Index")';
+                }
+                else {
+                    if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
+
+                        for (i = 0 ; i < data.Customfields.length; i++) {
+
+                            var CustomFieldId = data.Customfields[i].ID.split('_')[1];
+                            var CustomFieldValues = data.Customfields[i].Value;
+                            $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+
+                                var chkid = $(this).attr("id");
+                                var chkfieldid = $(this).attr("id").split('_')[0];
+                                var chkOptionid = $(this).attr("id").split('_')[1];
+                                if (chkfieldid == CustomFieldId) {
+
+                                    if (CustomFieldValues.indexOf(chkOptionid) != -1) {
+                                        $(this).attr('checked', 'checked');
+                                        filters.customFieldIds.push(chkid);
+                                        $(this).parent().addClass("close-list");
+                                    }
+                                    else {
+                                        $(this).removeAttr('checked');
+                                    }
+
+                                }
+                            });
+                        }
+                    }
+
+
+                    if (data.OwnerNames.length != 0 && data.OwnerNames.length != undefined) {
+
+                        filters.OwnerIds = [];
+                        $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
+                        $("#ulSelectedOwner li ").removeClass("close-list");
+                        for (i = 0 ; i < data.OwnerNames.length; i++) {
+
+                            $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+
+                                var Value = $(this).attr("id");
+                                if (Value == data.OwnerNames[i]) {
+
+                                    filters.OwnerIds.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+                            });
+                        }
+                    }
+
+
+                    if (data.TTList.length != 0 && data.TTList.length != undefined) {
+
+                        filters.TacticTypeids = [];
+                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
+                        $("#ulTacticType li ").removeClass("close-list");
+                        for (i = 0 ; i < data.TTList.length; i++) {
+
+                            $("#ulTacticType li input[type=checkbox]").each(function () {
+
+                                var Value = $(this).attr("id").replace("CbTT", "");
+                                if (Value == data.TTList[i]) {
+
+                                    filters.TacticTypeids.push(Value);
+                                    $(this).attr('checked', 'checked');
+                                    $(this).parent().addClass("close-list");
+                                }
+                            });
+                        }
+                    }
+
+                }
+            }
+        });
+
+    }
+
+    function SaveLastSetofViews() {
+        filters.customFieldIds = [];
+
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.customFieldIds.push(chkid);
+                }
+            }
+        });
+        filters.SelectedPlans = [];
+
+        $('#ulSelectedPlans').find("input[type=checkbox]").each(function () {
+            if ($(this).attr('checked') == 'checked') {
+                var chkid = $(this).attr("id");
+                var chkplanid = chkid.split('_');
+                if (chkid != undefined && chkid != 'undefined') {
+                    filters.SelectedPlans.push(chkplanid[0]);
+                }
+            }
+        });
+        if (filters.SelectedPlans.length == 1) {
+            CurrentPlanId = filters.SelectedPlans[0].toString();
+            $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
+
+        }
+
+        var Planid = filters.SelectedPlans;
+        var CustomFieldId = filters.customFieldIds;
+        var OwnerIds = filters.OwnerIds;
+        var TacticTypeids = filters.TacticTypeids;
+        var GetSelectedPlanNo = filters.SelectedPlans.length;
+
+        $.ajax({
+            type: "GET",
+            cache: false,
+            async: false,
+            url: '@Url.Action("SaveLastSetofViews", "Home")',
+            data: {
+                PlanId: Planid.toString(),
+                customFieldIds: CustomFieldId.toString(),
+                ownerIds: OwnerIds.toString(),
+                TacticTypeid: TacticTypeids.toString(),
+                StatusIds: "AddActual",
+            },
+            dataType: "json",
+            success: function (data) {
+            }
+
+        })
+
+    }
 
     //Added by komal rawal for new homepage UI
     function LoadPlan() {
@@ -372,13 +526,23 @@
             if ($(this).attr('checked') == 'checked') {
                 var chkid = $(this).attr("id");
                 if (chkid != undefined && chkid != 'undefined') {
-                    tacticTypeIds.push(chkid);
+                    //tacticTypeIds.push(chkid);
+                    tacticTypeIds.push(chkid.replace("CbTT", ""));
                 }
             }
         });
 
+        //var customFieldIds = [];
+        //$('.CustomFieldAccordian').find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        var chkid = $(this).attr("id");
+        //        if (chkid != undefined && chkid != 'undefined') {
+        //            customFieldIds.push(chkid);
+        //        }
+        //    }
+        //});
         var customFieldIds = [];
-        $('.CustomFieldAccordian').find("input[type=checkbox]").each(function () {
+        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
                 var chkid = $(this).attr("id");
                 if (chkid != undefined && chkid != 'undefined') {
@@ -386,7 +550,6 @@
                 }
             }
         });
-
         var ownerIds = [];
         $('#accordion-Owner').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -1192,6 +1355,13 @@
         else {
             $("#li" + id).removeClass("close-list");
         }
+        filters.TacticTypeids = [];
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+            }
+        });
     }
 
     function removeByValue(arr, val) {
@@ -1204,6 +1374,7 @@
     }
 
     function UpdateResult() {
+        SaveLastSetofViews();
         displayConfirmCommon("CallAjax();");
         //CallAjax();
     }
@@ -1226,6 +1397,14 @@
         else {
             $("#liOwner" + id).removeClass("close-list");
         }
+
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.OwnerIds.push(chkid);
+            }
+        });
     }
 
     function BulkOwnerOperation(selection) {
