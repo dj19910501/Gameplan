@@ -1489,10 +1489,18 @@
         if (ulStatus.length == filters.StatusIds.length) {
             filters.StatusIds = [];
         }
-        if (ulTacticType.length == filters.TacticTypeids.length) {
-            filters.TacticTypeids = [];
-        }
+        //if (ulTacticType.length == filters.TacticTypeids.length) {
+        //    filters.TacticTypeids = [];
+        //}
         // End By Nishant Sheth
+        filters.TacticTypeids = [];
+        $("#ulTacticType li input[type=checkbox]").each(function () {
+
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.TacticTypeids.push(chkid.replace("CbTT", ""));
+            }
+        });
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
                 var chkid = $(this).attr("id");
@@ -1560,9 +1568,9 @@
         if (ulStatus.length == filters.StatusIds.length) {
             filters.StatusIds = [];
         }
-        if (ulTacticType.length == filters.TacticTypeids.length) {
-            filters.TacticTypeids = [];
-        }
+        //if (ulTacticType.length == filters.TacticTypeids.length) {
+        //    filters.TacticTypeids = [];
+        //}
         // End By Nishant Sheth
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -5652,6 +5660,9 @@ function Quarter() {
                                 }
                             });
                         }
+                    }
+                    else {
+                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
                     }
 
                 }
