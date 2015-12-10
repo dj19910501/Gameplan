@@ -109,6 +109,15 @@
     });
 
     $("#ddlTabViewBy").change(function () {
+        ExportSelectedIds = {
+            TaskID: [],
+            Title: [],
+            ColorCode: [],
+            OwnerName: [],
+            TacticType: [],
+            PlanFlag: []
+        };
+
         requestPlanActiveTab(false);
         RefreshCurrentTab();
     });
