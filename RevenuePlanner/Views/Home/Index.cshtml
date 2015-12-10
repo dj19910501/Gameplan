@@ -2988,7 +2988,7 @@
     });
     var CloseClick = false;
     $(document).on('click', function (e) {
-
+       
         if (CloseClick == true) {
 
             e.stopPropagation();
@@ -3005,6 +3005,10 @@
         }
 
         CloseClick = false;
+    });
+
+    $(".popover-content").live('click', function (e) {
+        CloseClick = true;
     });
 
     /*Added By Komal Rawal for honeycomb feature #1779*/
