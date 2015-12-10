@@ -10511,7 +10511,10 @@ li.close-list {
 }
 .home-content-header .sbHolder,.home-content-header  .ui-multiselect .ui-icon
 {
-    z-index:0;
+    z-index:1;
+}
+.honeycombbox .popover:not(.in) .popover-content,.honeycombbox .popover:not(.in) .arrow{ /*by bheru mehta 10-12-2015 for #1762*/
+  display: none;
 }
 /*by bheru mehta 09-12-2015 for #1762*/
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
