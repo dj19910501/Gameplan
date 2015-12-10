@@ -1175,7 +1175,7 @@ namespace RevenuePlanner.Controllers
                 planid = taskdata.planid,
                 type = "Plan",
                 TacticType = doubledesh,
-                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
+                OwnerName = taskdata.CreatedBy.ToString(),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
 
             }).ToList().Distinct().ToList();
@@ -1213,7 +1213,7 @@ namespace RevenuePlanner.Controllers
                 Status = taskdata.Status,
                 type = "Campaign",
                 TacticType = doubledesh,
-                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
+                OwnerName = taskdata.CreatedBy.ToString(),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).ToList().Distinct().ToList();
             #endregion
@@ -1250,7 +1250,7 @@ namespace RevenuePlanner.Controllers
                 Status = taskdata.Status,
                 type = "Program",
                 TacticType = doubledesh,
-                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
+                OwnerName = taskdata.CreatedBy.ToString(),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).ToList().Distinct().ToList();
             #endregion
@@ -1289,8 +1289,8 @@ namespace RevenuePlanner.Controllers
                 plantacticid = taskdata.plantacticid,
                 Status = taskdata.Status,
                 type = "Tactic",
-                TacticType = Gettactictype(taskdata.TacticTypeId),
-                OwnerName = Common.GetUserName(taskdata.CreatedBy.ToString()),
+                TacticType = taskdata.TacticTypeId.ToString(),
+                OwnerName = taskdata.CreatedBy.ToString(),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).Distinct().ToList();
             #endregion
@@ -1740,7 +1740,7 @@ namespace RevenuePlanner.Controllers
                     planid = plan.planid,
                     type = "Plan",
                 TacticType = doubledesh,
-                OwnerName = Common.GetUserName(plan.CreatedBy.ToString()),
+                OwnerName = plan.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -1902,8 +1902,8 @@ namespace RevenuePlanner.Controllers
                     plantacticid = tactic.plantacticid,
                     Status = tactic.Status,
                     type = "Tactic",
-                TacticType = Gettactictype(tactic.TacticTypeId),
-                OwnerName = Common.GetUserName(tactic.CreatedBy.ToString()),
+                TacticType = tactic.TacticTypeId.ToString(),
+                OwnerName = tactic.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -1942,7 +1942,7 @@ namespace RevenuePlanner.Controllers
                     Status = program.Status,
                     type = "Program",
                 TacticType = doubledesh,
-                OwnerName = Common.GetUserName(program.CreatedBy.ToString()),
+                OwnerName = program.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(program.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -1980,7 +1980,7 @@ namespace RevenuePlanner.Controllers
                     Status = campaign.Status,
                     type = "Campaign",
                 TacticType = doubledesh,
-                OwnerName = Common.GetUserName(campaign.CreatedBy.ToString()),
+                OwnerName = campaign.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(campaign.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2040,7 +2040,7 @@ namespace RevenuePlanner.Controllers
                     planid = plan.planid,
                     type = "Plan",
                     TacticType = doubledesh,
-                    OwnerName = Common.GetUserName(plan.CreatedBy.ToString()),
+                    OwnerName = plan.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -2148,7 +2148,7 @@ namespace RevenuePlanner.Controllers
                     Status = _campgn.Status,
                     type = "Campaign",
                     TacticType = doubledesh,
-                    OwnerName = Common.GetUserName(_campgn.CreatedBy.ToString()),
+                    OwnerName = _campgn.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (_campgn.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(_campgn.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -2193,7 +2193,7 @@ namespace RevenuePlanner.Controllers
                     Status = task.Status,
                     type = "Program",
                     TacticType = doubledesh,
-                    OwnerName = Common.GetUserName(task.CreatedBy.ToString()),
+                    OwnerName = task.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2259,8 +2259,8 @@ namespace RevenuePlanner.Controllers
                     plantacticid = task.plantacticid,
                     Status = task.Status,
                     type = "Tactic",
-                    TacticType = Gettactictype(task.TacticTypeId),
-                    OwnerName = Common.GetUserName(task.CreatedBy.ToString()),
+                    TacticType = task.TacticTypeId.ToString(),
+                    OwnerName = task.CreatedBy.ToString(),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -4935,15 +4935,7 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 				 
-        #region -- GetTacticType for Honeycomb list
-						 public string Gettactictype(int TacticTypeID)
-        {
-            var TacticType = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
-
-            return TacticType;
-        }
-
-        #endregion
+    
 
     }
 

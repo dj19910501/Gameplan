@@ -281,6 +281,17 @@
                 CloseClick = false;
                 var entityType = $(this).attr('id').toUpperCase().toString();
                 var task_id = $(this).attr('name1');
+                //Changes  to improve performance issue
+                var Ownername = $("#ulSelectedOwner").find('#liOwner' + $(this).attr('ownername')).attr("title");
+                var TacticType = $("#ulTacticType").find('#liTT' + $(this).attr('tactictype')).attr("title");
+                if (TacticType == undefined || TacticType == 'undefined')
+                {
+                    TacticType = $(this).attr('tactictype');
+                }
+                else
+                {
+                    TacticType = TacticType.split("(")[0];
+                }
                 //gantt.open(task_id);
                 switch (entityType) {
                     case 'PLAN':
@@ -311,8 +322,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.OwnerName.push(Ownername);
+                            ExportSelectedIds.TacticType.push(TacticType);
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
 
@@ -357,8 +368,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.OwnerName.push(Ownername);
+                            ExportSelectedIds.TacticType.push(TacticType);
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
                             //var innertask = gantt.getChildren($(this).attr('name1'));
@@ -394,8 +405,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.OwnerName.push(Ownername);
+                            ExportSelectedIds.TacticType.push(TacticType);
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
                             //gantt.open($(this).attr('name1'));
@@ -419,8 +430,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
-                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
+                            ExportSelectedIds.OwnerName.push(Ownername);
+                            ExportSelectedIds.TacticType.push(TacticType);
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
                         }
@@ -1715,6 +1726,7 @@
                 customFieldIds: CustomFieldId.toString()
             },
             success: function (result) {
+             
                 $("#divgridview").html('');
                 $("#divgridview").html(result);
                 LoadImprovementGrid(CurrentPlanId)

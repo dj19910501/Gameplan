@@ -369,6 +369,7 @@
         HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
 
         HomeGrid.setImageSize(1, 1);
+      
         HomeGrid.setCustomSorting(sort_Owner, 8);
 
         HomeGrid.setCustomSorting(sort_TacticType, 7);
@@ -392,8 +393,6 @@
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridData = (mainGridData.toString().replace(/&amp;/g, '&'));
-
-
 
 
         HomeGrid.parse(GridData, "json");
@@ -426,7 +425,17 @@
     // 1780
     //Added by Rahul shah for Honeycomb selection in grid
     function AddRemoveEntity(item) {
-
+        //Changes  to improve performance issue
+        var Ownername = $("#ulSelectedOwner").find('#liOwner' + $(item).attr('ownername')).attr("title");
+        var TacticType = $("#ulTacticType").find('#liTT' + $(item).attr('tactictype')).attr("title");
+        if (TacticType == undefined || TacticType == 'undefined')
+        {
+            TacticType = $(item).attr('tactictype');
+        }
+        else
+        {
+            TacticType = TacticType.split("(")[0];
+        }
         if ($(item).attr('id') == 'PlanAdd') {
             //var planid = $(item).attr('altId').split('_')[0];
             //if (planid != undefined) {
@@ -435,6 +444,7 @@
             //}
             if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
+             
                 if (index >= 0) {
                     ExportSelectedIds.TaskID.splice(index, 1);
                     ExportSelectedIds.Title.splice(index, 1);
@@ -469,11 +479,11 @@
             else {
 
                 $(item).addClass("honeycombbox-icon-gantt-Active");
-
+             
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.OwnerName.push(Ownername);
+                ExportSelectedIds.TacticType.push(TacticType);
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 // Loop for selecting Program on selecting Plan
@@ -539,8 +549,8 @@
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.OwnerName.push(Ownername);
+                ExportSelectedIds.TacticType.push(TacticType);
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 
@@ -584,8 +594,8 @@
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.OwnerName.push(Ownername);
+                ExportSelectedIds.TacticType.push(TacticType);
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 
@@ -610,8 +620,8 @@
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push($(item).attr('ownername'));
-                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
+                ExportSelectedIds.OwnerName.push(Ownername);
+                ExportSelectedIds.TacticType.push(TacticType);
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
             }
@@ -751,13 +761,15 @@
 
     }
 
+  
     function sort_Owner(a, b, ord, a_id, b_id) {
-
+   
         a = HomeGrid.cells(a_id, 8).getText();
         b = HomeGrid.cells(b_id, 8).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
     };
     function sort_TacticType(a, b, ord, a_id, b_id) {
+     
         var atype = a_id.split(".")[0].toString();
         var btype = b_id.split(".")[0].toString();
         if (atype == "tact" && btype == "tact") {
@@ -767,6 +779,7 @@
         } else return 0;
     };
     function convertNumber(num) {
+   
         var finlval = 0;
         var base = parseFloat(num.replace('$', ''));
         if (num.toLowerCase().match(/k/)) {
