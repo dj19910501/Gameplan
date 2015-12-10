@@ -4845,7 +4845,7 @@ namespace RevenuePlanner.Controllers
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
                 NewCustomFieldData.Add(objFilterValues);
             }
-            if (StatusIds != "AddActual")
+            if (StatusIds != "AddActual" && StatusIds != "Report")
             {
                 if (StatusIds != null && StatusIds != "")
                 {
