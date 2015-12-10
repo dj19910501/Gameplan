@@ -632,6 +632,9 @@
         else {
             $("#totalEntity").text($('.honeycombbox-icon-gantt-Active').length);
             $(".honeycombbox").show();
+
+            $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
+            $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
         }
     }
    

@@ -1262,8 +1262,8 @@
             <div class="dropup pull-left">
                 <button class="btn btn-lg dropdown-toggle" type="button" id="exportMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa fa-external-link"></i></button>
                 <ul class="dropdown-menu" aria-labelledby="exportMenu1">
-                    <li><a href="#" onclick='CallPdfHoneyComb()'>Export .pdf</a></li>
-                    <li><a href="#" id="ExportCSVHoneyComb">Export .csv</a></li>
+                    <li><a href="#" id="ExportPDFVHoneyComb" onclick='CallPdfHoneyComb()'>Export .pdf</a></li>
+                    <li><a href="#" id="ExportCSVHoneyComb" style="display:none">Export .csv</a></li>
                 </ul>
             </div>
             <button class="btn btn-lg pull-right" onclick='RemoveAllHoneyCombData();'><i class="fa fa-trash"></i></button>
@@ -1391,6 +1391,8 @@
             // 1762
             $('#IsGridView').val("False");
 
+            $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
+            $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
         }
         else {
 
@@ -2989,8 +2991,8 @@
 
         if (CloseClick == true) {
 
-            e.stopPropagation;
-            e.preventDefault;
+            e.stopPropagation();
+            e.preventDefault();
 
         }
         else {
