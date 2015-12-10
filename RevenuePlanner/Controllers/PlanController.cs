@@ -11973,78 +11973,59 @@ namespace RevenuePlanner.Controllers
                 {
                     var srcTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(tac => tac.PlanTacticId == srcPlanEntityId);
                     var destProgram = db.Plan_Campaign_Program.FirstOrDefault(prg => prg.PlanProgramId == destPlanEntityId);
-                    
-                    if (destProgram.StartDate > srcTactic.StartDate)
+
+                    if (isDifferPlanyear)
                     {
-                        if (isDifferPlanyear)
-                        {
-                            destProgram.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.StartDate.Year); 
-                        }
-                        else
+                        destProgram.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.StartDate,true,isParentUpdate:true);
+
+                        destProgram.Plan_Campaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.Plan_Campaign.StartDate, true, isParentUpdate: true);
+
+                        destProgram.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.EndDate, false, isParentUpdate: true);
+
+                        destProgram.Plan_Campaign.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.Plan_Campaign.EndDate, false, isParentUpdate: true);
+                    }
+                    else
+                    {
+                        if (destProgram.StartDate > srcTactic.StartDate)
                         {
                             destProgram.StartDate = srcTactic.StartDate;
                         }
-                    }
-                    if (destProgram.Plan_Campaign.StartDate > srcTactic.StartDate)
-                    {
-                        if (isDifferPlanyear)
-                        {
-                            destProgram.Plan_Campaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.Plan_Campaign.StartDate.Year); 
-                        }
-                        else
+                        if (destProgram.Plan_Campaign.StartDate > srcTactic.StartDate)
                         {
                             destProgram.Plan_Campaign.StartDate = srcTactic.StartDate;
                         }
-                    }
-                    if (srcTactic.EndDate > destProgram.EndDate)
-                    {
-                        if (isDifferPlanyear)
-                        {
-                            destProgram.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.EndDate.Year);
-                        }
-                        else
+
+                        if (srcTactic.EndDate > destProgram.EndDate)
                         {
                             destProgram.EndDate = srcTactic.EndDate;
                         }
-                    }
-                    if (srcTactic.EndDate > destProgram.Plan_Campaign.EndDate)
-                    {
-                        if (isDifferPlanyear)
-                        {
-                            destProgram.Plan_Campaign.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.Plan_Campaign.EndDate.Year);
-                        }
-                        else
+                        if (srcTactic.EndDate > destProgram.Plan_Campaign.EndDate)
                         {
                             destProgram.Plan_Campaign.EndDate = srcTactic.EndDate;
                         }
                     }
+                    
                     db.Entry(destProgram).State = EntityState.Modified;
                 }
                 else if (CloneType == Enums.DuplicationModule.Program.ToString())
                 {
                     var srcTactic = db.Plan_Campaign_Program.FirstOrDefault(prg => prg.PlanProgramId == srcPlanEntityId);
                     var destCampaign = db.Plan_Campaign.FirstOrDefault(cmpgn => cmpgn.PlanCampaignId == destPlanEntityId);
-                    if (destCampaign.StartDate > srcTactic.StartDate)
+
+                    if (isDifferPlanyear)
                     {
-                        if (isDifferPlanyear)
-                        {
-                            destCampaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destCampaign.StartDate.Year);
-                        }
-                        else
-                        {
-                            destCampaign.StartDate = srcTactic.StartDate;
-                        }
-                        
+                        destCampaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destCampaign.StartDate, true, isParentUpdate: true);
+                        destCampaign.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destCampaign.EndDate, false, isParentUpdate: true);
                     }
-                    if (srcTactic.EndDate > destCampaign.EndDate)
+                    else
                     {
-                        if (isDifferPlanyear)
+                        if (destCampaign.StartDate > srcTactic.StartDate)
                         {
-                            destCampaign.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destCampaign.EndDate.Year);
+                                destCampaign.StartDate = srcTactic.StartDate;
                         }
-                        else
+                        if (srcTactic.EndDate > destCampaign.EndDate)
                         {
-                            destCampaign.EndDate = srcTactic.EndDate;
+                                destCampaign.EndDate = srcTactic.EndDate;
                         }
                     }
                     db.Entry(destCampaign).State = EntityState.Modified;

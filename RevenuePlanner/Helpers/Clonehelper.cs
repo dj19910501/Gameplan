@@ -887,8 +887,8 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.LastSyncDate = null;
                     objPlanTactic.ModifiedDate = null;
                     objPlanTactic.ModifiedBy = null;
-                    objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate.Year) : objPlanTactic.StartDate;
-                    objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDate(objPlanTactic.EndDate, endDate.Year) : objPlanTactic.EndDate;
+                    objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate,true) : objPlanTactic.StartDate;
+                    objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDate(objPlanTactic.EndDate, endDate,false) : objPlanTactic.EndDate;
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
@@ -998,8 +998,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.IntegrationInstanceCampaignId = null;
                     objPlanCampaign.LastSyncDate = null;
                     objPlanCampaign.PlanId = parentEntityId;
-                    objPlanCampaign.StartDate = (objPlanCampaign.StartDate.Year != planyear) ? GetResultDate(objPlanCampaign.StartDate, planyear) : objPlanCampaign.StartDate;
-                    objPlanCampaign.EndDate = (objPlanCampaign.EndDate.Year != planyear) ? GetResultDate(objPlanCampaign.EndDate, planyear) : objPlanCampaign.EndDate;
+                    objPlanCampaign.StartDate = (objPlanCampaign.StartDate.Year != planyear) ? GetCampaignResultDate(objPlanCampaign.StartDate, planyear) : objPlanCampaign.StartDate;
+                    objPlanCampaign.EndDate = (objPlanCampaign.EndDate.Year != planyear) ? GetCampaignResultDate(objPlanCampaign.EndDate, planyear) : objPlanCampaign.EndDate;
                    
                     objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -1013,8 +1013,8 @@ namespace RevenuePlanner.Helpers
                             t.IntegrationInstanceProgramId = null;
                             t.LastSyncDate = null;
                             t.Plan_Campaign_Program_Budget = t.Plan_Campaign_Program_Budget;
-                            t.StartDate = (t.StartDate.Year != planyear) ? GetResultDate(t.StartDate, planyear) : t.StartDate;
-                            t.EndDate = (t.EndDate.Year != planyear) ? GetResultDate(t.EndDate, planyear) : t.EndDate;
+                            t.StartDate = (t.StartDate.Year != planyear) ? GetCampaignResultDate(t.StartDate, planyear) : t.StartDate;
+                            t.EndDate = (t.EndDate.Year != planyear) ? GetCampaignResultDate(t.EndDate, planyear) : t.EndDate;
                             t.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(pcpt =>
                             {
                                 pcpt.Plan_Campaign_Program_Tactic_Actual = null;
@@ -1033,8 +1033,8 @@ namespace RevenuePlanner.Helpers
                                 pcpt.IntegrationWorkFrontProjectID = null;
                                 pcpt.LastSyncDate = null;
                                 pcpt.Status = TacticStatus;
-                                pcpt.StartDate = (pcpt.StartDate.Year != planyear) ? GetResultDate(pcpt.StartDate, planyear) : pcpt.StartDate;
-                                pcpt.EndDate = (pcpt.EndDate.Year != planyear) ? GetResultDate(pcpt.EndDate, planyear) : pcpt.EndDate;
+                                pcpt.StartDate = (pcpt.StartDate.Year != planyear) ? GetCampaignResultDate(pcpt.StartDate, planyear) : pcpt.StartDate;
+                                pcpt.EndDate = (pcpt.EndDate.Year != planyear) ? GetCampaignResultDate(pcpt.EndDate, planyear) : pcpt.EndDate;
                                 pcpt.Plan_Campaign_Program_Tactic_Cost = null;//pcpt.Plan_Campaign_Program_Tactic_Cost.ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_Budget = null;//pcpt.Plan_Campaign_Program_Tactic_Budget.ToList();
                                 pcpt.Plan_Campaign_Program_Tactic_LineItem = pcpt.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
@@ -1172,8 +1172,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.ModifiedDate = null;
                     objPlanCampaignPrograms.ModifiedBy = null;
                     objPlanCampaignPrograms.PlanCampaignId = parentEntityId;
-                    objPlanCampaignPrograms.StartDate = (objPlanCampaignPrograms.StartDate.Year != startDate.Year) ? GetResultDate(objPlanCampaignPrograms.StartDate, startDate.Year) : objPlanCampaignPrograms.StartDate;
-                    objPlanCampaignPrograms.EndDate = (objPlanCampaignPrograms.EndDate.Year != endDate.Year) ? GetResultDate(objPlanCampaignPrograms.EndDate, endDate.Year) : objPlanCampaignPrograms.EndDate;
+                    objPlanCampaignPrograms.StartDate = (objPlanCampaignPrograms.StartDate.Year != startDate.Year) ? GetResultDate(objPlanCampaignPrograms.StartDate, startDate,true) : objPlanCampaignPrograms.StartDate;
+                    objPlanCampaignPrograms.EndDate = (objPlanCampaignPrograms.EndDate.Year != endDate.Year) ? GetResultDate(objPlanCampaignPrograms.EndDate, endDate,false) : objPlanCampaignPrograms.EndDate;
                     objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -1196,8 +1196,8 @@ namespace RevenuePlanner.Helpers
                             t.LastSyncDate = null;
                             t.Plan_Campaign_Program_Tactic_Cost = null;//t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_Budget = null; //t.Plan_Campaign_Program_Tactic_Budget.ToList();
-                            t.StartDate = (t.StartDate.Year != startDate.Year) ? GetResultDate(t.StartDate, startDate.Year) : t.StartDate;
-                            t.EndDate = (t.EndDate.Year != endDate.Year) ? GetResultDate(t.EndDate, endDate.Year) : t.EndDate;
+                            t.StartDate = (t.StartDate.Year != startDate.Year) ? GetResultDate(t.StartDate, startDate,true) : t.StartDate;
+                            t.EndDate = (t.EndDate.Year != endDate.Year) ? GetResultDate(t.EndDate, endDate,false) : t.EndDate;
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
@@ -1269,7 +1269,112 @@ namespace RevenuePlanner.Helpers
             }
         }
 
-        public DateTime GetResultDate(DateTime srcDate, int destYear)
+        public DateTime GetResultDate(DateTime srcDate, DateTime destDate, bool IsStartDate = false, bool isParentUpdate = false)
+        {
+            DateTime resultDate = new DateTime();
+
+            if (isParentUpdate)     // if parent entities update
+                resultDate = destDate;
+            else
+                resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); 
+            try
+            {
+
+                if (srcDate.Month.Equals(2)) // identify source date's month name is Feb or not.
+                {
+                    if (DateTime.IsLeapYear(srcDate.Year) && srcDate.Day.Equals(DateTime.DaysInMonth(srcDate.Year, srcDate.Month))) // Identify that year of source date having leap year and it's last day of Feb month
+                    {
+                        if (DateTime.IsLeapYear(destDate.Year)) // if destination year is leap year then copy the same day of month.
+                        {
+                            if (IsStartDate)
+                            {
+                                DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day);   // Create source date with Destination year
+                                if (destDate > nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                                {
+                                    resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                                }
+                            }
+                            else
+                            {
+                                DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day);   // Create source date with Destination year
+                                if (destDate < nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                                {
+                                    resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                                }
+                            }
+                            //resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                        }
+                        else
+                        {
+                            if (IsStartDate)
+                            {
+                                DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.AddDays(-1).Day);   // Create source date with Destination year
+                                if (destDate > nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                                {
+                                    resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.AddDays(-1).Day); // if destination year is not leap year and source date's year leap year then reduce the day of source date if last day of month copied to destination.
+                                }
+                            }
+                            else
+                            {
+                                DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.AddDays(-1).Day);   // Create source date with Destination year
+                                if (destDate < nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                                {
+                                    resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.AddDays(-1).Day); // if destination year is not leap year and source date's year leap year then reduce the day of source date if last day of month copied to destination.
+                                }
+                            }
+                            //resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.AddDays(-1).Day); // if destination year is not leap year and source date's year leap year then reduce the day of source date if last day of month copied to destination.
+                        }
+                    }
+                    else
+                    {
+                        if (IsStartDate)
+                        {
+                            DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day);   // Create source date with Destination year
+                            if (destDate > nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                            {
+                                resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                            }
+                        }
+                        else
+                        {
+                            DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day);   // Create source date with Destination year
+                            if (destDate < nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                            {
+                                resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                            }
+                        }
+                        //resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                    }
+                }
+                else
+                {
+                    if (IsStartDate)
+                    {
+                        DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day);   // Create source date with Destination year
+                        if (destDate > nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                        {
+                            resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                        }
+                    }
+                    else
+                    {
+                        DateTime nsrcDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day);   // Create source date with Destination year
+                        if (destDate < nsrcDate)    // Compare source and destination date that if Destination Date greater than source date than extend it.
+                        {
+                            resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                        }
+                    }
+                    //resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return resultDate;
+        }
+
+        public DateTime GetCampaignResultDate(DateTime srcDate, int destYear)
         {
             DateTime resultDate = new DateTime();
             //resultDate = destDate;
