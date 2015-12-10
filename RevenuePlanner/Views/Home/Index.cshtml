@@ -486,6 +486,7 @@
         }
 
         function GetOwnerListForFilter(Planids, async) {
+          
             var asyncval = false;
             if (async != undefined && async != 'undefined' && async != '' && async != null) {
                 asyncval = async;
@@ -1170,7 +1171,7 @@
     </div>
 </div>
 
-<div class="honeycombbox">
+<div class="honeycombbox" style="display:none">
     <span id="totalEntity" class="badge">0</span>
     <!-- honeycomb svg -->
     <svg id="honeycomb" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
