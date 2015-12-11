@@ -133,6 +133,14 @@
     });
     });
     $('.request').click(function () {
+        ExportSelectedIds = {
+            TaskID: [],
+            Title: [],
+            ColorCode: [],
+            OwnerName: [],
+            TacticType: [],
+            PlanFlag: []
+        };
         isRequest = true;
         requestPlanActiveTab(isRequest);
         getViewByList = true;

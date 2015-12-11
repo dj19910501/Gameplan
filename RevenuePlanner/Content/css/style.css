@@ -10345,6 +10345,7 @@ li.close-list {
     margin-top: 0;
   width: 20px;
   height:21px;
+  cursor:pointer;
 }
    /*.honeycombbox-icon-gantt  .st1 {
      fill: transparent;
@@ -10360,6 +10361,7 @@ li.close-list {
   margin-left: 2px;
     margin-top: 0;
   width: 20px;
+    cursor:pointer;
 }
    /*.honeycombbox-icon-gantt-Active  .st1 {
      fill: transparent;
