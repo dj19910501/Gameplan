@@ -2524,34 +2524,71 @@
             $('#errorMessageInspectPopup').removeClass('message-position');
         }
     }
+    //Added by Rahul Shah for PL #1803 for Honeycomb pdf Header
+    function setpdfgraphdata(lstchart) {
+
+        var barChart2 = new dhtmlXChart({
+            view: "bar",
+            container: "chartpdf",
+            value: "#NoOfActivity#",
+            label: "#NoOfActivity#",
+            color: "#Color#",
+            radius: 3,
+            padding: {
+                top: 25,
+                bottom: 16,
+                right: 00,
+                left: 00
+
+            },
+            xAxis: {
+
+                template: "#Month#"
+            },
+        });
+        barChart2.parse(lstchart, "json");
+    }
+    //Added by Rahul Shah for PL #1782 for Honeycomb pdf
     function CallPdfHoneyComb() {
 
         var GanttTaskDataforHoney = {
             data: new Array()
         };// Added By Rahul Shah For HoneyComp Pdf
-        var GantTaskData1 = GanttTaskData;
+        var GanttTaskDataNew = GanttTaskData;
         var defaultParentArr = {
             index: [],
-            parent: []
+            parent: [],
+            tacticId: [],
+            planyear: []
         }
-        for (var i = 0; i < GantTaskData1.data.length; i++) {
+        var TotalTact = 0;
+        var TotalCost = 0;
+        var Status = "";
+        for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
+            if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
+                Status = GanttTaskDataNew.data[i].Status;
+                defaultParentArr.planyear.push(GanttTaskDataNew.data[0].start_date.getFullYear());
+            }
             for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
-                if (GantTaskData1.data[i].id == ExportSelectedIds.TaskID[j]) {
-                    var ganttData = GantTaskData1.data[i];
+                if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
 
-                    GanttTaskDataforHoney.data.push(ganttData);
-                    var honeyDatalength = GanttTaskDataforHoney.data.length - 1;
+                    GanttTaskDataforHoney.data.push(GanttTaskDataNew.data[i]);
 
-                    var defaultParent = GantTaskData1.data[i].parent;
                     defaultParentArr.index.push(i);
-                    defaultParentArr.parent.push(defaultParent);
-                    GanttTaskDataforHoney.data[honeyDatalength].parent = 0;
-                    GanttTaskDataforHoney.data[honeyDatalength].color = '#'+ GanttTaskDataforHoney.data[honeyDatalength].colorcode;
+                    defaultParentArr.parent.push(GanttTaskDataNew.data[i].parent);
+                    GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
+                    GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
 
+                    if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
+                        TotalTact = TotalTact + 1;
+                        TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
+                        defaultParentArr.tacticId.push(GanttTaskDataNew.data[i].id.split('_')[3].replace("T", ""));
+                    }
                 }
             }
         }
-
+        var tacticids = defaultParentArr.tacticId;
+        var planyear = defaultParentArr.planyear;
         gantt.clearAll();
         gantt.init("gantt_honey");
         gantt.parse(GanttTaskDataforHoney);
@@ -2694,15 +2731,6 @@
             }
             $("#filterdiv").html('');
             $("#filterdiv").append(htmltestdiv);
-            $("#mqllabeltest").text($("#pmqlLabel").text());
-            $("#mqlspanvalue").text($("#pMQLs").text());
-            $("#mqlspanpercentage").text($("#pMQLImproved").text());
-            $("#pMQLImproved").parent().find('.greenfont').each(function () {
-                $("#mqlspanpercentage").css("color", "#559659");
-            });
-            $("#pMQLImproved").parent().find('.redfont').each(function () {
-                $("#mqlspanpercentage").css("color", "#EF2240");
-            });
 
             var originurl = document.location.origin;
             var mypathurl = document.location.pathname.split('/')[1];
@@ -2711,7 +2739,6 @@
             $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
             $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
                 $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
-                //  $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg.png")')");
 
                 $("#mqlmaindiv").css("background-position", "right bottom");
                 $("#mqlmaindiv").css("background-repeat", "no-repeat");
@@ -2732,13 +2759,54 @@
                 $("#budgetmaindiv").css("background-repeat", "no-repeat");
             });
 
+            var TotalMql = "";
+            var ChartHtml = "";
+            var Canvas = "";
+            $.ajax({
+                type: 'POST',
+                async: false,
+                url: '@Url.Content("~/Home/GetHeaderDataforHoneycombPDF/")',
+                data: {
+                    TactIds: tacticids.toString(),
+                    strParam: planyear.toString()
+                },
+                success: function (data) {
 
+                    $("#pdfchart").find('.dhx_canvas_text').remove();
+                    $("#pdfchart").find("canvas").remove();
+                    setpdfgraphdata(data.lstchart);
+                    TotalMql = data.TotalMql;
+                    ChartHtml = $("#chartCanvas").html();
+                    Canvas = $("#chartpdf").find(".dhx_canvas_text");
+                },
+                error: function () {
+                }
+            });
+            $("#mqllabeltest").text($("#pmqlLabel").text());
             $("#budgetlabeltest").text($("#pcostLabel").text());
-            $("#budgetspanvalue").text($("#pbudget").text());
-            $("#ptacticcounttest").text($("#ptacticcount").text());
 
-            var ChartHtml = $("#chartCanvas").html();
-            var Canvas = $("#chart2").find(".dhx_canvas_text");
+            if (Status.toUpperCase().toString() == "DRAFT") {
+                $("#mqlspanvalue").text($("#pMQLs").text());
+                $("#budgetspanvalue").text($("#pbudget").text());
+            }
+            else {
+                $("#HoneyMQLs").text(TotalMql);
+                SetPriceValue("#HoneyMQLs")
+                $("#mqlspanvalue").text($("#HoneyMQLs").text());
+                $("#honeybudget").text(TotalCost);
+                SetBudget("#honeybudget")
+                $("#budgetspanvalue").text($("#honeybudget").text());
+            }
+            $("#ptacticcounttest").text(TotalTact);
+            //$("#mqlspanpercentage").text($("#pMQLImproved").text());
+            //$("#pMQLImproved").parent().find('.greenfont').each(function () {
+            //    $("#mqlspanpercentage").css("color", "#559659");
+            //});
+            //$("#pMQLImproved").parent().find('.redfont').each(function () {
+            //    $("#mqlspanpercentage").css("color", "#EF2240");
+            //});
+            //var ChartHtml = $("#chartCanvas").html();
+            //var Canvas = $("#chart2").find(".dhx_canvas_text");
             var i = 0;
             var AttachChartHtml = ChartHtml;
             $.each(Canvas, function () {
@@ -2758,6 +2826,7 @@
 
             $("#AttachChartCanvas").html('');
             $("#AttachChartCanvas").html(AttachChartHtml);
+            $("#testdiv #mqlspanpercentage").hide();
             var headerhtml = $("#testdiv").html();
 
             var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
@@ -2808,7 +2877,7 @@
             gantt.init("gantt_here");
             gantt.parse(GanttTaskData);
             gantt.refreshData();
-            //AjaxRequest();
+           
         }
         else {
             $('#cErrorInspectPopup').html('No plan exists to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
@@ -6314,7 +6383,6 @@
 </script>
 <script>
     $('.sidebar-toogle a').toggle(
-
 
 function () {
     $('#sidebar').css({

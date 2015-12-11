@@ -26,17 +26,26 @@
 <div  class="white-chart  bulldoller-bg">
     <p class="source-sans-probold" id="pcostLabel" title="@Html.DisplayFor(model => model.costLabel)">@Html.DisplayFor(model => model.costLabel)</p>
     <p class="value source-sans-prolight" id="pbudget">$ @Html.DisplayFor(model => model.Budget)</p>
+    <p class="value source-sans-prolight" id="honeybudget" style="display:none"></p>  @*added by Rahul shah on 10/12/2015 for PL #1803*@
      <a class="value source-sans-prolight" style="cursor:pointer;" id="DivBulldollerbg" ></a>
 </div>
 <div id="DivBullhornbg" class="white-chart">
     <p class="source-sans-probold" id="pmqlLabel" title="@Html.DisplayFor(model => model.mqlLabel)">@Html.DisplayFor(model => model.mqlLabel)</p>
-    <p class="value source-sans-prolight" id="pMQLs">@Html.DisplayFor(model => model.MQLs)</p>
-                
+    <p class="value source-sans-prolight" id="pMQLs">@Html.DisplayFor(model => model.MQLs)</p> @*added by Rahul shah on 10/12/2015 for PL #1803*@
+    <p class="value source-sans-prolight" id="HoneyMQLs" style="display:none"></p>
     <!--Added By: Maninder Singh Wadhva-->
     <!--Addressed PL Ticket: 37,38,47,49-->
     <!-- Modified font class by kapil - 100614 - #508 -->
     <p id="pMQLImproved" class="small-value source-sans-prosemibold">@Html.DisplayFor(model => model.PercentageMQLImproved)</p>
 </div>
+      @*added by Rahul shah on 11/12/2015 for PL #1803*@
+      <div class="white-chart" id="pdfchart" style="visibility: hidden">
+          <p class="source-sans-probold">Activity Distribution</p>
+          <div id="chartpdf" style="width: 140px; height: 85px; margin-left: 34px; margin-top: 38px;"></div>
+          @*<div class="graph">
+                <img src="@Url.Content("~/Content/images/graph-chart-small.jpg")" alt="graph" />
+            </div>*@
+      </div>
 </div>
   @*  Added By Komal Rawal for new UI of homepage*@
 <div  class="planheader-title">
