@@ -1629,17 +1629,17 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
-                    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    List<Guid> lstSubordinatesIds = new List<Guid>();
-                    if (IsTacticAllowForSubordinates)
-                    {
-                        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+                    //bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                    //List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                    //List<Guid> lstSubordinatesIds = new List<Guid>();
+                    //if (IsTacticAllowForSubordinates)
+                    //{
+                    //    lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
 
-                    }
-                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    //}
+                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
 
-                    planTacticIds = planTacticIds.Where(tactic => tactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+                    planTacticIds = planTacticIds.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
 
 
                 }
@@ -1860,17 +1860,17 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
-                    bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                    List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    List<Guid> lstSubordinatesIds = new List<Guid>();
-                    if (IsTacticAllowForSubordinates)
-                    {
-                        lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
+                    //bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
+                    //List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                    //List<Guid> lstSubordinatesIds = new List<Guid>();
+                    //if (IsTacticAllowForSubordinates)
+                    //{
+                    //    lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
 
-                    }
-                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    //}
+                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
 
-                    planTacticsList = planTacticsList.Where(tactic => tactic.objPlanTactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.objPlanTactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();
+                    planTacticsList = planTacticsList.Where(tactic => tactic.objPlanTactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
 
 
                 }
