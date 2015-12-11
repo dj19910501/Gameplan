@@ -540,17 +540,19 @@ namespace RevenuePlanner.Controllers
                 if (IsFiltered == false && customFieldIds == "" && ownerIds == "" && TacticTypeid == "" && StatusIds == "")
                 {
                     //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
-                    List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    List<Guid> collaboratorIdsList = collaboratorIds.Select(Guid.Parse).ToList();
-                    List<Guid> lstSubordinatesIds = new List<Guid>();
-                    if (IsTacticAllowForSubordinates)
-                    {
-                        lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
-                    }
-                    List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    //List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
+                    //List<Guid> collaboratorIdsList = collaboratorIds.Select(Guid.Parse).ToList();
+                    //List<Guid> lstSubordinatesIds = new List<Guid>();
+                    //if (IsTacticAllowForSubordinates)
+                    //{
+                    //    lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
+                    //}
+                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
 
                     //Modified By Komal Rawal for #1505
-                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId || (collaboratorIds.Equals(tactic.CreatedBy)) || (lstSubordinatesIds.Contains(tactic.CreatedBy) == true ? lsteditableEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) : lstSubordinatesIds.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
+                    // Modified By Nishant Sheth 
+                    // Desc:: To resolve the #1790 observation
+                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId ).Select(tactic => tactic).ToList();
                 }
                 else
                 {

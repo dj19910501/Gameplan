@@ -262,69 +262,34 @@
         });
     }
 
-    //var myApp;
-    //myApp = myApp || (function () {
-    //    var pleaseWaitDiv = $('<div style="z-index:99999" class="modal hide" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header">Please wait...</div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>');
-    //    return {
-    //        showPleaseWait: function () {
-    //            pleaseWaitDiv.modal();
-    //        },
-    //        hidePleaseWait: function () {
-    //            pleaseWaitDiv.modal('hide');
-    //        },
-
-    //    };
-    //})();
-
-    //Added by Ashish Mistry for PL #1746
-    // Modify By Nishant Sheth 
-    // Desc :: modify with review code comments #1796
     var myApp;
-    var pleaseWaitDiv;
     myApp = myApp || (function () {
+        var pleaseWaitDiv = $('<div data-notify="container" class="span4 alert alert-info notify-load animated fadeInDown" role="alert" data-notify-position="top-right" style="display: inline-block; margin: 0px auto; position: fixed; transition: all 0.5s ease-in-out; z-index: 2500; top: 20px; right: 20px;"><button type="button" aria-hidden="true" class="close" data-notify="dismiss" style="display: none; position: absolute; right: 10px; top: 5px; z-index: 2502;">×</button><span data-notify="icon"></span> <span data-notify="message"><strong>Loading...</strong></span></div>');
         return {
             showPleaseWait: function () {
-
-                        countplease = 0;
-                        var counter = $('[data-notify="container"]').length;
-                        if (counter == 0) {
-                            pleaseWaitDiv = $.notify({
-                            }, {
-                                element: 'body',
-                                type: "info",
-                                allow_dismiss: false,
-                                showProgressbar: true,
-                                z_index: 2500,
-                                delay: 1000,
-                                animate: {
-                                    enter: 'animated fadeInDown',
-                                    exit: 'animated fadeOutUp'
-                                },
-                                icon_type: 'class',
-                                template: '<div data-notify="container" class="span4 alert alert-{0} notify-load" role="alert">' +
-                                    '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-                                    '<span data-notify="icon"></span> ' +
-                                    '<span data-notify="message"><strong>Loading...</strong></span>' +
-                                    '<div class="progress" data-notify="progressbar">' +
-                                        '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-                                    '</div>' +
-                                '</div>'
-                            });
-                }
+                // Modified By Nishant Sheth
+                // Desc:: To apply new ajax loader as per #1799
+                pleaseWaitDiv.modal();
+                
+                $(".modal-backdrop").css('z-index', '0');
+                $(".modal-backdrop").css('background-color', 'transparent');
+                $(".modal-backdrop").css('opacity', '');
+                $(".modal-backdrop").css('filter', '');
+                $(".modal-backdrop.fade.in ").css('opacity', '');
+                $(".modal-backdrop.fade.in ").css('filter', '');
+                //$(".modal-backdrop").hide();
+                
+                //$(".modal-backdrop").css("display","none");
             },
             hidePleaseWait: function () {
-                //if (resp.state() === 'resolved') {
-                    countplease = countplease + 1;
-                    //alert('resolved');
-                    if (countplease == 1) {
-                        pleaseWaitDiv.update({
-                            'type': 'success',
-                            'message': '<strong>Loaded Successfully...</strong>',
-                        });
-                    }
+                pleaseWaitDiv.modal('hide');
+
             },
+
         };
     })();
+
+   
     var countplease = 0;
     //var resp = $.ajax({});
     //Added by Ashish Mistry for PL #1746

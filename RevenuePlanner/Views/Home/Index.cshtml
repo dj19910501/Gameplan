@@ -480,6 +480,7 @@
 
             });
             if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
+                IsPlanChange = true;
                 SaveLastSetofViews();
             }
 
@@ -543,6 +544,10 @@
                                     });
                                     //Modified by Nishant to bring the owner name in the list even if they dont own any tactic
                                     if (IsOwnerPresent == false) {
+                                        // Modified By Nishant Sheth
+                                        // Desc:: To resolve the #1790 observation
+                                        checked = "checked"
+                                        checkedclass = "close-list"
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
                                     }
 
@@ -1502,19 +1507,10 @@
 
         SaveLastSetofViews()
     }
-
+    var IsPlanChange = false;
     function SaveLastSetofViews() {
         filters.customFieldIds = [];
-        //Add by Nishant For "if all selected then no record inserted for user default view"
-        var ulStatus = $("#ulStatus li");
-        var ulTacticType = $("#ulTacticType li");
-        if (ulStatus.length == filters.StatusIds.length) {
-            filters.StatusIds = [];
-        }
-        //if (ulTacticType.length == filters.TacticTypeids.length) {
-        //    filters.TacticTypeids = [];
-        //}
-        // End By Nishant Sheth
+
         filters.TacticTypeids = [];
         $("#ulTacticType li input[type=checkbox]").each(function () {
 
@@ -1545,6 +1541,43 @@
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
 
         }
+
+        //Add by Nishant For "if all selected then no record inserted for user default view"
+        // Modified By Nishant Sheth
+        // Desc:: To resolve the #1790 observation
+        var ulStatus = $("#ulStatus li");
+        var ulTacticType = $("#ulTacticType li");
+        if (ulStatus.length == filters.StatusIds.length) {
+            filters.StatusIds = [];
+        }
+        if (ulTacticType.length == filters.TacticTypeids.length) {
+            filters.TacticTypeids = [];
+        }
+        // End By Nishant Sheth
+
+        //Added By Komal rawal to maintain the owner and tactic on plan change
+        if (IsPlanChange && !IsUpdate) {
+
+            var Count = 0;
+            filters.TacticTypeids = PreviousListFilter.TacticTypeIds;
+            $.each($("#ulTacticType li input[type=checkbox]"), function () {
+
+                var id = $(this).attr('id').replace("CbTT", "");
+                var index = PreviousListFilter.TacticTypeIds.indexOf(id);
+                if (index >= 0) {
+                    Count++;
+                }
+            });
+            if (Count == 0) {
+                $("#ulTacticType li input[type=checkbox]").attr('checked', 'checked');
+                $("#ulTacticType li ").addClass("close-list");
+
+            }
+
+            filters.OwnerIds = PreviousListFilter.OwnerIds;
+
+        }
+
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -5671,6 +5704,10 @@
 
     });
 
+    var PreviousListFilter = {
+        OwnerIds: [],
+        TacticTypeIds: []
+    }
     function GetLastSetofViews() {
         $.ajax({
             type: 'POST',
@@ -5729,6 +5766,7 @@
                         $("#ulSelectedOwner li input[type=checkbox]").removeAttr('checked');
                         $("#ulSelectedOwner li ").removeClass("close-list");
                         for (i = 0 ; i < data.OwnerNames.length; i++) {
+                            PreviousListFilter.OwnerIds.push(data.OwnerNames[i]);
                             $("#ulSelectedOwner li input[type=checkbox]").each(function () {
                                 var Value = $(this).attr("id");
                                 if (Value == data.OwnerNames[i]) {
@@ -5746,6 +5784,7 @@
                         $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
                         $("#ulTacticType li ").removeClass("close-list");
                         for (i = 0 ; i < data.TTList.length; i++) {
+                            PreviousListFilter.TacticTypeIds.push(data.TTList[i]);
                             $("#ulTacticType li input[type=checkbox]").each(function () {
                                 var Value = $(this).attr("id").replace("CbTT", "");
                                 if (Value == data.TTList[i]) {
@@ -5756,9 +5795,7 @@
                             });
                         }
                     }
-                    else {
-                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
-                    }
+                  
 
                 }
             }
