@@ -355,6 +355,7 @@
     $('#errorMessageInspectPopup .close').click(function () {
         $('#errorMessageInspectPopup').css("display", "none");
     });
+    var GridDataCsv;
     function BindHomeGrid() {
         @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
@@ -394,7 +395,10 @@
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
         var GridData = (mainGridData.toString().replace(/&amp;/g, '&'));
 
-
+        //Added by Ashish mistry on 11/12/2015 for PL #1782 :- export to csv from honeycomb
+        GridDataCsv={rows:[],head:[]};
+        GridDataCsv.head=JSON.parse(GridData).head;
+        GridDataCsv.rows=JSON.parse(GridData).rows;
         HomeGrid.parse(GridData, "json");
 
         // HomeGrid.sortRows(1, 'str', 'asc');
