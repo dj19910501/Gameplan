@@ -11749,7 +11749,7 @@ namespace RevenuePlanner.Controllers
         /// <returns></returns>
         public JsonResult ClonetoOtherPlan(string CloneType, string srcEntityId, string destEntityID, string srcPlanID, string destPlanID, string sourceEntityTitle)
         {
-
+            string sourceEntityHtmlDecodedTitle = string.Empty;
             int sourceEntityId = !string.IsNullOrEmpty(srcEntityId) ? Convert.ToInt32(srcEntityId) : 0;
             int destEntityId = !string.IsNullOrEmpty(destEntityID) ? Convert.ToInt32(destEntityID) : 0;
             int srcPlanId = !string.IsNullOrEmpty(srcPlanID) ? Convert.ToInt32(srcPlanID) : 0;
@@ -11852,6 +11852,7 @@ namespace RevenuePlanner.Controllers
                         sourceEntityTitle = objTactic.Title;
                     }
                 }
+                 sourceEntityHtmlDecodedTitle=HttpUtility.HtmlDecode(sourceEntityTitle);
                 #endregion
             }
             catch (Exception ex)
@@ -11859,7 +11860,7 @@ namespace RevenuePlanner.Controllers
                 return Json(new { msg = Common.objCached.ExceptionErrorMessage, isSuccess = false }, JsonRequestBehavior.AllowGet);
                // throw ex;
             }
-            return Json(new { msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}",HttpUtility.HtmlDecode(sourceEntityTitle)).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
+            return Json(new { msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
 
         public List<PlanTactic_TacticTypeMapping> CheckTacticTypeIdToDestinationModel(string CloneType, int sourceEntityId, int destModelId, ref string invalidTacticIds)
