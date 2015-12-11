@@ -487,7 +487,7 @@
         }
 
         function GetOwnerListForFilter(Planids, async) {
-          
+
             var asyncval = false;
             if (async != undefined && async != 'undefined' && async != '' && async != null) {
                 asyncval = async;
@@ -973,61 +973,61 @@
                     <div id="accordion-element-Status" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulStatus">
                             @*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
-                        <li class="accordion-inner close-list" id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" checked /></li>
-                        <li class="accordion-inner close-list" id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" checked /></li>
-                        <li class="accordion-inner close-list" id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" checked /></li>
-                        <li class="accordion-inner close-list" id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" checked /></li>
-                        <li class="accordion-inner close-list" id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" checked /></li>
-                        <li class="accordion-inner close-list" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" checked /></li>
-                    </ul>
-                    <div class="list-tab">
-                        <ul id="StatusAllModule">
-                            <li><a onclick="BulkStatusOperation(true)">select all</a></li>
-                            <li>|</li>
-                            <li><a onclick="BulkStatusOperation(false)">deselect all</a></li>
+                            <li class="accordion-inner close-list" id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" checked /></li>
+                            <li class="accordion-inner close-list" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" checked /></li>
                         </ul>
+                        <div class="list-tab">
+                            <ul id="StatusAllModule">
+                                <li><a onclick="BulkStatusOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkStatusOperation(false)">deselect all</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
 
-    @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
-    {
+        @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
+        {
             <!--First Static Accordion-->
             <!--Modified By Maninder Singh Wadhva PL Ticket#47-->
-        <div class="accordion colors left-nav margin-bottom10" id="marketing-activities" style="display: none;">
+            <div class="accordion colors left-nav margin-bottom10" id="marketing-activities" style="display: none;">
 
-            <div class="accordion-group source-sans-proregular">
-                <div class="accordion-heading">
-                    <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
-                        <div class="cf source-sans-prosemibold ">Marketing Activities</div>
-                    </a>
-                </div>
-                <div class="scrolled_div" style="position: relative; overflow: hidden; max-height: 230px;">
-                    <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+                <div class="accordion-group source-sans-proregular">
+                    <div class="accordion-heading">
+                        <a href="#DivAccordionMarketingActivities" data-parent="marketing-activities" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                            <div class="cf source-sans-prosemibold ">Marketing Activities</div>
+                        </a>
+                    </div>
+                    <div class="scrolled_div" style="position: relative; overflow: hidden; max-height: 230px;">
+                        <div class="accordion-body in collapse" id="DivAccordionMarketingActivities">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
             <!--First Static Accordion END-->
             <!--Second Static Accordion-->
-        <div class="accordion colors left-nav improvements margin-bottom10" id="improvements">
-            <div class="accordion-group source-sans-proregular">
-                <div class="accordion-heading">
-                    <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
-                        <div class="cf source-sans-prosemibold">Improvements</div>
-                    </a>
-                </div>
-                <div class="accordion-body collapse" id="DivAccordionImprovementActivities">
+            <div class="accordion colors left-nav improvements margin-bottom10" id="improvements">
+                <div class="accordion-group source-sans-proregular">
+                    <div class="accordion-heading">
+                        <a href="#DivAccordionImprovementActivities" data-parent="improvements" data-toggle="collapse" class="accordion-toggle item-741f98 collapsed">
+                            <div class="cf source-sans-prosemibold">Improvements</div>
+                        </a>
+                    </div>
+                    <div class="accordion-body collapse" id="DivAccordionImprovementActivities">
+                    </div>
                 </div>
             </div>
-        </div>
             <!--Second Static Accordion END-->
-    }
-</div>
-<!--End sidebar-->
+        }
+    </div>
+    <!--End sidebar-->
 }
 
 @*<!--success message-->
@@ -2592,15 +2592,15 @@
             index: [],
             parent: [],
             tacticId: [],
-            planyear: []
+
         }
         var TotalTact = 0;
         var TotalCost = 0;
         var Status = "";
+        var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
         for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
             if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
                 Status = GanttTaskDataNew.data[i].Status;
-                defaultParentArr.planyear.push(GanttTaskDataNew.data[0].start_date.getFullYear());
             }
             for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
                 if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
@@ -2621,7 +2621,6 @@
             }
         }
         var tacticids = defaultParentArr.tacticId;
-        var planyear = defaultParentArr.planyear;
         gantt.clearAll();
         gantt.init("gantt_honey");
         gantt.parse(GanttTaskDataforHoney);
@@ -2769,7 +2768,7 @@
             var mypathurl = document.location.pathname.split('/')[1];
             var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
 
-            $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
+            //$("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
             $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
                 $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
 
@@ -2910,7 +2909,7 @@
             gantt.init("gantt_here");
             gantt.parse(GanttTaskData);
             gantt.refreshData();
-           
+
         }
         else {
             $('#cErrorInspectPopup').html('No plan exists to export the data in .pdf'); //PL #1595 - Dashrath Prajapati
@@ -3091,7 +3090,7 @@
     });
     var CloseClick = false;
     $(document).on('click', function (e) {
-       
+
         if (CloseClick == true) {
 
             e.stopPropagation();
@@ -5795,7 +5794,7 @@
                             });
                         }
                     }
-                  
+
 
                 }
             }
