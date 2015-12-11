@@ -796,33 +796,71 @@ namespace RevenuePlanner.Controllers
             var tacticstatus = "";
             DateTime MinStartDateForCustomField;
             DateTime MinStartDateForPlan;
-
+            List<DateTime> EffectiveDateList;
+            List<TacticStageMapping> lstTacticStageMap = new List<TacticStageMapping>();
+            DateTime minEffectiveDate = new DateTime();
             if (viewBy.Equals(PlanGanttTypes.Stage.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
+               
+                List<int> lstStageIds = new List<int>();
+                lstStageIds = lstTactic.Select(tac => tac.objPlanTactic.StageId).Distinct().ToList();
+                TacticStageMapping objStageTac;
+                List<Plan_Tactic> lstPlanTactic;
+                List<int> lstProgramIds, lstCampaignIds;
+                DateTime minTacticDate = new DateTime();
+                DateTime minProgramDate = new DateTime();
+                DateTime minCampaignDate = new DateTime();
+                List<Plan_Campaign_Program> programList;
+                lstStageIds.ForEach(stgId =>
+                {
+                    lstPlanTactic = new List<Plan_Tactic>();
+                    programList = new List<Plan_Campaign_Program>();
+                    lstPlanTactic = lstTactic.Where(tatic => tatic.objPlanTactic.StageId == stgId).ToList();
+                    lstProgramIds = lstCampaignIds = new List<int>();
+                    lstProgramIds = lstPlanTactic.Select(tac => tac.objPlanTactic.PlanProgramId).ToList();
+                    programList = lstProgram.Where(prg => lstProgramIds.Contains(prg.PlanProgramId)).ToList();
+                    lstCampaignIds = programList.Select(prg => prg.PlanCampaignId).ToList();
+                    objStageTac = new TacticStageMapping();
+                    objStageTac.StageId = stgId;
+                    objStageTac.TacticList = lstPlanTactic;
+                    minTacticDate = lstPlanTactic.Select(tac => tac.objPlanTactic.StartDate).Min();
+                    minProgramDate = programList.Select(prg => prg.StartDate).Min();
+                    minCampaignDate = lstCampaign.Where(campgn => lstCampaignIds.Contains(campgn.PlanCampaignId)).Select(campgn => campgn.StartDate).Min();
+                    objStageTac.minDate = new[] { minTacticDate, minProgramDate, minCampaignDate }.Min();
+                    lstTacticStageMap.Add(objStageTac);
+                });
                 foreach (var tacticItem in lstTactic)
                 {
                     tacticstageId = tacticItem.objPlanTactic.StageId;
-                    tacticListByViewById = lstTactic.Where(tatic => tatic.objPlanTactic.StageId == tacticstageId).Select(tatic => tatic).ToList();
-                    tacticPlanId = tacticItem.objPlanTacticProgram.Plan_Campaign.PlanId;
-                    MinStartDateForCustomField = GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
+                    tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.TacticList).FirstOrDefault();
+                    tacticPlanId = tacticItem.PlanId;
+                    MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
+                    
                     MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
 
+                    EffectiveDateList = new List<DateTime>();
+                    if (EffectiveDateListByPlanIds != null && EffectiveDateListByPlanIds.Count > 0)
+                    {
+                        EffectiveDateList = EffectiveDateListByPlanIds.Where(_date => _date.PlanId == tacticPlanId).Select(_date => _date.EffectiveDate).ToList();
+                        if (EffectiveDateList != null && EffectiveDateList.Count > 0)
+                            minEffectiveDate = EffectiveDateList.Min();
+                    }
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
                         Tactic = tacticItem.objPlanTactic,
                         CreatedBy = tacticItem.CreatedBy,
                         CustomFieldId = tacticstageId.ToString(),
                         CustomFieldTitle = tacticItem.objPlanTactic.Stage.Title,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstageId, tacticPlanId, tacticItem.objPlanTacticProgram.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstageId, tacticPlanId, tacticItem.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
                         ColorCode = TacticColor,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                         EndDate = DateTime.MaxValue,
                         Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField,
                                                                 GetMaxEndDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById)),
-                        CampaignProgress = GetCampaignProgress(tacticListByViewById, tacticItem.objPlanTacticProgram.Plan_Campaign, EffectiveDateListByPlanIds, tacticPlanId),
-                        ProgramProgress = GetProgramProgress(tacticListByViewById, tacticItem.objPlanTacticProgram, EffectiveDateListByPlanIds, tacticPlanId),
+                        CampaignProgress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticCampaign, minEffectiveDate, tacticPlanId),
+                        ProgramProgress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticProgram, minEffectiveDate, tacticPlanId),
                         PlanProgrss = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
                                                     Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
                                                     GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
@@ -834,17 +872,12 @@ namespace RevenuePlanner.Controllers
                 //// Prepare stage list for Marketting accrodian for Home screen only.
                 if (activemenu.Equals(Enums.ActiveMenu.Home))
                 {
-                    lstCustomFields = (lstTactic.Select(tactic => tactic.objPlanTactic.Stage)).Select(tactic => new
+                    lstCustomFields = (lstTactic.Select(tactic => tactic.objPlanTactic.Stage)).Distinct().Select(tactic => new CustomFields()
                     {
-                        CustomFieldId = tactic.StageId,
+                        CustomFieldId = tactic.StageId.ToString(),
                         Title = tactic.Title,
                         ColorCode = TacticColor
-                    }).ToList().Distinct().Select(tactic => new CustomFields()
-                    {
-                        CustomFieldId = tactic.CustomFieldId.ToString(),
-                        Title = tactic.Title,
-                        ColorCode = tactic.ColorCode
-                    }).ToList().OrderBy(stage => stage.Title).ToList();
+                    }).OrderBy(stage => stage.Title).ToList();
                 }
 
                 //// Prepare ImprovementTactic list that relates to selected tactic and stage
@@ -857,35 +890,74 @@ namespace RevenuePlanner.Controllers
                                                  ImprovementTactic = improvementTactic,
                                                  MainParentId = stage.StageId.ToString(),
                                                  MinStartDate = lstImprovementTactic.Where(impTactic => impTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impTactic => impTactic.EffectiveDate).Min(),
-                                             }).Select(improvementTactic => improvementTactic).ToList().Distinct().ToList();
+                                             }).Distinct().ToList();
             }
             else if (viewBy.Equals(PlanGanttTypes.Status.ToString(), StringComparison.OrdinalIgnoreCase)) //Added by Komal RAwal for #1376
             {
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
+
+                #region " Creat Tactic-Status Mapping list"
+                List<string> lstStatus = new List<string>();
+                lstStatus = lstTactic.Select(tac => tac.objPlanTactic.Status).Distinct().ToList();
+                TacticStageMapping objStageTac;
+                List<Plan_Tactic> lstPlanTactic;
+                List<int> lstProgramIds, lstCampaignIds;
+                DateTime minTacticDate = new DateTime();
+                DateTime minProgramDate = new DateTime();
+                DateTime minCampaignDate = new DateTime();
+                List<Plan_Campaign_Program> programList;
+                lstStatus.ForEach(stats =>
+                {
+                    lstPlanTactic = new List<Plan_Tactic>();
+                    programList = new List<Plan_Campaign_Program>();
+                    lstPlanTactic = lstTactic.Where(tatic => tatic.objPlanTactic.Status == stats).ToList();
+                    lstProgramIds = lstCampaignIds = new List<int>();
+                    lstProgramIds = lstPlanTactic.Select(tac => tac.objPlanTactic.PlanProgramId).ToList();
+                    programList = lstProgram.Where(prg => lstProgramIds.Contains(prg.PlanProgramId)).ToList();
+                    lstCampaignIds = programList.Select(prg => prg.PlanCampaignId).ToList();
+                    objStageTac = new TacticStageMapping();
+                    objStageTac.Status = stats;
+                    objStageTac.TacticList = lstPlanTactic;
+                    minTacticDate = lstPlanTactic.Select(tac => tac.objPlanTactic.StartDate).Min();
+                    minProgramDate = programList.Select(prg => prg.StartDate).Min();
+                    minCampaignDate = lstCampaign.Where(campgn => lstCampaignIds.Contains(campgn.PlanCampaignId)).Select(campgn => campgn.StartDate).Min();
+                    objStageTac.minDate = new[] { minTacticDate, minProgramDate, minCampaignDate }.Min();
+                    lstTacticStageMap.Add(objStageTac);
+                });
+                #endregion
+
                 foreach (var tacticItem in lstTactic)
                 {
                     tacticstatus = tacticItem.objPlanTactic.Status;
-                    tacticListByViewById = lstTactic.Where(tatic => tatic.objPlanTactic.Status == tacticstatus).Select(tatic => tatic).ToList();
-                    tacticPlanId = tacticItem.objPlanTacticProgram.Plan_Campaign.PlanId;
-                    MinStartDateForCustomField = GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
+                    tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.Status == tacticstatus).Select(tatic => tatic.TacticList).FirstOrDefault();
+                    tacticPlanId = tacticItem.PlanId;
+                    MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.Status == tacticstatus).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
                     MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
+
+                    EffectiveDateList = new List<DateTime>();
+                    if (EffectiveDateListByPlanIds != null && EffectiveDateListByPlanIds.Count > 0)
+                    {
+                        EffectiveDateList = EffectiveDateListByPlanIds.Where(_date => _date.PlanId == tacticPlanId).Select(_date => _date.EffectiveDate).ToList();
+                        if (EffectiveDateList != null && EffectiveDateList.Count > 0)
+                            minEffectiveDate = EffectiveDateList.Min();
+                    }
 
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
 
                         Tactic = tacticItem.objPlanTactic,
                         CreatedBy = tacticItem.CreatedBy,
-                        CustomFieldId = tacticstatus.ToString(),
-                        CustomFieldTitle = tacticItem.objPlanTactic.Status,
-                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstatus, tacticPlanId, tacticItem.objPlanTacticProgram.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
+                        CustomFieldId = tacticstatus,
+                        CustomFieldTitle = tacticstatus,
+                        TaskId = string.Format("Z{0}_L{1}_C{2}_P{3}_T{4}", tacticstatus, tacticPlanId, tacticItem.PlanCampaignId, tacticItem.objPlanTactic.PlanProgramId, tacticItem.objPlanTactic.PlanTacticId),
                         ColorCode = TacticColor,
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                         EndDate = DateTime.MaxValue,
                         Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField,
                                                                 GetMaxEndDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById)),
-                        CampaignProgress = GetCampaignProgress(tacticListByViewById, tacticItem.objPlanTacticProgram.Plan_Campaign, EffectiveDateListByPlanIds, tacticPlanId),
-                        ProgramProgress = GetProgramProgress(tacticListByViewById, tacticItem.objPlanTacticProgram, EffectiveDateListByPlanIds, tacticPlanId),
+                        CampaignProgress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticCampaign, minEffectiveDate, tacticPlanId),
+                        ProgramProgress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.objPlanTacticProgram, minEffectiveDate, tacticPlanId),
                         PlanProgrss = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
                                                     Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
                                                     GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
@@ -896,17 +968,12 @@ namespace RevenuePlanner.Controllers
                 //// Prepare  list for Marketting accrodian for Home screen only.
                 if (activemenu.Equals(Enums.ActiveMenu.Home))
                 {
-                    lstCustomFields = (lstTactic.Select(tactic => tactic.objPlanTactic.Status)).Select(tactic => new
+                    lstCustomFields = (lstTactic.Select(tactic => tactic.objPlanTactic.Status)).Distinct().Select(tactic => new CustomFields()
                     {
                         CustomFieldId = tacticstatus,
                         Title = tacticstatus,
                         ColorCode = TacticColor
-                    }).ToList().Distinct().Select(tactic => new CustomFields()
-                    {
-                        CustomFieldId = tactic.CustomFieldId.ToString(),
-                        Title = tactic.Title,
-                        ColorCode = tactic.ColorCode
-                    }).ToList().OrderBy(stage => stage.Title).ToList();
+                    }).OrderBy(stage => stage.Title).ToList();
                 }
 
                 //// Prepare ImprovementTactic list that relates to selected tactic and status
@@ -918,7 +985,7 @@ namespace RevenuePlanner.Controllers
                                                  ImprovementTactic = improvementTactic,
                                                  MainParentId = tactic.objPlanTactic.Status,
                                                  MinStartDate = lstImprovementTactic.Where(impTactic => impTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impTactic => impTactic.EffectiveDate).Min(),
-                                             }).Select(improvementTactic => improvementTactic).ToList().Distinct().ToList();
+                                             }).Distinct().ToList();
             }
 
              //// Prepare task tactic list for CustomFields tab(ViewBy)
@@ -1008,7 +1075,13 @@ namespace RevenuePlanner.Controllers
                                                                                 lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
                     MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, IsCampaign ? tacticPlanCampaignId.ToString() : (IsProgram ? _PlanProgramId.ToString() : _PlanTacticId.ToString()),
                                                                                 tacticPlanId, lstCampaign, lstProgram, tacticListByViewById, IsCampaign, IsProgram);
-
+                    EffectiveDateList = new List<DateTime>();
+                    if (EffectiveDateListByPlanIds != null && EffectiveDateListByPlanIds.Count > 0)
+                    {
+                        EffectiveDateList = EffectiveDateListByPlanIds.Where(_date => _date.PlanId == tacticPlanId).Select(_date => _date.EffectiveDate).ToList();
+                        if (EffectiveDateList != null && EffectiveDateList.Count > 0)
+                            minEffectiveDate = EffectiveDateList.Min();
+                    }
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
                         Tactic = tacticItem.tactic.objPlanTactic,
@@ -1019,8 +1092,8 @@ namespace RevenuePlanner.Controllers
                         StartDate = Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForCustomField),
                         EndDate = Common.GetEndDateAsPerCalendarInDateFormat(CalendarEndDate, MaxEndDateForCustomField),
                         Duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForCustomField, MaxEndDateForCustomField),
-                        CampaignProgress = GetCampaignProgress(tacticListByViewById, tacticItem.tactic.objPlanTacticCampaign, EffectiveDateListByPlanIds, tacticPlanId),
-                        ProgramProgress = GetProgramProgress(tacticListByViewById, tacticItem.tactic.objPlanTacticProgram, EffectiveDateListByPlanIds, tacticPlanId),
+                        CampaignProgress = GetCampaignProgressViewBy(tacticListByViewById, tacticItem.tactic.objPlanTacticCampaign, minEffectiveDate, tacticPlanId),
+                        ProgramProgress = GetProgramProgressViewBy(tacticListByViewById, tacticItem.tactic.objPlanTacticProgram, minEffectiveDate, tacticPlanId),
                         PlanProgrss = GetProgress(Common.GetStartDateAsPerCalendar(CalendarStartDate, MinStartDateForPlan),
                                                     Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
                                                         GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, IsCampaign ? tacticPlanCampaignId.ToString() : (IsProgram ? _PlanProgramId.ToString() : _PlanTacticId.ToString()),
@@ -1030,21 +1103,15 @@ namespace RevenuePlanner.Controllers
                         CreatedBy = tacticItem.CreatedBy
                     });
                 }
-
                 //// Prepare CustomFields list for Marketting accrodian for Home screen only.
                 if (activemenu.Equals(Enums.ActiveMenu.Home))
                 {
-                    lstCustomFields = (lstProcessedCustomFieldTactics.Select(tactic => tactic)).Select(tactic => new
+                    lstCustomFields = lstProcessedCustomFieldTactics.Distinct().Select(tactic => new CustomFields()
                 {
-                    CustomFieldId = tactic.customFieldId,
+                        CustomFieldId = tactic.customFieldId.ToString(),
                     Title = tactic.customFieldTitle,
                     ColorCode = TacticColor
-                }).ToList().Distinct().Select(tactic => new CustomFields()
-                    {
-                        CustomFieldId = tactic.CustomFieldId.ToString(),
-                        Title = tactic.Title,
-                        ColorCode = tactic.ColorCode
-                    }).ToList().OrderBy(customField => customField.Title).ToList();
+                    }).OrderBy(customField => customField.Title).ToList();
                 }
 
                 //// Prepare ImprovementTactic list that relates to selected tactic and customFields
@@ -1057,7 +1124,7 @@ namespace RevenuePlanner.Controllers
                                                  CreatedBy = improvementTactic.CreatedBy,
                                                  MainParentId = customfieldtactic.masterCustomFieldId.ToString(),
                                                  MinStartDate = lstImprovementTactic.Where(impTactic => impTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId == improvementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId).Select(impTactic => impTactic.EffectiveDate).Min(),
-                                             }).Select(improvementTactic => improvementTactic).ToList().Distinct().ToList();
+                                             }).Select(improvementTactic => improvementTactic).Distinct().ToList();
             }
 
             //// Prepare task detail list using taskTacticList for all task to be rendered in gantt chart
@@ -1082,7 +1149,7 @@ namespace RevenuePlanner.Controllers
                 ProgramProgress = tacticTask.ProgramProgress,
                 lstCustomEntityId = tacticTask.lstCustomEntityId,
                 CreatedBy = tacticTask.CreatedBy
-            }).ToList().Distinct().ToList();
+            }).Distinct().ToList();
 
             #region Prepare CustomField task data
             var taskDataCustomeFields = lstTaskDetails.Select(tacticTask => new
@@ -1097,20 +1164,20 @@ namespace RevenuePlanner.Controllers
                 color = tacticTask.Color,
                 CreatedBy = tacticTask.CreatedBy
 
-            }).Select(v => v).Distinct().OrderBy(tacticTask => tacticTask.text);
+            }).Distinct().OrderBy(tacticTask => tacticTask.text);
 
             //// Group same task for Custom Field by CustomFieldId
             var groupedCustomField = taskDataCustomeFields.GroupBy(groupedTask => new { id = groupedTask.id }).Select(groupedTask => new
             {
                 id = groupedTask.Key.id,
                 text = groupedTask.Select(task => task.text).FirstOrDefault(),
-                start_date = groupedTask.Select(task => task.start_date).ToList().Min(),
-                end_date = groupedTask.Select(task => task.end_date).ToList().Max(),
-                duration = groupedTask.Select(task => task.duration).ToList().Max(),
+                start_date = groupedTask.Select(task => task.start_date).Min(),
+                end_date = groupedTask.Select(task => task.end_date).Max(),
+                duration = groupedTask.Select(task => task.duration).Max(),
                 progress = groupedTask.Select(task => task.progress).FirstOrDefault(),
                 open = groupedTask.Select(task => task.open).FirstOrDefault(),
-                colorcode = groupedTask.ToList().Select(task => task.color).FirstOrDefault(),
-                color = ((groupedTask.ToList().Select(task => task.progress).FirstOrDefault() > 0) ? "stripe" : string.Empty)
+                colorcode = groupedTask.Select(task => task.color).FirstOrDefault(),
+                color = ((groupedTask.Select(task => task.progress).FirstOrDefault() > 0) ? "stripe" : string.Empty)
             });
 
             //// Finalize Custom Field task data to be render in gantt chart
@@ -1167,7 +1234,7 @@ namespace RevenuePlanner.Controllers
                 text = taskdata.text,
                 start_date = taskdata.start_date,
                 duration = taskdata.duration,
-                progress = taskDataPlan.Where(plan => plan.id == taskdata.id).Select(plan => plan.progress).Min(),
+                progress = taskdata.progress,//taskDataPlan.Where(plan => plan.id == taskdata.id).Select(plan => plan.progress).Min(),
                 open = taskdata.open,
                 parent = taskdata.parent,
                 color = (taskdata.progress > 0 ? "stripe" : string.Empty),
@@ -1178,7 +1245,7 @@ namespace RevenuePlanner.Controllers
                 OwnerName = taskdata.CreatedBy.ToString(),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
 
-            }).ToList().Distinct().ToList();
+            }).Distinct().ToList();
             #endregion
 
             #region Prepare Campaign task data
@@ -1207,7 +1274,7 @@ namespace RevenuePlanner.Controllers
                 progress = taskDataCampaign.Where(campaign => campaign.id == taskdata.id).Select(campaign => campaign.progress).Min(),
                 open = taskdata.open,
                 parent = taskdata.parent,
-                color = (taskdata.progress == 1 ? " stripe" : (taskdata.progress > 0 ? "stripe" : string.Empty)),
+                color = taskdata.progress > 0 ? "stripe" : string.Empty,
                 colorcode = taskdata.color,
                 plancampaignid = taskdata.plancampaignid,
                 Status = taskdata.Status,
@@ -1215,7 +1282,7 @@ namespace RevenuePlanner.Controllers
                 TacticType = doubledesh,
                 OwnerName = taskdata.CreatedBy.ToString(),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
-            }).ToList().Distinct().ToList();
+            }).Distinct().ToList();
             #endregion
 
             #region Prepare Program task data
@@ -1316,8 +1383,8 @@ namespace RevenuePlanner.Controllers
                 parent = string.Format("Z{0}_L{1}", taskdataImprovement.MainParentId, taskdataImprovement.ImprovementTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId),
             }).Select(taskdataImprovement => taskdataImprovement).Distinct().ToList();
 
-            string tacticStatusSubmitted = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
-            string tacticStatusDeclined = Enums.TacticStatusValues.Single(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
+            string tacticStatusSubmitted = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Submitted.ToString())).Value;
+            string tacticStatusDeclined = Enums.TacticStatusValues.FirstOrDefault(s => s.Key.Equals(Enums.TacticStatus.Decline.ToString())).Value;
 
             //// Prepare Improvent Tactics task data to be render in gantt chart
             var lstImprovementTacticTaskData = lstImprovementTaskDetails.Select(taskdataImprovement => new
@@ -2350,6 +2417,45 @@ namespace RevenuePlanner.Controllers
         }
 
         /// <summary>
+        /// Function to get program progress. Ticket #394 Apply styling on improvement activity in calendar
+        /// Added By: Dharmraj mangukiya.
+        /// Date: 2nd april, 2013
+        /// <param name="lstTactic">list of tactics of selected program</param>
+        /// <param name="planCampaignProgram">program object</param>
+        /// <param name="lstImprovementTactic">list of improvement tactics of selected plan</param>
+        /// <param name="PlanId">planId of selected program</param>
+        /// <returns>returns progress between 0 and 1</returns>
+        public double GetProgramProgressViewBy(List<Plan_Tactic> lstTactic, Plan_Campaign_Program planCampaignProgram, DateTime effectiveMinDate, int PlanId)
+        {
+            double result = 0;
+            //List<DateTime> EffectiveDateTimeList = new List<DateTime>();
+            //if (lstImprovementTactic != null && lstImprovementTactic.Count > 0)
+            //    EffectiveDateTimeList = lstImprovementTactic.Where(_date => _date.PlanId == PlanId).Select(_date => _date.EffectiveDate).ToList();
+
+            if (effectiveMinDate != null && effectiveMinDate != new DateTime())
+            {
+                //// Minimun date of improvement tactic
+                DateTime minDate = effectiveMinDate;
+
+                //// Start date of program
+                DateTime programStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaignProgram.StartDate));
+
+                //// List of all tactics that are affected by improvement tactic
+                var lstAffectedTactic = lstTactic.Where(tactic => tactic.objPlanTactic.IsDeleted.Equals(false) && tactic.objPlanTactic.PlanProgramId == planCampaignProgram.PlanProgramId && (tactic.objPlanTactic.StartDate >= minDate).Equals(true)
+                                                        && tactic.PlanId == PlanId)
+                                                .Select(tactic => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTactic.StartDate)) })
+                                                .ToList();
+                if (lstAffectedTactic.Count > 0)
+                {
+                    //// minimum start Date of tactics
+                    DateTime tacticMinStartDate = lstAffectedTactic.Select(tactic => tactic.startDate).Min();
+                    result = (tacticMinStartDate >= minDate) ? GetProgressResult(tacticMinStartDate, minDate, programStartDate, planCampaignProgram.StartDate, planCampaignProgram.EndDate) : 0;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// Function to get campaign progress. Ticket #394 Apply styling on improvement activity in calendar
         /// Added By: Dharmraj mangukiya.
         /// Date: 2nd april, 2013
@@ -2390,6 +2496,49 @@ namespace RevenuePlanner.Controllers
             }
             return result;
         }
+
+        /// <summary>
+        /// Function to get campaign progress. Ticket #394 Apply styling on improvement activity in calendar
+        /// Added By: Dharmraj mangukiya.
+        /// Date: 2nd april, 2013
+        /// </summary>
+        /// <param name="lstTactic">list of tactics of selected program</param>
+        /// <param name="planCampaign">campaign object</param>
+        /// <param name="lstImprovementTactic">list of improvement tactics of selected plan</param>
+        /// <param name="PlanId">planId of selected program</param>
+        /// <returns>returns progress between 0 and 1</returns>
+        public double GetCampaignProgressViewBy(List<Plan_Tactic> lstTactic, Plan_Campaign planCampaign, DateTime effectiveMinDate, int PlanId)
+        {
+            double result = 0;
+            //List<DateTime> EffectiveDateList = new List<DateTime>();
+            //EffectiveDateList = lstImprovementTactic.Where(_date => _date.PlanId == PlanId).Select(_date => _date.EffectiveDate).ToList();
+            if (effectiveMinDate != null && effectiveMinDate != new DateTime())
+            {
+                //// Minimun date of improvement tactic
+                DateTime minDate = effectiveMinDate;
+
+                //// Start date of Campaign
+                DateTime campaignStartDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, planCampaign.StartDate));
+
+                //// List of all tactics
+                var lstAllTactic = lstTactic.Where(tactic => Common.CheckBothStartEndDateOutSideCalendar(CalendarStartDate, CalendarEndDate, tactic.objPlanTactic.StartDate, tactic.objPlanTactic.EndDate).Equals(false)
+                                                    && tactic.PlanId == PlanId);
+
+                //// List of all tactics that are affected by improvement tactic
+                var lstAffectedTactic = lstAllTactic.Where(tactic => (tactic.objPlanTactic.IsDeleted.Equals(false) && tactic.objPlanTactic.StartDate >= minDate).Equals(true) && tactic.objPlanTactic.Plan_Campaign_Program.PlanCampaignId == planCampaign.PlanCampaignId)
+                                                     .Select(tactic => new { startDate = Convert.ToDateTime(Common.GetStartDateAsPerCalendar(CalendarStartDate, tactic.objPlanTactic.StartDate)) })
+                                                     .ToList();
+
+                if (lstAffectedTactic != null && lstAffectedTactic.Count > 0)
+                {
+                    //// minimum start Date of tactics
+                    DateTime tacticMinStartDate = lstAffectedTactic.Select(tactic => tactic.startDate).Min();
+                    result = (tacticMinStartDate >= minDate) ? GetProgressResult(tacticMinStartDate, minDate, campaignStartDate, planCampaign.StartDate, planCampaign.EndDate) : 0;
+                }
+            }
+            return result;
+        }
+
 
         /// <summary>
         /// Function to get progress. Ticket #394 Apply styling on improvement activity in calendar
@@ -2585,12 +2734,12 @@ namespace RevenuePlanner.Controllers
                     minDateTactic = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
                     break;
                 case PlanGanttTypes.Stage:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == Convert.ToInt32(typeId) && tactic.objPlanTacticProgram.Plan_Campaign.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == Convert.ToInt32(typeId) && tactic.objPlanTacticProgram.Plan_Campaign.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
+                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == Convert.ToInt32(typeId) && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
+                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.StageId == Convert.ToInt32(typeId) && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
                     break;
                 case PlanGanttTypes.Status:
-                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.Status == tacticstatus && tactic.objPlanTacticProgram.Plan_Campaign.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
-                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.Status == tacticstatus && tactic.objPlanTacticProgram.Plan_Campaign.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
+                    queryPlanProgramId = lstTactic.Where(tactic => tactic.objPlanTactic.Status == tacticstatus && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
+                    minDateTactic = lstTactic.Where(tactic => tactic.objPlanTactic.Status == tacticstatus && tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.StartDate).Min();
                     break;
                 case PlanGanttTypes.Custom:
                     queryPlanProgramId = lstTactic.Where(tactic => tactic.PlanId == planId).Select(tactic => tactic.objPlanTactic.PlanProgramId).ToList<int>();
@@ -5156,5 +5305,13 @@ namespace RevenuePlanner.Controllers
     {
         public int PlanId { get; set; }
         public DateTime EffectiveDate { get; set; }
+    }
+
+    public class TacticStageMapping
+    {
+        public int StageId { get; set; }
+        public string Status { get; set; }
+        public List<Plan_Tactic> TacticList { get; set; }
+        public DateTime minDate { get; set; }
     }
 }
