@@ -411,6 +411,7 @@
     };
    
     function GetOwnerListForFilter(Planids, ifexists) {
+        var type = '@PlanGanttTypes.Tactic.ToString()';
         var asyncval = false;
         if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
             asyncval = ifexists;
@@ -426,10 +427,12 @@
         type: "GET",
         cache: false,
         async: asyncval,
-        url: '@Url.Action("GetOwnerListForFilter", "Report")',
+        @* url: '@Url.Action("GetOwnerListForFilter", "Report")',*@
+        url: '@Url.Action("GetOwnerListForFilter", "Home")',
             data: {
                 PlanId: Planids.toString(),
-                leftPaneOption : leftPaneOption
+                ViewBy: type,
+                ActiveMenu: '@RevenuePlanner.Helpers.Enums.ActiveMenu.Home'
                    
             },
             dataType: "json",
@@ -443,19 +446,36 @@
                             if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
                                 OwnerCount = data.AllowedOwner.length;
                                 if (OwnerCount > 0) {
+                                    var IsOwnerPresent = false;
+                                    var checked = "";
+                                    var checkedclass = "";
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
-                                        var checked = "";
-                                        var checkedclass = "";
+                                        var LoggedInOwner = data.LoggedInUser.OwnerId;
+                                        if (OwnerItem.OwnerId == LoggedInOwner) {
+                                            IsOwnerPresent = true;
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
+                                        //var checked = "";
+                                        //var checkedclass = "";
                                         //Modify by Rahul Shah on 28/10/2015 for PL #1438
                                         //if (ifexists &&  filters.OwnerIds.indexOf(OwnerItem.OwnerId)>= 0) {
-                                            checked = "checked";
-                                            checkedclass = "close-list";
+                                           // checked = "checked";
+                                           // checkedclass = "close-list";
                                         //}
 
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
                                     });
+                                    if (IsOwnerPresent == false) {
+
+                                        // Modified By Nishant Sheth
+                                        // Desc:: To resolve the #1790 observation
+                                        checked = "checked"
+                                        checkedclass = "close-list"
+                                        $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
+                                    }
                                 }
                                 else {
                                     $("#ulOwnerAllModule").css("display", "none");
@@ -527,10 +547,10 @@
                 type: "GET",
                 cache: false,
                 async: asyncval,
-                url: '@Url.Action("GetTacticTypeListForFilter", "Report")',
+                @* url: '@Url.Action("GetTacticTypeListForFilter", "Report")',*@
+                url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
             data: {
-                PlanId: Planids.toString(),
-                leftPaneOption: leftPaneOption
+                PlanId: Planids.toString()
             },
             dataType: "json",
             success: function (data) {
@@ -770,6 +790,12 @@
 
         }
     
+        var ulTacticType = $("#ulTacticType li");
+
+        if (ulTacticType.length == filters.TacticTypeids.length) {
+            filters.TacticTypeids = [];
+        }
+
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;

@@ -8647,35 +8647,35 @@ namespace RevenuePlanner.Controllers
 
             try
             {
-                List<string> tacticStatus = Common.GetStatusListAfterApproved();
+                //List<string> tacticStatus = Common.GetStatusListAfterApproved();
                 //// Tthis is inititalized as 0 bcoz to get the status for tactics.
-                string planGanttType = PlanGanttTypes.Tactic.ToString();
+                //string planGanttType = PlanGanttTypes.Tactic.ToString();
                 ViewBag.AddActualFlag = true;     // Added by Arpita Soni on 01/17/2015 for Ticket #1090 
-                List<RevenuePlanner.BDSService.User> lstIndividuals = GetIndividualsByPlanId(Planid.ToString(), planGanttType, Enums.ActiveMenu.Plan.ToString(), true);
+                //List<RevenuePlanner.BDSService.User> lstIndividuals = GetIndividualsByPlanId(Planid.ToString(), planGanttType, Enums.ActiveMenu.Plan.ToString(), true);
                 ////Start - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
 
                 //// Fetch individual's records distinct
-                planmodel.objIndividuals = lstIndividuals.Select(user => new
-                {
-                    UserId = user.UserId,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
-                }).ToList().Distinct().Select(user => new RevenuePlanner.BDSService.User()
-                {
-                    UserId = user.UserId,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName
-                }).ToList().OrderBy(user => string.Format("{0} {1}", user.FirstName, user.LastName)).ToList();
+                //planmodel.objIndividuals = lstIndividuals.Select(user => new
+                //{
+                //    UserId = user.UserId,
+                //    FirstName = user.FirstName,
+                //    LastName = user.LastName
+                //}).ToList().Distinct().Select(user => new RevenuePlanner.BDSService.User()
+                //{
+                //    UserId = user.UserId,
+                //    FirstName = user.FirstName,
+                //    LastName = user.LastName
+                //}).ToList().OrderBy(user => string.Format("{0} {1}", user.FirstName, user.LastName)).ToList();
                 ////End - Modified by Mitesh Vaishnav for PL ticket 972 - Add Actuals - Filter section formatting
 
-                List<TacticType> objTacticType = new List<TacticType>();
+                //List<TacticType> objTacticType = new List<TacticType>();
 
-                //// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
-                objTacticType = (from tactic in db.Plan_Campaign_Program_Tactic
-                                 where tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Planid && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false
-                                 select tactic.TacticType).Distinct().OrderBy(tactic => tactic.Title).ToList();
+                ////// Modified By: Maninder Singh for TFS Bug#282: Extra Tactics Displaying in Add Actual Screen
+                //objTacticType = (from tactic in db.Plan_Campaign_Program_Tactic
+                //                 where tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == Planid && tacticStatus.Contains(tactic.Status) && tactic.IsDeleted == false
+                //                 select tactic.TacticType).Distinct().OrderBy(tactic => tactic.Title).ToList();
 
-                ViewBag.TacticTypeList = objTacticType;
+                //ViewBag.TacticTypeList = objTacticType;
 
                 //// Added by Dharmraj Mangukiya to implement custom restrictions PL ticket #537
                 //// Get current user permission for edit own and subordinates plans.

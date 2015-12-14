@@ -62,7 +62,7 @@
                     </div>
                     <div id="accordion-element-TacticType" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulTacticType">
-                            @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
+                          @*  @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
                             {
                                 foreach (var item in ((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList))
                                 {
@@ -70,10 +70,10 @@
                                     string _id = "CbTT" + item.TacticTypeId;
                                     <li class="accordion-inner" id="@id" title="@item.Title"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@_id" onchange="toggleTacticType(this)"/></li>
                                 }
-                            }
+                            }*@
                         </ul>
                         <div class="list-tab">
-                             @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
+                          @*   @if (((List<RevenuePlanner.Models.TacticType>)ViewBag.TacticTypeList).Count > 0)
                              {
                                 <ul id="TacticTypeAllModule">
                                     <li><a onclick="BulkTTOperation(true)">select all</a></li>
@@ -84,7 +84,13 @@
                              else
                              {
                                 <div id="NoTTFound" class="NoDataFoundFilter">No TacticType Found</div>
-                             }
+                             }*@
+                              <ul id="TacticTypeAllModule">
+                                    <li><a onclick="BulkTTOperation(true)">select all</a></li>
+                                    <li>|</li>
+                                    <li><a onclick="BulkTTOperation(false)">deselect all</a></li>
+                                </ul>
+                                <div id="NoTTFound" class="NoDataFoundFilter">No Tactic Type Found</div>
                         </div>
                     </div>
                 </div>
@@ -135,7 +141,7 @@
                     </div>
                     <div id="accordion-element-Owner" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulSelectedOwner">
-                            @if (Model.objIndividuals.Count > 0)
+                           @* @if (Model.objIndividuals.Count > 0)
                             {
                                 foreach (var item in Model.objIndividuals)
                                 {
@@ -153,23 +159,24 @@
 
 
                                 }
-                            }
+                            }*@
                         </ul>
                         <div class="list-tab">
-                             @if (Model.objIndividuals.Count > 0)
+                            @* @if (Model.objIndividuals.Count > 0)
                              {
                             <ul id="ulOwnerAllModule">
                                 <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
                                 <li>|</li>
                                 <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
                             </ul>
-                            @*Added by Arpita Soni on 01/16/2015 for ticket #1090*@
-                            <div id="NoOwnerFound1" class="NoDataFoundFilter" style="display:none">No Owner Found</div>
-                             }
-                             else
-                             {
+                          
+                           *@
+                            <ul id="ulOwnerAllModule">
+                                <li><a onclick="BulkOwnerOperation(true)">select all</a></li>
+                                <li>|</li>
+                                <li><a onclick="BulkOwnerOperation(false)">deselect all</a></li>
+                            </ul>
                             <div id="NoOwnerFound" class="NoDataFoundFilter">No Owner Found</div>
-                             }
                         </div>
                     </div>
                 </div>
@@ -284,9 +291,155 @@
 
         LoadPlan();
         onClickPlanTitle();
+        GetOwnerListForFilter(CurrentPlanId, false);
+        GetTacticTypelist(CurrentPlanId, false);
         GetLastSetofViews();
          CallAjax();
     });//document ready
+
+    function GetTacticTypelist(Planids, ifexists) {
+        var asyncval = false;
+        if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
+            asyncval = ifexists;
+        }
+
+        $('#ulTacticType').html('');
+        if (!ifexists) {
+            filters.TacticTypeids = [];
+        }
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            type: "GET",
+            cache: false,
+            async: asyncval,
+                @*           url: '@Url.Action("GetTacticTypeListForFilter", "Report")',*@
+            url: '@Url.Action("GetTacticTypeListForFilter", "Home")',
+            data: {
+                PlanId: Planids.toString()
+            },
+            dataType: "json",
+            success: function (data) {
+                if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                    window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+                    }
+                    else {
+                        if (data.isSuccess == true) {
+                            if (data.TacticTypelist != 'undefined' && data.TacticTypelist != null) {
+                                TactictypeCount = data.TacticTypelist.length;
+                                if (TactictypeCount > 0) {
+
+                                    $("#TacticTypeAllModule").css("display", "block");
+                                    $("#NoTTFound").hide();
+                                    $.each(data.TacticTypelist, function (i, TactictypeItem) {
+                                        var checked = "";
+                                        var checkedclass = "";
+                                        //Modify by Rahul Shah on 28/10/2015 for PL #1438
+
+                                        checked = "checked";
+                                        checkedclass = "close-list";
+                                        //}
+                                        $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
+                                    });
+                                }
+                                else {
+                                    $("#TacticTypeAllModule").css("display", "none");
+                                    $("#NoTTFound").show();
+                                }
+                            }
+                            else {
+                                $("#TacticTypeAllModule").css("display", "none");
+                                $("#NoTTFound").show();
+                            }
+                        }
+                    }
+                }
+        });
+
+        }
+
+        function GetOwnerListForFilter(Planids, ifexists) {
+            var type = '@PlanGanttTypes.Tactic.ToString()';
+        var asyncval = false;
+        if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
+            asyncval = ifexists;
+        }
+        $('#ulSelectedOwner').html('');
+        if (!ifexists) {
+            filters.OwnerIds = [];
+        }
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            type: "GET",
+            cache: false,
+            async: asyncval,
+        @*url: '@Url.Action("GetOwnerListForFilter", "Report")',*@
+                url: '@Url.Action("GetOwnerListForFilter", "Home")',
+                data: {
+                    PlanId: Planids.toString(),
+                    ViewBy: type,
+                    ActiveMenu: '@RevenuePlanner.Helpers.Enums.ActiveMenu.Home'
+        },
+                dataType: "json",
+                success: function (data) {
+
+                    if (data.returnURL != 'undefined' && data.returnURL == '#') {
+                        window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
+            }
+            else {
+                if (data.isSuccess == true) {
+                    if (data.AllowedOwner != 'undefined' && data.AllowedOwner != null) {
+
+                        OwnerCount = data.AllowedOwner.length;
+                        if (OwnerCount > 0) {
+                            var IsOwnerPresent = false;
+                            $("#ulOwnerAllModule").css("display", "block");
+                            $("#NoOwnerFound").hide();
+                            $.each(data.AllowedOwner, function (i, OwnerItem) {
+
+                                var LoggedInOwner = data.LoggedInUser.OwnerId;
+                                var checked = "";
+                                var checkedclass = "";
+                                if (OwnerItem.OwnerId == LoggedInOwner) {
+                                    IsOwnerPresent = true;
+                                    checked = "checked"
+                                    checkedclass = "close-list"
+                                }
+                                //Modify by Rahul Shah on 28/10/2015 for PL #1438
+                                //if (ifexists &&  filters.OwnerIds.indexOf(OwnerItem.OwnerId)>= 0) {
+                                //checked = "checked";
+                                //checkedclass = "close-list";
+                                //}
+
+                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
+                            });
+                            if (IsOwnerPresent == false) {
+
+                                // Modified By Nishant Sheth
+                                // Desc:: To resolve the #1790 observation
+                                checked = "checked"
+                                checkedclass = "close-list"
+                                $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + data.LoggedInUser.Title + '" id="liOwner' + data.LoggedInUser.OwnerId + '"><span class="sidebarliwidth">' + data.LoggedInUser.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + data.LoggedInUser.Title + '" onchange="toggleOwner(this)" id="' + data.LoggedInUser.OwnerId + '"' + checked + '></input></li>');
+                            }
+                        }
+                        else {
+                            $("#ulOwnerAllModule").css("display", "none");
+                            $("#NoOwnerFound").show();
+                        }
+                    }
+                    else {
+                        $("#ulOwnerAllModule").css("display", "none");
+                        $("#NoOwnerFound").show();
+                    }
+                }
+            }
+        }
+            });
+}
+
 
     function GetLastSetofViews() {
 
@@ -1056,7 +1209,7 @@
                 if (Status == 0) {
                     $html += '@RevenuePlanner.Helpers.Common.objCached.NoOpenTacticExists';
                     //Added by Arpita Soni on 01/13/2015 for ticket #1090
-                    $('#ulSelectedOwner li').hide();
+                    //$('#ulSelectedOwner li').hide();
                     $('#ulOwnerAllModule ').hide();
                     $('#NoOwnerFound1').show();
                     //Ended by Arpita Soni on 01/13/2015 for ticket #1090
@@ -1064,7 +1217,7 @@
                 else {
                     $html += '@RevenuePlanner.Helpers.Common.objCached.NoTacticExistPlan';
                     //Added by Arpita Soni on 01/13/2015 for ticket #1090
-                    $('#ulSelectedOwner li').hide();
+                    //$('#ulSelectedOwner li').hide();
                     $('#ulOwnerAllModule ').hide();
                     $('#NoOwnerFound1').show();
                     //Ended by Arpita Soni on 01/13/2015 for ticket #1090
