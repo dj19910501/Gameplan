@@ -3264,7 +3264,7 @@
 
 
     //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
-    var actualGrid = { rows: [], head: [] };
+ 
     function ExportCSVHoneyComb() {
         ExportToCsv = true;
         HomeGrid.expandAll();
@@ -3274,10 +3274,8 @@
         if (count > 0) {
             for (var i = 2 ; i <= 13 ; i++) {
                 HomeGrid.insertColumn(i);
-
             }
             var ListOfSelectedIds = { Id: [] };
-            var z = [];
             for (var i = 0; i < count; i++) {
                 if ($(HomeGrid.cells2(i, 14).cell).find("div").last().attr("class") == "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active") {
                     ListOfSelectedIds.Id.push(HomeGrid.getRowId(i));
@@ -3288,21 +3286,44 @@
                     }
                     if (ActivityTypeName == "Campaign") {
 
+                        //1782
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
+                        //1782
                         HomeGrid.cellByIndex(i, 3).setValue(Taskname);
                     }
                     if (ActivityTypeName == "Program") {
+
+                        // 1782
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentid = HomeGrid.getParentId(parentid);
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
+                        // 1782
+
                         parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
                         parentname = HomeGrid.cells(parentid, 1).getValue();
                         HomeGrid.cellByIndex(i, 3).setValue(parentname);
                         HomeGrid.cellByIndex(i, 4).setValue(Taskname);
                     }
                     if (ActivityTypeName == "Tactic") {
+
+                        // 1782
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentid = HomeGrid.getParentId(parentid);
+                        parentid = HomeGrid.getParentId(parentid);
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
+                        // 1782
+
                         parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
                         parentname = HomeGrid.cells(parentid, 1).getValue();
                         HomeGrid.cellByIndex(i, 4).setValue(parentname);
                         parentid = HomeGrid.getParentId(parentid);
                         parentname = HomeGrid.cells(parentid, 1).getValue();
                         HomeGrid.cellByIndex(i, 3).setValue(parentname);
+
                         HomeGrid.cellByIndex(i, 5).setValue(Taskname);
                     }
                     HomeGrid.cellByIndex(i, 6).setValue(HomeGrid.cellByIndex(i, 16).getValue());
@@ -3313,101 +3334,41 @@
                     HomeGrid.cellByIndex(i, 11).setValue(HomeGrid.cellByIndex(i, 21).getValue());
                     HomeGrid.cellByIndex(i, 12).setValue(HomeGrid.cellByIndex(i, 22).getValue());
                     HomeGrid.cellByIndex(i, 13).setValue(HomeGrid.cellByIndex(i, 23).getValue());
-
                 }
-
             }
-            actualGrid = { rows: [], head: [] };
-            actualGrid.head = GridDataCsv.head;
-            var data;
-            for (var i = 0; i < ListOfSelectedIds.Id.length; i++) {
-                var gid = ListOfSelectedIds.Id[i];
-                $.each(GridDataCsv.rows, function () {
-                    data = []; //new
-                    // Plan
-                    if (gid == this.id) {
-                        actualGrid.rows.push(this.id);
-
-                    } else {
-                        $.each(this.rows, function () {
-                            if (gid == this.id) {
-                                actualGrid.rows.push(this.id); // Camp
-
-                            }
-                            else {
-                                $.each(this.rows, function () {
-                                    // prog
-                                    if (gid == this.id) {
-                                        actualGrid.rows.push(this.id);
-
-                                    }
-                                    else {
-                                        $.each(this.rows, function () {
-                                            if (gid == this.id) {
-                                                actualGrid.rows.push(this.id); // tac
-
-                                            }
-                                        });
-
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
-
             var data;
             var Entity = [];
             var csvHeader = ",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal,R MQl,Revenue".split(',');
             Entity.push(csvHeader + '\n');
-            $.each(actualGrid.rows, function () {
-
-                data = [];
-                for (var i = 0; i < 14; i++) {
-
-                    if (i == 8) {
-
-                        data[i] = '$' + HomeGrid.cells(this, i).getValue().toString();
-
-                    }
-                    else if (i == 9) {
-
-                        data[i] = $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text();
-
-                    }
-                    else if (i == 10) {
-
-                        data[i] = $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text();
-                    }
-                    else {
-                        data[i] = HomeGrid.cells(this, i).getValue();
+            if (ListOfSelectedIds.Id.length > 0) {
+                $.each(ListOfSelectedIds.Id, function () {
+                    data = [];
+                    for (var i = 0; i < 14; i++) {
+                        if (i == 8) {
+                            data[i] = '$' + HomeGrid.cells(this, i).getValue().toString();
+                        }
+                        else if (i == 9) {
+                            data[i] = $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text();
+                        }
+                        else if (i == 10) {
+                            data[i] = $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text();
+                        }
+                        else if (i == 11) {
+                            data[i] = HomeGrid.cells(this, i).getValue().replace(/,/g, "");
+                        }
+                        else {
+                            data[i] = HomeGrid.cells(this, i).getValue();
+                        }
                     }
 
-                }
-                Entity.push(data.slice(2, data.length) + '\n');
-
-            });
-
-            ExportSelectedIds = {
-                TaskID: [],
-                Title: [],
-                ColorCode: [],
-                OwnerName: [],
-                TacticType: [],
-                PlanFlag: []
-            };
-            $("#totalEntity").text(0);
-            $(".honeycombbox-icon-gantt-Active").removeClass();
-            $(".honeycombbox").hide();
-
-            debugger;
+                    Entity.push(data.slice(2, data.length) + '\n');
+                });
+            }
             var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
-            $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv')
+            $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv');
             $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));
-
             BindHomeGrid();
+            BindEntityState();
         }
     }
 
