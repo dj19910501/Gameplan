@@ -282,7 +282,10 @@
                 var entityType = $(this).attr('id').toUpperCase().toString();
                 var task_id = $(this).attr('name1');
                 //Changes  to improve performance issue
-                var Ownername = $("#ulSelectedOwner").find('#liOwner' + $(this).attr('ownername')).attr("title");
+                var Ownername = "--";
+                if ($(this).attr('ownername') != "") {
+                    Ownername = $("#ulSelectedOwner").find('#liOwner' + $(this).attr('ownername')).attr("title");
+                }
                 var TacticType = $("#ulTacticType").find('#liTT' + $(this).attr('tactictype')).attr("title");
                 if (TacticType == undefined || TacticType == 'undefined') {
                     TacticType = $(this).attr('tactictype');
@@ -3090,6 +3093,7 @@
         // LastSetofowners();
     });
     var CloseClick = false;
+    var ExportToCsv = false;
     $(document).on('click', function (e) {
 
         if (CloseClick == true) {
@@ -3109,10 +3113,18 @@
 
         CloseClick = false;
     });
-    //Commented by Rahul shah on 12/12/2015 for PL #1782 :- export to csv from honeycomb not working.
-    //$(".popover-content").live('click', function (e) {
-    //    CloseClick = true;
-    //});
+    //Modified by Komal Rawal  on 14/12/2015 for PL #1782 :- export to csv from honeycomb not working.
+    $(".popover-content").live('click', function (e) {
+        
+        if (ExportToCsv) {
+            CloseClick = false;
+        }
+        else {
+            CloseClick = true;
+        }
+        ExportToCsv = false;
+
+    });
 
     /*Added By Komal Rawal for honeycomb feature #1779*/
 
@@ -3126,18 +3138,46 @@
 
             var htmlstring = "";
             var hccontrolsdiv = $('#honeycomb_content').find("#hc-controlsdiv").parent().html();
+            var Removefromlist = [];
             if (ExportSelectedIds.TaskID.length > 0) {
 
                 $('#honeycomb_content').html("");
 
                 for (i = 0; i < (ExportSelectedIds.TaskID.length) ; i++) {
+                    var HasActiveClass = false;
+                    if ($('#IsGridView').val() == "True") {
+                        HasActiveClass = $("div[altid='" + ExportSelectedIds.TaskID[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
+                    }
+                    else {
+                        HasActiveClass = $("div[name1='" + ExportSelectedIds.TaskID[i] + "']").hasClass("honeycombbox-icon-gantt-Active");
+                    }
+                    if (HasActiveClass == true) {
+                        htmlstring += '<div class="hc-block"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5 title="' + ExportSelectedIds.Title[i] + '">' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                    }
+                    else {
 
-                    htmlstring += '<div class="hc-block"><div class="row-fluid"><div  class="span8 pophover-left"  style="border-left: 5px solid #' + ExportSelectedIds.ColorCode[i] + '"><h5>' + ExportSelectedIds.Title[i] + '</h5>  <p class="metadata"><span>' + ExportSelectedIds.TacticType[i] + ' </span>|<span> ' + ExportSelectedIds.OwnerName[i] + '</span></p></div><div class="span1 text-right pull-right"><i taskid = "' + ExportSelectedIds.TaskID[i] + '" id ="CloseIcon"  class="fa fa-times" onclick="CloseIcon(this)" ></i></div></div></div>';
+                        Removefromlist.push(ExportSelectedIds.TaskID[i]);
+
+
+                    }
 
                 }
             }
 
             $('#honeycomb_content').append(htmlstring + hccontrolsdiv);
+
+            for (i = 0; i < Removefromlist.length; i++) {
+                var index = ExportSelectedIds.TaskID.indexOf(Removefromlist[i]);
+                if (index >= 0) {
+                    ExportSelectedIds.TaskID.splice(index, 1);
+                    ExportSelectedIds.Title.splice(index, 1);
+                    ExportSelectedIds.OwnerName.splice(index, 1);
+                    ExportSelectedIds.TacticType.splice(index, 1);
+                    ExportSelectedIds.ColorCode.splice(index, 1);
+                }
+
+
+            }
 
             return $("#honeycomb_content").html();
 
@@ -3222,11 +3262,11 @@
 
     };
 
-   
+
     //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
     var actualGrid = { rows: [], head: [] };
     function ExportCSVHoneyComb() {
-    
+        ExportToCsv = true;
         HomeGrid.expandAll();
         var count = HomeGrid.getRowsNum();
         var parentid = 0;
@@ -3277,7 +3317,7 @@
                 }
 
             }
-                       actualGrid = { rows: [], head: [] };
+            actualGrid = { rows: [], head: [] };
             actualGrid.head = GridDataCsv.head;
             var data;
             for (var i = 0; i < ListOfSelectedIds.Id.length; i++) {
@@ -3323,13 +3363,13 @@
             var csvHeader = ",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal,R MQl,Revenue".split(',');
             Entity.push(csvHeader + '\n');
             $.each(actualGrid.rows, function () {
-                   
+
                 data = [];
                 for (var i = 0; i < 14; i++) {
 
                     if (i == 8) {
-                        
-                        data[i] = '$'+ HomeGrid.cells(this, i).getValue().toString();
+
+                        data[i] = '$' + HomeGrid.cells(this, i).getValue().toString();
 
                     }
                     else if (i == 9) {
@@ -3362,11 +3402,11 @@
             $(".honeycombbox-icon-gantt-Active").removeClass();
             $(".honeycombbox").hide();
 
-            
+            debugger;
             var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
             $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv')
             $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));
-            
+
             BindHomeGrid();
         }
     }

@@ -10392,7 +10392,7 @@ li.close-list {
   font-size: 0.8em;
   margin-bottom: 60px;
   max-height: 400px;
-  max-width: 240px;
+  max-width: 100%;/*by bheru mehta 14-12-2015 for #1781*/
   overflow: auto;
         min-height: 450px;
 }
@@ -10451,8 +10451,10 @@ li.close-list {
         background-color: #ffffff;
         bottom: 100px;
         font-family: source_sans_proregular;
-  min-width: 275px;
+  min-width: 320px;/*by bheru mehta 14-12-2015 for #1781*/
         top: auto !important;
+        right:-81px;/*by bheru mehta 14-12-2015 for #1781*/
+        left:auto !important;/*by bheru mehta 14-12-2015 for #1781*/
     }
 
     .honeycombbox .dropdown-menu > li > a {
@@ -10485,7 +10487,10 @@ li.close-list {
         font-size: 16px;
         font-weight: normal;
         margin-top: 0;
-    word-break:break-all;
+  max-width: 100%;/*by bheru mehta 14-12-2015 for #1781 start*/
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;/*by bheru mehta 14-12-2015 for #1781 end*/
 }
 
  .honeycombbox  .st0 {
@@ -10517,6 +10522,10 @@ li.close-list {
 }
 .honeycombbox .popover:not(.in) .popover-content,.honeycombbox .popover:not(.in) .arrow{ /*by bheru mehta 10-12-2015 for #1762*/
   display: none;
+}
+.honeycombbox .popover.top .arrow /*by bheru mehta 14-12-2015 for #1781*/
+{
+    left:60%;
 }
 /*by bheru mehta 09-12-2015 for #1762*/
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {

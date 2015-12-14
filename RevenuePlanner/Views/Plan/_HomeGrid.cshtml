@@ -267,7 +267,7 @@
             // Desc :: To resolve show popup isssue after export to csv feature. #1789
 
             //$(".grid_Search").click(function (e) {
-            //    
+            //
             //    inspectCloseFocus = $(this).position().top;
             //    var id = $(this).parent().next().html();
             //    var type = $(this).attr('id');
@@ -370,7 +370,7 @@
         HomeGrid.setNumberFormat("$0,000", 6, ".", ",");
 
         HomeGrid.setImageSize(1, 1);
-      
+
         HomeGrid.setCustomSorting(sort_Owner, 8);
 
         HomeGrid.setCustomSorting(sort_TacticType, 7);
@@ -427,10 +427,29 @@
     }
 
     // 1780
+
+    //Added By Komal Rawal to close the popover if we click anywhere on the grid
+    $('#gridbox').find('tbody tr').on('click', function (e) {
+        var targetname = e.target.nodeName;
+        if (targetname != "circle") {
+            $(".popover").removeClass('in').addClass('out');
+
+        }
+
+    });
+    //End
+
+
+
     //Added by Rahul shah for Honeycomb selection in grid
     function AddRemoveEntity(item) {
         //Changes  to improve performance issue
-        var Ownername = $("#ulSelectedOwner").find('#liOwner' + $(item).attr('ownername')).attr("title");
+      
+        var Ownername = "--";
+        if($(item).attr('ownername') != "")
+        {
+            Ownername =  $("#ulSelectedOwner").find('#liOwner' + $(item).attr('ownername')).attr("title");
+        }
         var TacticType = $("#ulTacticType").find('#liTT' + $(item).attr('tactictype')).attr("title");
         if (TacticType == undefined || TacticType == 'undefined')
         {
@@ -448,7 +467,7 @@
             //}
             if ($(item).hasClass("honeycombbox-icon-gantt-Active")) {
                 var index = ExportSelectedIds.TaskID.indexOf($(item).attr('altId'));
-             
+
                 if (index >= 0) {
                     ExportSelectedIds.TaskID.splice(index, 1);
                     ExportSelectedIds.Title.splice(index, 1);
@@ -483,7 +502,7 @@
             else {
 
                 $(item).addClass("honeycombbox-icon-gantt-Active");
-             
+
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
                 ExportSelectedIds.Title.push($(item).attr('taskname'));
                 ExportSelectedIds.OwnerName.push(Ownername);
@@ -557,7 +576,7 @@
                 ExportSelectedIds.TacticType.push(TacticType);
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
-                
+
                 // Loop for selecting tactin on selecting Campaign
                 //$($("div[altId^='_" + $(item).attr('altId').split('_')[1] + "']")).each(function (index) {
                 //    var progid = $(this).attr('altId').split('_')[2];
@@ -602,7 +621,7 @@
                 ExportSelectedIds.TacticType.push(TacticType);
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
-                
+
             }
         }
 
@@ -641,7 +660,7 @@
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "none");
         }
     }
-   
+
 
 
     // Create funtion to load grid view event - Apply Distributed Parsing
@@ -768,15 +787,15 @@
 
     }
 
-  
+
     function sort_Owner(a, b, ord, a_id, b_id) {
-   
+
         a = HomeGrid.cells(a_id, 8).getText();
         b = HomeGrid.cells(b_id, 8).getText();
         return ord == "asc" ? (a > b ? 1 : -1) : (a > b ? -1 : 1);
     };
     function sort_TacticType(a, b, ord, a_id, b_id) {
-     
+
         var atype = a_id.split(".")[0].toString();
         var btype = b_id.split(".")[0].toString();
         if (atype == "tact" && btype == "tact") {
@@ -786,7 +805,7 @@
         } else return 0;
     };
     function convertNumber(num) {
-   
+
         var finlval = 0;
         var base = parseFloat(num.replace('$', ''));
         if (num.toLowerCase().match(/k/)) {
