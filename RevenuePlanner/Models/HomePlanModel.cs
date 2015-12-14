@@ -247,6 +247,7 @@ namespace RevenuePlanner.Models
     public class TacticTaskList
     {
         public Plan_Campaign_Program_Tactic Tactic { get; set; }
+        public Plan_Tactic PlanTactic { get; set; }
         public string CustomFieldType { get; set; }
         public string CustomFieldId { get; set; }
         public string CustomFieldTitle { get; set; }
@@ -260,6 +261,8 @@ namespace RevenuePlanner.Models
         public double ProgramProgress { get; set; }
         public List<int> lstCustomEntityId { get; set; }
         public System.Guid CreatedBy { get; set; } 
+        public DateTime PlanStartDate { get; set; }
+        public DateTime PlanEndDate { get; set; }
     }
 
     public class Plan_Tactic
