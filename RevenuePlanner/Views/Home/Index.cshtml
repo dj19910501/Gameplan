@@ -2585,6 +2585,21 @@
         });
         barChart2.parse(lstchart, "json");
     }
+    // Add By Nishant Sheth
+    // Desc :: to display parent child hireachy with export odf function
+    var selectedIds = [];
+    function GetParentIdRecursive(id) {
+
+        var checkindexselected = selectedIds.indexOf(id);
+        if (!(checkindexselected >= 0)) {
+            selectedIds.push(id);
+            var getparentid = gantt.getParent(id);
+            if (getparentid != 0) {
+                return GetParentIdRecursive(getparentid);
+            }
+        }
+
+    }
     //Added by Rahul Shah for PL #1782 for Honeycomb pdf
     function CallPdfHoneyComb() {
 
@@ -2603,19 +2618,22 @@
         var Status = "";
         var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
         for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
+            if (GanttTaskDataNew.data[i].type != undefined) {
             if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
                 Status = GanttTaskDataNew.data[i].Status;
+            }
             }
             for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
                 if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
 
-                    GanttTaskDataforHoney.data.push(GanttTaskDataNew.data[i]);
+                    GetParentIdRecursive(GanttTaskDataNew.data[i].id);
 
-                    defaultParentArr.index.push(i);
-                    defaultParentArr.parent.push(GanttTaskDataNew.data[i].parent);
-                    GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
-                    GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
+                    //defaultParentArr.index.push(i);
 
+                    //defaultParentArr.parent.push(GanttTaskDataNew.data[i].parent);
+                    //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
+                    //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
+                    if (GanttTaskDataNew.data[i].type != undefined) {
                     if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
                         TotalTact = TotalTact + 1;
                         TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
@@ -2624,6 +2642,15 @@
                 }
             }
         }
+        }
+
+        for (var p = 0; p < selectedIds.length; p++) {
+
+            var taskdata = gantt.getTask(selectedIds[p]);
+            GanttTaskDataforHoney.data.push(taskdata);
+            GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
+        }
+
         var tacticids = defaultParentArr.tacticId;
         gantt.clearAll();
         gantt.init("gantt_honey");
@@ -2821,6 +2848,7 @@
             $("#mqllabeltest").text($("#pmqlLabel").text());
             $("#budgetlabeltest").text($("#pcostLabel").text());
 
+            if (Status != undefined && Status != null) {
             if (Status.toUpperCase().toString() == "DRAFT") {
                 $("#mqlspanvalue").text($("#pMQLs").text());
                 $("#budgetspanvalue").text($("#pbudget").text());
@@ -2832,6 +2860,7 @@
                 $("#honeybudget").text(TotalCost);
                 SetBudget("#honeybudget")
                 $("#budgetspanvalue").text($("#honeybudget").text());
+            }
             }
             $("#ptacticcounttest").text(TotalTact);
             //$("#mqlspanpercentage").text($("#pMQLImproved").text());
@@ -2903,11 +2932,14 @@
                 end: dateend
 
             });
-            for (var m = 0; m < defaultParentArr.index.length; m++) {
-                var indexdef = defaultParentArr.index[m];
-                var parentdef = defaultParentArr.parent[m];
-                GanttTaskData.data[indexdef].parent = parentdef;
-            }
+
+            //for (var m = 0; m < defaultParentArr.index.length; m++) {
+            //    var indexdef = defaultParentArr.index[m];
+            //    var parentdef = defaultParentArr.parent[m];
+            //    GanttTaskData.data[indexdef].parent = parentdef;
+            //}
+            selectedIds = [];
+            GanttTaskDataforHoney.data = new Array();
             gantt.clearAll();
 
             gantt.init("gantt_here");
