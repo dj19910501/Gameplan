@@ -452,6 +452,8 @@
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
+                                        var checked = "";
+                                        var checkedclass = "";
                                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                                         if (OwnerItem.OwnerId == LoggedInOwner) {
                                             IsOwnerPresent = true;
