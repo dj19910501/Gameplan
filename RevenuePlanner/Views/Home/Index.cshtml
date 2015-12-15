@@ -281,18 +281,7 @@
                 CloseClick = false;
                 var entityType = $(this).attr('id').toUpperCase().toString();
                 var task_id = $(this).attr('name1');
-                //Changes  to improve performance issue
-                var Ownername = "--";
-                if ($(this).attr('ownername') != "") {
-                    Ownername = $("#ulSelectedOwner").find('#liOwner' + $(this).attr('ownername')).attr("title");
-                }
-                var TacticType = $("#ulTacticType").find('#liTT' + $(this).attr('tactictype')).attr("title");
-                if (TacticType == undefined || TacticType == 'undefined') {
-                    TacticType = $(this).attr('tactictype');
-                }
-                else {
-                    TacticType = TacticType.split("(")[0];
-                }
+              
                 //gantt.open(task_id);
                 switch (entityType) {
                     case 'PLAN':
@@ -323,8 +312,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push(Ownername);
-                            ExportSelectedIds.TacticType.push(TacticType);
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
 
@@ -369,8 +358,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push(Ownername);
-                            ExportSelectedIds.TacticType.push(TacticType);
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
                             //var innertask = gantt.getChildren($(this).attr('name1'));
@@ -406,8 +395,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push(Ownername);
-                            ExportSelectedIds.TacticType.push(TacticType);
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
                             //gantt.open($(this).attr('name1'));
@@ -431,8 +420,8 @@
                             $(this).addClass("honeycombbox-icon-gantt-Active");
                             ExportSelectedIds.TaskID.push($(this).attr('name1'));
                             ExportSelectedIds.Title.push($(this).attr('aria-label'));
-                            ExportSelectedIds.OwnerName.push(Ownername);
-                            ExportSelectedIds.TacticType.push(TacticType);
+                            ExportSelectedIds.OwnerName.push($(this).attr('ownername'));
+                            ExportSelectedIds.TacticType.push($(this).attr('tactictype'));
                             ExportSelectedIds.ColorCode.push($(this).attr('colorcode'));
                             ExportSelectedIds.PlanFlag.push('Calender');
                         }
@@ -3445,30 +3434,38 @@
             }
             var data;
             var Entity = [];
-            var csvHeader = ",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal,R MQl,Revenue".split(',');
+            var csvHeader = String(",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal,R MQl,Revenue".split(',')).toString();
             Entity.push(csvHeader + '\n');
             if (ListOfSelectedIds.Id.length > 0) {
                 $.each(ListOfSelectedIds.Id, function () {
                     data = [];
                     for (var i = 0; i < 14; i++) {
                         if (i == 8) {
-                            data[i] = '$' + HomeGrid.cells(this, i).getValue().toString();
+                            data[i] = "\"" + '$' + HomeGrid.cells(this, i).getValue().toString() + "\"";
                         }
                         else if (i == 9) {
-                            data[i] = $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text();
+                           // data[i] = "\"" + $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
+                            var TT = HomeGrid.cells(this, 14).getValue();
+                            data[i] = "\"" + $(TT).last().attr("TacticType") + "\"";
                         }
                         else if (i == 10) {
-                            data[i] = $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text();
+                          //  data[i] = "\"" + $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
+                            var OwnerName = HomeGrid.cells(this, 14).getValue();
+                            data[i] = "\"" + $(OwnerName).last().attr("ownername") + "\"";
+                            
+
                         }
                         else if (i == 11) {
-                            data[i] = HomeGrid.cells(this, i).getValue().replace(/,/g, "");
+                            data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
                         }
                         else {
-                            data[i] = HomeGrid.cells(this, i).getValue();
+                            data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
                         }
                     }
 
-                    Entity.push(data.slice(2, data.length) + '\n');
+                    if (data != null) {
+                        Entity.push('' + String(data.slice(2, data.length) + '\n') + '');
+                    }
                 });
             }
             @*var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);

@@ -477,20 +477,6 @@
     function AddRemoveEntity(item) {
         //Changes  to improve performance issue
       
-        var Ownername = "--";
-        if($(item).attr('ownername') != "")
-        {
-            Ownername =  $("#ulSelectedOwner").find('#liOwner' + $(item).attr('ownername')).attr("title");
-        }
-        var TacticType = $("#ulTacticType").find('#liTT' + $(item).attr('tactictype')).attr("title");
-        if (TacticType == undefined || TacticType == 'undefined')
-        {
-            TacticType = $(item).attr('tactictype');
-        }
-        else
-        {
-            TacticType = TacticType.split("(")[0];
-        }
         if ($(item).attr('id') == 'PlanAdd') {
             //var planid = $(item).attr('altId').split('_')[0];
             //if (planid != undefined) {
@@ -536,9 +522,9 @@
                 $(item).addClass("honeycombbox-icon-gantt-Active");
 
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push(Ownername);
-                ExportSelectedIds.TacticType.push(TacticType);
+                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
                 // Loop for selecting Program on selecting Plan
@@ -603,9 +589,9 @@
             else {
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push(Ownername);
-                ExportSelectedIds.TacticType.push(TacticType);
+                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
 
@@ -648,9 +634,9 @@
 
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push(Ownername);
-                ExportSelectedIds.TacticType.push(TacticType);
+                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
 
@@ -674,9 +660,9 @@
             else {
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
-                ExportSelectedIds.OwnerName.push(Ownername);
-                ExportSelectedIds.TacticType.push(TacticType);
+                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
+                ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
                 ExportSelectedIds.PlanFlag.push('Grid');
             }
@@ -1052,6 +1038,19 @@
         if (stage == 2) // start edit Shipping column
         {
             if (nValue != null && nValue != "") {
+             
+                //Added By Komal Rawal to Change the value in array if grid updated
+                if(ExportSelectedIds.TaskID.length > 0)
+                {
+                    var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
+                    if(TasknameIndex >= 0 )
+                    {
+                        ExportSelectedIds.Title[TasknameIndex] = nValue;
+
+                    }
+                    
+                }
+                //End
                 var sdateindex = HomeGrid.getColIndexById('startdate');
                 var edateindex = HomeGrid.getColIndexById('enddate');
                 var idindex = HomeGrid.getColIndexById('id');
@@ -1131,6 +1130,18 @@
                             url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
                             data: { tacticTypeId: tacticTypeId },
                             success: function (data) {
+                                //if(ExportSelectedIds.TaskID.length > 0)
+                                //{
+                                  
+                                //    var TaskName = HomeGrid.cells(rowId,1).getValue()
+                                //    var OldValue = $("div[taskname='" + TaskName + "']").attr('TacticType')
+                                //    var TacticTypeIndex = ExportSelectedIds.TacticType.indexOf(OldValue);
+                                //    if(TacticTypeIndex >= 0 )
+                                //    {
+                                //        ExportSelectedIds.TacticType[TacticTypeIndex] = data.TacticTypeName;
+
+                                //    }
+                                //}
                                 pcost = data.revenue;
                                 var stagetitle = data.stageTitle;
                                 var projectedStageValue = data.projectedStageValue;
@@ -1229,6 +1240,20 @@
                             data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                             dataType: 'json',
                             success: function (states) {
+                              
+                                //if(ExportSelectedIds.TaskID.length > 0)
+                                //{
+                                //    var TaskName = HomeGrid.cells(rowId,1).getValue()
+                                //    var OldValue = $("div[taskname='" + TaskName + "']").attr('OwnerName')
+                                //    var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
+
+                                //    if(OwnerNameIndex >= 0 )
+                                //    {
+                                //        ExportSelectedIds.OwnerName[OwnerNameIndex] = states.OwnerName;
+
+                                //    }
+                                //}
+
                                 if (states.errormsg != null && states.errormsg.trim() != "") {
                                     alert(states.errormsg.trim());
                                     HomeGrid.cells(rowId, cellInd).setValue(oValue);

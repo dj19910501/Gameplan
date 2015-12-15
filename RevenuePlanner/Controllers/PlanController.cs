@@ -2525,6 +2525,7 @@ namespace RevenuePlanner.Controllers
                 IsDeployedToIntegration = tt.IsDeployedToIntegration,
                 stageId = tt.StageId,
                 stageTitle = tt.Stage.Title,
+                TacticTypeName = tt.Title,
                 projectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue
             }, JsonRequestBehavior.AllowGet);
         }
@@ -9397,7 +9398,7 @@ namespace RevenuePlanner.Controllers
                         plandataobj = new Plandataobj();
                         //#1780
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=add_Remove_Entity onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>";
-                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + planitem.CreatedBy.ToString() + "' TaskName=" + HttpUtility.HtmlEncode(planitem.Title) + " ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>";
+                        plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=honeycombbox-icon-gantt onclick=javascript:AddRemoveEntity(this) id=PlanAdd TacticType= '" + doubledesh + "' OwnerName= '" + GetOwnerName(planitem.CreatedBy.ToString()) + "' TaskName=" + Uri.EscapeDataString(planitem.Title) + " ColorCode='" + PlanColor + "' altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div>";
                         plandataobjlist.Add(plandataobj);
 
                         plandataobj = new Plandataobj();
@@ -9543,7 +9544,7 @@ namespace RevenuePlanner.Controllers
 
                                     campaigndataobj = new Plandataobj();
                                     //campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") +  "<div class=add_Remove_Entity id=CampaignAdd onclick=javascript:AddRemoveEntity(this) altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + Campaignitem.CreatedBy.ToString() + "' TaskName=" + HttpUtility.HtmlEncode(Campaignitem.Title) + " altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                    campaigndataobj.value = "<div class=grid_Search id=CP></div>" + (Campaignitem.IsPlanCreateAll ? "<div class=grid_add id=Campaign alt=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "> </div>" : "") + "<div class=honeycombbox-icon-gantt id=CampaignAdd onclick=javascript:AddRemoveEntity(this) TacticType= '" + doubledesh + "' ColorCode='" + CampaignColor + "'  OwnerName= '" + GetOwnerName(Campaignitem.CreatedBy) + "' TaskName=" + Uri.EscapeDataString(Campaignitem.Title) + " altId=" + planitem.PlanId + "_" + Campaignitem.PlanCampaignId + " per=" + Campaignitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                     campaigndataobjlist.Add(campaigndataobj);
 
                                     campaigndataobj = new Plandataobj();
@@ -9691,7 +9692,7 @@ namespace RevenuePlanner.Controllers
 
                                                 programdataobj = new Plandataobj();
                                                 //programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=ProgramAdd onclick=javascript:AddRemoveEntity(this); altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + Programitem.CreatedBy.ToString() + "'  TaskName=" + HttpUtility.HtmlEncode(Programitem.Title) + "  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                programdataobj.value = "<div class=grid_Search id=PP></div>" + (Programitem.IsPlanCreateAll ? "<div class=grid_add id=Program alt=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=ProgramAdd onclick=javascript:AddRemoveEntity(this); TacticType= '" + doubledesh + "' ColorCode='" + ProgramColor + "' OwnerName= '" + GetOwnerName(Programitem.CreatedBy) + "'  TaskName=" + Uri.EscapeDataString(Programitem.Title) + "  altId=_" + Campaignitem.PlanCampaignId + "_" + Programitem.PlanProgramId + " per=" + Programitem.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                 programdataobjlist.Add(programdataobj);
 
                                                 programdataobj = new Plandataobj();
@@ -9815,8 +9816,9 @@ namespace RevenuePlanner.Controllers
 
                                                         tacticdataobj = new Plandataobj();
                                                      
-                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=add_Remove_Entity id=TacticAdd onclick=javascript:AddRemoveEntity(this) altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this)  TaskName=" + HttpUtility.HtmlEncode(tactic.title) + " ColorCode='" + TacticColor + "'  TacticType= '" + tactic.tactictypeid.ToString() + "' OwnerName= '" + tactic.CreatedBy.ToString() + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                        
+
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this)  TaskName=" + Uri.EscapeDataString(tactic.title) + " ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
@@ -10564,7 +10566,13 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
-                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost }, JsonRequestBehavior.AllowGet);
+                    //Added By Komal Rawal to update owner in HoneyComb
+                    var OwnerName = "";
+                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    {
+                         OwnerName = GetOwnerName(UpdateVal);
+                    }
+                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
                 #region update program detail
@@ -10626,6 +10634,14 @@ namespace RevenuePlanner.Controllers
                             SendEmailnotification(pcpobj.Plan_Campaign.Plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), pcpobj.Plan_Campaign.Plan.Title.ToString(), pcpobj.Plan_Campaign.Title.ToString(), pcpobj.Title.ToString(), pcpobj.Title.ToString(), Enums.Section.Program.ToString().ToLower());
 
                     }
+
+                    //Added By Komal Rawal to update owner in HoneyComb
+                    var OwnerName = "";
+                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    {
+                        OwnerName = GetOwnerName(UpdateVal);
+                    }
+                    return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
 
 
@@ -10677,6 +10693,14 @@ namespace RevenuePlanner.Controllers
                             SendEmailnotification(pcobj.Plan.PlanId, id, oldOwnerId, new Guid(UpdateVal), pcobj.Plan.Title, pcobj.Title, pcobj.Title, pcobj.Title, Enums.Section.Campaign.ToString().ToLower());
 
                     }
+
+                    //Added By Komal Rawal to update owner in HoneyComb
+                    var OwnerName = "";
+                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    {
+                        OwnerName = GetOwnerName(UpdateVal);
+                    }
+                    return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
 
                 #endregion
@@ -10848,6 +10872,7 @@ namespace RevenuePlanner.Controllers
                     double totalLineitemCost1 = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                     var objOtherLineItemNew = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId == null);
                     tacticostNew = objTactic.Cost;
+                    
                     return Json(new { lineItemCost = totalLineitemCost1, tacticCost = tacticostNew, otherLineItemCost = objOtherLineItemNew.Cost }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
@@ -11488,7 +11513,44 @@ namespace RevenuePlanner.Controllers
         #endregion	   
 
 
-    
+        #region GetOwnerName and TacticTypeName
+        /// <summary>
+        /// Added By: Komal Rawal.
+        /// Action to get all UserNames and TacticType
+        /// </summary>
+        public string GettactictypeName(int TacticTypeID)
+        {
+            var TacticType = db.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
+
+            return TacticType;
+        }
+
+        public string GetOwnerName(string UserGuid)
+        {
+            var OwnerName = "";
+            if(UserGuid != "")
+            {
+               if(lstUserDetails == null ||lstUserDetails.Count == 0)
+               {
+                 lstUserDetails =  objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+               }
+           
+            var userName = lstUserDetails.Where(user => user.UserId.ToString() == UserGuid).Select(user=>new{
+            FirstName = user.FirstName,
+            Lastname = user.LastName
+            }).FirstOrDefault();
+
+
+            if (userName != null)
+            {
+                OwnerName = userName.FirstName + " " + userName.Lastname;
+            }
+            }
+
+            return OwnerName.ToString();
+        }
+
+        #endregion
 
         #region "Feature: Copy Tactic/Program/Campaign between Plan"
 

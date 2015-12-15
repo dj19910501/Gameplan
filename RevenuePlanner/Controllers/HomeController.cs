@@ -32,6 +32,8 @@ namespace RevenuePlanner.Controllers
         private BDSService.BDSServiceClient objBDSUserRepository = new BDSService.BDSServiceClient();
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
+        List<User> lstUsers = new List<User>();
+        private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
         #endregion
 
@@ -61,6 +63,10 @@ namespace RevenuePlanner.Controllers
             bool IsPlanEditAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditAll);
             bool IsPlanEditable = false;
             bool isPublished = false;
+
+        
+
+
             //// Set viewbag for notification email shared link inspect popup
             ViewBag.ActiveMenu = activeMenu;
             ViewBag.ShowInspectForPlanTacticId = planTacticId;
@@ -416,6 +422,9 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns json result object of tactic type and plan campaign program tactic.</returns>
         public async Task<JsonResult> GetViewControlDetail(string viewBy, string planId, string timeFrame, string customFieldIds, string ownerIds, string activeMenu, bool getViewByList, string TacticTypeid, string StatusIds, bool isupdate)
         {
+            //Added By Komal Rawal to get all the user names for honeycomb feature
+            lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            //End
             //// Create plan list based on PlanIds of search filter
 
             List<int> planIds = string.IsNullOrWhiteSpace(planId) ? new List<int>() : planId.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -1310,7 +1319,7 @@ namespace RevenuePlanner.Controllers
                 planid = taskdata.planid,
                 type = "Plan",
                 TacticType = doubledesh,
-                OwnerName = taskdata.CreatedBy.ToString(),
+                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
 
             }).Distinct().ToList();
@@ -1348,7 +1357,7 @@ namespace RevenuePlanner.Controllers
                 Status = taskdata.Status,
                 type = "Campaign",
                 TacticType = doubledesh,
-                OwnerName = taskdata.CreatedBy.ToString(),
+                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).Distinct().ToList();
             #endregion
@@ -1385,7 +1394,7 @@ namespace RevenuePlanner.Controllers
                 Status = taskdata.Status,
                 type = "Program",
                 TacticType = doubledesh,
-                OwnerName = taskdata.CreatedBy.ToString(),
+                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).ToList().Distinct().ToList();
             #endregion
@@ -1424,8 +1433,8 @@ namespace RevenuePlanner.Controllers
                 plantacticid = taskdata.plantacticid,
                 Status = taskdata.Status,
                 type = "Tactic",
-                TacticType = taskdata.TacticTypeId.ToString(),
-                OwnerName = taskdata.CreatedBy.ToString(),
+                TacticType = GettactictypeName(taskdata.TacticTypeId),
+                OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
                 Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
             }).Distinct().ToList();
             #endregion
@@ -1877,7 +1886,7 @@ namespace RevenuePlanner.Controllers
                     type = "Plan",
                     TacticType = doubledesh,
                     Status = plan.Status,
-                    OwnerName = plan.CreatedBy.ToString(),
+                    OwnerName = GetOwnerName(plan.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2039,8 +2048,8 @@ namespace RevenuePlanner.Controllers
                     plantacticid = tactic.plantacticid,
                     Status = tactic.Status,
                     type = "Tactic",
-                    TacticType = tactic.TacticTypeId.ToString(),
-                    OwnerName = tactic.CreatedBy.ToString(),
+                    TacticType = GettactictypeName(tactic.TacticTypeId),
+                    OwnerName = GetOwnerName(tactic.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2079,7 +2088,7 @@ namespace RevenuePlanner.Controllers
                     Status = program.Status,
                     type = "Program",
                     TacticType = doubledesh,
-                    OwnerName = program.CreatedBy.ToString(),
+                    OwnerName = GetOwnerName(program.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (program.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(program.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2117,7 +2126,7 @@ namespace RevenuePlanner.Controllers
                     Status = campaign.Status,
                     type = "Campaign",
                     TacticType = doubledesh,
-                    OwnerName = campaign.CreatedBy.ToString(),
+                    OwnerName = GetOwnerName(campaign.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (campaign.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(campaign.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2179,7 +2188,7 @@ namespace RevenuePlanner.Controllers
                     type = "Plan",
                     TacticType = doubledesh,
                     Status = plan.Status,
-                    OwnerName = plan.CreatedBy.ToString(),
+                    OwnerName = GetOwnerName(plan.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (plan.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(plan.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -2287,7 +2296,7 @@ namespace RevenuePlanner.Controllers
                     Status = _campgn.Status,
                     type = "Campaign",
                     TacticType = doubledesh,
-                    OwnerName = _campgn.CreatedBy.ToString(),
+                    OwnerName = GetOwnerName( _campgn.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (_campgn.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(_campgn.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -2332,7 +2341,7 @@ namespace RevenuePlanner.Controllers
                     Status = task.Status,
                     type = "Program",
                     TacticType = doubledesh,
-                    OwnerName = task.CreatedBy.ToString(),
+                    OwnerName = GetOwnerName(task.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -2398,8 +2407,8 @@ namespace RevenuePlanner.Controllers
                     plantacticid = task.plantacticid,
                     Status = task.Status,
                     type = "Tactic",
-                    TacticType = task.TacticTypeId.ToString(),
-                    OwnerName = task.CreatedBy.ToString(),
+                    TacticType = GettactictypeName(task.TacticTypeId),
+                    OwnerName = GetOwnerName(task.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
                 #endregion
@@ -5365,6 +5374,49 @@ namespace RevenuePlanner.Controllers
             return Json(new { lstchart = lstActivityChart.ToList(), TotalMql = MQLs }, JsonRequestBehavior.AllowGet);
 
         }
+        #endregion
+
+        #region GetOwnerName and TacticTypeName
+        /// <summary>
+        /// Added By: Komal Rawal.
+        /// Action to get all UserNames and TacticType
+        /// </summary>
+        public string GettactictypeName(int TacticTypeID)
+        {
+            var TacticType = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
+
+            return TacticType;
+        }
+
+        public string GetOwnerName(string UserGuid)
+        {
+            var OwnerName = "";
+            if(lstUsers.Count == 0 || lstUsers == null )
+            {
+                objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+            }
+            if (UserGuid != "")
+            {
+
+
+                var userName = lstUsers.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
+                {
+                    FirstName = user.FirstName,
+                    Lastname = user.LastName
+                }).FirstOrDefault();
+
+
+                if(userName != null)
+                {
+                    OwnerName = userName.FirstName + " " + userName.Lastname;
+                }
+              
+            }
+
+            return OwnerName.ToString();
+        }
+
+
         #endregion
 
     }
