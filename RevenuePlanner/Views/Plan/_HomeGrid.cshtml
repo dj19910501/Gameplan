@@ -250,9 +250,37 @@
             lines.splice(2, 1, "Program");
             lines.splice(3, 1, "Tactic");
             lines.splice(4, 1, "Line Item");
-            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
+            @*var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
             $("#exportcsv").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv')
-            $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
+            $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));*@
+
+            // Add By Nishant Sheth To resolve the issue for IE : #1782
+            var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
+            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
+         
+            if (navigator.userAgent.search("Trident") >= 0) { 
+                if (!window.Blob) {
+                    // if IE 9 then becuase ie 9 and lower version not support blob
+                    //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
+                    var IEwindow = window.open();
+                    IEwindow.document.write('sep=,\r\n' + lines);
+                    IEwindow.document.close();
+                    IEwindow.document.execCommand('SaveAs', true, Filename);
+                    IEwindow.close();
+                }
+                else
+                {
+                    var fileData = ["sep=,\r\n" + lines];
+                    blobObject = new Blob(fileData);
+                    window.navigator.msSaveOrOpenBlob(blobObject, Filename); // Now the user will have the option of clicking the Save button and the Open button.
+                }
+            }
+            else
+            {
+                $("#exportcsv").attr('download', Filename)
+                $("#exportcsv").attr("href", 'data:Application/octet-stream,' + (escape(lines)));
+            }
+
 
             BindHomeGrid();
             $(".orange-corner-grid").hover(function () {
@@ -306,6 +334,9 @@
             $("#content_wraper").removeClass("span10 all-height").addClass("span10 padding-top40");
             $('#errorMessageInspectPopup').css("display", "block");
         }
+        // 1782 Added by ashish mistry
+        BindEntityState();
+        // 1782 Added by ashish mistry
     }
     function callsearch() {
         $("#divgridview").find(".grid_Search").each(function () {

@@ -2637,7 +2637,82 @@
                     if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
                         TotalTact = TotalTact + 1;
                         TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
-                        defaultParentArr.tacticId.push(GanttTaskDataNew.data[i].id.split('_')[3].replace("T", ""));
+                            // Add BY Nishant Sheth
+                            //Desc:: resolve the issue with view by dropdown
+                            var name_Id = GanttTaskDataNew.data[i].id.split('_');
+                            var name = name_Id[0];
+                            var PlanId;
+                            var CampaignId;
+                            var ProgramId;
+                            var TacticId;
+                            var ImpTacticId;
+                            var LineId;
+                            if (name_Id.length == 1) {
+                                PlanId = name_Id[0].replace("L", "");
+                            }
+                            else if (name_Id.length == 2) {
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                }
+                            }
+                            else if (name_Id.length == 3) {
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[2].replace("C", "");
+                                    //ProgramId = name_Id[2].replace("P", "");
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                    ProgramId = name_Id[2].replace("P", "");
+                                }
+                            }
+                            else if (name_Id.length == 4) {
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[2].replace("C", "");
+                                    ProgramId = name_Id[3].replace("P", "");
+                                    //TacticId = name_Id[3].replace("T", "");
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                    ProgramId = name_Id[2].replace("P", "");
+                                    TacticId = name_Id[3].replace("T", "");
+                                }
+                            }
+                            else {
+
+                                // Chaneg By Nishant Sheth
+                                // Desc:: To resolve issue with change view by dropdown
+                                var nameindex = name.indexOf("Z");
+                                if (nameindex >= 0) {
+                                    PlanId = name_Id[1].replace("L", "");
+                                    CampaignId = name_Id[2].replace("C", "");
+                                    ProgramId = name_Id[3].replace("P", "");
+                                    TacticId = name_Id[4].replace("T", "");
+                                    //LineId = name_Id[4];
+                                } else {
+                                    PlanId = name_Id[0].replace("L", "");
+                                    CampaignId = name_Id[1].replace("C", "");
+                                    ProgramId = name_Id[2].replace("P", "");
+                                    TacticId = name_Id[3].replace("T", "");
+                                    LineId = name_Id[4];
+                                }
+                            }
+                            
+                            defaultParentArr.tacticId.push(TacticId);
                     }
                 }
             }
@@ -3396,9 +3471,34 @@
                     Entity.push(data.slice(2, data.length) + '\n');
                 });
             }
-            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
+            @*var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
             $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv');
-            $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));
+            $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));*@
+            // Add By Nishant Sheth To resolve the issue for IE : #1782
+            
+            var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
+            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
+
+            if (navigator.userAgent.search("Trident") >= 0) {
+                if (!window.Blob) {
+                    // if IE 9 then becuase ie 9 and lower version not support blob
+                    //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
+                    var IEwindow = window.open();
+                    IEwindow.document.write('sep=,\r\n' + Entity.join(","));
+                    IEwindow.document.close();
+                    IEwindow.document.execCommand('SaveAs', true, Filename);
+                    IEwindow.close();
+                }
+                else {
+                    var fileData = ["sep=,\r\n" + Entity.join(",")];
+                    blobObject = new Blob(fileData);
+                    window.navigator.msSaveOrOpenBlob(blobObject, Filename); // Now the user will have the option of clicking the Save button and the Open button.
+                }
+            }
+            else {
+                $("#ExportCSVHoneyComb").attr('download', Filename)
+                $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(","))));
+            }
             BindHomeGrid();
             BindEntityState();
         }
