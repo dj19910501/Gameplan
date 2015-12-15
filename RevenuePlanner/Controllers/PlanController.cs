@@ -49,6 +49,7 @@ namespace RevenuePlanner.Controllers
         List<User> lstUserDetails = new List<User>();
         List<int> lstCustomFieldsRequired = new List<int>();
     //    List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
+        List<TacticType> TacticTypeListForHC = new List<TacticType>();
         List<Plan_Campaign_Program_Tactic_LineItem> DBLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
 
         #endregion
@@ -9118,7 +9119,8 @@ namespace RevenuePlanner.Controllers
             string xmlUserlist = string.Empty;
             string stageMQL = Enums.Stage.MQL.ToString();
             Plangrid objplangrid = new Plangrid();
-            
+
+            TacticTypeListForHC = db.TacticTypes.Where(tt => tt.IsDeleted == false).Select(tt => tt).ToList();
             //Added By Komal rawal for honeycomb feature
             Dictionary<string, string> ColorCodelist = db.EntityTypeColors.ToDictionary(e => e.EntityType.ToLower(), e => e.ColorCode);
             var TacticColor = ColorCodelist[Enums.EntityType.Tactic.ToString().ToLower()];
@@ -11520,7 +11522,11 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public string GettactictypeName(int TacticTypeID)
         {
-            var TacticType = db.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
+            if (TacticTypeListForHC.Count == 0 || TacticTypeListForHC == null)
+            {
+                TacticTypeListForHC = db.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt).ToList();
+            }
+            var TacticType = TacticTypeListForHC.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
 
             return TacticType;
         }

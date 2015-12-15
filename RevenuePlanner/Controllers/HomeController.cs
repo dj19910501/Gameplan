@@ -33,6 +33,7 @@ namespace RevenuePlanner.Controllers
         private DateTime CalendarStartDate;
         private DateTime CalendarEndDate;
         List<User> lstUsers = new List<User>();
+        List<TacticType> TacticTypeList = new List<TacticType>();
         private BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
 
         #endregion
@@ -423,6 +424,7 @@ namespace RevenuePlanner.Controllers
         public async Task<JsonResult> GetViewControlDetail(string viewBy, string planId, string timeFrame, string customFieldIds, string ownerIds, string activeMenu, bool getViewByList, string TacticTypeid, string StatusIds, bool isupdate)
         {
             //Added By Komal Rawal to get all the user names for honeycomb feature
+            TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.IsDeleted == false).Select(tt => tt).ToList();
             lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
             //End
             //// Create plan list based on PlanIds of search filter
@@ -5383,7 +5385,11 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         public string GettactictypeName(int TacticTypeID)
         {
-            var TacticType = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt.Title).FirstOrDefault();
+            if (TacticTypeList.Count == 0 || TacticTypeList == null)
+            {
+                TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt).ToList();
+            }
+            var TacticType = TacticTypeList.Where(tt => tt.TacticTypeId == TacticTypeID ).Select(tt => tt.Title).FirstOrDefault();
 
             return TacticType;
         }
@@ -5393,7 +5399,7 @@ namespace RevenuePlanner.Controllers
             var OwnerName = "";
             if(lstUsers.Count == 0 || lstUsers == null )
             {
-                objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+               lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
             }
             if (UserGuid != "")
             {
