@@ -10567,12 +10567,12 @@ namespace RevenuePlanner.Controllers
                     }
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                     //Added By Komal Rawal to update owner in HoneyComb
-                    var OwnerName = "";
-                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                    {
-                         OwnerName = GetOwnerName(UpdateVal);
-                    }
-                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost, OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
+                    //var OwnerName = "";
+                    //if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    //{
+                    //     OwnerName = GetOwnerName(UpdateVal);
+                    //}
+                    return Json(new { lineItemCost = totalLineitemCost, OtherLineItemCost = otherLineItemCost }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
                 #region update program detail
@@ -10636,12 +10636,12 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //Added By Komal Rawal to update owner in HoneyComb
-                    var OwnerName = "";
-                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                    {
-                        OwnerName = GetOwnerName(UpdateVal);
-                    }
-                    return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
+                    //var OwnerName = "";
+                    //if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    //{
+                    //    OwnerName = GetOwnerName(UpdateVal);
+                    //}
+                    //return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
 
 
@@ -10695,12 +10695,12 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //Added By Komal Rawal to update owner in HoneyComb
-                    var OwnerName = "";
-                    if (UpdateColumn == Enums.PlanGrid_Column["owner"])
-                    {
-                        OwnerName = GetOwnerName(UpdateVal);
-                    }
-                    return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
+                    //var OwnerName = "";
+                    //if (UpdateColumn == Enums.PlanGrid_Column["owner"])
+                    //{
+                    //    OwnerName = GetOwnerName(UpdateVal);
+                    //}
+                    //return Json(new { OwnerName = OwnerName }, JsonRequestBehavior.AllowGet);
                 }
 
                 #endregion
