@@ -1,7 +1,6 @@
 ﻿@model RevenuePlanner.Models.Plangrid
 @*<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />*@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>*@
-
 <style>
     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
         text-align: center;
@@ -31,7 +30,6 @@
     </a>
 </div>
 <div id="gridbox" style="background-color:white;width:100%;"></div>
-
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
 @*Added by Komal Rawal for #1432*@
 <div id="ImprovementGrid" class="improvement-grid-wrapper">
@@ -44,7 +42,6 @@
                 <form>
                     <h2 class="primary-title source-sans-prosemibold resubmission_header">Moving a Tactic</h2>
                     <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to move a tactic to </label>
-
                     <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
                     <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
                     <input type="hidden" id="hdnsourceid" />
@@ -152,7 +149,8 @@
             }
         }
         //Added By Komal Rawal to close the popover if we click anywhere on the grid
-        $('#gridbox').find('tbody tr').on('click', function (e) {
+        //$('#gridbox').find('tbody tr').on('click', function (e) {
+        $('#gridbox').find('table').find('tbody').on('click', function (e) {
             var targetname = e.target.nodeName;
             if (targetname != "circle") {
                 $(".popover").removeClass('in').addClass('out');
@@ -257,8 +255,8 @@
             // Add By Nishant Sheth To resolve the issue for IE : #1782
             var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
             var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
-         
-            if (navigator.userAgent.search("Trident") >= 0) { 
+
+            if (navigator.userAgent.search("Trident") >= 0) {
                 if (!window.Blob) {
                     // if IE 9 then becuase ie 9 and lower version not support blob
                     //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
@@ -469,14 +467,14 @@
 
     // 1780
 
-  
+
 
 
 
     //Added by Rahul shah for Honeycomb selection in grid
     function AddRemoveEntity(item) {
         //Changes  to improve performance issue
-      
+
         if ($(item).attr('id') == 'PlanAdd') {
             //var planid = $(item).attr('altId').split('_')[0];
             //if (planid != undefined) {
@@ -1038,7 +1036,7 @@
         if (stage == 2) // start edit Shipping column
         {
             if (nValue != null && nValue != "") {
-             
+
                 //Added By Komal Rawal to Change the value in array if grid updated
                 if(ExportSelectedIds.TaskID.length > 0)
                 {
@@ -1048,7 +1046,7 @@
                         ExportSelectedIds.Title[TasknameIndex] = nValue;
 
                     }
-                    
+
                 }
                 //End
                 var sdateindex = HomeGrid.getColIndexById('startdate');
@@ -1132,7 +1130,7 @@
                             success: function (data) {
                                 //if(ExportSelectedIds.TaskID.length > 0)
                                 //{
-                                  
+
                                 //    var TaskName = HomeGrid.cells(rowId,1).getValue()
                                 //    var OldValue = $("div[taskname='" + TaskName + "']").attr('TacticType')
                                 //    var TacticTypeIndex = ExportSelectedIds.TacticType.indexOf(OldValue);
@@ -1240,7 +1238,7 @@
                             data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                             dataType: 'json',
                             success: function (states) {
-                              
+
                                 //if(ExportSelectedIds.TaskID.length > 0)
                                 //{
                                 //    var TaskName = HomeGrid.cells(rowId,1).getValue()

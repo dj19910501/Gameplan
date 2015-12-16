@@ -281,7 +281,7 @@
                 CloseClick = false;
                 var entityType = $(this).attr('id').toUpperCase().toString();
                 var task_id = $(this).attr('name1');
-              
+
                 //gantt.open(task_id);
                 switch (entityType) {
                     case 'PLAN':
@@ -778,11 +778,11 @@
                     if (objplan.Checked == "checked")
                     // if(objplan.PlanId == CurrentPlanId)
                     {
-                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
+                                    <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
                     }
                     else
                     {
-                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
+                                    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
                     }
                 }
                                 }
@@ -828,41 +828,41 @@
                         allCustom = custField.CustomFieldId + "AllModule";
                         noCustom = "No" + custField.CustomFieldId + "Found";
 
-                        <div id="@acordionId" class="dropdown-section accordion">
-                            <div class="accordion-group">
-                                <div class="accordion-heading">
-                                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
-                                </div>
-                                <div id="@acordionElementId" class="accordion-body collapse">
-                                    <ul class="scroll-list" id="@ulCustom">
-                                        @{
+                    <div id="@acordionId" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                            </div>
+                            <div id="@acordionElementId" class="accordion-body collapse">
+                                <ul class="scroll-list" id="@ulCustom">
+                                    @{
                         foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                         {
 
                             liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
                             cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                            <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
+                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
                         }
-                                        }
-                                    </ul>
-                                    <div class="list-tab">
-                                        @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                    }
+                                </ul>
+                                <div class="list-tab">
+                                    @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
                                         {
-                                            <ul id="@allCustom">
-                                                <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId')">select all</a></li>
-                                                <li>|</li>
-                                                <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId')">deselect all</a></li>
-                                            </ul>
+                                        <ul id="@allCustom">
+                                            <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId')">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId')">deselect all</a></li>
+                                        </ul>
                                         }
                                         else
                                         {
-                                            <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
+                                        <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
                                         }
-                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     }
                 }
             </div>
@@ -878,7 +878,7 @@
                                 foreach (var owner in ownerList)
                                 {
                                     liid = "liOwner" + owner.OwnerId;
-                                    <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
+                                <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
                                 }
                             }
                         </ul>
@@ -921,10 +921,10 @@
                                     titielwithbracket = tactictype.Title + " (";
                                     lastbracket = ")";
                                     cbttid = "CbTT" + tactictype.TacticTypeId;
-                                    <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
-                                        <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
-                                        <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input>
-                                    </li>
+                                <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
+                                    <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
+                                    <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input>
+                                </li>
                                 }
                             }
 
@@ -2602,15 +2602,15 @@
             tacticId: [],
 
         }
-        var TotalTact = 0;
-        var TotalCost = 0;
+
         var Status = "";
         var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
         for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
             if (GanttTaskDataNew.data[i].type != undefined) {
-            if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
-                Status = GanttTaskDataNew.data[i].Status;
-            }
+                if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
+
+                    Status = GanttTaskDataNew.data[i].Status;
+                }
             }
             for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
                 if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
@@ -2623,9 +2623,10 @@
                     //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
                     //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
                     if (GanttTaskDataNew.data[i].type != undefined) {
-                    if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
-                        TotalTact = TotalTact + 1;
-                        TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
+                        if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
+
+                            //TotalTact = TotalTact + 1;
+                            //TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
                             // Add BY Nishant Sheth
                             //Desc:: resolve the issue with view by dropdown
                             var name_Id = GanttTaskDataNew.data[i].id.split('_');
@@ -2700,12 +2701,12 @@
                                     LineId = name_Id[4];
                                 }
                             }
-                            
+
                             defaultParentArr.tacticId.push(TacticId);
+                        }
                     }
                 }
             }
-        }
         }
 
         for (var p = 0; p < selectedIds.length; p++) {
@@ -2723,7 +2724,7 @@
         var htmltestdiv = '';
         htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
         htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
-        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Timeframe: </label>';
+        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
         htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
         htmltestdiv += isQuater + '</span>';
         htmltestdiv += '</p>';
@@ -2885,7 +2886,8 @@
                 $("#budgetmaindiv").css("background-position", "right bottom");
                 $("#budgetmaindiv").css("background-repeat", "no-repeat");
             });
-
+            var TotalTact = 0;
+            var TotalCost = 0;
             var TotalMql = "";
             var ChartHtml = "";
             var Canvas = "";
@@ -2903,6 +2905,8 @@
                     $("#pdfchart").find("canvas").remove();
                     setpdfgraphdata(data.lstchart);
                     TotalMql = data.TotalMql;
+                    TotalCost = data.TotalCost;
+                    TotalTact = data.TotalCount;
                     ChartHtml = $("#chartCanvas").html();
                     Canvas = $("#chartpdf").find(".dhx_canvas_text");
                 },
@@ -2913,18 +2917,18 @@
             $("#budgetlabeltest").text($("#pcostLabel").text());
 
             if (Status != undefined && Status != null) {
-            if (Status.toUpperCase().toString() == "DRAFT") {
-                $("#mqlspanvalue").text($("#pMQLs").text());
-                $("#budgetspanvalue").text($("#pbudget").text());
-            }
-            else {
-                $("#HoneyMQLs").text(TotalMql);
-                SetPriceValue("#HoneyMQLs")
-                $("#mqlspanvalue").text($("#HoneyMQLs").text());
-                $("#honeybudget").text(TotalCost);
-                SetBudget("#honeybudget")
-                $("#budgetspanvalue").text($("#honeybudget").text());
-            }
+                if (Status.toUpperCase().toString() == "DRAFT") {
+                    $("#mqlspanvalue").text($("#pMQLs").text());
+                    $("#budgetspanvalue").text($("#pbudget").text());
+                }
+                else {
+                    $("#HoneyMQLs").text(TotalMql);
+                    SetPriceValue("#HoneyMQLs")
+                    $("#mqlspanvalue").text($("#HoneyMQLs").text());
+                    $("#honeybudget").text(TotalCost);
+                    SetBudget("#honeybudget")
+                    $("#budgetspanvalue").text($("#honeybudget").text());
+                }
             }
             $("#ptacticcounttest").text(TotalTact);
             //$("#mqlspanpercentage").text($("#pMQLImproved").text());
@@ -3211,7 +3215,7 @@
     });
     //Modified by Komal Rawal  on 14/12/2015 for PL #1782 :- export to csv from honeycomb not working.
     $(".popover-content").live('click', function (e) {
-        
+
         if (ExportToCsv) {
             CloseClick = false;
         }
@@ -3360,7 +3364,7 @@
 
 
     //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
- 
+
     function ExportCSVHoneyComb() {
         ExportToCsv = true;
         HomeGrid.expandAll();
@@ -3444,15 +3448,15 @@
                             data[i] = "\"" + '$' + HomeGrid.cells(this, i).getValue().toString() + "\"";
                         }
                         else if (i == 9) {
-                           // data[i] = "\"" + $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
+                            // data[i] = "\"" + $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
                             var TT = HomeGrid.cells(this, 14).getValue();
                             data[i] = "\"" + $(TT).last().attr("TacticType") + "\"";
                         }
                         else if (i == 10) {
-                          //  data[i] = "\"" + $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
+                            //  data[i] = "\"" + $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
                             var OwnerName = HomeGrid.cells(this, 14).getValue();
                             data[i] = "\"" + $(OwnerName).last().attr("ownername") + "\"";
-                            
+
 
                         }
                         else if (i == 11) {
@@ -3472,7 +3476,7 @@
             $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv');
             $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));*@
             // Add By Nishant Sheth To resolve the issue for IE : #1782
-            
+
             var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
             var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
 

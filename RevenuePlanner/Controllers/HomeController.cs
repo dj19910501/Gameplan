@@ -65,7 +65,7 @@ namespace RevenuePlanner.Controllers
             bool IsPlanEditable = false;
             bool isPublished = false;
 
-        
+
 
 
             //// Set viewbag for notification email shared link inspect popup
@@ -563,7 +563,7 @@ namespace RevenuePlanner.Controllers
                     //Modified By Komal Rawal for #1505
                     // Modified By Nishant Sheth 
                     // Desc:: To resolve the #1790 observation
-                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId ).Select(tactic => tactic).ToList();
+                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
                 }
                 else
                 {
@@ -816,7 +816,7 @@ namespace RevenuePlanner.Controllers
             {
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
-               
+
                 List<int> lstStageIds = new List<int>();
                 lstStageIds = lstTactic.Select(tac => tac.objPlanTactic.StageId).Distinct().ToList();
                 TacticStageMapping objStageTac;
@@ -850,7 +850,7 @@ namespace RevenuePlanner.Controllers
                     tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.TacticList).FirstOrDefault();
                     tacticPlanId = tacticItem.PlanId;
                     MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
-                    
+
                     MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
 
                     EffectiveDateList = new List<DateTime>();
@@ -1076,13 +1076,13 @@ namespace RevenuePlanner.Controllers
                 var lstUniqueCustomField = lstProcessedCustomFieldTactics.Select(c => c.customFieldId).Distinct().ToList();
                 if (IsCampaign)
                 {
-                lstUniqueCustomField.ForEach(cstmId =>
-                {
-                    objStageTac = new TacticStageMapping();
-                    objStageTac.CustomFieldId = cstmId;
+                    lstUniqueCustomField.ForEach(cstmId =>
+                    {
+                        objStageTac = new TacticStageMapping();
+                        objStageTac.CustomFieldId = cstmId;
                         objStageTac.TacticList = lstTactic.Where(tactic => lstProcessedCustomFieldTactics.Where(lc => lc.customFieldId == cstmId).Select(lc => lc.customFieldTacticList).FirstOrDefault().Contains(tactic.PlanCampaignId)).Select(tactic => tactic).ToList();
-                    lstTacticStageMap.Add(objStageTac);
-                });
+                        lstTacticStageMap.Add(objStageTac);
+                    });
                 }
                 else if (IsProgram)
                 {
@@ -1106,7 +1106,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 DateTime MaxEndDateForCustomField;
-                int _PlanTacticId = 0, _PlanProgramId = 0,_TypeId = 0;
+                int _PlanTacticId = 0, _PlanProgramId = 0, _TypeId = 0;
                 List<Plan_Tactic> fltrTactic, fltrplantacic;
                 //// Prepare tactic task list for CustomField to be used in rendering of gantt chart. 
                 List<int> PlanIds = lstProcessedCustomFieldTactics.Select(_tac => _tac.tactic.PlanId).ToList();
@@ -1126,20 +1126,20 @@ namespace RevenuePlanner.Controllers
                     #region "Get CampaignIds,ProgramIds & Tactic list for Min & Max Date"
                     fltrTactic = new List<Plan_Tactic>();
                     fltrTactic = tacticListByViewById.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == _TypeId).ToList();
-                    
+
                     #endregion
                     #region "Get Tactic,Program & Campaign MaxDate"
-                        maxDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                        maxDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.EndDate).Max();
-                        maxDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.EndDate).Max();
-                        MaxEndDateForCustomField = new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
+                    maxDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.EndDate).Max();
+                    maxDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.EndDate).Max();
+                    maxDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.EndDate).Max();
+                    MaxEndDateForCustomField = new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
                     #endregion
                     #region "Get Tactic,Program & Campaign MinDate"
-                        minDateTactic = new DateTime();
-                        minDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                        minDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.StartDate).Min();
-                        minDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.StartDate).Min();
-                        MinStartDateForCustomField = new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
+                    minDateTactic = new DateTime();
+                    minDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.StartDate).Min();
+                    minDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.StartDate).Min();
+                    minDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.StartDate).Min();
+                    MinStartDateForCustomField = new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
                     #endregion
 
                     #region "Get Min Start Date of Plan"
@@ -1194,10 +1194,10 @@ namespace RevenuePlanner.Controllers
                 {
                     lstCustomFields = lstProcessedCustomFieldTactics.Distinct().Select(tactic => new CustomFields()
                 {
-                        CustomFieldId = tactic.customFieldId.ToString(),
+                    CustomFieldId = tactic.customFieldId.ToString(),
                     Title = tactic.customFieldTitle,
                     ColorCode = TacticColor
-                    }).OrderBy(customField => customField.Title).ToList();
+                }).OrderBy(customField => customField.Title).ToList();
                 }
 
                 //// Prepare ImprovementTactic list that relates to selected tactic and customFields
@@ -1237,7 +1237,9 @@ namespace RevenuePlanner.Controllers
                 lstCustomEntityId = tacticTask.lstCustomEntityId,
                 CreatedBy = tacticTask.CreatedBy,
                 PlanStartDate = tacticTask.PlanStartDate,
-                PlanEndDate = tacticTask.PlanEndDate
+                PlanEndDate = tacticTask.PlanEndDate,
+                Status = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Status
+
             }).Distinct().ToList();
 
             #region Prepare CustomField task data
@@ -1288,7 +1290,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
                 text = taskdata.PlanTitle,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate,  viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy,taskdata.MainParentId,
+                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
                             taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram, lstTactic, IsCampaign, IsProgram) : taskdata.PlanStartDate),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
                                                           viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
@@ -1302,7 +1304,8 @@ namespace RevenuePlanner.Controllers
                 parent = string.Format("Z{0}", taskdata.MainParentId),
                 color = PlanColor,
                 planid = taskdata.PlanId,
-                CreatedBy = taskdata.CreatedBy
+                CreatedBy = taskdata.CreatedBy,
+                Status = taskdata.Status  //added by Rahul Shah on 16/12/2015 for PL #1782
 
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
 
@@ -1322,7 +1325,8 @@ namespace RevenuePlanner.Controllers
                 type = "Plan",
                 TacticType = doubledesh,
                 OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
-                Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
+                Status = taskdata.Status //added by Rahul Shah on 16/12/2015 for PL #1782
 
             }).Distinct().ToList();
             #endregion
@@ -1870,7 +1874,7 @@ namespace RevenuePlanner.Controllers
                 color = PlanColor,
                 planid = objplan.PlanId,
                 CreatedBy = objplan.CreatedBy,
-                Status = objplan.Status     
+                Status = objplan.Status
             }).Select(objplan => objplan).OrderBy(objplan => objplan.text);
 
                 //// Finalize task data plan list for gantt chart
@@ -2298,7 +2302,7 @@ namespace RevenuePlanner.Controllers
                     Status = _campgn.Status,
                     type = "Campaign",
                     TacticType = doubledesh,
-                    OwnerName = GetOwnerName( _campgn.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(_campgn.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (_campgn.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(_campgn.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -5184,7 +5188,8 @@ namespace RevenuePlanner.Controllers
 
             var objPlan_Campaign_Program_Tactic1 = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                       TacticIds.Contains(tactic.PlanTacticId)).ToList();
-
+            var tactcost = objPlan_Campaign_Program_Tactic1.Sum(TactItem => TactItem.Cost);
+            var tactcount = objPlan_Campaign_Program_Tactic1.Count();
             var MQLs = Common.GetTacticStageRelation(objPlan_Campaign_Program_Tactic1, false).Sum(tactic => tactic.MQLValue);
             string planYear = string.Empty;
             int Planyear;
@@ -5373,7 +5378,7 @@ namespace RevenuePlanner.Controllers
             // await Task.Delay(1);
 
 
-            return Json(new { lstchart = lstActivityChart.ToList(), TotalMql = MQLs }, JsonRequestBehavior.AllowGet);
+            return Json(new { lstchart = lstActivityChart.ToList(), TotalMql = MQLs, TotalCost = tactcost, TotalCount = tactcount, }, JsonRequestBehavior.AllowGet);
 
         }
         #endregion
@@ -5389,7 +5394,7 @@ namespace RevenuePlanner.Controllers
             {
                 TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt).ToList();
             }
-            var TacticType = TacticTypeList.Where(tt => tt.TacticTypeId == TacticTypeID ).Select(tt => tt.Title).FirstOrDefault();
+            var TacticType = TacticTypeList.Where(tt => tt.TacticTypeId == TacticTypeID).Select(tt => tt.Title).FirstOrDefault();
 
             return TacticType;
         }
@@ -5397,9 +5402,9 @@ namespace RevenuePlanner.Controllers
         public string GetOwnerName(string UserGuid)
         {
             var OwnerName = "";
-            if(lstUsers.Count == 0 || lstUsers == null )
+            if (lstUsers.Count == 0 || lstUsers == null)
             {
-               lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
             }
             if (UserGuid != "")
             {
@@ -5412,11 +5417,11 @@ namespace RevenuePlanner.Controllers
                 }).FirstOrDefault();
 
 
-                if(userName != null)
+                if (userName != null)
                 {
                     OwnerName = userName.FirstName + " " + userName.Lastname;
                 }
-              
+
             }
 
             return OwnerName.ToString();
