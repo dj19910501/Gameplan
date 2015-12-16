@@ -444,7 +444,8 @@
                             data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
                         }
                         else {
-                            data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
+                            //  data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
+                            data[i] = $('<span/>').html("\"" + HomeGrid.cells(this, i).getValue() + "\"").text();
                         }
                     }
 
