@@ -14,6 +14,11 @@
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
+    // Add By Nishant Sheth
+    // Desc:: To Display multiple year in budget allocation tab
+    var YearDiffrence = ViewBag.YearDiffrence;
+    var StartYear = ViewBag.StartYear;
+    var AllocatedBy = Model.AllocatedBy;
 }
 
 <style type="text/css">
@@ -76,7 +81,7 @@
                 </div>
                 <div class="budget-collapse">
                     <div class="white-bg-edirProgram">
-                        @HtmlHelpers.GenerateBudgetAllocationControl(@Model.AllocatedBy)
+                        @HtmlHelpers.GenerateBudgetAllocationControl(@Model.AllocatedBy, @YearDiffrence, @StartYear)
                     <div class="SepraterStacticis"></div>
                     <div class="budget-result source-sans-prolight">
                           <p>
@@ -379,7 +384,7 @@
             type: 'POST',
                 async: false,
             url: '@Url.Content("~/Inspect/SaveLineItemBudgetAllocation")',
-            data: $("form").serialize() + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title),
+            data: $("form").serialize() + '&CostInputValues=' + allocationValue.toString() + '&UserId=' + uId + '&title=' + escape(title) + '&AllocatedBy=' + '@AllocatedBy' + '&YearDiffrence=' + '@YearDiffrence',
             success: function (data) {
                 if (data.IsSaved) {
                      //   CancelEvent();

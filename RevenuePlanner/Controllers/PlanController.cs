@@ -2545,6 +2545,27 @@ namespace RevenuePlanner.Controllers
                 //Reintialize the Monthly list for Actual Allocation object 
                 List<string> MonthlyList = Common.lstMonthly;
                 var objPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(_line => _line.PlanLineItemId == id && _line.IsDeleted == false); // Modified by :- Sohel Pathan on 05/09/2014 for PL ticket #749
+                var tacticDetails = objPlanLineItem.Plan_Campaign_Program_Tactic;
+                // Add By Nishant Sheth 
+                // Desc:: for add multiple years regarding #1765
+                // To create the period of the year dynamically base on item period
+                int GlobalYearDiffrence = 0;
+                
+                List<string> lstMonthlyExtended = new List<string>();
+                int YearDiffrence = Convert.ToInt32(Convert.ToInt32(tacticDetails.EndDate.Year) - Convert.ToInt32(tacticDetails.StartDate.Year));
+                GlobalYearDiffrence = YearDiffrence;
+                string periodPrefix = "Y";
+                int baseYear = 0;
+                for (int i = 0; i < (YearDiffrence + 1); i++)
+                {
+                    for (int j = 1; j <= 12; j++)
+                    {
+                        lstMonthlyExtended.Add(periodPrefix + Convert.ToString(j + baseYear));
+                    }
+                    baseYear = baseYear + 12;
+                }
+               
+
 
                 //get planId from database.
                 int planId = db.Plan_Campaign.Where(pc => pc.PlanCampaignId == objPlanLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId && pc.IsDeleted.Equals(false)).Select(pc => pc.PlanId).FirstOrDefault();
@@ -2582,7 +2603,7 @@ namespace RevenuePlanner.Controllers
                                                               }).ToList();
 
                 //Set the custom array for fecthed Line item Actual data .
-                var ActualCostData = MonthlyList.Select(period => new
+                var ActualCostData = lstMonthlyExtended.Select(period => new
                 {
                     periodTitle = period,
                     costValue = lstActualLineItemCost.FirstOrDefault(lnCost => lnCost.Period == period && lnCost.PlanLineItemId == id) == null ? "" : lstActualLineItemCost.FirstOrDefault(lnCost => lnCost.Period == period && lnCost.PlanLineItemId == id).Value.ToString()
@@ -2594,7 +2615,7 @@ namespace RevenuePlanner.Controllers
                 {
                     List<PlanBudgetAllocationValue> lstPlanBudgetAllocationValue = new List<PlanBudgetAllocationValue>();
                     string[] quarterPeriods = Common.quarterPeriods;
-                    for (int i = 0; i < 12; i++)
+                    for (int i = 0; i < (12 * (GlobalYearDiffrence + 1)); i++)
                     {
                         if ((i + 1) % 3 == 0)
                         {
@@ -2616,7 +2637,7 @@ namespace RevenuePlanner.Controllers
                 // End - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
                 else
                 {
-                    var costData = MonthlyList.Select(period => new
+                    var costData = lstMonthlyExtended.Select(period => new
                     {
                         periodTitle = period,
                         costValue = lstLineItemCost.FirstOrDefault(lnCost => lnCost.Period == period && lnCost.PlanLineItemId == id) == null ? "" : lstLineItemCost.FirstOrDefault(lnCost => lnCost.Period == period && lnCost.PlanLineItemId == id).Value.ToString(),

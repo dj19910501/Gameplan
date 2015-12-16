@@ -3738,6 +3738,8 @@ namespace RevenuePlanner.Controllers
                                     listActual.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
                                     var listBudget = db.Plan_Campaign_Program_Tactic_Budget.Where(a => a.PlanTacticId == pcpobj.PlanTacticId && deleteperiodmonth.Contains(a.Period)).ToList();
                                     listBudget.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
+                                    var listLineITemCost = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(a => a.Plan_Campaign_Program_Tactic_LineItem.PlanTacticId == pcpobj.PlanTacticId && deleteperiodmonth.Contains(a.Period)).ToList();
+                                    listLineITemCost.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
                                 }
                                 // End By Nishant Sheth
                                 pcpobj.Title = form.TacticTitle;
@@ -6278,6 +6280,13 @@ namespace RevenuePlanner.Controllers
             ViewBag.tacticCost = TacticCost;
             ViewBag.totalLineItemCost = totalLineItemCost;
             ViewBag.otherLineItemCost = otherLineItemCost;
+            // Add By Nishant Sheth
+            // Desc :: To add multiple year with budget allocation
+            var TacticEndYear = pcptl.Plan_Campaign_Program_Tactic.EndDate.Year;
+            var TacticStartYear = pcptl.Plan_Campaign_Program_Tactic.StartDate.Year;
+            ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(TacticEndYear) - Convert.ToInt32(TacticStartYear));
+            ViewBag.StartYear = Convert.ToInt32(TacticStartYear);
+
             pcptlm.Cost = pcptl.Cost;
 
             return PartialView("_SetupLineitemBudgetAllocation", pcptlm);
@@ -6292,7 +6301,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="title"></param>
         /// <returns>Returns Action Result.</returns>
         [HttpPost]
-        public ActionResult SaveLineItemBudgetAllocation(Plan_Campaign_Program_Tactic_LineItemModel form, string CostInputValues, string UserId = "", string title = "")
+        public ActionResult SaveLineItemBudgetAllocation(Plan_Campaign_Program_Tactic_LineItemModel form, string CostInputValues, string UserId = "", string title = "", string AllocatedBy = "", int YearDiffrence = 0)
         {
             //// check whether current userId is loggined user or not.
             if (!string.IsNullOrEmpty(UserId))
@@ -6403,7 +6412,10 @@ namespace RevenuePlanner.Controllers
                             {
                                 List<Plan_Campaign_Program_Tactic_LineItem_Cost> PrevAllocationList = db.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(c => c.PlanLineItemId == form.PlanLineItemId).Select(c => c).ToList();
 
-                                if (arrCostInputValues.Length == 12)
+                                //// Process for Monthly budget values.
+                                // Change by Nishant sheth
+                                // Desc :: #1765 - to replace the lenth of array to allocated by
+                                if (AllocatedBy == Enums.PlanAllocatedBy.months.ToString().ToLower())
                                 {
                                     bool isExists;
                                     Plan_Campaign_Program_Tactic_LineItem_Cost updatePlanTacticBudget, objlineItemCost;
@@ -6447,17 +6459,26 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
-                                else if (arrCostInputValues.Length == 4)
+                                // Change by Nishant sheth
+                                // Desc :: #1765 - to replace the lenth of array to allocated by
+                                else if (AllocatedBy == Enums.PlanAllocatedBy.quarters.ToString().ToLower())  //// Process for Quarterly budget values.
                                 {
+                                    int QuarterCnt = 1, j = 1;
+                                    int m = 0;
                                     ////QurterList which contains list of month as per quarter. e.g. for Q1, list is Y1,Y2 and Y3
-                                    int QuarterCnt = 1;
-                                    bool isExists;
+
                                     List<Plan_Campaign_Program_Tactic_LineItem_Cost> thisQuartersMonthList;
                                     Plan_Campaign_Program_Tactic_LineItem_Cost thisQuarterFirstMonthBudget, objlineItemCost;
-                                    double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
-                                    int j = 1;
-                                    for (int i = 0; i < 4; i++)
+                                    for (int k = 1; k <= (YearDiffrence + 1); k++)
                                     {
+                                        bool isExists;
+                                    double thisQuarterOtherMonthBudget = 0, thisQuarterTotalBudget = 0, newValue = 0, BudgetDiff = 0;
+                                        for (int i = m; i < (4 * k); i++)
+                                        {
+                                            if ((i + 1) % 4 == 0)
+                                            {
+                                                m = i + 1;
+                                            }
                                         // Start - Added by Sohel Pathan on 05/09/2014 for PL ticket #759
                                         isExists = false;
                                         if (PrevAllocationList != null && PrevAllocationList.Count > 0)
@@ -6529,6 +6550,7 @@ namespace RevenuePlanner.Controllers
                                             db.Entry(objlineItemCost).State = EntityState.Added;
                                         }
                                         QuarterCnt = QuarterCnt + 3;
+                                        }
                                     }
                                 }
 
