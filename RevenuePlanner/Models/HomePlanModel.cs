@@ -239,7 +239,7 @@ namespace RevenuePlanner.Models
 
     public class CustomFields
     {
-        public string CustomFieldId { get; set; }
+        public string cfId { get; set; }
         public string Title { get; set; }
         public string ColorCode { get; set; }
     }

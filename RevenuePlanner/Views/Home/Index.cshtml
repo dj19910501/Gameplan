@@ -3776,8 +3776,8 @@
 
                 $.each(data.customFields, function (index1, objVertical) {
                     var colorCode = objVertical.ColorCode;
-                    var cfId = objVertical.CustomFieldId;
-                    var filteredVertical = $.grep(data.customFieldTactics, function (value) { return value.CustomFieldId == cfId; }).sort(SortAlphabetically);
+                    var cfId = objVertical.cfId;
+                    var filteredVertical = $.grep(data.customFieldTactics, function (value) { return value.cfId == cfId; }).sort(SortAlphabetically);
                     AddMarketingActivities(colorCode, objVertical.Title, cfId, filteredVertical);
                 });
             }
