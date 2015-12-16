@@ -767,7 +767,7 @@
                 $(item).addClass("honeycombbox-icon-gantt-Active");
 
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -834,7 +834,7 @@
             else {
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.Title.push(($(item).attr('taskname')).replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -879,7 +879,7 @@
 
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -905,7 +905,7 @@
             else {
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push($(item).attr('taskname'));
+                ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -1291,14 +1291,15 @@
             if (nValue != null && nValue != "") {
 
                 //Added By Komal Rawal to Change the value in array if grid updated
-              
-                $("div[taskname='" + oValue + "']").attr('taskname',nValue)
+              //  alert(htmlDecode(nValue));
+                var NewValue = htmlDecode(nValue);
+                $("div[taskname='" + oValue + "']").attr('taskname',NewValue)
                 if(ExportSelectedIds.TaskID.length > 0)
                 {
                     var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
                     if(TasknameIndex >= 0 )
                     {
-                        ExportSelectedIds.Title[TasknameIndex] = nValue;
+                        ExportSelectedIds.Title[TasknameIndex] = NewValue;
 
                     }
 
