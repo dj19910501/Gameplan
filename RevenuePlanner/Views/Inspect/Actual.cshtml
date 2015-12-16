@@ -695,6 +695,8 @@
     function SaveActual() {
         var planTacticId = $("#hdnPlanTacticId").val();
         var returnparameter = false;
+        var _decimalRegex = '^(0|[0-9][0-9]*)[.]?[0-9]*$';
+        var _IntgerRegex = '^(0|[0-9][0-9]*)$';
         var ReturnParameter = SaveTitle();
             if (ReturnParameter == false) {
                 return false;
@@ -728,10 +730,10 @@
                 if ($(this).val().trim() != '') {
                     var _isCurrency = $(this).hasClass("currency_dollar");
                     //alert(_isCurrency);
-                    if ((!_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('$', '').match(_intRegex))) {
+                    if ((!_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('$', '').match(_IntgerRegex))) {
                         $(this).removeClass("error");
                     }
-                    else if ((_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('.', '').replace('$', '').match(_decmlRegex))) {
+                    else if ((_isCurrency) && ($(this).val().trim().replace(/,/g, '').replace('.', '').replace('$', '').match(_decimalRegex))) {
                         $(this).removeClass("error");
                     }
                     else {
