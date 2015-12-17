@@ -152,7 +152,8 @@
             }
         }
         //Added By Komal Rawal to close the popover if we click anywhere on the grid
-        $('#gridbox').find('tbody tr').on('click', function (e) {
+        //$('#gridbox').find('tbody tr').on('click', function (e) {
+        $('#gridbox').find('table').find('tbody').on('click', function (e) {
             var targetname = e.target.nodeName;
             if (targetname != "circle") {
                 $(".popover").removeClass('in').addClass('out');

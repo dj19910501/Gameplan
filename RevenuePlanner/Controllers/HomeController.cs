@@ -1254,7 +1254,8 @@ namespace RevenuePlanner.Controllers
                 lstCustomEntityId = tacticTask.lstCustomEntityId,
                 CreatedBy = tacticTask.CreatedBy,
                 PlanStartDate = tacticTask.PlanStartDate,
-                PlanEndDate = tacticTask.PlanEndDate
+                PlanEndDate = tacticTask.PlanEndDate,
+                Status = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Status
             }).Distinct().ToList();
 
             #region Prepare CustomField task data
@@ -1319,7 +1320,8 @@ namespace RevenuePlanner.Controllers
                 parent = string.Format("Z{0}", taskdata.MainParentId),
                 color = PlanColor,
                 planid = taskdata.PlanId,
-                CreatedBy = taskdata.CreatedBy
+                CreatedBy = taskdata.CreatedBy,
+                Status = taskdata.Status  //added by Rahul Shah on 16/12/2015 for PL #1782
 
             }).Select(taskdata => taskdata).Distinct().OrderBy(taskdata => taskdata.text);
 
@@ -1339,7 +1341,8 @@ namespace RevenuePlanner.Controllers
                 type = "Plan",
                 TacticType = doubledesh,
                 OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
-                Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
+                Status = taskdata.Status //added by Rahul Shah on 16/12/2015 for PL #1782
 
             }).Distinct().ToList();
             #endregion
@@ -5200,6 +5203,8 @@ namespace RevenuePlanner.Controllers
 
             var objPlan_Campaign_Program_Tactic1 = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
                                       TacticIds.Contains(tactic.PlanTacticId)).ToList();
+            var tactcost = objPlan_Campaign_Program_Tactic1.Sum(TactItem => TactItem.Cost);
+            var tactcount = objPlan_Campaign_Program_Tactic1.Count();
 
             var MQLs = Common.GetTacticStageRelation(objPlan_Campaign_Program_Tactic1, false).Sum(tactic => tactic.MQLValue);
             string planYear = string.Empty;
@@ -5389,7 +5394,7 @@ namespace RevenuePlanner.Controllers
             // await Task.Delay(1);
 
 
-            return Json(new { lstchart = lstActivityChart.ToList(), TotalMql = MQLs }, JsonRequestBehavior.AllowGet);
+            return Json(new { lstchart = lstActivityChart.ToList(), TotalMql = MQLs, TotalCost = tactcost, TotalCount = tactcount, }, JsonRequestBehavior.AllowGet);
 
         }
         #endregion
