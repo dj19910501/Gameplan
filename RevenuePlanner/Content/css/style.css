@@ -10678,7 +10678,10 @@ li.close-list {
     z-index: 1;
     padding-bottom: 10px;
 }
-
+.inspect-column-parent .dropup{
+       bottom: 53px;
+    padding: 0;
+}
 .drop-down_header {
     border: 1px solid #dfdfdf;
     border-radius: 6px;

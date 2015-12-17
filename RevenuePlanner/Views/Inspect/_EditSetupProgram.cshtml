@@ -217,6 +217,9 @@
         $_prevdata = -1;
         $prevtext = '';
         KeyPressOnDropdown();
+        var dropdowntop = $('.dropdown_new_btn').offset().top;
+        var windownheight = $(window).height();
+        if (dropdowntop >= (windownheight - 500)) { $('.dropdown-wrapper').addClass('dropup') }
     });
 
     $(document).click(function () {
