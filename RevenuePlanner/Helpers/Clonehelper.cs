@@ -590,6 +590,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.TacticCustomName = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceEloquaId = null;
+                    objPlanCampaignProgramTactic.IntegrationWorkFrontProjectID = null; //Added 16 Dec 2015, Brad Gray, PL#1460 
                     ////Start- Added by Mitesh Vaishnav for PL ticket #1129
                     objPlanCampaignProgramTactic.LastSyncDate = null;
                     ////End- Added by Mitesh Vaishnav for PL ticket #1129
