@@ -1,6 +1,11 @@
 ﻿@model RevenuePlanner.Models.Plangrid
 @*<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />*@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>*@
+@*// Add By Nishant Sheth
+    // Desc :: #1818 To display message with no data exists*@
+@{
+    var countrows = Model.PlanDHTMLXGrid.rows.Count;
+}
 <style>
     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
         text-align: center;
@@ -709,6 +714,27 @@
         //        }
         //    }
         //});
+
+        // Add By Nishant Sheth
+        // #1818 :: To display message 
+        
+        if(parseInt('@countrows')>0)
+        {
+            $('#lblMarkringActivitiestitle').hide();
+            $("#gridbox").show();
+            $("#goalwrapper").show();
+            $(".pull-right.toggle-status.source-sans-proregular").show();
+            $("#improvements").show();
+            $("#NodatawithfilterGrid").hide();
+       
+        }else{
+            $('#lblMarkringActivitiestitle').hide();
+            $("#gridbox").hide();
+            $("#goalwrapper").hide();
+            $(".pull-right.toggle-status.source-sans-proregular").hide();
+            $("#improvements").hide();
+            $("#NodatawithfilterGrid").show();
+        }
 
     }
 

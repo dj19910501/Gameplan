@@ -1065,7 +1065,13 @@
 
 <div id="DivloadPlan" class="no-bottom-border margin-top">
 </div>
-<div id="divgridview" class="task-tbl" style="display: none;"></div>
+<div id="divgridview" class="task-tbl" style="display: none;">
+    @*// Add By Nishant Sheth
+        // Desc:: #1818 display message with filter*@
+    <div id="NodatawithfilterGrid" style="display:none;">
+        <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters applied.</span>
+    </div>
+</div>
 @*Added by Komal Rawal for #1432
     <div id="ImprovementGrid" style="display: none;" class="improvement-grid-wrapper">
     </div>*@
@@ -1074,6 +1080,11 @@
     </div>
 </div>
 <div id="CalenderView" class="tab-content all-height cf" style="padding-right: 18px;">
+    @*// Add By Nishant Sheth
+        // Desc:: #1818 display message with filter*@
+    <div id="NodatawithfilterCalendar" style="display:none;">
+        <span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters applied.</span>
+    </div>
     <div class="tab-pane active all-height" id="panel-656352">
         <div class=" pl20 cf">
 
@@ -1762,9 +1773,14 @@
                 customFieldIds: CustomFieldId.toString()
             },
             success: function (result) {
-
+                // Add By Nishant Sheth
+                // Desc :: #1818 
+                var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
+        '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters applied.</span>' +
+    '<br/></div>';
+                gridhtml += result;
                 $("#divgridview").html('');
-                $("#divgridview").html(result);
+                $("#divgridview").html(gridhtml);
                 LoadImprovementGrid(CurrentPlanId)
             }
         });
@@ -3756,6 +3772,15 @@
                         ShowMessage(true, "Error occured due to exception. Please contact system admin.");
                     }
                     else {
+                        // Add By Nishant sheth
+                        // #1818 :: Display message if no any data with filters
+                        if (data.taskData.length > 0) {
+                            $("#gantt_here").show();
+                            $(".pull-right.toggle-status.source-sans-proregular").show();
+                            $("#improvements").show();
+                            $('#lblMarkringActivitiestitle').hide();
+                            $('#divCollaborator').show();
+                            $("#NodatawithfilterCalendar").hide();
 
                         type = data.ViewBy.toString();
                         if (getViewByList == true) {
@@ -3878,6 +3903,17 @@
                         $(".gantt_ver_scroll").scroll(function () {
                             $('#popupType').css('display', 'none');
                         });
+
+                        } else {
+                            //Add By Nishant Sheth
+                            // Desc :: #1818
+                            $("#gantt_here").hide();
+                            $(".pull-right.toggle-status.source-sans-proregular").hide();
+                            $("#improvements").hide();
+                            $('#lblMarkringActivitiestitle').hide();
+                            $('#divCollaborator').hide();
+                            $("#NodatawithfilterCalendar").show();
+                        }
                     }
 
                 }
