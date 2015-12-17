@@ -1767,21 +1767,26 @@ namespace RevenuePlanner.Helpers
             // Add By Nishant sheth
             DateTime StartDate;
             DateTime EndDate;
-            if (!int.TryParse(year, out Year))
+           
+            // Modified By Nishant Sheth
+            // #1825 stuck of loading overlay with 'this month' and 'this quarter'
+            string planYear = string.Empty;
+
+            bool isNumeric = int.TryParse(year, out Year);
+
+            if (isNumeric)
             {
-                //year = DateTime.Now.Year.ToString();
-                // Add By Nishant Sheth
-                // Desc :: get with between years start and end date
-                StartDate = new DateTime(Convert.ToInt32(year.Split('-').First()), 1, 1);
-                EndDate = new DateTime(Convert.ToInt32(year.Split('-').Last()) + 1, 1, 1).AddTicks(-1);
+                planYear = Convert.ToString(year);
             }
             else
             {
-                // Add By Nishant Sheth
-                // Desc :; get year start and end date
-                StartDate = new DateTime(Convert.ToInt32(year), 1, 1);
-                EndDate = new DateTime(Convert.ToInt32(year) + 1, 1, 1).AddTicks(-1);
+                planYear = DateTime.Now.Year.ToString();
             }
+
+          
+            StartDate = EndDate = DateTime.Now;
+            Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
+            //End
             double TotalMQLs = 0, TotalBudget = 0;
             double? TotalPercentageMQLImproved = 0;
             int TotalTacticCount = 0;
