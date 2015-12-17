@@ -281,7 +281,6 @@
                 CloseClick = false;
                 var entityType = $(this).attr('id').toUpperCase().toString();
                 var task_id = $(this).attr('name1');
-              
                 //gantt.open(task_id);
                 switch (entityType) {
                     case 'PLAN':
@@ -2602,13 +2601,13 @@
             tacticId: [],
 
         }
-        //var TotalTact = 0;
-        //var TotalCost = 0;
+
         var Status = "";
         var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
         for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
             if (GanttTaskDataNew.data[i].type != undefined) {
             if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
+
                 Status = GanttTaskDataNew.data[i].Status;
             }
             }
@@ -2624,6 +2623,7 @@
                     //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
                     if (GanttTaskDataNew.data[i].type != undefined) {
                     if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
+
                         //TotalTact = TotalTact + 1;
                         //TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
                             // Add BY Nishant Sheth
@@ -3362,148 +3362,7 @@
     };
 
 
-    //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
- 
-    function ExportCSVHoneyComb() {
-        ExportToCsv = true;
-        HomeGrid.expandAll();
-        var count = HomeGrid.getRowsNum();
-        var parentid = 0;
-        var parentname = "";
-        if (count > 0) {
-            for (var i = 2 ; i <= 13 ; i++) {
-                HomeGrid.insertColumn(i);
-            }
-            var ListOfSelectedIds = { Id: [] };
-            for (var i = 0; i < count; i++) {
-                if ($(HomeGrid.cells2(i, 14).cell).find("div").last().attr("class") == "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active") {
-                    ListOfSelectedIds.Id.push(HomeGrid.getRowId(i));
-                    var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
-                    var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
-                    if (ActivityTypeName == "Plan") {
-                        HomeGrid.cellByIndex(i, 2).setValue(Taskname);
-                    }
-                    if (ActivityTypeName == "Campaign") {
-
-                        //1782
-                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
-                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
-                        //1782
-                        HomeGrid.cellByIndex(i, 3).setValue(Taskname);
-                    }
-                    if (ActivityTypeName == "Program") {
-
-                        // 1782
-                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentid = HomeGrid.getParentId(parentid);
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
-                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
-                        // 1782
-
-                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
-                        HomeGrid.cellByIndex(i, 3).setValue(parentname);
-                        HomeGrid.cellByIndex(i, 4).setValue(Taskname);
-                    }
-                    if (ActivityTypeName == "Tactic") {
-
-                        // 1782
-                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentid = HomeGrid.getParentId(parentid);
-                        parentid = HomeGrid.getParentId(parentid);
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
-                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
-                        // 1782
-
-                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
-                        HomeGrid.cellByIndex(i, 4).setValue(parentname);
-                        parentid = HomeGrid.getParentId(parentid);
-                        parentname = HomeGrid.cells(parentid, 1).getValue();
-                        HomeGrid.cellByIndex(i, 3).setValue(parentname);
-
-                        HomeGrid.cellByIndex(i, 5).setValue(Taskname);
-                    }
-                    HomeGrid.cellByIndex(i, 6).setValue(HomeGrid.cellByIndex(i, 16).getValue());
-                    HomeGrid.cellByIndex(i, 7).setValue(HomeGrid.cellByIndex(i, 17).getValue());
-                    HomeGrid.cellByIndex(i, 8).setValue(HomeGrid.cellByIndex(i, 18).getValue());
-                    HomeGrid.cellByIndex(i, 9).setValue(HomeGrid.cellByIndex(i, 19).getValue());
-                    HomeGrid.cellByIndex(i, 10).setValue(HomeGrid.cellByIndex(i, 20).getValue());
-                    HomeGrid.cellByIndex(i, 11).setValue(HomeGrid.cellByIndex(i, 21).getValue());
-                    HomeGrid.cellByIndex(i, 12).setValue(HomeGrid.cellByIndex(i, 22).getValue());
-                    HomeGrid.cellByIndex(i, 13).setValue(HomeGrid.cellByIndex(i, 23).getValue());
-                }
-            }
-            var data;
-            var Entity = [];
-            var csvHeader = String(",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal,R MQl,Revenue".split(',')).toString();
-            Entity.push(csvHeader + '\n');
-            if (ListOfSelectedIds.Id.length > 0) {
-                $.each(ListOfSelectedIds.Id, function () {
-                    data = [];
-                    for (var i = 0; i < 14; i++) {
-                        if (i == 8) {
-                            data[i] = "\"" + '$' + HomeGrid.cells(this, i).getValue().toString() + "\"";
-                        }
-                        else if (i == 9) {
-                           // data[i] = "\"" + $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
-                            var TT = HomeGrid.cells(this, 14).getValue();
-                            data[i] = "\"" + $(TT).last().attr("TacticType") + "\"";
-                        }
-                        else if (i == 10) {
-                          //  data[i] = "\"" + $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
-                            var OwnerName = HomeGrid.cells(this, 14).getValue();
-                            data[i] = "\"" + $(OwnerName).last().attr("ownername") + "\"";
-                            
-
-                        }
-                        else if (i == 11) {
-                            data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
-                        }
-                        else {
-                            //data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
-                            data[i] = $('<span/>').html("\"" + HomeGrid.cells(this, i).getValue() + "\"").text(); 
-                        }
-                    }
-
-                    if (data != null) {
-                        Entity.push('' + String(data.slice(2, data.length) + '\n') + '');
-                    }
-                });
-            }
-            @*var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
-            $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv');
-            $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));*@
-            // Add By Nishant Sheth To resolve the issue for IE : #1782
-            
-            var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
-            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
-
-            if (navigator.userAgent.search("Trident") >= 0) {
-                if (!window.Blob) {
-                    // if IE 9 then becuase ie 9 and lower version not support blob
-                    //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
-                    var IEwindow = window.open();
-                    IEwindow.document.write('sep=,\r\n' + Entity.join(","));
-                    IEwindow.document.close();
-                    IEwindow.document.execCommand('SaveAs', true, Filename);
-                    IEwindow.close();
-                }
-                else {
-                    var fileData = ["sep=,\r\n" + Entity.join(",")];
-                    blobObject = new Blob(fileData);
-                    window.navigator.msSaveOrOpenBlob(blobObject, Filename); // Now the user will have the option of clicking the Save button and the Open button.
-                }
-            }
-            else {
-                $("#ExportCSVHoneyComb").attr('download', Filename)
-                $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(","))));
-            }
-            BindHomeGrid();
-            BindEntityState();
-        }
-    }
+   
 
     function LoadPlan() {
         var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))

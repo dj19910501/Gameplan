@@ -1,7 +1,6 @@
 ﻿@model RevenuePlanner.Models.Plangrid
 @*<link href="@Url.Content("~/Content/css/DHTMLX/dhtmlxtreegrid2_min.css")" rel="stylesheet" type="text/css" />*@
 @*<script type="text/javascript" src="@Url.Content("~/Scripts/js/DHTMLX/dhtmlxtreegrid_min.js")"></script>*@
-
 <style>
     div.gridbox_dhx_skyblue.gridbox table.hdr td div.hdrcell {
         text-align: center;
@@ -31,7 +30,6 @@
     </a>
 </div>
 <div id="gridbox" style="background-color:white;width:100%;"></div>
-
 <div id="divTacticReqMsg" class="clue-tip-message-orange-grid" style="display:none;">This tactic needs to have all required fields filled out before submission for approval.</div>
 @*Added by Komal Rawal for #1432*@
 <div id="ImprovementGrid" class="improvement-grid-wrapper">
@@ -44,7 +42,6 @@
                 <form>
                     <h2 class="primary-title source-sans-prosemibold resubmission_header">Moving a Tactic</h2>
                     <label style="text-align: center; width: 100%;" class="resubmission_content">You are about to move a tactic to </label>
-
                     <label id="lipname" style="text-align: center; width: 100%; font-weight:800;" class="resubmission_content"></label>
                     <label style="text-align: center; width: 100%;" class="resubmission_content">Do you want to proceed?</label>
                     <input type="hidden" id="hdnsourceid" />
@@ -339,6 +336,252 @@
         BindEntityState();
         // 1782 Added by ashish mistry
     }
+
+    var IsExportToCsv = false;
+    //Added by Ashish mistry for PL #1782 :- export to csv for Honeycomb
+    var ListOfSelectedIds = { Id: [] };
+    function ExportCSVHoneyComb() {
+        var MQlTitle ='@ViewBag.MQLTitle';
+        ExportToCsv = true;
+        IsExportToCsv = true;
+        HomeGrid.expandAll();
+        var count = HomeGrid.getRowsNum();
+        var parentid = 0;
+        var parentname = "";
+        
+        if (count > 0) {
+
+            for (var i = 2 ; i <= 13 ; i++) {
+               
+                HomeGrid.insertColumn(i);
+                HomeGrid.setColumnHidden(i, true);
+            }
+            ListOfSelectedIds.Id = [];
+            for (var i = 0; i < count; i++) {
+                if ($(HomeGrid.cells2(i, 14).cell).find("div").last().attr("class") == "honeycombbox-icon-gantt honeycombbox-icon-gantt-Active") {
+                    ListOfSelectedIds.Id.push(HomeGrid.getRowId(i));
+                    var Taskname = HomeGrid.cellByIndex(i, 1).getValue();
+                    var ActivityTypeName = HomeGrid.cellByIndex(i, 0).getValue();
+                    if (ActivityTypeName == "Plan") {
+                        HomeGrid.cellByIndex(i, 2).setValue(Taskname);
+                    }
+                    if (ActivityTypeName == "Campaign") {
+
+                        //1782
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
+                        //1782
+                        HomeGrid.cellByIndex(i, 3).setValue(Taskname);
+                    }
+                    if (ActivityTypeName == "Program") {
+
+                        // 1782
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentid = HomeGrid.getParentId(parentid);
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
+                        // 1782
+
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 3).setValue(parentname);
+                        HomeGrid.cellByIndex(i, 4).setValue(Taskname);
+                    }
+                    if (ActivityTypeName == "Tactic") {
+
+                        // 1782
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentid = HomeGrid.getParentId(parentid);
+                        parentid = HomeGrid.getParentId(parentid);
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 2).setValue(parentname);
+                        // 1782
+
+                        parentid = HomeGrid.getParentId(HomeGrid.getRowId(i));
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 4).setValue(parentname);
+                        parentid = HomeGrid.getParentId(parentid);
+                        parentname = HomeGrid.cells(parentid, 1).getValue();
+                        HomeGrid.cellByIndex(i, 3).setValue(parentname);
+
+                        HomeGrid.cellByIndex(i, 5).setValue(Taskname);
+                    }
+                    HomeGrid.cellByIndex(i, 6).setValue(HomeGrid.cellByIndex(i, 16).getValue());
+                    HomeGrid.cellByIndex(i, 7).setValue(HomeGrid.cellByIndex(i, 17).getValue());
+                    HomeGrid.cellByIndex(i, 8).setValue(HomeGrid.cellByIndex(i, 18).getValue());
+                    HomeGrid.cellByIndex(i, 9).setValue(HomeGrid.cellByIndex(i, 19).getValue());
+                    HomeGrid.cellByIndex(i, 10).setValue(HomeGrid.cellByIndex(i, 20).getValue());
+                    HomeGrid.cellByIndex(i, 11).setValue(HomeGrid.cellByIndex(i, 21).getValue());
+                    HomeGrid.cellByIndex(i, 12).setValue(HomeGrid.cellByIndex(i, 22).getValue());
+                    HomeGrid.cellByIndex(i, 13).setValue(HomeGrid.cellByIndex(i, 23).getValue());
+                }
+            }
+            var data;
+            var Entity = [];
+            var csvHeader = String(",Plan,Campaign,Program,Tactic,Start Date,End Date,Planned Cost,Type,Owner,Target Stage Goal,"+ MQlTitle +",Revenue".split(',')).toString();
+            Entity.push(csvHeader + '\n');
+            if (ListOfSelectedIds.Id.length > 0) {
+                $.each(ListOfSelectedIds.Id, function () {
+                    data = [];
+                    for (var i = 0; i < 14; i++) {
+                        if (i == 8) {
+                            data[i] = "\"" + '$' + HomeGrid.cells(this, i).getValue().toString() + "\"";
+                        }
+                        else if (i == 9) {
+                            // data[i] = "\"" + $("#ulTacticType").find('li').attr('id', '#liTT' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
+                            var TT = HomeGrid.cells(this, 14).getValue();
+                            data[i] = "\"" + $(TT).last().attr("TacticType") + "\"";
+                        }
+                        else if (i == 10) {
+                            //  data[i] = "\"" + $("#ulSelectedOwner").find('li').attr('id', '#liOwner' + HomeGrid.cells(this, i).getValue().toString()).text() + "\"";
+                            var OwnerName = HomeGrid.cells(this, 14).getValue();
+                            data[i] = "\"" + $(OwnerName).last().attr("ownername") + "\"";
+
+
+                        }
+                        else if (i == 11) {
+                            data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
+                        }
+                        else {
+                            //  data[i] = "\"" + HomeGrid.cells(this, i).getValue() + "\"";
+                            data[i] = $('<span/>').html("\"" + HomeGrid.cells(this, i).getValue() + "\"").text();
+                        }
+                    }
+
+                    if (data != null) {
+                        Entity.push('' + String(data.slice(2, data.length) + '\n') + '');
+                    }
+                });
+            }
+            @*var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20);
+            $("#ExportCSVHoneyComb").attr('download', Filename + ' @DateTime.Now' + '_GridData.csv');
+            $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(", "))));*@
+            // Add By Nishant Sheth To resolve the issue for IE : #1782
+
+            var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
+            var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
+
+            if (navigator.userAgent.search("Trident") >= 0) {
+                if (!window.Blob) {
+                    // if IE 9 then becuase ie 9 and lower version not support blob
+                    //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
+                    var IEwindow = window.open();
+                    IEwindow.document.write('sep=,\r\n' + Entity.join(","));
+                    IEwindow.document.close();
+                    IEwindow.document.execCommand('SaveAs', true, Filename);
+                    IEwindow.close();
+                }
+                else {
+                    var fileData = ["sep=,\r\n" + Entity.join(",")];
+                    blobObject = new Blob(fileData);
+                    window.navigator.msSaveOrOpenBlob(blobObject, Filename); // Now the user will have the option of clicking the Save button and the Open button.
+                }
+            }
+            else {
+                //alert(2);
+                $("#ExportCSVHoneyComb").attr('download', Filename)
+                $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(","))));
+            }
+            
+            for (var i = 2 ; i <= 13 ; i++) {
+                HomeGrid.deleteColumn(2);
+            }
+             UpdateHomeGridData();
+            countid = 0;
+            HomeGrid.parse(GridDataHomeGrid, "json");
+          
+            LoadAfterParsing();
+            //BindHomeGrid();
+          
+        }
+    }
+
+    // Add By Nishant Sheth
+    var countid = 0;
+    function UpdateHomeGridData(id) {
+        var ColumnCount = HomeGrid.getColumnCount();
+        var dataid;
+        if (id == null) {
+            dataid = ListOfSelectedIds.Id[countid];
+        } else {
+            dataid = id;
+        }
+        var datahome=JSON.parse(GridDataHomeGrid);
+        $.each(datahome.rows, function () {
+          
+            // Update data for planrecords
+            var planid = this.id;
+            var plandata = this;
+            if (planid == dataid) {
+                for (var i = 0; i < ColumnCount; i++)
+                {
+                    plandata.data[i].value = HomeGrid.cells(planid, i).getValue();
+                }
+                countid++;
+                return UpdateHomeGridData(countid);
+            } else {
+              
+                // Update data for campaign records
+                if(plandata.rows != null && plandata.rows != "")
+                {
+                    $.each(plandata.rows, function () {
+                      
+                        var campid = this.id;
+                        var campdata = this;
+                        if (campid == dataid) {
+                            for ( var i = 0; i < ColumnCount; i++) {
+                                campdata.data[i].value = HomeGrid.cells(campid, i).getValue();
+                            }
+                            countid++;
+                            return UpdateHomeGridData(countid);
+                        }
+                        else {
+                            if(campdata.rows != null && campdata.rows != "")
+                            {
+                                // Update data for program records
+                                $.each(campdata.rows, function () {
+                                  
+                                    var progid = this.id;
+                                    var progdata = this;
+                                    if (progid == dataid) {
+                                        for ( var i = 0; i < ColumnCount; i++) {
+                                            progdata.data[i].value = HomeGrid.cells(progid, i).getValue();
+                                        }
+                                        countid++;
+                                        return UpdateHomeGridData(countid);
+                                    } else {
+                                        // Update data for tactic records
+                                        if(progdata.rows != null && progdata.rows != "")
+                                        {
+                                            $.each(progdata.rows, function () {
+                                                var tacid = this.id;
+                                                var tacdata = this;
+                                                if (tacid == dataid) {
+                                                    for ( var i = 0; i < ColumnCount; i++) {
+                                                        tacdata.data[i].value = HomeGrid.cells(tacid, i).getValue();
+                                                    }
+                                                    countid++;
+                                                    return UpdateHomeGridData(countid);
+                                                } else {
+                                                    countid++;
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        })
+      
+        GridDataHomeGrid =JSON.stringify(datahome);
+    }
+
+    // End By Nishant Sheth
+
     function callsearch() {
         $("#divgridview").find(".grid_Search").each(function () {
             $(this).click(function (e) {
@@ -398,6 +641,7 @@
         $('#errorMessageInspectPopup').css("display", "none");
     });
     //var GridDataCsv;
+    var GridDataHomeGrid; 
     function BindHomeGrid() {
         @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
@@ -435,13 +679,13 @@
 
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-        var GridData = (mainGridData.toString().replace(/&amp;/g, '&'));
+         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
 
         //Added by Ashish mistry on 11/12/2015 for PL #1782 :- export to csv from honeycomb
         //GridDataCsv={rows:[],head:[]};
         //GridDataCsv.head=JSON.parse(GridData).head;
         //GridDataCsv.rows=JSON.parse(GridData).rows;
-        HomeGrid.parse(GridData, "json");
+         HomeGrid.parse(GridDataHomeGrid, "json");
 
         // HomeGrid.sortRows(1, 'str', 'asc');
         LoadAfterParsing();
@@ -523,7 +767,7 @@
                 $(item).addClass("honeycombbox-icon-gantt-Active");
 
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -590,7 +834,7 @@
             else {
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.Title.push(($(item).attr('taskname')).replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -635,7 +879,7 @@
 
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -661,7 +905,7 @@
             else {
                 $(item).addClass("honeycombbox-icon-gantt-Active");
                 ExportSelectedIds.TaskID.push($(item).attr('altId'));
-                ExportSelectedIds.Title.push(decodeURIComponent($(item).attr('taskname')));
+                ExportSelectedIds.Title.push($(item).attr('taskname').replace('&amp','&'));
                 ExportSelectedIds.OwnerName.push( $(item).attr('ownername'));
                 ExportSelectedIds.TacticType.push($(item).attr('tactictype'));
                 ExportSelectedIds.ColorCode.push($(item).attr('colorcode'));
@@ -802,6 +1046,12 @@
             });
 
         });
+
+
+        if(IsExportToCsv)
+        {
+            BindEntityState();
+        }
 
 
     }
@@ -1041,12 +1291,15 @@
             if (nValue != null && nValue != "") {
              
                 //Added By Komal Rawal to Change the value in array if grid updated
+              //  alert(htmlDecode(nValue));
+                var NewValue = htmlDecode(nValue);
+                $("div[taskname='" + oValue + "']").attr('taskname',NewValue)
                 if(ExportSelectedIds.TaskID.length > 0)
                 {
                     var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
                     if(TasknameIndex >= 0 )
                     {
-                        ExportSelectedIds.Title[TasknameIndex] = nValue;
+                        ExportSelectedIds.Title[TasknameIndex] = NewValue;
 
                     }
                     
@@ -1131,18 +1384,22 @@
                             url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
                             data: { tacticTypeId: tacticTypeId },
                             success: function (data) {
-                                //if(ExportSelectedIds.TaskID.length > 0)
-                                //{
-                                  
-                                //    var TaskName = HomeGrid.cells(rowId,1).getValue()
-                                //    var OldValue = $("div[taskname='" + TaskName + "']").attr('TacticType')
-                                //    var TacticTypeIndex = ExportSelectedIds.TacticType.indexOf(OldValue);
-                                //    if(TacticTypeIndex >= 0 )
-                                //    {
-                                //        ExportSelectedIds.TacticType[TacticTypeIndex] = data.TacticTypeName;
+                               
+                                var TaskName = HomeGrid.cells(rowId,1).getValue()
+                                if(ExportSelectedIds.TaskID.length > 0)
+                                {
+                                    var OldValue = $("div[taskname='" + TaskName + "']").attr('TacticType')
+                                    var TacticTypeIndex = ExportSelectedIds.TacticType.indexOf(OldValue);
+                                    if(TacticTypeIndex >= 0 && data.TacticTypeName != ""  )
+                                    {
+                                        ExportSelectedIds.TacticType[TacticTypeIndex] = data.TacticTypeName;
 
-                                //    }
-                                //}
+                                    }
+                                }
+                                if(data.TacticTypeName != "" && data.TacticTypeName != null)
+                                {
+                                    $("div[taskname='" + TaskName + "']").attr('tactictype',data.TacticTypeName)
+                                }
                                 pcost = data.revenue;
                                 var stagetitle = data.stageTitle;
                                 var projectedStageValue = data.projectedStageValue;
@@ -1242,18 +1499,24 @@
                             dataType: 'json',
                             success: function (states) {
                               
-                                //if(ExportSelectedIds.TaskID.length > 0)
-                                //{
-                                //    var TaskName = HomeGrid.cells(rowId,1).getValue()
-                                //    var OldValue = $("div[taskname='" + TaskName + "']").attr('OwnerName')
-                                //    var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
+                                var TaskName = HomeGrid.cells(rowId,1).getValue()
+                                if(ExportSelectedIds.TaskID.length > 0)
+                                {
+                                    var OldValue = $("div[taskname='" + TaskName + "']").attr('OwnerName')
+                                    var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
 
-                                //    if(OwnerNameIndex >= 0 )
-                                //    {
-                                //        ExportSelectedIds.OwnerName[OwnerNameIndex] = states.OwnerName;
+                                    if(OwnerNameIndex >= 0 && states.OwnerName != "" )
+                                    {
+                                        ExportSelectedIds.OwnerName[OwnerNameIndex] = states.OwnerName;
 
-                                //    }
-                                //}
+                                    }
+                                }
+                                if(states.OwnerName != "" && states.OwnerName !=  null)
+                                {
+
+                              
+                                    $("div[taskname='" + TaskName + "']").attr('ownername',states.OwnerName)
+                                }
 
                                 if (states.errormsg != null && states.errormsg.trim() != "") {
                                     alert(states.errormsg.trim());
@@ -1591,6 +1854,7 @@
         }
     }
     $(document).ready(function () {
+       
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");
 
