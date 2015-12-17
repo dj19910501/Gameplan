@@ -6669,7 +6669,7 @@ namespace RevenuePlanner.Controllers
                 //}
                 //objHomePlan.plans = planList;
 
-                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(PlanId);
+                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(PlanId, onlyplan:true);
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
                 ViewBag.IsQuarter = IsQuarter;
                 #endregion
@@ -6706,7 +6706,17 @@ namespace RevenuePlanner.Controllers
                 lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
             }
 
-            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            // Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
+			var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+             var plancampaignids = campaign.Select(c => c.PlanCampaignId).ToList();
+            var campaignbudgetlist = db.Plan_Campaign_Budget.Where(tb => plancampaignids.Contains(tb.PlanCampaignId)).Select(tb => new { tb.Period, tb.Value, tb.PlanCampaignId }).ToList();
+             var programlist = db.Plan_Campaign_Program.Where(p => plancampaignids.Contains(p.PlanCampaignId) && p.IsDeleted.Equals(false)).ToList();
+            var planprogramids = programlist.Select(p => p.PlanProgramId).ToList();
+            var programbudgetlist = db.Plan_Campaign_Program_Budget.Where(tb => planprogramids.Contains(tb.PlanProgramId)).Select(tb => new { tb.Period, tb.Value, tb.PlanProgramId }).ToList();
+            var tacticslist = db.Plan_Campaign_Program_Tactic.Where(t => planprogramids.Contains(t.PlanProgramId) && t.IsDeleted.Equals(false)).ToList();
+            var plantacticids = tacticslist.Select(t => t.PlanTacticId).ToList();
+            var tacticbudgetlist = db.Plan_Campaign_Program_Tactic_Budget.Where(tb => plantacticids.Contains(tb.PlanTacticId)).Select(tb => new { tb.Period, tb.Value, tb.PlanTacticId }).ToList();
+            
             var campaignobj = campaign.Select(_campgn => new
             {
                 id = _campgn.PlanCampaignId,
@@ -6714,32 +6724,32 @@ namespace RevenuePlanner.Controllers
                 description = _campgn.Description,
                 isOwner = Sessions.User.UserId == _campgn.CreatedBy ? 1 : 0,
                 Budgeted = _campgn.CampaignBudget,
-                Budget = _campgn.Plan_Campaign_Budget.Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
+                Budget = campaignbudgetlist.Where(cb => cb.PlanCampaignId == _campgn.PlanCampaignId).Select(b1 => new BudgetedValue { Period = b1.Period, Value = b1.Value }).ToList(),
                 createdBy = _campgn.CreatedBy,
-                programs = (db.Plan_Campaign_Program.Where(pcp => pcp.PlanCampaignId.Equals(_campgn.PlanCampaignId) && pcp.IsDeleted.Equals(false)).Select(pcp => pcp).ToList()).Select(pcpj => new
+                programs = programlist.Where(p => p.PlanCampaignId == _campgn.PlanCampaignId).Select(pcpj => new
                 {
                     id = pcpj.PlanProgramId,
                     title = pcpj.Title,
                     description = pcpj.Description,
                     Budgeted = pcpj.ProgramBudget,
-                    Budget = pcpj.Plan_Campaign_Program_Budget.Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = _budgt.Value }).ToList(),
+                    Budget = programbudgetlist.Where(pb => pb.PlanProgramId == pcpj.PlanProgramId).Select(_budgt => new BudgetedValue { Period = _budgt.Period, Value = _budgt.Value }).ToList(),
                     isOwner = Sessions.User.UserId == pcpj.CreatedBy ? 1 : 0,
                     createdBy = pcpj.CreatedBy,
-                    tactics = (db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.PlanProgramId.Equals(pcpj.PlanProgramId) && pcpt.IsDeleted.Equals(false)).Select(pcpt => pcpt).ToList()).Select(pcptj => new
+                    tactics = tacticslist.Where(t => t.PlanProgramId == pcpj.PlanProgramId).Select(pcptj => new
                     {
                         id = pcptj.PlanTacticId,
                         title = pcptj.Title,
                         description = pcptj.Description,
                         Cost = pcptj.TacticBudget,
-                        Budget = pcptj.Plan_Campaign_Program_Tactic_Budget.Select(t => new BudgetedValue { Period = t.Period, Value = t.Value }).ToList(),
+                        Budget = tacticbudgetlist.Where(tb => tb.PlanTacticId == pcptj.PlanTacticId).Select(t => new BudgetedValue { Period = t.Period, Value = t.Value }).ToList(),
                         isOwner = Sessions.User.UserId == pcptj.CreatedBy ? 1 : 0,
                         createBy = pcptj.CreatedBy
 
-                    }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id)
+                    }).Select(pcptj => pcptj).Distinct().OrderBy(pcptj => pcptj.id).ToList()
 
-                }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id)
-            }).Select(_campgn => _campgn).Distinct().OrderBy(_campgn => _campgn.id);
-
+                }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id).ToList()
+            }).Select(_campgn => _campgn).Distinct().OrderBy(_campgn => _campgn.id).ToList();
+            
             var lstCampaignTmp = campaignobj.Select(_campgn => new
             {
                 id = _campgn.id,
@@ -6874,20 +6884,17 @@ namespace RevenuePlanner.Controllers
             string EntityTypeTactic = Enums.EntityType.Tactic.ToString();
             bool isDisplayForFilter = false;
             bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), Sessions.User.ClientId);
-            var CustomFieldexists = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) &&
-                                                                        (customfield.IsRequired && !isDisplayForFilter) && customfield.IsDeleted.Equals(false)
-                                                                         ).Any();
+            // Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
+			var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
+            var CustomFieldexists = customfieldlist.Where(customfield => customfield.IsRequired && !isDisplayForFilter).Any();
+            var customfieldids = customfieldlist.Where(customfield => customfield.CustomFieldType.Name == DropDownList && (isDisplayForFilter ? customfield.IsDisplayForFilter : true)).Select(customfield => customfield.CustomFieldId).ToList();
             List<string> tacIds = model.Where(t => t.ActivityType == EntityTypeTactic).Select(t => t.ActivityId).ToList();
             tacIds = tacIds.Select(t => t.Replace("cpt_", "")).ToList();
             List<int> intList = tacIds.ConvertAll(s => Int32.Parse(s));
-            var Entities = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).Select(entityid => entityid).ToList();
+            var EntitiesList = db.CustomField_Entity.Where(entityid => intList.Contains(entityid.EntityId)).ToList();
+            var Entities = EntitiesList.Select(entityid => entityid).ToList();
 
-            var lstAllTacticCustomFieldEntities = db.CustomField_Entity.Where(customFieldEntity => customFieldEntity.CustomField.ClientId == Sessions.User.ClientId &&
-                                                                                                        customFieldEntity.CustomField.IsDeleted.Equals(false) &&
-                                                                                                        customFieldEntity.CustomField.EntityType.Equals(EntityTypeTactic) &&
-                                                                                                        customFieldEntity.CustomField.CustomFieldType.Name.Equals(DropDownList) &&
-                                                                                                        (isDisplayForFilter ? customFieldEntity.CustomField.IsDisplayForFilter.Equals(true) : true) &&
-                                                                                                        intList.Contains(customFieldEntity.EntityId))
+            var lstAllTacticCustomFieldEntities = EntitiesList.Where(customFieldEntity => customfieldids.Contains(customFieldEntity.CustomFieldId))
                                                                                                 .Select(customFieldEntity => customFieldEntity).Distinct().ToList(); //todo : able to move up
             List<RevenuePlanner.Models.CustomRestriction> userCustomRestrictionList = Common.GetUserCustomRestrictionsList(Sessions.User.UserId, true);
             foreach (var item in model)
@@ -6910,9 +6917,9 @@ namespace RevenuePlanner.Controllers
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
-                        //item.programs.ToList().ForEach(p => p.tactics.ToList().ForEach(t => planTacticIds.Add(t.id)));
-                        var modeltacticIds = model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
-                        model.Where(m => m.ActivityType == ActivityType.ActivityTactic && model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList().Contains(m.ParentActivityId)).ToList().ForEach(t => planTacticIds.Add(Convert.ToInt32(t.ActivityId)));
+                        // Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
+						var modelprogramid = model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
+                        plantacticids = model.Where(m => m.ActivityType == ActivityType.ActivityTactic && modelprogramid.Contains(m.ParentActivityId)).Select(m => Convert.ToInt32(m.ActivityId)).ToList();
                         lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
@@ -6930,7 +6937,8 @@ namespace RevenuePlanner.Controllers
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
-                        model.Where(m => m.ActivityType == ActivityType.ActivityTactic && m.ParentActivityId == item.ActivityId).ToList().ForEach(t => planTacticIds.Add(Convert.ToInt32(t.ActivityId)));
+						// Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
+                        planTacticIds = model.Where(m => m.ActivityType == ActivityType.ActivityTactic && m.ParentActivityId == item.ActivityId).Select(m => Convert.ToInt32(m.ActivityId)).ToList();
                         lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
                         {
