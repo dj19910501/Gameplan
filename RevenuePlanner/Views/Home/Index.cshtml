@@ -6148,7 +6148,7 @@
         $('#CloneCampaign1').click(function () {
             isCopyTactic = CampaignId;
             var idPlanCamaign = CampaignId;//$("#hdnPlanCampaignId").val();
-            var Title = title;//$("#lblCampaignTitle").html();
+            var Title = $("<div/>").text(title).html();// Encode Title
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/Clone")',
@@ -6207,7 +6207,7 @@
         $('#CloneProgram1').click(function () {
             isCopyTactic = ProgramId;
             var idPlanProgram = ProgramId;// $("#hdnPlanProgramId").val();
-            var Title = title;// $("#lblProgramTitle").html();
+            var Title = $("<div/>").text(title).html();// Encode Title
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/Clone")',
@@ -6269,7 +6269,7 @@
         $('#CloneTactic1').click(function () {
             isCopyTactic = ProgramId;
             var idPlanTactic = TacticId;// $("#hdnPlanTacticId").val();
-            var Title = title;// $("#lblTacticTitle").html();
+            var Title = $("<div/>").text(title).html();// Encode Title
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/Clone")',
