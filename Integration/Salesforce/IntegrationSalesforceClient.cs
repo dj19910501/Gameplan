@@ -3920,13 +3920,19 @@ namespace Integration.Salesforce
         #region helper
         private Dictionary<string, object> GetCampaign(Plan_Campaign planCampaign)
         {
-            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Campaign>(planCampaign, _mappingCampaign);
+            string PlanName = string.Empty;
+            if (planCampaign != null)
+                PlanName = planCampaign.Plan.Title;
+            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Campaign>(planCampaign, _mappingCampaign, PlanName);
             return campaign;
         }
 
         private Dictionary<string, object> GetProgram(Plan_Campaign_Program planProgram, Enums.Mode mode)
         {
-            Dictionary<string, object> program = GetTargetKeyValue<Plan_Campaign_Program>(planProgram, _mappingProgram);
+            string PlanName = string.Empty;
+            if (planProgram != null)
+                PlanName = planProgram.Plan_Campaign.Plan.Title;
+            Dictionary<string, object> program = GetTargetKeyValue<Plan_Campaign_Program>(planProgram, _mappingProgram, PlanName);
 
             if (mode.Equals(Enums.Mode.Create))
             {
@@ -3937,7 +3943,10 @@ namespace Integration.Salesforce
 
         private Dictionary<string, object> GetTactic(Plan_Campaign_Program_Tactic planTactic, Enums.Mode mode)
         {
-            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic);
+            string PlanName = string.Empty;
+            if (planTactic != null)
+                PlanName = planTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Title;
+            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Campaign_Program_Tactic>(planTactic, _mappingTactic, PlanName);
             if (mode.Equals(Enums.Mode.Create))
             {
                 tactic.Add(ColumnParentId, _parentId);
@@ -3948,13 +3957,19 @@ namespace Integration.Salesforce
 
         private Dictionary<string, object> GetImprovementCampaign(Plan_Improvement_Campaign planIMPCampaign)
         {
-            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Improvement_Campaign>(planIMPCampaign, _mappingImprovementCampaign);
+            string PlanName = string.Empty;
+            if (planIMPCampaign != null)
+                PlanName = planIMPCampaign.Plan.Title;
+            Dictionary<string, object> campaign = GetTargetKeyValue<Plan_Improvement_Campaign>(planIMPCampaign, _mappingImprovementCampaign, PlanName);
             return campaign;
         }
 
         private Dictionary<string, object> GetImprovementProgram(Plan_Improvement_Campaign_Program planIMPProgram, Enums.Mode mode)
         {
-            Dictionary<string, object> program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram);
+            string PlanName = string.Empty;
+            if (planIMPProgram != null)
+                PlanName = planIMPProgram.Plan_Improvement_Campaign.Plan.Title;
+            Dictionary<string, object> program = GetTargetKeyValue<Plan_Improvement_Campaign_Program>(planIMPProgram, _mappingImprovementProgram, PlanName);
 
             if (mode.Equals(Enums.Mode.Create))
             {
@@ -3965,7 +3980,10 @@ namespace Integration.Salesforce
 
         private Dictionary<string, object> GetImprovementTactic(Plan_Improvement_Campaign_Program_Tactic planIMPTactic, Enums.Mode mode)
         {
-            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic);
+            string PlanName = string.Empty;
+            if (planIMPTactic != null)
+                PlanName = planIMPTactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.Plan.Title;
+            Dictionary<string, object> tactic = GetTargetKeyValue<Plan_Improvement_Campaign_Program_Tactic>(planIMPTactic, _mappingImprovementTactic, PlanName);
             if (mode.Equals(Enums.Mode.Create))
             {
                 tactic.Add(ColumnParentId, _parentId);
@@ -3975,7 +3993,7 @@ namespace Integration.Salesforce
         }
 
 
-        private Dictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType)
+        private Dictionary<string, object> GetTargetKeyValue<T>(object obj, Dictionary<string, string> mappingDataType,string planname)
         {
             string status = "Status";
             string createdBy = "CreatedBy";
@@ -4035,6 +4053,11 @@ namespace Integration.Salesforce
                     if (mapping.Key == costActual)
                     {
                         value = GetActualCostbyPlanTacticId(((Plan_Campaign_Program_Tactic)obj).PlanTacticId);
+                        keyvaluepair.Add(mapping.Value, value);
+                    }
+                    else if (mapping.Key == Enums.SFDCGlobalFields.PlanName.ToString())
+                    {
+                        value = !string.IsNullOrEmpty(planname)?planname:string.Empty;
                         keyvaluepair.Add(mapping.Value, value);
                     }
                     else

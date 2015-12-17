@@ -238,5 +238,9 @@ namespace Integration.Helper
             {Enums.ActualFields.Title.ToString(),"string,text"},
             {Enums.ActualFields.Other.ToString(),"string,text"}
 };
+        public enum SFDCGlobalFields
+        {
+            PlanName
+        }
     }
 }
