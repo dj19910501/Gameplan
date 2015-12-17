@@ -6168,6 +6168,7 @@
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
+                        isError = false;
                         ShowMessage(isError, data.msg);
 
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -6226,6 +6227,7 @@
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
+                        isError = false;
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                             if (CurrentPlanId > 0) {
@@ -6288,6 +6290,7 @@
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
+                        isError = false;
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                             if (CurrentPlanId > 0) {
@@ -6342,7 +6345,7 @@
 
             isCopyTactic = TacticId;
             var idPlanLineItem = LineId;// $("#hdnPlanTacticId").val();
-            var Title = title;// $("#lblTacticTitle").html();
+            var Title = $("<div/>").text(title).html();// Encode Title
             $.ajax({
                 type: 'POST',
                 url: '@Url.Content("~/Inspect/Clone")',
@@ -6361,6 +6364,7 @@
                         isCopyTactic = data.Id;
                         isCopyTacticHomeGrid = isCopyTactic;
                         RefreshCurrentTab();
+                        isError = false;
                         ShowMessage(isError, data.msg);
                         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
                             if (CurrentPlanId > 0) {
