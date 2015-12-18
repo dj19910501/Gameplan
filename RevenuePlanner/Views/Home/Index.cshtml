@@ -174,7 +174,7 @@
 
         }
 
-
+        var TacticDeselectAll = false;
         function BulkTTOperation(selection) {
             GetLastview = false;
             filters.TacticTypeids = [];
@@ -188,6 +188,7 @@
                 });
             }
             else {
+                TacticDeselectAll = true;
                 $("#ulTacticType li").each(function (i) {
                     $(this).removeClass("close-list");
                     var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -1343,7 +1344,7 @@
             }
         });
     }
-
+    var DeselectAllStatus = false;
     function BulkStatusOperation(selection) {
         GetLastview = false;
         filters.StatusIds = [];
@@ -1356,6 +1357,7 @@
             });
         }
         else {
+            DeselectAllStatus = true;
             $("#ulStatus li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -1512,6 +1514,7 @@
     }
     var IsPlanChange = false;
     function SaveLastSetofViews() {
+
         filters.customFieldIds = [];
 
         filters.TacticTypeids = [];
@@ -1581,12 +1584,22 @@
 
         }
 
+
+        if (DeselectAllStatus) {
+            filters.StatusIds.push(0);
+        }
+        if (TacticDeselectAll) {
+            filters.TacticTypeids.push(0);
+        }
+
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
         var TacticTypeids = filters.TacticTypeids; //Modified for #1283
         var GetSelectedPlanNo = filters.SelectedPlans.length;
         var StatusIds = filters.StatusIds;
+
+
 
 
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
@@ -1774,7 +1787,7 @@
             },
             success: function (result) {
                 // Add By Nishant Sheth
-                // Desc :: #1818 
+                // Desc :: #1818
                 var gridhtml = '<div id="NodatawithfilterGrid" style="display:none;">' +
         '<span class="pull-left margin_t30 bold " style="margin-left: 20px;">No data exists. Please check the filters applied.</span>' +
     '<br/></div>';
@@ -2606,7 +2619,7 @@
     }
     //Added by Rahul Shah for PL #1782 for Honeycomb pdf
     function CallPdfHoneyComb() {
-        
+
         var GanttTaskDataforHoney = {
             data: new Array()
         };// Added By Rahul Shah For HoneyComp Pdf
@@ -2622,10 +2635,10 @@
         var planyear = GanttTaskDataNew.data[0].start_date.getFullYear();
         for (var i = 0; i < GanttTaskDataNew.data.length; i++) {
             if (GanttTaskDataNew.data[i].type != undefined) {
-            if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
+                if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "PLAN") {
 
-                Status = GanttTaskDataNew.data[i].Status;
-            }
+                    Status = GanttTaskDataNew.data[i].Status;
+                }
             }
             for (var j = 0; j < ExportSelectedIds.TaskID.length; j++) {
                 if (GanttTaskDataNew.data[i].id == ExportSelectedIds.TaskID[j]) {
@@ -2638,10 +2651,10 @@
                     //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].parent = 0;
                     //GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].color = '#' + GanttTaskDataforHoney.data[GanttTaskDataforHoney.data.length - 1].colorcode;
                     if (GanttTaskDataNew.data[i].type != undefined) {
-                    if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
+                        if (GanttTaskDataNew.data[i].type.toUpperCase().toString() == "TACTIC") {
 
-                        //TotalTact = TotalTact + 1;
-                        //TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
+                            //TotalTact = TotalTact + 1;
+                            //TotalCost = TotalCost + GanttTaskDataNew.data[i].cost;
                             // Add BY Nishant Sheth
                             //Desc:: resolve the issue with view by dropdown
                             var name_Id = GanttTaskDataNew.data[i].id.split('_');
@@ -2716,12 +2729,12 @@
                                     LineId = name_Id[4];
                                 }
                             }
-                            
+
                             defaultParentArr.tacticId.push(TacticId);
+                        }
                     }
                 }
             }
-        }
         }
 
         for (var p = 0; p < selectedIds.length; p++) {
@@ -2930,20 +2943,20 @@
             });
             $("#mqllabeltest").text($("#pmqlLabel").text());
             $("#budgetlabeltest").text($("#pcostLabel").text());
-            
+
             if (Status != undefined && Status != null) {
-            if (Status.toUpperCase().toString() == "DRAFT") {
-                $("#mqlspanvalue").text($("#pMQLs").text());
-                $("#budgetspanvalue").text($("#pbudget").text());
-            }
-            else {
-                $("#HoneyMQLs").text(TotalMql);
-                SetPriceValue("#HoneyMQLs")
-                $("#mqlspanvalue").text($("#HoneyMQLs").text());
-                $("#honeybudget").text(TotalCost);
-                SetBudget("#honeybudget")
-                $("#budgetspanvalue").text($("#honeybudget").text());
-            }
+                if (Status.toUpperCase().toString() == "DRAFT") {
+                    $("#mqlspanvalue").text($("#pMQLs").text());
+                    $("#budgetspanvalue").text($("#pbudget").text());
+                }
+                else {
+                    $("#HoneyMQLs").text(TotalMql);
+                    SetPriceValue("#HoneyMQLs")
+                    $("#mqlspanvalue").text($("#HoneyMQLs").text());
+                    $("#honeybudget").text(TotalCost);
+                    SetBudget("#honeybudget")
+                    $("#budgetspanvalue").text($("#honeybudget").text());
+                }
             }
             $("#ptacticcounttest").text(TotalTact);
             //$("#mqlspanpercentage").text($("#pMQLImproved").text());
@@ -3230,7 +3243,7 @@
     });
     //Modified by Komal Rawal  on 14/12/2015 for PL #1782 :- export to csv from honeycomb not working.
     $(".popover-content").live('click', function (e) {
-        
+
         if (ExportToCsv) {
             CloseClick = false;
         }
@@ -3378,7 +3391,7 @@
     };
 
 
-   
+
 
     function LoadPlan() {
         var plans = @Html.Raw(Json.Encode(ListBudgetingPlan))
@@ -3782,127 +3795,127 @@
                             $('#divCollaborator').show();
                             $("#NodatawithfilterCalendar").hide();
 
-                        type = data.ViewBy.toString();
-                        if (getViewByList == true) {
-                            BindViewSelections(data.ViewById, type);
-                        }
-                        getViewByList = false;
-                        $('#ddlTabViewBy').val(data.ViewBy.toString());
-                        $('.request-icons').find('.counter').html(data.requestCount);
-                        planYear = parseInt(data.planYear);
-                        var isDataExistForTacticTable = false;
-                        //// Modified By Maninder Singh Wadhva PL Ticket#47
-                        if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
-                            typeof data.improvementTacticForAccordion != 'undefined' &&
-                            data.improvementTacticForAccordion.length > 0 &&
-                            data.improvementTacticTypeForAccordion.length > 0 &&
-                            data.taskData.length > 0) {
-                            // $('#improvements').show();
-                            // AddAccordionToggleAndInnerImprovementTactic(data.improvementTacticTypeForAccordion, data.improvementTacticForAccordion);
-                            isDataExistForTacticTable = true;
-                            $('#improvements').hide();
-                        }
-                        else {
-                            $('#improvements').hide();
-                        }
-
-                        // To hide/show current plan edit button based on user plan edit permission
-                        if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                            $("#divPlanEditButtonHome").show();
-                            $('.WelcomeMessageBorder').show();
-                            GetCurrentPlanPermissionDetail();
-                        }
-                        else {
-                            $("#divPlanEditButtonHome").hide();
-                            $('.WelcomeMessageBorder').show();
-                            //  $("#divAddActuals").hide();
-                        }
-
-                        //// Modified By Maninder Singh Wadhva PL Ticket#47
-                        //// filtering non improvement task data.
-                        var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
-                        if (filteredNonImprovementData.length > 0 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                            isDataExistForTacticTable = true;
-                            $('#marketing-activities').show();
-                            var IsCampaign = type.indexOf('@Common.CampaignCustomTitle') > 0 ? '@Common.CampaignCustomTitle' : type.toString();
-                            var IsProgram = type.indexOf('@Common.ProgramCustomTitle') > 0 ? '@Common.ProgramCustomTitle' : type.toString();
-                            var IsTactic = type.indexOf('@Common.TacticCustomTitle') > 0 ? '@Common.TacticCustomTitle' : type.toString();
-                            if (isRequest) {
-                                // AddAccordionToggleAndInnerRequest(data);
+                            type = data.ViewBy.toString();
+                            if (getViewByList == true) {
+                                BindViewSelections(data.ViewById, type);
                             }
-                            else if (type == '@PlanGanttTypes.Tactic.ToString()') {
-                                //  AddAccordionToggleAndInnerTactic(data);
+                            getViewByList = false;
+                            $('#ddlTabViewBy').val(data.ViewBy.toString());
+                            $('.request-icons').find('.counter').html(data.requestCount);
+                            planYear = parseInt(data.planYear);
+                            var isDataExistForTacticTable = false;
+                            //// Modified By Maninder Singh Wadhva PL Ticket#47
+                            if (typeof data.improvementTacticTypeForAccordion != 'undefined' &&
+                                typeof data.improvementTacticForAccordion != 'undefined' &&
+                                data.improvementTacticForAccordion.length > 0 &&
+                                data.improvementTacticTypeForAccordion.length > 0 &&
+                                data.taskData.length > 0) {
+                                // $('#improvements').show();
+                                // AddAccordionToggleAndInnerImprovementTactic(data.improvementTacticTypeForAccordion, data.improvementTacticForAccordion);
+                                isDataExistForTacticTable = true;
+                                $('#improvements').hide();
                             }
-                            else if (IsTactic == type) {
-                                //   AddAccordionToggleAndInnerCustomFields(data);
+                            else {
+                                $('#improvements').hide();
+                            }
+
+                            // To hide/show current plan edit button based on user plan edit permission
+                            if (CurrentPlanId > 0 && GetSelectedPlanNo == 1 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                                $("#divPlanEditButtonHome").show();
+                                $('.WelcomeMessageBorder').show();
+                                GetCurrentPlanPermissionDetail();
+                            }
+                            else {
+                                $("#divPlanEditButtonHome").hide();
+                                $('.WelcomeMessageBorder').show();
+                                //  $("#divAddActuals").hide();
+                            }
+
+                            //// Modified By Maninder Singh Wadhva PL Ticket#47
+                            //// filtering non improvement task data.
+                            var filteredNonImprovementData = $.grep(data.taskData, function (value) { return (typeof value.isImprovement == 'undefined') });
+                            if (filteredNonImprovementData.length > 0 && activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                                isDataExistForTacticTable = true;
+                                $('#marketing-activities').show();
+                                var IsCampaign = type.indexOf('@Common.CampaignCustomTitle') > 0 ? '@Common.CampaignCustomTitle' : type.toString();
+                                var IsProgram = type.indexOf('@Common.ProgramCustomTitle') > 0 ? '@Common.ProgramCustomTitle' : type.toString();
+                                var IsTactic = type.indexOf('@Common.TacticCustomTitle') > 0 ? '@Common.TacticCustomTitle' : type.toString();
+                                if (isRequest) {
+                                    // AddAccordionToggleAndInnerRequest(data);
+                                }
+                                else if (type == '@PlanGanttTypes.Tactic.ToString()') {
+                                    //  AddAccordionToggleAndInnerTactic(data);
+                                }
+                                else if (IsTactic == type) {
+                                    //   AddAccordionToggleAndInnerCustomFields(data);
+                                }
+                                else {
+                                    $('#marketing-activities').hide();
+                                }
+
+                                AttachEventToGroupHeading();
+                                $('#marketing-activities').hide();
                             }
                             else {
                                 $('#marketing-activities').hide();
                             }
 
-                            AttachEventToGroupHeading();
-                            $('#marketing-activities').hide();
-                        }
-                        else {
-                            $('#marketing-activities').hide();
-                        }
+                            //GanttTaskData = data.taskData; // Add By Nishant Sheth
+                            renderGantt(data.taskData);
+                            var w1 = window.innerWidth;
+                            var w3 = document.body.clientWidth;
 
-                        //GanttTaskData = data.taskData; // Add By Nishant Sheth
-                        renderGantt(data.taskData);
-                        var w1 = window.innerWidth;
-                        var w3 = document.body.clientWidth;
+                            //// Hide/Show Tabulated data shown below gantt of request tab.
+                            if (isRequest) {
+                                requestPlanActiveTab(isRequest);
+                                //$(".shadow-scroll-gantt").hide();   //Commented by Rahul Shah on 14/09/2015 for PL #1582
+                                $("#table_activities").show();
+                                FillTacticTableForRequest(data);
+                                $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
+                                $("#ddlTabViewBy").multiselect('refresh');
+                                isRequest = false;
+                            }
+                            else {
+                                requestPlanActiveTab(false);
+                                $("#table_activities").hide();
+                                $(".shadow-scroll-gantt").hide();
+                            }
+                            gantt.refreshData();
 
-                        //// Hide/Show Tabulated data shown below gantt of request tab.
-                        if (isRequest) {
-                            requestPlanActiveTab(isRequest);
-                            //$(".shadow-scroll-gantt").hide();   //Commented by Rahul Shah on 14/09/2015 for PL #1582
-                            $("#table_activities").show();
-                            FillTacticTableForRequest(data);
-                            $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
-                            $("#ddlTabViewBy").multiselect('refresh');
-                            isRequest = false;
-                        }
-                        else {
-                            requestPlanActiveTab(false);
-                            $("#table_activities").hide();
-                            $(".shadow-scroll-gantt").hide();
-                        }
-                        gantt.refreshData();
+                            $(".gantt_container .gantt_tree_content").each(function (index, element) {
 
-                        $(".gantt_container .gantt_tree_content").each(function (index, element) {
+                                $(element).attr("title", htmlDecode(element.innerHTML));
+                            });
 
-                            $(element).attr("title", htmlDecode(element.innerHTML));
-                        });
+                            //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
+                            //// display popup based on type and name and title.
 
-                        //// Added By Ravindra Singh Sisodiya  PL Ticket #1411
-                        //// display popup based on type and name and title.
+                            $(".gantt_last_cell").dblclick(function (e) {
+                                e.stopPropagation();
+                            });
 
-                        $(".gantt_last_cell").dblclick(function (e) {
-                            e.stopPropagation();
-                        });
+                            $(".gantt_add").click(function (e) {
 
-                        $(".gantt_add").click(function (e) {
+                                var type = $(this).attr('id');
+                                var name = $(this).attr('Name');
+                                var title = $(this).attr('aria-label');
+                                var permission = $(this).attr('Permission');
+                                var linetype = $(this).attr('lineitemtype');
+                                DisplayPopUpMenu(type, name, title, permission, linetype, e);
 
-                            var type = $(this).attr('id');
-                            var name = $(this).attr('Name');
-                            var title = $(this).attr('aria-label');
-                            var permission = $(this).attr('Permission');
-                            var linetype = $(this).attr('lineitemtype');
-                            DisplayPopUpMenu(type, name, title, permission, linetype, e);
+                            });
 
-                        });
+                            var $doc = $(document);
+                            $doc.click(function () {
+                                $('#popupType').css('display', 'none');
+                            });
 
-                        var $doc = $(document);
-                        $doc.click(function () {
-                            $('#popupType').css('display', 'none');
-                        });
-
-                        $(document).mouseup(function (e) {
-                            $('#popupType').css("display", "none");
-                        });
-                        $(".gantt_ver_scroll").scroll(function () {
-                            $('#popupType').css('display', 'none');
-                        });
+                            $(document).mouseup(function (e) {
+                                $('#popupType').css("display", "none");
+                            });
+                            $(".gantt_ver_scroll").scroll(function () {
+                                $('#popupType').css('display', 'none');
+                            });
 
                         } else {
                             //Add By Nishant Sheth
@@ -5803,25 +5816,36 @@
             dataType: "json",
             async: false,
             success: function (data) {
+              
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
                 else {
-                    if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
-                        $("#ulStatus li input[type=checkbox]").removeAttr('checked');
-                        $("#ulStatus li ").removeClass("close-list");
-                        for (i = 0 ; i < data.StatusNAmes.length; i++) {
-                            $("#ulStatus li input[type=checkbox]").each(function () {
-                                var Value = $(this).attr("id");
-                                if (Value == data.StatusNAmes[i]) {
-                                    filters.StatusIds.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
+                    if (data.StatusNAmes != null) {
+                        if (data.StatusNAmes.length != 0 && data.StatusNAmes.length != undefined) {
+                            $("#ulStatus li input[type=checkbox]").removeAttr('checked');
+                            $("#ulStatus li ").removeClass("close-list");
+                            for (i = 0 ; i < data.StatusNAmes.length; i++) {
+                                $("#ulStatus li input[type=checkbox]").each(function () {
+                                    var Value = $(this).attr("id");
+                                    if (Value == data.StatusNAmes[i]) {
+                                        filters.StatusIds.push(Value);
+                                        $(this).attr('checked', 'checked');
+                                        $(this).parent().addClass("close-list");
+                                    }
 
-                            });
+                                });
 
+                            }
                         }
+                    }
+                    else
+                    {
+                        $("#ulStatus li").each(function (i) {
+                            $(this).removeClass("close-list");
+                            var chkid = $(this).find("input[type=checkbox]").attr("id");
+                            $("#" + chkid).removeAttr("checked");
+                        });
                     }
 
                     if (data.Customfields.length != 0 && data.Customfields.length != undefined) {
@@ -5866,21 +5890,34 @@
                     }
 
 
-                    if (data.TTList.length != 0 && data.TTList.length != undefined) {
-                        filters.TacticTypeids = [];
-                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
-                        $("#ulTacticType li ").removeClass("close-list");
-                        for (i = 0 ; i < data.TTList.length; i++) {
-                            PreviousListFilter.TacticTypeIds.push(data.TTList[i]);
-                            $("#ulTacticType li input[type=checkbox]").each(function () {
-                                var Value = $(this).attr("id").replace("CbTT", "");
-                                if (Value == data.TTList[i]) {
-                                    filters.TacticTypeids.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
-                            });
+                  
+                    if (data.TTList != null) {
+                        if (data.TTList.length != 0 && data.TTList.length != undefined) {
+                            filters.TacticTypeids = [];
+                            $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
+                            $("#ulTacticType li ").removeClass("close-list");
+                            for (i = 0 ; i < data.TTList.length; i++) {
+                                PreviousListFilter.TacticTypeIds.push(data.TTList[i]);
+                                $("#ulTacticType li input[type=checkbox]").each(function () {
+                                    var Value = $(this).attr("id").replace("CbTT", "");
+                                    if (Value == data.TTList[i]) {
+                                        filters.TacticTypeids.push(Value);
+                                        $(this).attr('checked', 'checked');
+                                        $(this).parent().addClass("close-list");
+                                    }
+                                });
+                            
+                            }
                         }
+                    }
+                    else
+                    {
+                        $("#ulTacticType li").each(function (i) {
+                            $(this).removeClass("close-list");
+                            var chkid = $(this).find("input[type=checkbox]").attr("id");
+                            $("#" + chkid).removeAttr("checked");
+                        });
+
                     }
 
 

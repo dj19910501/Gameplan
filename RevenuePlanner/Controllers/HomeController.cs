@@ -5014,11 +5014,19 @@ namespace RevenuePlanner.Controllers
             var LastSetOfStatus = new List<string>();
             //Modified for #1750 by Komal Rawal
             var listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
-            var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-            if (SetOfStatus != null)
+            var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel && view.ViewName == null).Select(View => View.FilterValues).ToList();
+            if (SetOfStatus.Count > 0)
             {
-                LastSetOfStatus = SetOfStatus.Split(',').ToList();
+                if (SetOfStatus.FirstOrDefault() != null)
+                {
+                    LastSetOfStatus = SetOfStatus.FirstOrDefault().Split(',').ToList();
+                }
+                else
+                {
+                    LastSetOfStatus = null;
+                }
             }
+           
             var OwnerLabel = Enums.FilterLabel.Owner.ToString();
 
             var LastSetOfOwners = new List<string>();
@@ -5033,11 +5041,20 @@ namespace RevenuePlanner.Controllers
             var TTLabel = Enums.FilterLabel.TacticType.ToString();
             var LastSetOfTacticType = new List<string>();
 
-            var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-            if (SetOfTacticType != null)
+            var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel && view.ViewName == null).Select(View => View.FilterValues).ToList();
+            if (SetOfTacticType.Count > 0)
             {
-                LastSetOfTacticType = SetOfTacticType.Split(',').ToList();
+                if (SetOfTacticType.FirstOrDefault() != null)
+                {
+                    LastSetOfTacticType = SetOfTacticType.FirstOrDefault().Split(',').ToList();
+                }
+                else
+                {
+                    LastSetOfTacticType = null;
+                }
+               
             }
+           
             var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF") && view.ViewName == null).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
             return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
         }
@@ -5092,6 +5109,10 @@ namespace RevenuePlanner.Controllers
             }
             if (TacticTypeid != null && TacticTypeid != "")
             {
+                if(TacticTypeid == "0")
+                {
+                    TacticTypeid = null;
+                }
                 Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                 objFilterValues.ViewName = null;
                 objFilterValues.FilterName = Enums.FilterLabel.TacticType.ToString();
@@ -5105,6 +5126,10 @@ namespace RevenuePlanner.Controllers
             {
                 if (StatusIds != null && StatusIds != "")
                 {
+                    if (StatusIds == "0")
+                    {
+                        StatusIds = null;
+                    }
                     Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                     objFilterValues.ViewName = null;
                     objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();

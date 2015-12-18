@@ -592,7 +592,7 @@
         });
 
       }
-
+      var TacticDeselectAll = false;
       function BulkTTOperation(selection) {
           filters.TacticTypeids = [];
           if (selection) {
@@ -605,6 +605,7 @@
               });
           }
           else {
+              TacticDeselectAll = true;
               $("#ulTacticType li").each(function (i) {
                   $(this).removeClass("close-list");
                   var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -740,23 +741,33 @@
                         }
                     }
 
-                   
-                    if (data.TTList.length != 0 && data.TTList.length != undefined) {
-                        filters.TacticTypeids = [];
-                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
-                        $("#ulTacticType li ").removeClass("close-list");
-                        for (i = 0 ; i < data.TTList.length; i++) {
-                           
-                            $("#ulTacticType li input[type=checkbox]").each(function () {
-                               
-                                var Value = $(this).attr("id").replace("CbTT", "");
-                                if (Value == data.TTList[i]) {
-                                    filters.TacticTypeids.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
-                            });
+                    if (data.TTList != null) {
+                        if (data.TTList.length != 0 && data.TTList.length != undefined) {
+                            filters.TacticTypeids = [];
+                            $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
+                            $("#ulTacticType li ").removeClass("close-list");
+                            for (i = 0 ; i < data.TTList.length; i++) {
+
+                                $("#ulTacticType li input[type=checkbox]").each(function () {
+
+                                    var Value = $(this).attr("id").replace("CbTT", "");
+                                    if (Value == data.TTList[i]) {
+                                        filters.TacticTypeids.push(Value);
+                                        $(this).attr('checked', 'checked');
+                                        $(this).parent().addClass("close-list");
+                                    }
+                                });
+                            }
                         }
+                    }
+                    else
+                    {
+                        $("#ulTacticType li").each(function (i) {
+                            $(this).removeClass("close-list");
+                            var chkid = $(this).find("input[type=checkbox]").attr("id");
+                            $("#" + chkid).removeAttr("checked");
+                        });
+
                     }
 
                 }
@@ -797,7 +808,9 @@
         if (ulTacticType.length == filters.TacticTypeids.length) {
             filters.TacticTypeids = [];
         }
-
+        if (TacticDeselectAll) {
+            filters.TacticTypeids.push(0);
+        }
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;

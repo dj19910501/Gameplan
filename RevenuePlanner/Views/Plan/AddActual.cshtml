@@ -504,25 +504,35 @@
                         }
                     }
 
+                    if (data.TTList != null) {
+                        if (data.TTList.length != 0 && data.TTList.length != undefined) {
 
-                    if (data.TTList.length != 0 && data.TTList.length != undefined) {
+                            filters.TacticTypeids = [];
+                            $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
+                            $("#ulTacticType li ").removeClass("close-list");
+                            for (i = 0 ; i < data.TTList.length; i++) {
 
-                        filters.TacticTypeids = [];
-                        $("#ulTacticType li input[type=checkbox]").removeAttr('checked');
-                        $("#ulTacticType li ").removeClass("close-list");
-                        for (i = 0 ; i < data.TTList.length; i++) {
+                                $("#ulTacticType li input[type=checkbox]").each(function () {
 
-                            $("#ulTacticType li input[type=checkbox]").each(function () {
+                                    var Value = $(this).attr("id").replace("CbTT", "");
+                                    if (Value == data.TTList[i]) {
 
-                                var Value = $(this).attr("id").replace("CbTT", "");
-                                if (Value == data.TTList[i]) {
-
-                                    filters.TacticTypeids.push(Value);
-                                    $(this).attr('checked', 'checked');
-                                    $(this).parent().addClass("close-list");
-                                }
-                            });
+                                        filters.TacticTypeids.push(Value);
+                                        $(this).attr('checked', 'checked');
+                                        $(this).parent().addClass("close-list");
+                                    }
+                                });
+                            }
                         }
+                    }
+                    else
+                    {
+                        $("#ulTacticType li").each(function (i) {
+                            $(this).removeClass("close-list");
+                            var chkid = $(this).find("input[type=checkbox]").attr("id");
+                            $("#" + chkid).removeAttr("checked");
+                        });
+
                     }
 
                 }
@@ -558,7 +568,9 @@
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
 
         }
-
+        if (TacticDeselectAll) {
+            filters.TacticTypeids.push(0);
+        }
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -1604,7 +1616,7 @@
             });
         }
     }
-
+    var TacticDeselectAll = false;
     function BulkTTOperation(selection) {
         if (selection) {
             $("#ulTacticType li").each(function (i) {
@@ -1614,6 +1626,7 @@
             });
         }
         else {
+            TacticDeselectAll = true;
             $("#ulTacticType li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
