@@ -719,7 +719,7 @@
                         Activity Distribution
                     </span>
                     @*<p style="margin: 13px 4px 0;word-break: break-all;word-break:break-all">
-                </p>*@
+                        </p>*@
                     <div id="chartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;display:none;">
                         <div id="JAN" style="margin-left:3px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">J</div>
                         <div id="APR" style="margin-left: 35px; margin-top: 69.5px;overflow: hidden;position: absolute;text-align: center;white-space: nowrap;">A</div>
@@ -733,15 +733,15 @@
 
                 </div>
                 @*<div style="display:none; border:2px solid #E7E8E8;width:22.3%;margin-right:2.5%;text-align: center;display: inline-block;height:100px;vertical-align:top;  margin-right: 0;   border-radius: 5px;">
-            <span style="color:#918E89;font-size:15px;  font-weight: 600;">
-                Tactic Distribution
-            </span>
-                    <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
-                        <img style="width:100%" src="images/graph-chart-small.jpg">
-                    </p>
+                    <span style="color:#918E89;font-size:15px;  font-weight: 600;">
+                        Tactic Distribution
+                    </span>
+                            <p style="  margin: 13px 4px 0;word-break: break-all;;word-break:break-all">
+                                <img style="width:100%" src="images/graph-chart-small.jpg">
+                            </p>
 
-                    <p></p>
-                </div>*@
+                            <p></p>
+                        </div>*@
             </div>
             <br />
         </div>
@@ -778,11 +778,11 @@
                     if (objplan.Checked == "checked")
                     // if(objplan.PlanId == CurrentPlanId)
                     {
-                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
+                                    <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
                     }
                     else
                     {
-                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
+                                    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
                     }
                 }
                                 }
@@ -828,41 +828,41 @@
                         allCustom = custField.CustomFieldId + "AllModule";
                         noCustom = "No" + custField.CustomFieldId + "Found";
 
-                        <div id="@acordionId" class="dropdown-section accordion">
-                            <div class="accordion-group">
-                                <div class="accordion-heading">
-                                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
-                                </div>
-                                <div id="@acordionElementId" class="accordion-body collapse">
-                                    <ul class="scroll-list" id="@ulCustom">
-                                        @{
+                    <div id="@acordionId" class="dropdown-section accordion">
+                        <div class="accordion-group">
+                            <div class="accordion-heading">
+                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                            </div>
+                            <div id="@acordionElementId" class="accordion-body collapse">
+                                <ul class="scroll-list" id="@ulCustom">
+                                    @{
                         foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                         {
 
                             liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
                             cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                            <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
+                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
                         }
-                                        }
-                                    </ul>
-                                    <div class="list-tab">
-                                        @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                    }
+                                </ul>
+                                <div class="list-tab">
+                                    @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
                                         {
-                                            <ul id="@allCustom">
-                                                <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId')">select all</a></li>
-                                                <li>|</li>
-                                                <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId')">deselect all</a></li>
-                                            </ul>
+                                        <ul id="@allCustom">
+                                            <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId')">select all</a></li>
+                                            <li>|</li>
+                                            <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId')">deselect all</a></li>
+                                        </ul>
                                         }
                                         else
                                         {
-                                            <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
+                                        <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
                                         }
-                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     }
                 }
             </div>
@@ -878,7 +878,7 @@
                                 foreach (var owner in ownerList)
                                 {
                                     liid = "liOwner" + owner.OwnerId;
-                                    <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
+                                <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
                                 }
                             }
                         </ul>
@@ -921,10 +921,10 @@
                                     titielwithbracket = tactictype.Title + " (";
                                     lastbracket = ")";
                                     cbttid = "CbTT" + tactictype.TacticTypeId;
-                                    <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
-                                        <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
-                                        <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input>
-                                    </li>
+                                <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
+                                    <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
+                                    <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input>
+                                </li>
                                 }
                             }
 
@@ -2998,6 +2998,7 @@
             $("#AttachChartCanvas").html('');
             $("#AttachChartCanvas").html(AttachChartHtml);
             $("#testdiv #mqlspanpercentage").hide();
+            $('#AttachChartCanvas').css('margin-left', '55px');
             var headerhtml = $("#testdiv").html();
 
             var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
@@ -3024,11 +3025,15 @@
                 $('#mainpdfdiv').css('width', '1000px');
                 var headerhtml = $("#testdiv").html();
             }
-            else { //added by Rahul Shah on 18/12/2015 for PL #1766
+            else {
+                //added by Rahul Shah on 18/12/2015 for PL #1766
                 var PlanYears = isQuater.split("-");
                 var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
                 datestart = "01-01-" + isQuater.split("-")[0];
                 dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
+                //Added by Rahul Shah for PL #1813
+                $('#AttachChartCanvas').css('margin-left', '160px');
+                var headerhtml = $("#testdiv").html();
             }
             gantt.exportToPDF({
                 header: headerhtml,
@@ -5824,7 +5829,7 @@
             dataType: "json",
             async: false,
             success: function (data) {
-              
+
                 if (data.returnURL != 'undefined' && data.returnURL == '#') {
                     window.location = '@Url.Content("~/Login/Index")';
                 }
@@ -5847,8 +5852,7 @@
                             }
                         }
                     }
-                    else
-                    {
+                    else {
                         $("#ulStatus li").each(function (i) {
                             $(this).removeClass("close-list");
                             var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -5898,7 +5902,7 @@
                     }
 
 
-                  
+
                     if (data.TTList != null) {
                         if (data.TTList.length != 0 && data.TTList.length != undefined) {
                             filters.TacticTypeids = [];
@@ -5914,12 +5918,11 @@
                                         $(this).parent().addClass("close-list");
                                     }
                                 });
-                            
+
                             }
                         }
                     }
-                    else
-                    {
+                    else {
                         $("#ulTacticType li").each(function (i) {
                             $(this).removeClass("close-list");
                             var chkid = $(this).find("input[type=checkbox]").attr("id");
