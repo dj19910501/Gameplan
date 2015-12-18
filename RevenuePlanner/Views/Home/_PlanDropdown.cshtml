@@ -178,8 +178,8 @@
             Currenttime = $('#ddlUpComingActivites').val();
             isQuater = Currenttime;
             RefreshCurrentTab();
-            GetHealderData(TempPlanIds);
-            GetNumberOfActivityPerMonByPlanId(TempPlanIds, Currenttime);
+            GetHealderData(TempPlanIds,filters.customFieldIds,filters.OwnerIds,filters.TacticTypeids, filters.StatusIds);
+            GetNumberOfActivityPerMonByPlanId(TempPlanIds, Currenttime, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
 
     $('.sbHolder').click(function () {

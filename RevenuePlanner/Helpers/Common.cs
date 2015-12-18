@@ -1541,7 +1541,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false)
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year="", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false)
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -1579,7 +1579,32 @@ namespace RevenuePlanner.Helpers
             {
                 //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+                if(year != "" && year != null)
+                {
+                    int Year;
+                    // Modified By Komal Rawal to get proper HUd values for #1788
 
+                    string planYear = string.Empty;
+
+                    bool isNumeric = int.TryParse(year, out Year);
+
+                    if (isNumeric)
+                    {
+                        planYear = Convert.ToString(year);
+                    }
+                    else
+                    {
+                        planYear = DateTime.Now.Year.ToString();
+                    }
+
+                    DateTime StartDate;
+                    DateTime EndDate;
+                    StartDate = EndDate = DateTime.Now;
+                    Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
+                    planTacticIds = planTacticIds.Where(t => (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).ToList();
+
+
+                }
                 //Modified By Komal Rawal for #1447
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
@@ -1797,9 +1822,11 @@ namespace RevenuePlanner.Helpers
             var planList = db.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
             var planData = planList.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == year).Select(a => a.PlanId).ToList();
 
-            var campplist = db.Plan_Campaign.Where(camp => !(camp.StartDate > EndDate || camp.EndDate < StartDate) && planIds.Contains(camp.PlanId)).Select(a => new { PlanCampaignId = a.PlanCampaignId, PlanId = a.PlanId }).ToList();
+            var campplist = db.Plan_Campaign.Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => new { PlanCampaignId = a.PlanCampaignId, PlanId = a.PlanId }).ToList();
             var campplanid = campplist.Select(a => a.PlanId).ToList();
             var campid = campplist.Select(a => a.PlanCampaignId).ToList();
+
+          
             // End by Nishant Sheth
             //var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true && p.Year == year).Select(m => m).ToList();
 
@@ -1840,7 +1867,7 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();// Commented By Rahul Shah on 16/09/2015 for PL #1610
                 // Modify by Nishant Sheth
                 // Desc :: to manage multiple years plan id and to get correct tactic count #1750
-                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && campplanid.Count > 0 ? campid.Contains(t.Plan_Campaign_Program.PlanCampaignId) : innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)  && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
 
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
@@ -1865,15 +1892,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
-                    //bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                    //List<string> collaboratorIds = GetAllCollaborators(lstTacticIds).Distinct().ToList();
-                    //List<Guid> lstSubordinatesIds = new List<Guid>();
-                    //if (IsTacticAllowForSubordinates)
-                    //{
-                    //    lstSubordinatesIds = GetAllSubordinates(Sessions.User.UserId);
 
-                    //}
-                    //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
 
                     planTacticsList = planTacticsList.Where(tactic => tactic.objPlanTactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
 

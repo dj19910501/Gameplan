@@ -960,14 +960,14 @@ namespace RevenuePlanner.Controllers
         /// Get plan by plan id
         /// </summary>
         /// <param name="planid"></param>
-        public async Task<JsonResult> GetPlanByPlanID(int planid, string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetPlanByPlanID(int planid,string year="", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
             try
             {
                 await Task.Delay(1);
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid,year,CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
