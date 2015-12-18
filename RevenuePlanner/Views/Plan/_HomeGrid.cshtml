@@ -1317,9 +1317,10 @@
             if (nValue != null && nValue != "") {
              
                 //Added By Komal Rawal to Change the value in array if grid updated
-              //  alert(htmlDecode(nValue));
                 var NewValue = htmlDecode(nValue);
-                $("div[taskname='" + oValue + "']").attr('taskname',NewValue)
+                //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
+                var TaskID = HomeGrid.cells(rowId,3).getValue();
+                $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
                 if(ExportSelectedIds.TaskID.length > 0)
                 {
                     var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
@@ -1411,10 +1412,11 @@
                             data: { tacticTypeId: tacticTypeId },
                             success: function (data) {
                                
-                                var TaskName = HomeGrid.cells(rowId,1).getValue()
+                                //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
+                                var TaskID = HomeGrid.cells(rowId,3).getValue();
                                 if(ExportSelectedIds.TaskID.length > 0)
                                 {
-                                    var OldValue = $("div[taskname='" + TaskName + "']").attr('TacticType')
+                                    var OldValue = $("div[taskId='" + TaskID + "']").attr('TacticType')
                                     var TacticTypeIndex = ExportSelectedIds.TacticType.indexOf(OldValue);
                                     if(TacticTypeIndex >= 0 && data.TacticTypeName != ""  )
                                     {
@@ -1424,7 +1426,7 @@
                                 }
                                 if(data.TacticTypeName != "" && data.TacticTypeName != null)
                                 {
-                                    $("div[taskname='" + TaskName + "']").attr('tactictype',data.TacticTypeName)
+                                    $("div[taskId='" + TaskID + "']").attr('tactictype',data.TacticTypeName);
                                 }
                                 pcost = data.revenue;
                                 var stagetitle = data.stageTitle;
@@ -1525,10 +1527,11 @@
                             dataType: 'json',
                             success: function (states) {
                               
-                                var TaskName = HomeGrid.cells(rowId,1).getValue()
+                                //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
+                                var TaskID = HomeGrid.cells(rowId,3).getValue();
                                 if(ExportSelectedIds.TaskID.length > 0)
                                 {
-                                    var OldValue = $("div[taskname='" + TaskName + "']").attr('OwnerName')
+                                    var OldValue = $("div[taskId='" + TaskID + "']").attr('OwnerName');
                                     var OwnerNameIndex = ExportSelectedIds.OwnerName.indexOf(OldValue);
 
                                     if(OwnerNameIndex >= 0 && states.OwnerName != "" )
@@ -1539,9 +1542,7 @@
                                 }
                                 if(states.OwnerName != "" && states.OwnerName !=  null)
                                 {
-
-                              
-                                    $("div[taskname='" + TaskName + "']").attr('ownername',states.OwnerName)
+                                    $("div[taskId='" + TaskID + "']").attr('ownername',states.OwnerName);
                                 }
 
                                 if (states.errormsg != null && states.errormsg.trim() != "") {
