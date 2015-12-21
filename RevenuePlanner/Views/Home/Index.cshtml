@@ -1549,6 +1549,7 @@
 
         }
 
+
         $("#ulStatus li input[type=checkbox]").each(function () {
             var chkid = $(this).attr("id");
             if ($(this).is(':checked')) {
@@ -1556,6 +1557,7 @@
             }
         });
 
+     
        
         //Add by Nishant For "if all selected then no record inserted for user default view"
         // Modified By Nishant Sheth
@@ -1643,11 +1645,11 @@
 
         filters.customFieldIds = [];
         //Add by Nishant For "if all selected then no record inserted for user default view"
-        var ulStatus = $("#ulStatus li");
-        var ulTacticType = $("#ulTacticType li");
-        if (ulStatus.length == filters.StatusIds.length) {
-            filters.StatusIds = [];
-        }
+        //var ulStatus = $("#ulStatus li");
+        //var ulTacticType = $("#ulTacticType li");
+        //if (ulStatus.length == filters.StatusIds.length) {
+        //    filters.StatusIds = [];
+        //}
         //if (ulTacticType.length == filters.TacticTypeids.length) {
         //    filters.TacticTypeids = [];
         //}
