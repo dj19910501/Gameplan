@@ -1002,6 +1002,9 @@
             strYear = new Date().getFullYear();
         }
         $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
             type: 'POST',
             url: '@Url.Content("~/Report/GetBudgetPlanBasedOnYear/")',
             data: {
@@ -1226,7 +1229,7 @@
 
         //// Get Plan Ids from multiselect list
         function GetFilterIdForPlan(ulPlanId) {
-        myApp.showPleaseWait();// add by nishant sheth
+      //  myApp.showPleaseWait();// add by nishant sheth // Comment by bhavesh
             var finalValue = "";
             var isShowAddActual = 0;
             $('#' + ulPlanId).find("input[type='checkbox']").each(function () {

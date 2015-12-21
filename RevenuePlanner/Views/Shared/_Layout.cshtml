@@ -92,9 +92,9 @@
     var sess_intervalID;
     var sess_lastActivity;
     var warningRunTime = 0;
-    // Change by Nishant Sheth
-    // #1824 :: stuck loading overlay with some pages.
-    var pleaseWaitDiv = $('<div data-notify="container" class="span4 alert alert-info notify-load animated fadeInDown" role="alert" data-notify-position="top-right" style="display: none; margin: 0px auto; position: fixed; transition: all 0.5s ease-in-out; z-index: 2500; top: 20px; right: 20px;"><button type="button" aria-hidden="true" class="close" data-notify="dismiss" style="display: none; position: absolute; right: 10px; top: 5px; z-index: 2502;">×</button><span data-notify="icon"></span> <span data-notify="message"><strong>Loading...</strong></span></div>');
+    // Updated by bhavesh :  Date : 21 Dec 2015
+    // To Display & hide Loading Popup #1799
+    var pleaseWaitDiv = $('<div id="pleasewaitmaindiv" data-notify="container" class="span4 alert notify-load animated fadeInDown" role="alert" data-notify-position="top-right" style="display: none; margin: 0px auto; position: fixed; transition: all 0.5s ease-in-out; z-index: 2500; top: 20px; right: 20px; background-color:#BCE8F1; color:#3A87AD;"><button type="button" aria-hidden="true" class="close" data-notify="dismiss" style="display: none; position: absolute; right: 10px; top: 5px; z-index: 2502;">×</button><span data-notify="icon"></span> <span data-notify="message"><strong id="loadingtext">Loading...</strong></span></div>');
     function initSession() {
         sess_lastActivity = new Date();
         sessSetInterval();
@@ -266,29 +266,63 @@
         });
     }
 
+    // Added by bhavesh :  Date : 21 Dec 2015
+    // To Display & hide Loading Popup #1799
     var myApp;
+    var isloading = true;
+    var isSetTimeout = false;
     myApp = myApp || (function () {
         
         return {
             showPleaseWait: function () {
                 // Modified By Nishant Sheth
                 // Desc:: To apply new ajax loader as per #1799
-                
+               
                 pleaseWaitDiv.css("display", "block");
+                $("#pleasewaitmaindiv").css("background-color", "#BCE8F1");
+                $("#pleasewaitmaindiv").css("color", "#3A87AD");
+                $("#loadingtext").text("Loading...");
+                isloading = true;
                 
             },
             hidePleaseWait: function () {
-                
-                //pleaseWaitDiv.modal('hide');
-                pleaseWaitDiv.css("display", "none");
-                //$(".modal-backdrop").css("display", "none");
-
+                    $("#pleasewaitmaindiv").css("background-color", "#DEF0D8");
+                    $("#pleasewaitmaindiv").css("color", "#458847");
+                    $("#loadingtext").text("Loaded Successfully...");
+                    isloading = false;
+                    if (!isSetTimeout) {
+                        setTimeout(closepopup, 500);
+                    }
             },
 
         };
     })();
 
-   
+    // Added by bhavesh :  Date : 21 Dec 2015
+    // To Display & hide Loading Popup #1799
+    var closepopupcount = 0;
+    function closepopup() {
+        isSetTimeout = true;
+        if (!isloading) {
+            closepopupcount = closepopupcount + 1;
+            setTimeout(closeloadingpopup, 3000, closepopupcount);
+            isSetTimeout = false;
+        }
+        else {
+            setTimeout(closepopup, 500);
+        }
+    }
+
+    // Added by bhavesh :  Date : 21 Dec 2015
+    // To Display & hide Loading Popup #1799
+    function closeloadingpopup(closepopupcountinner) {
+        if (!isloading) {
+            if (closepopupcount == closepopupcountinner) {
+                pleaseWaitDiv.css("display", "none");
+            }
+        }
+    }
+
     var countplease = 0;
     //var resp = $.ajax({});
     //Added by Ashish Mistry for PL #1746
