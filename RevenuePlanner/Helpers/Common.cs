@@ -1651,6 +1651,9 @@ namespace RevenuePlanner.Helpers
                         }
 
                     }
+                    lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    planTacticIds = planTacticIds.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.PlanTacticId) || pcptobj.CreatedBy == Sessions.User.UserId).ToList();
                 }
                 else
                 {
@@ -1872,11 +1875,12 @@ namespace RevenuePlanner.Helpers
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
-
+                    
                     planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
                                              (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
-                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
+                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status)) ).ToList();
 
+                 
                     //// Apply Custom restriction for None type
                     if (planTacticsList.Count() > 0)
                     {
@@ -1889,6 +1893,9 @@ namespace RevenuePlanner.Helpers
                         }
 
                     }
+                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
+                    List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
+                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || pcptobj.objPlanTactic.CreatedBy == Sessions.User.UserId).ToList();
                 }
                 else
                 {
