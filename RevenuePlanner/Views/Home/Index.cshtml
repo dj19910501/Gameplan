@@ -114,8 +114,8 @@
                     $("#NoTTFound").hide();
                     $.each(data.TacticTypelist, function (i, TactictypeItem) {
                         //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
-                        var checked = "checked";
-                        var checkedclass = "close-list";
+                        var checked = "";
+                        var checkedclass = "";
                         $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + ' (' + TactictypeItem.Number + ')" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + " " + '(<span class="font-size14 TacticNumber" Previousvalue= ' + TactictypeItem.Number + '>' + TactictypeItem.Number + '</span>) </span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                     });
                 }
@@ -174,7 +174,7 @@
 
         }
 
-        var TacticDeselectAll = false;
+      //  var TacticDeselectAll = false;
         function BulkTTOperation(selection) {
             GetLastview = false;
             filters.TacticTypeids = [];
@@ -188,7 +188,7 @@
                 });
             }
             else {
-                TacticDeselectAll = true;
+            //    TacticDeselectAll = true;
                 $("#ulTacticType li").each(function (i) {
                     $(this).removeClass("close-list");
                     var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -965,12 +965,12 @@
                     <div id="accordion-element-Status" class="accordion-body collapse">
                         <ul class="scroll-list" id="ulStatus">
                             @*//Modified by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view*@
-                            <li class="accordion-inner close-list" id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" checked /></li>
-                            <li class="accordion-inner close-list" id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus" checked /></li>
-                            <li class="accordion-inner close-list" id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" checked /></li>
-                            <li class="accordion-inner close-list" id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" checked /></li>
-                            <li class="accordion-inner close-list" id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" checked /></li>
-                            <li class="accordion-inner close-list" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" checked /></li>
+                            <li class="accordion-inner " id="liStatusCreated"><span class="sidebarliwidth">@CreatedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CreatedStatus" /></li>
+                            <li class="accordion-inner " id="liStatusSubmitted"><span class="sidebarliwidth">@SubmittedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@SubmittedStatus"  /></li>
+                            <li class="accordion-inner " id="liStatusApproved"><span class="sidebarliwidth">@ApprovedStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@ApprovedStatus" /></li>
+                            <li class="accordion-inner " id="liStatusInProgress"><span class="sidebarliwidth">@InProgressStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@InProgressStatus" /></li>
+                            <li class="accordion-inner " id="liStatusComplete"><span class="sidebarliwidth">@CompleteStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@CompleteStatus" /></li>
+                            <li class="accordion-inner" id="liStatusDecline"><span class="sidebarliwidth">@DeclineStatus</span><input type="checkbox" class="chkbxfilter" onchange="toggleStatus(this)" id="@DeclineStatus" /></li>
                         </ul>
                         <div class="list-tab">
                             <ul id="StatusAllModule">
@@ -1344,7 +1344,7 @@
             }
         });
     }
-    var DeselectAllStatus = false;
+   // var DeselectAllStatus = false;
     function BulkStatusOperation(selection) {
         GetLastview = false;
         filters.StatusIds = [];
@@ -1357,7 +1357,7 @@
             });
         }
         else {
-            DeselectAllStatus = true;
+         //   DeselectAllStatus = true;
             $("#ulStatus li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -1548,17 +1548,25 @@
 
         }
 
+        $("#ulStatus li input[type=checkbox]").each(function () {
+            var chkid = $(this).attr("id");
+            if ($(this).is(':checked')) {
+                filters.StatusIds.push(chkid);
+            }
+        });
+
+       
         //Add by Nishant For "if all selected then no record inserted for user default view"
         // Modified By Nishant Sheth
         // Desc:: To resolve the #1790 observation
-        var ulStatus = $("#ulStatus li");
-        var ulTacticType = $("#ulTacticType li");
-        if (ulStatus.length == filters.StatusIds.length) {
-            filters.StatusIds = [];
-        }
-        if (ulTacticType.length == filters.TacticTypeids.length) {
-            filters.TacticTypeids = [];
-        }
+        //var ulStatus = $("#ulStatus li");
+        //var ulTacticType = $("#ulTacticType li");
+        //if (ulStatus.length == filters.StatusIds.length) {
+        //    filters.StatusIds = [];
+        //}
+        //if (ulTacticType.length == filters.TacticTypeids.length) {
+        //    filters.TacticTypeids = [];
+        //}
         // End By Nishant Sheth
 
         //Added By Komal rawal to maintain the owner and tactic on plan change
@@ -1566,31 +1574,31 @@
 
             var Count = 0;
             filters.TacticTypeids = PreviousListFilter.TacticTypeIds;
-            $.each($("#ulTacticType li input[type=checkbox]"), function () {
+            //$.each($("#ulTacticType li input[type=checkbox]"), function () {
 
-                var id = $(this).attr('id').replace("CbTT", "");
-                var index = PreviousListFilter.TacticTypeIds.indexOf(id);
-                if (index >= 0) {
-                    Count++;
-                }
-            });
-            if (Count == 0) {
-                $("#ulTacticType li input[type=checkbox]").attr('checked', 'checked');
-                $("#ulTacticType li ").addClass("close-list");
+            //    var id = $(this).attr('id').replace("CbTT", "");
+            //    var index = PreviousListFilter.TacticTypeIds.indexOf(id);
+            //    if (index >= 0) {
+            //        Count++;
+            //    }
+            //});
+            //if (Count == 0) {
+            //    $("#ulTacticType li input[type=checkbox]").attr('checked', 'checked');
+            //    $("#ulTacticType li ").addClass("close-list");
 
-            }
+            //}
 
             filters.OwnerIds = PreviousListFilter.OwnerIds;
 
         }
 
 
-        if (DeselectAllStatus) {
-            filters.StatusIds.push(0);
-        }
-        if (TacticDeselectAll) {
-            filters.TacticTypeids.push(0);
-        }
+        //if (DeselectAllStatus) {
+        //    filters.StatusIds.push(0);
+        //}
+        //if (TacticDeselectAll) {
+        //    filters.TacticTypeids.push(0);
+        //}
 
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
@@ -1818,14 +1826,14 @@
                 }
             }
         });
-        $("#ulStatus li input[type=checkbox]").attr('checked', 'checked');
-        $("#ulStatus li ").addClass("close-list");
-        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                $(this).removeAttr('checked');
-                $(this).parent().removeClass("close-list");
-            }
-        });
+        //$("#ulStatus li input[type=checkbox]").attr('checked', 'checked');
+        //$("#ulStatus li ").addClass("close-list");
+        //$('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        $(this).removeAttr('checked');
+        //        $(this).parent().removeClass("close-list");
+        //    }
+        //});
         GetOwnerListForFilter(planids, true);
         GetTacticTypelist(planids, true);
     }
@@ -2093,14 +2101,14 @@
             });
         }
 
-        $("#ulStatus li input[type=checkbox]").attr('checked', 'checked');
-        $("#ulStatus li ").addClass("close-list");
-        $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
-            if ($(this).attr('checked') == 'checked') {
-                $(this).removeAttr('checked');
-                $(this).parent().removeClass("close-list");
-            }
-        });
+        //$("#ulStatus li input[type=checkbox]").attr('checked', 'checked');
+        //$("#ulStatus li ").addClass("close-list");
+        //$('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
+        //    if ($(this).attr('checked') == 'checked') {
+        //        $(this).removeAttr('checked');
+        //        $(this).parent().removeClass("close-list");
+        //    }
+        //});
 
         GetOwnerListForFilter(planids, true);
         GetTacticTypelist(planids, true);

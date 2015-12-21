@@ -571,8 +571,8 @@
                                       var checkedclass = "";
                                       //Modify by Rahul Shah on 28/10/2015 for PL #1438
                                      
-                                          checked = "checked";
-                                          checkedclass = "close-list";
+                                          //checked = "checked";
+                                          //checkedclass = "close-list";
                                       //}
                                       $('#ulTacticType').append('<li class="accordion-inner ' + checkedclass + '" title="' + TactictypeItem.Title + '" id="liTT' + TactictypeItem.TacticTypeId + '"><span class="sidebarliwidth">' + TactictypeItem.Title + '</span><input type="checkbox" class="chkbxfilter" TacticTypeTitle="' + TactictypeItem.Title + '" onchange="toggleTacticType(this)" id="CbTT' + TactictypeItem.TacticTypeId + '"' + checked + '></input></li>');
                                   });
@@ -592,7 +592,7 @@
         });
 
       }
-      var TacticDeselectAll = false;
+     // var TacticDeselectAll = false;
       function BulkTTOperation(selection) {
           filters.TacticTypeids = [];
           if (selection) {
@@ -605,7 +605,7 @@
               });
           }
           else {
-              TacticDeselectAll = true;
+            //  TacticDeselectAll = true;
               $("#ulTacticType li").each(function (i) {
                   $(this).removeClass("close-list");
                   var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -803,14 +803,15 @@
 
         }
     
-        var ulTacticType = $("#ulTacticType li");
+        //Commented By Komal Rawal for ticket 1802
+       // var ulTacticType = $("#ulTacticType li");
 
-        if (ulTacticType.length == filters.TacticTypeids.length) {
-            filters.TacticTypeids = [];
-        }
-        if (TacticDeselectAll) {
-            filters.TacticTypeids.push(0);
-        }
+        //if (ulTacticType.length == filters.TacticTypeids.length) {
+        //    filters.TacticTypeids = [];
+        //}
+        //if (TacticDeselectAll) {
+        //    filters.TacticTypeids.push(0);
+        //}
         var Planid = filters.SelectedPlans;
         var CustomFieldId = filters.customFieldIds;
         var OwnerIds = filters.OwnerIds;
@@ -914,14 +915,16 @@
     function OnPlanchange(_plancheckbox) {
         var _checked = $(_plancheckbox).attr('checked');
         var _val = $(_plancheckbox).attr('id');
-        var _planliId = "liPlan" + _val;
+        //Modified by komal rawal to solve plan filter selection problem in reports.
+        var _planliId = "liPlan" + "_" + _val;
         OnCheckboxChangeForPlan(_planliId, _checked);
     }
 
     function OnMultiselectchange(_checkbox) {
         var _checked = $(_checkbox).attr('checked');
         var _val = $(_checkbox).attr('id');
-        var _parentliId = "liCustom" + _val;
+        //Modified by komal rawal to solve Custom filter selection problem in reports.
+        var _parentliId = "liCustom" + _val.split("_")[1];
         OnCheckboxChange(_parentliId, _checked);
     }
     function OnCheckboxChangeForPlan(_parentliId, _checked) {

@@ -5021,10 +5021,10 @@ namespace RevenuePlanner.Controllers
                 {
                     LastSetOfStatus = SetOfStatus.FirstOrDefault().Split(',').ToList();
                 }
-                else
-                {
-                    LastSetOfStatus = null;
-                }
+                //else
+                //{
+                //    LastSetOfStatus = null;
+                //}
             }
            
             var OwnerLabel = Enums.FilterLabel.Owner.ToString();
@@ -5048,10 +5048,10 @@ namespace RevenuePlanner.Controllers
                 {
                     LastSetOfTacticType = SetOfTacticType.FirstOrDefault().Split(',').ToList();
                 }
-                else
-                {
-                    LastSetOfTacticType = null;
-                }
+                //else
+                //{
+                //    LastSetOfTacticType = null;
+                //}
                
             }
            
@@ -5109,10 +5109,10 @@ namespace RevenuePlanner.Controllers
             }
             if (TacticTypeid != null && TacticTypeid != "")
             {
-                if(TacticTypeid == "0")
-                {
-                    TacticTypeid = null;
-                }
+                //if(TacticTypeid == "0")
+                //{
+                //    TacticTypeid = null;
+                //}
                 Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                 objFilterValues.ViewName = null;
                 objFilterValues.FilterName = Enums.FilterLabel.TacticType.ToString();
@@ -5126,10 +5126,10 @@ namespace RevenuePlanner.Controllers
             {
                 if (StatusIds != null && StatusIds != "")
                 {
-                    if (StatusIds == "0")
-                    {
-                        StatusIds = null;
-                    }
+                    //if (StatusIds == "0")
+                    //{
+                    //    StatusIds = null;
+                    //}
                     Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                     objFilterValues.ViewName = null;
                     objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();
