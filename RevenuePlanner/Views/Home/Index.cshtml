@@ -2544,6 +2544,7 @@
 
             $("#AttachChartCanvas").html('');
             $("#AttachChartCanvas").html(AttachChartHtml);
+            $('#AttachChartCanvas').css('margin-left', '55px');
             var headerhtml = $("#testdiv").html();
             //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
             var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
@@ -2574,6 +2575,8 @@
                 var yearDiffrence = (parseInt(PlanYears[1]) - parseInt(PlanYears[0])) + 1;
                 datestart = "01-01-" + isQuater.split("-")[0];
                 dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
+                $('#AttachChartCanvas').css('margin-left', '160px');
+                var headerhtml = $("#testdiv").html();
             }
             gantt.exportToPDF({
                 header: headerhtml,
@@ -3032,6 +3035,7 @@
                 datestart = "01-01-" + isQuater.split("-")[0];
                 dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
                 //Added by Rahul Shah for PL #1813
+              
                 $('#AttachChartCanvas').css('margin-left', '160px');
                 var headerhtml = $("#testdiv").html();
             }
