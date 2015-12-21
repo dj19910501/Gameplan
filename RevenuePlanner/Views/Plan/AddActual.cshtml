@@ -1533,7 +1533,7 @@
 
     //Added by Mitesh Vaishnav for PL ticket #972 - Add Actuals - Filter section formatting
     function toggleTacticType(obj) {
-        var id = $(obj).attr('id');
+        var id = $(obj).attr('id').replace("Cb", "");
         if ($(obj).is(':checked')) {
             $("#li" + id).addClass("close-list");
         }
