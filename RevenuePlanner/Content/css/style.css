@@ -10690,6 +10690,12 @@ li.close-list {
 .inspect-column-parent  div.gridbox.gridbox_dhx_skyblue table.row20px.obj tr td{
     height:36px;
 }
+.inspect-column-parent .fieldmapping-dropdown{
+    top:-455px;
+    position:relative;
+    background-color:#fff;
+    height:400px !important;
+}
 .drop-down_header {
     border: 1px solid #dfdfdf;
     border-radius: 6px;

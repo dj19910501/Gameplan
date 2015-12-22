@@ -219,9 +219,20 @@
         KeyPressOnDropdown();
         var dropdowntop = $('.dropdown_new_btn').offset().top;
         var windownheight = $(window).height();
-        if (dropdowntop >= (windownheight - 500)) { $('.dropdown-wrapper').addClass('dropup') }
+        if (dropdowntop >= (windownheight - 300)) { $('.dropdown-wrapper').addClass('dropup') }
     });
 
+    var DropdownTop = 0;
+    $(".pop-body-wraper").scroll(function () {
+
+        var DropdownToPos = $(this).scrollTop();
+        if (DropdownToPos > DropdownTop) {
+            $('.dropdown-wrapper').removeClass('dropup');
+        } else {
+            $('.dropdown-wrapper').addClass('dropup')
+        }
+        DropdownTop = DropdownToPos;
+    });
     $(document).click(function () {
         $(document).unbind('keypress');
     });
