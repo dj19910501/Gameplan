@@ -4756,7 +4756,6 @@
     });
     function CloseIconClick() {
         $('.close-x-big-icon').click(function () {
-
             $("#modal-container-186470").addClass("transition-close");
             $("#modal-container-186470").removeClass("transition_y");
             addDefaultModalPopupBackgroungColor();
@@ -6434,6 +6433,7 @@
         //new Campaign
         $('#NewLineItem').click(function () {
             isCopyTactic = TacticId;
+            isDataModified = false;
             var planId = PlanId; // $("#hdnPlanId").val();
             ShowModels("@Enums.InspectPopupMode.Add.ToString()", "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", 0, TacticId, '@RequestedModule');
             $('.taskpopup').css('display', 'none');
