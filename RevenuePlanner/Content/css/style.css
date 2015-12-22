@@ -10681,6 +10681,14 @@ li.close-list {
 .inspect-column-parent .dropup{
        bottom: 53px;
     padding: 0;
+    top:auto !important;
+}
+.dropup-field-mapping{
+    position:absolute;
+    bottom:50px;
+}
+.inspect-column-parent  div.gridbox.gridbox_dhx_skyblue table.row20px.obj tr td{
+    height:36px;
 }
 .drop-down_header {
     border: 1px solid #dfdfdf;

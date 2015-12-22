@@ -282,7 +282,6 @@
     };
     var totalWeightage = 0;
     var ValueChanged = false;
-
     //// Function to redirect to login page on unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
@@ -297,7 +296,10 @@
         if($(this).next().css("display") == "none")
         {
             //$(this).next().css("width","auto");
-          //  $(this).next().addClass('dropdownAddborder');
+            //  $(this).next().addClass('dropdownAddborder');
+            var dropdown_field_top = $('#dropdown_new_btn_FieldMapping').offset().top;
+            var windownheight = $(window).height();
+            if (dropdown_field_top >= (windownheight - 500)) { $('#treeviewddl').css({'top':'-455px','position':'relative','background-color':'#fff','height':'400px !important'}) }
             $(this).next().css("display","block");
             //LoadBudgetDropdown();
         }
@@ -306,6 +308,7 @@
             //$(this).next().css("width","0px");
             $(this).next().css("display","none");
         }
+        
     });
 
     function LoadBudgetDropdown()
@@ -324,7 +327,7 @@
                 var imgpath = '@Url.Content("~/codebase/imgs/")';
                 TreeViewDdl.setImagePath(imgpath);
                 TreeViewDdl.setHeader("Item Name,Weight%");
-                TreeViewDdl.enableAutoHeight(true,670,true);
+                TreeViewDdl.enableAutoHeight(true,400,true);
                 TreeViewDdl.enableAutoWidth(true);
                 TreeViewDdl.enableTreeCellEdit(false)
                 TreeViewDdl.setImageSize(1, 1);
@@ -666,6 +669,9 @@
         $('.dropdown_new_btn').each(function () {
             $(this).multiselectWeight(
             );
+            var dropdowntop = $('.dropdown_new_btn').offset().top;
+            var windownheight = $(window).height();
+            if (dropdowntop >= (windownheight - 500)) { $('.dropdown-wrapper').addClass('dropup') }
         });
 
         $('#LineItemTypeId').next().css('width', '95%');
