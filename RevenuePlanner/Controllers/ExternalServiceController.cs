@@ -1999,6 +1999,8 @@ namespace RevenuePlanner.Controllers
                                         int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
                                         if (form.SyncFrequency.Time.Substring(5, 2) == SyncFrequencys.PM && hour != 12)
                                             hour = hour + 12;
+                                        else if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour == 12)
+                                            hour = hour - 12;// Updated By Bhavesh Dobariya Date : 22 Dec 2015 Ticket : #1808
                                         objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                     }
                                 }
@@ -2057,6 +2059,8 @@ namespace RevenuePlanner.Controllers
                                             int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
                                             if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour != 12)
                                                 hour = hour + 12;
+                                            else if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour == 12)
+                                                hour = hour - 12;// Updated By Bhavesh Dobariya Date : 22 Dec 2015 Ticket : #1808
                                             objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                         }
                                         objSyncFrequency.DayofWeek = null;
@@ -2074,6 +2078,8 @@ namespace RevenuePlanner.Controllers
                                             int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
                                             if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour != 12)
                                                 hour = hour + 12;
+                                            else if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour == 12)
+                                                hour = hour - 12;// Updated By Bhavesh Dobariya Date : 22 Dec 2015 Ticket : #1808
                                             objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                         }
                                         objSyncFrequency.Day = null;
@@ -2091,6 +2097,8 @@ namespace RevenuePlanner.Controllers
                                             int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
                                             if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour != 12)
                                                 hour = hour + 12;
+                                            else if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour == 12)
+                                                hour = hour - 12;// Updated By Bhavesh Dobariya Date : 22 Dec 2015 Ticket : #1808
                                             objSyncFrequency.Time = new TimeSpan(hour, 0, 0);
                                         }
                                         objSyncFrequency.DayofWeek = null;
