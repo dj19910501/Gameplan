@@ -417,12 +417,13 @@ namespace Integration.Eloqua
 
                                 Dictionary<string, int> tempYearMonthDictionary = new Dictionary<string, int>();
 
-                                var lstYearMonth = lstTacticContacts.Select(t => t.peroid.Month).Distinct().ToList();
+                                var lstYearMonth = lstTacticContacts.Select(t => new { Month = t.peroid.Month, Year = t.peroid.Year }).Distinct().ToList();
 
                                 foreach (var item in lstYearMonth)
                                 {
-                                    string tmpPeriod = "Y" + item;
-                                    tempYearMonthDictionary.Add(tmpPeriod, lstTacticContacts.Where(t => t.peroid.Month == item).ToList().Count());
+                                    //string tmpPeriod = "Y" + item.Month;
+                                    string tmpPeriod = (tacticStartDate.Year < item.Year) ? ("Y" + (((item.Year - tacticStartDate.Year) * 12) + item.Month)) : ("Y" + item.Month.ToString());
+                                    tempYearMonthDictionary.Add(tmpPeriod, lstTacticContacts.Where(t => (t.peroid.Month == item.Month) && (t.peroid.Year == item.Year)).ToList().Count());
                                 }
 
                                 foreach (var item in tempYearMonthDictionary)
@@ -805,8 +806,8 @@ namespace Integration.Eloqua
                                                                                 r.peroid >= tacticStartDate && r.peroid <= tacticEndDate).ToList();
                                 foreach (EloquaResponseModel item in lstTacticResponse)
                                 {
-                                    string tmpPeriod = "Y" + item.peroid.Month.ToString();
-                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == tmpPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                    string actualPeriod = (tacticStartDate.Year < item.peroid.Year) ? ("Y" + (((item.peroid.Year - tacticStartDate.Year) * 12) + item.peroid.Month )) : ("Y" + item.peroid.Month.ToString());
+                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == actualPeriod && a.StageTitle == Common.StageProjectedStageValue);
                                     if (objTacticActual != null)
                                     {
                                         objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.responseCount;
@@ -819,7 +820,7 @@ namespace Integration.Eloqua
                                         Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
                                         actualTactic.Actualvalue = item.responseCount;
                                         actualTactic.PlanTacticId = objTactic.PlanTacticId;
-                                        actualTactic.Period = "Y" + item.peroid.Month;
+                                        actualTactic.Period = actualPeriod;//"Y" + item.peroid.Month;
                                         actualTactic.StageTitle = Common.StageProjectedStageValue;
                                         actualTactic.CreatedDate = DateTime.Now;
                                         actualTactic.CreatedBy = _userId;
@@ -875,8 +876,8 @@ namespace Integration.Eloqua
                                 string unprocessdatalog =string.Empty;
                                 foreach (var item in lstTacticResponse)
                                 {
-                                    string tmpPeriod = "Y" + item.ResponseDateTime.Month.ToString();
-                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == tmpPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                    string actualPeriod = (tacticStartDate.Year < item.ResponseDateTime.Year) ? ("Y" + (((item.ResponseDateTime.Year - tacticStartDate.Year) * 12) + item.ResponseDateTime.Month)) : ("Y" + item.ResponseDateTime.Month.ToString());
+                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == actualPeriod && a.StageTitle == Common.StageProjectedStageValue);
                                     if (objTacticActual != null)
                                     {
                                         objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.ResponseCount;
@@ -889,7 +890,7 @@ namespace Integration.Eloqua
                                         Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
                                         actualTactic.Actualvalue = item.ResponseCount;
                                         actualTactic.PlanTacticId = objTactic.PlanTacticId;
-                                        actualTactic.Period = "Y" + item.ResponseDateTime.Month;
+                                        actualTactic.Period = actualPeriod;//"Y" + item.ResponseDateTime.Month;
                                         actualTactic.StageTitle = Common.StageProjectedStageValue;
                                         actualTactic.CreatedDate = DateTime.Now;
                                         actualTactic.CreatedBy = _userId;

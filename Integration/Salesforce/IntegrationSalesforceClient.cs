@@ -1191,8 +1191,10 @@ namespace Integration.Salesforce
                                         {
                                             CampaignId = cl.Key.CampaignId,
                                             TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : 0,
-                                            Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
-                                            IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
+                                            //Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                            //IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
+                                            Period = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null) &&(lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year < Convert.ToDateTime(cl.Key.Month).Year) ? "Y" + (((Convert.ToDateTime(cl.Key.Month).Year - (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year)) * 12) + Convert.ToDateTime(cl.Key.Month).Month) : "Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                            IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year <= Convert.ToDateTime(cl.Key.Month).Year) && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).EndDate.Year >= Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
                                             Count = cl.Count()
                                         }).Where(cm => cm.IsYear).ToList();
 
@@ -1959,8 +1961,8 @@ namespace Integration.Salesforce
                                                 {
                                                     CampaignId = cl.Key.CampaignId,
                                                     TacticId = lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null ? (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).PlanTacticId) : 0,
-                                                    Period = "Y" + Convert.ToDateTime(cl.Key.Month).Month,
-                                                    IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year == Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
+                                                    Period = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null) && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year < Convert.ToDateTime(cl.Key.Month).Year)? "Y"+(((Convert.ToDateTime(cl.Key.Month).Year - (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year)) * 12) +Convert.ToDateTime(cl.Key.Month).Month)  :"Y" + Convert.ToDateTime(cl.Key.Month).Month,
+                                                    IsYear = (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId) != null && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).StartDate.Year <= Convert.ToDateTime(cl.Key.Month).Year) && (lstSalesForceTactic.FirstOrDefault(t => t.IntegrationInstanceTacticId == cl.Key.CampaignId).EndDate.Year >= Convert.ToDateTime(cl.Key.Month).Year)) ? true : false,
                                                     Count = cl.Count(),
                                                     Revenue = cl.Sum(c => c.Amount)
                                                 }).Where(om => om.IsYear).ToList();
