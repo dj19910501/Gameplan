@@ -16,7 +16,7 @@
     <!--font Awesome css-->
     <link rel="stylesheet" href="@Url.Content("~/Content/css/font-awesome.min.css")" type="text/css" />
     <!--font Awesome css-->
-    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Dec17.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/style_min_Dec18.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/style_extended_min_Oct1.css")" type="text/css" />
 
     @Scripts.Render("~/bundles/GetJS")
@@ -94,7 +94,7 @@
     var warningRunTime = 0;
     // Updated by bhavesh :  Date : 21 Dec 2015
     // To Display & hide Loading Popup #1799
-    var pleaseWaitDiv = $('<div id="pleasewaitmaindiv" data-notify="container" class="span4 alert notify-load animated fadeInDown" role="alert" data-notify-position="top-right" style="display: none; margin: 0px auto; position: fixed; transition: all 0.5s ease-in-out; z-index: 2500; top: 20px; right: 20px; background-color:#BCE8F1; color:#3A87AD;"><button type="button" aria-hidden="true" class="close" data-notify="dismiss" style="display: none; position: absolute; right: 10px; top: 5px; z-index: 2502;">×</button><span data-notify="icon"></span> <span data-notify="message"><strong id="loadingtext">Loading...</strong></span></div>');
+    var pleaseWaitDiv = $('<div id="pleasewaitmaindiv" data-notify="container" class="span4 alert notify-load animated fadeInDown" role="alert" data-notify-position="top-right" style="display: none; margin: 0px auto; position: fixed; transition: all 0.5s ease-in-out; z-index: 2500; top: 20px; right: 20px; background-color:#BCE8F1; color:#3A87AD;"><button type="button" aria-hidden="true" class="close" data-notify="dismiss" style="display: none; position: absolute; right: 10px; top: 5px; z-index: 2502;">×</button><span data-notify="icon"></span> <span data-notify="message"><strong id="loadingtext">Loading...</strong></span><div class="loading-progress"></div>');
     function initSession() {
         sess_lastActivity = new Date();
         sessSetInterval();
@@ -282,13 +282,17 @@
                 $("#pleasewaitmaindiv").css("background-color", "#BCE8F1");
                 $("#pleasewaitmaindiv").css("color", "#3A87AD");
                 $("#loadingtext").text("Loading...");
+                $('.loading-progress').removeClass('loading-success');
+                $('.loading-progress').addClass('loading-load');
                 isloading = true;
                 
             },
             hidePleaseWait: function () {
                     $("#pleasewaitmaindiv").css("background-color", "#DEF0D8");
                     $("#pleasewaitmaindiv").css("color", "#458847");
-                    $("#loadingtext").text("Loaded Successfully...");
+                $("#loadingtext").text("Loaded Successfully...");
+                $('.loading-progress').removeClass('loading-load');
+                $('.loading-progress').addClass('loading-success');
                     isloading = false;
                     if (!isSetTimeout) {
                         setTimeout(closepopup, 500);

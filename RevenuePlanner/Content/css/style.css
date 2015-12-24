@@ -15437,7 +15437,7 @@ font-weight:normal;
 
 .notify-load {
     border: 1px solid transparent;
-    padding: 15px;
+    padding: 15px 0 0;
 }
 
 
@@ -15465,7 +15465,22 @@ font-weight:normal;
     .notify-load .notifyBox h5 {
         margin-top: 0;
     }
-
+    .notify-load span {
+  float: left;
+  padding-left: 15px;
+}
+.loading-progress {
+  float: left;
+  height: 5px;
+  margin-top: 10px;
+  width: 100%;
+}
+.loading-load{
+      background: rgba(0, 0, 0, 0) url("../images/loading.gif") no-repeat scroll center 100%;
+}
+.loading-success{
+      background: rgba(0, 0, 0, 0) url("../images/loading-success.png") no-repeat scroll center 100%;
+}
 /*Notify animation css start*/
 .animated {
     -webkit-animation-duration: 1s;
@@ -15547,3 +15562,7 @@ font-weight:normal;
     display:inline;
 }
 
+div.gridbox_dhx_skyblue.isModern table.obj.row20px tr td {
+  height: 23px !important;
+  line-height: 23px !important;
+}
