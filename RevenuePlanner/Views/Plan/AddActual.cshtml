@@ -45,6 +45,10 @@
     </div>
 
     <!--error message-->
+    <div id="successMessageLoadPreset" class="alert hide alert-success">
+        <a class="close">×</a>
+        <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+    </div>
     <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="height: 456.85px; display:none">
         <h2>Save As Preset</h2>
         <label for="Preset">Please enter a name for preset</label>
@@ -77,10 +81,7 @@
                 <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
             </div>
             <!--error message-->
-            <div id="errorMessageMainSidebar" class="alert hide alert-error">
-                <a class="close">×</a>
-                <strong></strong><span id="spanErrorMessageRole"></span>
-            </div>
+
         </div>
         <div class="sidebar-section scroll-section">
             <div class="float-left filter-preset">
@@ -1741,7 +1742,8 @@
         var IsAnyCustomFieldSelected = $('#divCustomFieldsFilter').find("li").hasClass("close-list");
         var IsAnyTTSelected = $('#ulTacticType').find("li").hasClass("close-list");
         var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
-        if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected) {
+        var IsAnyOwnerSelected = $('#ulSelectedOwner').find("li").hasClass("close-list");
+        if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected && !IsAnyOwnerSelected) {
             alert('Please select atleast one filter');
             return false;
         }
@@ -1827,6 +1829,7 @@
     function CancelSavePreset() {
         $("#errorMessageMainSidebar").css("display", "none");
         $("#successMessageSidebar").css("display", "none");
+        $("#successMessageLoadPreset").css("display", "none");
         $("#content_SaveFilters").css("display", "none");
         $("#DefaultFilters").css("display", "none");
         $("#DivButtonsHome").css("display", "block");
