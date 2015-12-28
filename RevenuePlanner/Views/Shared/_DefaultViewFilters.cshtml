@@ -6,8 +6,8 @@
 
     <p id="msgDefaultFilter">Please select checkbox to save filter preset as default.</p>
     <h2>Load saved filters</h2>
-    <label for="Preset">Please Select a saved preset below:</label>
-    <input type="text" id="SearchView" onchange="LoadPresentSerch(this);" />
+    <label for="Preset">Please select a saved preset below and click on proceed:</label>
+    <input type="text" id="SearchView" onchange="LoadPresentSerch(this);" placeholder="Search preset" />
 
     <ul id="ulFilterPreset">
         @foreach (var filter in Model)
@@ -155,7 +155,7 @@
             }
         });
         if (filtername == '') {
-            alert('Please select atleaset one preset.');
+            alert('Please select atleast one preset.');
             return false;
         }
         else {
