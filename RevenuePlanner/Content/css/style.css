@@ -10528,6 +10528,12 @@ li.close-list {
     left:60%;
 }
 /*by bheru mehta 09-12-2015 for #1762*/
+/*by bheru mehta 28-12-2015 for #1747 start*/
+.task-tbl div.gridbox_dhx_skyblue table.obj.row20px tr td {
+  height: 23px;
+  line-height: 23px !important;
+}
+/*by bheru mehta 28-12-2015 for #1747 end*/
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;
