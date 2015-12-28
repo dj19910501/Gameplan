@@ -1,0 +1,282 @@
+﻿@model List<RevenuePlanner.Models.Preset>
+@using RevenuePlanner.Helpers
+
+
+<div id="content_2" class="sidebar-preset scroll-section load-filter">
+
+    <p id="msgDefaultFilter">Please select checkbox to save filter preset as default.</p>
+    <h2>Load saved filters</h2>
+    <label for="Preset">Please Select a saved preset below:</label>
+    <input type="text" id="SearchView" onchange="LoadPresentSerch(this);" />
+
+    <ul id="ulFilterPreset">
+        @foreach (var filter in Model)
+        {
+            <li style="cursor:pointer" id="@filter.Id">
+
+                <input id="chkdefaultpreset_@filter.Name" type="checkbox" />
+                @*@if (filter.isdefaultpreset)
+                    {
+                            <input id="chkdefaultpreset_@filter.name" type="checkbox" checked="checked" style="float:left; margin-right:5px" />
+                    }
+                    else
+                    {
+                            <input id="chkdefaultpreset_@filter.name" type="checkbox" style="float:left; margin-right:5px" />
+                        }*@
+                <span title='@filter.Name'>@filter.Name</span>
+                <a onclick="DeletePreset('@filter.Name',this)"><i class="fa fa-close"></i></a>
+            </li>
+        }
+    </ul>
+
+
+    <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnProceed" onclick="LoadSelectedFilter()" />
+    <input type="button" class="btn btn-link" title="Cancel" title="Cancel" value="Cancel" id="btnCancel" onclick="CancelPreset()" />
+    <div style="margin-bottom: 10px" id="NoPreset">No preset found.</div>
+    <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular back-btn" title="Cancel" title="Back" value="Back" id="btnBack" onclick="CancelPreset()" />
+
+</div>
+<script>
+    $(document).ready(function () {
+
+        debugger;
+        if ('@Model.Count' > 0) {
+            $('div[id=NoPreset]').each(function () {
+                if ($(this).is(':visible'))
+                    $(this).hide();
+            });
+            $('input[id=btnBack]').each(function () {
+                if ($(this).is(':visible'))
+                    $(this).hide();
+            });
+            $('ul[id=ulFilterPreset]').each(function () {
+                if ($(this).parent().is(':visible'))
+                    $(this).show();
+            });
+            $('input[id=btnProceed]').each(function () {
+                if ($(this).parent().is(':visible'))
+                    $(this).show();
+            });
+            $('input[id=btnCancel]').each(function () {
+                if ($(this).parent().is(':visible'))
+                    $(this).show();
+            });
+
+        }
+        else {
+            $('ul[id=ulFilterPreset]').each(function () {
+                if ($(this).is(':visible'))
+                    $(this).remove();
+
+            });
+            $('input[id=btnProceed]').each(function () {
+                if ($(this).is(':visible'))
+                    $(this).hide();
+            });
+            $('input[id=btnCancel]').each(function () {
+                if ($(this).is(':visible'))
+                    $(this).hide();
+            });
+            $('div[id=NoPreset]').each(function () {
+                if ($(this).parent().is(':visible'))
+                    $(this).show();
+            });
+            $('input[id=btnBack]').each(function () {
+                if ($(this).parent().is(':visible'))
+                    $(this).show();
+            });
+            $("label[id^='msgDefaultFilter']").each(function () {
+                if ($(this).is(':visible'))
+                    $(this).hide();
+            });
+        }
+    });
+
+    //Added by Komal Rawal for #1749
+    function CancelPreset() {
+        $("#content_SaveFilters").css("display", "none");
+        $("#DefaultFilters").css("display", "none");
+        $("#PlanModulesSection").css("display", "block");
+        $("#Filtersidebar").css("display", "block");
+        $("#btnreportSection").css("display", "block");
+    }
+
+    $('#content_2 ul li').on("click", function () {
+        if ($(this).is(':visible')) {
+            $('#content_2 ul li').each(function () {
+                $(this).removeClass('active');
+            });
+            $(this).addClass('active');
+        }
+    });
+
+    $("input[id^='chkdefaultpreset']").on('change', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        var chkCurrent = $(this);
+        var checked = false;
+        if ($(chkCurrent).is(":checked")) {
+            checked = true;
+        }
+        $("input[id^='chkdefaultpreset']").each(function () {
+            $(this).prop("checked", false);
+        });
+        var presetName = '';
+        if (checked) {
+            $(chkCurrent).prop("checked", true);
+            presetName = $(chkCurrent).attr("id").replace('chkdefaultpreset_', '');
+        }
+        $.ajax({
+            beforeSend: function (x) {
+                myApp.hidePleaseWait();
+            },
+            url: '@Url.Content("~/Home/SaveDefaultPreset")',
+            type: 'POST',
+            dataType: 'json',
+            data: { PresetName: presetName },
+            success: function (data) {
+
+            }
+        });
+
+    });
+
+    function LoadSelectedFilter() {
+
+        var filtername = '';
+        $('#content_2 ul li').each(function () {
+            if ($(this).is(':visible')) {
+                if ($(this).hasClass('active')) {
+                    filtername = $.trim($(this).text());
+                }
+            }
+        });
+        if (filtername == '') {
+            alert('Please select atleaset one preset.');
+            return false;
+        }
+        else {
+
+            $.ajax({
+                beforeSend: function (x) {
+                    myApp.hidePleaseWait();
+                },
+                url: '@Url.Content("~/Home/SetFilterPresetName")',
+                type: 'POST',
+                dataType: 'json',
+                data: { Filtername: filtername },
+                success: function (data) {
+                    var PlanId = $("#CurrentPlanId").val();
+                    var url = "";
+                    if ($('#ActiveMenu').val().toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                        url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Home' + '&currentPlanId=' + PlanId;
+                    }
+                    else {
+                        if ($('#IsGridView').val() == "True") {
+
+                            var pid = $("#CurrentPlanId").val();
+
+                            url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
+
+                        }
+                        else {
+
+                            url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+
+                        }
+                    }
+                    window.location.href = url;
+
+                }
+            });
+
+        }
+
+        $("#content_SaveFilters").css("display", "none");
+        $("#DefaultFilters").css("display", "none");
+        $("#PlanModulesSection").css("display", "block");
+        $("#Filtersidebar").css("display", "block");
+
+
+    }
+
+    //End
+    function DeletePreset(presetName, sender) {
+        debugger;
+        if (confirm('Are you sure you want to delete preset ' + presetName)) {
+            var params = {};
+            params.PresetName = presetName;
+            $.ajax({
+                url: '@Url.Content("~/Home/DeletePreset")',
+                type: 'POST',
+                dataType: 'json',
+                data: $.param(params, true),
+                success: function (data) {
+                    debugger;
+                    if (data.isSuccess != 'undefined' && data.isSuccess != null && data.isSuccess != 'false') {
+                        var liCount = $(sender).parents('ul').find('li').length
+                        $(sender).parents().closest('li').remove();
+
+                        if (liCount == 1)
+                        {
+                           $ ('ul[id=ulFilterPreset]').each(function () {
+                                if ($(this).is(':visible'))
+                                    $(this).hide();
+                            });
+                            $('input[id=btnProceed]').each(function () {
+                                if ($(this).is(':visible'))
+                                    $(this).hide();
+                            });
+                            $('input[id=btnCancel]').each(function () {
+                                if ($(this).is(':visible'))
+                                    $(this).hide();
+                            });
+                            $('div[id=NoPreset]').each(function () {
+                                if ($(this).parent().is(':visible'))
+                                    $(this).show();
+                            });
+                            $('input[id=btnBack]').each(function () {
+                                if ($(this).parent().is(':visible'))
+                                    $(this).show();
+                            });
+                        }
+                    }
+                }
+            });
+        }
+    }
+    function LoadPresentSerch(sender) {
+        var txtSerch = $(sender).val();
+        var isLoadPreset = true;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LastSetOfViews", "Home")',
+            data: {
+                PresetName: txtSerch,
+                isLoadPreset: isLoadPreset,
+            },
+            //dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $('#DefaultFilters').css('display', 'block');
+                    $('#DefaultFilters').html(data);
+
+                }
+                else {
+                    $('#DefaultFilters').css('display', 'none');
+
+
+                }
+
+            }
+
+        });
+
+        $("#DefaultFilters").css("display", "block");
+        $("#PlanModulesSection").css("display", "none");
+        $("#Filtersidebar").css("display", "none");
+
+    }
+</script>

@@ -919,6 +919,7 @@
           <Property Name="FilterValues" Type="nvarchar(max)" />
           <Property Name="Userid" Type="uniqueidentifier" />
           <Property Name="LastModifiedDate" Type="datetime" Nullable="false" />
+          <Property Name="IsDefaultPreset" Type="bit" />
         </EntityType>
         <EntityType Name="Report_Share">
           <Key>
@@ -5154,6 +5155,7 @@
           <Property Name="FilterValues" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="Userid" Type="Guid" />
           <Property Name="LastModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="IsDefaultPreset" Type="Boolean" />
         </EntityType>
         </Schema>
     </edmx:ConceptualModels>
@@ -6236,6 +6238,7 @@
           <EntitySetMapping Name="Plan_UserSavedViews">
             <EntityTypeMapping TypeName="MRPModel.Plan_UserSavedViews">
               <MappingFragment StoreEntitySet="Plan_UserSavedViews">
+                <ScalarProperty Name="IsDefaultPreset" ColumnName="IsDefaultPreset" />
                 <ScalarProperty Name="LastModifiedDate" ColumnName="LastModifiedDate" />
                 <ScalarProperty Name="Userid" ColumnName="Userid" />
                 <ScalarProperty Name="FilterValues" ColumnName="FilterValues" />

@@ -5008,55 +5008,105 @@ namespace RevenuePlanner.Controllers
         /// Added By: Komal Rawal.
         /// Action to get last accessed data
         /// </summary>
-        public JsonResult LastSetOfViews()
+        public ActionResult LastSetOfViews(string PresetName = "", Boolean isLoadPreset = false)
         {
             var StatusLabel = Enums.FilterLabel.Status.ToString();
             var LastSetOfStatus = new List<string>();
             //Modified for #1750 by Komal Rawal
             var listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
-            var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel && view.ViewName == null).Select(View => View.FilterValues).ToList();
-            if (SetOfStatus.Count > 0)
+            //Modified by Rahul shah on 24/12/2015 for PL#1837
+            if (isLoadPreset == true)
             {
-                if (SetOfStatus.FirstOrDefault() != null)
+
+                List<Preset> newList = (from item in listofsavedviews
+                                        where item.ViewName != null
+                                        select new Preset
+                                        {
+                                            Id = Convert.ToString(item.Id),
+                                            Name = item.ViewName,
+                                            IsDefaultPreset = item.IsDefaultPreset
+                                        }).ToList();
+
+
+                newList = newList.GroupBy(g => g.Name).Select(x => x.FirstOrDefault()).ToList();
+
+                //for searching 
+                if (!string.IsNullOrEmpty(PresetName))
                 {
-                    LastSetOfStatus = SetOfStatus.FirstOrDefault().Split(',').ToList();
+                    List<Preset> newListSearch = (from item in listofsavedviews
+                                                  where item.ViewName != null && item.ViewName.ToUpper().Contains(PresetName.ToUpper())
+                                                  select new Preset
+                                                  {
+                                                      Id = Convert.ToString(item.Id),
+                                                      Name = item.ViewName,
+                                                      IsDefaultPreset = item.IsDefaultPreset
+                                                  }).ToList();
+                    newListSearch = newListSearch.GroupBy(g => g.Name).Select(x => x.FirstOrDefault()).ToList();
+                    return PartialView("~/Views/Shared/_DefaultViewFilters.cshtml", newListSearch);
                 }
-                //else
-                //{
-                //    LastSetOfStatus = null;
-                //}
+
+
+                return PartialView("~/Views/Shared/_DefaultViewFilters.cshtml", newList);
             }
-           
-            var OwnerLabel = Enums.FilterLabel.Owner.ToString();
-
-            var LastSetOfOwners = new List<string>();
-
-
-            var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-            if (SetOfOwners != null)
+            else
             {
-                LastSetOfOwners = SetOfOwners.Split(',').ToList();
-            }
-
-            var TTLabel = Enums.FilterLabel.TacticType.ToString();
-            var LastSetOfTacticType = new List<string>();
-
-            var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel && view.ViewName == null).Select(View => View.FilterValues).ToList();
-            if (SetOfTacticType.Count > 0)
-            {
-                if (SetOfTacticType.FirstOrDefault() != null)
+                if (!string.IsNullOrEmpty(PresetName))
                 {
-                    LastSetOfTacticType = SetOfTacticType.FirstOrDefault().Split(',').ToList();
+                    listofsavedviews = listofsavedviews.Where(name => name.ViewName == PresetName).ToList();
                 }
-                //else
-                //{
-                //    LastSetOfTacticType = null;
-                //}
-               
+                else
+                {
+                    listofsavedviews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
+                    if (listofsavedviews.Count == 0)
+                    {
+                        listofsavedviews = listofsavedviews.Where(view => view.ViewName == null).ToList();
+                    }
+                }
+
+                var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel).Select(View => View.FilterValues).ToList();
+                if (SetOfStatus.Count > 0)
+                {
+                    if (SetOfStatus.FirstOrDefault() != null)
+                    {
+                        LastSetOfStatus = SetOfStatus.FirstOrDefault().Split(',').ToList();
+                    }
+                    //else
+                    //{
+                    //    LastSetOfStatus = null;
+                    //}
+                }
+
+                var OwnerLabel = Enums.FilterLabel.Owner.ToString();
+
+                var LastSetOfOwners = new List<string>();
+
+
+                var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+                if (SetOfOwners != null)
+                {
+                    LastSetOfOwners = SetOfOwners.Split(',').ToList();
+                }
+
+                var TTLabel = Enums.FilterLabel.TacticType.ToString();
+                var LastSetOfTacticType = new List<string>();
+
+                var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel && view.ViewName == null).Select(View => View.FilterValues).ToList();
+                if (SetOfTacticType.Count > 0)
+                {
+                    if (SetOfTacticType.FirstOrDefault() != null)
+                    {
+                        LastSetOfTacticType = SetOfTacticType.FirstOrDefault().Split(',').ToList();
+                    }
+                    //else
+                    //{
+                    //    LastSetOfTacticType = null;
+                    //}
+
+                }
+
+                var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF") && view.ViewName == null).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
+                return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
             }
-           
-            var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF") && view.ViewName == null).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
-            return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>
@@ -5214,6 +5264,43 @@ namespace RevenuePlanner.Controllers
             return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
 
+        #region --Delete Preset Data---
+        /// <summary>
+        /// Added By: Rahul Shah.
+        /// Action to Delete Preset data.
+        /// </summary>
+        public ActionResult DeletePreset(string PresetName)
+        {
+            if (!string.IsNullOrEmpty(PresetName))
+            {
+
+                PresetName = Convert.ToString(PresetName).TrimStart();
+                PresetName = Convert.ToString(PresetName).TrimEnd();
+                PresetName = Convert.ToString(PresetName).Trim();
+
+                List<int> lstViewID = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == Sessions.User.UserId && x.ViewName == PresetName).Select(x => x.Id).ToList();
+                if (lstViewID != null)
+                {
+                    foreach (int id in lstViewID)
+                    {
+                        Plan_UserSavedViews planToDelete = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Id == id).SingleOrDefault();
+                        objDbMrpEntities.Plan_UserSavedViews.Remove(planToDelete);
+                    }
+                    objDbMrpEntities.SaveChanges();
+                    return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+                }
+
+            }
+            else
+            {
+                return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
+            }
+        }
+          #endregion
         #endregion
 
         #region --Get Header Data for HoneyComb Pdf---

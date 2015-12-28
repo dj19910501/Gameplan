@@ -378,4 +378,10 @@ namespace RevenuePlanner.Models
         public string RowId { get; set; }
     } 
     #endregion
+    public class Preset
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public bool? IsDefaultPreset { get; set; }
+    }
 }

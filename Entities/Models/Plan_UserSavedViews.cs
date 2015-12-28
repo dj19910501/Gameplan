@@ -20,5 +20,6 @@ namespace RevenuePlanner.Models
         public string FilterValues { get; set; }
         public Nullable<System.Guid> Userid { get; set; }
         public System.DateTime LastModifiedDate { get; set; }
+        public Nullable<bool> IsDefaultPreset { get; set; }
     }
 }

@@ -609,7 +609,25 @@
         }
 
     </script>
+        <!--success message-->
+    <div class="save-filter">
+    <!--error message-->
+        <div id="errorMessageMainSidebar" class="alert hide alert-error">
+        <a class="close">×</a>
+        <strong></strong><span id="spanErrorMessageRole"></span>
+    </div>
 
+    <!--error message-->
+        <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="display:none">
+           
+            <h2>Save As Preset</h2>
+        <label for="Preset">Please enter a name for preset</label>
+        <input type="text" id="txtPresetName" />
+            <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnSaveProceed" onclick="javascript: SavePreset()" />
+            <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnSaveCancel" onclick="javascript: CancelSavePreset()" />
+    </div>
+    <div id="DefaultFilters" style="display:none"></div>
+</div>
     <div id="PlanModulesSection" class="plan-mod-section sidebar-main">
         <div class="padding-content padding-bottom0 sidebar-toogle-wrapper">
             <div class="sidebar-toogle">
@@ -747,18 +765,56 @@
         </div>
     </div>
     <!-- Sidebar Block Starts -->
-    <div id="sidebar" class="span2 sidebar">
+   <div id="Filtersidebar" class="span2 sidebar">
         <div class="WelcomeMessageBorder"></div>
+
+        <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
+            <div class="wraper-btns cf">
+                <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="UpdateResult" onclick="UpdateResult()">
+                    Update Results
+                </button>
+            </div>
+        </div>
+        <!--success message-->
+        <div class="error-msg-filter">
+            <div id="successMessageSidebar" class="alert hide alert-success">
+                <a class="close">×</a>
+                <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
+            </div>
+            <!--error message-->
+            <div id="errorMessageMainSidebar" class="alert hide alert-error">
+                <a class="close">×</a>
+                <strong></strong><span id="spanErrorMessageRole"></span>
+            </div>
+        </div>
+        <!--error message-->
         <div class="sidebar-section scroll-section">
-            <div style="width: 100%;">
+            <div class="float-left filter-preset">
                 <div class="width50 float-left filter-title ">
                     <span class="filter-header">Filters</span>
                 </div>
-                <div class="width50 float-left filter-btn">
+            <div class="dropdown" style="float:right;">
+                <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
+                    <i class="fa fa-bars"></i>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
+                    <li onclick="SaveAsPreset()" role="presentation">
+                        <a id="saveaslink" tabindex="-1" role="menuitem">Save current filters</a>
+                    </li>
+                    <li onclick="LoadPreset()" role="presentation">
+                        <a tabindex="-1" role="menuitem">Load saved filters</a>
+                    </li>
+                    <li onclick="ClearAllPreset()" role="presentation">
+                        <a tabindex="-1" role="menuitem">Clear all</a>
+                    </li>
+                </ul>
+            </div>
+            @*<div class="width50 float-left filter-btn">
                     <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
                         Update Results
                     </button>
-                </div>
+            </div>*@
             </div>
             <div style="clear: both;"></div>
             @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
@@ -6736,5 +6792,43 @@ function () {
         $("#dvCopyEntity").empty();
         var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
         $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
+    } 
+ function LoadPreset() {
+        var isLoadPreset = true;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LastSetOfViews", "Home")',
+            data: {
+                isLoadPreset: isLoadPreset,
+            },
+            //dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $('#DefaultFilters').css('display', 'block');
+                    $('#DefaultFilters').html(data);
+
+                }
+                else {
+                    $('#DefaultFilters').css('display', 'none');
+                }
+
+
+            }
+
+        });
+        //GetLastSetofViews(isLoadPreset);
+        $("#DefaultFilters").css("display", "block");
+        $("#PlanModulesSection").css("display", "none");
+        $("#Filtersidebar").css("display", "none");
+        //  $("#displaydata").css("display", "none");
+
+    }  
+    function CancelSavePreset() {
+        $("#content_SaveFilters").css("display", "none");
+        $("#DefaultFilters").css("display", "none");
+        $("#PlanModulesSection").css("display", "block");
+        $("#Filtersidebar").css("display", "block");
     }
+
 </script>

@@ -7,8 +7,9 @@
     int CurrentPlanId = ViewBag.PlanId;
     var ListBudgetingPlan = Model.objplanhomemodelheader.plans; //Modified for new homepage UI
     var IsQuarter = ViewBag.IsQuarter;
+    var PageTitle = "Add Actuals";
 }
-
+@Html.Hidden("PageTitle", PageTitle)
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -32,6 +33,25 @@
             margin: 7px -3px 0 0 !important;
         }
     </style>
+    @*modified by Rahul Shah for Pl #1837*@
+      <!--success message-->
+<div class="save-filter">
+    <!--error message-->
+    <div id="errorMessageMainSidebar" class="alert hide alert-error">
+        <a class="close">×</a>
+        <strong></strong><span id="spanErrorMessageRole"></span>
+    </div>
+
+    <!--error message-->
+    <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="height: 456.85px; display:none">
+        <h2>Save As Preset</h2>
+        <label for="Preset">Please enter a name for preset</label>
+        <input type="text" id="txtPresetName" />
+        <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnSaveProceed" onclick="javascript: SavePreset()" />
+        <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnSaveCancel" onclick="javascript: CancelSavePreset()" />
+    </div>
+    <div id="DefaultFilters" style="display:none"></div>
+</div>
     <div class="padding-content padding-bottom0" id="DivButtonsHome">
         <h4 class="text-shadow-black source-sans-prolight">Actions</h4>
         <div class="wraper-btns cf">
@@ -40,20 +60,51 @@
             </div>
         </div>
     </div>
-
-    <div id="sidebar" class="span2 sidebar">
+@*modified by Rahul Shah for Pl #1837*@
+    <div id="Filtersidebar" class="span2 sidebar">
         <div class="WelcomeMessageBorder"></div>
-        <div class="sidebar-section scroll-section">
-            <div style="width: 100%;">
-                <div class="width50 float-left ">
-                    <span class="filter-header">Filters</span>
-                </div>
-                <div class="width50 float-left">
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="btnUpdateResultFilters" onclick="UpdateResult()">
+        <div class="wraper-btns cf update-result">
+            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" style="min-width: 90%" type="button" id="btnUpdateResultFilters" onclick="UpdateResult()">
                         Update Results
                     </button>
                 </div>
+        <!--success message-->
+        <div class="error-msg-filter">
+            <div id="successMessageSidebar" class="alert hide alert-success">
+                <a class="close">×</a>
+                <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
             </div>
+            <!--error message-->
+            <div id="errorMessageMainSidebar" class="alert hide alert-error">
+                <a class="close">×</a>
+                <strong></strong><span id="spanErrorMessageRole"></span>
+            </div>
+        </div>
+        <div class="sidebar-section scroll-section">
+            <div class="float-left filter-preset">
+                <div class="width50 float-left filter-title ">
+                    <span class="filter-header">Filters</span>
+                </div>
+                <div class="dropdown" style="float:right;">
+                    <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
+                        <i class="fa fa-bars"></i>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
+                        <li onclick="SaveAsPreset()" role="presentation">
+                            <a id="saveaslink" tabindex="-1" role="menuitem">Save current filters</a>
+                        </li>
+                        <li onclick="LoadPreset()" role="presentation">
+                            <a tabindex="-1" role="menuitem">Load saved filters</a>
+                        </li>
+                        <li onclick="ClearAllPreset()" role="presentation">
+                            <a tabindex="-1" role="menuitem">Clear all</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+               
             <div style="clear: both;"></div>
             <div id="accordion-TacticType" class="dropdown-section accordion">
                 <div class="accordion-group">
@@ -1643,4 +1694,52 @@
             });
         }
     }
+
+    
+
+     @*Added by Rahul Shah for Pl #1837*@
+
+    function LoadPreset() {
+
+        var isLoadPreset = true;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("LastSetOfViews", "Home")',
+            data: {
+                isLoadPreset: isLoadPreset,
+            },
+            //dataType: "json",
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $('#DefaultFilters').css('display', 'block');
+                    $('#DefaultFilters').html(data);
+
+                }
+                else {
+                    $('#DefaultFilters').css('display', 'none');
+                }
+
+
+            }
+
+        });
+        $("#successMessageSidebar").css("display", "none");
+        $("#DefaultFilters").css("display", "block");
+        $("#DivButtonsHome").css("display", "none");
+        $("#Filtersidebar").css("display", "none");
+        //  $("#displaydata").css("display", "none");
+
+    }
+
+  
+
+    function CancelSavePreset() {
+        $("#content_SaveFilters").css("display", "none");
+        $("#DefaultFilters").css("display", "none");
+        $("#DivButtonsHome").css("display", "block");
+        $("#Filtersidebar").css("display", "block");
+    }
+
+
 </script>
