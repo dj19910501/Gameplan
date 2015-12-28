@@ -1,16 +1,23 @@
-﻿@using RevenuePlanner.Helpers;
+﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers;
 @{
-    var popupvalue = (string)ViewBag.InspectPopup;
-    var InspectMode = ViewBag.InspectMode != null ? (string)ViewBag.InspectMode : string.Empty;
-    var planDetails = (RevenuePlanner.Models.InspectModel)ViewBag.PlanDetails;
-    bool IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+    RevenuePlanner.Models.InspectModel planDetails = null;
+    if(Model != null)
+    {
+        planDetails = Model;
+    }
+
+    var popupvalue = (string)planDetails.InspectPopup;
+    var InspectMode = planDetails.InspectMode != null ? (string)planDetails.InspectMode : string.Empty;
+
+    bool IsPlanEditable = (bool)planDetails.IsPlanEditable;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
-    string RequestedModule = ViewBag.RedirectType != null ? ViewBag.RedirectType : "";
+    string RequestedModule = planDetails.RedirectType != null ? planDetails.RedirectType : "";
     var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
     bool isIndex = (bool)(!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RequestedModule) ? (RequestedModule == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
     
-    if (planDetails != null)
+    if (planDetails.PlanId != 0)
     {
         TempData["PlanModel"] = planDetails;
 
@@ -74,7 +81,14 @@
                 @if (IsPlanEditable)
                 {
                     <div style="float: right; position: relative;">
-                        <span id="EditForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="edit-icon-white btn-blue btn-large"></span>
+                        @{
+                            string classbutton = "edit-icon-white";
+                            if (InspectMode == Enums.InspectPopupMode.Edit.ToString())
+                            {
+                                classbutton = "Save-icon-white";
+                            }
+                        <span id="EditForm" style="display: block; cursor: pointer; margin-right: 10px;z-index:1;" class="@classbutton btn-blue btn-large"></span>
+                        }
                         <div id="popupeditplan" style="display: none; position: absolute; top: 35px;z-index:1;width:154px;" class="btn-dropdwn">
                             <ul style="margin: 0;">
                                 <li id="lnkEdit" class="new-edit">Edit Details</li>
@@ -274,9 +288,8 @@
                     return false;
                 }
                 else {
-                    returnToReadOnlyMode(planId);
-                    // loadInnerTabs(planId, activeTab);
-                    //RefreshCurrentTab(requestedModule, 0, 0, 0);
+                    $('.close-x-big-icon').trigger('click');
+                    
 
                 }
             }
@@ -287,7 +300,8 @@
                     return false;
                 }
                 else {
-                    returnToReadOnlyMode(planId);
+                    $('.close-x-big-icon').trigger('click');
+                    
                 }
             }
 

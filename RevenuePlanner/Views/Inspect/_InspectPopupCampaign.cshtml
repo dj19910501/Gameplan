@@ -1,37 +1,29 @@
-﻿@using RevenuePlanner.Helpers;
+﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers;
 @{
-    var popupvalue = (string)ViewBag.InspectPopup;
-    var RedirectType = (string)ViewBag.RedirectType;
+    RevenuePlanner.Models.InspectModel campaignMaster = null;
+    if (Model != null)
+    {
+        campaignMaster = Model;
+    }
+    var RedirectType = (string)campaignMaster.RedirectType;
     var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
     bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
     var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
    
-}
-@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
-@{
+
     var planCampaignId = 0;
     var campaignStatus = "";
     string colorCode = "C6EBF3";
-    string planId = Convert.ToString(ViewBag.PlanId);
+    string planId = Convert.ToString(campaignMaster.PlanId);
     string campaignTitle = "";
 
-    RevenuePlanner.Models.InspectModel campaignMaster = null;
-    if (ViewBag.CampaignDetail != null)
-    {
-        campaignMaster = (RevenuePlanner.Models.InspectModel)ViewBag.CampaignDetail;
-    }
-
+    
+   
+    string InspectMode = string.Empty;
     bool IsPlanEditable = false;
-    if (ViewBag.IsPlanEditable != null)
-    {
-        IsPlanEditable = (bool)ViewBag.IsPlanEditable;
-    }
     bool IsPlanCreateAll = false;
-    if (ViewBag.IsPlanCreateAll != null)
-    {
-        IsPlanCreateAll = (bool)ViewBag.IsPlanCreateAll;
-    }
+    var popupvalue = string.Empty;
     if (campaignMaster != null)
     {
         TempData["CampaignModel"] = campaignMaster;
@@ -39,14 +31,14 @@
         campaignStatus = campaignMaster.Status;
         colorCode = campaignMaster.ColorCode;
         campaignTitle = campaignMaster.CampaignTitle;
+        IsPlanEditable = (bool)campaignMaster.IsPlanEditable;
+        IsPlanCreateAll = (bool)campaignMaster.IsPlanCreateAll;
+        InspectMode = campaignMaster.InspectMode;
+        popupvalue = (string)campaignMaster.InspectPopup;
     }
     
-}
-
-@{
-    
+ 
     //Added By komal Rawal For #1324 - To maintain the mode on tab change after review
-    string InspectMode = ViewBag.InspectMode;
     string Campaignopt = "";
     if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
     {
@@ -60,6 +52,7 @@
     //End
 }
 
+@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Hidden("hdnPlanCampaignId", planCampaignId, new { id = "hdnPlanCampaignId" })
 @Html.Hidden("hdnCampaignStatus", campaignStatus, new { id = "hdnCampaignStatus" })
 @Html.Hidden("hdnCampaignOpt", Campaignopt, new { id = "hdnCampaignOpt" })   @* Modified By komal Rawal For #1324*@
@@ -91,7 +84,7 @@
     <div class="headefix">
 
         <h2 class="title-simple source-sans-prolight">
-            @if (campaignMaster != null)
+            @if (campaignMaster.PlanCampaignId != 0)
             {
                 
                 <span>
@@ -125,7 +118,7 @@
              
             }
 
-            @if (campaignMaster == null)
+            @if (campaignMaster.PlanCampaignId == 0)
             {
                 <span class="Save-icon-white btn-blue btn-large" href="#" id="btnEditCampaign" style="margin-right: 15px;"></span>
             }
@@ -151,7 +144,7 @@
             </div>
         </form>
 
-        @if (campaignMaster != null)
+        @if (campaignMaster.PlanCampaignId != 0)
         {
             <div class="modal-popup-summary" id="campaignSummary">
                 <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight" style="margin-bottom: 0px;">
@@ -228,7 +221,6 @@
           $("#li" + InspectValue).addClass("active pull-left");
           tabtext = ($("#li" + InspectValue).children('a').text());
           $('#div' + tabtext).css({ display: "block" });
-
 
           // Click on Tab Partialview Refresh Based On Selected Tab
           $("#liSetup,#liReview,#liBudget").on("click", function () {
@@ -331,7 +323,7 @@
               return returnparameter;
           }
           //End
-          if (planCampaignId != '0') {
+          if (planCampaignId != 0) {
               if ($('#btnEditCampaign').hasClass('edit-icon-white') && $("#hdnCampaignOpt").val() == '@Enums.InspectPopupMode.Edit.ToString()') {
                       $('#btnEditCampaign').removeClass('edit-icon-white');//Modified for #1318 by Komal Rawal
                       $('#btnEditCampaign').addClass('Save-icon-white');
@@ -412,14 +404,8 @@ else {
             return false;
         }
         else {
-            $("#hdnCampaignOpt").val("View");
-            var campaignId = $('#hdnPlanCampaignId').val();
-            loadReview(campaignId, activeTab);
-            $('#btnEditCampaign').removeClass('Save-icon-white');
-            $('#btnEditCampaign').addClass('edit-icon-white');
-            $('#txtTitle').css('display', 'none');
-            $('#lblCampaignTitle').css('display', 'block');
-            $("#txtTitle").prop('readonly', true);
+            $('.close-x-big-icon').trigger('click');
+            
 
         }
     }
@@ -430,14 +416,8 @@ else {
             return false;
         }
         else {
-            $("#hdnCampaignOpt").val("View");
-            var campaignId = $('#hdnPlanCampaignId').val();
-            loadReview(campaignId, activeTab);
-            $('#btnEditCampaign').removeClass('Save-icon-white');
-            $('#btnEditCampaign').addClass('edit-icon-white');
-            $('#txtTitle').css('display', 'none');
-            $('#lblCampaignTitle').css('display', 'block');
-            $("#txtTitle").prop('readonly', true);
+            $('.close-x-big-icon').trigger('click');
+            
 
         }
     }
@@ -448,15 +428,8 @@ else {
             return false;
         }
         else {
-
-        $("#hdnCampaignOpt").val("View");
-        var campaignId = $('#hdnPlanCampaignId').val();
-        loadReview(campaignId, activeTab);
-        $('#btnEditCampaign').removeClass('Save-icon-white');
-        $('#btnEditCampaign').addClass('edit-icon-white');
-        $('#txtTitle').css('display', 'none');
-        $('#lblCampaignTitle').css('display', 'block');
-        $("#txtTitle").prop('readonly', true);
+            $('.close-x-big-icon').trigger('click');
+          
         }
 
     }

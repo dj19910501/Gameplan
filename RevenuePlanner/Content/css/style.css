@@ -9507,7 +9507,7 @@ li.close-list {
 
 .Save-icon-white:after {
     background-image: url(../images/save-icon-white.png);
-    content: "Save";
+    content: "Save & Close";
 }
 
 .border-top-div {

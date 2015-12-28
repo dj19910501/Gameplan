@@ -4795,7 +4795,7 @@
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             $("#modal-container-186470").modal('show');
-            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
+            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
         }
             //// Checking whether current task is tactic or not.
         else if (typeof planTacticId != 'undefined' && planTacticId != 0) {
@@ -4805,7 +4805,7 @@
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             $("#modal-container-186470").modal('show');
-            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
+            loadInspectPopup(planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
         }
 
             //// Checking whether current task is tactic or not.
@@ -4816,7 +4816,7 @@
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             $("#modal-container-186470").modal('show');
-            loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");//Modified by Komal rawal For #1325 - To get the default mode as read only
+            loadInspectPopup(planProgramId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Program).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");//Modified by Komal rawal For #1325 - To get the default mode as read only
         }
             //// Checking whether current task is tactic or not.
         else if (typeof planCampaignId != 'undefined' && planCampaignId != 0) {
@@ -4826,7 +4826,7 @@
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             $("#modal-container-186470").modal('show');
-            loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()"); //Modified by Komal rawal For #1324 - To get the default mode as read only
+            loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()"); //Modified by Komal rawal For #1324 - To get the default mode as read only
         }
             //// Checking whether current task is tactic or not.
         else if (typeof planLineItemId != 'undefined' && planLineItemId != 0) {
@@ -4836,7 +4836,7 @@
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             $("#modal-container-186470").modal('show');
-            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
+            loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()", 0, "@Enums.InspectPopupRequestedModules.Index.ToString()");
         }
         else if (typeof planId != 'undefined' && planId != 0) {
             modalFullPosition();
@@ -4845,7 +4845,7 @@
             $("#successMessage").css("display", "none");
             $("#errorMessage").css("display", "none");
             $("#modal-container-186470").modal('show');
-            loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", "@Enums.InspectPopupMode.ReadOnly.ToString()");
+            loadInspectPopup(planId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Plan).ToLower()", "Setup", "@Enums.InspectPopupMode.Edit.ToString()");
         }
     }
 
@@ -6624,7 +6624,7 @@
                 loadInspectPopup("0", "campaign", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "campaign", currentTab, "ReadOnly", ParentId, RequestedModule);
+                loadInspectPopup(id, "campaign", currentTab, "Edit", ParentId, RequestedModule);
             }
         }
         else if (section == "program") {
@@ -6632,7 +6632,7 @@
                 loadInspectPopup("0", "program", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "program", currentTab, "ReadOnly", ParentId, RequestedModule);
+                loadInspectPopup(id, "program", currentTab, "Edit", ParentId, RequestedModule);
             }
         }
         else if (section == "tactic") {
@@ -6640,7 +6640,7 @@
                 loadInspectPopup("0", "tactic", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "tactic", currentTab, "ReadOnly", ParentId, RequestedModule);
+                loadInspectPopup(id, "tactic", currentTab, "Edit", ParentId, RequestedModule);
             }
         }
         else if (section == "improvementtactic") {
@@ -6648,7 +6648,7 @@
                 loadInspectPopup(0, "improvementtactic", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "improvementtactic", currentTab, "ReadOnly", ParentId, RequestedModule);
+                loadInspectPopup(id, "improvementtactic", currentTab, "Edit", ParentId, RequestedModule);
             }
         }
         else if (section == "lineitem") {
@@ -6656,7 +6656,7 @@
                 loadInspectPopup("0", "lineitem", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "lineitem", currentTab, "ReadOnly", ParentId, RequestedModule);
+                loadInspectPopup(id, "lineitem", currentTab, "Edit", ParentId, RequestedModule);
             }
         }
         else if (section == "plan") {
@@ -6664,7 +6664,7 @@
                 loadInspectPopup("0", "plan", currentTab, "Add", ParentId, RequestedModule);
             }
             else {
-                loadInspectPopup(id, "plan", currentTab, "ReadOnly", ParentId, RequestedModule);
+                loadInspectPopup(id, "plan", currentTab, "Edit", ParentId, RequestedModule);
             }
         }
         //modalBackdropDisplayNone();

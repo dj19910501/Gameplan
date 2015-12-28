@@ -3237,51 +3237,63 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Tactic.</returns>
         public ActionResult EditTactic(int id = 0, string RedirectType = "", string CalledFromBudget = "")
         {
+            Inspect_Popup_Plan_Campaign_Program_TacticModel ippctm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
+            
             Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
             if (pcpt == null)
                 return null;
+            
+            Plan_Campaign plancampaignobj = pcpt.Plan_Campaign_Program.Plan_Campaign;
+            
+            Plan_Campaign_Program planprogramobj = pcpt.Plan_Campaign_Program;
+            
+            int planId = plancampaignobj.PlanId;
+            
 
-            int planId = pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId;
+            ippctm.CalledFromBudget = CalledFromBudget;
 
-            ViewBag.CalledFromBudget = CalledFromBudget;
-            ViewBag.IsCreated = false;
 
+            ippctm.IsCreated = false;
+            System.Diagnostics.Debug.WriteLine("Step 2.4:" + DateTime.Now.ToString("o"));
             if (RedirectType == "Assortment")
             {
-                ViewBag.RedirectType = false;
+             
+                ippctm.RedirectType = false;
             }
             else
             {
-                ViewBag.RedirectType = true;
+             
+                ippctm.RedirectType = true;
             }
-
-            List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => tactype.IsDeleted == null || tactype.IsDeleted == false).ToList();
+            
+            int modelid = plancampaignobj.Plan.ModelId;
+            List<TacticType> tblTacticTypes = db.TacticTypes.Where(tactype => (tactype.IsDeleted == null || tactype.IsDeleted == false) && tactype.ModelId == modelid).ToList();
             //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
-            var lstTactic = from tacType in tblTacticTypes
-                            join _plan in db.Plans on tacType.ModelId equals _plan.ModelId
-                            where _plan.PlanId == planId && tacType.IsDeployedToModel == true
+            var lstTactic = (from tacType in tblTacticTypes
+                            where tacType.IsDeployedToModel == true
                             orderby tacType.Title
-                            select tacType;
-
+                            select tacType).ToList();
+            
             //// Check whether current TacticId related TacticType exist or not.
             if (!lstTactic.Any(tacType => tacType.TacticTypeId == pcpt.TacticTypeId))
             {
                 //// Get list of Tactic Types based on PlanID.
-                var tacticTypeSpecial = from _tacType in tblTacticTypes
-                                        join _plan in db.Plans on _tacType.ModelId equals _plan.ModelId
-                                        where (_plan.PlanId == planId || _plan.PlanId == planId) && _tacType.TacticTypeId == pcpt.TacticTypeId
+                var tacticTypeSpecial = (from _tacType in tblTacticTypes
+                                        where _tacType.TacticTypeId == pcpt.TacticTypeId
                                         orderby _tacType.Title
-                                        select _tacType;
-                lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial);
-                lstTactic = lstTactic.OrderBy(a => a.Title);
+                                        select _tacType).ToList();
+                lstTactic = lstTactic.Concat<TacticType>(tacticTypeSpecial).ToList();
+                lstTactic = lstTactic.OrderBy(a => a.Title).ToList();
             }
-            ViewBag.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);
-
+          
+            ippctm.IsTacticAfterApproved = Common.CheckAfterApprovedStatus(pcpt.Status);
+          
 
             foreach (var item in lstTactic)
                 item.Title = HttpUtility.HtmlDecode(item.Title);
 
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(pcpt.TacticType.Model);
+           
+            ippctm.ExtIntService = Common.CheckModelIntegrationExist(pcpt.TacticType.Model);
 
             /* Added by Mitesh Vaishnav for PL ticket #1073
              Add number of stages for advance/Basic attributes waightage related to tacticType*/
@@ -3294,15 +3306,16 @@ namespace RevenuePlanner.Controllers
                 CostWeight = cfs.CostWeightage,
                 Weight = cfs.Weightage
             }).ToList();
-            ViewBag.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
-
+         
+            ippctm.customFieldWeightage = JsonConvert.SerializeObject(customFeildsWeightage);
+         
             /*End : Added by Mitesh Vaishnav for PL ticket #1073*/
 
-            Inspect_Popup_Plan_Campaign_Program_TacticModel ippctm = new Inspect_Popup_Plan_Campaign_Program_TacticModel();
+            
             ippctm.PlanProgramId = pcpt.PlanProgramId;
-            ippctm.ProgramTitle = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Title);
-            ippctm.PlanCampaignId = pcpt.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId;
-            ippctm.CampaignTitle = HttpUtility.HtmlDecode(pcpt.Plan_Campaign_Program.Plan_Campaign.Title);
+            ippctm.ProgramTitle = HttpUtility.HtmlDecode(planprogramobj.Title);
+            ippctm.PlanCampaignId = plancampaignobj.PlanCampaignId;
+            ippctm.CampaignTitle = HttpUtility.HtmlDecode(plancampaignobj.Title);
             ippctm.PlanTacticId = pcpt.PlanTacticId;
             ippctm.TacticTitle = HttpUtility.HtmlDecode(pcpt.Title);
             ippctm.TacticTypeId = pcpt.TacticTypeId;
@@ -3310,10 +3323,10 @@ namespace RevenuePlanner.Controllers
             ippctm.OwnerId = pcpt.CreatedBy;
             ippctm.StartDate = pcpt.StartDate;
             ippctm.EndDate = pcpt.EndDate;
-            ippctm.PStartDate = pcpt.Plan_Campaign_Program.StartDate;
-            ippctm.PEndDate = pcpt.Plan_Campaign_Program.EndDate;
-            ippctm.CStartDate = pcpt.Plan_Campaign_Program.Plan_Campaign.StartDate;
-            ippctm.CEndDate = pcpt.Plan_Campaign_Program.Plan_Campaign.EndDate;
+            ippctm.PStartDate = planprogramobj.StartDate;
+            ippctm.PEndDate = planprogramobj.EndDate;
+            ippctm.CStartDate = plancampaignobj.StartDate;
+            ippctm.CEndDate = plancampaignobj.EndDate;
             //User userName = new User();
             try
             {
@@ -3378,20 +3391,24 @@ namespace RevenuePlanner.Controllers
             var plantacticStageType = pcpt.StageId;
             if (modelTacticStageType == plantacticStageType)
             {
-                ViewBag.IsDiffrentStageType = false;
+            
+                ippctm.IsDiffrentStageType = false;
             }
             else
             {
-                ViewBag.IsDiffrentStageType = true;
+            
+                ippctm.IsDiffrentStageType = true;
             }
 
             if (Sessions.User.UserId == pcpt.CreatedBy)
             {
-                ViewBag.IsOwner = true;
+           
+                ippctm.IsOwner = true;
             }
             else
             {
-                ViewBag.IsOwner = false;
+            
+                ippctm.IsOwner = false;
             }
 
             List<TacticType> tnewList = lstTactic.ToList();
@@ -3406,20 +3423,24 @@ namespace RevenuePlanner.Controllers
                 tnewList.Add(tobj);
             }
 
-            ViewBag.Tactics = tnewList.OrderBy(t => t.Title);
-            ViewBag.Year = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Year;
+         
+         
+            ippctm.Tactics = tnewList.OrderBy(t => t.Title).ToList();
+            ippctm.Year = plancampaignobj.Plan.Year;
             ippctm.TacticCost = pcpt.Cost;
-            ippctm.AllocatedBy = pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.AllocatedBy;
-
+            ippctm.AllocatedBy = plancampaignobj.Plan.AllocatedBy;
+            
             #region "Calculate Plan remaining budget"
-            var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpt.PlanProgramId).ToList().Sum(c => c.Cost);
+            var CostTacticsBudget = db.Plan_Campaign_Program_Tactic.Where(c => c.PlanProgramId == pcpt.PlanProgramId).Sum(c => c.Cost);
             double? objPlanCampaignProgram = db.Plan_Campaign_Program.FirstOrDefault(p => p.PlanProgramId == pcpt.PlanProgramId).ProgramBudget;
             objPlanCampaignProgram = objPlanCampaignProgram != null ? objPlanCampaignProgram : 0;
-            ViewBag.planRemainingBudget = (objPlanCampaignProgram - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
+         
+            ippctm.planRemainingBudget = (objPlanCampaignProgram - (!string.IsNullOrEmpty(Convert.ToString(CostTacticsBudget)) ? CostTacticsBudget : 0));
             #endregion
 
             // Start - Added by Sohel Pathan on 14/11/2014 for PL ticket #708
-            ViewBag.IsTackticAddEdit = true;
+         
+            ippctm.IsTackticAddEdit = true;
             var campaignList = db.Plan_Campaign.Where(pc => pc.IsDeleted.Equals(false) && pc.PlanId == planId).Select(pc => new
             {
                 pc.PlanCampaignId,
@@ -3434,8 +3455,10 @@ namespace RevenuePlanner.Controllers
                 pcp.PlanProgramId,
                 pcp.Title
             }).OrderBy(pcp => pcp.Title).ToList();
-            ViewBag.PlanCampaignList = campaignList;
-            ViewBag.CampaignProgramList = programList;
+            
+            ippctm.PlanCampaignList = campaignList.Select(c => new SelectListValue { Id = c.PlanCampaignId, Title = c.Title}).ToList();
+            ippctm.CampaignProgramList = programList.Select(p => new SelectListValue { Id = p.PlanProgramId, Title = p.Title }).ToList();
+            System.Diagnostics.Debug.WriteLine("Step 13.2:" + DateTime.Now.ToString("o"));
             try
             {
                 BDSService.BDSServiceClient objBDSServiceClient = new BDSService.BDSServiceClient();
@@ -3460,16 +3483,20 @@ namespace RevenuePlanner.Controllers
                     {
                         lstUserDetails = lstUserDetails.OrderBy(user => user.FirstName).ThenBy(user => user.LastName).ToList();
                         var lstPreparedOwners = lstUserDetails.Select(user => new { UserId = user.UserId, DisplayName = string.Format("{0} {1}", user.FirstName, user.LastName) }).ToList();
-                        ViewBag.OwnerList = lstPreparedOwners;
+                    
+                        ippctm.OwnerList = lstPreparedOwners.Select(u => new SelectListUser { Name = u.DisplayName, Id = u.UserId }).ToList();
+                    
                     }
                     else
                     {
-                        ViewBag.OwnerList = new List<User>();
+
+                        ippctm.OwnerList = new List<SelectListUser>();
                     }
                 }
                 else
                 {
-                    ViewBag.OwnerList = new List<User>();
+               
+                    ippctm.OwnerList = new List<SelectListUser>();
                 }
             }
             catch (Exception e)
@@ -4110,29 +4137,22 @@ namespace RevenuePlanner.Controllers
         public PartialViewResult CreateTactic(int id = 0)
         {
 
+             Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).FirstOrDefault();
             //// Get PlanId by PlanCampaignId.
-            int PlanId = (from pc in db.Plan_Campaign
-                          where pc.PlanCampaignId ==
-                              (from pcp in db.Plan_Campaign_Program where pcp.PlanProgramId == id select pcp.PlanCampaignId).FirstOrDefault()
-                          select pc.PlanId).FirstOrDefault();
+            
+             var objPlan = pcpt.Plan_Campaign.Plan;
+             int PlanId = objPlan.PlanId;
             //// Get those Tactic types whose ModelId exist in Plan table and IsDeployedToModel = true.
-            var tactics = from _tacType in db.TacticTypes
-                          join plan in db.Plans on _tacType.ModelId equals plan.ModelId
-                          where plan.PlanId == PlanId && (_tacType.IsDeleted == null || _tacType.IsDeleted == false) && _tacType.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
-                          orderby _tacType.Title, new AlphaNumericComparer()
-                          select _tacType;
+            List<TacticType> tactics = (from _tacType in db.TacticTypes
+                                        where _tacType.ModelId == objPlan.ModelId && (_tacType.IsDeleted == null || _tacType.IsDeleted == false) && _tacType.IsDeployedToModel == true //// Modified by Sohel Pathan on 17/07/2014 for PL ticket #594
+                          select _tacType).OrderBy(t => t.Title).ToList();
             foreach (var item in tactics)
             {
                 item.Title = HttpUtility.HtmlDecode(item.Title);
             }
 
-            ViewBag.Tactics = tactics;
-            ViewBag.IsCreated = true;
-
-            var objPlan = db.Plans.FirstOrDefault(varP => varP.PlanId == PlanId);
-
-            ViewBag.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
-            Plan_Campaign_Program pcpt = db.Plan_Campaign_Program.Where(pcpobj => pcpobj.PlanProgramId.Equals(id)).FirstOrDefault();
+          
+           
             if (pcpt == null)
             {
                 return null;
@@ -4146,18 +4166,26 @@ namespace RevenuePlanner.Controllers
             pcptm.IsDeployedToIntegration = false;
             pcptm.StageId = 0;
             pcptm.StageTitle = "Stage";
-            ViewBag.IsOwner = true;
+         
             pcptm.ProgramTitle = HttpUtility.HtmlDecode(pcpt.Title);
             pcptm.CampaignTitle = HttpUtility.HtmlDecode(pcpt.Plan_Campaign.Title);
-            ViewBag.RedirectType = false;
+         
             pcptm.StartDate = GetCurrentDateBasedOnPlan(false, PlanId);
             pcptm.EndDate = GetCurrentDateBasedOnPlan(true, PlanId);
-            ViewBag.Year = db.Plans.Single(p => p.PlanId.Equals(PlanId)).Year;  //Sessions.PlanId
+         
             pcptm.TacticCost = 0;
             pcptm.AllocatedBy = objPlan.AllocatedBy;
 
 
             pcptm.Owner = (Sessions.User.FirstName + " " + Sessions.User.LastName).ToString();
+            pcptm.Tactics = tactics;
+            pcptm.IsCreated = true;
+            pcptm.ExtIntService = Common.CheckModelIntegrationExist(objPlan.Model);
+            pcptm.IsOwner = true;
+            pcptm.RedirectType = false;
+            pcptm.Year = db.Plans.Single(p => p.PlanId.Equals(PlanId)).Year;
+
+
             #endregion
 
             if (tactics.ToList().Count == 1)
@@ -7184,13 +7212,27 @@ namespace RevenuePlanner.Controllers
         /// <returns>Returns Partial View Of Inspect Popup.</returns>
         public ActionResult LoadInspectPopup(int id, string section, string TabValue = "Setup", string InspectPopupMode = "", int parentId = 0, string RequestedModule = "")
         {
+            #region "Initialize variables"
+
+            bool IsPlanEditable = false;
+            bool IsPlanCreateAll = false;
+            List<Guid> lstSubordinatesIds = new List<Guid>();
+            
+            Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
+            Plan_Campaign_Program objPlan_Campaign_Program = null;
+            Plan_Campaign objPlan_Campaign = null;
+            Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
+            Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
+            bool IsOwner = false;
+            InspectModel im = new InspectModel();
+            #endregion
             try
             {
-                ViewBag.InspectMode = InspectPopupMode;
 
+                
                 if (!string.IsNullOrEmpty(RequestedModule))
                 {
-                    ViewBag.RedirectType = RequestedModule;
+                    im.RedirectType = RequestedModule;
                 }
 
                 bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
@@ -7198,58 +7240,46 @@ namespace RevenuePlanner.Controllers
                 //// If Id is null then return section respective PartialView.
                 if (id == 0)
                 {
-                    ViewBag.InspectPopup = TabValue;
+                    im.InspectMode = InspectPopupMode;
+                    im.InspectPopup = TabValue;
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
-                        ViewBag.PlanId = parentId;
-                        ViewBag.CampaignDetail = null;
-                        return PartialView("_InspectPopupCampaign", null);
+                        im.PlanId = parentId;
+                        
+                        return PartialView("_InspectPopupCampaign", im);
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
-                        ViewBag.CampaignId = parentId;
-                        ViewBag.ProgramDetail = null;
-                        return PartialView("_InspectPopupProgram", null);
+                        im.PlanCampaignId = parentId;
+                        
+                        return PartialView("_InspectPopupProgram", im);
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
-                        ViewBag.PlanProgrameId = parentId;
-                        ViewBag.TacticDetail = null;
+                        im.PlanProgramId = parentId;
+                        
                         ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-                        return PartialView("InspectPopup", null);
+                        return PartialView("InspectPopup", im);
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
-                        ViewBag.PlanProgrameId = parentId;
-                        ViewBag.TacticDetail = null;
-                        return PartialView("_InspectPopupImprovementTactic", null);
+                        im.PlanProgramId = parentId;
+                        
+                        return PartialView("_InspectPopupImprovementTactic", im);
                     }
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
                     {
-                        ViewBag.tacticId = parentId;
-                        ViewBag.TacticDetail = null;
+                        im.PlanTacticId = parentId;
+                        
                         ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-                        return PartialView("_InspectPopupLineitem", null);
+                        return PartialView("_InspectPopupLineitem", im);
                     }
                 }
-
-                // To get permission status for Add/Edit Actual, By dharmraj PL #519
-                ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
-
+                
+               
                 //// Added by Pratik Chauhan for functional review points
 
-                #region "Initialize variables"
-                Plan_Campaign_Program_Tactic objPlan_Campaign_Program_Tactic = null;
-                Plan_Campaign_Program objPlan_Campaign_Program = null;
-                Plan_Campaign objPlan_Campaign = null;
-                Plan_Improvement_Campaign_Program_Tactic objPlan_Improvement_Campaign_Program_Tactic = null;
-                Plan_Campaign_Program_Tactic_LineItem objPlan_Campaign_Program_Tactic_LineItem = null;
-                bool IsPlanEditable = false;
-                bool IsPlanCreateAll = false;
-                bool IsOwner = false;
-
-
-                #endregion
+               
 
                 //// load section wise data to ViewBag.
                 if (Convert.ToString(section) != "")
@@ -7258,8 +7288,7 @@ namespace RevenuePlanner.Controllers
 
                     //Verify that existing user has created activity or it has subordinate permission and activity owner is subordinate of existing user
                     bool IsTacticAllowForSubordinates = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
-                    List<Guid> lstSubordinatesIds = new List<Guid>();
-                    if (IsTacticAllowForSubordinates)
+                    if (IsTacticAllowForSubordinates || Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Plan).ToLower())
                     {
                         lstSubordinatesIds = Common.GetAllSubordinates(Sessions.User.UserId);
                     }
@@ -7267,7 +7296,7 @@ namespace RevenuePlanner.Controllers
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Tactic).ToLower())
                     {
                         objPlan_Campaign_Program_Tactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId.Equals(id)).FirstOrDefault();
-                        ViewBag.PlanId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                        
 
                         if (IsPlanCreateAllAuthorized)
                         {
@@ -7297,8 +7326,9 @@ namespace RevenuePlanner.Controllers
                             IsPlanEditable = true;
                         }
 
-                        ViewBag.CampaignId = objPlan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
-                        ViewBag.PlanProgrameId = objPlan_Campaign_Program_Tactic.PlanProgramId;
+                        
+                        // To get permission status for Add/Edit Actual, By dharmraj PL #519
+                        ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
 
                         //// if Tactic status based on Function CheckAfterApprovedStatus
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign_Program_Tactic.Status))
@@ -7319,7 +7349,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
                     {
                         objPlan_Campaign_Program = db.Plan_Campaign_Program.Where(pcpobjw => pcpobjw.PlanProgramId.Equals(id)).FirstOrDefault();
-                        ViewBag.PlanId = objPlan_Campaign_Program.Plan_Campaign.PlanId;
+                        
 
                         if (IsPlanCreateAllAuthorized)
                         {
@@ -7347,7 +7377,7 @@ namespace RevenuePlanner.Controllers
                             IsPlanEditable = true;
                         }
 
-                        ViewBag.CampaignId = objPlan_Campaign_Program.PlanCampaignId;
+                        
                         if (Common.CheckAfterApprovedStatus(objPlan_Campaign_Program.Status))
                         {
                             if (todaydate > objPlan_Campaign_Program.StartDate && todaydate < objPlan_Campaign_Program.EndDate)
@@ -7366,7 +7396,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
                     {
                         objPlan_Campaign = db.Plan_Campaign.Where(pcpobjw => pcpobjw.PlanCampaignId.Equals(id)).FirstOrDefault();
-                        ViewBag.PlanId = objPlan_Campaign.PlanId;
+                        
 
                         if (IsPlanCreateAllAuthorized)
                         {
@@ -7413,7 +7443,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
                     {
                         objPlan_Improvement_Campaign_Program_Tactic = db.Plan_Improvement_Campaign_Program_Tactic.Where(picpobjw => picpobjw.ImprovementPlanTacticId.Equals(id)).FirstOrDefault();
-                        ViewBag.PlanId = objPlan_Improvement_Campaign_Program_Tactic.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId;
+                        
 
                         if (objPlan_Improvement_Campaign_Program_Tactic.CreatedBy.Equals(Sessions.User.UserId))
                         {
@@ -7423,11 +7453,7 @@ namespace RevenuePlanner.Controllers
                     else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
                     {
                         objPlan_Campaign_Program_Tactic_LineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcptl => pcptl.PlanLineItemId.Equals(id)).FirstOrDefault();
-                        ViewBag.LineItemId = objPlan_Campaign_Program_Tactic_LineItem.PlanLineItemId;
-                        ViewBag.LineItemTitle = objPlan_Campaign_Program_Tactic_LineItem.Title;
-                        ViewBag.PlanId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
-                        ViewBag.tacticId = objPlan_Campaign_Program_Tactic_LineItem.PlanTacticId;
-
+                        
                         if (IsPlanCreateAllAuthorized)
                         {
                             IsPlanCreateAll = true;
@@ -7458,16 +7484,12 @@ namespace RevenuePlanner.Controllers
                         {
                             ViewBag.IsOtherLineItem = false;
                         }
+                        // To get permission status for Add/Edit Actual, By dharmraj PL #519
+                        ViewBag.IsTacticActualsAddEditAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.TacticActualsAddEdit);
 
-                        ViewBag.CampaignId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
-                        ViewBag.PlanProgrameId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanProgramId;
+                       
                     }
-                    // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
-                    else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
-                    {
-                        ViewBag.PlanId = id;
-                    }
-                    // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
+                    
 
                     //// Custom Restrictions
                     if (IsPlanEditable && !IsOwner)
@@ -7546,8 +7568,7 @@ namespace RevenuePlanner.Controllers
                 {
                     IsPlanEditable = true;
                 }
-                ViewBag.IsPlanEditable = IsPlanEditable;
-                ViewBag.IsPlanCreateAll = IsPlanCreateAll;
+              
             }
             catch (Exception e)
             {
@@ -7564,67 +7585,9 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
-
-            InspectModel im = GetInspectModel(id, section, false);      //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
-            ViewBag.TacticDetail = im;
-            ViewBag.InspectPopup = TabValue;
-
-            if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
+            if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
             {
-                ViewBag.ProgramDetail = im;
-                return PartialView("_InspectPopupProgram", im);
-            }
-            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
-            {
-                ViewBag.CampaignDetail = im;
-                return PartialView("_InspectPopupCampaign", im);
-            }
-            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
-            {
-                ViewBag.CampaignDetail = im;
-                if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
-                {
-                    ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
-                }
-                else if (InspectPopupMode == Enums.InspectPopupMode.Add.ToString())
-                {
-                    ViewBag.InspectMode = Enums.InspectPopupMode.Add.ToString();
-                }
-                else
-                {
-                    ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
-                }
-                return PartialView("_InspectPopupImprovementTactic", im);
-            }
-            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
-            {
-                return PartialView("_InspectPopupLineitem");
-            }
-            // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
-            else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
-            {
-                bool IsPlanEditable = false;
-                //Get all subordinates of current user upto n level
-                var lstOwnAndSubOrdinates = new List<Guid>();
-                try
-                {
-                    lstOwnAndSubOrdinates = Common.GetAllSubordinates(Sessions.User.UserId);
-                }
-                catch (Exception e)
-                {
-                    ErrorSignal.FromCurrentContext().Raise(e);
-                    //// Flag to indicate unavailability of web service.
-                    //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                    //// Ticket: 942 Exception handeling in Gameplan.
-                    if (e is System.ServiceModel.EndpointNotFoundException)
-                    {
-                        //// Flag to indicate unavailability of web service.
-                        //// Added By: Maninder Singh Wadhva on 11/24/2014.
-                        //// Ticket: 942 Exception handeling in Gameplan.
-                        return Json(new { serviceUnavailable = Common.RedirectOnServiceUnavailibilityPage }, JsonRequestBehavior.AllowGet);
-
-                    }
-                }
+                IsPlanEditable = false;
                 // Get current user permission for edit own and subordinates plans.
                 bool IsPlanEditSubordinatesAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanEditSubordinates);
                 // To get permission status for Plan Edit, By dharmraj PL #519
@@ -7640,27 +7603,61 @@ namespace RevenuePlanner.Controllers
                 }
                 else if (IsPlanEditSubordinatesAuthorized)
                 {
-                    if (lstOwnAndSubOrdinates.Contains(im.OwnerId))
+                    if (lstSubordinatesIds.Contains(im.OwnerId))
                     {
                         IsPlanEditable = true;
                     }
                 }
+            }
+            if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
+            {
+                if (!IsPlanEditable)
+                {
+                    InspectPopupMode = Enums.InspectPopupMode.ReadOnly.ToString();
+                }
+            }
 
-                ViewBag.IsPlanEditable = IsPlanEditable;
+
+
+
+            im = GetInspectModel(id, section, false);      //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
+            im.IsPlanEditable = IsPlanEditable;
+            im.IsPlanCreateAll = IsPlanCreateAll;
+            im.InspectMode = InspectPopupMode;
+            im.InspectPopup = TabValue;
+
+            if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
+            {
+                
+                return PartialView("_InspectPopupProgram", im);
+            }
+            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
+            {
+                
+                
+                return PartialView("_InspectPopupCampaign", im);
+            }
+            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.ImprovementTactic).ToLower())
+            {
+                
+                return PartialView("_InspectPopupImprovementTactic", im);
+            }
+            else if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.LineItem).ToLower())
+            {
+                im.PlanLineitemId = objPlan_Campaign_Program_Tactic_LineItem.PlanLineItemId;
+                im.Title = objPlan_Campaign_Program_Tactic_LineItem.Title;
+               
+                im.PlanTacticId = objPlan_Campaign_Program_Tactic_LineItem.PlanTacticId;
+                im.PlanCampaignId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId;
+                im.PlanProgramId = objPlan_Campaign_Program_Tactic_LineItem.Plan_Campaign_Program_Tactic.PlanProgramId;
+
+                return PartialView("_InspectPopupLineitem", im);
+            }
+            // Start - Added by Sohel Pathan on 07/11/2014 for PL ticket #811
+            else if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
+            {
                 ViewBag.IsPlanCreateAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
-                ViewBag.PlanDetails = im;
-                if (InspectPopupMode == Enums.InspectPopupMode.ReadOnly.ToString())
-                {
-                    ViewBag.InspectMode = Enums.InspectPopupMode.ReadOnly.ToString();
-                }
-                else if (InspectPopupMode == Enums.InspectPopupMode.Edit.ToString())
-                {
-                    ViewBag.InspectMode = Enums.InspectPopupMode.Edit.ToString();
-                }
-                else
-                {
-                    ViewBag.InspectMode = "";
-                }
+                
                 return PartialView("_InspectPopupPlan", im);
             }
             // End - Added by Sohel Pathan on 07/11/2014 for PL ticket #811

@@ -2878,14 +2878,12 @@ namespace RevenuePlanner.Helpers
         {
             using (MRPEntities db = new MRPEntities())
             {
-                var lstProgram = db.Plan_Campaign.FirstOrDefault(varC => varC.PlanCampaignId == planCampaignId)
-                                                 .Plan_Campaign_Program
-                                                 .Where(varP => varP.IsDeleted == false)
-                                                 .ToList();
+                
 
                 double cost = 0;
-                /*Modified by Mitesh Vaishnav on 29/07/2014 for PL ticket #619*/
-                lstProgram.ForEach(varP => varP.Plan_Campaign_Program_Tactic.Where(varT => varT.IsDeleted == false).ToList().ForEach(varT => cost = cost + varT.Plan_Campaign_Program_Tactic_LineItem.Where(varL => varL.IsDeleted == false).Sum(varL => varL.Cost)));
+                
+                cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == planCampaignId && l.IsDeleted == false).Sum(l => l.Cost);
+                System.Diagnostics.Debug.WriteLine("Step Inspect 7.c.5.1.3 :" + DateTime.Now.ToString("o"));
 
                 return cost;
 

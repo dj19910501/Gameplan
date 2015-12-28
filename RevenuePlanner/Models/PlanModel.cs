@@ -182,6 +182,24 @@ namespace RevenuePlanner.Models
         public string AllocatedBy { get; set; }
         public double Revenue { get; set; }
         public MvcHtmlString CustomFieldHtmlContent { get; set; }
+
+        // Extra view bag variable
+        public string CalledFromBudget { get; set; }
+        public bool IsCreated { get; set; }
+        public bool RedirectType { get; set; }
+        public bool IsTacticAfterApproved { get; set; }
+        public bool ExtIntService { get; set; }
+        public string customFieldWeightage { get; set; }
+        public bool IsDiffrentStageType { get; set; }
+        public bool IsOwner { get; set; }
+        public List<TacticType> Tactics { get; set; }
+        public string Year { get; set; }
+        public double? planRemainingBudget { get; set; }
+        public bool IsTackticAddEdit { get; set; }
+        public List<SelectListValue> PlanCampaignList { get; set; }
+        public List<SelectListValue> CampaignProgramList { get; set; }
+        public List<SelectListUser> OwnerList { get; set; }
+
     }
 
     public class Plan_Campaign_Program_Tactic_LineItemModel
@@ -536,6 +554,17 @@ namespace RevenuePlanner.Models
     {
         public int Id { get; set; }
         public int Weightage { get; set; }
+    }
 
+    public class SelectListValue
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+    }
+
+    public class SelectListUser
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
     }
 }

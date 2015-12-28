@@ -1,14 +1,14 @@
 ﻿@model RevenuePlanner.Models.Inspect_Popup_Plan_Campaign_Program_TacticModel
 @using RevenuePlanner.Helpers;
 @{
-    var IsTackticAddEdit = ViewBag.IsTackticAddEdit != null ? (bool)ViewBag.IsTackticAddEdit : false;
+    var IsTackticAddEdit = Model.IsTackticAddEdit;
     //// Flag to indicate unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
-    var isCreated = ViewBag.IsCreated;
-    var Allowresubmission = ViewBag.IsOwner;//Modified By komal Rawal for #1235
+    var isCreated = Model.IsCreated;
+    var Allowresubmission = Model.IsOwner;//Modified By komal Rawal for #1235
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
-    string customFieldWeightage = ViewBag.customFieldWeightage;
+    string customFieldWeightage = Model.customFieldWeightage;
     //Modified By komal Rawal for #1235
     var resubmission = "";
     if (Allowresubmission)
@@ -99,7 +99,7 @@
 {
     <script src="~/Scripts/js/bootstrap-datepicker.js"></script>
 
-    bool ExtIntService = (bool)ViewBag.ExtIntService;
+    bool ExtIntService = Model.ExtIntService;
     // @Html.HiddenFor(model => model.PlanProgramId, new { id = "hdnPlanProgramId" })
     @Html.HiddenFor(model => model.PlanTacticId, new { id = "hdnPlanTacticId" })
     @Html.HiddenFor(model => model.PStartDate, new { id = "hdnPStartDate" })
@@ -120,7 +120,7 @@
                     @if (IsTackticAddEdit && !isCreated)
                     {
 
-                        @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)ViewBag.PlanCampaignList, "PlanCampaignId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Parent Campaign" })
+                        @Html.DropDownListFor(model => model.PlanCampaignId, new SelectList((System.Collections.IEnumerable)Model.PlanCampaignList, "Id", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlcampaign", label = "Parent Campaign" })
 
                     }
                     else
@@ -134,7 +134,7 @@
                     @if (IsTackticAddEdit && !isCreated)
                     {
                         <span style="min-width: 100%; position: relative; display: block;">
-                            @Html.DropDownListFor(model => model.PlanProgramId, new SelectList((System.Collections.IEnumerable)ViewBag.CampaignProgramList, "PlanProgramId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlProgram", label = "Parent Program" })
+                            @Html.DropDownListFor(model => model.PlanProgramId, new SelectList((System.Collections.IEnumerable)Model.CampaignProgramList, "Id", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlProgram", label = "Parent Program" })
                         </span>
                     }
                     else
@@ -150,7 +150,7 @@
         <div class="span3 no_margin_top" id="inspect-modal-left-column2">
             <p>Tactic Type <span class="required-asterisk">*</span></p>
             <span style="min-width: 100%; position: relative; display: block;">
-                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)ViewBag.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
+                @Html.DropDownListFor(model => model.TacticTypeId, new SelectList((System.Collections.IEnumerable)Model.Tactics, "TacticTypeId", "Title"), "Please Select", new { @class = "ddlStyle" + resubmission + "editable-dropdown hide", require = "true", Id = "ddlTacticType", label = "Tactic_Type" })
             </span>
             <p class="margin-top-10">Tactic Planned Cost</p>
             @Html.TextBoxFor(model => model.Cost, new { @class = "input-small truncate currency_dollar input-setup", id = "TacticCost", maxlength = @RevenuePlanner.Helpers.Common.maxLengthDollar })
@@ -178,7 +178,7 @@
             @if (IsTackticAddEdit)
             {
                 <span style="min-width: 100%; position: relative; display: block;">
-                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)ViewBag.OwnerList, "UserId", "DisplayName"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
+                    @Html.DropDownListFor(model => model.OwnerId, new SelectList((System.Collections.IEnumerable)Model.OwnerList, "Id", "Name"), "Please Select", new { @class = "ddlStyle resubmission editable-dropdown hide", require = "true", Id = "ddlOwner", label = "Owner" })
                 </span>
             }
             else
@@ -204,7 +204,7 @@
                 <div class="margin-right10 pull-left" style="width: 47%">
                     <label id="lblStageTitle" title="@Model.StageTitle" class="stage-title inspect-bolder-label">@Model.StageTitle &nbsp;</label>
 
-                    @if (ViewBag.IsDiffrentStageType == true)
+                    @if (Model.IsDiffrentStageType == true)
                     {
                         <span>
                             <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
@@ -627,7 +627,7 @@
           var arrClosedTaskString = null;
           var _customFieldValues = [];
           var _resubmissionLabelValues = [];
-          hdnYear = @ViewBag.Year
+          hdnYear = @Model.Year
 
 
           $("#btnCancel").on("click", function (e) {

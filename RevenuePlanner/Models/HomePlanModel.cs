@@ -169,6 +169,14 @@ namespace RevenuePlanner.Models
         public double Budget { get; set; }
         public string AllocatedBy { get; set; }
         public string TacticCustomName { get; set; }
+
+        public bool IsPlanEditable { get; set; }
+        public bool IsPlanCreateAll { get; set; }
+        public string InspectMode { get; set; }
+        public string InspectPopup { get; set; }
+        public string RedirectType { get; set; }
+
+        public int PlanLineitemId { get; set; }
     }
 
     public class InspectReviewModel

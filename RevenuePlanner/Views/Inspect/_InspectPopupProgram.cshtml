@@ -1,44 +1,40 @@
-﻿@using RevenuePlanner.Helpers;
+﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers;
 @{
-    var popupvalue = (string)ViewBag.InspectPopup;
-    var RedirectType = (string)ViewBag.RedirectType;
-    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
-    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
-    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
-}
-@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
-@{
-    var planProgramId = 0;
-    var programStatus = "";
-    string colorCode = "C6EBF3";
-    string programTitle = "";
-    var campaignId=Convert.ToString(ViewBag.CampaignId);
-    RevenuePlanner.Models.InspectModel programMaster=null;
-    if (ViewBag.ProgramDetail != null)
+    RevenuePlanner.Models.InspectModel programMaster = null;
+    if (Model != null)
     {
-    programMaster = (RevenuePlanner.Models.InspectModel)ViewBag.ProgramDetail;
-    planProgramId = programMaster.PlanProgramId;
-    programStatus = programMaster.Status;
-    colorCode = programMaster.ColorCode;
-    programTitle = programMaster.ProgramTitle;
-    TempData["ProgramModel"] = programMaster;
+        programMaster = Model;
     }
-    bool IsPlanEditable = false;
-    if (ViewBag.IsPlanEditable != null)
-    {
-        IsPlanEditable =(bool)ViewBag.IsPlanEditable;
-    }
-    
-    bool IsPlanCreateAll = false;
-    if (ViewBag.IsPlanCreateAll != null)
-    {
-        IsPlanCreateAll = (bool)ViewBag.IsPlanCreateAll;
-    }
-   
-    
+    var RedirectType = (string)programMaster.RedirectType;
+        var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+        bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+        var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
+
+        var planProgramId = 0;
+        var programStatus = "";
+        string colorCode = "C6EBF3";
+        string programTitle = "";
+        var campaignId = Convert.ToString(programMaster.PlanCampaignId);
+        
+        bool IsPlanEditable = false;
+        bool IsPlanCreateAll = false;
+        var popupvalue = string.Empty;
+        string InspectMode = string.Empty;
+        if (programMaster != null)
+        {
+            planProgramId = programMaster.PlanProgramId;
+            programStatus = programMaster.Status;
+            colorCode = programMaster.ColorCode;
+            programTitle = programMaster.ProgramTitle;
+            TempData["ProgramModel"] = programMaster;
+            IsPlanEditable = (bool)programMaster.IsPlanEditable;
+            IsPlanCreateAll = (bool)programMaster.IsPlanCreateAll;
+            popupvalue = (string)programMaster.InspectPopup;
+            InspectMode = programMaster.InspectMode;
+        }
+
         //Added By komal Rawal For #1325 - To maintain the mode on tab change after review
-        string InspectMode = ViewBag.InspectMode;
         string ProgramOpt = "";
         if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
         {
@@ -48,10 +44,10 @@
         {
             ProgramOpt = "Edit";
         }
+        //End
 
-    //End
-
-}
+    }
+@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Hidden("hdnPlanProgramId", planProgramId, new { id = "hdnPlanProgramId" })
 @Html.Hidden("hdnProgramStatus", programStatus, new { id = "hdnProgramStatus" })
 @Html.Hidden("hdnProgramOpt", ProgramOpt, new { id = "hdnProgramOpt" })
@@ -83,7 +79,7 @@
     <div class="headefix">
 
         <h2 class="title-simple source-sans-prolight">
-            @if (programMaster != null)
+            @if (programMaster.PlanProgramId != 0)
             {
                 
                 <span>
@@ -94,8 +90,8 @@
                         </div>
                     }
 
-                      @if(IsPlanCreateAll)
-                    {
+                      @if (IsPlanCreateAll)
+                      {
                     <div style="float: right; position: relative;">
                         <span class="add-icon-white btn-blue btn-large" style="display: block; cursor: pointer; margin-right: 10px;" id="AddForm"></span>
                         <div class="btn-dropdwn" style="display: none; position: absolute; top: 40px;z-index:1;" id="popupnewprogram">
@@ -109,7 +105,7 @@
                     @if (IsPlanEditable)
                     {
                        <span class="edit-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px;cursor:pointer;"></span>
-                       //  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
+                        //  @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "edit-icon-white btn-blue btn-large",style="margin-right:10px;" })
                     }
 
 
@@ -118,7 +114,7 @@
              
             }
 
-            @if (programMaster == null)
+            @if (programMaster.PlanProgramId == 0)
             {
                 <span class="Save-icon-white btn-blue btn-large" href="#" id="EditProgram" style="margin-right: 15px; cursor:pointer;"></span>
                @* @Html.ActionLink(" ", "Assortment", "Plan", new { campaignId = programMaster.PlanCampaignId, programId = programMaster.PlanProgramId, tacticId = 0, EditObject = "Program", ismsg = "" }, new { @id = "EditProgram", @class = "Save-icon-white btn-blue btn-large",style="margin-right:10px;" })*@
@@ -144,7 +140,7 @@
                 </h2>
             </div>
 </form>
-@if (programMaster!=null)
+@if (programMaster.PlanProgramId != 0)
 {
 <div class="modal-popup-summary">
     <div id="nl-form" class="nl-form nl-form-modal source-sans-prolight" style="margin-bottom:0px;">
@@ -182,8 +178,8 @@
         <li class="pull-left" id="liReview">
             <a>Review</a>
         </li>
-           @if(!Sessions.IsBudgetShow)
-        {
+           @if (!Sessions.IsBudgetShow)
+           {
         <li class="pull-left" id="liBudget">
             <a>Budget</a>
         </li>
@@ -396,13 +392,8 @@
                           return false;
                       }
                       else {
-                          $("#hdnProgramOpt").val("View");
-                          loadReview(planProgramId, activeTab);
-                          $('#EditProgram').removeClass('Save-icon-white');
-                          $('#EditProgram').addClass('edit-icon-white');
-                          $('#txtProgramTitle').css('display', 'none');
-                          $('#lblProgramTitle').css('display', 'block');
-                          $("#txtProgramTitle").prop('readonly', true);
+                          $('.close-x-big-icon').trigger('click');
+                         
 
                       }
                   }
@@ -413,13 +404,8 @@
                           return false;
                       }
                       else {
-                          $("#hdnProgramOpt").val("View");
-                          loadReview(planProgramId, activeTab);
-                          $('#EditProgram').removeClass('Save-icon-white');
-                          $('#EditProgram').addClass('edit-icon-white');
-                          $('#txtProgramTitle').css('display', 'none');
-                          $('#lblProgramTitle').css('display', 'block');
-                          $("#txtProgramTitle").prop('readonly', true);
+                          $('.close-x-big-icon').trigger('click');
+                          
 
                       }
                   }
@@ -430,15 +416,8 @@
                           return false;
                       }
                       else {
-
-                          $("#hdnProgramOpt").val("View");
-                        
-                      loadReview(planProgramId, activeTab);
-                      $('#EditProgram').removeClass('Save-icon-white');
-                      $('#EditProgram').addClass('edit-icon-white');
-                      $('#txtProgramTitle').css('display', 'none');
-                      $('#lblProgramTitle').css('display', 'block');
-                      $("#txtProgramTitle").prop('readonly', true);
+                          $('.close-x-big-icon').trigger('click');
+                       
                       }
 
                   }

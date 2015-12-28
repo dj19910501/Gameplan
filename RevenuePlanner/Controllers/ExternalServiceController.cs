@@ -341,8 +341,8 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly.ToString())
                     {
-                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                         TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek), time);
                         objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                     }
                     else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly.ToString())
@@ -406,12 +406,23 @@ namespace RevenuePlanner.Controllers
         /// <param name="startDate"></param>
         /// <param name="desiredDay"></param>
         /// <returns></returns>
-        public static DateTime GetNextDateForDay(DateTime startDate, DayOfWeek desiredDay)
+        public static DateTime GetNextDateForDay(DateTime startDate, DayOfWeek desiredDay, TimeSpan timeset)
         {
             int start = (int)startDate.DayOfWeek;
+            TimeSpan todaytime = startDate.TimeOfDay;
             int target = (int)desiredDay;
-            if (target <= start)
-                target += 7;
+            int daycount = 7;
+            if (target == start)
+            {
+                if (todaytime < timeset)
+                {
+                    daycount = 0;
+                }
+            }
+            if (target >= start)
+            {
+                target += daycount;
+            }
             return startDate.AddDays(target - start);
         }
 
@@ -789,10 +800,9 @@ namespace RevenuePlanner.Controllers
                                 }
                                 objSyncFrequency.Day = null;
                                 objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
-
-                                //// Handle NextSyncDate based on Frequency.
-                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                                 TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                //// Handle NextSyncDate based on Frequency.
+                                DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek), time);
                                 objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                             }
                             else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly.ToString())
@@ -1997,7 +2007,7 @@ namespace RevenuePlanner.Controllers
                                     if (form.SyncFrequency.Time.Length == 8)
                                     {
                                         int hour = Convert.ToInt16(form.SyncFrequency.Time.Substring(0, 2));
-                                        if (form.SyncFrequency.Time.Substring(5, 2) == SyncFrequencys.PM && hour != 12)
+                                        if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour != 12)
                                             hour = hour + 12;
                                         else if (form.SyncFrequency.Time.Substring(6, 2) == SyncFrequencys.PM && hour == 12)
                                             hour = hour - 12;// Updated By Bhavesh Dobariya Date : 22 Dec 2015 Ticket : #1808
@@ -2019,8 +2029,9 @@ namespace RevenuePlanner.Controllers
                                 }
                                 else if (form.SyncFrequency.Frequency == SyncFrequencys.Weekly)
                                 {
-                                    DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                                     TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                    DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek), time);
+                                    
                                     objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                                 }
                                 else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)
@@ -2084,10 +2095,9 @@ namespace RevenuePlanner.Controllers
                                         }
                                         objSyncFrequency.Day = null;
                                         objSyncFrequency.DayofWeek = form.SyncFrequency.DayofWeek;
-
-                                        //// Handle NextSyncDate
-                                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek));
                                         TimeSpan time = (TimeSpan)objSyncFrequency.Time;
+                                        //// Handle NextSyncDate
+                                        DateTime nextDate = GetNextDateForDay(DateTime.Now, (DayOfWeek)Enum.Parse(typeof(DayOfWeek), objSyncFrequency.DayofWeek), time);
                                         objSyncFrequency.NextSyncDate = new DateTime(nextDate.Year, nextDate.Month, nextDate.Day, time.Hours, time.Minutes, time.Seconds);
                                     }
                                     else if (form.SyncFrequency.Frequency == SyncFrequencys.Monthly)

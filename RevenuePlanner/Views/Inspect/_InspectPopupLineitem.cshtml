@@ -1,54 +1,62 @@
-﻿@using RevenuePlanner.Helpers;
+﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers;
+
 @{
-    var popupvalue = (string)ViewBag.InspectPopup;
-    var RedirectType = (string)ViewBag.RedirectType;
-    var inspectMode = ViewBag.InspectMode;
-    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
-    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
-    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
+    RevenuePlanner.Models.InspectModel lineitemMaster = null;
+    if(Model != null) 
+    {
+        lineitemMaster = Model;
+    }
+     
+    var popupvalue = string.Empty;
+    var RedirectType = (string)lineitemMaster.RedirectType;
+    var inspectMode = string.Empty;
+    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == RevenuePlanner.Helpers.Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == RevenuePlanner.Helpers.Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == RevenuePlanner.Helpers.Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
     //// Flag to indicate unavailability of web service.
     //// Added By: Maninder Singh Wadhva on 11/24/2014.
     //// Ticket: 942 Exception handeling in Gameplan.
     bool isServiceUnavailable = Convert.ToBoolean(ViewBag.IsServiceUnavailable);
-    
-}
-@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
-@{
-    var planLineItemId = 0;
-    string colorCode = "C6EBF3";
-    string tacticId = Convert.ToString(ViewBag.tacticId);
-    var campaignId = Convert.ToString(ViewBag.CampaignId);
-    var planProgrameId = Convert.ToString(ViewBag.PlanProgrameId);
-
-    string lineitemTitle = "";
+    string tacticId = Convert.ToString(lineitemMaster.PlanTacticId);
+    var campaignId = string.Empty;
+    var planProgrameId = string.Empty;
     bool IsPlanEditable = false;
+    var planLineItemId = 0;
+    bool IsPlanCreateAll = false;
+    string lineitemTitle = "";
+    if(lineitemMaster != null)
+    {
+        popupvalue = lineitemMaster.InspectPopup;
+        inspectMode = lineitemMaster.InspectMode;
+        campaignId = Convert.ToString(lineitemMaster.PlanCampaignId);
+        planProgrameId = Convert.ToString(lineitemMaster.PlanProgramId);
+        IsPlanEditable = (bool)lineitemMaster.IsPlanEditable;
+        planLineItemId = lineitemMaster.PlanLineitemId;
+        lineitemTitle = lineitemMaster.Title;
+        IsPlanCreateAll = (bool)lineitemMaster.IsPlanCreateAll;
+    }
+   
+    string colorCode = "C6EBF3";
     bool IsOtherLineItem = false;
-
     if (ViewBag.IsOtherLineItem != null)
     {
         IsOtherLineItem = (bool)ViewBag.IsOtherLineItem;
     }
-
-    if (ViewBag.IsPlanEditable != null)
+    string LineitemOpt = "";
+    if (inspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
     {
-        IsPlanEditable = (bool)ViewBag.IsPlanEditable;
+        LineitemOpt = "View";
     }
-    if (ViewBag.LineItemId != null)
+    else
     {
-        planLineItemId = ViewBag.LineItemId;
-        lineitemTitle = ViewBag.LineItemTitle;
-    }
-    bool IsPlanCreateAll = false;
-    if (ViewBag.IsPlanCreateAll != null)
-    {
-        IsPlanCreateAll = (bool)ViewBag.IsPlanCreateAll;
+        LineitemOpt = "Edit";
     }
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
 }
-
+@Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
 @Html.Hidden("hdnPlanLineItemID", planLineItemId, new { id = "hdnPlanLineItemID" })
-@Html.Hidden("hdnLineitemOpt", "View", new { id = "hdnLineitemOpt" })
+@Html.Hidden("hdnLineitemOpt", LineitemOpt, new { id = "hdnLineitemOpt" })
 @Html.Hidden("hdnRedirectType", RedirectType, new { id = "hdnRedirectType" })
 <style type="text/css">
     #successMessageViewCampaign, #errorMessageEditCampaign
@@ -514,13 +522,8 @@
               return false;
           }
           else {
-              $("#hdnLineitemOpt").val("View");
-              loadReview(PlanLineItemId, activeTab);
-              $('#btnEditlineItem').removeClass('Save-icon-white');
-              $('#btnEditlineItem').addClass('edit-icon-white');
-              $('#txtTitle').css('display', 'none');
-              $('#lblLineitemTitle').css('display', 'block');
-              $("#txtTitle").prop('readonly', true);
+              $('.close-x-big-icon').trigger('click');
+            
           }
       }
 
@@ -530,13 +533,8 @@
               return false;
           }
           else {
-              $("#hdnLineitemOpt").val("View");
-              loadReview(PlanLineItemId, activeTab);
-              $('#btnEditlineItem').removeClass('Save-icon-white');
-              $('#btnEditlineItem').addClass('edit-icon-white');
-              $('#txtTitle').css('display', 'none');
-              $('#lblLineitemTitle').css('display', 'block');
-              $("#txtTitle").prop('readonly', true);
+              $('.close-x-big-icon').trigger('click');
+            
 
           }
       }
@@ -556,14 +554,8 @@
               return false;
           }
           else {
-              $("#hdnLineitemOpt").val("View");
-              loadReview(PlanLineItemId, activeTab);
-              $('#btnEditlineItem').removeClass('Save-icon-white');
-              $('#btnEditlineItem').addClass('edit-icon-white');
-              $('#txtTitle').css('display', 'none');
-              $('#lblLineitemTitle').css('display', 'block');
-              $("#txtTitle").prop('readonly', true);
-
+              $('.close-x-big-icon').trigger('click');
+            
           }
 
       }

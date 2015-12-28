@@ -1,69 +1,74 @@
-﻿@using RevenuePlanner.Helpers;
+﻿@model RevenuePlanner.Models.InspectModel
+@using RevenuePlanner.Helpers;
 @{
-    var popupvalue = (string)ViewBag.InspectPopup;
-    var RedirectType = (string)ViewBag.RedirectType;
-    var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
-    bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
-    var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
-}
+    RevenuePlanner.Models.InspectModel tacticMaster = null;
+    if (Model != null)
+    {
+        tacticMaster = Model;
+    }
+    var RedirectType = (string)tacticMaster.RedirectType;
+        var RedirectTypeMode = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.ApplyToCalendar.ToString() ? true : false) : false);
+        bool isIndex = (bool)(!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Index.ToString() ? true : false) : true);
+        var CalledFromBudget = (!string.IsNullOrEmpty(RedirectType) ? (RedirectType == Enums.InspectPopupRequestedModules.Budgeting.ToString() ? "Budegting" : "") : "");
+
+        var TacticTitle = "";
+        var Status = "";
+        var PlanTacticId = 0;
+        var IsResubmitableStatus = false;
+        bool IsPlanEditable = false;
+
+       
+
+        var PlanProgramId = tacticMaster.PlanProgramId;
+        var colorCode = "";
+        string RequestedModule = RedirectType;
+        if (tacticMaster != null)
+        {
+            TempData["TacticModel"] = tacticMaster;
+        }
+
+        bool IsPlanCreateAll = false;
+        var popupvalue = "";
+        var campaignId = "";
+        string InspectMode = "";
+        if (tacticMaster != null)
+        {
+            IsPlanEditable = (bool)tacticMaster.IsPlanEditable;
+            IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
+            TacticTitle = tacticMaster.TacticTitle;
+            PlanTacticId = tacticMaster.PlanTacticId;
+            Status = tacticMaster.Status;
+            colorCode = tacticMaster.ColorCode;
+            popupvalue = (string)tacticMaster.InspectPopup;
+            campaignId = Convert.ToString(tacticMaster.PlanCampaignId);
+            IsPlanCreateAll = (bool)tacticMaster.IsPlanCreateAll;
+            InspectMode = tacticMaster.InspectMode;
+        }
+        else
+        {
+            if (tacticMaster.PlanProgramId != 0)
+            {
+                PlanProgramId = tacticMaster.PlanProgramId;
+            }
+        }
+
+        bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
+
+        //Added By komal Rawal For #1213 - To maintain the mode on tab change after review
+        string ProgramOpt = "";
+        if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
+        {
+            ProgramOpt = "View";
+        }
+        else
+        {
+            ProgramOpt = "Edit";
+        }
+        //End
+    }
+
 
 @Html.Hidden("hdnPopup", popupvalue, new { id = "hdnInspectPopup" })
-@*<buttom class="close-x-big-icon" data-dismiss="modal" aria-hidden="true"></buttom>*@
-@{
-    var TacticTitle = "";
-    var Status = "";
-    var PlanTacticId = 0;
-    var IsResubmitableStatus = false;
-    bool IsPlanEditable = false;
-    var campaignId = Convert.ToString(ViewBag.CampaignId);
-    var tacticMaster = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
-    var PlanProgramId = ViewBag.PlanProgrameId;
-    var colorCode = "";
-    string RequestedModule = (ViewBag.RedirectType != "") ? ViewBag.RedirectType : "";
-    if (tacticMaster != null)
-    {
-        TempData["TacticModel"] = tacticMaster;
-    }
-
-    bool IsPlanCreateAll = false;
-    if (ViewBag.IsPlanCreateAll != null)
-    {
-        IsPlanCreateAll = (bool)ViewBag.IsPlanCreateAll;
-    }
-
-    if (ViewBag.TacticDetail != null)
-    {
-        IsPlanEditable = (bool)ViewBag.IsPlanEditable;
-        IsResubmitableStatus = (bool)Common.CheckAfterApprovedStatus(tacticMaster.Status);
-        TacticTitle = tacticMaster.TacticTitle;
-        PlanTacticId = tacticMaster.PlanTacticId;
-        Status = tacticMaster.Status;
-        colorCode = tacticMaster.ColorCode;
-    }
-    else
-    {
-        if (ViewBag.PlanProgrameId != null)
-        {
-            PlanProgramId = ViewBag.PlanProgrameId;
-        }
-    }
-
-    bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
-    string InspectMode = ViewBag.InspectMode;
-    //Added By komal Rawal For #1213 - To maintain the mode on tab change after review
-    string ProgramOpt = "";
-    if (InspectMode == Enums.InspectPopupMode.ReadOnly.ToString())
-    {
-        ProgramOpt = "View";
-    }
-    else
-    {
-        ProgramOpt = "Edit";
-    }
-    //End
-}
-
-
 @Html.Hidden("hdnPlanTacticId", PlanTacticId, new { id = "hdnPlanTacticId" })
 @Html.Hidden("hdnTacticStatus", Status, new { id = "hdnTacticStatus" })
 @Html.Hidden("hdnTacticBudgetAllocationOpt", ProgramOpt, new { id = "hdnTacticBudgetAllocationOpt" })
@@ -146,7 +151,7 @@
                     @Html.TextBox("txtTitle1", "", new { @style = "display:none", id = "txtTitle" })
                 </h2>
             </div>
-            @if (tacticMaster != null && !string.IsNullOrEmpty(tacticMaster.TacticCustomName))
+            @if (tacticMaster.PlanTacticId != 0 && !string.IsNullOrEmpty(tacticMaster.TacticCustomName))
             {
                 <div class="Machine-Name">
                     <span>External Name: </span>
@@ -395,16 +400,8 @@
                           return false;
                       }
                       else {
-
-                          $("#hdnTacticBudgetAllocationOpt").val("View");
-                          planTacticId = $("#hdnPlanTacticId").val();
-                          InspectMode = "@Enums.InspectPopupMode.Edit.ToString()";
-                          loadReview(planTacticId, activeTab);
-                          $('#EditForm').removeClass('Save-icon-white');
-                          $('#EditForm').addClass('edit-icon-white');
-                          $('#txtTacticTitle').css('display', 'none');
-                          $('#lblTacticTitle').css('display', 'block');
-                          $("#lblTacticTitle").removeAttr("style");
+                          $('.close-x-big-icon').trigger('click');
+                        
                       }
                   }
 
@@ -414,13 +411,8 @@
                           return false;
                       }
                       else {
-                          $("#hdnTacticBudgetAllocationOpt").val("View");
-                          loadReview(planTacticId, activeTab);
-                          $('#EditForm').removeClass('Save-icon-white');
-                          $('#EditForm').addClass('edit-icon-white');
-                          $('#txtTacticTitle').css('display', 'none');
-                          $('#lblTacticTitle').css('display', 'block');
-                          $("#lblTacticTitle").removeAttr("style");
+                          $('.close-x-big-icon').trigger('click');
+                          
                       }
                   }
 
@@ -440,13 +432,8 @@
                           return false;
                       }
                       else {
-                          $("#hdnTacticBudgetAllocationOpt").val("View");
-                          loadReview(planTacticId, activeTab);
-                          $('#EditForm').removeClass('Save-icon-white');
-                          $('#EditForm').addClass('edit-icon-white');
-                          $('#txtTacticTitle').css('display', 'none');
-                          $('#lblTacticTitle').css('display', 'block');
-                          $("#lblTacticTitle").removeAttr("style");
+                          $('.close-x-big-icon').trigger('click');
+                        
                       }
                   }
 
@@ -458,14 +445,8 @@
                       }
                       else {
 
-
-                          $("#hdnTacticBudgetAllocationOpt").val("View");
-                          loadReview(planTacticId, activeTab);
-                          $('#EditForm').removeClass('Save-icon-white');
-                          $('#EditForm').addClass('edit-icon-white');
-                          $('#txtTacticTitle').css('display', 'none');
-                          $('#lblTacticTitle').css('display', 'block');
-                          $("#lblTacticTitle").removeAttr("style");
+                          $('.close-x-big-icon').trigger('click');
+                          
                       }
                   }
               }
