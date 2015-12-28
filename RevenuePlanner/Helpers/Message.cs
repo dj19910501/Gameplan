@@ -2467,6 +2467,33 @@ namespace RevenuePlanner.Helpers
             }
         }
         ////End - Added by Dashrath Prajapati for PL ticket #1776
+        //Added By Komal Rawal for #1749
+        private string _SavePresetSuccess;
+        public string SavePresetSuccess
+        {
+            get
+            {
+                return _SavePresetSuccess;
+            }
+            set
+            {
+                _SavePresetSuccess = value;
+            }
+        }
+
+        private string _ProvidePresetName;
+        public string ProvidePresetName
+        {
+            get
+            {
+                return _ProvidePresetName;
+            }
+            set
+            {
+                _ProvidePresetName = value;
+            }
+        }
+       //End
         #endregion
 
         #region  Functions
@@ -3247,6 +3274,14 @@ namespace RevenuePlanner.Helpers
                                             _CloneEntityMetaDataErrorMessage = strMsgValue;
                                             break;
                                         ////End - Added by Dashrath Prajapati for PL ticket #1776
+                                        ////Start - Added by Komal Rawal for PL ticket #1779
+                                        case "SavePresetSuccess":
+                                            _SavePresetSuccess = strMsgValue;
+                                            break;
+                                        case "ProvidePresetName":
+                                            _ProvidePresetName = strMsgValue;
+                                            break;
+                                        ////End - Added by Komal Rawal for PL ticket #1779
                                     }
                                 }
                                 i = i + 1;

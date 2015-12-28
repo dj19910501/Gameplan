@@ -152,11 +152,27 @@ namespace RevenuePlanner.Controllers
             //
             var LastSetOfPlanSelected = new List<string>();
             var Label = Enums.FilterLabel.Plan.ToString();
-            var SetOfPlanSelected = db.Plan_UserSavedViews.Where(i => i.FilterName == Label && i.Userid == Sessions.User.UserId && i.ViewName == null).Select(i => i.FilterValues).FirstOrDefault();
-            if (SetOfPlanSelected != null)
+            var FilterName = Sessions.FilterPresetName;
+            var SetOfPlanSelected = db.Plan_UserSavedViews.Where(Saveview => Saveview.FilterName == Label && Saveview.Userid == Sessions.User.UserId).ToList();
+            var FinalSetOfPlanSelected = "";
+            if (FilterName != null && FilterName != "")
             {
-                LastSetOfPlanSelected = SetOfPlanSelected.Split(',').ToList();
+                FinalSetOfPlanSelected = SetOfPlanSelected.Where(Saveview => Saveview.ViewName == FilterName).Select(Saveview => Saveview.FilterValues).FirstOrDefault();
             }
+            else
+            {
+                FinalSetOfPlanSelected = SetOfPlanSelected.Where(Saveview => Saveview.IsDefaultPreset == true).Select(Saveview => Saveview.FilterValues).FirstOrDefault();
+                if (FinalSetOfPlanSelected == null)
+                {
+                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(Saveview => Saveview.ViewName == null).Select(Saveview => Saveview.FilterValues).FirstOrDefault();
+                }
+
+            }
+            if (FinalSetOfPlanSelected != null)
+            {
+                LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
+            }
+
 
             // activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
             ViewBag.ViewPlan = lstPlan.Select(plan => new PlanListModel

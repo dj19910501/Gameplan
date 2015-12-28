@@ -14,15 +14,15 @@
         {
             <li style="cursor:pointer" id="@filter.Id">
 
-                <input id="chkdefaultpreset_@filter.Name" type="checkbox" />
-                @*@if (filter.isdefaultpreset)
+                @*// <input id="chkdefaultpreset_@filter.Name" type="checkbox" style="float:left; margin-right:5px" />*@
+                @if (filter.IsDefaultPreset == true)
                     {
-                            <input id="chkdefaultpreset_@filter.name" type="checkbox" checked="checked" style="float:left; margin-right:5px" />
+                    <input id="chkdefaultpreset_@filter.Name" type="checkbox" checked="checked"  />
                     }
-                    else
-                    {
-                            <input id="chkdefaultpreset_@filter.name" type="checkbox" style="float:left; margin-right:5px" />
-                        }*@
+                     else
+                {
+                    <input id="chkdefaultpreset_@filter.Name" type="checkbox" />
+                }
                 <span title='@filter.Name'>@filter.Name</span>
                 <a onclick="DeletePreset('@filter.Name',this)"><i class="fa fa-close"></i></a>
             </li>
@@ -31,15 +31,15 @@
 
 
     <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnProceed" onclick="LoadSelectedFilter()" />
-    <input type="button" class="btn btn-link" title="Cancel" title="Cancel" value="Cancel" id="btnCancel" onclick="CancelPreset()" />
+    <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnCancel" onclick="CancelSavePreset()" />
     <div style="margin-bottom: 10px" id="NoPreset">No preset found.</div>
-    <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular back-btn" title="Cancel" title="Back" value="Back" id="btnBack" onclick="CancelPreset()" />
+    <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular back-btn"  title="Back" value="Back" id="btnBack" onclick="CancelSavePreset()" />
 
 </div>
 <script>
     $(document).ready(function () {
 
-        debugger;
+  
         if ('@Model.Count' > 0) {
             $('div[id=NoPreset]').each(function () {
                 if ($(this).is(':visible'))
@@ -93,13 +93,13 @@
     });
 
     //Added by Komal Rawal for #1749
-    function CancelPreset() {
-        $("#content_SaveFilters").css("display", "none");
-        $("#DefaultFilters").css("display", "none");
-        $("#PlanModulesSection").css("display", "block");
-        $("#Filtersidebar").css("display", "block");
-        $("#btnreportSection").css("display", "block");
-    }
+    //function CancelPreset() {
+    //    $("#content_SaveFilters").css("display", "none");
+    //    $("#DefaultFilters").css("display", "none");
+    //    $("#PlanModulesSection").css("display", "block");
+    //    $("#Filtersidebar").css("display", "block");
+    //    $("#DivButtonsHome").css("display", "block");
+    //}
 
     $('#content_2 ul li').on("click", function () {
         if ($(this).is(':visible')) {
@@ -117,10 +117,12 @@
         var chkCurrent = $(this);
         var checked = false;
         if ($(chkCurrent).is(":checked")) {
+            //$(this).addClass('active')
             checked = true;
         }
         $("input[id^='chkdefaultpreset']").each(function () {
             $(this).prop("checked", false);
+          //  $(this).removeClass('active')
         });
         var presetName = '';
         if (checked) {
@@ -168,10 +170,21 @@
                 data: { Filtername: filtername },
                 success: function (data) {
                     var PlanId = $("#CurrentPlanId").val();
+
                     var url = "";
+                    if ($("#PageTitle").val() == "Add Actuals") {
+                        var url = '@Url.Content("~/Plan/AddActual?PlanId=")' + PlanId;
+                    }
+                    else if ($("#PageTitle").val() == "Reports")
+                    {
+                        var url = '@Url.Content("~/Report/Index")'
+                    }
+                    else
+                    {
                     if ($('#ActiveMenu').val().toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                         url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Home' + '&currentPlanId=' + PlanId;
                     }
+                       
                     else {
                         if ($('#IsGridView').val() == "True") {
 
@@ -185,6 +198,7 @@
                             url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
 
                         }
+                    }
                     }
                     window.location.href = url;
 
@@ -203,7 +217,7 @@
 
     //End
     function DeletePreset(presetName, sender) {
-        debugger;
+     
         if (confirm('Are you sure you want to delete preset ' + presetName)) {
             var params = {};
             params.PresetName = presetName;
@@ -213,7 +227,7 @@
                 dataType: 'json',
                 data: $.param(params, true),
                 success: function (data) {
-                    debugger;
+                   
                     if (data.isSuccess != 'undefined' && data.isSuccess != null && data.isSuccess != 'false') {
                         var liCount = $(sender).parents('ul').find('li').length
                         $(sender).parents().closest('li').remove();
@@ -241,6 +255,15 @@
                                     $(this).show();
                             });
                         }
+
+                        $('div[id=successMessageSidebar]').each(function () {
+                            if ($(this).parent().is(':visible')) {
+                                $(this).show();
+                                $(this).find("span[id=spanSuccessMessageRole]").text(data.msg);
+                                $(this).slideDown(600);
+                                // $(this).slideDown(600).delay(3000).slideUp(600);
+                            }
+                        });
                     }
                 }
             });

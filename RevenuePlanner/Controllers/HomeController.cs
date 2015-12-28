@@ -253,10 +253,25 @@ namespace RevenuePlanner.Controllers
                 //Modified for #1750 by Komal Rawal
                 var LastSetOfPlanSelected = new List<string>();
                 var Label = Enums.FilterLabel.Plan.ToString();
-                var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
-                if (SetOfPlanSelected != null)
+                var FilterName = Sessions.FilterPresetName;
+                var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName == Label && view.Userid == Sessions.User.UserId).ToList();
+                var FinalSetOfPlanSelected = "";
+                if (FilterName != null && FilterName != "")
                 {
-                    LastSetOfPlanSelected = SetOfPlanSelected.Split(',').ToList();
+                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == FilterName).Select(View => View.FilterValues).FirstOrDefault();
+                }
+                else
+                {
+                    FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.IsDefaultPreset == true).Select(View => View.FilterValues).FirstOrDefault();
+                    if (FinalSetOfPlanSelected == null)
+                    {
+                        FinalSetOfPlanSelected = SetOfPlanSelected.Where(view => view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+                    }
+
+                }
+                if (FinalSetOfPlanSelected != null)
+                {
+                    LastSetOfPlanSelected = FinalSetOfPlanSelected.Split(',').ToList();
                 }
 
                 activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
@@ -5081,7 +5096,7 @@ namespace RevenuePlanner.Controllers
                 var LastSetOfOwners = new List<string>();
 
 
-                var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel && view.ViewName == null).Select(View => View.FilterValues).FirstOrDefault();
+            var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel).Select(View => View.FilterValues).FirstOrDefault();
                 if (SetOfOwners != null)
                 {
                     LastSetOfOwners = SetOfOwners.Split(',').ToList();
@@ -5090,7 +5105,7 @@ namespace RevenuePlanner.Controllers
                 var TTLabel = Enums.FilterLabel.TacticType.ToString();
                 var LastSetOfTacticType = new List<string>();
 
-                var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel && view.ViewName == null).Select(View => View.FilterValues).ToList();
+            var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel).Select(View => View.FilterValues).ToList();
                 if (SetOfTacticType.Count > 0)
                 {
                     if (SetOfTacticType.FirstOrDefault() != null)
@@ -5104,7 +5119,9 @@ namespace RevenuePlanner.Controllers
 
                 }
 
-                var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF") && view.ViewName == null).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
+            var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF")).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
+
+            Sessions.FilterPresetName = null;
                 return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -5114,7 +5131,7 @@ namespace RevenuePlanner.Controllers
         /// Action to save last accessed data
         /// </summary>
         /// <param name="PlanId">Plan Id and filters</param>
-        public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds)
+        public JsonResult SaveLastSetofViews(string planId, string customFieldIds, string ownerIds, string TacticTypeid, string StatusIds, string ViewName)
         {
 
 
@@ -5128,6 +5145,21 @@ namespace RevenuePlanner.Controllers
             List<string> tempFilterValues = new List<string>();
             #region "Remove previous records by userid"
             var prevCustomFieldList = objDbMrpEntities.Plan_UserSavedViews.Where(custmfield => custmfield.Userid == Sessions.User.UserId).ToList();
+            if (ViewName != null && ViewName != "")
+            {
+                var ViewNames = prevCustomFieldList.Where(custmfield => custmfield.ViewName != null).Select(name => name.ViewName).ToList();
+                if (ViewNames.Contains(ViewName))
+                {
+                    return Json(new { isSuccess = false, msg = "Given Preset name already exists" }, JsonRequestBehavior.AllowGet);
+
+                }
+
+            }
+            else
+            {
+                prevCustomFieldList = prevCustomFieldList.Where(custmfield => custmfield.ViewName == null).ToList();
+            }
+
             #endregion
 
 
@@ -5138,10 +5170,15 @@ namespace RevenuePlanner.Controllers
             {
                 Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                 objFilterValues.ViewName = null;
+                if (ViewName != null && ViewName != "")
+                {
+                    objFilterValues.ViewName = ViewName;
+                }
                 objFilterValues.FilterName = Enums.FilterLabel.Plan.ToString();
                 objFilterValues.FilterValues = planId;
                 objFilterValues.Userid = Sessions.User.UserId;
                 objFilterValues.LastModifiedDate = DateTime.Now;
+                objFilterValues.IsDefaultPreset = false;
                 NewCustomFieldData.Add(objFilterValues);
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
 
@@ -5150,10 +5187,15 @@ namespace RevenuePlanner.Controllers
             {
                 Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                 objFilterValues.ViewName = null;
+                if (ViewName != null && ViewName != "")
+                {
+                    objFilterValues.ViewName = ViewName;
+                }
                 objFilterValues.FilterName = Enums.FilterLabel.Owner.ToString();
                 objFilterValues.FilterValues = ownerIds;
                 objFilterValues.Userid = Sessions.User.UserId;
                 objFilterValues.LastModifiedDate = DateTime.Now;
+                objFilterValues.IsDefaultPreset = false;
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
                 NewCustomFieldData.Add(objFilterValues);
             }
@@ -5165,10 +5207,15 @@ namespace RevenuePlanner.Controllers
                 //}
                 Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                 objFilterValues.ViewName = null;
+                if (ViewName != null && ViewName != "")
+                {
+                    objFilterValues.ViewName = ViewName;
+                }
                 objFilterValues.FilterName = Enums.FilterLabel.TacticType.ToString();
                 objFilterValues.FilterValues = TacticTypeid;
                 objFilterValues.Userid = Sessions.User.UserId;
                 objFilterValues.LastModifiedDate = DateTime.Now;
+                objFilterValues.IsDefaultPreset = false;
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
                 NewCustomFieldData.Add(objFilterValues);
             }
@@ -5182,10 +5229,15 @@ namespace RevenuePlanner.Controllers
                     //}
                     Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                     objFilterValues.ViewName = null;
+                    if (ViewName != null && ViewName != "")
+                    {
+                        objFilterValues.ViewName = ViewName;
+                    }
                     objFilterValues.FilterName = Enums.FilterLabel.Status.ToString();
                     objFilterValues.FilterValues = StatusIds;
                     objFilterValues.Userid = Sessions.User.UserId;
                     objFilterValues.LastModifiedDate = DateTime.Now;
+                    objFilterValues.IsDefaultPreset = false;
                     objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
                     NewCustomFieldData.Add(objFilterValues);
                 }
@@ -5218,10 +5270,15 @@ namespace RevenuePlanner.Controllers
                         {
                             objFilterValues = new Plan_UserSavedViews();
                             objFilterValues.ViewName = null;
+                            if (ViewName != null && ViewName != "")
+                            {
+                                objFilterValues.ViewName = ViewName;
+                            }
                             objFilterValues.FilterName = "CF" + "_" + customField.Split('_')[0];
                             objFilterValues.FilterValues = customField.Split('_')[1];
                             objFilterValues.Userid = Sessions.User.UserId;
                             objFilterValues.LastModifiedDate = DateTime.Now;
+                            objFilterValues.IsDefaultPreset = false;
                             FilterNameTemp = "";
                             FilterNameTemp += "CF" + "_" + customField.Split('_')[0].ToString();
                             Previousval = "";
@@ -5245,6 +5302,16 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
+            if (ViewName != null)
+            {
+
+
+                objDbMrpEntities.SaveChanges();
+            }
+            else
+            {
+
+
             var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
             var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
             if (isCheckinPrev == true || isCheckinNew == true)
@@ -5259,8 +5326,48 @@ namespace RevenuePlanner.Controllers
                     objDbMrpEntities.SaveChanges();
                 }
             }
+            }
+
             #endregion
             //End
+         return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
+        } 
+
+  /// <summary>
+        /// To Set the default filter
+        /// Addded By komal Rawal for 1749
+        /// </summary>
+        /// <param name="PresetName"></param>
+        /// <returns></returns>
+        public ActionResult SaveDefaultPreset(string PresetName)
+        {
+            PresetName = Convert.ToString(PresetName).TrimStart();
+            PresetName = Convert.ToString(PresetName).TrimEnd();
+            PresetName = Convert.ToString(PresetName).Trim();
+            var ListOfUserViews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).ToList();
+            var ResetFlagList = ListOfUserViews.Where(view => view.IsDefaultPreset == true).ToList();
+            ResetFlagList.ForEach(s => s.IsDefaultPreset = false);
+            if (!string.IsNullOrEmpty(PresetName))
+            {
+                ListOfUserViews = ListOfUserViews.Where(name => name.ViewName == PresetName).ToList();
+                ListOfUserViews.ForEach(s => s.IsDefaultPreset = true);
+              
+            }
+            objDbMrpEntities.SaveChanges();
+
+
+            return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// To Set filter name in sessions
+        /// Addded By komal Rawal for 1749
+        /// </summary>
+        /// <param name="PresetName"></param>
+        /// <returns></returns>
+        public JsonResult SetFilterPresetName(string Filtername)
+        {
+            Sessions.FilterPresetName = Filtername;
             return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
 
@@ -5278,16 +5385,16 @@ namespace RevenuePlanner.Controllers
                 PresetName = Convert.ToString(PresetName).TrimEnd();
                 PresetName = Convert.ToString(PresetName).Trim();
 
-                List<int> lstViewID = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == Sessions.User.UserId && x.ViewName == PresetName).Select(x => x.Id).ToList();
+                var lstViewID = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Userid == Sessions.User.UserId && x.ViewName == PresetName).ToList();
                 if (lstViewID != null)
                 {
-                    foreach (int id in lstViewID)
+                    foreach (var item in lstViewID)
                     {
-                        Plan_UserSavedViews planToDelete = objDbMrpEntities.Plan_UserSavedViews.Where(x => x.Id == id).SingleOrDefault();
+                        Plan_UserSavedViews planToDelete = lstViewID.Where(x => x.Id == item.Id).SingleOrDefault();
                         objDbMrpEntities.Plan_UserSavedViews.Remove(planToDelete);
                     }
                     objDbMrpEntities.SaveChanges();
-                    return Json(new { isSuccess = true }, JsonRequestBehavior.AllowGet);
+                    return Json(new { isSuccess = true, msg = "Preset " + PresetName + " deleted successfuly" }, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {

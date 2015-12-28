@@ -173,30 +173,30 @@
 		<Name>ModelTacticEditSucess</Name>
 		<value>Model Tactic {0} modified successfully.</value>
 	</Field>
-  <!--Commented by Rahul shah on 24/11/2015 for PL 1764.-->
-  <!--start-->
-
-  <!--<Field>
+	<!--Commented by Rahul shah on 24/11/2015 for PL 1764.-->
+	<!--start-->
+	<!--
+<Field>
 		<Name>StartDateCurrentYear</Name>
 		<value>Start date must be selected of current plan year.</value>
 	</Field>
 	<Field>
 		<Name>EndDateCurrentYear</Name>
 		<value>End date must be selected of current plan year.</value>
-	</Field>-->
-  <!--end-->
-
-  <!--Added by Rahul shah on 24/11/2015 for PL 1764.-->
-  <!--start-->
-  <Field>
-    <Name>StartDateCurrentYear</Name>
-    <value>Start date must be selected of {0} or {1} year.</value>
-  </Field>
-  <Field>
-    <Name>EndDateCurrentYear</Name>
-    <value>End date must be selected of {0} or {1} year.</value>
-  </Field>
-  <!--end-->
+	</Field>
+	-->
+	<!--end-->
+	<!--Added by Rahul shah on 24/11/2015 for PL 1764.-->
+	<!--start-->
+	<Field>
+		<Name>StartDateCurrentYear</Name>
+		<value>Start date must be selected of {0} or {1} year.</value>
+	</Field>
+	<Field>
+		<Name>EndDateCurrentYear</Name>
+		<value>End date must be selected of {0} or {1} year.</value>
+	</Field>
+	<!--end-->
 	<Field>
 		<Name>NoTacticFound</Name>
 		<value>No tactic found.</value>
@@ -924,46 +924,60 @@
 		<value>I use marketing to generate leads annually from my website, blogs and social media efforts with an average deal size of #MarketingDealSize.</value>
 	</Field>
 	<!--End Added by Mitesh Vaishnav for PL ticket #1215-->
-  <!--start Added by Viral Kadiya for PL ticket #1220-->
-  <Field>
-    <Name>RevenueSparklineChartHeader</Name>
-    <value>Top {0} by</value>
-  </Field>
-  <!--start Added by Viral Kadiya for PL ticket #1220-->
-<!--start Added by Viral Kadiya for PL ticket #1748-->
-  <Field>
-    <Name>CloneEntityErrorMessage</Name>
-    <value>A {0} can only be moved into a {1}. Please try again.</value>
-  </Field>
-  <!--End Added by Viral Kadiya for PL ticket #1748-->
-  <!--start Added by Viral Kadiya for PL ticket #1748-->
-  <Field>
-    <Name>ExceptionErrorMessage</Name>
-    <value>Error occurred while copying data.</value>
-  </Field>
-  <!--End Added by Viral Kadiya for PL ticket #1748-->
-  <!--start Added by Viral Kadiya for PL ticket #1748-->
-  <Field>
-    <Name>TacticTypeConflictMessage</Name>
-    <value>Copy process cannot proceed due to source and destination plan uses different Tactic Type. Please check Tactic Type under Model.</value>
-  </Field>
-  <!--end Added by Viral Kadiya for PL ticket #1748-->
- <!--start Added by Viral Kadiya for PL ticket #1748-->
-  <Field>
-    <Name>CloneEntitySuccessMessage</Name>
-    <value>{0} {1} has been copied to {2}.</value>
-  </Field>
-  <!--End Added by Viral Kadiya for PL ticket #1748-->
-  <!--start Added by Dashrath Prajapati for PL ticket #1776-->
-  <Field>
-    <Name>CloneEntityNoneSelectiontMessage</Name>
-    <value>Please select Task Name.</value>
-  </Field>
-  <!--End Added by Dashrath Prajapati for PL ticket #1776-->
-  <!--start Added by Dashrath Prajapati for PL ticket #1776-->
-  <Field>
-    <Name>CloneEntityMetaDataMessage</Name>
-    <value>Some META Data will be lost if this plan uses a different model.</value>
-  </Field>
-  <!--End Added by Dashrath Prajapati for PL ticket #1776-->
+	<!--start Added by Viral Kadiya for PL ticket #1220-->
+	<Field>
+		<Name>RevenueSparklineChartHeader</Name>
+		<value>Top {0} by</value>
+	</Field>
+	<!--start Added by Viral Kadiya for PL ticket #1220-->
+	<!--start Added by Viral Kadiya for PL ticket #1748-->
+	<Field>
+		<Name>CloneEntityErrorMessage</Name>
+		<value>A {0} can only be moved into a {1}. Please try again.</value>
+	</Field>
+	<!--End Added by Viral Kadiya for PL ticket #1748-->
+	<!--start Added by Viral Kadiya for PL ticket #1748-->
+	<Field>
+		<Name>ExceptionErrorMessage</Name>
+		<value>Error occurred while copying data.</value>
+	</Field>
+	<!--End Added by Viral Kadiya for PL ticket #1748-->
+	<!--start Added by Viral Kadiya for PL ticket #1748-->
+	<Field>
+		<Name>TacticTypeConflictMessage</Name>
+		<value>Copy process cannot proceed due to source and destination plan uses different Tactic Type. Please check Tactic Type under Model.</value>
+	</Field>
+	<!--end Added by Viral Kadiya for PL ticket #1748-->
+	<!--start Added by Viral Kadiya for PL ticket #1748-->
+	<Field>
+		<Name>CloneEntitySuccessMessage</Name>
+		<value>{0} {1} has been copied to {2}.</value>
+	</Field>
+	<!--End Added by Viral Kadiya for PL ticket #1748-->
+	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
+	<Field>
+		<Name>CloneEntityNoneSelectiontMessage</Name>
+		<value>Please select Task Name.</value>
+	</Field>
+	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
+	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
+	<Field>
+		<Name>CloneEntityMetaDataMessage</Name>
+		<value>Some META Data will be lost if this plan uses a different model.</value>
+	</Field>
+	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
+	<!--start Added by Komal Rawal for PL ticket #1779-->
+	<Field>
+		<Name>SavePresetSuccess</Name>
+		<value>Preset Saved Successfully</value>
+	</Field>
+	<Field>
+		<Name>SavePresetSuccess</Name>
+		<value>Preset Saved Successfully</value>
+	</Field>
+	<Field>
+		<Name>ProvidePresetName</Name>
+		<value>Please provide preset name</value>
+	</Field>
+	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
 </Messages>

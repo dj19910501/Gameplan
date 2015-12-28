@@ -11,6 +11,7 @@
     //// Modified By Maninder Singh Wadhva PL Ticket#47
     bool isImprovement = Convert.ToBoolean(ViewBag.IsImprovement);
     int CurrentPlanId = Sessions.PlanId;/*changed by Nirav for plan consistency on 14 apr 2014*/
+    string  FilterName = Sessions.FilterPresetName;
     bool IsPlanCreateAuthorized = (bool)ViewBag.IsPlanCreateAuthorized;
     bool IsTacticActualsAddEditAuthorized = (bool)ViewBag.IsTacticActualsAddEditAuthorized;
     bool IsPlanEditable = (bool)ViewBag.IsPlanEditable; //Added By Komal Rawal for new homepage UI
@@ -50,6 +51,7 @@
 @Html.Hidden("hdnIsImprovement", isImprovement)
 @Html.Hidden("CurrentPlanId", CurrentPlanId)
 @Html.Hidden("IsGridView", IsGridView)
+@Html.Hidden("FilterName", FilterName)
 @Html.Hidden("IsTacticActualsAddEditAuthorized", IsTacticActualsAddEditAuthorized)
 
 <link href="@Url.Content("~/Content/css/dhtmlxchart_1.css")" rel="stylesheet" type="text/css" />
@@ -608,7 +610,9 @@
             $dropdown.append($html);
         }
 
+
     </script>
+
         <!--success message-->
     <div class="save-filter">
     <!--error message-->
@@ -1525,6 +1529,7 @@
     //End
     var isFiltered = false;
     var IsUpdate = false;
+    var SavePresetValue = false;
     function UpdateResult() {
         IsUpdate = true;
         // added by devanshi for #1431
@@ -1565,11 +1570,14 @@
         else {
             UpdateCalenderView();
         }
-
-        SaveLastSetofViews()
+        if (SavePresetValue == false)
+        {
+            SaveLastSetofViews();
+        }
+        SavePresetValue = false;
     }
     var IsPlanChange = false;
-    function SaveLastSetofViews() {
+    function SaveLastSetofViews(ViewName) {
 
         filters.customFieldIds = [];
 
@@ -1685,9 +1693,43 @@
                 ownerIds: OwnerIds.toString(),
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: filters.StatusIds.toString(),
+                ViewName: ViewName
+
             },
             dataType: "json",
             success: function (data) {
+                if (data.isSuccess == true) {
+
+
+                    if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
+                        $("#content_SaveFilters").css("display", "none");
+                        $("#PlanModulesSection").css("display", "block");
+                        $("#Filtersidebar").css("display", "block");
+                        $("#errorMessageMainSidebar").css("display", "none");
+                        $('div[id=successMessageSidebar]').each(function () {
+                            if ($(this).parent().is(':visible')) {
+                                $(this).show();
+                                $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
+                                $(this).slideDown(600);
+                                // $(this).slideDown(600).delay(3000).slideUp(600);
+                            }
+                        });
+
+                        $("#txtPresetName").val('');
+                    }
+                }
+                else {
+                    $("#successMessageSidebar").css("display", "none");
+                    $('div[id=errorMessageMainSidebar]').each(function () {
+                        if ($(this).parent().is(':visible')) {
+                            $(this).show();
+                            $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
+                            $(this).slideDown(600);
+                            // $(this).slideDown(600).delay(3000).slideUp(600);
+                        }
+                    });
+
+                }
             }
 
         })
@@ -3296,7 +3338,8 @@
         }
         GetTacticTypelist(planids);
         GetOwnerListForFilter(planids);
-        GetLastSetofViews();
+      //  alert($('#FilterName').val());
+        GetLastSetofViews($('#FilterName').val());
 
         if ($('#IsGridView').val() == "True") {
             $("#CalenderView").hide();
@@ -5891,11 +5934,11 @@
         OwnerIds: [],
         TacticTypeIds: []
     }
-    function GetLastSetofViews() {
+    function GetLastSetofViews(presetName) {
         $.ajax({
             type: 'POST',
             url: '@Url.Action("LastSetOfViews", "Home")',
-            data: {},
+            data: { PresetName: presetName },
             dataType: "json",
             async: false,
             success: function (data) {
@@ -6793,6 +6836,37 @@ function () {
         var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
         $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
     } 
+    function SaveAsPreset() {
+
+        var IsAnyPlanSelected = $('#ulSelectedPlans').find("li").hasClass("close-list");
+        var IsAnyCustomFieldSelected = $('#divCustomFieldsFilter').find("li").hasClass("close-list");
+        var IsAnyTTSelected = $('#ulTacticType').find("li").hasClass("close-list");
+        var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
+        if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected) {
+            alert('Please select atleast one filter');
+            return false;
+        }
+        else {
+            $("#content_SaveFilters").css("display", "block");
+            $("#PlanModulesSection").css("display", "none");
+            $("#Filtersidebar").css("display", "none");
+        }
+
+    }
+
+    function ClearAllPreset() {
+        BulkPlanOperation(false);
+        BulkTTOperation(false);
+        BulkStatusOperation(false);
+        $('#divCustomFieldsFilter').find("li").each(function (i) {
+            $(this).removeClass("close-list");
+            var chkid = $(this).find("input[type=checkbox]").attr("id");
+            $("#" + chkid).removeAttr("checked");
+        });
+
+
+    }
+
  function LoadPreset() {
         var isLoadPreset = true;
         $.ajax({
@@ -6817,14 +6891,40 @@ function () {
             }
 
         });
-        //GetLastSetofViews(isLoadPreset);
+        $("#successMessageSidebar").css("display", "none");
         $("#DefaultFilters").css("display", "block");
         $("#PlanModulesSection").css("display", "none");
         $("#Filtersidebar").css("display", "none");
         //  $("#displaydata").css("display", "none");
 
     }  
+
+    function SavePreset() {
+      
+        var ViewName = $("#txtPresetName").val();
+        if (ViewName == null || ViewName == "" ) {
+            $("#successMessageSidebar").css("display", "none");
+            $('div[id=errorMessageMainSidebar]').each(function () {
+                  if ($(this).parent().is(':visible')) {
+                $(this).show();
+                $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
+                $(this).slideDown(600);
+                // $(this).slideDown(600).delay(3000).slideUp(600);
+                 }
+            });
+        }
+        else {
+            SavePresetValue = true;
+            SaveLastSetofViews(ViewName);
+            UpdateResult();
+        }
+
+
+    }
+
     function CancelSavePreset() {
+        $("#errorMessageMainSidebar").css("display", "none");
+        $("#successMessageSidebar").css("display", "none");
         $("#content_SaveFilters").css("display", "none");
         $("#DefaultFilters").css("display", "none");
         $("#PlanModulesSection").css("display", "block");

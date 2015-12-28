@@ -7,9 +7,11 @@
     int CurrentPlanId = ViewBag.PlanId;
     var ListBudgetingPlan = Model.objplanhomemodelheader.plans; //Modified for new homepage UI
     var IsQuarter = ViewBag.IsQuarter;
+    string FilterName = Sessions.FilterPresetName;
     var PageTitle = "Add Actuals";
 }
 @Html.Hidden("PageTitle", PageTitle)
+@Html.Hidden("FilterName", FilterName)
 @section nlFormContent{
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/default.css")" type="text/css" />
     <link rel="stylesheet" href="@Url.Content("~/Content/css/NaturalLanguageForm/component.css")" type="text/css" />
@@ -344,7 +346,7 @@
         onClickPlanTitle();
         GetOwnerListForFilter(CurrentPlanId, false);
         GetTacticTypelist(CurrentPlanId, false);
-        GetLastSetofViews();
+        GetLastSetofViews($('#FilterName').val());
          CallAjax();
     });//document ready
 
@@ -492,12 +494,12 @@
 }
 
 
-    function GetLastSetofViews() {
+    function GetLastSetofViews(presetName) {
 
         $.ajax({
             type: 'POST',
             url: '@Url.Action("LastSetOfViews", "Home")',
-            data: {},
+            data: { PresetName: presetName },
             dataType: "json",
             async: false,
             success: function (data) {
@@ -592,7 +594,7 @@
 
     }
 
-    function SaveLastSetofViews() {
+    function SaveLastSetofViews(ViewName) {
         filters.customFieldIds = [];
 
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
@@ -648,9 +650,42 @@
                 ownerIds: OwnerIds.toString(),
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: "AddActual",
+                ViewName: ViewName
             },
             dataType: "json",
             success: function (data) {
+                if (data.isSuccess == true) {
+
+
+                    if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
+                        $("#content_SaveFilters").css("display", "none");
+                        $("#DivButtonsHome").css("display", "block");
+                        $("#Filtersidebar").css("display", "block");
+                        $("#errorMessageMainSidebar").css("display", "none");
+                        $('div[id=successMessageSidebar]').each(function () {
+                            if ($(this).parent().is(':visible')) {
+                                $(this).show();
+                                $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
+                                $(this).slideDown(600);
+                                // $(this).slideDown(600).delay(3000).slideUp(600);
+                            }
+                        });
+
+                        $("#txtPresetName").val('');
+                    }
+                }
+                else {
+                    $("#successMessageSidebar").css("display", "none");
+                    $('div[id=errorMessageMainSidebar]').each(function () {
+                        if ($(this).parent().is(':visible')) {
+                            $(this).show();
+                            $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
+                            $(this).slideDown(600);
+                            // $(this).slideDown(600).delay(3000).slideUp(600);
+                        }
+                    });
+
+                }
             }
 
         })
@@ -1609,9 +1644,14 @@
         }
     }
 
+    var SavePresetValue = false;
     function UpdateResult() {
+        if (SavePresetValue == false)
+        {
         SaveLastSetofViews();
+        }
         displayConfirmCommon("CallAjax();");
+        SavePresetValue = false;
         //CallAjax();
     }
 
@@ -1695,9 +1735,38 @@
         }
     }
 
-    
+    function SaveAsPreset() {
 
-     @*Added by Rahul Shah for Pl #1837*@
+        var IsAnyPlanSelected = $('#ulSelectedPlans').find("li").hasClass("close-list");
+        var IsAnyCustomFieldSelected = $('#divCustomFieldsFilter').find("li").hasClass("close-list");
+        var IsAnyTTSelected = $('#ulTacticType').find("li").hasClass("close-list");
+        var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
+        if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected) {
+            alert('Please select atleast one filter');
+            return false;
+        }
+        else {
+            $("#content_SaveFilters").css("display", "block");
+            $("#DivButtonsHome").css("display", "none");
+            $("#Filtersidebar").css("display", "none");
+
+
+        }
+
+    }
+
+    function ClearAllPreset() {
+        BulkPlanOperation(false);
+        BulkTTOperation(false);
+        BulkStatusOperation(false);
+        $('#divCustomFieldsFilter').find("li").each(function (i) {
+            $(this).removeClass("close-list");
+            var chkid = $(this).find("input[type=checkbox]").attr("id");
+            $("#" + chkid).removeAttr("checked");
+        });
+
+
+    }
 
     function LoadPreset() {
 
@@ -1732,9 +1801,32 @@
 
     }
 
-  
+    function SavePreset() {
+
+        var ViewName = $("#txtPresetName").val();
+        if (ViewName == null || ViewName == "") {
+            $("#successMessageSidebar").css("display", "none");
+            $('div[id=errorMessageMainSidebar]').each(function () {
+                if ($(this).parent().is(':visible')) {
+                    $(this).show();
+                    $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
+                    $(this).slideDown(600);
+                    // $(this).slideDown(600).delay(3000).slideUp(600);
+                }
+            });
+        }
+        else {
+            SavePresetValue = true;
+            SaveLastSetofViews(ViewName);
+            UpdateResult()
+        }
+
+
+    }
 
     function CancelSavePreset() {
+        $("#errorMessageMainSidebar").css("display", "none");
+        $("#successMessageSidebar").css("display", "none");
         $("#content_SaveFilters").css("display", "none");
         $("#DefaultFilters").css("display", "none");
         $("#DivButtonsHome").css("display", "block");

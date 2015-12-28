@@ -1308,7 +1308,7 @@ namespace RevenuePlanner.Test.Controllers
 
             string Status = string.Join(",", lststatus);
 
-            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status) as JsonResult;
+            var result = objHomeController.SaveLastSetofViews(CommaSeparatedPlanId, CommaSeparatedCustomFields, Ownerids, tactictypeids, Status,"") as JsonResult;
             if (result != null)
             {
                 //// ViewResult shoud not be null and should match with viewName

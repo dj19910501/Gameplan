@@ -411,5 +411,21 @@ namespace RevenuePlanner.Helpers
             }
         }
 
+        public static string FilterPresetName
+        {
+            get
+            {
+                if (HttpContext.Current.Session["FilterPresetName"] != null)
+                {
+                    return (string)HttpContext.Current.Session["FilterPresetName"];
+                }
+                return null;
+            }
+            set
+            {
+                HttpContext.Current.Session["FilterPresetName"] = value;
+            }
+        }
+
     }
 }

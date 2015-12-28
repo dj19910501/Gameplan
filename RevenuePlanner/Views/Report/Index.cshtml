@@ -9,12 +9,15 @@
     var ViewCustomFields = (List<RevenuePlanner.Models.CustomField>)ViewBag.ViewCustomFields;
     var ViewCustomFieldOptions = (List<RevenuePlanner.Models.CustomFieldOption>)ViewBag.ViewCustomFieldOptions;
     // End - Added by Arpita Soni on 01/19/2015 for Ticket #1148 
-    
+    string FilterName = Sessions.FilterPresetName;
     string _monthly = Enums.ViewByAllocated.Monthly.ToString();
     string _quarterly =  Enums.ViewByAllocated.Quarterly.ToString();
     ViewBag.Title = "Summary";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var PageTitle = "Reports";
 }
+@Html.Hidden("PageTitle", PageTitle)
+@Html.Hidden("FilterName", FilterName)
 @Scripts.Render("~/bundles/GetJSReport")
 <link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.mCustomScrollbar.css")" type="text/css" />
 <style type="text/css">
@@ -722,7 +725,7 @@
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,false);
         GetTacticTypelist(PlanIds, false);
-        GetLastSetofViews();
+        GetLastSetofViews($('#FilterName').val());
         GetselectionFilter();
         $("#DivShareReport").hide();
         GetFilterIdForPlan(multiselectPlanId);
@@ -737,11 +740,11 @@
         NumberFormatterTipsyTitle(".tipsyclassTitle", 27);
     });
 
-    function GetLastSetofViews() {
+    function GetLastSetofViews(presetName) {
         $.ajax({
             type: 'POST',
             url: '@Url.Action("LastSetOfViews", "Home")',
-            data: {},
+            data: { PresetName: presetName },
             dataType: "json",
             async: false,
             success: function (data) {
@@ -830,7 +833,7 @@
 
     }
 
-    function SaveLastSetofViews() {
+    function SaveLastSetofViews(ViewName) {
         filters.customFieldIds = [];
 
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
@@ -883,9 +886,42 @@
                 ownerIds: OwnerIds.toString(),
                 TacticTypeid: TacticTypeids.toString(),
                 StatusIds: "Report",
+                ViewName: ViewName
             },
             dataType: "json",
             success: function (data) {
+                if (data.isSuccess == true) {
+
+
+                    if (data.ViewName != null && data.ViewName != "" && data.ViewName != undefined) {
+                        $("#content_SaveFilters").css("display", "none");
+                        $("#btnreportSection").css("display", "block");
+                        $("#Filtersidebar").css("display", "block");
+                        $("#errorMessageMainSidebar").css("display", "none");
+                        $('div[id=successMessageSidebar]').each(function () {
+                            if ($(this).parent().is(':visible')) {
+                                $(this).show();
+                                $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
+                                $(this).slideDown(600);
+                                // $(this).slideDown(600).delay(3000).slideUp(600);
+                            }
+                        });
+
+                        $("#txtPresetName").val('');
+                    }
+                }
+                else {
+                    $("#successMessageSidebar").css("display", "none");
+                    $('div[id=errorMessageMainSidebar]').each(function () {
+                        if ($(this).parent().is(':visible')) {
+                            $(this).show();
+                            $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
+                            $(this).slideDown(600);
+                            // $(this).slideDown(600).delay(3000).slideUp(600);
+                        }
+                    });
+
+                }
             }
 
         })
@@ -1352,6 +1388,8 @@
         });
 
         //// handle update button event
+
+        var SavePresetValue = false;
         $('#updatedata').click(function () {
 
             var arrOptionIds = new Array();
@@ -1421,9 +1459,14 @@
                         }
             }
 
-                    SaveLastSetofViews();
+                   
                 }
             });
+           
+            if (SavePresetValue == false) {
+                    SaveLastSetofViews();
+                }
+            SavePresetValue = false;
         });
 
 function OnYearChange(_yearli) {
@@ -2235,8 +2278,38 @@ $("#BtnShareReport").click(function () {
         }
     //End:- Combination Chart Script
 
-        
-      @*Added by Rahul Shah for Pl #1837*@
+        function SaveAsPreset() {
+
+            var IsAnyPlanSelected = $('#ulSelectedPlans').find("li").hasClass("close-list");
+            var IsAnyCustomFieldSelected = $('#divCustomFieldsFilter').find("li").hasClass("close-list");
+            var IsAnyTTSelected = $('#ulTacticType').find("li").hasClass("close-list");
+            var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
+            if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected) {
+                alert('Please select atleast one filter');
+                return false;
+            }
+            else {
+                $("#content_SaveFilters").css("display", "block");
+                $("#btnreportSection").css("display", "none");
+                $("#Filtersidebar").css("display", "none");
+
+
+            }
+
+        }
+
+        function ClearAllPreset() {
+            BulkPlanOperation(false);
+            BulkTTOperation(false);
+            BulkStatusOperation(false);
+            $('#divCustomFieldsFilter').find("li").each(function (i) {
+                $(this).removeClass("close-list");
+                var chkid = $(this).find("input[type=checkbox]").attr("id");
+                $("#" + chkid).removeAttr("checked");
+            });
+
+
+        }
 
         function LoadPreset() {
 
@@ -2271,9 +2344,34 @@ $("#BtnShareReport").click(function () {
 
         }
 
-      
+        function SavePreset() {
+
+            var ViewName = $("#txtPresetName").val();
+            if (ViewName == null || ViewName == "") {
+                $("#successMessageSidebar").css("display", "none");
+                $('div[id=errorMessageMainSidebar]').each(function () {
+                    if ($(this).parent().is(':visible')) {
+                        $(this).show();
+                        $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
+                        $(this).slideDown(600);
+                        // $(this).slideDown(600).delay(3000).slideUp(600);
+                    }
+                });
+            }
+            else {
+                SavePresetValue = true;
+                SaveLastSetofViews(ViewName);
+                $('#updatedata').click();
+
+              
+            }
+
+
+        }
 
         function CancelSavePreset() {
+        $("#errorMessageMainSidebar").css("display", "none");
+        $("#successMessageSidebar").css("display", "none");
             $("#content_SaveFilters").css("display", "none");
             $("#DefaultFilters").css("display", "none");
             $("#btnreportSection").css("display", "block");
