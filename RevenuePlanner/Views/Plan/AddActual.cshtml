@@ -667,8 +667,8 @@
                             if ($(this).parent().is(':visible')) {
                                 $(this).show();
                                 $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
-                                $(this).slideDown(600);
-                                // $(this).slideDown(600).delay(3000).slideUp(600);
+                               // $(this).slideDown(600);
+                               $(this).slideDown(600).delay(3000).slideUp(600);
                             }
                         });
 
@@ -681,8 +681,8 @@
                         if ($(this).parent().is(':visible')) {
                             $(this).show();
                             $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
-                            $(this).slideDown(600);
-                            // $(this).slideDown(600).delay(3000).slideUp(600);
+                           // $(this).slideDown(600);
+                            $(this).slideDown(600).delay(3000).slideUp(600);
                         }
                     });
 
@@ -1812,8 +1812,8 @@
                 if ($(this).parent().is(':visible')) {
                     $(this).show();
                     $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
-                    $(this).slideDown(600);
-                    // $(this).slideDown(600).delay(3000).slideUp(600);
+                   // $(this).slideDown(600);
+                    $(this).slideDown(600).delay(3000).slideUp(600);
                 }
             });
         }
