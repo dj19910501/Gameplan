@@ -221,6 +221,7 @@ namespace Integration.Helper
             Status,
             TacticType,
             Title,
+            PlanName,
             Other
         }
         public static Dictionary<string, string> ActualFieldDatatype = new Dictionary<string, string>()
@@ -236,6 +237,7 @@ namespace Integration.Helper
             {Enums.ActualFields.Status.ToString(),"string,text"},
             {Enums.ActualFields.TacticType.ToString(),"string,text"},
             {Enums.ActualFields.Title.ToString(),"string,text"},
+            {Enums.ActualFields.PlanName.ToString(),"string,text"},
             {Enums.ActualFields.Other.ToString(),"string,text"}
 };
         public enum SFDCGlobalFields
