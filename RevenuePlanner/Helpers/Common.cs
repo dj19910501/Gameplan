@@ -2878,15 +2878,9 @@ namespace RevenuePlanner.Helpers
         {
             using (MRPEntities db = new MRPEntities())
             {
-                
-
                 double cost = 0;
-                
-                cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == planCampaignId && l.IsDeleted == false).Sum(l => l.Cost);
-                System.Diagnostics.Debug.WriteLine("Step Inspect 7.c.5.1.3 :" + DateTime.Now.ToString("o"));
-
+                cost = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == planCampaignId && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                 return cost;
-
             }
         }
 
