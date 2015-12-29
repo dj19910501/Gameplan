@@ -10566,8 +10566,8 @@ li.close-list {
 .error-msg-filter .alert{
     margin:20px 20px 0;
 }
-.save-filter .sidebar-preset{
-    padding:36px 15px 22px;
+.save-filter .sidebar-preset{/*by bheru mehta 29-12-2015 #1749*/
+    padding:17px 15px 22px;
     font-family: source_sans_proregular;
 }
 .save-filter  h2 {
@@ -10575,6 +10575,7 @@ li.close-list {
   line-height: normal;
   margin-bottom: 16px;
   font-family: source_sans_proregular;
+  margin-top:-2px;/*by bheru mehta 29-12-2015 #1749*/
 }
 .save-filter label{
     font-weight:bold;
@@ -10656,8 +10657,8 @@ font-size: 20px;
   right: -8px;
 }
 .save-filter .alert {
-  margin: 20px 20px -27px;
-  padding:8px 33px 8px 14px;
+  margin: 20px 0 0;
+  padding: 8px 33px 8px 14px;
 }
 .update-result{
     width:auto;
