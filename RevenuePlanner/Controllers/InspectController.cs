@@ -7235,16 +7235,17 @@ namespace RevenuePlanner.Controllers
             {
 
                 
-                if (!string.IsNullOrEmpty(RequestedModule))
-                {
-                    im.RedirectType = RequestedModule;
-                }
+               
 
                 bool IsPlanCreateAllAuthorized = AuthorizeUserAttribute.IsAuthorized(Enums.ApplicationActivity.PlanCreate);
 
                 //// If Id is null then return section respective PartialView.
                 if (id == 0)
                 {
+                    if (!string.IsNullOrEmpty(RequestedModule))
+                    {
+                        im.RedirectType = RequestedModule;
+                    }
                     im.InspectMode = InspectPopupMode;
                     im.InspectPopup = TabValue;
                     if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Campaign).ToLower())
@@ -7590,6 +7591,8 @@ namespace RevenuePlanner.Controllers
 
                 }
             }
+            
+            im = GetInspectModel(id, section, false);      //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             if (Convert.ToString(section).Equals(Enums.Section.Plan.ToString(), StringComparison.OrdinalIgnoreCase))
             {
                 IsPlanEditable = false;
@@ -7622,14 +7625,14 @@ namespace RevenuePlanner.Controllers
                 }
             }
 
-
-
-
-            im = GetInspectModel(id, section, false);      //// Modified by :- Sohel Pathan on 27/05/2014 for PL ticket #425
             im.IsPlanEditable = IsPlanEditable;
             im.IsPlanCreateAll = IsPlanCreateAll;
             im.InspectMode = InspectPopupMode;
             im.InspectPopup = TabValue;
+            if (!string.IsNullOrEmpty(RequestedModule))
+            {
+                im.RedirectType = RequestedModule;
+            }
 
             if (Convert.ToString(section).Trim().ToLower() == Convert.ToString(Enums.Section.Program).ToLower())
             {
