@@ -2578,6 +2578,7 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.TacticDetail = _inspectmodel;
             ViewBag.IsModelDeploy = _inspectmodel.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
+            ViewBag.IsModelIntegratedWorkFront = _inspectmodel.
 
             bool isValidOwner = false;
             bool isEditable = false;
@@ -2722,7 +2723,12 @@ namespace RevenuePlanner.Controllers
             //integrationinstance11 - Push Tactic Data Eloqua
             //integrationinstance4 - Project Management
             if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance11); }
-            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) { modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4); }
+            if (pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4 != null && pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4.IsDeleted == false) 
+            { 
+                modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
+                ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
+            }
+            else{ViewBag.IsModelIntegratedWorkFront = false;} //Added 29 Dec 2015 by Brad Gray PL#1851
             ViewBag.IntegrationInstances = modelIntegrationList;
 
             //create a dictionary of each instance type name ("Salesforce", "WorkFront", etc) and the front end urls)
