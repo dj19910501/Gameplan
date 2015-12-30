@@ -220,13 +220,46 @@
    
     </div>
 
+   @if (tacticReview.IsDeployedToIntegration && (bool)ViewBag.IsModelDeploy && (bool)ViewBag.IsModelIntegratedWorkFront)
+   {
+        <ul class="nav nav-tabs new-margin clear remove-bottom-border" style="border-top: 1px solid #b2afaf">
+            <li>
+                <h4 class="source-sans-proregular">WorkFront Setup and Options</h4>
+            </li>
+        </ul>
+                    <div class="span5">
+                        <div class="cf form-group">
+                            @Html.Label("Request Queue")
+                            @Html.TextBoxFor(model => tacticReview.TacticTypeTitle, new { @class = "span10 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticReview.TacticTypeTitle })
+                        </div>
+                        <div class="cf form-group">
+                            @Html.Label("Assigned To")
+                            @Html.TextBoxFor(model => tacticReview.TacticTypeTitle, new { @class = "span10 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticReview.TacticTypeTitle })
+                        </div>
+                    </div>
+
+                    <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 border-bottom-div">
+                        <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
+                            <div class="source-sans-prosemibold">Tactic Type</div>
+                            <div>
+                                <div id="campaign-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
+                            </div>
+                        </div>
+                        <div style="float: right; width: 47%;">
+                            <div class="source-sans-prosemibold">WorkFront Template</div>
+                            <div>
+                                <div id="program-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
+                            </div>
+                        </div>
+                    </div>
+      }
 
 
 <div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
 
 
 
-            @{    
+            @{
                 //Modified By Komal Rawal for #1375
                 string Submit = "Submit for Approval";
                 string Approve = "Approve";
@@ -275,7 +308,7 @@
                     {
                         if ((bool)ViewBag.IsValidOwner)
                         {
-                            
+
                             aryStatus.Add(Submit);
                         }
                         else
@@ -308,8 +341,10 @@
                     isVisibleSyncButton = true;
                 }
 
-               /*
-                 Begin PL#1462 07 Brad Gray, Aug 2015 * */
+                /*
+                  Begin PL#1462 07 Brad Gray, Aug 2015 * */
+
+             
 
 
                 /* --Remove Sync Button Brad Gray 07 Aug 2015 PL#1462
