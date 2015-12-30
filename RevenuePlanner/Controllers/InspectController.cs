@@ -2578,7 +2578,6 @@ namespace RevenuePlanner.Controllers
 
             ViewBag.TacticDetail = _inspectmodel;
             ViewBag.IsModelDeploy = _inspectmodel.IsIntegrationInstanceExist == "N/A" ? false : true;////Modified by Mitesh vaishnav on 20/08/2014 for PL ticket #690
-            ViewBag.IsModelIntegratedWorkFront = _inspectmodel.
 
             bool isValidOwner = false;
             bool isEditable = false;
