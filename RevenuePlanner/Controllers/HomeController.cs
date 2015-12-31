@@ -894,6 +894,10 @@ namespace RevenuePlanner.Controllers
                                                     Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
                                                     GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
                                                     tacticListByViewById, lstImprovementTactic, tacticPlanId),
+                        LinkTacticPermission = ((tacticItem.objPlanTactic.EndDate.Year - tacticItem.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                        LinkedTacticId = tacticItem.objPlanTactic.LinkedTacticId
+
+
 
                     });
                 }
@@ -997,6 +1001,8 @@ namespace RevenuePlanner.Controllers
                                                     Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate, MinStartDateForPlan,
                                                     GetMaxEndDateForPlanOfCustomFields(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById)),
                                                     tacticListByViewById, lstImprovementTactic, tacticPlanId),
+                        LinkTacticPermission = ((tacticItem.objPlanTactic.EndDate.Year - tacticItem.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                        LinkedTacticId = tacticItem.objPlanTactic.LinkedTacticId
                     });
                 }
 
@@ -1211,7 +1217,9 @@ namespace RevenuePlanner.Controllers
                         lstCustomEntityId = tacticItem.customFieldTacticList.ToList(),
                         CreatedBy = tacticItem.CreatedBy,
                         PlanStartDate = MinStartDateForPlan,
-                        PlanEndDate = MaxEndDateForPlan
+                        PlanEndDate = MaxEndDateForPlan,
+                        LinkTacticPermission = ((tacticItem.tactic.objPlanTactic.EndDate.Year - tacticItem.tactic.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                        LinkedTacticId = tacticItem.tactic.objPlanTactic.LinkedTacticId
                     });
                 }
                 System.Diagnostics.Trace.WriteLine("End 1: " + DateTime.Now.Minute.ToString() + " : " + DateTime.Now.Second.ToString() + " : " + DateTime.Now.Millisecond.ToString());
@@ -1270,7 +1278,10 @@ namespace RevenuePlanner.Controllers
                 CreatedBy = tacticTask.CreatedBy,
                 PlanStartDate = tacticTask.PlanStartDate,
                 PlanEndDate = tacticTask.PlanEndDate,
-                Status = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Status
+                Status = tacticTask.Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Status,
+                LinkTacticPermission = tacticTask.LinkTacticPermission,
+                LinkedTacticId = tacticTask.LinkedTacticId
+
             }).Distinct().ToList();
 
             #region Prepare CustomField task data
@@ -1437,6 +1448,28 @@ namespace RevenuePlanner.Controllers
             #endregion
 
             #region Prepare Tactic task data
+            //Added by Komal Rawal for #1845 Link tactic to plan 
+
+            var LinkedTacticList = lstTactic.Where(list => list.objPlanTactic.LinkedTacticId != null && list.objPlanTactic.LinkedPlanId != null).ToList();
+
+            var ListOfLinkedPlanIds = LinkedTacticList.Select(list =>
+                      list.objPlanTactic.LinkedPlanId
+               ).ToList();
+
+
+            var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
+
+
+
+            var ListOfLinkedTactics = LinkedTacticList.Select(list =>
+                new
+                {
+                    TacticId = list.objPlanTactic.LinkedTacticId,
+                    PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
+
+                }
+                );
+            //End
             List<int> _PlanIds = lstTaskDetails.Select(_task => _task.PlanId).ToList();
             List<ProgressModel> _EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => _PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
             var taskDataTactic = lstTaskDetails.Select(taskdata => new
@@ -1452,7 +1485,12 @@ namespace RevenuePlanner.Controllers
                 plantacticid = taskdata.Tactic.PlanTacticId,
                 Status = taskdata.Tactic.Status,
                 TacticTypeId = taskdata.Tactic.TacticTypeId,
-                CreatedBy = taskdata.CreatedBy
+                CreatedBy = taskdata.CreatedBy,
+                LinkTacticPermission = taskdata.LinkTacticPermission,
+                LinkedTacticId = taskdata.LinkedTacticId,
+                LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(taskdata.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault()
+
+
             }).Distinct().OrderBy(t => t.text);
 
             //// Finalize Tactic task data to be render in gantt chart
@@ -1472,7 +1510,10 @@ namespace RevenuePlanner.Controllers
                 type = "Tactic",
                 TacticType = GettactictypeName(taskdata.TacticTypeId),
                 OwnerName = GetOwnerName(taskdata.CreatedBy.ToString()),
-                Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                Permission = IsPlanCreateAllAuthorized == false ? (taskdata.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(taskdata.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
+                LinkTacticPermission = taskdata.LinkTacticPermission,
+                LinkedTacticId = taskdata.LinkedTacticId,
+                LinkedPlanName = taskdata.LinkedPlanName
             }).Distinct().ToList();
             #endregion
 
@@ -1879,6 +1920,28 @@ namespace RevenuePlanner.Controllers
             // DESC:: For get default filter view after user log out #1750
             //var Label = Enums.FilterLabel.Plan.ToString();
             //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).ToList();
+          //Added by Komal Rawal for #1845 Link tactic to plan 
+            
+            var LinkedTacticList = lstTactic.Where(list => list.objPlanTactic.LinkedTacticId != null && list.objPlanTactic.LinkedPlanId != null).ToList();
+
+            var ListOfLinkedPlanIds = LinkedTacticList.Select(list =>
+                      list.objPlanTactic.LinkedPlanId
+               ).ToList();
+
+
+            var ListOfLinkedPlans = objDbMrpEntities.Plans.Where(Id => ListOfLinkedPlanIds.Contains(Id.PlanId)).Select(list => list).ToList();
+
+
+
+            var ListOfLinkedTactics = LinkedTacticList.Select(list =>
+                new
+                {
+                    TacticId = list.objPlanTactic.LinkedTacticId,
+                    PlanName = ListOfLinkedPlans.Where(l => l.PlanId == list.objPlanTactic.LinkedPlanId).Select(l => l.Title).FirstOrDefault()
+
+                }
+                );
+            //End
 
             if (IsRequest || IsFiltered) //When clicked on request tab data will be displayed in bottom up approach else top-down for ViewBy Tactic
             {
@@ -2041,6 +2104,7 @@ namespace RevenuePlanner.Controllers
                 #region Prepare Tactic Task Data
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
+
                 //// Prepare task data tactic list for gantt chart
                 var taskDataTactic = lstTactic.Select(tactic => new
                 {
@@ -2061,7 +2125,11 @@ namespace RevenuePlanner.Controllers
                     plantacticid = tactic.objPlanTactic.PlanTacticId,
                     Status = tactic.objPlanTactic.Status,
                     TacticTypeId = tactic.objPlanTactic.TacticTypeId,
-                    CreatedBy = tactic.CreatedBy
+                    CreatedBy = tactic.CreatedBy,
+                    LinkTacticPermission = ((tactic.objPlanTactic.EndDate.Year - tactic.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                    LinkedTacticId = tactic.objPlanTactic.LinkedTacticId,
+                    LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(tactic.objPlanTactic.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault()
+
                 }).OrderBy(tactic => tactic.text);
 
                 //// Finalize task data tactic list for gantt chart
@@ -2087,7 +2155,10 @@ namespace RevenuePlanner.Controllers
                     type = "Tactic",
                     TacticType = GettactictypeName(tactic.TacticTypeId),
                     OwnerName = GetOwnerName(tactic.CreatedBy.ToString()),
-                    Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                    Permission = IsPlanCreateAllAuthorized == false ? (tactic.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(tactic.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
+                    LinkTacticPermission = tactic.LinkTacticPermission,
+                    LinkedTacticId = tactic.LinkedTacticId,
+                    LinkedPlanName = tactic.LinkedPlanName
                 });
                 #endregion
 
@@ -2414,7 +2485,10 @@ namespace RevenuePlanner.Controllers
                                                                         plantacticid = _tac.objPlanTactic.PlanTacticId,
                                                                         Status = _tac.objPlanTactic.Status,
                                                                         TacticTypeId = _tac.objPlanTactic.TacticTypeId,
-                                                                        CreatedBy = _tac.CreatedBy
+                                                                        CreatedBy = _tac.CreatedBy,
+                                                                        LinkTacticPermission = ((_tac.objPlanTactic.EndDate.Year - _tac.objPlanTactic.StartDate.Year) > 0) ? true : false,
+                                                                        LinkedTacticId = _tac.objPlanTactic.LinkedTacticId,
+                                                                        LinkedPlanName = ListOfLinkedTactics.Where(id => id.TacticId.Equals(_tac.objPlanTactic.LinkedTacticId)).Select(a => a.PlanName).FirstOrDefault()
 
                                                                     }).OrderBy(_tac => _tac.text).ToList();
 
@@ -2446,7 +2520,11 @@ namespace RevenuePlanner.Controllers
                     type = "Tactic",
                     TacticType = GettactictypeName(task.TacticTypeId),
                     OwnerName = GetOwnerName(task.CreatedBy.ToString()),
-                    Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
+                    Permission = IsPlanCreateAllAuthorized == false ? (task.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(task.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized,
+                    LinkTacticPermission = task.LinkTacticPermission,
+                    LinkedTacticId = task.LinkedTacticId,
+                    LinkedPlanName = task.LinkedPlanName
+
                 });
                 #endregion
 

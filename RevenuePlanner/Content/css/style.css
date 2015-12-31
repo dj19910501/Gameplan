@@ -10672,6 +10672,31 @@ font-size: 20px;
     background-color: #73C4EE;
 }
 /*By Bheru mehta 24-12-2015 for #1749 end*/
+/*By Bheru mehta 30-12-2015 for #1843 start*/
+.unlink-icon {
+    font-size: 14px;
+    color: #000;
+    display: inline-block;
+    vertical-align: top;
+        margin-right: -4px;
+}
+.unlink-icon-grid{
+       margin-right: 4px;
+}
+.btn-dropdwn ul .link-icon {
+    padding-left: 10px;
+}
+.link-icon i {
+    font-size: 12px;
+    color: #000;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+.link-icon:hover i{
+    color:#fff;
+}
+/*By Bheru mehta 30-12-2015 for #1843 end*/
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;

@@ -738,6 +738,8 @@
           <Property Name="TacticCustomName" Type="nvarchar" MaxLength="4000" />
           <Property Name="IntegrationWorkFrontProjectID" Type="nvarchar" MaxLength="50" />
           <Property Name="IntegrationInstanceEloquaId" Type="nvarchar" MaxLength="50" />
+          <Property Name="LinkedTacticId" Type="int" />
+          <Property Name="LinkedPlanId" Type="int" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -805,6 +807,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="LinkedLineItemId" Type="int" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Actual">
           <Key>
@@ -3569,6 +3572,8 @@
           <NavigationProperty Name="Tactic_Share" Relationship="MRPModel.FK_Tactic_Share_Plan_Campaign_Program_Tactic1" FromRole="Plan_Campaign_Program_Tactic" ToRole="Tactic_Share" />
           <Property Name="IntegrationWorkFrontProjectID" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="IntegrationInstanceEloquaId" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LinkedTacticId" Type="Int32" />
+          <Property Name="LinkedPlanId" Type="Int32" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -3647,6 +3652,7 @@
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem_Actual" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Actual_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic_LineItem_Actual" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic_LineItem_Cost" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="Plan_Campaign_Program_Tactic_LineItem_Cost" />
           <NavigationProperty Name="LineItem_Budget" Relationship="MRPModel.FK_LineItem_Budget_Plan_Campaign_Program_Tactic_LineItem1" FromRole="Plan_Campaign_Program_Tactic_LineItem" ToRole="LineItem_Budget" />
+          <Property Name="LinkedLineItemId" Type="Int32" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_LineItem_Actual">
           <Key>
@@ -5715,6 +5721,8 @@
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic">
+                <ScalarProperty Name="LinkedPlanId" ColumnName="LinkedPlanId" />
+                <ScalarProperty Name="LinkedTacticId" ColumnName="LinkedTacticId" />
                 <ScalarProperty Name="IntegrationInstanceEloquaId" ColumnName="IntegrationInstanceEloquaId" />
                 <ScalarProperty Name="IntegrationWorkFrontProjectID" ColumnName="IntegrationWorkFrontProjectID" />
                 <ScalarProperty Name="TacticCustomName" ColumnName="TacticCustomName" />
@@ -5795,6 +5803,7 @@
           <EntitySetMapping Name="Plan_Campaign_Program_Tactic_LineItem">
             <EntityTypeMapping TypeName="MRPModel.Plan_Campaign_Program_Tactic_LineItem">
               <MappingFragment StoreEntitySet="Plan_Campaign_Program_Tactic_LineItem">
+                <ScalarProperty Name="LinkedLineItemId" ColumnName="LinkedLineItemId" />
                 <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
                 <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />

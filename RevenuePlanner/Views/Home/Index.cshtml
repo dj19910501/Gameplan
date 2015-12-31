@@ -1925,6 +1925,12 @@
                 gridhtml += result;
                 $("#divgridview").html('');
                 $("#divgridview").html(gridhtml);
+            
+                $("div[id^='LinkIcon']").each(function () {
+                   
+                    bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
+                });
+
                 LoadImprovementGrid(CurrentPlanId)
             }
         });
@@ -4165,6 +4171,11 @@
                             }
                             gantt.refreshData();
 
+                          
+                            $("div[id^='LinkIcon']").each(function () {
+                                
+                                bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
+                            });
                             $(".gantt_container .gantt_tree_content").each(function (index, element) {
 
                                 $(element).attr("title", htmlDecode(element.innerHTML));
@@ -4184,7 +4195,9 @@
                                 var title = $(this).attr('aria-label');
                                 var permission = $(this).attr('Permission');
                                 var linetype = $(this).attr('lineitemtype');
-                                DisplayPopUpMenu(type, name, title, permission, linetype, e);
+                                var LinkTacticPermission = $(this).attr('linktacticpermission');
+                                var LinkedTacticId = $(this).attr('linkedtacticid');
+                                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
                             });
 
@@ -4434,7 +4447,9 @@
                 var title = $(this).attr('aria-label');
                 var permission = $(this).attr('Permission');
                 var linetype = $(this).attr('lineitemtype');
-                DisplayPopUpMenu(type, name, title, permission, linetype, e);
+                var LinkTacticPermission = $(this).attr('linktacticpermission');
+                var LinkedTacticId = $(this).attr('linkedtacticid');
+                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
             });
 
@@ -4500,7 +4515,9 @@
                 var title = $(this).attr('aria-label');
                 var permission = $(this).attr('Permission');
                 var linetype = $(this).attr('lineitemtype');
-                DisplayPopUpMenu(type, name, title, permission, linetype, e);
+                var LinkTacticPermission = $(this).attr('linktacticpermission');
+                var LinkedTacticId = $(this).attr('linkedtacticid');
+                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
             });
 
@@ -5071,7 +5088,9 @@
                     var title = $(this).attr('aria-label');
                     var permission = $(this).attr('Permission');
                     var linetype = $(this).attr('lineitemtype');
-                    DisplayPopUpMenu(type, name, title, permission, linetype, e);
+                    var LinkTacticPermission = $(this).attr('linktacticpermission');
+                    var LinkedTacticId = $(this).attr('linkedtacticid');
+                    DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
                 });
 
                 var $doc = $(document);
@@ -5349,7 +5368,9 @@
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
             var linetype = $(this).attr('lineitemtype');
-            DisplayPopUpMenu(type, name, title, permission, linetype, e);
+            var LinkTacticPermission = $(this).attr('linktacticpermission');
+            var LinkedTacticId = $(this).attr('linkedtacticid');
+            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
         });
 
@@ -5684,7 +5705,9 @@
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
             var linetype = $(this).attr('lineitemtype');
-            DisplayPopUpMenu(type, name, title, permission, linetype, e);
+            var LinkTacticPermission = $(this).attr('linktacticpermission');
+            var LinkedTacticId = $(this).attr('linkedtacticid');
+            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
         });
 
@@ -6011,7 +6034,9 @@
             var title = $(this).attr('aria-label');
             var permission = $(this).attr('Permission');
             var linetype = $(this).attr('lineitemtype');
-            DisplayPopUpMenu(type, name, title, permission, linetype, e);
+            var LinkTacticPermission = $(this).attr('linktacticpermission');
+            var LinkedTacticId = $(this).attr('linkedtacticid');
+            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
         });
     });
@@ -6259,7 +6284,8 @@
 
 
 
-    function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission, linetype, e) {
+    function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission, linetype, LinkTacticPermission,LinkedTacticId, e) {
+     
         var type = typeVal;
         var name = nameVal;
         // var chk_permission = titleVal.split("/");
@@ -6359,8 +6385,19 @@
         }
 
         else if (type == "Tactic") {
+         
             if (permission == "true") {
+              
+                if (LinkTacticPermission.toLowerCase() == "true" && LinkedTacticId == "null" )
+                {
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'><i class='fa fa-link'></i>Link To</li></ul>";
+                }
+                else
+                {
+
                 ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
+
+                }
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -6876,7 +6913,9 @@ function () {
         var title = $(this).attr('aria-label');
         var permission = $(this).attr('Permission');
         var linetype = $(this).attr('lineitemtype');
-        DisplayPopUpMenu(type, name, title, permission, linetype, e);
+        var LinkTacticPermission = $(this).attr('linktacticpermission');
+        var LinkedTacticId = $(this).attr('linkedtacticid');
+        DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission,LinkedTacticId,e);
 
     });
 
@@ -6940,7 +6979,9 @@ function () {
         var title = $(this).attr('aria-label');
         var permission = $(this).attr('Permission');
         var linetype = $(this).attr('lineitemtype');
-        DisplayPopUpMenu(type, name, title, permission, linetype, e);
+        var LinkTacticPermission = $(this).attr('linktacticpermission');
+        var LinkedTacticId = $(this).attr('linkedtacticid');
+        DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
     });
 

@@ -327,7 +327,9 @@
                 //title = chk_permission[0];
                 //var permission = chk_permission[1];
                 var linetype = $(this).attr('lt');
-                DisplayPopUpMenu(type, name, title, permission,linetype, e);
+                var LinkTacticPermission = $(this).attr('linktacticper');
+                var LinkedTacticId = $(this).attr('linkedtacticid');
+                DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
 
             });
 
@@ -607,7 +609,9 @@
                 var title = $(this).parent().prev().attr('title');
                 var permission = $(this).attr('per');
                 var linetype = $(this).attr('lt');
-                DisplayPopUpMenu(type, name, title, permission,linetype, e);
+                var LinkTacticPermission = $(this).attr('linktacticper');
+                var LinkedTacticId = $(this).attr('linkedtacticid');
+                DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
             });
         });
         $('#gridbox').find('tbody tr').each(function () {
@@ -1006,7 +1010,9 @@
             //title = chk_permission[0];
             //var permission = chk_permission[1];
             var linetype = $(this).attr('lt');
-            DisplayPopUpMenu(type, name, title, permission, linetype, e);
+            var LinkTacticPermission = $(this).attr('linktacticper');
+            var LinkedTacticId = $(this).attr('linkedtacticid');
+            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
         });
         if (isCopyTacticHomeGrid != 0) {
@@ -1067,7 +1073,9 @@
                 //title = chk_permission[0];
                 //var permission = chk_permission[1];
                 var linetype = $(this).attr('lt');
-                DisplayPopUpMenu(type, name, title, permission, linetype, e);
+                var LinkTacticPermission = $(this).attr('linktacticper');
+                var LinkedTacticId = $(this).attr('linkedtacticid');
+                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
 
             });
 
@@ -1905,7 +1913,9 @@
             //title = chk_permission[0];
             //var permission = chk_permission[1];
             var linetype = $(this).attr('lt');
-            DisplayPopUpMenu(type, name, title, permission,linetype, e);
+            var LinkTacticPermission = $(this).attr('linktacticper');
+            var LinkedTacticId = $(this).attr('linkedtacticid');
+            DisplayPopUpMenu(type, name, title, permission,linetype,LinkTacticPermission,LinkedTacticId, e);
 
         });
     });
