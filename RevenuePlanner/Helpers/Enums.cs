@@ -1317,6 +1317,7 @@ namespace RevenuePlanner.Helpers
         public static string Weekly = "Weekly";
         public static string Monthly = "Monthly";
         public static string PM = "PM";
+        public static string AM = "AM";
     }
 
     public static class ActivityType
