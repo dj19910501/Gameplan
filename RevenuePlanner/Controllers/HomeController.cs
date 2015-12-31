@@ -65,7 +65,7 @@ namespace RevenuePlanner.Controllers
             bool IsPlanEditable = false;
             bool isPublished = false;
 
-        
+
 
 
             //// Set viewbag for notification email shared link inspect popup
@@ -578,7 +578,7 @@ namespace RevenuePlanner.Controllers
                     //Modified By Komal Rawal for #1505
                     // Modified By Nishant Sheth 
                     // Desc:: To resolve the #1790 observation
-                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId ).Select(tactic => tactic).ToList();
+                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
                 }
                 else
                 {
@@ -831,7 +831,7 @@ namespace RevenuePlanner.Controllers
             {
                 List<int> PlanIds = lstTactic.Select(_tac => _tac.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
-               
+
                 List<int> lstStageIds = new List<int>();
                 lstStageIds = lstTactic.Select(tac => tac.objPlanTactic.StageId).Distinct().ToList();
                 TacticStageMapping objStageTac;
@@ -865,7 +865,7 @@ namespace RevenuePlanner.Controllers
                     tacticListByViewById = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.TacticList).FirstOrDefault();
                     tacticPlanId = tacticItem.PlanId;
                     MinStartDateForCustomField = lstTacticStageMap.Where(tatic => tatic.StageId == tacticstageId).Select(tac => tac.minDate).FirstOrDefault();//GetMinStartDateStageAndBusinessUnit(lstCampaign, lstProgram, tacticListByViewById);
-                    
+
                     MinStartDateForPlan = GetMinStartDateForPlanOfCustomField(viewBy, tacticstatus, tacticstageId.ToString(), tacticPlanId, lstCampaign, lstProgram, tacticListByViewById);
 
                     EffectiveDateList = new List<DateTime>();
@@ -1101,13 +1101,13 @@ namespace RevenuePlanner.Controllers
                 var lstUniqueCustomField = lstProcessedCustomFieldTactics.Select(c => c.customFieldId).Distinct().ToList();
                 if (IsCampaign)
                 {
-                lstUniqueCustomField.ForEach(cstmId =>
-                {
-                    objStageTac = new TacticStageMapping();
-                    objStageTac.CustomFieldId = cstmId;
+                    lstUniqueCustomField.ForEach(cstmId =>
+                    {
+                        objStageTac = new TacticStageMapping();
+                        objStageTac.CustomFieldId = cstmId;
                         objStageTac.TacticList = lstTactic.Where(tactic => lstProcessedCustomFieldTactics.Where(lc => lc.customFieldId == cstmId).Select(lc => lc.customFieldTacticList).FirstOrDefault().Contains(tactic.PlanCampaignId)).Select(tactic => tactic).ToList();
-                    lstTacticStageMap.Add(objStageTac);
-                });
+                        lstTacticStageMap.Add(objStageTac);
+                    });
                 }
                 else if (IsProgram)
                 {
@@ -1131,7 +1131,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 DateTime MaxEndDateForCustomField;
-                int _PlanTacticId = 0, _PlanProgramId = 0,_TypeId = 0;
+                int _PlanTacticId = 0, _PlanProgramId = 0, _TypeId = 0;
                 List<Plan_Tactic> fltrTactic, fltrplantacic;
                 //// Prepare tactic task list for CustomField to be used in rendering of gantt chart. 
                 List<int> PlanIds = lstProcessedCustomFieldTactics.Select(_tac => _tac.tactic.PlanId).ToList();
@@ -1151,20 +1151,20 @@ namespace RevenuePlanner.Controllers
                     #region "Get CampaignIds,ProgramIds & Tactic list for Min & Max Date"
                     fltrTactic = new List<Plan_Tactic>();
                     fltrTactic = tacticListByViewById.Where(tactic => (IsCampaign ? tactic.PlanCampaignId : (IsProgram ? tactic.objPlanTactic.PlanProgramId : tactic.objPlanTactic.PlanTacticId)) == _TypeId).ToList();
-                    
+
                     #endregion
                     #region "Get Tactic,Program & Campaign MaxDate"
-                        maxDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.EndDate).Max();
-                        maxDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.EndDate).Max();
-                        maxDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.EndDate).Max();
-                        MaxEndDateForCustomField = new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
+                    maxDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.EndDate).Max();
+                    maxDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.EndDate).Max();
+                    maxDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.EndDate).Max();
+                    MaxEndDateForCustomField = new[] { maxDateTactic, maxDateProgram, maxDateCampaign }.Max();
                     #endregion
                     #region "Get Tactic,Program & Campaign MinDate"
-                        minDateTactic = new DateTime();
-                        minDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.StartDate).Min();
-                        minDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.StartDate).Min();
-                        minDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.StartDate).Min();
-                        MinStartDateForCustomField = new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
+                    minDateTactic = new DateTime();
+                    minDateTactic = fltrTactic.Select(tactic => tactic.objPlanTactic.StartDate).Min();
+                    minDateProgram = fltrTactic.Select(tactic => tactic.objPlanTacticProgram.StartDate).Min();
+                    minDateCampaign = fltrTactic.Select(tactic => tactic.objPlanTacticCampaign.StartDate).Min();
+                    MinStartDateForCustomField = new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
                     #endregion
 
                     #region "Get Min Start Date of Plan"
@@ -1221,10 +1221,10 @@ namespace RevenuePlanner.Controllers
                 {
                     lstCustomFields = (lstProcessedCustomFieldTactics.Select(tactic => tactic)).Select(tactic => new
                 {
-                        CustomFieldId = tactic.customFieldId,
+                    CustomFieldId = tactic.customFieldId,
                     Title = tactic.customFieldTitle,
                     ColorCode = TacticColor
-                    }).ToList().Distinct().Select(tactic => new CustomFields()
+                }).ToList().Distinct().Select(tactic => new CustomFields()
                     {
                         cfId = tactic.CustomFieldId.ToString(),
                         Title = tactic.Title,
@@ -1321,7 +1321,7 @@ namespace RevenuePlanner.Controllers
             {
                 id = string.Format("Z{0}_L{1}", taskdata.MainParentId, taskdata.PlanId),
                 text = taskdata.PlanTitle,
-                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate,  viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy,taskdata.MainParentId,
+                start_date = Common.GetStartDateAsPerCalendar(CalendarStartDate, viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
                             taskdata.MainParentId, taskdata.PlanId, lstCampaign, lstProgram, lstTactic, IsCampaign, IsProgram) : taskdata.PlanStartDate),
                 duration = Common.GetEndDateAsPerCalendar(CalendarStartDate, CalendarEndDate,
                                                           viewBy == "Status" ? GetMinStartDateForPlanOfCustomField(viewBy, taskdata.MainParentId,
@@ -1905,7 +1905,7 @@ namespace RevenuePlanner.Controllers
                 color = PlanColor,
                 planid = objplan.PlanId,
                 CreatedBy = objplan.CreatedBy,
-                Status = objplan.Status     
+                Status = objplan.Status
             }).Select(objplan => objplan).OrderBy(objplan => objplan.text);
 
                 //// Finalize task data plan list for gantt chart
@@ -2333,7 +2333,7 @@ namespace RevenuePlanner.Controllers
                     Status = _campgn.Status,
                     type = "Campaign",
                     TacticType = doubledesh,
-                    OwnerName = GetOwnerName( _campgn.CreatedBy.ToString()),
+                    OwnerName = GetOwnerName(_campgn.CreatedBy.ToString()),
                     Permission = IsPlanCreateAllAuthorized == false ? (_campgn.CreatedBy.Equals(Sessions.User.UserId) || lstSubordinatesIds.Contains(_campgn.CreatedBy)) ? true : false : IsPlanCreateAllAuthorized
                 });
 
@@ -3362,14 +3362,25 @@ namespace RevenuePlanner.Controllers
             CalendarStartDate = DateTime.Now;
             CalendarEndDate = DateTime.Now;
             //// Get planyear of the selected Plan
-            isNumeric = int.TryParse(strparam, out Planyear);
-            if (isNumeric)
+            if (strparam.Contains("-"))
             {
-                planYear = Convert.ToString(Planyear);
+
+                List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
+                lstActivityChartyears = getmultipleyearActivityChart(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan);
+                return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                planYear = DateTime.Now.Year.ToString();
+
+                isNumeric = int.TryParse(strparam, out Planyear);
+                if (isNumeric)
+                {
+                    planYear = Convert.ToString(Planyear);
+                }
+                else
+                {
+                    planYear = DateTime.Now.Year.ToString();
+                }
             }
             //// Set start and end date for calender
             Common.GetPlanGanttStartEndDate(planYear, strparam, ref CalendarStartDate, ref CalendarEndDate);
@@ -3427,8 +3438,11 @@ namespace RevenuePlanner.Controllers
             //List<int> lstProgramId = lstProgram.Select(program => program.PlanProgramId).ToList<int>();
 
             //// Selecte tactic(s) from selected programs
+            //var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
+            //                             campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+
             var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
-                                         campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && tactic.StartDate >= CalendarStartDate && tactic.EndDate <= CalendarEndDate).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+                                                    campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
 
             //Modified By Komal Rawal for #1447
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
@@ -3553,52 +3567,73 @@ namespace RevenuePlanner.Controllers
                     }
                     else if (strparam.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-
-                        foreach (string objDifference in differenceItems)
+                        if (startDate.Year == System.DateTime.Now.Year)
                         {
-                            monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
-                            if (monthNo == DateTime.Now.Month)
+                        //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+
+                            differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM")); 
+                            List<string> thismonthdifferenceItem = new List<string>();
+                            if (differenceItems.Count() > 12)
                             {
-                                if (monthNo == 1)
+                                thismonthdifferenceItem = differenceItems.ToList();
+                                thismonthdifferenceItem.RemoveRange(12, 12);
+                            }
+                            else
+                            {
+                                thismonthdifferenceItem = differenceItems.ToList();
+                            }
+                           
+
+
+
+                        foreach (string objDifference in thismonthdifferenceItem)
+                            {
+                                monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                if (monthNo == DateTime.Now.Month)
                                 {
-                                    monthArray[0] = monthArray[0] + 1;
-                                }
-                                else
-                                {
-                                    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                    if (monthNo == 1)
+                                    {
+                                        monthArray[0] = monthArray[0] + 1;
+                                    }
+                                    else
+                                    {
+                                        monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                    }
                                 }
                             }
                         }
                     }
                     else if (strparam.Equals(Enums.UpcomingActivities.thisquarter.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
-                        if (currentMonth == 1 || currentMonth == 2 || currentMonth == 3)
+                        if (startDate.Year == System.DateTime.Now.Year || endDate.Year == System.DateTime.Now.Year)
                         {
-                            if (startDate.Month == 1 || startDate.Month == 2 || startDate.Month == 3 || endDate.Month == 1 || endDate.Month == 2 || endDate.Month == 3)
+                            if (currentMonth == 1 || currentMonth == 2 || currentMonth == 3)
                             {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q1), startDate, endDate, monthArray);
+                                if (startDate.Month == 1 || startDate.Month == 2 || startDate.Month == 3 || endDate.Month == 1 || endDate.Month == 2 || endDate.Month == 3)
+                                {
+                                    monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q1), startDate, endDate, monthArray);
+                                }
                             }
-                        }
-                        else if (currentMonth == 4 || currentMonth == 5 || currentMonth == 6)
-                        {
-                            if (startDate.Month == 4 || startDate.Month == 5 || startDate.Month == 6 || endDate.Month == 4 || endDate.Month == 5 || endDate.Month == 6)
+                            else if (currentMonth == 4 || currentMonth == 5 || currentMonth == 6)
                             {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q2), startDate, endDate, monthArray);
+                                if (startDate.Month == 4 || startDate.Month == 5 || startDate.Month == 6 || endDate.Month == 4 || endDate.Month == 5 || endDate.Month == 6)
+                                {
+                                    monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q2), startDate, endDate, monthArray);
+                                }
                             }
-                        }
-                        else if (currentMonth == 7 || currentMonth == 8 || currentMonth == 9)
-                        {
-                            if (startDate.Month == 7 || startDate.Month == 8 || startDate.Month == 9 || endDate.Month == 7 || endDate.Month == 8 || endDate.Month == 9)
+                            else if (currentMonth == 7 || currentMonth == 8 || currentMonth == 9)
                             {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q3), startDate, endDate, monthArray);
+                                if (startDate.Month == 7 || startDate.Month == 8 || startDate.Month == 9 || endDate.Month == 7 || endDate.Month == 8 || endDate.Month == 9)
+                                {
+                                    monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q3), startDate, endDate, monthArray);
+                                }
                             }
-                        }
-                        else if (currentMonth == 10 || currentMonth == 11 || currentMonth == 12)
-                        {
-                            if (startDate.Month == 10 || startDate.Month == 11 || startDate.Month == 12 || endDate.Month == 10 || endDate.Month == 11 || endDate.Month == 12)
+                            else if (currentMonth == 10 || currentMonth == 11 || currentMonth == 12)
                             {
-                                monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q4), startDate, endDate, monthArray);
+                                if (startDate.Month == 10 || startDate.Month == 11 || startDate.Month == 12 || endDate.Month == 10 || endDate.Month == 11 || endDate.Month == 12)
+                                {
+                                    monthArray = GetQuarterWiseGraph(Convert.ToString(Enums.Quarter.Q4), startDate, endDate, monthArray);
+                                }
                             }
                         }
                     }
@@ -3645,6 +3680,437 @@ namespace RevenuePlanner.Controllers
             await Task.Delay(1);
             //// return Activity Chart list as Json Result object
             return Json(new { lstchart = lstActivityChart.ToList() }, JsonRequestBehavior.AllowGet);
+        }
+
+        private List<ActivityChart> getmultipleyearActivityChart(string strParam, string planid, string CustomFieldId, string OwnerIds, string TacticTypeids, string StatusIds, bool isMultiplePlan)
+        {
+            List<int> filteredPlanIds = new List<int>();
+            string planYear = string.Empty;
+            int Planyear = 0;
+            bool isNumeric = false;
+            List<int> campplanid = new List<int>();
+            CalendarStartDate = DateTime.Now;
+            CalendarEndDate = DateTime.Now;
+            List<Plan> planData = new List<Plan>();
+            List<int> planIds = new List<int>();
+            List<ActivityChart> lstActivityChart = new List<ActivityChart>();
+            List<ActivityChart> lstActivitybothChart = new List<ActivityChart>();
+            List<string> categories = new List<string>();
+            if (strParam.Contains("-"))
+            {
+                if (isMultiplePlan)
+                {
+                    planIds = string.IsNullOrWhiteSpace(planid) ? new List<int>() : planid.Split(',').Select(plan => int.Parse(plan)).ToList();
+                    planData = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false)).Select(a => a).ToList();
+                }
+
+                string[] multipleyear = strParam.Split('-');
+                for (int i = 0; i < multipleyear.Count(); i++)
+                {
+                    isNumeric = int.TryParse(multipleyear[i], out Planyear);
+                    if (isNumeric)
+                    {
+                        planYear = Convert.ToString(Planyear);
+                    }
+                    else
+                    {
+                        planYear = DateTime.Now.Year.ToString();
+                    }
+                    //// Set start and end date for calender
+                    Common.GetPlanGanttStartEndDate(planYear, multipleyear[i], ref CalendarStartDate, ref CalendarEndDate);
+
+                    if (isMultiplePlan)
+                    {
+                        var planList = planData.Where(plan => planIds.Contains(plan.PlanId) && plan.IsDeleted.Equals(false) && plan.Year == planYear).Select(a => a.PlanId).ToList();
+                        if (planList.Count == 0)
+                        {
+                            campplanid = objDbMrpEntities.Plan_Campaign.Where(camp => !(camp.StartDate > CalendarEndDate || camp.EndDate < CalendarStartDate) && planIds.Contains(camp.PlanId)).Select(a => a.PlanId).Distinct().ToList();
+                        }
+                        filteredPlanIds = planData.Where(plan => plan.IsDeleted == false &&
+                            campplanid.Count > 0 ? campplanid.Contains(plan.PlanId) : planIds.Contains(plan.PlanId)).ToList().Select(plan => plan.PlanId).ToList();
+                    }
+                    else
+                    {
+
+                        int PlanId = !string.IsNullOrEmpty(planid) ? int.Parse(planid) : 0;
+                        //// Get planyear of the selected Plan
+                        planYear = objDbMrpEntities.Plans.FirstOrDefault(_plan => _plan.PlanId.Equals(PlanId)).Year;
+
+                        /// if strparam value null then set planYear as default value.
+                        if (string.IsNullOrEmpty(multipleyear[i]))
+                            multipleyear[i] = planYear;
+                        isNumeric = int.TryParse(multipleyear[i], out Planyear);
+                        if (!string.IsNullOrEmpty(planid))
+                            filteredPlanIds.Add(int.Parse(planid));
+                    }
+
+                    //// Selecte tactic(s) from selected programs
+                  
+                       var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
+                                                     campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+                   
+                   
+
+                    List<string> lstFilteredCustomFieldOptionIds = new List<string>();
+                    List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
+                    List<int> lstTacticIds = new List<int>();
+
+                    // Owner filter criteria.
+                    List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+
+                    // TacticType filter criteria
+                    List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+
+                    //Status filter criteria
+                    List<string> filterStatus = string.IsNullOrWhiteSpace(StatusIds) ? new List<string>() : StatusIds.Split(',').Select(tactictype => tactictype).ToList();
+
+                    // Custom Field Filter Criteria.
+                    List<string> filteredCustomFields = string.IsNullOrWhiteSpace(CustomFieldId) ? new List<string>() : CustomFieldId.Split(',').Select(customFieldId => customFieldId.ToString()).ToList();
+                    if (filteredCustomFields.Count > 0)
+                    {
+                        filteredCustomFields.ForEach(customField =>
+                        {
+                            string[] splittedCustomField = customField.Split('_');
+                            lstCustomFieldFilter.Add(new CustomFieldFilter { CustomFieldId = int.Parse(splittedCustomField[0]), OptionId = splittedCustomField[1] });
+                            lstFilteredCustomFieldOptionIds.Add(splittedCustomField[1]);
+                        });
+
+                    }
+
+                    if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
+                    {
+                        lstTacticIds = objPlan_Campaign_Program_Tactic.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                        objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.CreatedBy)) &&
+                                                 (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.TacticTypeId)) &&
+                                                 (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.Status))).ToList();
+
+                        //// Apply Custom restriction for None type
+                        if (objPlan_Campaign_Program_Tactic.Count() > 0)
+                        {
+
+                            if (filteredCustomFields.Count > 0)
+                            {
+                                lstTacticIds = Common.GetTacticBYCustomFieldFilter(lstCustomFieldFilter, lstTacticIds);
+                                //// get Allowed Entity Ids
+                                objPlan_Campaign_Program_Tactic = objPlan_Campaign_Program_Tactic.Where(tacticlist => lstTacticIds.Contains(tacticlist.PlanTacticId)).ToList();
+                            }
+
+                        }
+                    }
+
+                    //End
+                    //// Prepare an array of month as per selected dropdown paramter
+                    int[] monthArray = new int[12];
+                    int[] monthArrayactivity = new int[12];
+                    int q1 = 0;
+                    int q2 = 0;
+                    int q3 = 0;
+                    int q4 = 0;
+                    if (objPlan_Campaign_Program_Tactic != null && objPlan_Campaign_Program_Tactic.Count() > 0)
+                    {
+                        IEnumerable<string> differenceItems;
+                        int year = 0;
+                        if (multipleyear[i] != null && isNumeric)
+                        {
+                            year = Planyear;
+                        }
+
+                        int currentMonth = DateTime.Now.Month, monthNo = 0;
+                        DateTime startDate, endDate;
+                        foreach (var tactic in objPlan_Campaign_Program_Tactic)
+                        {
+                            startDate = endDate = new DateTime();
+                            startDate = Convert.ToDateTime(tactic.StartDate);
+                            endDate = Convert.ToDateTime(tactic.EndDate);
+
+                            if (year != 0)
+                            {
+                                if (startDate.Year == year)
+                                {
+                                    if (startDate.Year == endDate.Year)
+                                    {
+                                        endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
+                                    }
+                                    else
+                                    {
+                                        endDate = new DateTime(startDate.Year, 12, 31);
+                                    }
+
+                                    differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+                                    int q1counter = 0;
+                                    int q2counter = 0;
+                                    int q3counter = 0;
+                                    int q4counter = 0;
+                                    foreach (string objDifference in differenceItems)
+                                    {
+                                        monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                        //
+                                        categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+                                        string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNo);
+                                        int CurrentQuarter = (int)Math.Floor(((decimal)(monthNo) + 2) / 3);
+                                        if (CurrentQuarter == 1)
+                                        {
+                                            if (monthNo <= 3)
+                                            {
+                                                if (q1counter == 0)
+                                                {
+                                                    monthArrayactivity[2] = q1 + 1;
+                                                    q1 = monthArrayactivity[2];
+                                                    q1counter++;
+                                                }
+                                            }
+                                        }
+                                        else if (CurrentQuarter == 2)
+                                        {
+                                            if (monthNo <= 6)
+                                            {
+                                                if (q2counter == 0)
+                                                {
+                                                    monthArrayactivity[5] = q2 + 1;
+                                                    q2 = monthArrayactivity[5];
+                                                    q2counter++;
+                                                }
+                                            }
+                                        }
+                                        else if (CurrentQuarter == 3)
+                                        {
+                                            if (monthNo <= 9)
+                                            {
+                                                if (q3counter == 0)
+                                                {
+                                                    monthArrayactivity[8] = q3 + 1;
+                                                    q3 = monthArrayactivity[8];
+                                                    q3counter++;
+                                                }
+                                            }
+                                        }
+                                        else if (CurrentQuarter == 4)
+                                        {
+                                            if (monthNo <= 12)
+                                            {
+                                                if (q4counter == 0)
+                                                {
+                                                    monthArrayactivity[11] = q4 + 1;
+                                                    q4 = monthArrayactivity[11];
+                                                    q4counter++;
+                                                }
+                                            }
+                                        }
+                                        //
+
+
+                                        if (monthNo == 1)
+                                        {
+                                            monthArray[0] = monthArray[0] + 1;
+                                        }
+                                        else
+                                        {
+                                            monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                        }
+                                    }
+                                }
+                                else if (endDate.Year == year)
+                                {
+                                    if (startDate.Year != year)
+                                    {
+                                        startDate = new DateTime(endDate.Year, 01, 01);
+                                        differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+
+                                        int q1counter = 0;
+                                        int q2counter = 0;
+                                        int q3counter = 0;
+                                        int q4counter = 0;
+                                        foreach (string objDifference in differenceItems)
+                                        {
+                                            monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                            //
+                                            categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+                                            string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNo);
+                                            int CurrentQuarter = (int)Math.Floor(((decimal)(monthNo) + 2) / 3);
+                                            if (CurrentQuarter == 1)
+                                            {
+                                                if (monthNo <= 3)
+                                                {
+                                                    if (q1counter == 0)
+                                                    {
+                                                        monthArrayactivity[2] = q1 + 1;
+                                                        q1 = monthArrayactivity[2];
+                                                        q1counter++;
+                                                    }
+                                                }
+                                            }
+                                            else if (CurrentQuarter == 2)
+                                            {
+                                                if (monthNo <= 6)
+                                                {
+                                                    if (q2counter == 0)
+                                                    {
+                                                        monthArrayactivity[5] = q2 + 1;
+                                                        q2 = monthArrayactivity[5];
+                                                        q2counter++;
+                                                    }
+                                                }
+                                            }
+                                            else if (CurrentQuarter == 3)
+                                            {
+                                                if (monthNo <= 9)
+                                                {
+                                                    if (q3counter == 0)
+                                                    {
+                                                        monthArrayactivity[8] = q3 + 1;
+                                                        q3 = monthArrayactivity[8];
+                                                        q3counter++;
+                                                    }
+                                                }
+                                            }
+                                            else if (CurrentQuarter == 4)
+                                            {
+                                                if (monthNo <= 12)
+                                                {
+                                                    if (q4counter == 0)
+                                                    {
+                                                        monthArrayactivity[11] = q4 + 1;
+                                                        q4 = monthArrayactivity[11];
+                                                        q4counter++;
+                                                    }
+                                                }
+                                            }
+                                            //
+
+
+                                            if (monthNo == 1)
+                                            {
+                                                monthArray[0] = monthArray[0] + 1;
+                                            }
+                                            else
+                                            {
+                                                monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    //// Prepare Activity Chart list
+                    string quater = string.Empty;
+                    lstActivityChart = new List<ActivityChart>();
+                    //
+                    for (int month = 0; month < monthArrayactivity.Count(); month++)
+                    {
+                        ActivityChart objActivityChart = new ActivityChart();
+                        categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+                        string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month + 1);
+                        int CurrentQuarter = (int)Math.Floor(((decimal)(month + 1) + 2) / 3);
+                        if (CurrentQuarter == 1)
+                        {
+                            quater = categories[0];
+                            if (month == 2)
+                            {
+                                if (monthArrayactivity[month] == 0)
+                                {
+                                    objActivityChart.NoOfActivity = string.Empty;
+                                }
+                                else
+                                {
+                                    objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                                }
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                        }
+                        if (CurrentQuarter == 2)
+                        {
+                            quater = categories[1];
+                            if (month == 5)
+                            {
+                                if (monthArrayactivity[month] == 0)
+                                {
+                                    objActivityChart.NoOfActivity = string.Empty;
+                                }
+                                else
+                                {
+                                    objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                                }
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                        }
+                        if (CurrentQuarter == 3)
+                        {
+                            quater = categories[2];
+                            if (month == 8)
+                            {
+                                if (monthArrayactivity[month] == 0)
+                                {
+                                    objActivityChart.NoOfActivity = string.Empty;
+                                }
+                                else
+                                {
+                                    objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                                }
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                        }
+                        if (CurrentQuarter == 4)
+                        {
+                            quater = categories[3];
+                            if (month == 11)
+                            {
+                                if (monthArrayactivity[month] == 0)
+                                {
+                                    objActivityChart.NoOfActivity = string.Empty;
+                                }
+                                else
+                                {
+                                    objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                                }
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                        }
+
+                        if (month == 0)
+                        {
+                            objActivityChart.Month = quater;
+                        }
+                        else
+                        {
+                            if (month % 3 == 0)
+                            {
+                                objActivityChart.Month = quater;
+                            }
+                            else
+                            {
+                                objActivityChart.Month = string.Empty;
+                            }
+                        }
+                        if (i == 1)
+                        {
+                            objActivityChart.Color = Common.ActivityNextYearChartColor;
+                        }
+                        else
+                        {
+                            objActivityChart.Color = Common.ActivityChartColor;
+                        }
+
+                        lstActivityChart.Add(objActivityChart);
+                    }
+                    lstActivitybothChart.AddRange(lstActivityChart);
+                }
+            }
+
+            return lstActivitybothChart;
         }
         #endregion
 
@@ -3696,7 +4162,19 @@ namespace RevenuePlanner.Controllers
             if (startDateParam.Month == month1 || startDateParam.Month == month2 || startDateParam.Month == month3 || endDateParam.Month == month1 || endDateParam.Month == month2 || endDateParam.Month == month3)
             {
                 differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDateParam.AddMonths(element)).TakeWhile(element => element <= endDateParam).Select(element => element.ToString("MM"));
-                foreach (string d in differenceItems)
+
+                List<string> thismonthdifferenceItem = new List<string>();
+                if (differenceItems.Count() > 12)
+                {
+                    thismonthdifferenceItem = differenceItems.ToList();
+                    thismonthdifferenceItem.RemoveRange(12, 12);
+                }
+                else
+                {
+                    thismonthdifferenceItem = differenceItems.ToList();
+                }
+
+                foreach (string d in thismonthdifferenceItem)
                 {
                     monthNo = Convert.ToInt32(d.TrimStart('0'));
                     if (monthNo == month1 || monthNo == month2 || monthNo == month3)
@@ -5096,7 +5574,7 @@ namespace RevenuePlanner.Controllers
                 var LastSetOfOwners = new List<string>();
 
 
-            var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel).Select(View => View.FilterValues).FirstOrDefault();
+                var SetOfOwners = listofsavedviews.Where(view => view.FilterName == OwnerLabel).Select(View => View.FilterValues).FirstOrDefault();
                 if (SetOfOwners != null)
                 {
                     LastSetOfOwners = SetOfOwners.Split(',').ToList();
@@ -5105,7 +5583,7 @@ namespace RevenuePlanner.Controllers
                 var TTLabel = Enums.FilterLabel.TacticType.ToString();
                 var LastSetOfTacticType = new List<string>();
 
-            var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel).Select(View => View.FilterValues).ToList();
+                var SetOfTacticType = listofsavedviews.Where(view => view.FilterName == TTLabel).Select(View => View.FilterValues).ToList();
                 if (SetOfTacticType.Count > 0)
                 {
                     if (SetOfTacticType.FirstOrDefault() != null)
@@ -5119,9 +5597,9 @@ namespace RevenuePlanner.Controllers
 
                 }
 
-            var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF")).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
+                var LastSetofCustomField = listofsavedviews.Where(view => view.FilterName.Contains("CF")).Select(view => new { ID = view.FilterName, Value = view.FilterValues }).ToList();
 
-            Sessions.FilterPresetName = null;
+                Sessions.FilterPresetName = null;
                 return Json(new { StatusNAmes = LastSetOfStatus, Customfields = LastSetofCustomField, OwnerNames = LastSetOfOwners, TTList = LastSetOfTacticType }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -5312,28 +5790,28 @@ namespace RevenuePlanner.Controllers
             {
 
 
-            var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
-            var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
-            if (isCheckinPrev == true || isCheckinNew == true)
-            {
-                prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
-                objDbMrpEntities.SaveChanges();
-            }
-            else
-            {
-                if (prevCustomFieldList.Count == 0)
+                var isCheckinPrev = prevCustomFieldList.Select(a => a.FilterValues).Except(NewCustomFieldData.Select(b => b.FilterValues)).Any();
+                var isCheckinNew = NewCustomFieldData.Select(a => a.FilterValues).Except(prevCustomFieldList.Select(b => b.FilterValues)).Any();
+                if (isCheckinPrev == true || isCheckinNew == true)
                 {
+                    prevCustomFieldList.ForEach(custmfield => objDbMrpEntities.Entry(custmfield).State = EntityState.Deleted);
                     objDbMrpEntities.SaveChanges();
                 }
-            }
+                else
+                {
+                    if (prevCustomFieldList.Count == 0)
+                    {
+                        objDbMrpEntities.SaveChanges();
+                    }
+                }
             }
 
             #endregion
             //End
-         return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
-        } 
+            return Json(new { isSuccess = true, ViewName = ViewName }, JsonRequestBehavior.AllowGet);
+        }
 
-  /// <summary>
+        /// <summary>
         /// To Set the default filter
         /// Addded By komal Rawal for 1749
         /// </summary>
@@ -5351,7 +5829,7 @@ namespace RevenuePlanner.Controllers
             {
                 ListOfUserViews = ListOfUserViews.Where(name => name.ViewName == PresetName).ToList();
                 ListOfUserViews.ForEach(s => s.IsDefaultPreset = true);
-              
+
             }
             objDbMrpEntities.SaveChanges();
 
@@ -5407,7 +5885,7 @@ namespace RevenuePlanner.Controllers
                 return Json(new { isSuccess = false }, JsonRequestBehavior.AllowGet);
             }
         }
-          #endregion
+        #endregion
         #endregion
 
         #region --Get Header Data for HoneyComb Pdf---
@@ -5430,23 +5908,32 @@ namespace RevenuePlanner.Controllers
             int Planyear;
             bool isNumeric = false;
 
-
-            //// Get planyear of the selected Plan
-            isNumeric = int.TryParse(strParam, out Planyear);
-            if (isNumeric)
-            {
-                planYear = Convert.ToString(Planyear);
-            }
-            else
-            {
-                planYear = DateTime.Now.Year.ToString();
-            }
             //For Activity Distribution
             CalendarStartDate = DateTime.Now;
             CalendarEndDate = DateTime.Now;
+            if (strParam.Contains("-"))
+            {
+                List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
+                lstActivityChartyears = getmultipleyearActivityChartHoneyComb(strParam, TactIds);
+                return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                isNumeric = int.TryParse(strParam, out Planyear);
+                if (isNumeric)
+                {
+                    planYear = Convert.ToString(Planyear);
+                }
+                else
+                {
+                    planYear = DateTime.Now.Year.ToString();
+                }
+            }
+
             Common.GetPlanGanttStartEndDate(planYear, strParam, ref CalendarStartDate, ref CalendarEndDate);
             var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
-                                      TacticIds.Contains(tactic.PlanTacticId) && tactic.StartDate >= CalendarStartDate && tactic.EndDate <= CalendarEndDate).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+                                      TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+
 
 
             //// Prepare an array of month as per selected dropdown paramter
@@ -5522,8 +6009,17 @@ namespace RevenuePlanner.Controllers
                     else if (strParam.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-
-                        foreach (string objDifference in differenceItems)
+                        List<string> thismonthdifferenceItem = new List<string>();
+                        if (differenceItems.Count() > 12)
+                        {
+                            thismonthdifferenceItem = differenceItems.ToList();
+                            thismonthdifferenceItem.RemoveRange(12, 12);
+                        }
+                        else
+                        {
+                            thismonthdifferenceItem = differenceItems.ToList();
+                        }
+                        foreach (string objDifference in thismonthdifferenceItem)
                         {
                             monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                             if (monthNo == DateTime.Now.Month)
@@ -5616,6 +6112,350 @@ namespace RevenuePlanner.Controllers
             return Json(new { lstchart = lstActivityChart.ToList(), TotalMql = MQLs, TotalCost = tactcost, TotalCount = tactcount, }, JsonRequestBehavior.AllowGet);
 
         }
+
+        private List<ActivityChart> getmultipleyearActivityChartHoneyComb(string strParam, string TactIds)
+        {
+            List<int> TacticIds = string.IsNullOrWhiteSpace(TactIds) ? new List<int>() : TactIds.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
+
+            string planYear = string.Empty;
+            int Planyear = 0;
+            bool isNumeric = false;
+            List<ActivityChart> lstActivityChart = new List<ActivityChart>();
+            List<ActivityChart> lstActivitybothChart = new List<ActivityChart>();
+            List<string> categories = new List<string>();
+            string[] multipleyear = strParam.Split('-');
+
+            for (int i = 0; i < multipleyear.Count(); i++)
+            {
+                isNumeric = int.TryParse(multipleyear[i], out Planyear);
+                if (isNumeric)
+                {
+                    planYear = Convert.ToString(Planyear);
+                }
+                else
+                {
+                    planYear = DateTime.Now.Year.ToString();
+                }
+                //// Set start and end date for calender
+                Common.GetPlanGanttStartEndDate(planYear, multipleyear[i], ref CalendarStartDate, ref CalendarEndDate);
+
+                //// Selecte tactic(s) from selected programs
+                var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
+                                    TacticIds.Contains(tactic.PlanTacticId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+
+                //// Prepare an array of month as per selected dropdown paramter
+                int[] monthArray = new int[12];
+                int[] monthArrayactivity = new int[12];
+                int q1 = 0;
+                int q2 = 0;
+                int q3 = 0;
+                int q4 = 0;
+
+                if (objPlan_Campaign_Program_Tactic != null && objPlan_Campaign_Program_Tactic.Count() > 0)
+                {
+                    IEnumerable<string> differenceItems;
+                    int year = 0;
+                    if (multipleyear[i] != null && isNumeric)
+                    {
+                        year = Planyear;
+                    }
+
+                    int currentMonth = DateTime.Now.Month, monthNo = 0;
+                    DateTime startDate, endDate;
+                    foreach (var tactic in objPlan_Campaign_Program_Tactic)
+                    {
+                        startDate = endDate = new DateTime();
+                        startDate = Convert.ToDateTime(tactic.StartDate);
+                        endDate = Convert.ToDateTime(tactic.EndDate);
+
+                        if (year != 0)
+                        {
+                            if (startDate.Year == year)
+                            {
+                                if (startDate.Year == endDate.Year)
+                                {
+                                    endDate = new DateTime(endDate.Year, endDate.Month, DateTime.DaysInMonth(endDate.Year, endDate.Month));
+                                }
+                                else
+                                {
+                                    endDate = new DateTime(startDate.Year, 12, 31);
+                                }
+
+                                differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+                                int q1counter = 0;
+                                int q2counter = 0;
+                                int q3counter = 0;
+                                int q4counter = 0;
+                                foreach (string objDifference in differenceItems)
+                                {
+                                    monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                    //
+                                    categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+                                    string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNo);
+                                    int CurrentQuarter = (int)Math.Floor(((decimal)(monthNo) + 2) / 3);
+                                    if (CurrentQuarter == 1)
+                                    {
+                                        if (monthNo <= 3)
+                                        {
+                                            if (q1counter == 0)
+                                            {
+                                                monthArrayactivity[2] = q1 + 1;
+                                                q1 = monthArrayactivity[2];
+                                                q1counter++;
+                                            }
+                                        }
+                                    }
+                                    else if (CurrentQuarter == 2)
+                                    {
+                                        if (monthNo <= 6)
+                                        {
+                                            if (q2counter == 0)
+                                            {
+                                                monthArrayactivity[5] = q2 + 1;
+                                                q2 = monthArrayactivity[5];
+                                                q2counter++;
+                                            }
+                                        }
+                                    }
+                                    else if (CurrentQuarter == 3)
+                                    {
+                                        if (monthNo <= 9)
+                                        {
+                                            if (q3counter == 0)
+                                            {
+                                                monthArrayactivity[8] = q3 + 1;
+                                                q3 = monthArrayactivity[8];
+                                                q3counter++;
+                                            }
+                                        }
+                                    }
+                                    else if (CurrentQuarter == 4)
+                                    {
+                                        if (monthNo <= 12)
+                                        {
+                                            if (q4counter == 0)
+                                            {
+                                                monthArrayactivity[11] = q4 + 1;
+                                                q4 = monthArrayactivity[11];
+                                                q4counter++;
+                                            }
+                                        }
+                                    }
+                                    //
+
+
+                                    if (monthNo == 1)
+                                    {
+                                        monthArray[0] = monthArray[0] + 1;
+                                    }
+                                    else
+                                    {
+                                        monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                    }
+                                }
+                            }
+                            else if (endDate.Year == year)
+                            {
+                                if (startDate.Year != year)
+                                {
+                                    startDate = new DateTime(endDate.Year, 01, 01);
+                                    differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+
+                                    int q1counter = 0;
+                                    int q2counter = 0;
+                                    int q3counter = 0;
+                                    int q4counter = 0;
+                                    foreach (string objDifference in differenceItems)
+                                    {
+                                        monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
+                                        //
+                                        categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+                                        string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(monthNo);
+                                        int CurrentQuarter = (int)Math.Floor(((decimal)(monthNo) + 2) / 3);
+                                        if (CurrentQuarter == 1)
+                                        {
+                                            if (monthNo <= 3)
+                                            {
+                                                if (q1counter == 0)
+                                                {
+                                                    monthArrayactivity[2] = q1 + 1;
+                                                    q1 = monthArrayactivity[2];
+                                                    q1counter++;
+                                                }
+                                            }
+                                        }
+                                        else if (CurrentQuarter == 2)
+                                        {
+                                            if (monthNo <= 6)
+                                            {
+                                                if (q2counter == 0)
+                                                {
+                                                    monthArrayactivity[5] = q2 + 1;
+                                                    q2 = monthArrayactivity[5];
+                                                    q2counter++;
+                                                }
+                                            }
+                                        }
+                                        else if (CurrentQuarter == 3)
+                                        {
+                                            if (monthNo <= 9)
+                                            {
+                                                if (q3counter == 0)
+                                                {
+                                                    monthArrayactivity[8] = q3 + 1;
+                                                    q3 = monthArrayactivity[8];
+                                                    q3counter++;
+                                                }
+                                            }
+                                        }
+                                        else if (CurrentQuarter == 4)
+                                        {
+                                            if (monthNo <= 12)
+                                            {
+                                                if (q4counter == 0)
+                                                {
+                                                    monthArrayactivity[11] = q4 + 1;
+                                                    q4 = monthArrayactivity[11];
+                                                    q4counter++;
+                                                }
+                                            }
+                                        }
+                                        //
+
+
+                                        if (monthNo == 1)
+                                        {
+                                            monthArray[0] = monthArray[0] + 1;
+                                        }
+                                        else
+                                        {
+                                            monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                //// Prepare Activity Chart list
+
+                string quater = string.Empty;
+                lstActivityChart = new List<ActivityChart>();
+                for (int month = 0; month < monthArrayactivity.Count(); month++)
+                {
+                    ActivityChart objActivityChart = new ActivityChart();
+                    categories = new List<string>() { "Q1", "Q2", "Q3", "Q4" };
+                    string strMonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month + 1);
+                    int CurrentQuarter = (int)Math.Floor(((decimal)(month + 1) + 2) / 3);
+                    if (CurrentQuarter == 1)
+                    {
+                        quater = categories[0];
+                        if (month == 2)
+                        {
+                            if (monthArrayactivity[month] == 0)
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                            }
+                        }
+                        else
+                        {
+                            objActivityChart.NoOfActivity = string.Empty;
+                        }
+                    }
+                    if (CurrentQuarter == 2)
+                    {
+                        quater = categories[1];
+                        if (month == 5)
+                        {
+                            if (monthArrayactivity[month] == 0)
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                            }
+                        }
+                        else
+                        {
+                            objActivityChart.NoOfActivity = string.Empty;
+                        }
+                    }
+                    if (CurrentQuarter == 3)
+                    {
+                        quater = categories[2];
+                        if (month == 8)
+                        {
+                            if (monthArrayactivity[month] == 0)
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                            }
+                        }
+                        else
+                        {
+                            objActivityChart.NoOfActivity = string.Empty;
+                        }
+                    }
+                    if (CurrentQuarter == 4)
+                    {
+                        quater = categories[3];
+                        if (month == 11)
+                        {
+                            if (monthArrayactivity[month] == 0)
+                            {
+                                objActivityChart.NoOfActivity = string.Empty;
+                            }
+                            else
+                            {
+                                objActivityChart.NoOfActivity = monthArrayactivity[month].ToString();
+                            }
+                        }
+                        else
+                        {
+                            objActivityChart.NoOfActivity = string.Empty;
+                        }
+                    }
+
+                    if (month == 0)
+                    {
+                        objActivityChart.Month = quater;
+                    }
+                    else
+                    {
+                        if (month % 3 == 0)
+                        {
+                            objActivityChart.Month = quater;
+                        }
+                        else
+                        {
+                            objActivityChart.Month = string.Empty;
+                        }
+                    }
+                    if (i == 1)
+                    {
+                        objActivityChart.Color = Common.ActivityNextYearChartColor;
+                    }
+                    else
+                    {
+                        objActivityChart.Color = Common.ActivityChartColor;
+                    }
+
+                    lstActivityChart.Add(objActivityChart);
+                }
+                lstActivitybothChart.AddRange(lstActivityChart);
+            }
+            return lstActivitybothChart;
+
+        }
         #endregion
 
         #region GetOwnerName and TacticTypeName
@@ -5629,7 +6469,7 @@ namespace RevenuePlanner.Controllers
             {
                 TacticTypeList = objDbMrpEntities.TacticTypes.Where(tt => tt.TacticTypeId == TacticTypeID && tt.IsDeleted == false).Select(tt => tt).ToList();
             }
-            var TacticType = TacticTypeList.Where(tt => tt.TacticTypeId == TacticTypeID ).Select(tt => tt.Title).FirstOrDefault();
+            var TacticType = TacticTypeList.Where(tt => tt.TacticTypeId == TacticTypeID).Select(tt => tt.Title).FirstOrDefault();
 
             return TacticType;
         }
@@ -5637,9 +6477,9 @@ namespace RevenuePlanner.Controllers
         public string GetOwnerName(string UserGuid)
         {
             var OwnerName = "";
-            if(lstUsers.Count == 0 || lstUsers == null )
+            if (lstUsers.Count == 0 || lstUsers == null)
             {
-               lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                lstUsers = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
             }
             if (UserGuid != "")
             {
@@ -5652,11 +6492,11 @@ namespace RevenuePlanner.Controllers
                 }).FirstOrDefault();
 
 
-                if(userName != null)
+                if (userName != null)
                 {
                     OwnerName = userName.FirstName + " " + userName.Lastname;
                 }
-              
+
             }
 
             return OwnerName.ToString();
