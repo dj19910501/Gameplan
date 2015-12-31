@@ -3800,7 +3800,7 @@ namespace RevenuePlanner.Controllers
 
                     //End
                     //// Prepare an array of month as per selected dropdown paramter
-                    int[] monthArray = new int[12];
+                   // int[] monthArray = new int[12];
                     int[] monthArrayactivity = new int[12];
                     int q1 = 0;
                     int q2 = 0;
@@ -3899,14 +3899,14 @@ namespace RevenuePlanner.Controllers
                                         //
 
 
-                                        if (monthNo == 1)
-                                        {
-                                            monthArray[0] = monthArray[0] + 1;
-                                        }
-                                        else
-                                        {
-                                            monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                                        }
+                                        //if (monthNo == 1)
+                                        //{
+                                        //    monthArray[0] = monthArray[0] + 1;
+                                        //}
+                                        //else
+                                        //{
+                                        //    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                        //}
                                     }
                                 }
                                 else if (endDate.Year == year)
@@ -3976,16 +3976,7 @@ namespace RevenuePlanner.Controllers
                                                 }
                                             }
                                             //
-
-
-                                            if (monthNo == 1)
-                                            {
-                                                monthArray[0] = monthArray[0] + 1;
-                                            }
-                                            else
-                                            {
-                                                monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                                            }
+                                          
                                         }
                                     }
                                 }
@@ -6244,14 +6235,14 @@ namespace RevenuePlanner.Controllers
                                     //
 
 
-                                    if (monthNo == 1)
-                                    {
-                                        monthArray[0] = monthArray[0] + 1;
-                                    }
-                                    else
-                                    {
-                                        monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                                    }
+                                    //if (monthNo == 1)
+                                    //{
+                                    //    monthArray[0] = monthArray[0] + 1;
+                                    //}
+                                    //else
+                                    //{
+                                    //    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                    //}
                                 }
                             }
                             else if (endDate.Year == year)
@@ -6454,7 +6445,6 @@ namespace RevenuePlanner.Controllers
                 lstActivitybothChart.AddRange(lstActivityChart);
             }
             return lstActivitybothChart;
-
         }
         #endregion
 
