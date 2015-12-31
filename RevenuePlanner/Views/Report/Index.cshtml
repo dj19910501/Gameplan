@@ -1202,8 +1202,19 @@
         $('#revenueHeader').css('display', 'none');
         $("#BtnShareReport").show();
         $('#accordion-quart').css('display', 'block');
-       @* var url = '@Url.Content("~/Report/GetSummaryData/")';
+        @* var url = '@Url.Content("~/Report/GetSummaryData/")';
         $('#divMainReportPart').load(url , function () {*@
+
+        if (Qurt_Month == "Monthly") {
+            $("#ddlAllocate option[value='months']").attr("selected", "selected");
+            $("#ddlAllocate option[value='quarters']").attr("selected", false);
+        }
+        else {
+            $("#ddlAllocate option[value='quarters']").attr("selected", "selected");
+            $("#ddlAllocate option[value='months']").attr("selected", false);
+        }
+        $('.sbSelector').text(Qurt_Month);
+
         var url = '@Url.Content("~/Report/GetOverviewData/")';
         $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
