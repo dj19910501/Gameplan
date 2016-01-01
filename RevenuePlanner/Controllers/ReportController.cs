@@ -762,8 +762,8 @@ namespace RevenuePlanner.Controllers
                 {
                     if ((YearName == currentYear || !(ListYear.Contains(currentYear))) && ismonthly == false)
                     {
-                for (int i = 1; i <= 12; i++)
-                {
+                        for (int i = 1; i <= 12; i++)
+                        {
                             includeMonth.Add(YearName + PeriodPrefix + i);
                         }
                         ismonthly = true;
@@ -838,18 +838,18 @@ namespace RevenuePlanner.Controllers
                 {
                     if ((ListYear.Length == 1 || (ListYear.Length > 1 && YearName == currentyear)) || (YearName == ListYear.Min().ToString() && !ListYear.Contains(currentyear)))  // Modified By Nishant Sheth #1838
                     {
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString());
-                lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jan.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Feb.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Mar.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.April.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.May.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Jun.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.July.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Aug.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Sep.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Oct.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Nov.ToString()].ToString());
+                        lmtitle.Add(Enums.ReportMonthDisplayValues[Enums.ReportMonthDisplay.Dec.ToString()].ToString());
                     }
                     else
                     {
@@ -1157,16 +1157,20 @@ namespace RevenuePlanner.Controllers
                 {
                     currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
                 }
+                else
+                {
+                    currentEndMonth = objBasicModel.Categories.Count;
+                }
+
                 #region Calculate GoalYTD
                 for (int i = 0; i < objBasicModel.Categories.Count; i++)
                 {
-                    _goalval = objBasicModel.GoalList.ToList()[i];
-                    if (currentEndMonth > i)
+                    _goalval = objBasicModel.GoalYTD.ToList()[i];
+                    //if (currentEndMonth > i)
+                    // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
+                    if (_goalval != 0.0)
                     {
-                        if (_goalval != 0.0)
-                        {
-                            _goalYTD = _goalYTD + _goalval;
-                        }
+                        _goalYTD = _goalYTD + _goalval;
                     }
                     else
                     {
@@ -2066,7 +2070,7 @@ namespace RevenuePlanner.Controllers
                                             .Concat(PlanIds).Distinct().ToList();
                 // End By Nishant Sheth
 
-            //// Set Plan list.
+                //// Set Plan list.
                 //var planList1 = PlanList.Where(plan => plan.Year == Year && plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId).ToList().Select(plan => new
                 //{
                 //    Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
@@ -4452,9 +4456,9 @@ namespace RevenuePlanner.Controllers
                                 for (int k = 1; k <= 4; k++)
                                 {
                                     List<string> Quarters = new List<string>() { PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++) };
-                        PlannedCostList = new List<double>();
-                        BudgetCostList = new List<double>();
-                        _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
+                                    PlannedCostList = new List<double>();
+                                    BudgetCostList = new List<double>();
+                                    _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
 
                                     PlannedCostList = _tacCostList.Where(plancost => Quarters.Contains(plancost.Period)
                                         && plancost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year.ToString()).Select(plancost => plancost.Value).ToList();
@@ -4462,26 +4466,26 @@ namespace RevenuePlanner.Controllers
                                     BudgetCostList = _tacBudgetList.Where(budgtcost => Quarters.Contains(budgtcost.Period)
                                         && budgtcost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year.ToString()).Select(budgtcost => budgtcost.Value).ToList();
 
-                        _PlannedCostValue = PlannedCostList.Sum(val => val);
-                        serPlannedData.Add(_PlannedCostValue);
+                                    _PlannedCostValue = PlannedCostList.Sum(val => val);
+                                    serPlannedData.Add(_PlannedCostValue);
 
-                        _BudgetCostValue = BudgetCostList.Sum(val => val);
-                        serBudgetData.Add(_BudgetCostValue);
+                                    _BudgetCostValue = BudgetCostList.Sum(val => val);
+                                    serBudgetData.Add(_BudgetCostValue);
 
-                        scatterData.Add(_ActualCostValue);
+                                    scatterData.Add(_ActualCostValue);
 
-                        btmPlannedCostList.Add(_PlannedCostValue);
-                        btmActualCostList.Add(_ActualCostValue);
-                        btmBudgetCostList.Add(_BudgetCostValue);
+                                    btmPlannedCostList.Add(_PlannedCostValue);
+                                    btmActualCostList.Add(_ActualCostValue);
+                                    btmBudgetCostList.Add(_BudgetCostValue);
                                 }
                                 isMonthList = true;
                             }
                             else if (isNumeric)
                             {
 
-                        PlannedCostList = new List<double>();
-                        BudgetCostList = new List<double>();
-                        _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
+                                PlannedCostList = new List<double>();
+                                BudgetCostList = new List<double>();
+                                _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
 
                                 string Year = Convert.ToString(categories[i - 1]);
 
@@ -4499,13 +4503,13 @@ namespace RevenuePlanner.Controllers
                                 _BudgetCostValue = _tacBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
                                     && budgtcost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == Year).Sum(budgtcost => budgtcost.Value);
 
-                        serPlannedData.Add(_PlannedCostValue);
-                        serBudgetData.Add(_BudgetCostValue);
-                        scatterData.Add(_ActualCostValue);
+                                serPlannedData.Add(_PlannedCostValue);
+                                serBudgetData.Add(_BudgetCostValue);
+                                scatterData.Add(_ActualCostValue);
 
-                        btmPlannedCostList.Add(_PlannedCostValue);
-                        btmActualCostList.Add(_ActualCostValue);
-                        btmBudgetCostList.Add(_BudgetCostValue);
+                                btmPlannedCostList.Add(_PlannedCostValue);
+                                btmActualCostList.Add(_ActualCostValue);
+                                btmBudgetCostList.Add(_BudgetCostValue);
                             }
                         }
                         plannedSeries.data = serPlannedData;
@@ -4541,20 +4545,20 @@ namespace RevenuePlanner.Controllers
                             if (!(isNumeric) && isMonthList == false)
                             {
                                 for (int k = 1; k <= 12; k++)
-                        {
-                            curntPeriod = PeriodPrefix + i;
+                                {
+                                    curntPeriod = PeriodPrefix + i;
 
-                            _PlannedCostValue = _tacCostList.Where(plancost => plancost.Period.Equals(curntPeriod)).Select(plancost => plancost.Value).FirstOrDefault();
-                            TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Value));
-                            _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod)).Select(budgtcost => budgtcost.Value).FirstOrDefault();
+                                    _PlannedCostValue = _tacCostList.Where(plancost => plancost.Period.Equals(curntPeriod)).Select(plancost => plancost.Value).FirstOrDefault();
+                                    TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Value));
+                                    _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod)).Select(budgtcost => budgtcost.Value).FirstOrDefault();
 
-                            serPlannedData.Add(_PlannedCostValue);
-                            serBudgetData.Add(_BudgetCostValue);
-                            scatterData.Add(_ActualCostValue);
+                                    serPlannedData.Add(_PlannedCostValue);
+                                    serBudgetData.Add(_BudgetCostValue);
+                                    scatterData.Add(_ActualCostValue);
 
-                            btmPlannedCostList.Add(_PlannedCostValue);
-                            btmActualCostList.Add(_ActualCostValue);
-                            btmBudgetCostList.Add(_BudgetCostValue);
+                                    btmPlannedCostList.Add(_PlannedCostValue);
+                                    btmActualCostList.Add(_ActualCostValue);
+                                    btmBudgetCostList.Add(_BudgetCostValue);
                                 }
                                 isMonthList = true;
                             }
@@ -5261,18 +5265,18 @@ namespace RevenuePlanner.Controllers
                                 if ((ListYear.Length == 1 || (ListYear.Length > 1 && YearName == currentyear)) || (YearName == ListYear.Min().ToString() && !ListYear.Contains(currentyear)))
                                 {
 
-                            ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
+                                    ActualQ1 = ActualQ2 = ActualQ3 = ActualQ4 = TrendQ1 = TrendQ2 = TrendQ3 = TrendQ4 = 0;
 
                                     ActualQ1 = CurrentMonthActualTacticList.Where(actual => Q1.Contains(actual.Period) && actual.PlanYear == Convert.ToInt32(YearName)).Sum(actual => actual.ActualValue);
                                     ActualQ2 = ActualQ1 + (CurrentMonthActualTacticList.Where(actual => Q2.Contains(actual.Period) && actual.PlanYear == Convert.ToInt32(YearName)).Sum(actual => actual.ActualValue));
                                     ActualQ3 = ActualQ2 + (CurrentMonthActualTacticList.Where(actual => Q3.Contains(actual.Period) && actual.PlanYear == Convert.ToInt32(YearName)).Sum(actual => actual.ActualValue));
                                     ActualQ4 = ActualQ3 + (CurrentMonthActualTacticList.Where(actual => Q4.Contains(actual.Period) && actual.PlanYear == Convert.ToInt32(YearName)).Sum(actual => actual.ActualValue));
 
-                            TotalTrendQ1 = TotalTrendQ1 + (ActualQ1);
-                            TotalTrendQ2 = TotalTrendQ2 + (ActualQ2);
-                            TotalTrendQ3 = TotalTrendQ3 + (ActualQ3);
-                            TotalTrendQ4 = TotalTrendQ4 + (ActualQ4);
-                            strTrendValue = string.Join(", ", new List<string> { (ActualQ1).ToString(), (ActualQ2).ToString(), (ActualQ3).ToString(), (ActualQ4).ToString() });
+                                    TotalTrendQ1 = TotalTrendQ1 + (ActualQ1);
+                                    TotalTrendQ2 = TotalTrendQ2 + (ActualQ2);
+                                    TotalTrendQ3 = TotalTrendQ3 + (ActualQ3);
+                                    TotalTrendQ4 = TotalTrendQ4 + (ActualQ4);
+                                    strTrendValue = string.Join(", ", new List<string> { (ActualQ1).ToString(), (ActualQ2).ToString(), (ActualQ3).ToString(), (ActualQ4).ToString() });
                                 }
                                 else
                                 {
@@ -6594,27 +6598,28 @@ namespace RevenuePlanner.Controllers
                             for (int k = 1; k <= 4; k++)
                             {
                                 List<string> Quarters = new List<string>() { PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++) };
-
-                                _curntQuarterListActual = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= Convert.ToInt32(currentEndMonth)).ToList();
-                                _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) > Convert.ToInt32(currentEndMonth)).ToList();
+                                // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
+                                _curntQuarterListActual = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Nishant Sheth #1839
+                                _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) > (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Nishant Sheth #1839
                                 _curntQuarterListGoal = Quarters;
 
                                 _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) && _curntQuarterListActual.Contains(actual.Month)).Sum(actual => actual.Value);
-                        _actuallist.Add(_Actual);
+                                _actuallist.Add(_Actual);
 
 
                                 _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && _curntQuarterListProjected.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
-                        _projectedlist.Add(_Projected);
+                                _projectedlist.Add(_Projected);
 
                                 _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
                                     && _curntQuarterListGoal.Contains(_projected.Month)).Sum(_projected => _projected.Value);
-                        _goallist.Add(_Goal);
+                                _goallist.Add(_Goal);
 
-                        // Addd For Rveneue header value Goal Yeat to Date
-                                DateTime CurrentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                                // Addd For Rveneue header value Goal Yeat to Date
+                                //DateTime CurrentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                                // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
                                 _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
-                                    && _curntQuarterListActual.Contains(_projected.Month) && _projected.EndDate <= CurrentDate).Sum(_projected => _projected.Value);
-                        _goalYTDList.Add(_GoalYTD);
+                                    && _curntQuarterListActual.Contains(_projected.Month)).Sum(_projected => _projected.Value); // Modified By Nishant Sheth #1839
+                                _goalYTDList.Add(_GoalYTD);
                             }
                             isMonthList = true;
                         }
@@ -6655,14 +6660,25 @@ namespace RevenuePlanner.Controllers
                             DateTime TFendDate = new DateTime(year, 12, 31);
                             for (int k = 1; k <= 12; k++)
                             {
+                                // Modified By Nishant Sheth #1839
                                 curntPeriod = PeriodPrefix + k;
-                                _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= currentEndMonth ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.Value);
-                                _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) > currentEndMonth ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue);
-                                _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
+                                // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
+                                _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))
+                                    && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.Value);
+                                _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
+                                    && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) > (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue);
+                                // Modified By Nishant Sheth #1839
+                                _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
+                                    && _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
 
-                        _actuallist.Add(_Actual);
-                        _projectedlist.Add(_Projected);
-                        _goallist.Add(_Goal);
+                                _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
+                                    && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.Value);
+
+                                _actuallist.Add(_Actual);
+                                _projectedlist.Add(_Projected);
+                                _goallist.Add(_Goal);
+                                _goalYTDList.Add(_GoalYTD);
+                                // End By Nishant Sheth
                             }
                             isMonthList = true;
                         }
@@ -6674,10 +6690,12 @@ namespace RevenuePlanner.Controllers
                             _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))).Sum(actual => actual.Value);
                             _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.TrendValue);
                             _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
+                            _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
 
                             _actuallist.Add(_Actual);
                             _projectedlist.Add(_Projected);
                             _goallist.Add(_Goal);
+                            _goalYTDList.Add(_GoalYTD);
                         }
                         //End By Nishant Sheth
                     }
@@ -7388,23 +7406,23 @@ namespace RevenuePlanner.Controllers
                         {
                             List<int> QuarterasZero = new List<int>();
                             if (ListYear.Contains(currentYear))
-                    {
-                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                        if (_quater == 1)
-                        {
+                            {
+                                int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                                if (_quater == 1)
+                                {
                                     //TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(2);
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 2)
-                        {
+                                }
+                                else if (_quater == 2)
+                                {
                                     //TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 3)
-                        {
+                                }
+                                else if (_quater == 3)
+                                {
                                     //TotalTrendQ4 = 0;
                                     QuarterasZero.Add(4);
                                 }
@@ -7446,22 +7464,22 @@ namespace RevenuePlanner.Controllers
                         {
                             int currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
 
-                    for (int i = 0; i < 12; i++)
-                    {
-                                _actualval = ActualList.ToList()[ListIndex];
-                        if (currentEndMonth > i)
-                        {
-                            if (_actualval != 0.0)
+                            for (int i = 0; i < 12; i++)
                             {
-                                _actualtotal = _actualtotal + _actualval;
-                            }
-                        }
-                        else
-                        {
-                            _actualtotal = 0;
+                                _actualval = ActualList.ToList()[ListIndex];
+                                if (currentEndMonth > i)
+                                {
+                                    if (_actualval != 0.0)
+                                    {
+                                        _actualtotal = _actualtotal + _actualval;
+                                    }
+                                }
+                                else
+                                {
+                                    _actualtotal = 0;
 
-                        }
-                        RevenueList.Add(_actualtotal.ToString());
+                                }
+                                RevenueList.Add(_actualtotal.ToString());
                                 ListIndex++;
                             }
                             Quarteryvalues = true;
@@ -7601,11 +7619,11 @@ namespace RevenuePlanner.Controllers
                     {
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int i = 1; i <= 12; i++)
-                    {
+                            for (int i = 1; i <= 12; i++)
+                            {
                                 _totalGoal = GoalList.ToList()[ListIndex];
                                 _TotalTrendValue = _totalGoal > 0 ? ((((ActualList.ToList()[ListIndex]) - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant #1424
-                        PerformanceList.Add(_TotalTrendValue.ToString());
+                                PerformanceList.Add(_TotalTrendValue.ToString());
                                 ListIndex++;
                             }
                             Quarteryvalues = true;
@@ -7716,8 +7734,8 @@ namespace RevenuePlanner.Controllers
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int i = 1; i <= 12; i++)
-                    {
+                            for (int i = 1; i <= 12; i++)
+                            {
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + i;
                                 _actualval = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
                                     && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
@@ -7841,14 +7859,14 @@ namespace RevenuePlanner.Controllers
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int _month = 1; _month <= 12; _month++)
-                    {
+                            for (int _month = 1; _month <= 12; _month++)
+                            {
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + _month;
                                 _revactual = ActualList.ToList()[ListIndex];
                                 _costActual = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
                                      && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
                                 _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
-                        ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
+                                ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
                                 ListIndex++;
                             }
                             Quarteryvalues = true;
@@ -7941,23 +7959,23 @@ namespace RevenuePlanner.Controllers
                         {
                             List<int> QuarterasZero = new List<int>();
                             if (ListYear.Contains(currentYear))
-                    {
-                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                        if (_quater == 1)
-                        {
+                            {
+                                int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                                if (_quater == 1)
+                                {
                                     //TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(2);
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 2)
-                        {
+                                }
+                                else if (_quater == 2)
+                                {
                                     //TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 3)
-                        {
+                                }
+                                else if (_quater == 3)
+                                {
                                     //TotalTrendQ4 = 0;
                                     QuarterasZero.Add(4);
                                 }
@@ -8025,22 +8043,22 @@ namespace RevenuePlanner.Controllers
                         {
                             int currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
 
-                    for (int i = 0; i < 12; i++)
-                    {
-                                _actualval = ActualList.ToList()[ListIndex];
-                        if (currentEndMonth > i)
-                        {
-                            if (_actualval != 0.0)
+                            for (int i = 0; i < 12; i++)
                             {
-                                _actualtotal = _actualtotal + _actualval;
-                            }
-                        }
-                        else
-                        {
-                            _actualtotal = 0;
+                                _actualval = ActualList.ToList()[ListIndex];
+                                if (currentEndMonth > i)
+                                {
+                                    if (_actualval != 0.0)
+                                    {
+                                        _actualtotal = _actualtotal + _actualval;
+                                    }
+                                }
+                                else
+                                {
+                                    _actualtotal = 0;
 
-                        }
-                        RevenueList.Add(_actualtotal.ToString());
+                                }
+                                RevenueList.Add(_actualtotal.ToString());
                                 ListIndex++;
                             }
                             Quarteryvalues = true;
@@ -8137,8 +8155,8 @@ namespace RevenuePlanner.Controllers
                     {
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int i = 1; i <= 12; i++)
-                    {
+                            for (int i = 1; i <= 12; i++)
+                            {
                                 _totalGoal = GoalList.ToList()[ListIndex];
                                 _TotalTrendValue = _totalGoal > 0 ? ((((ActualList.ToList()[ListIndex]) - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant #1424
                                 PerformanceList.Add(_TotalTrendValue.ToString());
@@ -8253,13 +8271,13 @@ namespace RevenuePlanner.Controllers
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int i = 1; i <= 12; i++)
-                    {
+                            for (int i = 1; i <= 12; i++)
+                            {
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + i;
                                 _actualval = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
                                     && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
-                        CostList.Add(_actualval.ToString());
-                    }
+                                CostList.Add(_actualval.ToString());
+                            }
                             Quarteryvalues = true;
                         }
                         else
@@ -8354,14 +8372,14 @@ namespace RevenuePlanner.Controllers
                         DateTime TFEndDate = new DateTime(Convert.ToInt32(YearName), 12, 31);
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int _month = 1; _month <= 12; _month++)
-                    {
+                            for (int _month = 1; _month <= 12; _month++)
+                            {
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + _month;
                                 _revactual = ActualList.ToList()[ListIndex];
                                 _costActual = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
                                      && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
-                        _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
-                        ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
+                                _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
+                                ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
                                 ListIndex++;
                             }
                             Quarteryvalues = true;
@@ -8498,14 +8516,16 @@ namespace RevenuePlanner.Controllers
 
                 for (int i = 0; i < categories.Count; i++)
                 {
-                    _goalval = objBasicModel.GoalList.ToList()[i];
-                    if (currentEndMonth > i)
+                    // Modify By Nishant Sheth #1840 to get same value for quaterly and monthly
+                    _goalval = objBasicModel.GoalYTD.ToList()[i];
+                    
+                    //if (currentEndMonth > i)
+                    //{
+                    if (_goalval != 0.0)
                     {
-                        if (_goalval != 0.0)
-                        {
-                            _goalYTD = _goalYTD + _goalval;
-                        }
+                        _goalYTD = _goalYTD + _goalval;
                     }
+                    //}
                     else
                     {
                         _goalYTD += 0;
@@ -8906,23 +8926,23 @@ namespace RevenuePlanner.Controllers
                         {
                             List<int> QuarterasZero = new List<int>();
                             if (ListYear.Contains(currentYear))
-                    {
-                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                        if (_quater == 1)
-                        {
+                            {
+                                int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                                if (_quater == 1)
+                                {
                                     //TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(2);
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 2)
-                        {
+                                }
+                                else if (_quater == 2)
+                                {
                                     //TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 3)
-                        {
+                                }
+                                else if (_quater == 3)
+                                {
                                     //TotalTrendQ4 = 0;
                                     QuarterasZero.Add(4);
                                 }
@@ -8986,19 +9006,19 @@ namespace RevenuePlanner.Controllers
                         {
                             int currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
 
-                    for (int i = 0; i < 12; i++)
-                    {
-                                _actualval = ActualList.ToList()[ListIndex];
-                        if (currentEndMonth > i)
-                        {
-                            if (_actualval != 0.0)
+                            for (int i = 0; i < 12; i++)
                             {
-                                _actualtotal = _actualtotal + _actualval;
-                            }
-                        }
-                        else
-                        {
-                            _actualtotal = 0;
+                                _actualval = ActualList.ToList()[ListIndex];
+                                if (currentEndMonth > i)
+                                {
+                                    if (_actualval != 0.0)
+                                    {
+                                        _actualtotal = _actualtotal + _actualval;
+                                    }
+                                }
+                                else
+                                {
+                                    _actualtotal = 0;
 
                                 }
                                 RevenueList.Add(_actualtotal.ToString());
@@ -9102,7 +9122,7 @@ namespace RevenuePlanner.Controllers
 
                     }
                     // End By Nishant Sheth 
-                    #endregion
+                #endregion
                 }
                 else
                 {
@@ -9115,8 +9135,8 @@ namespace RevenuePlanner.Controllers
                     {
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int i = 1; i <= 12; i++)
-                    {
+                            for (int i = 1; i <= 12; i++)
+                            {
                                 _totalGoal = GoalList.ToList()[ListIndex];
                                 _TotalTrendValue = _totalGoal > 0 ? ((((ActualList.ToList()[ListIndex]) - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant #1424
                                 PerformanceList.Add(_TotalTrendValue.ToString());
@@ -9138,7 +9158,7 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
 
-                #endregion
+        #endregion
 
                 #region "Add all list to Master Model"
                 objSubDataTableModel.PerformanceList = PerformanceList;
@@ -9236,23 +9256,23 @@ namespace RevenuePlanner.Controllers
                         {
                             List<int> QuarterasZero = new List<int>();
                             if (ListYear.Contains(currentYear))
-                    {
-                        int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
-                        if (_quater == 1)
-                        {
+                            {
+                                int _quater = ((DateTime.Now.Month - 1) / 3) + 1;
+                                if (_quater == 1)
+                                {
                                     //TotalTrendQ2 = TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(2);
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 2)
-                        {
+                                }
+                                else if (_quater == 2)
+                                {
                                     //TotalTrendQ3 = TotalTrendQ4 = 0;
                                     QuarterasZero.Add(3);
                                     QuarterasZero.Add(4);
-                        }
-                        else if (_quater == 3)
-                        {
+                                }
+                                else if (_quater == 3)
+                                {
                                     //TotalTrendQ4 = 0;
                                     QuarterasZero.Add(4);
                                 }
@@ -9317,19 +9337,19 @@ namespace RevenuePlanner.Controllers
                         {
                             int currentEndMonth = Convert.ToInt32(DateTime.Now.Month);
 
-                    for (int i = 0; i < 12; i++)
-                    {
-                                _actualval = ActualList.ToList()[ListIndex];
-                        if (currentEndMonth > i)
-                        {
-                            if (_actualval != 0.0)
+                            for (int i = 0; i < 12; i++)
                             {
-                                _actualtotal = _actualtotal + _actualval;
-                            }
-                        }
-                        else
-                        {
-                            _actualtotal = 0;
+                                _actualval = ActualList.ToList()[ListIndex];
+                                if (currentEndMonth > i)
+                                {
+                                    if (_actualval != 0.0)
+                                    {
+                                        _actualtotal = _actualtotal + _actualval;
+                                    }
+                                }
+                                else
+                                {
+                                    _actualtotal = 0;
 
                                 }
                                 RevenueList.Add(_actualtotal.ToString());
@@ -9472,8 +9492,8 @@ namespace RevenuePlanner.Controllers
                     {
                         if (YearName == DateTime.Now.Year.ToString().ToLower() || !ListYear.Contains(DateTime.Now.Year.ToString()) && Quarteryvalues == false)
                         {
-                    for (int i = 1; i <= 12; i++)
-                    {
+                            for (int i = 1; i <= 12; i++)
+                            {
                                 _totalGoal = GoalList.ToList()[ListIndex];
                                 _TotalTrendValue = _totalGoal > 0 ? ((((ActualList.ToList()[ListIndex]) - _totalGoal) / _totalGoal) * 100) : 0; // Change By Nishant #1424
                                 PerformanceList.Add(_TotalTrendValue.ToString());
@@ -11085,11 +11105,11 @@ namespace RevenuePlanner.Controllers
                         List<string> Quarters = new List<string>() { PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++), PeriodPrefix + (Quarterbase++) };
                         _Actual = ActualTrendList.Where(actual => Quarters.Contains(actual.Month)
                             && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
-                _actuallist.Add(_Actual);
+                        _actuallist.Add(_Actual);
 
                         _cost = CurrentMonthCostList.Where(costactual => Quarters.Contains(costactual.Month)
                             && !(costactual.StartDate >= TFEndDate || costactual.EndDate <= TFStartDate)).Sum(costactual => costactual.Value);
-                _costlist.Add(_cost);
+                        _costlist.Add(_cost);
 
                     }
                     Quarteryvalues = true;
