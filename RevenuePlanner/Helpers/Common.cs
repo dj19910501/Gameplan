@@ -6451,6 +6451,50 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
 
+        /// <summary>
+        /// Added By: Nishant Sheth.
+        /// Function to get plan report start and end date as per timeframe list.
+        /// </summary>
+        /// <param name="timeframe">time frame.</param>
+
+        public static void GetReportStartEndDate(string timeframe, ref DateTime startDate1, ref DateTime endDate1, ref DateTime startDate2, ref DateTime endDate2)
+        {
+            int year;
+            string[] ListYears = timeframe.Split(',');
+            bool isNumeric = int.TryParse(ListYears[0], out year);
+
+            startDate1 = new DateTime(Convert.ToInt32(DateTime.Now.Year), 1, 1);
+            endDate1 = new DateTime(Convert.ToInt32(DateTime.Now.Year), 12, 31);
+
+            startDate2 = startDate1;
+            endDate2 = endDate1;
+            if (ListYears.Length > 0 && isNumeric)
+            {
+                startDate1 = new DateTime(Convert.ToInt32(ListYears[0]), 1, 1);
+                endDate1 = new DateTime(Convert.ToInt32(ListYears[0]), 12, 31);
+                if (ListYears.Length <= 1)
+                {
+                    startDate2 = startDate1;
+                    endDate2 = endDate1;
+                }
+                if (ListYears.Length > 1)
+                {
+                    startDate2 = new DateTime(Convert.ToInt32(ListYears[ListYears.Length - 1]), 1, 1);
+                    endDate2 = new DateTime(Convert.ToInt32(ListYears[ListYears.Length - 1]), 12, 31);
+                }
+            }
+
+        }
+        /// <summary>
+        /// Added By: Nishant Sheth.
+        /// Function to Get list of selcted Years
+        /// </summary>
+        /// <param name="timeframe">time frame.</param>
+
+        public static void GetselectedYearList(string timeframe, ref string[] selectedYearList)
+        {
+            selectedYearList = timeframe.Split(',');
+        }
 
     }
 

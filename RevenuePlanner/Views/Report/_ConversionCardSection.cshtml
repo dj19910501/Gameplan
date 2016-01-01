@@ -660,7 +660,8 @@
             url: '@Url.Content("~/Report/LoadCampaignDropDownDynamic/")',
             data: {
                 marsterCustomField: marsterCustomField,
-                masterCustomFieldOptionId: masteroptionid
+                masterCustomFieldOptionId: masteroptionid,
+                selectOption: optionmain
             },
             success: function (data) {
                 $("#ddlCampaignConversionToPlan").empty();
@@ -701,7 +702,8 @@
             data: {
                 id: id,
                 marsterCustomField: marsterCustomField,
-                masterCustomFieldOptionId: masteroptionid
+                masterCustomFieldOptionId: masteroptionid,
+                selectOption:optionmain
             },
             success: function (data) {
                 $("#ddlProgramConversionToPlan").empty();
@@ -743,7 +745,8 @@
                 id: id,
                 type: Type,
                 marsterCustomField: marsterCustomField,
-                masterCustomFieldOptionId: masteroptionid
+                masterCustomFieldOptionId: masteroptionid,
+                selectOption:optionmain
             },
             success: function (data) {
                 $("#ddlTacticConversionToPlan").empty();

@@ -246,6 +246,9 @@ namespace RevenuePlanner.Models
         public string Period { get; set; }
         public string StageTitle { get; set; }
         public double ActualValue { get; set; }
+        public int PlanYear { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 
     public class ProjectedTrendModel
@@ -255,12 +258,15 @@ namespace RevenuePlanner.Models
         public double Value { get; set; }
         public double TrendValue { get; set; }
         public string Month { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 
     public class ActualTrendModel
     {
         public int PlanTacticId { get; set; }
-     
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public double Trend { get; set; }
         public double Value { get; set; }
         public string Month { get; set; }
@@ -288,6 +294,8 @@ namespace RevenuePlanner.Models
         public int EndMonth { get; set; }
         public double Value { get; set; }
         public int Year { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 
     public class ActualTacticListByStage
