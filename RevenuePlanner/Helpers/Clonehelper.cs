@@ -588,6 +588,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignProgramTactic.TacticType = null;
                     objPlanCampaignProgramTactic.Tactic_Share = null;
                     objPlanCampaignProgramTactic.TacticCustomName = null;
+                    objPlanCampaignProgramTactic.LinkedTacticId = null;
+                    objPlanCampaignProgramTactic.LinkedPlanId = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceTacticId = null;
                     objPlanCampaignProgramTactic.IntegrationInstanceEloquaId = null;
                     objPlanCampaignProgramTactic.IntegrationWorkFrontProjectID = null; //Added 16 Dec 2015, Brad Gray, PL#1460 
@@ -888,6 +890,8 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.LastSyncDate = null;
                     objPlanTactic.ModifiedDate = null;
                     objPlanTactic.ModifiedBy = null;
+                    objPlanTactic.LinkedTacticId = null;
+                    objPlanTactic.LinkedPlanId = null;
                     objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate,true) : objPlanTactic.StartDate;
                     objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDate(objPlanTactic.EndDate, endDate,false) : objPlanTactic.EndDate;
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(

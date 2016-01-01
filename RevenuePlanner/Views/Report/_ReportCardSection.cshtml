@@ -533,7 +533,8 @@ function fillCardCampaignDropDown(campaignId, type) {
         url: '@Url.Content("~/Report/LoadCampaignDropDownDynamic/")',
         data: {
             marsterCustomField: marsterCustomField,
-            masterCustomFieldOptionId: masteroptionid
+            masterCustomFieldOptionId: masteroptionid,
+            selectOption: optionmain
         },
         success: function (data) {
             $("#ddlCampaignRevenueToPlan").empty();
@@ -578,7 +579,8 @@ function fillCardProgramDropDown(campaignId, type) {
             data: {
                 id: id,
                 marsterCustomField: marsterCustomField,
-                masterCustomFieldOptionId: masteroptionid
+                masterCustomFieldOptionId: masteroptionid,
+                selectOption:optionmain
             },
             success: function (data) {
                 $("#ddlProgramRevenueToPlan").empty();
@@ -621,7 +623,8 @@ function fillCardProgramDropDown(campaignId, type) {
                 id: id,
                 type: Type,
                 marsterCustomField: marsterCustomField,
-                masterCustomFieldOptionId: masteroptionid
+                masterCustomFieldOptionId: masteroptionid,
+                selectOption: optionmain
             },
             success: function (data) {
                 $("#ddlTacticRevenueToPlan").empty();

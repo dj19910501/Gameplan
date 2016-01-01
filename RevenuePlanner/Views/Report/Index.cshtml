@@ -164,11 +164,16 @@
                                  
                                  if (item.Value == SelectedYear)
                                  {
-                                    <li class="accordion-inner close-list" title="@YearText" id="@ddlYearId" onclick="OnYearChange(this);" yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span></li>
+                                     //Modified By Nishant Sheth
+                                     // Desc:: #1842 Multiple year selection for multiple year support base on #1821
+                                    <li class="accordion-inner" title="@YearText" id="@ddlYearId"  yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span>
+                                        <input type="checkbox" class="chkbxfilter" checked="checked" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input></li>
                                  }
                                  else
                                  {
-                                     <li class="accordion-inner" title="@YearText" id="@ddlYearId" onclick="OnYearChange(this);" yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span></li>
+                                     <li class="accordion-inner" title="@YearText" id="@ddlYearId"  yearValue ="@item.Value"><span class="sidebarliwidth">@YearText</span>
+                                         <input type="checkbox" class="chkbxfilter" id="@ddlYearId" onchange="OnYearChange(this);" yearvalue="@item.Value"></input>
+                                    </li>
                                  }
                              }
                           }
@@ -231,6 +236,7 @@
                                 <li>|</li>
                                 <li><a onclick="BulkPlanOperation(false)">deselect all</a></li>
                             </ul>
+                               <div id="NoPlanFound" class="NoDataFoundFilter" style="display:none;">No Plan Found</div>
                            }
                            else
                            {
@@ -1202,8 +1208,19 @@
         $('#revenueHeader').css('display', 'none');
         $("#BtnShareReport").show();
         $('#accordion-quart').css('display', 'block');
-       @* var url = '@Url.Content("~/Report/GetSummaryData/")';
+        @* var url = '@Url.Content("~/Report/GetSummaryData/")';
         $('#divMainReportPart').load(url , function () {*@
+
+        if (Qurt_Month == "Monthly") {
+            $("#ddlAllocate option[value='months']").attr("selected", "selected");
+            $("#ddlAllocate option[value='quarters']").attr("selected", false);
+        }
+        else {
+            $("#ddlAllocate option[value='quarters']").attr("selected", "selected");
+            $("#ddlAllocate option[value='months']").attr("selected", false);
+        }
+        $('.sbSelector').text(Qurt_Month);
+
         var url = '@Url.Content("~/Report/GetOverviewData/")';
         $('#divMainReportPart').load(url + '?timeframeOption=' + OptionMain + '&isQuarterly=' + Qurt_Month, function () {
             isAllowClick = true;
@@ -1471,14 +1488,25 @@ function OnYearChange(_yearli) {
     $(_yearli).siblings().each(function () {
         $(this).removeClass('close-list');
     });
-    $(_yearli).addClass('close-list');
-    OptionMain = $(_yearli).attr('yearValue');
+        //$(_yearli).addClass('close-list');
+        // Add By Nishant Sheth
+        // Desc :: #1842 multiple year selection base on #1821
+    var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+    var years = "";
+    $.each(listCheckbox, function () {
+        if ($(this).attr("checked")) {
+            years += $(this).attr('yearValue') + ",";
+        }
+    });
+    years = years.slice(0, -1);
+        //OptionMain = $(_yearli).attr('yearValue');
+    OptionMain = years;
     if (IsCallFromYearDropdown) {
         LoadPlanData();
     }
-    var _yearText = $(_yearli).attr('title');
-    $("#spYearText").html(_yearText);
-    $("#aYear").click();
+    //var _yearText = $(_yearli).attr('title');
+    //$("#spYearText").html(_yearText);
+    //$("#aYear").click();
 }
 
 //function OnTimeFrameChange(_quartmonthli) {
@@ -1537,19 +1565,30 @@ function LoadYearDropdown() {
 }
 
 function getYearSelectedValue(isYearDetail) {
-    var _selecteditem = '';
-    $('#ulSelectedYear li').each(function () {
-        if ($(this).hasClass('close-list')) {
-            _selecteditem = $(this);
+    //var _selecteditem = '';
+    //$('#ulSelectedYear li').each(function () {
+    //    if ($(this).hasClass('close-list')) {
+    //        _selecteditem = $(this);
+    //    }
+    //});
+    // Add By Nishant Sheth
+    // Desc :: #1842 multiple year selection base on #1821
+    var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
+    var years = "";
+    $.each(listCheckbox, function () {
+        if ($(this).attr("checked")) {
+            years += $(this).attr('yearValue') + ",";
         }
     });
-    var _selectedYear = $(_selecteditem[0]).attr('yearValue');
-    if (isYearDetail) {
-        var _YearText = $(_selecteditem).find('span').eq(0).html();
-        $("#spYearText").html(_YearText);
-    }
+    years = years.slice(0, -1);
+    // End By Nishant Sheth
+    //var _selectedYear = $(_selecteditem[0]).attr('yearValue');
+    //if (isYearDetail) {
+    //    var _YearText = $(_selecteditem).find('span').eq(0).html();
+    //    $("#spYearText").html(_YearText);
+    //}
 
-    return _selectedYear;
+    return years;
 }
 
 function getQuarterMonthlySelectedValue() {

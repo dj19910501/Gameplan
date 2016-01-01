@@ -271,6 +271,8 @@ namespace RevenuePlanner.Models
         public System.Guid CreatedBy { get; set; } 
         public DateTime PlanStartDate { get; set; }
         public DateTime PlanEndDate { get; set; }
+        public bool LinkTacticPermission { get; set; }
+        public int? LinkedTacticId { get; set; }
     }
 
     public class Plan_Tactic

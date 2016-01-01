@@ -145,6 +145,7 @@ namespace RevenuePlanner.Helpers
         /// Color code list for get random color .
         /// </summary>
         public static List<string> ColorcodeList = new List<string> { "27a4e5", "6ae11f", "bbb748", "bf6a4b", "ca3cce", "7c4bbf", "1af3c9", "f1eb13", "c7893b", "e42233", "a636d6", "2940e2", "0b3d58", "244c0a", "414018", "472519", "4b134d", "2c1947", "055e4d", "555305", "452f14", "520a10", "3e1152", "0c1556", "73c4ee", "9ceb6a", "d2cf86", "d59e89", "dc80df", "a989d5", "6bf7dc", "f6f263", "dab17d", "eb6e7a", "c57de4", "7483ec", "1472a3", "479714", "7f7c2f", "86472f", "8e2590", "542f86", "09af8f", "a6a10a", "875c26", "9e1320", "741f98", "1627a0" };
+        public static string ActivityNextYearChartColor = "#407B22";
         public static string ActivityChartColor = "#c633c9";
         public static string Campaign_InspectPopup_Flag_Color = "C6EBF3";
         public static string Plan_InspectPopup_Flag_Color = "C6EBF3";
@@ -6450,6 +6451,50 @@ namespace RevenuePlanner.Helpers
         }
         #endregion
 
+        /// <summary>
+        /// Added By: Nishant Sheth.
+        /// Function to get plan report start and end date as per timeframe list.
+        /// </summary>
+        /// <param name="timeframe">time frame.</param>
+
+        public static void GetReportStartEndDate(string timeframe, ref DateTime startDate1, ref DateTime endDate1, ref DateTime startDate2, ref DateTime endDate2)
+        {
+            int year;
+            string[] ListYears = timeframe.Split(',');
+            bool isNumeric = int.TryParse(ListYears[0], out year);
+
+            startDate1 = new DateTime(Convert.ToInt32(DateTime.Now.Year), 1, 1);
+            endDate1 = new DateTime(Convert.ToInt32(DateTime.Now.Year), 12, 31);
+
+            startDate2 = startDate1;
+            endDate2 = endDate1;
+            if (ListYears.Length > 0 && isNumeric)
+            {
+                startDate1 = new DateTime(Convert.ToInt32(ListYears[0]), 1, 1);
+                endDate1 = new DateTime(Convert.ToInt32(ListYears[0]), 12, 31);
+                if (ListYears.Length <= 1)
+                {
+                    startDate2 = startDate1;
+                    endDate2 = endDate1;
+                }
+                if (ListYears.Length > 1)
+                {
+                    startDate2 = new DateTime(Convert.ToInt32(ListYears[ListYears.Length - 1]), 1, 1);
+                    endDate2 = new DateTime(Convert.ToInt32(ListYears[ListYears.Length - 1]), 12, 31);
+                }
+            }
+
+        }
+        /// <summary>
+        /// Added By: Nishant Sheth.
+        /// Function to Get list of selcted Years
+        /// </summary>
+        /// <param name="timeframe">time frame.</param>
+
+        public static void GetselectedYearList(string timeframe, ref string[] selectedYearList)
+        {
+            selectedYearList = timeframe.Split(',');
+        }
 
     }
 

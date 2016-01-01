@@ -171,8 +171,27 @@
         var _curnttimeframe = '';
         _tbody = _tbody + ' <th>&nbsp;</th> '
         for (var _cat = 0; _cat < _catCount; _cat++) {
-            _curnttimeframe = _categories[_cat] + ' ' + _lblTimeFrame;
+            //_curnttimeframe = _categories[_cat] + ' ' + _lblTimeFrame;
+            //_tbody = _tbody + ' <th class="nobold">' + _curnttimeframe + '</th>';
+            // Modified By Nishant Sheth #1839
+            var YearName = '';
+            var d = new Date();
+            var n = d.getFullYear();
+            
+            if (parseInt(_categories[_cat], 10)) {
+                YearName = _categories[_cat];
+            } else {
+
+                var ListYears = _lblTimeFrame.split(',');
+                if (ListYears.indexOf(n.toString()) >= 0) {
+                    YearName = n.toString();
+                } else {
+                    YearName = ListYears[0];
+                }
+            }
+            _curnttimeframe = (_categories[_cat] == YearName ? '' : _categories[_cat]) + '&nbsp;' + YearName;
             _tbody = _tbody + ' <th class="nobold">' + _curnttimeframe + '</th>';
+            // End By Nishant Sheth
         }
         _tbody = _tbody + ' </tr>';
 

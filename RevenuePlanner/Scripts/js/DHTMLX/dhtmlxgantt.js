@@ -1471,7 +1471,7 @@ gantt._render_grid_item = function (item) {
 		    else if (item.type == "Tactic" && item.Permission == true) {
 		        // #1780
 		        //value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='add_Remove_Entity' name1='" + item.id + "' aria-label='" + item.text + "' Permission='" + item.Permission + "'></div>  ";
-		        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
+		        value = "<div id='" + item.type + "' class='gantt_add' Name='" + item.id + "' aria-label='" + _item + "' Permission='" + item.Permission + "' LinkTacticPermission='" + item.LinkTacticPermission + "' LinkedTacticId = '" + item.LinkedTacticId + "'></div> <div id='" + item.type + "'  class='honeycombbox-icon-gantt calender-view-honeycomb' name1='" + item.id + "' ColorCode= '" + item.colorcode + "'  TacticType='" + item.TacticType + "' OwnerName= '" + item.OwnerName + "'  aria-label='" + _item + "' Permission='" + item.Permission + "'>" + "</div>  ";
 		        // #1780
 		    }
 
@@ -9968,8 +9968,33 @@ gantt._init_templates = function(){
             return "<div class='gantt_tree_icon gantt_" + (item.$open ? "close" : "open") + "'></div>";
         },
         grid_blank:function(item) {
+            if (item.type == "Tactic")
+            {
+
+                if (item.Permission == true && item.LinkTacticPermission == true) {
+                    //"<div class='gantt_tree_icon gantt_blank'></div>";
+                    //Added By Komal Rawal for PL 1845 link tactic feature.
+                    var Class = 'fa fa-chain-broken';
+                    var Id = 'UnlinkIcon';
+                    if(item.LinkedTacticId != null)
+                    {
+                        Class = 'fa fa-link';
+                        Id = 'LinkIcon';
+                    }
+                  
+                    return "<div class='unlink-icon' id = '" + Id + "' LinkedPlanName = '" + htmlEncode(item.LinkedPlanName).replace("'", "&#39;") + "'><i class= '" + Class + "'></i></div>";
+                }
+                else
+                {
             return "<div class='gantt_tree_icon gantt_blank'></div>";
+                }
+            }
+            else
+            {
+                return  "<div class='gantt_tree_icon gantt_blank'></div>";
+            }
         },
+       
 		date_grid: function(date, item) {
 			if(item && gantt.isUnscheduledTask(item) && gantt.config.show_unscheduled){
 				return gantt.templates.task_unscheduled_time(item);
