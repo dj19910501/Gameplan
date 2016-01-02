@@ -222,37 +222,77 @@
 
    @if (tacticReview.IsDeployedToIntegration && (bool)ViewBag.IsModelDeploy && (bool)ViewBag.IsModelIntegratedWorkFront)
    {
-        <ul class="nav nav-tabs new-margin clear remove-bottom-border" style="border-top: 1px solid #b2afaf">
+        <ul class="nav nav-tabs new-margin clear remove-bottom-border" style="border-top: 1px solid #b2afaf;padding-bottom:10px;padding-top:10px">
             <li>
                 <h4 class="source-sans-proregular">WorkFront Setup and Options</h4>
             </li>
         </ul>
-                    <div class="span5">
-                        <div class="cf form-group">
-                            @Html.Label("Request Queue")
-                            @Html.TextBoxFor(model => tacticReview.TacticTypeTitle, new { @class = "span10 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticReview.TacticTypeTitle })
-                        </div>
-                        <div class="cf form-group">
-                            @Html.Label("Assigned To")
-                            @Html.TextBoxFor(model => tacticReview.TacticTypeTitle, new { @class = "span10 input-small truncate", style = "background:#F2F2F2;", @readonly = "true", title = tacticReview.TacticTypeTitle })
-                        </div>
-                    </div>
 
-                    <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 border-bottom-div">
-                        <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
-                            <div class="source-sans-prosemibold">Tactic Type</div>
-                            <div>
-                                <div id="campaign-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
-                            </div>
-                        </div>
-                        <div style="float: right; width: 47%;">
-                            <div class="source-sans-prosemibold">WorkFront Template</div>
-                            <div>
-                                <div id="program-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
-                            </div>
-                        </div>
-                    </div>
-      }
+
+    <div class="row">
+        <div style="padding-bottom: 8px; margin-bottom: 8px;" class="span2">
+            <div style="float: left; width: 98%; border-right: 1px solid #b2afaf">
+                <div class="source-sans-prosemibold">Tactic Type</div>
+                <div>
+                    <div id="campaign-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
+                </div>
+                <div class="source-sans-prosemibold">WorkFront Template</div>
+                <div>
+                    <div id="program-title1" class="sub-head" title="@Html.Raw(tacticReview.TacticTypeTitle) ">@Html.Raw(tacticReview.TacticTypeTitle)</div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="span3" style="padding-left:40px">
+            <h5>Tactic Approval Behavior</h5>
+            <div class="radio" style="width:100%; float:left;margin-left:20px">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios1" value="option1" checked="">
+                    Create a project in WorkFront
+                </label>
+            </div>
+            <div class="radio" style="width:100%; float:left; margin-left:20px">
+                <label>
+                    <input type="radio" name="optionsRadios" id="optionsRadios2" value="option2">
+                    Create a request in WorkFront
+                </label>
+            </div>
+        </div>
+
+        <div class="span2" style="padding-left: 20px; border-right:1px solid #b2afaf">
+            <div class="cf form-group">
+                @Html.Label("Request Queue")
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Dropdown
+                    <span class="caret"></span>
+                </button>
+            </div>
+            <div class="cf form-group">
+                @Html.Label("Assigned To")
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    Dropdown
+                    <span class="caret"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="span3" style="padding-left:40px">
+            <h5>Organization Behavior</h5>
+            <div class="checkbox" style="width:100%; float:left;margin-left:20px">
+                <label>
+                    <input type="checkbox" value="" id="organizationSelection">
+                    Organize WorkFront projects
+                </label>
+            </div>
+        </div>
+
+    </div>
+
+   }
 
 
 <div class="border-top-div cf pull-left margin-top10 margin-bottom20" style="width: 100%;">
