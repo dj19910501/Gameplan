@@ -2726,6 +2726,15 @@ namespace RevenuePlanner.Controllers
             { 
                 modelIntegrationList.Add(pcpt.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstance4);
                 ViewBag.IsModelIntegratedWorkFront = true; //Added 29 Dec 2015 by Brad Gray PL#1851
+                if(pcpt.TacticType.WorkFront_Template == null)
+                {
+                    ViewBag.WorkFront_Template = "None Selected";
+                }
+                else
+                {
+
+                    ViewBag.WorkFront_Template = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == pcpt.TacticType.WorkFront_Template).First().Template_Name;
+                }
             }
             else{ViewBag.IsModelIntegratedWorkFront = false;} //Added 29 Dec 2015 by Brad Gray PL#1851
             ViewBag.IntegrationInstances = modelIntegrationList;
