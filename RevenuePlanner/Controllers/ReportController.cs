@@ -138,21 +138,60 @@ namespace RevenuePlanner.Controllers
 
             var DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
-
-            var CampPlanIds = db.Plan_Campaign.Where(camp => (!(camp.StartDate >= endDate1 || camp.EndDate <= startDate1)))
-                .Select(camp => camp.PlanId).Distinct().ToList();
-            var ProgramPlanIds = db.Plan_Campaign_Program.Where(prog => (!(prog.StartDate >= endDate1 || prog.EndDate <= startDate1)))
-                .Select(prog => prog.Plan_Campaign.PlanId).Distinct().ToList();
-            var TacticPlanIds = db.Plan_Campaign_Program_Tactic.Where(tac => (!(tac.StartDate >= endDate1 || tac.EndDate <= startDate1)))
-                .Select(tac => tac.Plan_Campaign_Program.Plan_Campaign.PlanId).ToList();
+            // Modified By Nishant Sheth 
+            // Desc #1842 :: as per code review changes
+            var CampPlans = db.Plan_Campaign.Where(camp => camp.IsDeleted == false)
+                .Select(camp => new
+                {
+                    PlanId = camp.PlanId,
+                    StartYear = camp.StartDate.Year,
+                    EndYear = camp.EndDate.Year,
+                    StartDate = camp.StartDate,
+                    EndDate = camp.EndDate
+                })
+                .ToList();
+            var ProgramPlans = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false)
+                .Select(prog => new
+                {
+                    PlanId = prog.Plan_Campaign.PlanId,
+                    StartYear = prog.StartDate.Year,
+                    EndYear = prog.EndDate.Year,
+                    StartDate = prog.StartDate,
+                    EndDate = prog.EndDate
+                }).ToList();
+            var TacticPlans = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false)
+                .Select(tac => new
+                {
+                    PlanId = tac.Plan_Campaign_Program.Plan_Campaign.PlanId,
+                    StartYear = tac.StartDate.Year,
+                    EndYear = tac.EndDate.Year,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate
+                }).ToList();
             var PlanIds = DataPlanList.Where(plan => plan.Year == selectedYear)
                 .Select(plan => plan.PlanId).Distinct().ToList();
 
+            var CampPlanIds = CampPlans.Where(camp => (!(camp.StartDate >= endDate1 || camp.EndDate <= startDate1)))
+                .Select(camp => camp.PlanId).Distinct().ToList();
+            var ProgramPlanIds = ProgramPlans.Where(prog => (!(prog.StartDate >= endDate1 || prog.EndDate <= startDate1)))
+                .Select(prog => prog.PlanId).Distinct().ToList();
+            var TacticPlanIds = TacticPlans.Where(tac => (!(tac.StartDate >= endDate1 || tac.EndDate <= startDate1)))
+                .Select(tac => tac.PlanId).Distinct().ToList();
 
             var allPlanIds = CampPlanIds.Concat(ProgramPlanIds)
                                         .Concat(TacticPlanIds)
                                         .Concat(PlanIds).Distinct().ToList();
+            var StartYears = CampPlans.Select(camp => camp.StartYear)
+                .Concat(ProgramPlans.Select(prog => prog.StartYear))
+                .Concat(TacticPlans.Select(tac => tac.StartYear))
+                .Distinct().ToList();
 
+            var EndYears = CampPlans.Select(camp => camp.EndYear)
+                .Concat(ProgramPlans.Select(prog => prog.EndYear))
+                .Concat(TacticPlans.Select(tac => tac.EndYear))
+                .Distinct().ToList();
+
+            var PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
 
             var lstPlan = tblPlan.Where(plan => allPlanIds.Contains(plan.PlanId)).ToList(); // Modify BY Nishant Sheth #1821
             if (lstPlan.Count == 0)
@@ -168,16 +207,17 @@ namespace RevenuePlanner.Controllers
             ViewBag.SelectedYear = selectedYear;
             // End - Added by Arpita Soni for Ticket #1148 on 02/02/2015
 
-            var yearlist = DataPlanList.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();// Modify BY Nishant Sheth #1821
+            var yearlist = PlanYears;// Modify BY Nishant Sheth #1821
             SelectListItem objYear = new SelectListItem();
-            foreach (string year in yearlist)
+            foreach (int year in yearlist)
             {
+                string yearname = Convert.ToString(year);
                 objYear = new SelectListItem();
 
                 objYear.Text = "FY " + year;
 
-                objYear.Value = year;
-                objYear.Selected = year == selectedYear ? true : false;
+                objYear.Value = yearname;
+                objYear.Selected = yearname == selectedYear ? true : false;
                 lstYear.Add(objYear);
             }
 

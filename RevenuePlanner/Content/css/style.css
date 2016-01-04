@@ -11829,6 +11829,7 @@ div.clue-bottom-default .cluetip-arrows {
 
 .revenue-graph-info .yearcounter {
     text-align: center;
+    word-wrap:break-word; 
 }
 
 .margintop5per {
