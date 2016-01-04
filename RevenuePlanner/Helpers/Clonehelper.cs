@@ -1412,5 +1412,172 @@ namespace RevenuePlanner.Helpers
         }
 
         #endregion
+
+        #region "Method related to Link entities to other Plan"
+        /// <summary>
+        /// This method is identify the clone type 
+        /// Added : By Rahul Shah for PL #1846 Linking icon for tactics with allocation
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <param name="Suffix"></param>
+        /// <param name="LinkClone"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public int LinkToOtherPlan(List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping, string cloneType = "", int entityId = 0, int PlanId = 0, int parentEntityId = 0, bool isdifferModel = false)
+        {
+            Guid UserId = Sessions.User.UserId;
+            if (PlanId == 0)
+            {
+                PlanId = Sessions.PlanId;
+            }
+            string entityStatus = Enums.TacticStatus.Created.ToString();
+            return LinkTacticToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, isdifferModel, lstTacticTypeMapping);
+            //switch (cloneType)
+            //{
+            //    case "Campaign":
+            //       return CloneCampaignToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, lstTacticTypeMapping);
+
+            //    case "Program":
+            //       return CloneProgramToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, lstTacticTypeMapping);
+
+            //    case "Tactic":
+            //        return LinkTacticToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, isdifferModel, lstTacticTypeMapping);
+            //        
+            //}
+            //return 0;
+        }
+
+
+        /// <summary>
+        /// Link the Tactic and it's All Child element
+        /// Added : By Rahul Shah for PL #1846 Linking Tactic to Same or Other Plan
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <param name="Suffix"></param>
+        /// <param name="UserId"></param>
+        /// <param name="ID"></param>
+        /// <param name="TacticStatus"></param>
+        /// <returns></returns>
+        public int LinkTacticToOtherPlan(int planid, Guid UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
+        {
+            int returnFlag = 0;
+            if (entityId == 0)
+                return returnFlag;
+            DateTime startDate = new DateTime(), endDate = new DateTime();
+            try
+            {
+                db.Configuration.AutoDetectChangesEnabled = false;
+                Plan_Campaign_Program objParentProgram = new Plan_Campaign_Program();
+                if (parentEntityId > 0)
+                    objParentProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == parentEntityId).FirstOrDefault();
+                if (objParentProgram != null)
+                {
+                    startDate = objParentProgram.StartDate;
+                    endDate = objParentProgram.EndDate;
+                }
+
+                Plan_Campaign_Program_Tactic objPlanTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().FirstOrDefault(p => p.PlanTacticId == entityId && p.IsDeleted == false);
+
+
+                if (objPlanTactic != null)
+                {
+                    planid = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                    //HttpContext.Current.Session["ProgramID"] = objPlanTactic.Plan_Campaign_Program.PlanProgramId;
+                    //HttpContext.Current.Session["CampaignID"] = objPlanTactic.Plan_Campaign_Program.PlanCampaignId;
+                    //objPlanTactic.Stage = null;
+                    //objPlanTactic.Status = TacticStatus;
+                    //objPlanTactic.CreatedBy = UserId;
+                    //objPlanTactic.CreatedDate = DateTime.Now;
+                    //objPlanTactic.Title = (objPlanTactic.Title);
+                    //objPlanTactic.Plan_Campaign_Program_Tactic_Comment = null;  // & cost,Budget,CustomField_Entity
+                    //objPlanTactic.Plan_Campaign_Program_Tactic_Actual = null;   //
+                    objPlanTactic.Plan_Campaign_Program = null;
+                    //objPlanTactic.TacticType = null;
+                    //objPlanTactic.Tactic_Share = null;                          //
+                    //objPlanTactic.TacticCustomName = null;
+                    //objPlanTactic.IntegrationInstanceTacticId = null;   
+                    //objPlanTactic.IntegrationInstanceEloquaId = null;   
+                    //objPlanTactic.IntegrationWorkFrontProjectID = null; 
+                    //objPlanTactic.LastSyncDate = null;
+                    //objPlanTactic.ModifiedDate = null;
+                    //objPlanTactic.ModifiedBy = null;
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Comment = objPlanTactic.Plan_Campaign_Program_Tactic_Comment.ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
+                    objPlanTactic.Tactic_Share = objPlanTactic.Tactic_Share.ToList();
+                    objPlanTactic.PlanProgramId = parentEntityId;
+                    //objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate, true) : objPlanTactic.StartDate;
+                    //objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDate(objPlanTactic.EndDate, endDate, false) : objPlanTactic.EndDate;
+                    objPlanTactic.StartDate = objPlanTactic.StartDate;
+                    objPlanTactic.EndDate = objPlanTactic.EndDate;
+                    objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                        pcptl =>
+                        {
+                            pcptl.LineItemType = null;
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                            //pcptl.LineItem_Budget = pcptl.LineItem_Budget.ToList();
+                        });
+
+
+                    if (isdifferModel)
+                    {
+                        PlanTactic_TacticTypeMapping objTacticTypeMapping = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == objPlanTactic.PlanTacticId).FirstOrDefault();
+                        int destTacticTypeId = objTacticTypeMapping.TacticTypeId; // Get destination model TacticTypeId.
+                        objPlanTactic.TacticTypeId = destTacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
+
+                        // Handle Tactic TargetStage scenario.
+                        int? destTargetStageId = objTacticTypeMapping.TargetStageId;
+                        if (!destTargetStageId.HasValue || !objPlanTactic.StageId.Equals(destTargetStageId.Value))
+                        {
+                            objPlanTactic.ProjectedStageValue = null; // if destination Model TargetStage value null Or Source & Destionation Model Target Stage are different then update ProjectedStageValue to be null.
+                            objPlanTactic.StageId = destTargetStageId.HasValue ? destTargetStageId.Value : 0; // Update Target StageId with destination model value.
+                        }
+                    }
+                }
+
+                db.Plan_Campaign_Program_Tactic.Add(objPlanTactic);
+                db.SaveChanges();
+
+                int planTacticId = objPlanTactic.PlanTacticId;
+
+                string entityTypeTactic = Enums.EntityType.Tactic.ToString();
+
+                var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == entityId && (a.CustomField.EntityType == entityTypeTactic)).ToList();
+                CustomFieldsList.ForEach(a =>
+                {
+                    a.EntityId = objPlanTactic.PlanTacticId; db.Entry(a).State = EntityState.Added;
+
+                });
+
+                // clone custom attributes
+                string entityTypeLineItem = Enums.EntityType.Lineitem.ToString();
+
+                List<Plan_Campaign_Program_Tactic_LineItem> objPlanTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(p => p.PlanTacticId == entityId && p.IsDeleted == false).ToList();
+                foreach (var Lineitem in objPlanTacticLineItem)
+                {
+                    var LineItemCustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == Lineitem.PlanLineItemId && a.CustomField.EntityType == entityTypeLineItem).ToList();
+                    var clonedPlanLineItemId = objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Title == Lineitem.Title).FirstOrDefault().PlanLineItemId;
+                    LineItemCustomFieldsList.ForEach(a => { a.EntityId = clonedPlanLineItemId; db.Entry(a).State = EntityState.Added; });
+                }
+
+                db.SaveChanges();
+
+                Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                returnFlag = planTacticId;
+                return returnFlag;
+            }
+            catch (AmbiguousMatchException)
+            {
+                return returnFlag;
+            }
+            finally
+            {
+                db.Configuration.AutoDetectChangesEnabled = true;
+            }
+        }
+
+        #endregion
     }
 }

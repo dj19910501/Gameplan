@@ -6390,7 +6390,7 @@
               
                 if (LinkTacticPermission.toLowerCase() == "true" && LinkedTacticId == "null" )
                 {
-                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'><i class='fa fa-link'></i>Link To</li></ul>";
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'popupType='Linking'><i class='fa fa-link'></i>Link To</li></ul>";
                 }
                 else
                 {
@@ -7029,9 +7029,11 @@ function () {
     function OpentCopyPopup(obj) {
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
+        var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847
         $("#dvCopyEntity").empty();
         var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
-        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
+        //$("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
+        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype); // section parameter added to open share tactic popup
     } 
     function SaveAsPreset() {
 

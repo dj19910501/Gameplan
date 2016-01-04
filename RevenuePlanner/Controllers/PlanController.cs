@@ -48,7 +48,7 @@ namespace RevenuePlanner.Controllers
         List<Stage> stageList = new List<Stage>();
         List<User> lstUserDetails = new List<User>();
         List<int> lstCustomFieldsRequired = new List<int>();
-    //    List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
+        //    List<CustomField_Entity> tacticcustomfieldsentity = new List<CustomField_Entity>();
         List<TacticType> TacticTypeListForHC = new List<TacticType>();
         List<Plan_Campaign_Program_Tactic_LineItem> DBLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
 
@@ -960,14 +960,14 @@ namespace RevenuePlanner.Controllers
         /// Get plan by plan id
         /// </summary>
         /// <param name="planid"></param>
-        public async Task<JsonResult> GetPlanByPlanID(int planid,string year="", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
+        public async Task<JsonResult> GetPlanByPlanID(int planid, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "")
         {
             try
             {
                 await Task.Delay(1);
                 return Json(new
                 {
-                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid,year,CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
+                    lstHomePlanModelHeader = Common.GetPlanHeaderValue(planid, year, CustomFieldId, OwnerIds, TacticTypeids, StatusIds),
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception e)
@@ -2550,7 +2550,7 @@ namespace RevenuePlanner.Controllers
                 // Desc:: for add multiple years regarding #1765
                 // To create the period of the year dynamically base on item period
                 int GlobalYearDiffrence = 0;
-                
+
                 List<string> lstMonthlyExtended = new List<string>();
                 int YearDiffrence = Convert.ToInt32(Convert.ToInt32(tacticDetails.EndDate.Year) - Convert.ToInt32(tacticDetails.StartDate.Year));
                 GlobalYearDiffrence = YearDiffrence;
@@ -2564,7 +2564,7 @@ namespace RevenuePlanner.Controllers
                     }
                     baseYear = baseYear + 12;
                 }
-               
+
 
 
                 //get planId from database.
@@ -6669,7 +6669,7 @@ namespace RevenuePlanner.Controllers
                 //}
                 //objHomePlan.plans = planList;
 
-                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(PlanId, onlyplan:true);
+                planmodel.objplanhomemodelheader = Common.GetPlanHeaderValue(PlanId, onlyplan: true);
                 ViewBag.IsPlanCreateAll = IsPlanCreateAll;
                 ViewBag.IsQuarter = IsQuarter;
                 #endregion
@@ -6707,16 +6707,16 @@ namespace RevenuePlanner.Controllers
             }
 
             // Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
-			var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
-             var plancampaignids = campaign.Select(c => c.PlanCampaignId).ToList();
+            var campaign = db.Plan_Campaign.Where(pc => pc.PlanId.Equals(PlanId) && pc.IsDeleted.Equals(false)).Select(pc => pc).ToList();
+            var plancampaignids = campaign.Select(c => c.PlanCampaignId).ToList();
             var campaignbudgetlist = db.Plan_Campaign_Budget.Where(tb => plancampaignids.Contains(tb.PlanCampaignId)).Select(tb => new { tb.Period, tb.Value, tb.PlanCampaignId }).ToList();
-             var programlist = db.Plan_Campaign_Program.Where(p => plancampaignids.Contains(p.PlanCampaignId) && p.IsDeleted.Equals(false)).ToList();
+            var programlist = db.Plan_Campaign_Program.Where(p => plancampaignids.Contains(p.PlanCampaignId) && p.IsDeleted.Equals(false)).ToList();
             var planprogramids = programlist.Select(p => p.PlanProgramId).ToList();
             var programbudgetlist = db.Plan_Campaign_Program_Budget.Where(tb => planprogramids.Contains(tb.PlanProgramId)).Select(tb => new { tb.Period, tb.Value, tb.PlanProgramId }).ToList();
             var tacticslist = db.Plan_Campaign_Program_Tactic.Where(t => planprogramids.Contains(t.PlanProgramId) && t.IsDeleted.Equals(false)).ToList();
             var plantacticids = tacticslist.Select(t => t.PlanTacticId).ToList();
             var tacticbudgetlist = db.Plan_Campaign_Program_Tactic_Budget.Where(tb => plantacticids.Contains(tb.PlanTacticId)).Select(tb => new { tb.Period, tb.Value, tb.PlanTacticId }).ToList();
-            
+
             var campaignobj = campaign.Select(_campgn => new
             {
                 id = _campgn.PlanCampaignId,
@@ -6749,7 +6749,7 @@ namespace RevenuePlanner.Controllers
 
                 }).Select(pcpj => pcpj).Distinct().OrderBy(pcpj => pcpj.id).ToList()
             }).Select(_campgn => _campgn).Distinct().OrderBy(_campgn => _campgn.id).ToList();
-            
+
             var lstCampaignTmp = campaignobj.Select(_campgn => new
             {
                 id = _campgn.id,
@@ -6885,7 +6885,7 @@ namespace RevenuePlanner.Controllers
             bool isDisplayForFilter = false;
             bool IsCustomFeildExist = Common.IsCustomFeildExist(Enums.EntityType.Tactic.ToString(), Sessions.User.ClientId);
             // Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
-			var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
+            var customfieldlist = db.CustomFields.Where(customfield => customfield.ClientId == Sessions.User.ClientId && customfield.EntityType.Equals(EntityTypeTactic) && customfield.IsDeleted.Equals(false)).ToList();
             var CustomFieldexists = customfieldlist.Where(customfield => customfield.IsRequired && !isDisplayForFilter).Any();
             var customfieldids = customfieldlist.Where(customfield => customfield.CustomFieldType.Name == DropDownList && (isDisplayForFilter ? customfield.IsDisplayForFilter : true)).Select(customfield => customfield.CustomFieldId).ToList();
             List<string> tacIds = model.Where(t => t.ActivityType == EntityTypeTactic).Select(t => t.ActivityId).ToList();
@@ -6918,7 +6918,7 @@ namespace RevenuePlanner.Controllers
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
                         // Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
-						var modelprogramid = model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
+                        var modelprogramid = model.Where(minner => minner.ActivityType == ActivityType.ActivityProgram && minner.ParentActivityId == item.ActivityId).Select(minner => minner.ActivityId).ToList();
                         plantacticids = model.Where(m => m.ActivityType == ActivityType.ActivityTactic && modelprogramid.Contains(m.ParentActivityId)).Select(m => Convert.ToInt32(m.ActivityId)).ToList();
                         lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
@@ -6937,7 +6937,7 @@ namespace RevenuePlanner.Controllers
                     {
                         List<int> planTacticIds = new List<int>();
                         List<int> lstAllowedEntityIds = new List<int>();
-						// Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
+                        // Update code to improve performance for budgeting page #1567, Updated by Bhavesh , Date 17-12-2015
                         planTacticIds = model.Where(m => m.ActivityType == ActivityType.ActivityTactic && m.ParentActivityId == item.ActivityId).Select(m => Convert.ToInt32(m.ActivityId)).ToList();
                         lstAllowedEntityIds = Common.GetEditableTacticListPO(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, IsCustomFeildExist, CustomFieldexists, Entities, lstAllTacticCustomFieldEntities, userCustomRestrictionList, false);
                         if (lstAllowedEntityIds.Count == planTacticIds.Count)
@@ -9156,10 +9156,10 @@ namespace RevenuePlanner.Controllers
             var ProgramColor = ColorCodelist[Enums.EntityType.Program.ToString().ToLower()];
             var CampaignColor = ColorCodelist[Enums.EntityType.Campaign.ToString().ToLower()];
             var PlanColor = ColorCodelist[Enums.EntityType.Plan.ToString().ToLower()];
-			//Declare json object list & variable
+            //Declare json object list & variable
             List<PlanDHTMLXGridDataModel> gridjsonlist = new List<PlanDHTMLXGridDataModel>();
             PlanMainDHTMLXGrid objPlanMainDHTMLXGrid = new PlanMainDHTMLXGrid();
-            
+
             try
             {
                 List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
@@ -9207,7 +9207,7 @@ namespace RevenuePlanner.Controllers
                 // Store Tactic Type list in view bag
                 ViewBag.TacticTypelist = TacticTypeList;
                 ViewBag.Year = Year; //Added by Rahul Shah on 30/11/2015 for PL#1764. 
-				// Generate Json Header
+                // Generate Json Header
                 objPlanMainDHTMLXGrid.head = GenerateJsonHeader(MQLTitle, modelId, TacticTypeList, lstplandetail.Select(plan => plan.Year).FirstOrDefault());
                 GetGoalValue(lstplandetail, modelId, stageList, objplangrid); // for plan grid header to bind goal detail
 
@@ -9226,7 +9226,7 @@ namespace RevenuePlanner.Controllers
                 string section = Enums.Section.Tactic.ToString();
                 var cusomfield = db.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false).ToList();
                 var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
-                    
+
                 var lstAllTacticCustomFieldEntitiesanony = db.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
                                                                                                        .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
 
@@ -9287,13 +9287,13 @@ namespace RevenuePlanner.Controllers
                 // Store Line item type list in Viewbag
                 // Generate dropdown for line item type on click of cell
                 // Added by bhavesh : 17-Nov-2015 : Allow line item type editable
-				ViewBag.lineitemtype = lstLineItemType;
-				// Comment by bhavesh TO load line item type later
+                ViewBag.lineitemtype = lstLineItemType;
+                // Comment by bhavesh TO load line item type later
                 //foreach (var typelist in lstLineItemType)
                 //{
                 //    strLineType = strLineType + "<option value='" + typelist.LineItemTypeId + "'>" + HttpUtility.HtmlEncode((typelist.Title)) + "</option>";
                 //}
-            
+
                 //to improve performance logic changed
                 // Commented By Nishant Sheth 
                 // Desc:: To resolve the #1790 observation
@@ -9368,19 +9368,19 @@ namespace RevenuePlanner.Controllers
                     }
                     );
                 //End
-			   // Declare Variable for XML to JSON
+                // Declare Variable for XML to JSON
                 PlanDHTMLXGridDataModel gridjsonlistplanobj = new PlanDHTMLXGridDataModel();
-                string openstateone ="1",lockedstateone ="1";
-                string lockedstatezero ="0";
+                string openstateone = "1", lockedstateone = "1";
+                string lockedstatezero = "0";
                 string bgcolorPlan = "#E6E6E6";
                 string bgcolorCampaign = "#C6EBF3";
                 string bgcolorProgram = "#DFF0F8";
                 string bgcolorTactic = "#E4F1E1";
                 string bgcolorLineItem = "#ffffff";
-                
-                
+
+
                 string stylecolorblack = "color:#000";
-                
+
                 string doubledesh = "--";
                 string typero = "ro";
                 string dollarsymbol = "$";
@@ -9431,7 +9431,7 @@ namespace RevenuePlanner.Controllers
                             else
                                 IsPlanCreateAll = false;
                         }
-                       
+
                         // Added ID,open,bgcolor
                         gridjsonlistplanobj.id = "plan." + PlanCnt;
                         gridjsonlistplanobj.open = openstateone;
@@ -9448,7 +9448,7 @@ namespace RevenuePlanner.Controllers
                         plandataobj.value = HttpUtility.HtmlEncode(planitem.Title);
                         plandataobj.locked = IsPlanEditable ? lockedstatezero : lockedstateone;
                         plandataobjlist.Add(plandataobj);
-                      
+
                         plandataobj = new Plandataobj();
                         //#1780
                         //plandataobj.value = "<div class=grid_Search id=Plan></div>" + (IsPlanCreateAll ? "<div class=grid_add id=Plan alt=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() + "></div> " : "") + "<div class=add_Remove_Entity onclick=javascript:AddRemoveEntity(this) id=PlanAdd altId=" + planitem.PlanId + " per=" + IsPlanCreateAll.ToString().ToLower() +"></div>";
@@ -9464,42 +9464,42 @@ namespace RevenuePlanner.Controllers
                         plandataobj.value = Startdate;
                         plandataobj.locked = lockedstateone;
                         plandataobjlist.Add(plandataobj);
-                 
+
                         plandataobj = new Plandataobj();
                         plandataobj.value = Enddate;
                         plandataobj.locked = lockedstateone;
                         plandataobjlist.Add(plandataobj);
-                 
+
                         plandataobj = new Plandataobj();
                         plandataobj.value = totalcost.ToString();
                         plandataobj.actval = totalcost.ToString();
                         plandataobjlist.Add(plandataobj);
-                
+
                         plandataobj = new Plandataobj();
                         plandataobj.value = doubledesh;
                         plandataobj.type = typero;
                         plandataobjlist.Add(plandataobj);
-                 
+
                         plandataobj = new Plandataobj();
                         plandataobj.value = Common.GetUserName(planitem.CreatedBy.ToString());
                         plandataobj.type = typero;
                         plandataobjlist.Add(plandataobj);
-                
+
                         plandataobj = new Plandataobj();
                         plandataobj.value = doubledesh;
                         plandataobj.type = typero;
                         plandataobjlist.Add(plandataobj);
-                
+
                         plandataobj = new Plandataobj();
                         plandataobj.value = ConvertNumberToRoundFormate(totalmql).ToString();
                         plandataobj.actval = totalmql.ToString();
                         plandataobjlist.Add(plandataobj);
-                
+
                         plandataobj = new Plandataobj();
                         plandataobj.value = dollarsymbol + ConvertNumberToRoundFormate(totalrevenue).ToString();
                         plandataobj.actval = totalrevenue.ToString();
                         plandataobjlist.Add(plandataobj);
-                        
+
                         gridjsonlistplanobj.data = plandataobjlist;
                         Campaignfilterlst = lstcampaigndetail.Where(campaign => campaign.PlanId == planid && campaign.IsDeleted == false).OrderBy(c => c.Title).ToList();// Ticket #1753 : Add default sorting for task name : Added By Bhavesh : Date - 17-Nov-2015 : Addd orderby clause for Campaign title
                         CampCnt = 1;
@@ -9586,7 +9586,7 @@ namespace RevenuePlanner.Controllers
                                     campaignrowsobj.open = openstateone;
                                     campaignrowsobj.bgColor = bgcolorCampaign;
                                     List<Plandataobj> campaigndataobjlist = new List<Plandataobj>();
-                                    
+
                                     Plandataobj campaigndataobj = new Plandataobj();
                                     campaigndataobj.value = "Campaign";
                                     campaigndataobjlist.Add(campaigndataobj);
@@ -9735,7 +9735,7 @@ namespace RevenuePlanner.Controllers
                                                 programrowsobj.open = openstateone;
                                                 programrowsobj.bgColor = bgcolorProgram;
                                                 List<Plandataobj> programdataobjlist = new List<Plandataobj>();
-                                                
+
                                                 Plandataobj programdataobj = new Plandataobj();
                                                 programdataobj.value = "Program";
                                                 programdataobjlist.Add(programdataobj);
@@ -9801,7 +9801,7 @@ namespace RevenuePlanner.Controllers
                                                 programrowsobj.data = programdataobjlist;
 
 
-                                                if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0 )&& !IsFiltered )
+                                                if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0) && !IsFiltered)
                                                 {
                                                     //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
                                                     // Modified By Nishant Sheth 
@@ -9810,7 +9810,7 @@ namespace RevenuePlanner.Controllers
                                                 }
                                                 else
                                                 {
-                                                finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();
+                                                    finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();
 
                                                 }
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
@@ -9871,16 +9871,16 @@ namespace RevenuePlanner.Controllers
 
                                                         tacticdataobj = new Plandataobj();
                                                         //Modified By Komal Rawal for PL 1845 link tactic feature.
-                                                     
-                                                        
+
+
                                                         tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;") + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
                                                         tacticdataobj.locked = tactic.IstactEditable;
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
-                                                     
-                                                        
+
+
 
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
@@ -10062,7 +10062,7 @@ namespace RevenuePlanner.Controllers
                             }
                             gridjsonlistplanobj.rows = campaignrowsobjlist;
                         }
-                        
+
                         PlanCnt = PlanCnt + 1;
                         gridjsonlist.Add(gridjsonlistplanobj);
                     }
@@ -10086,7 +10086,7 @@ namespace RevenuePlanner.Controllers
         }
 
         #region method to generate grid header
-        protected List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid,List<TacticTypeModel> TacticTypeList, string PlanYear)
+        protected List<PlanHead> GenerateJsonHeader(string MQLTitle, int modelid, List<TacticTypeModel> TacticTypeList, string PlanYear)
         {
             List<PlanHead> headobjlist = new List<PlanHead>();
             PlanHead headobj = new PlanHead();
@@ -10230,7 +10230,7 @@ namespace RevenuePlanner.Controllers
                 headobj.width = 150;
                 headobj.value = "Revenue";
                 headobjlist.Add(headobj);
-              
+
             }
             catch (Exception objException)
             {
@@ -10937,7 +10937,7 @@ namespace RevenuePlanner.Controllers
                     double totalLineitemCost1 = db.Plan_Campaign_Program_Tactic_LineItem.Where(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId != null && l.IsDeleted == false).ToList().Sum(l => l.Cost);
                     var objOtherLineItemNew = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(l => l.PlanTacticId == objTactic.PlanTacticId && l.LineItemTypeId == null);
                     tacticostNew = objTactic.Cost;
-                    
+
                     return Json(new { lineItemCost = totalLineitemCost1, tacticCost = tacticostNew, otherLineItemCost = objOtherLineItemNew.Cost }, JsonRequestBehavior.AllowGet);
                 }
                 #endregion
@@ -11204,7 +11204,7 @@ namespace RevenuePlanner.Controllers
                 }
 
                 objplangrid.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
-               // objimprovement.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
+                // objimprovement.MQLLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(MQLLable);
                 objplangrid.INQLable = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(INQLable);
                 objplangrid.MQLValue = MQLValue;
                 objplangrid.INQValue = INQValue;
@@ -11291,8 +11291,8 @@ namespace RevenuePlanner.Controllers
                 TotalCost = DBLineItemList.Sum(l => l.Cost);
                 //ViewBag.TotalCost = TotalCost;
                 //ViewBag.TotalMqls = TotalMqls;
-              //  objimprovement.TotalCost = TotalCost;
-              //  objimprovement.TotalMqls = TotalMqls;
+                //  objimprovement.TotalCost = TotalCost;
+                //  objimprovement.TotalMqls = TotalMqls;
 
                 //End
 
@@ -11544,9 +11544,9 @@ namespace RevenuePlanner.Controllers
         }
         #endregion
 
-        
+
         #region method to convert number in k, m formate
-        
+
         /// <summary>
         /// Added By devanshi gandhi/ Bhavesh Dobariya to hadle format at server side and avoide at client side - Change made to improve performance of grid view
         /// </summary>
@@ -11567,15 +11567,15 @@ namespace RevenuePlanner.Controllers
                 return (num / 1000000D).ToString("0.##") + "M";
             if (num >= 1000)
                 return (num / 1000D).ToString("0.##") + "K";
-           
+
             if (num != 0.0)
                 return num.ToString("#,#");
             else
                 return "0";
-           
+
 
         }
-        #endregion	   
+        #endregion
 
 
         #region GetOwnerName and TacticTypeName
@@ -11597,23 +11597,24 @@ namespace RevenuePlanner.Controllers
         public string GetOwnerName(string UserGuid)
         {
             var OwnerName = "";
-            if(UserGuid != "")
+            if (UserGuid != "")
             {
-               if(lstUserDetails == null ||lstUserDetails.Count == 0)
-               {
-                 lstUserDetails =  objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
-               }
-           
-            var userName = lstUserDetails.Where(user => user.UserId.ToString() == UserGuid).Select(user=>new{
-            FirstName = user.FirstName,
-            Lastname = user.LastName
-            }).FirstOrDefault();
+                if (lstUserDetails == null || lstUserDetails.Count == 0)
+                {
+                    lstUserDetails = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                }
+
+                var userName = lstUserDetails.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
+                {
+                    FirstName = user.FirstName,
+                    Lastname = user.LastName
+                }).FirstOrDefault();
 
 
-            if (userName != null)
-            {
-                OwnerName = userName.FirstName + " " + userName.Lastname;
-            }
+                if (userName != null)
+                {
+                    OwnerName = userName.FirstName + " " + userName.Lastname;
+                }
             }
 
             return OwnerName.ToString();
@@ -11621,58 +11622,73 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
-        #region "Feature: Copy Tactic/Program/Campaign between Plan"
+        #region "Feature: Copy or Link Tactic/Program/Campaign between Plan"
 
         #region "Bind Planlist & Tree list"
-        public ActionResult LoadCopyEntityPopup(string entityId, string section)
+        public ActionResult LoadCopyEntityPopup(string entityId, string section, string PopupType)
         {
             CopyEntiyBetweenPlanModel objModel = new CopyEntiyBetweenPlanModel();
             try
             {
-            string planId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[0] : string.Empty;
-            entityId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[1] : string.Empty;
+                string planId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[0] : string.Empty;
+                string year = string.Empty;
+                entityId = !string.IsNullOrEmpty(entityId) ? entityId.Split(new char[] { '_' })[1] : string.Empty;
 
-            // Get Source Entity Title to display on Popup & success message.
-            #region "Get Source Entity Title"
-            int sourceEntityId = !string.IsNullOrEmpty(entityId) ? int.Parse(entityId) : 0;
-            string srcEntityTitle = string.Empty;
-            if (sourceEntityId > 0 && string.IsNullOrEmpty(srcEntityTitle))
-            {
-                if (section == Enums.Section.Campaign.ToString())
+                // Get Source Entity Title to display on Popup & success message.
+                #region "Get Source Entity Title"
+                int sourceEntityId = !string.IsNullOrEmpty(entityId) ? int.Parse(entityId) : 0;
+                string srcEntityTitle = string.Empty;
+                if (sourceEntityId > 0 && string.IsNullOrEmpty(srcEntityTitle))
                 {
-                    Plan_Campaign objCampaign = db.Plan_Campaign.Where(campagn => campagn.PlanCampaignId == sourceEntityId).FirstOrDefault();
+                    if (section == Enums.Section.Campaign.ToString())
+                    {
+                        Plan_Campaign objCampaign = db.Plan_Campaign.Where(campagn => campagn.PlanCampaignId == sourceEntityId).FirstOrDefault();
                         if (objCampaign != null)
                         {
-                    srcEntityTitle = objCampaign.Title;
+                            srcEntityTitle = objCampaign.Title;
                             planId = string.IsNullOrEmpty(planId) ? objCampaign.PlanId.ToString() : planId;    // if planId value is null then set through Entity.
                         }
-                }
-                else if (section == Enums.Section.Program.ToString())
-                {
-                    Plan_Campaign_Program objProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == sourceEntityId).FirstOrDefault();
+                    }
+                    else if (section == Enums.Section.Program.ToString())
+                    {
+                        Plan_Campaign_Program objProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == sourceEntityId).FirstOrDefault();
                         if (objProgram != null)
                         {
-                    srcEntityTitle = objProgram.Title;
+                            srcEntityTitle = objProgram.Title;
                             planId = string.IsNullOrEmpty(planId) ? objProgram.Plan_Campaign.PlanId.ToString() : planId;    // if planId value is null then set through Entity.
                         }
-                }
-                else if (section == Enums.Section.Tactic.ToString())
-                {
-                    Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
+                    }
+                    else if (section == Enums.Section.Tactic.ToString())
+                    {
+                        Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
                         if (objTactic != null)
                         {
-                    srcEntityTitle = objTactic.Title;
+                            srcEntityTitle = objTactic.Title;
                             planId = string.IsNullOrEmpty(planId) ? objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId.ToString() : planId;    // if planId value is null then set through Entity.
+                            year = objTactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year.ToString();
                         }
+                    }
                 }
-            }
-            #endregion
+                #endregion
 
                 #region "Get Plan List"
+                //Modified by Rahul Shah for PL#1846
                 HomePlanModelHeader planmodel = new Models.HomePlanModelHeader();
+                List<SelectListItem> lstPlans = new List<SelectListItem>();
                 // var PlanId = Sessions.PlanId;
-                planmodel = Common.GetPlanHeaderValue(int.Parse(planId), onlyplan: true);
-                List<SelectListItem> lstPlans = planmodel.plans;
+                if (PopupType.ToString() == Enums.ModelTypeText.Linking.ToString())
+                {
+                    var lstPlanAll = Common.GetPlan();
+                    lstPlanAll = lstPlanAll.Where(a => Convert.ToInt32(a.Year) >= Convert.ToInt32(year)).ToList();
+                    lstPlans = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+
+                }
+                else
+                {
+                    planmodel = Common.GetPlanHeaderValue(int.Parse(planId), onlyplan: true);
+                    lstPlans = planmodel.plans;
+                }
+
                 #endregion
 
                 // Handle user can not copy entity (Tactic/Program/Campaign) to the source Plan.
@@ -11685,17 +11701,18 @@ namespace RevenuePlanner.Controllers
 
                 ViewBag.plans = lstPlans;
                 #region "Get Model"
-                
+
                 int selectedPlanId = lstPlans != null ? Convert.ToInt32(lstPlans.FirstOrDefault().Value) : 0;
                 //selectedPlanId = 14832;
                 objModel = GetParentEntitySelectionList(selectedPlanId);
                 objModel.srcSectionType = section;
                 objModel.srcEntityId = entityId;
+                ViewBag.PopupType = PopupType;
                 objModel.srcPlanId = planId;
-            //objModel.HeaderTitle = HttpUtility.HtmlDecode(srcEntityTitle);
-            objModel.HeaderTitle = string.Empty;
-            ViewBag.HeaderTitle = srcEntityTitle;
-            #endregion
+                //objModel.HeaderTitle = HttpUtility.HtmlDecode(srcEntityTitle);
+                objModel.HeaderTitle = string.Empty;
+                ViewBag.HeaderTitle = srcEntityTitle;
+                #endregion
 
             }
             catch (Exception ex)
@@ -11710,12 +11727,12 @@ namespace RevenuePlanner.Controllers
             PlanId = !string.IsNullOrEmpty(planId) ? Convert.ToInt32(planId) : 0;
             #region "Get Model"
             CopyEntiyBetweenPlanModel objModel = new CopyEntiyBetweenPlanModel();
-            objModel = GetParentEntitySelectionList(PlanId,true);
+            objModel = GetParentEntitySelectionList(PlanId, true);
             #endregion
 
             return Json(objModel, JsonRequestBehavior.AllowGet);
         }
-        private CopyEntiyBetweenPlanModel GetParentEntitySelectionList(int planId,bool isAjaxCall = false)
+        private CopyEntiyBetweenPlanModel GetParentEntitySelectionList(int planId, bool isAjaxCall = false)
         {
 
             CopyEntiyBetweenPlanModel mainGridData = new CopyEntiyBetweenPlanModel();
@@ -11788,7 +11805,7 @@ namespace RevenuePlanner.Controllers
                 Plan objPlan = db.Plans.Where(plan => plan.PlanId == planId).FirstOrDefault();
                 ParentChildEntityMapping objPlanMapping = new ParentChildEntityMapping();
                 objPlanMapping.Id = objPlan.PlanId;
-                objPlanMapping.Name = isAjaxCall?HttpUtility.HtmlDecode(objPlan.Title):HttpUtility.HtmlEncode(objPlan.Title);
+                objPlanMapping.Name = isAjaxCall ? HttpUtility.HtmlDecode(objPlan.Title) : HttpUtility.HtmlEncode(objPlan.Title);
                 objPlanMapping.ParentId = 0;
                 objPlanMapping.RowId = Regex.Replace(objPlan.Title.Trim().Replace("_", ""), @"[^0-9a-zA-Z]+", "") + "_" + objPlan.PlanId.ToString() + "_" + "0" + "_" + Enums.Section.Plan.ToString() + "_" + objPlan.PlanId.ToString();
 
@@ -11846,7 +11863,7 @@ namespace RevenuePlanner.Controllers
                         objCampaign = new ParentChildEntityMapping();
                         objCampaign.Id = cmpgn.PlanCampaignId;
                         objCampaign.ParentId = parentId;
-                        objCampaign.Name = isAjaxCall ? HttpUtility.HtmlDecode(cmpgn.Title) : HttpUtility.HtmlEncode(cmpgn.Title); 
+                        objCampaign.Name = isAjaxCall ? HttpUtility.HtmlDecode(cmpgn.Title) : HttpUtility.HtmlEncode(cmpgn.Title);
                         objCampaign.RowId = Regex.Replace(cmpgn.Title.Trim().Replace("_", ""), @"[^0-9a-zA-Z]+", "") + "_" + cmpgn.PlanCampaignId.ToString() + "_" + parentId.ToString() + "_" + section.ToString() + "_" + destPlanId.ToString();
                         lstMapping.Add(objCampaign);
                     });
@@ -11860,7 +11877,7 @@ namespace RevenuePlanner.Controllers
                         objProgram = new ParentChildEntityMapping();
                         objProgram.Id = prgrm.PlanProgramId;
                         objProgram.ParentId = parentId;
-                        objProgram.Name = isAjaxCall ? HttpUtility.HtmlDecode(prgrm.Title) : HttpUtility.HtmlEncode(prgrm.Title); 
+                        objProgram.Name = isAjaxCall ? HttpUtility.HtmlDecode(prgrm.Title) : HttpUtility.HtmlEncode(prgrm.Title);
                         objProgram.RowId = Regex.Replace(prgrm.Title.Trim().Replace("_", ""), @"[^0-9a-zA-Z]+", "") + "_" + prgrm.PlanProgramId.ToString() + "_" + parentId.ToString() + "_" + section.ToString() + "_" + destPlanId.ToString();
                         lstMapping.Add(objProgram);
                     });
@@ -11900,7 +11917,7 @@ namespace RevenuePlanner.Controllers
             {
                 if (CloneType == Enums.Section.Campaign.ToString())
                 {
-                    Plan_Campaign objCampaign=db.Plan_Campaign.Where(campagn => campagn.PlanCampaignId == sourceEntityId).FirstOrDefault();
+                    Plan_Campaign objCampaign = db.Plan_Campaign.Where(campagn => campagn.PlanCampaignId == sourceEntityId).FirstOrDefault();
                     srcPlanId = objCampaign.PlanId;
                 }
                 else if (CloneType == Enums.Section.Program.ToString())
@@ -11959,7 +11976,7 @@ namespace RevenuePlanner.Controllers
 
                         //// Create Clone by CloneType e.g Plan,Campaign,Program,Tactic,LineItem
                         rtResult = objClonehelper.CloneToOtherPlan(lstTacticTypeMapping, CloneType, sourceEntityId, srcPlanId, destEntityId, isdifferModel);
-                        UpdateParentEntityStartEndData(sourceEntityId, destEntityId, CloneType, srcPlanId,destPlanId);
+                        UpdateParentEntityStartEndData(sourceEntityId, destEntityId, CloneType, srcPlanId, destPlanId);
                     }
                 }
                 catch (Exception e)
@@ -11988,13 +12005,13 @@ namespace RevenuePlanner.Controllers
                         sourceEntityTitle = objTactic.Title;
                     }
                 }
-                 sourceEntityHtmlDecodedTitle=HttpUtility.HtmlDecode(sourceEntityTitle);
+                sourceEntityHtmlDecodedTitle = HttpUtility.HtmlDecode(sourceEntityTitle);
                 #endregion
             }
             catch (Exception ex)
             {
                 return Json(new { msg = Common.objCached.ExceptionErrorMessage, isSuccess = false }, JsonRequestBehavior.AllowGet);
-               // throw ex;
+                // throw ex;
             }
             return Json(new { msg = Common.objCached.CloneEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
         }
@@ -12021,7 +12038,7 @@ namespace RevenuePlanner.Controllers
                         PlanTactic_TacticTypeMapping objTacticMapping = new PlanTactic_TacticTypeMapping();
                         objTacticMapping.PlanTacticId = sourceEntityId; //Source PlanTacticId
                         objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId; // Destination Model TacticTypeId.
-                        objTacticMapping.TargetStageId =lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
+                        objTacticMapping.TargetStageId = lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
                         lstTacticTypeMapping.Add(objTacticMapping);
                     }
                 }
@@ -12075,14 +12092,14 @@ namespace RevenuePlanner.Controllers
                         }
                     }
                 }
-                
+
             }
             catch (Exception ex)
             {
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
-                return lstTacticTypeMapping;
-            }
+            return lstTacticTypeMapping;
+        }
 
         /// <summary>
         /// Created By: Viral Kadiya on 11/23/2015 for PL ticket #1748: Abiliy to move a tactic/program/campign between different plans.
@@ -12092,7 +12109,7 @@ namespace RevenuePlanner.Controllers
         /// <param name="destPlanEntityId">Destination EntityId: Under which source entity copied</param>
         /// <param name="CloneType">CloneType: Entity will be copied</param>
         /// <returns></returns>
-        public void UpdateParentEntityStartEndData(int srcPlanEntityId, int destPlanEntityId, string CloneType,int srcPlanId, int destPlanId)
+        public void UpdateParentEntityStartEndData(int srcPlanEntityId, int destPlanEntityId, string CloneType, int srcPlanId, int destPlanId)
         {
             try
             {
@@ -12113,7 +12130,7 @@ namespace RevenuePlanner.Controllers
 
                     if (isDifferPlanyear)
                     {
-                        destProgram.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.StartDate,true,isParentUpdate:true);
+                        destProgram.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.StartDate, true, isParentUpdate: true);
 
                         destProgram.Plan_Campaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.Plan_Campaign.StartDate, true, isParentUpdate: true);
 
@@ -12141,7 +12158,7 @@ namespace RevenuePlanner.Controllers
                             destProgram.Plan_Campaign.EndDate = srcTactic.EndDate;
                         }
                     }
-                    
+
                     db.Entry(destProgram).State = EntityState.Modified;
                 }
                 else if (CloneType == Enums.DuplicationModule.Program.ToString())
@@ -12158,11 +12175,11 @@ namespace RevenuePlanner.Controllers
                     {
                         if (destCampaign.StartDate > srcTactic.StartDate)
                         {
-                                destCampaign.StartDate = srcTactic.StartDate;
+                            destCampaign.StartDate = srcTactic.StartDate;
                         }
                         if (srcTactic.EndDate > destCampaign.EndDate)
                         {
-                                destCampaign.EndDate = srcTactic.EndDate;
+                            destCampaign.EndDate = srcTactic.EndDate;
                         }
                     }
                     db.Entry(destCampaign).State = EntityState.Modified;
@@ -12178,6 +12195,234 @@ namespace RevenuePlanner.Controllers
 
         #endregion
 
+        #region "Link Entities from One Plan to Another"
+
+        /// <summary>
+        /// Created By: Rahul Shah on 12/30/2015 for PL ticket #1846: Abiliy to link a tactic between different plans.
+        /// Link Tactic from one plan to another.
+        /// </summary>
+        /// <param name="srcPlanEntityId">Source EntityId like PlanTacticId </param>
+        /// <param name="destPlanEntityId">Destination EntityId: Under which source entity copied</param>
+        /// <param name="CloneType">CloneType: Entity will be copied</param>
+        /// <returns></returns>
+        public JsonResult LinktoOtherPlan(string CloneType, string srcEntityId, string destEntityID, string srcPlanID, string destPlanID, string sourceEntityTitle)
+        {
+            string sourceEntityHtmlDecodedTitle = string.Empty;
+            int sourceEntityId = !string.IsNullOrEmpty(srcEntityId) ? Convert.ToInt32(srcEntityId) : 0;
+            int destEntityId = !string.IsNullOrEmpty(destEntityID) ? Convert.ToInt32(destEntityID) : 0;
+            int srcPlanId = !string.IsNullOrEmpty(srcPlanID) ? Convert.ToInt32(srcPlanID) : 0;
+            int destPlanId = !string.IsNullOrEmpty(destPlanID) ? Convert.ToInt32(destPlanID) : 0;
+            bool isdifferModel = false;
+            string destPlanTitle = string.Empty;
+            List<Plan> tblPlan = Common.GetPlan();
+
+            // when user click on "Copy To" option from Plan Grid then source planId will be null.
+            #region "Get Source PlanId"
+            if (sourceEntityId > 0 && string.IsNullOrEmpty(srcPlanID))
+            {
+
+                if (CloneType == Enums.Section.Tactic.ToString())
+                {
+                    Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
+                    srcPlanId = objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                }
+            }
+            #endregion
+            try
+            {
+                bool isValid = true;
+                #region "verify all required scenarios"
+                string invalidTacticIds = string.Empty;
+                // Get Source and Destination Plan ModelId.
+                int sourceModelId = 0; int destModelId = 0;
+
+                sourceModelId = tblPlan.Where(plan => plan.PlanId == srcPlanId).FirstOrDefault().ModelId;
+                Plan destPlan = tblPlan.Where(plan => plan.PlanId == destPlanId).FirstOrDefault();
+                destModelId = destPlan.ModelId;
+                destPlanTitle = destPlan.Title;
+                Model sourceModel = new Model();
+                Model destModel = new Model();
+
+                sourceModel = db.Models.Where(mod => mod.ModelId == sourceModelId).FirstOrDefault();
+
+                List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping = new List<PlanTactic_TacticTypeMapping>();
+                // verify that source & destination model are same or not.
+                if (sourceModelId > 0 && !sourceModelId.Equals(destModelId))
+                {
+
+                    if (sourceModel.IntegrationInstanceId != null || sourceModel.IntegrationInstanceEloquaId != null)
+                    {
+                        destModel = db.Models.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
+                        if (sourceModel.IntegrationInstanceId != destModel.IntegrationInstanceId || sourceModel.IntegrationInstanceEloquaId != destModel.IntegrationInstanceEloquaId)
+                        {
+                            return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
+                        }
+                    }
+                    isdifferModel = true;
+                    lstTacticTypeMapping = CheckDetailSourceandDestinationModel(CloneType, sourceEntityId, sourceModelId, destModelId, ref invalidTacticIds);
+                    if (!string.IsNullOrEmpty(invalidTacticIds))
+                        isValid = false;
+
+                }
+                if (!isValid)
+                    return Json(new { msg = Common.objCached.TacticTypeConflictMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
+                //Return:- quiet code execution process and give warning message like "Source and Destination plan refer to different Model this may cause invalid data".
+                #endregion
+
+                #region "if verify all above scenarios then create Clone"
+                int rtResult = 0;
+
+                if (Sessions.User == null)
+                {
+                    TempData["ErrorMessage"] = Common.objCached.SessionExpired;
+                    return Json(new { msg = Common.objCached.SessionExpired, isSuccess = false }, JsonRequestBehavior.AllowGet);
+                }
+
+                try
+                {
+                    if (!string.IsNullOrEmpty(CloneType) && sourceEntityId > 0)
+                    {
+                        Clonehelper objClonehelper = new Clonehelper();
+
+                        //// Create Clone by CloneType e.g Plan,Campaign,Program,Tactic,LineItem
+                        rtResult = objClonehelper.LinkToOtherPlan(lstTacticTypeMapping, CloneType, sourceEntityId, srcPlanId, destEntityId, isdifferModel);
+                        UpdateParentEntityStartEndDataforLinking(sourceEntityId, destEntityId, CloneType, srcPlanId, destPlanId);
+                    }
+                }
+                catch (Exception e)
+                {
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                    return Json(new { msg = Common.objCached.ExceptionErrorMessage, isSuccess = false }, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                // Get Source Entity Title to display on success message.
+                #region "Get Source Entity Title"
+                if (sourceEntityId > 0 && string.IsNullOrEmpty(sourceEntityTitle))
+                {
+
+                    if (CloneType == Enums.Section.Tactic.ToString())
+                    {
+                        Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
+                        sourceEntityTitle = objTactic.Title;
+                    }
+                }
+                sourceEntityHtmlDecodedTitle = HttpUtility.HtmlDecode(sourceEntityTitle);
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                return Json(new { msg = Common.objCached.ExceptionErrorMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
+                // throw ex;
+            }
+            return Json(new { msg = Common.objCached.LinkEntitySuccessMessage.Replace("{0}", CloneType).Replace("{1}", sourceEntityHtmlDecodedTitle).Replace("{2}", destPlanTitle), isSuccess = true }, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Created By: Rahul Shah on 01/01/2016 for PL ticket #1846: Abiliy to move a tactic/program/campign between different plans.
+        /// Update Parent Entity(i.e. Campaign,Program) Start-End Date.
+        /// </summary>
+        /// <param name="srcPlanEntityId">Source EntityId like PlanTacticId </param>
+        /// <param name="destPlanEntityId">Destination EntityId: Under which source entity linked</param>
+        /// <param name="CloneType">CloneType: Entity will be linked</param>
+        /// <returns></returns>
+        public void UpdateParentEntityStartEndDataforLinking(int srcPlanEntityId, int destPlanEntityId, string CloneType, int srcPlanId, int destPlanId)
+        {
+            try
+            {
+                //bool isDifferPlanyear = false;
+                //#region "Identify that source & destination point to different year or not"
+                //if (srcPlanId != destPlanId)
+                //{
+                //    isDifferPlanyear = true;
+                //}
+                //#endregion
+
+                #region "Update Parent Entity Start-End Date"
+                Clonehelper objClonehelper = new Clonehelper();
+                if (CloneType == Enums.DuplicationModule.Tactic.ToString())
+                {
+                    var srcTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(tac => tac.PlanTacticId == srcPlanEntityId);
+                    var destProgram = db.Plan_Campaign_Program.FirstOrDefault(prg => prg.PlanProgramId == destPlanEntityId);
+
+                    //if (isDifferPlanyear)
+                    //{
+                    //    destProgram.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.StartDate, true, isParentUpdate: true);
+
+                    //    destProgram.Plan_Campaign.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.Plan_Campaign.StartDate, true, isParentUpdate: true);
+
+                    //    destProgram.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.EndDate, false, isParentUpdate: true);
+
+                    //    destProgram.Plan_Campaign.EndDate = objClonehelper.GetResultDate(srcTactic.EndDate, destProgram.Plan_Campaign.EndDate, false, isParentUpdate: true);
+                    //}
+                    //else
+                    //{
+                    if (destProgram.StartDate > srcTactic.StartDate)
+                    {
+                        destProgram.StartDate = srcTactic.StartDate;
+                    }
+                    if (destProgram.Plan_Campaign.StartDate > srcTactic.StartDate)
+                    {
+                        destProgram.Plan_Campaign.StartDate = srcTactic.StartDate;
+                    }
+
+                    if (srcTactic.EndDate > destProgram.EndDate)
+                    {
+                        destProgram.EndDate = srcTactic.EndDate;
+                    }
+                    if (srcTactic.EndDate > destProgram.Plan_Campaign.EndDate)
+                    {
+                        destProgram.Plan_Campaign.EndDate = srcTactic.EndDate;
+                    }
+                    //}
+
+                    db.Entry(destProgram).State = EntityState.Modified;
+                }
+
+                db.SaveChanges();
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+        }
+
+        public List<PlanTactic_TacticTypeMapping> CheckDetailSourceandDestinationModel(string CloneType, int sourceEntityId, int sourceModelId, int destModelId, ref string invalidTacticIds)
+        {
+            //string invalidTacticIds = string.Empty;
+            List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping = new List<PlanTactic_TacticTypeMapping>();
+            try
+            {
+                if (CloneType == Enums.DuplicationModule.Tactic.ToString())
+                {
+                    Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
+                    objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId && tac.IsDeleted == false).FirstOrDefault();
+
+                    //// Check whether source Entity TacticType in list of TacticType of destination Model exist or not.
+                    var lstTacticType = from _tacType in db.TacticTypes
+                                        where _tacType.ModelId == destModelId && _tacType.IsDeleted == false && _tacType.IsDeployedToModel == true && _tacType.Title == objTactic.TacticType.Title && _tacType.StageId == objTactic.StageId
+                                        select _tacType;
+                    if (lstTacticType == null || lstTacticType.Count() == 0)
+                        invalidTacticIds = sourceEntityId.ToString();
+                    else
+                    {
+
+                        PlanTactic_TacticTypeMapping objTacticMapping = new PlanTactic_TacticTypeMapping();
+                        objTacticMapping.PlanTacticId = sourceEntityId; //Source PlanTacticId
+                        objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId; // Destination Model TacticTypeId.
+                        objTacticMapping.TargetStageId = lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
+                        lstTacticTypeMapping.Add(objTacticMapping);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return lstTacticTypeMapping;
+        }
+
+        #endregion
         #endregion
     }
 }

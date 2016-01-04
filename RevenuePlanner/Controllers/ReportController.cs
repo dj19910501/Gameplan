@@ -6124,17 +6124,17 @@ namespace RevenuePlanner.Controllers
             bool IsDisplay = false, IsQuarterly = objBasicModel.IsQuarterly;
             List<double?> serData1 = new List<double?>();
             List<double?> serData2 = new List<double?>();
-
+            
             double TodayValue = 0, catLength = 0;
             string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
-
+            string[] ListYear = timeframeOption.Split(',');
             #endregion
 
             try
             {
 
                 #region "Get Today Plot Value"
-                if (currentYear == timeframeOption)
+                if (ListYear.Contains(currentYear)) // Modified By Nishant Sheth #1838
                 {
                     IsDisplay = true;
                     TodayValue = GetTodayPlotValue(timeframeOption, IsQuarterly);

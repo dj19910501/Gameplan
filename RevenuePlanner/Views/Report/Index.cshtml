@@ -698,6 +698,7 @@
       var SelectedBUId, SelectedPlanId;
       var IsCallFromYearDropdown = true;
       var OptionMain = '';
+      var years = ""; // Add By Nishant Sheth
       var isAllowClick = true;
       var multiselectPlanId = "ulSelectedPlans";
       var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
@@ -1090,8 +1091,8 @@
 
     //// Load Plan data based on selected year
     var _item;
-    function LoadPlanData() {
-        var strYear = OptionMain;
+    function LoadPlanData(years) {
+        var strYear = years;
         if (OptionMain == 'thisquarter') {
             strYear = new Date().getFullYear();
         }
@@ -1484,7 +1485,7 @@
             SavePresetValue = false;
         });
 
-function OnYearChange(_yearli) {
+    function OnYearChange(_yearli) {        
     $(_yearli).siblings().each(function () {
         $(this).removeClass('close-list');
     });
@@ -1492,7 +1493,7 @@ function OnYearChange(_yearli) {
         // Add By Nishant Sheth
         // Desc :: #1842 multiple year selection base on #1821
     var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
-    var years = "";
+    years = "";
     $.each(listCheckbox, function () {
         if ($(this).attr("checked")) {
             years += $(this).attr('yearValue') + ",";
@@ -1500,9 +1501,9 @@ function OnYearChange(_yearli) {
     });
     years = years.slice(0, -1);
         //OptionMain = $(_yearli).attr('yearValue');
-    OptionMain = years;
+    //OptionMain = years;
     if (IsCallFromYearDropdown) {
-        LoadPlanData();
+        LoadPlanData(years);
     }
     //var _yearText = $(_yearli).attr('title');
     //$("#spYearText").html(_yearText);

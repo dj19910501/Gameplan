@@ -2439,6 +2439,63 @@ namespace RevenuePlanner.Helpers
             }
         }
         ////End - Added by Viral Kadiya for PL ticket #1748
+        ////Start - Added by Viral Kadiya for PL ticket #1748
+        private string _ExceptionErrorMessageforLinking;
+        public string ExceptionErrorMessageforLinking
+        {
+            get
+            {
+                return _ExceptionErrorMessageforLinking;
+            }
+            set
+            {
+                _ExceptionErrorMessageforLinking = value;
+            }
+        }
+        ////Start - Added by Rahul Shah for PL ticket #1846
+        private string _LinkEntitySuccessMessage;
+        public string LinkEntitySuccessMessage
+        {
+            get
+            {
+                return _LinkEntitySuccessMessage;
+            }
+            set
+            {
+                _LinkEntitySuccessMessage = value;
+            }
+        }
+        ////End - Added by Rahul Shah for PL ticket #1846
+
+        ////Start - Added by Rahul Shah for PL ticket #1846
+        private string _TacticTypeConflictMessageforLinking;
+        public string TacticTypeConflictMessageforLinking
+        {
+            get
+            {
+                return _TacticTypeConflictMessageforLinking;
+            }
+            set
+            {
+                _TacticTypeConflictMessageforLinking = value;
+            }
+        }
+        ////End - Added by Rahul Shah for PL ticket #1846
+
+        ////Start - Added by Rahul Shah for PL ticket #1846
+        private string _ModelTypeConflict;
+        public string ModelTypeConflict
+        {
+            get
+            {
+                return _ModelTypeConflict;
+            }
+            set
+            {
+                _ModelTypeConflict = value;
+            }
+        }
+        ////End - Added by Rahul Shah for PL ticket #1846
         ////Start - Added by Dashrath Prajapati for PL ticket #1776
         private string _CloneEntityNonSelctionErrorMessage;
         public string CloneEntityNonSelctionErrorMessage
@@ -3264,6 +3321,27 @@ namespace RevenuePlanner.Helpers
                                             _TacticTypeConflictMessage = strMsgValue;
                                             break;
                                         ////End - Added by Viral Kadiya for PL ticket #1748
+
+                                        ////Start - Added by Rahul Shah for PL ticket #1846
+                                        case "ExceptionErrorMessageforLinking":
+                                            _ExceptionErrorMessageforLinking = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1846
+                                        ////Start - Added by Rahul Shah for PL ticket #1846
+                                        case "LinkEntitySuccessMessage":
+                                            _LinkEntitySuccessMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1846
+                                        ////Start - Added by Rahul Shah for PL ticket #1846
+                                        case "TacticTypeConflictMessageforLinking":
+                                            _TacticTypeConflictMessageforLinking = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1846
+                                        ////Start - Added by Rahul Shah for PL ticket #1846
+                                        case "ModelTypeConflict":
+                                            _ModelTypeConflict = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1846
                                         ////Start - Added by Dashrath Prajapati for PL ticket #1776
                                         case "CloneEntityNoneSelectiontMessage":
                                             _CloneEntityNonSelctionErrorMessage = strMsgValue;

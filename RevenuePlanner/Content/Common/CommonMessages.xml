@@ -954,6 +954,30 @@
 		<value>{0} {1} has been copied to {2}.</value>
 	</Field>
 	<!--End Added by Viral Kadiya for PL ticket #1748-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>ExceptionErrorMessageforLinking</Name>
+    <value>Error occurred while Linking data.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>TacticTypeConflictMessageforLinking</Name>
+    <value>Linking process cannot proceed due to source and destination plan uses different Tactic Type. Please check Tactic Type under Model.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>ModelTypeConflict</Name>
+    <value>Linking process cannot proceed due to source and destination Model Integration instances are different.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>LinkEntitySuccessMessage</Name>
+    <value>{0} {1} has been Link to {2}.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
 	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
 	<Field>
 		<Name>CloneEntityNoneSelectiontMessage</Name>

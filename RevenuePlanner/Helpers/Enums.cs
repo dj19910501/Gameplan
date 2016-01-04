@@ -1273,6 +1273,18 @@ namespace RevenuePlanner.Helpers
             TacticType,
             Status,
         }
+
+        //Added by Rahul Shah for PL #1847
+        /// <summary>
+        /// Added by: Rahul Shah
+        /// Date:31/12/2015
+        /// Enum for LinkTo  and CopyTo Model
+        /// </summary>
+        public enum ModelTypeText
+        {
+            Linking,
+            Copying
+        }
     }
 
     #region Authorization
