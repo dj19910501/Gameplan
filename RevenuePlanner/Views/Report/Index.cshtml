@@ -1485,7 +1485,7 @@
             SavePresetValue = false;
         });
 
-function OnYearChange(_yearli) {
+    function OnYearChange(_yearli) {        
     $(_yearli).siblings().each(function () {
         $(this).removeClass('close-list');
     });
@@ -1493,7 +1493,7 @@ function OnYearChange(_yearli) {
         // Add By Nishant Sheth
         // Desc :: #1842 multiple year selection base on #1821
     var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
-    
+    years = "";
     $.each(listCheckbox, function () {
         if ($(this).attr("checked")) {
             years += $(this).attr('yearValue') + ",";
