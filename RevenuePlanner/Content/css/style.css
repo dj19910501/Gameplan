@@ -10697,6 +10697,16 @@ font-size: 20px;
     color:#fff;
 }
 /*By Bheru mehta 30-12-2015 for #1843 end*/
+
+/*By Bheru mehta 04-01-2016 for #1850 start*/
+.gantt_hor_scroll{
+    display:none !important;/*by bheru Mehta 04-01-2016 #1850*/
+}
+.market-activity-main .gantt_task{
+    overflow-x:auto;
+    overflow-y:hidden;
+}
+/*By Bheru mehta 04-01-2016 for #1850 end*/
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;
@@ -15607,7 +15617,7 @@ font-weight:normal;
 
 .notify-load {
     border: 1px solid transparent;
-    padding: 15px;
+    padding: 15px 0 0;/*by bheru 30-12-2015 #1799*/
 }
 
 

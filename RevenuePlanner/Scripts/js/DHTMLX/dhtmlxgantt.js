@@ -9104,8 +9104,8 @@ gantt._restore_scroll_state = function(){
 };
 gantt.scrollTo = function(left, top){
     if (left*1 == left){
-        this.$task.scrollLeft = left;
-		this._save_scroll_state(left, undefined);
+        //this.$task.scrollLeft = left;
+		//this._save_scroll_state(left, undefined);
 	}
     if(top*1 == top){
         this.$task_data.scrollTop = top;
