@@ -7,6 +7,7 @@
     var srcSectionType = Model.srcSectionType != null ? Model.srcSectionType : string.Empty;
     var srcEntityId = Model.srcEntityId != null ? Model.srcEntityId : string.Empty;
     var srcPlanId = Model.srcPlanId != null ? Model.srcPlanId : string.Empty;
+    var PopupType = (string)ViewBag.PopupType;
     var constPlan = RevenuePlanner.Helpers.Enums.Section.Plan;
         var constCampaign = RevenuePlanner.Helpers.Enums.Section.Campaign;
         var constProgram = RevenuePlanner.Helpers.Enums.Section.Program;
@@ -19,7 +20,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close closeCopyEntity" data-dismiss="modal" aria-label="Close" id="btnClose"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title  source-sans-proregular" id="myModalLabel">Copying - <span class=" source-sans-probold tipsyTitle" id="hdrTitle"></span></h4>
+                @*<h4 class="modal-title  source-sans-proregular" id="myModalLabel">Copying - <span class=" source-sans-probold tipsyTitle" id="hdrTitle"></span></h4>*@
+                <h4 class="modal-title  source-sans-proregular" id="myModalLabel"> @PopupType.ToString() - <span class=" source-sans-probold tipsyTitle" id="hdrTitle"></span></h4>  @*Modified by Rahul Shah on 30/12/2015 for PL #1847*@
             </div>
             <div class="modal-body">
                 <div id="nl-formCopyTacticPlan" class="nl-form-plan-title without-margin plantitle financetitle">
@@ -123,7 +125,7 @@
         });
     }
     function CopyEntity() {
-      
+        var poptype = '@PopupType.ToString().ToUpper()';
         var selectedRowId = myTreeGrid.getSelectedRowId();
         if (selectedRowId != null && selectedRowId != 'undefined') {
             var arrElements = selectedRowId.split('_'); // selectedRowWIdFormat: [entityname]_[EntityId]_[prntEntityId]_[sectionType]_[destPlanId]
@@ -148,14 +150,59 @@
                 ShowError(false, errorMsg);
             }
             else {
-                var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
-                var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
-                CloneEntityToOtherPlan(destEntityId, destPlanId);
+                if (poptype == "@Convert.ToString(RevenuePlanner.Helpers.Enums.ModelTypeText.Linking).ToUpper()") {
+                    var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
+                    var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
+                    LinkEntityToOtherPlan(destEntityId, destPlanId);
+                } else {
+                    var destEntityId = arrElements[1] != null && arrElements[1] != 'undefined' ? arrElements[1] : '';
+                    var destPlanId = arrElements[4] != null && arrElements[4] != 'undefined' ? arrElements[4] : '';
+                    CloneEntityToOtherPlan(destEntityId, destPlanId);
+                }
             }
         
         //alert(selectedRowId);
     }
+    //Added by Rahul Shah on 30/12/2015 for PL #1847
+    function LinkEntityToOtherPlan(destEntityId, destPlanId) {
+        var srcEntityID = '@srcEntityId';
+        var srcPlanID = '@srcPlanId';
+        var cloneType = '@srcSectionType';
+        var destEntityID = destEntityId;
+        var srcEntityTitle = '@HttpUtility.JavaScriptStringEncode(headerTitle)'; //PL#1794 Copy Tactic/Program/Campaign: Error Message & Validation Message -Added by Dashrath Prajapati
+        $.ajax({
+            url: '@Url.Content("~/Plan/LinktoOtherPlan/")',
+            data: {
+                CloneType: cloneType,
+                srcEntityId: srcEntityID,
+                destEntityID: destEntityId,
+                srcPlanID: srcPlanID,
+                destPlanID: destPlanId,
+                sourceEntityTitle: srcEntityTitle
+            },
+            datatype: 'json',
+            type: 'GET',
+            async: false,
+            success: function (result) {
+                if (result != null && result != undefined) {
+                    var issuccess = result.isSuccess;
+                    if (issuccess != null && issuccess != 'undefined' && issuccess) {
+                        $('#copytactic').hide();
+                        $("#errorMsg").css("display", "none");
+                        $("#SuccessMsg").css("display", "block");
+                        $("#spanMsgSuccess").empty();
+                        $("#spanMsgSuccess").text(result.msg);
+                        $("#errorMessage1").css("display", "none");
+                        $("#successMessage1").css("display", "none");
+                    }
+                    else {
+                        ShowError(issuccess, result.msg);
+                    }
 
+                }
+            }
+        });
+    }
     function CloneEntityToOtherPlan(destEntityId,destPlanId) {
         var srcEntityID = '@srcEntityId';
         var srcPlanID = '@srcPlanId';
