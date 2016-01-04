@@ -9873,7 +9873,9 @@ namespace RevenuePlanner.Controllers
                                                         //Modified By Komal Rawal for PL 1845 link tactic feature.
 
 
-                                                        tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;") + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
+                                                        //tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;") + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
+                                                        tacticdataobj.value = (LinkTacticPermission == true ? tactic.LinkTacticId == null ? "<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>" : "<div class='unlink-icon unlink-icon-grid'  LinkedPlanName='" + (tactic.LinkedPlanName == null ? null : HttpUtility.HtmlEncode(tactic.LinkedPlanName).Replace("'", "&#39;")) + "' id = 'LinkIcon' ><i class='fa fa-link'></i></div>" : "") + HttpUtility.HtmlEncode(tactic.title) + (tactic.IsRequiredfalse == true ? "<span id='tacticIsRequired'></span>" : "");
+
                                                         tacticdataobj.locked = tactic.IstactEditable;
                                                         tacticdataobj.style = cellTextColor;
                                                         tacticdataobjlist.Add(tacticdataobj);

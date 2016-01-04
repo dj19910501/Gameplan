@@ -269,6 +269,7 @@
     }
 
     $('#EditForm').click(function () {
+       
         var activeTab = $("#InspectTab li.active a").text();
         var planId = $("#hdnPlanId").val();
       //  var requestedModule = $("#hdnRequestedModule").val();
@@ -306,7 +307,21 @@
             }
 
         }
+        updatePlanNameDrp();
     });
+
+    function updatePlanNameDrp() {
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').each(function (e) {
+          var planid = $(this).val().toString();
+            if (planid == '@planDetails.PlanId') {
+                var updatedPlantext = $("#txtTitle").val();
+                $(this).attr('originalvalue', updatedPlantext);
+                $(this).text('');
+                $(this).text(updatedPlantext);
+                $(this).parent().parent().find('a').text(updatedPlantext)
+            }
+        });
+    }
 
     $('#AddForm').click(function () {
         if ($('#popupnewplan').css('display') == 'none') {
