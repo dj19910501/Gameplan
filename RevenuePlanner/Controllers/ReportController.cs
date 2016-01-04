@@ -2115,6 +2115,7 @@ namespace RevenuePlanner.Controllers
             string EntTacticType = Enums.EntityType.Tactic.ToString();
 
             List<Plan_Campaign_Program_Tactic> tacticList = new List<Plan_Campaign_Program_Tactic>();
+            Common.GetselectedYearList(Year, ref selectedYearList);// Add By Nishant Sheth #1839
             tacticList = GetTacticForReporting(true);
             var FilteredLineItemList = new List<Plan_Campaign_Program_Tactic_LineItem>();
             //// load Filter lists.
@@ -6124,7 +6125,7 @@ namespace RevenuePlanner.Controllers
             bool IsDisplay = false, IsQuarterly = objBasicModel.IsQuarterly;
             List<double?> serData1 = new List<double?>();
             List<double?> serData2 = new List<double?>();
-            
+
             double TodayValue = 0, catLength = 0;
             string curntPeriod = string.Empty, currentYear = DateTime.Now.Year.ToString(), timeframeOption = objBasicModel.timeframeOption;
             string[] ListYear = timeframeOption.Split(',');
@@ -8518,7 +8519,7 @@ namespace RevenuePlanner.Controllers
                 {
                     // Modify By Nishant Sheth #1840 to get same value for quaterly and monthly
                     _goalval = objBasicModel.GoalYTD.ToList()[i];
-                    
+
                     //if (currentEndMonth > i)
                     //{
                     if (_goalval != 0.0)
