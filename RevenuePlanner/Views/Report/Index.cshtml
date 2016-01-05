@@ -1098,6 +1098,17 @@
         if (OptionMain == 'thisquarter') {
             strYear = new Date().getFullYear();
         }
+        // Addd By Nishant Sheth
+        // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
+        var selectedPlanIds = [];
+        var listofselectedplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']:checked");
+        $.each(listofselectedplan, function () {
+            
+            var pid = $(this).attr('id').split('_')[0];
+            selectedPlanIds.push(pid);
+        });
+        // End By Nishant Sheth
+
         $.ajax({
             beforeSend: function (x) {
                 myApp.hidePleaseWait();
@@ -1128,7 +1139,19 @@
                     $("#PlanAllModule").css("display", "none");
                     $("#NoPlanFound").show();
                 }
+                // Addd By Nishant Sheth
+                // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
+                var listofplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']");
+                $.each(listofplan, function () {
 
+                    var pid = $(this).attr('id').split('_')[0];
+                    var indexofplan = $.inArray(pid, selectedPlanIds);
+                    if (indexofplan > -1) {
+                        $(this).attr("checked", "checked");
+                        OnPlanchange($(this));
+                    }
+                });
+                // End By Nishant Sheth
                 PlanIds = GetFilterIdForPlan(multiselectPlanId);
                 GetTacticTypelist(PlanIds,false);
                 GetOwnerListForFilter(PlanIds,false);
