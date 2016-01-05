@@ -3447,14 +3447,12 @@ namespace RevenuePlanner.Controllers
             //// Get planyear of the selected Plan
             if (strparam.Contains("-"))
             {
-
                 List<ActivityChart> lstActivityChartyears = new List<ActivityChart>();
                 lstActivityChartyears = getmultipleyearActivityChart(strparam, planid, CustomFieldId, OwnerIds, TacticTypeids, StatusIds, isMultiplePlan);
                 return Json(new { lstchart = lstActivityChartyears.ToList() }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-
                 isNumeric = int.TryParse(strparam, out Planyear);
                 if (isNumeric)
                 {
@@ -4245,7 +4243,7 @@ namespace RevenuePlanner.Controllers
             //// Prepare array of months for seelcted quarter
             if (startDateParam.Month == month1 || startDateParam.Month == month2 || startDateParam.Month == month3 || endDateParam.Month == month1 || endDateParam.Month == month2 || endDateParam.Month == month3)
             {
-                differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDateParam.AddMonths(element)).TakeWhile(element => element <= endDateParam).Select(element => element.ToString("MM"));
+                differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDateParam.AddMonths(element)).TakeWhile(element => element <= endDateParam).Select(element => element.ToString("MM-yyyy"));
 
                 List<string> thismonthdifferenceItem = new List<string>();
                 if (differenceItems.Count() > 12)
@@ -4258,19 +4256,50 @@ namespace RevenuePlanner.Controllers
                     thismonthdifferenceItem = differenceItems.ToList();
                 }
 
+                //
+                //foreach (string objDifference in thismonthdifferenceItem)
+                //{
+                //    string[] diffrenceitem = objDifference.Split('-');
+                //    monthNo = Convert.ToInt32(diffrenceitem[0].TrimStart('0'));
+                //    if (monthNo == DateTime.Now.Month)
+                //    {
+                //        if (diffrenceitem[1] == System.DateTime.Now.Year.ToString())
+                //        {
+                //            if (monthNo == 1)
+                //            {
+                //                monthArray[0] = monthArray[0] + 1;
+                //            }
+                //        }
+                //        else
+                //        {
+                //            monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                //        }
+                //    }
+                //}
+                //
+
                 foreach (string d in thismonthdifferenceItem)
                 {
-                    monthNo = Convert.ToInt32(d.TrimStart('0'));
+                    string[] diffrenceitem = d.Split('-');
+                    monthNo = Convert.ToInt32(diffrenceitem[0].TrimStart('0'));
                     if (monthNo == month1 || monthNo == month2 || monthNo == month3)
                     {
-                        if (monthNo == 1)
+                        if (diffrenceitem[1] == System.DateTime.Now.Year.ToString())
                         {
-                            monthArray[0] = monthArray[0] + 1;
+
+                            if (monthNo == 1)
+                            {
+                                monthArray[0] = monthArray[0] + 1;
+                            }
+                            else
+                            {
+                                monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                            }
                         }
-                        else
-                        {
-                            monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
-                        }
+                        //else
+                        //{
+                        //    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                        //}
                     }
                 }
 
