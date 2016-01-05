@@ -12270,7 +12270,11 @@ namespace RevenuePlanner.Controllers
                     return Json(new { msg = Common.objCached.TacticTypeConflictMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 //Return:- quiet code execution process and give warning message like "Source and Destination plan refer to different Model this may cause invalid data".
                 #endregion
-
+                //check source tactic exis or not in destination Program.
+                bool isTacticExist = db.Plan_Campaign_Program_Tactic.Any(tact => tact.PlanProgramId == destEntityId && tact.Title.Trim() == sourceEntityTitle.Trim() && tact.IsDeleted == false);
+                if (isTacticExist)
+                    return Json(new { msg = Common.objCached.LinkEntityAlreadyExist.Replace("{0}", sourceEntityTitle.ToString()), isSuccess = false }, JsonRequestBehavior.AllowGet);
+					
                 #region "if verify all above scenarios then create Clone"
                 int rtResult = 0;
 
@@ -12298,18 +12302,18 @@ namespace RevenuePlanner.Controllers
                 }
                 #endregion
                 // Get Source Entity Title to display on success message.
-                #region "Get Source Entity Title"
-                if (sourceEntityId > 0 && string.IsNullOrEmpty(sourceEntityTitle))
-                {
+                //#region "Get Source Entity Title"
+                //if (sourceEntityId > 0 && string.IsNullOrEmpty(sourceEntityTitle))
+                //{
 
-                    if (CloneType == Enums.Section.Tactic.ToString())
-                    {
-                        Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
-                        sourceEntityTitle = objTactic.Title;
-                    }
-                }
+                //    if (CloneType == Enums.Section.Tactic.ToString())
+                //    {
+                //        Plan_Campaign_Program_Tactic objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId).FirstOrDefault();
+                //        sourceEntityTitle = objTactic.Title;
+                //    }
+                //}
                 sourceEntityHtmlDecodedTitle = HttpUtility.HtmlDecode(sourceEntityTitle);
-                #endregion
+                //#endregion
             }
             catch (Exception ex)
             {

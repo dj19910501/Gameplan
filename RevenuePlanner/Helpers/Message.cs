@@ -2466,7 +2466,20 @@ namespace RevenuePlanner.Helpers
             }
         }
         ////End - Added by Rahul Shah for PL ticket #1846
-
+        ////Start - Added by Rahul Shah for PL ticket #1846
+        private string _LinkEntityAlreadyExist;
+        public string LinkEntityAlreadyExist
+        {
+            get
+            {
+                return _LinkEntityAlreadyExist;
+            }
+            set
+            {
+                _LinkEntityAlreadyExist = value;
+            }
+        }
+        ////End - Added by Rahul Shah for PL ticket #1846
         ////Start - Added by Rahul Shah for PL ticket #1846
         private string _TacticTypeConflictMessageforLinking;
         public string TacticTypeConflictMessageforLinking
@@ -3330,6 +3343,11 @@ namespace RevenuePlanner.Helpers
                                         ////Start - Added by Rahul Shah for PL ticket #1846
                                         case "LinkEntitySuccessMessage":
                                             _LinkEntitySuccessMessage = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1846
+                                        ////Start - Added by Rahul Shah for PL ticket #1846
+                                        case "LinkEntityAlreadyExist":
+                                            _LinkEntityAlreadyExist = strMsgValue;
                                             break;
                                         ////End - Added by Rahul Shah for PL ticket #1846
                                         ////Start - Added by Rahul Shah for PL ticket #1846

@@ -978,6 +978,13 @@
     <value>{0} {1} has been Link to {2}.</value>
   </Field>
   <!--end Added by Rahul Shah for PL ticket #1846-->
+  <!--start Added by Rahul Shah for PL ticket #1846-->
+  <Field>
+    <Name>LinkEntityAlreadyExist</Name>
+    <value>{0} is already Exist.</value>
+  </Field>
+  <!--end Added by Rahul Shah for PL ticket #1846-->
+  
 	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
 	<Field>
 		<Name>CloneEntityNoneSelectiontMessage</Name>
