@@ -220,6 +220,7 @@ namespace RevenuePlanner.Models
         public DateTime CEndDate { get; set; }
         public string AllocatedBy { get; set; }
         public bool IsOtherLineItem { get; set; }
+      
     }
 
     public class Plan_Selector

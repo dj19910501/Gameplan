@@ -8600,6 +8600,37 @@ namespace RevenuePlanner.Controllers
             int PlanLineItemId = int.Parse(strPlanItemId);
             int tid = db.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.PlanLineItemId == PlanLineItemId).FirstOrDefault().PlanTacticId;
 
+            //Added By Komal Rawal for LinkedLineItem change PL ticket #1853
+            Plan_Campaign_Program_Tactic_LineItem Lineitemobj = new Plan_Campaign_Program_Tactic_LineItem();
+            Plan_Campaign_Program_Tactic ObjLinkedTactic = new Plan_Campaign_Program_Tactic();
+
+            var LinkedLineitemId = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanLineItemId == PlanLineItemId && id.IsDeleted == false).Select(id => id.LinkedLineItemId).FirstOrDefault();
+
+            int? LinkedTacticId = null;
+            if (LinkedLineitemId != null)
+            {
+                Lineitemobj = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.PlanLineItemId == LinkedLineitemId && id.IsDeleted == false).ToList().FirstOrDefault();
+                LinkedTacticId = Lineitemobj.Plan_Campaign_Program_Tactic.PlanTacticId;
+              
+            }
+            //else
+            //{
+            //    Lineitemobj = db.Plan_Campaign_Program_Tactic_LineItem.Where(id => id.LinkedLineItemId == PlanLineItemId && id.IsDeleted == false).ToList().FirstOrDefault();
+            //    if (Lineitemobj != null)
+            //    {
+
+            //        LinkedLineitemId = Lineitemobj.PlanLineItemId;
+            //        LinkedTacticId = Lineitemobj.Plan_Campaign_Program_Tactic.LinkedTacticId;
+                  
+            //    }
+
+            //}
+
+
+            //End
+
+
+
             //// Get Duplicate record to check duplication.
             var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
                            join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
@@ -8609,11 +8640,33 @@ namespace RevenuePlanner.Controllers
                                            && pcpt.PlanTacticId == tid
                            select pcpt).FirstOrDefault();
 
+            //Check duplicate for Linked LineItem 
+            //Added By Komal Rawal for PL ticket #1853
+            var LinkedLi = new Plan_Campaign_Program_Tactic();
+            if (LinkedTacticId != null && LinkedTacticId.HasValue)
+            {
+                LinkedLi = (from pcptli in db.Plan_Campaign_Program_Tactic_LineItem
+                            join pcpt in db.Plan_Campaign_Program_Tactic on pcptli.PlanTacticId equals pcpt.PlanTacticId
+                            join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                            join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                            where pcptli.Title.Trim().ToLower().Equals(LineItemTitle.Trim().ToLower()) && pcptli.PlanLineItemId != LinkedLineitemId.Value && pcptli.IsDeleted.Equals(false)
+                                            && pcpt.PlanTacticId == LinkedTacticId.Value
+                            select pcpt).FirstOrDefault();
+
+            }
+            //End
+
             //// if duplicate record exist then return Duplicate message.
-            if (pcptvar != null)
+            if (pcptvar != null || LinkedLi != null)
             {
                 string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
-                return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                string strduplicatedlinkedlineitem = "";
+                if (LinkedLi != null)
+                {
+                    strduplicatedlinkedlineitem = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()] + " in the linkedtactic");    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                }
+
+                return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage, strmsg = strduplicatedlinkedlineitem });
             }
             else
             {
@@ -8626,6 +8679,16 @@ namespace RevenuePlanner.Controllers
                     objPCPTL.ModifiedDate = DateTime.Now;
                     db.Entry(objPCPTL).State = EntityState.Modified;
                     db.SaveChanges();
+                }
+
+                if (LinkedLineitemId != null && !string.IsNullOrEmpty(LineItemTitle))
+                {
+                    Lineitemobj.Title = LineItemTitle;
+                    Lineitemobj.ModifiedBy = Sessions.User.UserId;
+                    Lineitemobj.ModifiedDate = DateTime.Now;
+                    db.Entry(Lineitemobj).State = EntityState.Modified;
+                    db.SaveChanges();
+
                 }
                 var PrevActualAllocationListTactics = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(actl => actl.PlanLineItemId == PlanLineItemId).Select(actl => actl).ToList();
                 if (PrevActualAllocationListTactics != null && PrevActualAllocationListTactics.Count > 0)
@@ -8653,6 +8716,37 @@ namespace RevenuePlanner.Controllers
                 }
                 saveresult = db.SaveChanges();
 
+                //Added By Komal Rawal for LinkedLineItem change PL ticket #1853
+                if(LinkedLineitemId != null)
+                {
+                    #region "Update Linked Tactic Actual data"
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> tblLineItemData = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(id => (id.PlanLineItemId == PlanLineItemId) || (id.PlanLineItemId == LinkedLineitemId)).ToList();
+                    List<Plan_Campaign_Program_Tactic_LineItem_Actual> lstLineItemData = tblLineItemData.Where(id => id.PlanLineItemId == PlanLineItemId).ToList();
+
+                    if (lstLineItemData != null && lstLineItemData.Count > 0)
+                    {
+                        List<Plan_Campaign_Program_Tactic_LineItem_Actual> linkedLineItemData = tblLineItemData.Where(id => id.PlanLineItemId == LinkedLineitemId).ToList();
+                        linkedLineItemData.ForEach(bdgt => db.Entry(bdgt).State = EntityState.Deleted);
+                        Plan_Campaign_Program_Tactic_LineItem_Actual objlinkedActual = null;
+                        foreach (Plan_Campaign_Program_Tactic_LineItem_Actual item in lstLineItemData)
+                        {
+                            objlinkedActual = new Plan_Campaign_Program_Tactic_LineItem_Actual();
+                            objlinkedActual.PlanLineItemId = Convert.ToInt32(LinkedLineitemId);
+                            objlinkedActual.Period= item.Period;
+                            objlinkedActual.Value = item.Value;
+                            objlinkedActual.CreatedBy = item.CreatedBy;
+                            objlinkedActual.CreatedDate = item.CreatedDate;
+                            db.Entry(objlinkedActual).State = EntityState.Added;
+                            db.Plan_Campaign_Program_Tactic_LineItem_Actual.Add(objlinkedActual);
+                        }
+                   
+
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                }
+                //End
                 int pid = db.Plan_Campaign_Program_Tactic.Where(_tac => _tac.PlanTacticId == tid).FirstOrDefault().PlanProgramId;
                 int cid = db.Plan_Campaign_Program.Where(_prgrm => _prgrm.PlanProgramId == pid).FirstOrDefault().PlanCampaignId;
                 if (saveresult > 0 || !isdataupdate)

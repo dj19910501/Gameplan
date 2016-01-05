@@ -772,6 +772,7 @@
         $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
     });
     function ShowError(value) {
+      
         $("#modal-container-186470").scrollTop(0);
         $("#successMessageViewLineItem").slideUp(400);
         $("#spanSuccessMessageViewLineitem").empty();
@@ -943,7 +944,13 @@
                         }
                     }
                     else {
+                       
                         ShowError(data.msg);
+                        if(data.strmsg != "")
+                        {
+                          
+                            ShowError(data.strmsg);
+                        }
                         returnparameter = false;
                     }
                 }

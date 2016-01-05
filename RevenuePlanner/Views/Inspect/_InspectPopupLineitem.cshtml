@@ -217,6 +217,7 @@
                      var InProgressstatus = "@RevenuePlanner.Helpers.Enums.TacticStatusValues[RevenuePlanner.Helpers.Enums.TacticStatus.InProgress.ToString()].ToString()";
                      if (typeof hdnTacticStatus != 'undefined' && (hdnTacticStatus == Approvedstatus || hdnTacticStatus == InProgressstatus || hdnTacticStatus == Completestatus)) {
                          var ReturnParameter = SaveLineitemActual();
+                      
                      }
                      else {
                          var ReturnParameter = SaveTitle();
@@ -582,6 +583,7 @@
       });
 
       $("#deleteLineItem").click(function () {
+        
           if (confirm('@Common.objCached.ConfirmationForDeleteLineItem')) {
               isDataModified = true;
               var ProgramId = $("#hdnPlanLineItemID").val();

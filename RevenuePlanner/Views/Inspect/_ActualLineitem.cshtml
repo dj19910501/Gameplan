@@ -349,7 +349,9 @@
                 data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId, LineItemTitle: _lineitemtitle }),
                 success: function (data) {
                     if (data != 'undefined') {
+                      
                         if (!data.IsDuplicate) {
+                           
                         if (data.id != 0) {
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
@@ -373,11 +375,14 @@
                         }
                                 returnparameter = true;
                     }
-                    else {
-                        ShowError(data.errormsg);
+                        else {
+                            ShowError(data.errormsg);
+                            if (data.strmsg != "") {
+                                ShowError(data.strmsg);
+                            }
                                 returnparameter = false;
                     }
-                            returnparameter = true;
+                         //   returnparameter = true;
                 }
                 },
                 error: function () {
