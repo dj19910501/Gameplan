@@ -5635,7 +5635,7 @@ namespace RevenuePlanner.Controllers
                                         }).ToList();
 
 
-                newList = newList.GroupBy(g => g.Name).Select(x => x.FirstOrDefault()).ToList();
+                newList = newList.GroupBy(g => g.Name).Select(x => x.FirstOrDefault()).OrderBy(g => g.Name).ToList();
 
                 //for searching 
                 if (!string.IsNullOrEmpty(PresetName))
@@ -5648,7 +5648,7 @@ namespace RevenuePlanner.Controllers
                                                       Name = item.ViewName,
                                                       IsDefaultPreset = item.IsDefaultPreset
                                                   }).ToList();
-                    newListSearch = newListSearch.GroupBy(g => g.Name).Select(x => x.FirstOrDefault()).ToList();
+                    newListSearch = newListSearch.GroupBy(g => g.Name).Select(x => x.FirstOrDefault()).OrderBy(g => g.Name).ToList();
                     return PartialView("~/Views/Shared/_DefaultViewFilters.cshtml", newListSearch);
                 }
 
