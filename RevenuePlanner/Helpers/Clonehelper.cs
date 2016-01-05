@@ -1491,10 +1491,13 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.PlanProgramId = parentEntityId;
                     objPlanTactic.StartDate = objPlanTactic.StartDate;
                     objPlanTactic.EndDate = objPlanTactic.EndDate;
+                    objPlanTactic.LinkedPlanId = planid;
+                    objPlanTactic.LinkedTacticId = objPlanTactic.PlanTacticId;
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
+                            pcptl.LinkedLineItemId = pcptl.PlanLineItemId;
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
                             pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
                         });
