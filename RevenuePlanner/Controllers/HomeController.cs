@@ -1920,8 +1920,8 @@ namespace RevenuePlanner.Controllers
             // DESC:: For get default filter view after user log out #1750
             //var Label = Enums.FilterLabel.Plan.ToString();
             //var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).ToList();
-          //Added by Komal Rawal for #1845 Link tactic to plan 
-            
+            //Added by Komal Rawal for #1845 Link tactic to plan 
+
             var LinkedTacticList = lstTactic.Where(list => list.objPlanTactic.LinkedTacticId != null && list.objPlanTactic.LinkedPlanId != null).ToList();
 
             var ListOfLinkedPlanIds = LinkedTacticList.Select(list =>
@@ -3522,8 +3522,8 @@ namespace RevenuePlanner.Controllers
             //var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
             //                                        campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
 
-            var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => 
-                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false ).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+            var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic =>
+                                                   campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate)) && tactic.IsDeleted == false).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
 
             //Modified By Komal Rawal for #1447
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
@@ -3650,24 +3650,24 @@ namespace RevenuePlanner.Controllers
                     {
                         if (startDate.Year == System.DateTime.Now.Year)
                         {
-                        //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+                            //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
 
-                            differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM")); 
+                            differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
                             List<string> thismonthdifferenceItem = new List<string>();
                             if (differenceItems.Count() > 12)
                             {
                                 thismonthdifferenceItem = differenceItems.ToList();
-                                thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count-12);
+                                thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count - 12);
                             }
                             else
                             {
                                 thismonthdifferenceItem = differenceItems.ToList();
                             }
-                           
 
 
 
-                        foreach (string objDifference in thismonthdifferenceItem)
+
+                            foreach (string objDifference in thismonthdifferenceItem)
                             {
                                 monthNo = Convert.ToInt32(objDifference.TrimStart('0'));
                                 if (monthNo == DateTime.Now.Month)
@@ -3826,11 +3826,11 @@ namespace RevenuePlanner.Controllers
                     }
 
                     //// Selecte tactic(s) from selected programs
-                  
-                       var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
-                                                     campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
-                   
-                   
+
+                    var objPlan_Campaign_Program_Tactic = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) &&
+                                                  campplanid.Count > 0 ? campplanid.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) : filteredPlanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) && ((tactic.StartDate >= CalendarStartDate && tactic.EndDate >= CalendarStartDate) || (tactic.StartDate <= CalendarStartDate && tactic.EndDate >= CalendarStartDate))).Select(tactic => new { PlanTacticId = tactic.PlanTacticId, CreatedBy = tactic.CreatedBy, TacticTypeId = tactic.TacticTypeId, Status = tactic.Status, StartDate = tactic.StartDate, EndDate = tactic.EndDate }).ToList();
+
+
 
                     List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                     List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
@@ -3881,7 +3881,7 @@ namespace RevenuePlanner.Controllers
 
                     //End
                     //// Prepare an array of month as per selected dropdown paramter
-                   // int[] monthArray = new int[12];
+                    // int[] monthArray = new int[12];
                     int[] monthArrayactivity = new int[12];
                     int q1 = 0;
                     int q2 = 0;
@@ -4057,7 +4057,7 @@ namespace RevenuePlanner.Controllers
                                                 }
                                             }
                                             //
-                                          
+
                                         }
                                     }
                                 }
@@ -4239,7 +4239,7 @@ namespace RevenuePlanner.Controllers
                 if (differenceItems.Count() > 12)
                 {
                     thismonthdifferenceItem = differenceItems.ToList();
-                    thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count-12);
+                    thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count - 12);
                 }
                 else
                 {
@@ -5577,6 +5577,7 @@ namespace RevenuePlanner.Controllers
         {
             var StatusLabel = Enums.FilterLabel.Status.ToString();
             var LastSetOfStatus = new List<string>();
+            var NewListOfViews = new List<Plan_UserSavedViews>();// Add By Nishant Sheth to resolved the default view issue with update result
             //Modified for #1750 by Komal Rawal
             var listofsavedviews = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.Userid == Sessions.User.UserId).Select(view => view).ToList();
             //Modified by Rahul shah on 24/12/2015 for PL#1837
@@ -5621,13 +5622,18 @@ namespace RevenuePlanner.Controllers
                 }
                 else
                 {
-                    listofsavedviews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
-                    if (listofsavedviews.Count == 0)
+                    // Add By Nishant Sheth to resolved the default view issue with update result
+                    NewListOfViews = listofsavedviews.Where(view => view.IsDefaultPreset == true).ToList();
+                    if (NewListOfViews.Count == 0)
                     {
                         listofsavedviews = listofsavedviews.Where(view => view.ViewName == null).ToList();
                     }
+                    else
+                    {
+                        listofsavedviews = NewListOfViews;
+                    }
+                    // End By Nishant Sheth
                 }
-
                 var SetOfStatus = listofsavedviews.Where(view => view.FilterName == StatusLabel).Select(View => View.FilterValues).ToList();
                 if (SetOfStatus.Count > 0)
                 {
@@ -6085,7 +6091,7 @@ namespace RevenuePlanner.Controllers
                         if (differenceItems.Count() > 12)
                         {
                             thismonthdifferenceItem = differenceItems.ToList();
-                            thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count-12);
+                            thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count - 12);
                         }
                         else
                         {

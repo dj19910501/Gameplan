@@ -484,6 +484,14 @@ namespace RevenuePlanner.Controllers
                 tacticList = tacticList.Where(tactic => ownerIds.Contains(tactic.CreatedBy)
                                                               ).ToList();
             }
+            else
+            {
+                // Add By Nishant Sheth 
+                // Desc :: #1839 code review points - Tactic list is different 
+                tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId
+                                              ).ToList();
+
+            }
 
 
             if (Sessions.ReportTacticTypeIds != null && Sessions.ReportTacticTypeIds.Count > 0)

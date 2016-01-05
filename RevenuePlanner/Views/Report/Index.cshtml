@@ -726,7 +726,7 @@
 
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadYearDropdown();
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth due to off multiple time same methods are called
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,false);
         GetTacticTypelist(PlanIds, false);
@@ -746,6 +746,7 @@
     });
 
     function GetLastSetofViews(presetName) {
+        
         $.ajax({
             type: 'POST',
             url: '@Url.Action("LastSetOfViews", "Home")',
@@ -934,7 +935,7 @@
     }
 
     function GetselectionFilter() {
-
+        
         var yy = $(this);
         var arrOptionIds = new Array();
         //// close multiselect
@@ -988,6 +989,7 @@
             },
             success: function (data) {
                 if (data.status) {
+                    
                     if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
                             LoadSummary();
                         }
@@ -1622,7 +1624,8 @@ $('#liSummary').click(function () {
         RemoveAllActiveItem();
         $(this).addClass('active');
         $('#ddlsection').show(); //Modified for #1296
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
+        GetselectionFilter();
     }
 });
 
@@ -1642,7 +1645,8 @@ $('#liRevenue').click(function () {
         $(this).addClass('active');
         $('#ddlsection').hide(); //Modified for #1296
         LoadRevenueView();
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
+        GetselectionFilter();
     }
 });
 
@@ -1662,7 +1666,8 @@ $('#liConversion').click(function () {
         $(this).addClass('active');
         $('#ddlsection').hide(); //Modified for #1296
         LoadConversionView();
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
+        GetselectionFilter();
     }
 });
 
