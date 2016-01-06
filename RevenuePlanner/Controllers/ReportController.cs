@@ -343,10 +343,17 @@ namespace RevenuePlanner.Controllers
                     foreach (string TId in arrTactictypeIds)
                     {
                         int TacticId;
-                        if (int.TryParse(TId.Remove(0, 4), out TacticId))
+                        // Modified By Nishant SHeth
+                        // Desc :: #1863
+                        if (int.TryParse(TId, out TacticId))
                         {
-                            lstTactictypeIds.Add(TacticId);
+                            lstTactictypeIds.Add(Convert.ToInt32(TId));
                         }
+                        else
+                        {
+                            lstTactictypeIds.Add(Convert.ToInt32(TId.Remove(0, 4)));
+                        }
+                        // End By Nishant SHeth
                     }
                     if (lstTactictypeIds.Count > 0)
                     {

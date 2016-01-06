@@ -1542,7 +1542,7 @@ namespace RevenuePlanner.Helpers
         /// </summary>
         /// <param name="planId">selected plan id</param>
         /// <returns>returns  HomePlanModelHeader object</returns>
-        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year="", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false)
+        public static HomePlanModelHeader GetPlanHeaderValue(int planId, string year = "", string CustomFieldId = "", string OwnerIds = "", string TacticTypeids = "", string StatusIds = "", bool onlyplan = false)
         {
             HomePlanModelHeader objHomePlanModelHeader = new HomePlanModelHeader();
             MRPEntities objDbMrpEntities = new MRPEntities();
@@ -1580,7 +1580,7 @@ namespace RevenuePlanner.Helpers
             {
                 //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
-                if(year != "" && year != null)
+                if (year != "" && year != null)
                 {
                     int Year;
                     // Modified By Komal Rawal to get proper HUd values for #1788
@@ -1632,7 +1632,7 @@ namespace RevenuePlanner.Helpers
                     });
 
                 }
-                    lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
+                lstTacticIds = planTacticIds.Select(tacticlist => tacticlist.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
 
@@ -1796,7 +1796,7 @@ namespace RevenuePlanner.Helpers
             // Add By Nishant sheth
             DateTime StartDate;
             DateTime EndDate;
-           
+
             // Modified By Nishant Sheth
             // #1825 stuck of loading overlay with 'this month' and 'this quarter'
             string planYear = string.Empty;
@@ -1812,7 +1812,7 @@ namespace RevenuePlanner.Helpers
                 planYear = DateTime.Now.Year.ToString();
             }
 
-          
+
             StartDate = EndDate = DateTime.Now;
             Common.GetPlanGanttStartEndDate(planYear, year, ref StartDate, ref EndDate);
             //End
@@ -1830,7 +1830,7 @@ namespace RevenuePlanner.Helpers
             var campplanid = campplist.Select(a => a.PlanId).ToList();
             var campid = campplist.Select(a => a.PlanCampaignId).ToList();
 
-          
+
             // End by Nishant Sheth
             //var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true && p.Year == year).Select(m => m).ToList();
 
@@ -1843,7 +1843,7 @@ namespace RevenuePlanner.Helpers
                 List<string> lstFilteredCustomFieldOptionIds = new List<string>();
                 List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
                 List<int> lstTacticIds = new List<int>();
-            
+
 
                 //// Owner filter criteria.
                 List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
@@ -1871,17 +1871,17 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && tacticStatus.Contains(t.Status) && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList();// Commented By Rahul Shah on 16/09/2015 for PL #1610
                 // Modify by Nishant Sheth
                 // Desc :: to manage multiple years plan id and to get correct tactic count #1750
-                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId)  && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+                List<Plan_Tactic> planTacticsList = db.Plan_Campaign_Program_Tactic.Where(t => t.IsDeleted == false && innerplanids.Contains(t.Plan_Campaign_Program.Plan_Campaign.PlanId) && (!((t.EndDate < StartDate) || (t.StartDate > EndDate)))).Select(tactic => new Plan_Tactic { objPlanTactic = tactic, PlanId = tactic.Plan_Campaign_Program.Plan_Campaign.PlanId }).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
 
-                    lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
+                lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                 if (filterOwner.Count > 0 || filterTacticType.Count > 0 || filterStatus.Count > 0 || filteredCustomFields.Count > 0)
                 {
-                    
+
                     planTacticsList = planTacticsList.Where(pcptobj => (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy)) &&
                                              (filterTacticType.Count.Equals(0) || filterTacticType.Contains(pcptobj.objPlanTactic.TacticType.TacticTypeId)) &&
-                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status)) ).ToList();
+                                             (filterStatus.Count.Equals(0) || filterStatus.Contains(pcptobj.objPlanTactic.Status))).ToList();
 
-                 
+
                     //// Apply Custom restriction for None type
                     if (planTacticsList.Count() > 0)
                     {
@@ -4700,9 +4700,9 @@ namespace RevenuePlanner.Helpers
         public static List<ViewByModel> GetParentBudgetlist(int BudgetId = 0)
         {
             MRPEntities db = new MRPEntities();
-            
+
             List<ViewByModel> lstBudget = new List<ViewByModel>();
-          
+
             var budgeparentids = db.Budgets.Where(m => m.ClientId == Sessions.User.ClientId && (m.IsDeleted == false || m.IsDeleted == null)).Select(m => m.Id).ToList();
             var tblBudgetDetail = db.Budget_Detail.Where(a => a.IsDeleted == false && budgeparentids.Contains(a.BudgetId)).Select(a => a).ToList();
             int? ParentId = 0;
@@ -4712,7 +4712,7 @@ namespace RevenuePlanner.Helpers
             var customfieldlist = tblBudgetDetail.Where(a => (ParentId > 0 ? a.ParentId == (ParentId != null ? ParentId : null) : a.ParentId == null) && (a.IsDeleted == false || a.IsDeleted == null) && !string.IsNullOrEmpty(a.Name)).Select(a => new { a.Id, a.Name }).ToList();
 
             lstBudget = customfieldlist.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
-            
+
             return lstBudget;
         }
         /// <summary>
@@ -6235,7 +6235,7 @@ namespace RevenuePlanner.Helpers
                     optionvalue = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).FirstOrDefault();
                     if (optionvalue != "" && optionvalue != string.Empty)
                     {
-                        optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId).ToList();
+                        optionIds = lstCustomFieldFilter.Where(x => x.CustomFieldId == item).Select(x => x.OptionId.Split('_').Last()).ToList();// Modified by Nishant Sheth #1863
                         lstEntityData = new List<CustomField_Entity>();
                         if (isListExits)
                         {
@@ -6417,7 +6417,7 @@ namespace RevenuePlanner.Helpers
         public static LineItemDropdownModel GetParentLineItemBudgetDetailslist(int BudgetDetailId = 0)
         {
             MRPEntities db = new MRPEntities();
-            
+
             List<Budget_Detail> tblBudgetDetails = new List<Budget_Detail>();
             tblBudgetDetails = db.Budget_Detail.Where(a => a.IsDeleted == false).ToList();
             List<ViewByModel> lstParentItems = new List<ViewByModel>();
@@ -6429,7 +6429,7 @@ namespace RevenuePlanner.Helpers
                                     where detail1.ParentId == mostParentId && detail1.IsDeleted == false && !string.IsNullOrEmpty(detail1.Name)
                                     select new { detail1.Name, detail1.Id }).Distinct().ToList();
             lstParentItems = filterParentList.Select(budget => new ViewByModel { Text = HttpUtility.HtmlDecode(budget.Name), Value = budget.Id.ToString() }).OrderBy(bdgt => bdgt.Text, new AlphaNumericComparer()).ToList();
-            
+
             objParentListModel.list = lstParentItems;
             objParentListModel.parentId = ParentId.HasValue ? ParentId.Value : 0;
             return objParentListModel;
