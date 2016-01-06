@@ -477,6 +477,15 @@
         if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
             asyncval = ifexists;
         }
+        //Added by Rahul Shah on 06/01/2016 for PL #1854
+        var ids = [];
+        $('#ulSelectedOwner li').each(function () {
+            if ($(this).hasClass("close-list")) {
+                var id = $(this).attr('id').replace('liOwner', '')
+                ids.push(id);
+            }
+
+        });
     $('#ulSelectedOwner').html('');
     if (!ifexists) {
         filters.OwnerIds = [];
@@ -518,6 +527,11 @@
                                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                                         if (OwnerItem.OwnerId == LoggedInOwner) {
                                             IsOwnerPresent = true;
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
+                                        //Added by Rahul Shah on 06/01/2016 for PL #1854
+                                        if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }

@@ -489,6 +489,15 @@
             else {
                 asyncval = false;
             }
+            //Added by Rahul Shah on 06/01/2016 for PL #1854
+            var ids = [];
+            $('#ulSelectedOwner li').each(function () {
+                if ($(this).hasClass("close-list")) {
+                    var id = $(this).attr('id').replace('liOwner', '')
+                    ids.push(id);
+                }
+
+            });
             $('#ulSelectedOwner').html('');
             filters.OwnerIds = [];
 
@@ -531,6 +540,11 @@
                                             checkedclass = "close-list"
                                         }
 
+                                        //Added by Rahul Shah on 06/01/2016 for PL #1854
+                                        if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
 
 
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');

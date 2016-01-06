@@ -4687,14 +4687,42 @@ namespace RevenuePlanner.Controllers
         {
             try
             {
+                List<int> lstAllowedEntityIds = new List<int>();
                 List<int> PlanIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
 
                 //// Select Tactics of selected plans
                 var campaignList = objDbMrpEntities.Plan_Campaign.Where(campaign => campaign.IsDeleted.Equals(false) && PlanIds.Contains(campaign.PlanId)).Select(campaign => campaign.PlanCampaignId).ToList();
                 var programList = objDbMrpEntities.Plan_Campaign_Program.Where(program => program.IsDeleted.Equals(false) && campaignList.Contains(program.PlanCampaignId)).Select(program => program.PlanProgramId).ToList();
                 var tacticList = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted.Equals(false) && programList.Contains(tactic.PlanProgramId)).Select(tactic => tactic).ToList();
-                List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
-                List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                //List<int> planTacticIds = tacticList.Select(tactic => tactic.PlanTacticId).ToList();
+                //List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false);
+                //Added by Rahul Shah on 06/01/2016 for PL#1854.
+                string section = Enums.Section.Tactic.ToString();
+                var cusomfield = objDbMrpEntities.CustomFields.Where(customField => customField.EntityType == section && customField.ClientId == Sessions.User.ClientId && customField.IsDeleted == false).ToList();
+                var customfieldidlist = cusomfield.Select(c => c.CustomFieldId).ToList();
+                var lstAllTacticCustomFieldEntitiesanony = objDbMrpEntities.CustomField_Entity.Where(customFieldEntity => customfieldidlist.Contains(customFieldEntity.CustomFieldId))
+                                                                                       .Select(customFieldEntity => new { EntityId = customFieldEntity.EntityId, CustomFieldId = customFieldEntity.CustomFieldId, Value = customFieldEntity.Value }).Distinct().ToList();
+
+                foreach (var pId in PlanIds)
+                {
+                    List<int> planTacticIds = tacticList.Where(tact => tact.Plan_Campaign_Program.Plan_Campaign.PlanId == pId).Select(tact => tact.PlanTacticId).ToList();
+                    List<CustomField_Entity> customfieldlist = (from tbl in lstAllTacticCustomFieldEntitiesanony
+                                                                join lst in planTacticIds on tbl.EntityId equals lst
+                                                                select new CustomField_Entity
+                                                                {
+                                                                    EntityId = tbl.EntityId,
+                                                                    CustomFieldId = tbl.CustomFieldId,
+                                                                    Value = tbl.Value
+                                                                }).ToList();
+
+                    List<int> AllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, planTacticIds, false, customfieldlist);
+                    if (AllowedEntityIds.Count > 0)
+                    {
+                        lstAllowedEntityIds.AddRange(AllowedEntityIds);
+                    }
+
+                }
+
                 //Added by Nishant to bring the owner name in the list even if they dont own any tactic
                 var LoggedInUser = new OwnerModel
                 {
