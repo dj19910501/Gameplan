@@ -200,7 +200,7 @@
 
                 });
                 menu.find('.first_show').on('click', function (e) {
-                    
+                   
                     filters.chekboxIds = [];
                     var checkbx = $(this).find('input:checkbox');
                     var ParentValue = checkbx.attr('name');
@@ -220,13 +220,16 @@
                         filters.chekboxIds.push(checkbx.val());
 
                     $('#CustomHtmlHelperfield').find('.span3').each(function () {
+                      
                         var InputType = $(this).find("input").attr('type');
                         var cnt = 0;
                         if (InputType == "text" && $(this).attr('parentid') != 'undefined' && $(this).attr('parentid') != '0' && $(this).attr('parentid') == ParentValue) {
                             var ParentOptionID = $(this).find("input").parent().attr('parentoptionid');
+                            //Modified By Komal Rawal for #1864
+                            var arrParentOptionId = ParentOptionID.split(",");
                             var i;
                             $(this).css("display", "none");
-                            if ($.inArray(ParentOptionID, filters.chekboxIds) > -1 && $(this).css("display") == "none") {
+                            if (arrParentOptionId.indexOf(filters.chekboxIds.toString()) > -1 && $(this).css("display") == "none") {
                                 $(this).css("display", "inline-block");
                                 cnt++;
                             }
@@ -235,7 +238,7 @@
                             }
                         }
                         else {
-
+                        
                             if ($(this).attr('parentid') == ParentValue) {
                                
                                 var maindiv = $(this);
@@ -251,10 +254,11 @@
                                         isSelected = true;
                                     }
                                     var ParentOptionId = $(this).attr('parentid');
+                                    var arrParentOptionId = ParentOptionId.split(",");
                                     var i;
                                     for (i = 0 ; i < filters.chekboxIds.length; i++) {
-                                       
-                                        if (ParentOptionId == filters.chekboxIds[i] || $(this).find('.lable_inline').text() == "Please Select") {
+                                       //Modified By Komal Rawal for #1864
+                                        if (arrParentOptionId.indexOf(filters.chekboxIds[i]) > -1 || $(this).find('.lable_inline').text() == "Please Select") {
                                             
                                             if ($(this).css("display") == "none") {
                                                 $(this).css("display", "block");
