@@ -8654,6 +8654,10 @@ namespace RevenuePlanner.Controllers
                             select pcpt).FirstOrDefault();
 
             }
+            else
+            {
+                LinkedLi = null;
+            }
             //End
 
             //// if duplicate record exist then return Duplicate message.

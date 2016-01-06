@@ -5882,6 +5882,11 @@ namespace RevenuePlanner.Controllers
                                                 select pcptli).FirstOrDefault();
 
                             }
+                            else
+                            {
+                                LinkedLi = null;
+                            }
+                       
                             //End
                             //// if duplicate record exist then return duplication message.
                             if (pcptvar != null || LinkedLi != null)
@@ -6233,6 +6238,10 @@ namespace RevenuePlanner.Controllers
                                            && pcptli.PlanTacticId == LinkedTacticId
                                             select pcptli).FirstOrDefault();
 
+                            }
+                            else
+                            {
+                                LinkedLi = null;
                             }
                             //End
                             //// if duplicate record exist then return duplication message.
@@ -6811,6 +6820,10 @@ namespace RevenuePlanner.Controllers
                                        && pcptli.PlanTacticId == LinkedTacticId.Value
                                         select pcptli).FirstOrDefault();
 
+                        }
+                        else
+                        {
+                            LinkedLi = null;
                         }
                         //End
                       
