@@ -14,21 +14,23 @@
 
     double ActualCostPercent = 0;
     ActualCostPercent = (Model.ActualCostvsBudet == 0 && Model.TotalBudgetAllocated == 0) ? 0 : (Model.ActualCostvsBudet > 0 && Model.TotalBudgetAllocated == 0) ? 101 : Model.ActualCostvsBudet / Model.TotalBudgetAllocated * 100;
- }
+}
 
 <div class="report-btn-group">
     <p class="revanue-p">Finance</p> @*#1542 Change the label of Budget tab to "Finance" - Dashrath Prajapati*@
     <button name="" class="btn btn-blue  text-shadow-blue source-sans-proregular" id="btnFinancialDetails" onclick="onFinancialDetailsClick();">Details</button>
     <button name="" class="btn btn-blue  text-shadow-blue source-sans-proregular report-blue-btn hideReport" id="">
         <span>
-            <img src="~/Content/images/round-plus.png" /></span>Add Widget</button>
+            <img src="~/Content/images/round-plus.png" />
+        </span>Add Widget
+    </button>
 </div>
 <div class="revenue-graph revenue-financial">
     <div class="row">
         <div class="budgeting-graph-info">
             <p class="budgeting-titel" id="">Budget</p>
             <div class="budgeting-linechart amountcounterhead">
-               <span id="lblTotalBudgetAllocated">@Model.TotalBudgetAllocated</span>
+                <span id="lblTotalBudgetAllocated">@Model.TotalBudgetAllocated</span>
             </div>
             <p class="chartinfo smallamountcounterhead financial-small-chartinfo"><span id="lblTotalBudgetUnAllocated">Unallocated: @Model.TotalBudgetUnAllocated</span></p>
 
@@ -68,9 +70,7 @@
                         <th>Budget</th>
                     </tr>
                 </thead>
-                <tbody id="BottomBarchartData">
-                    
-                </tbody>
+                <tbody id="BottomBarchartData"></tbody>
             </table>
         </div>
     </div>
@@ -96,20 +96,20 @@
         //    alert("key:" + key +",val:" + val);
         //})
 
-        var _smallheight = 70, _smallwidth =200,_largeheight = 150,_largewidth=400;
+        var _smallheight = 70, _smallwidth = 200, _largeheight = 150, _largewidth = 400;
         //BindBarChartData(_plannedCostchartModel.categories, _plannedCostchartModel.series, "#plannedCostBarChart", _smallheight, _smallwidth);
         //BindBarChartData(_actualCostchartModel.categories, _actualCostchartModel.series, "#actualCostBarChart", _smallheight, _smallwidth);
         BindBarChartData(_mainCostchartModel.categories, _mainCostchartModel.series, "#mainCostBarChart");
 
-        
+
 
         DisplayBottomBarchartData();
 
         var _totalBudgetAllocated = '@Model.TotalBudgetAllocated';
         var _totalBudgetUnAllocated = '@Model.TotalBudgetUnAllocated';
-        var _plannedCostBudget ='@Model.PlannedCostvsBudget';
+        var _plannedCostBudget = '@Model.PlannedCostvsBudget';
         var _actualCostBudget = '@Model.ActualCostvsBudet';
-        var _formtTotalBudgetAllocated = '', _formtTotalBudgetUnAllocated = '', _formtPlannedCostBudget = '', _formtActualCostBudget = '',_frmtPlannedTotalBudget='',_frmtActualTotalBudget='';
+        var _formtTotalBudgetAllocated = '', _formtTotalBudgetUnAllocated = '', _formtPlannedCostBudget = '', _formtActualCostBudget = '', _frmtPlannedTotalBudget = '', _frmtActualTotalBudget = '';
         var _lblTotalBudgetAllocated = "#lblTotalBudgetAllocated", _lblTotalBudgetUnAllocated = "#lblTotalBudgetUnAllocated", _lblPlannedCostBudget = "#lblPlannedCostBudget", _lblActualCostBudget = "#lblActualCostBudget", _lblPlannedTotalBudget = "#lblPlannedTotalBudget", _lblActualTotalBudget = "#lblActualTotalBudget";
 
         // Start: Set Tooltip and Number formatting for Total Budget Allocated
@@ -135,7 +135,7 @@
             setBootstrapTooltip(_lblTotalBudgetUnAllocated, _totalBudgetUnAllocated, 9, true);
             _formtTotalBudgetUnAllocated = $(_lblTotalBudgetUnAllocated).text();
         }
-        $(_lblTotalBudgetUnAllocated).html('Unallocated: '+_formtTotalBudgetUnAllocated);
+        $(_lblTotalBudgetUnAllocated).html('Unallocated: ' + _formtTotalBudgetUnAllocated);
         // End: Set Tooltip and Number formatting for Total Budget UnAllocated
 
         // Start: Set Tooltip and Number formatting for PlannedCost vs Budget
@@ -179,7 +179,7 @@
         formatBottomBarChartData();
 
     });
-   
+
     function DisplayBottomBarchartData() {
         var _tdPlannedPrefix = "tdPlannedChart_", _tdActualPrefix = "tdActualChart_", _tdBudgetPrefix = "tdBudgetChart_";
         var _catCount = '@Model.CategoriesCount';
@@ -196,11 +196,11 @@
         _budgetCostList = (_budgetCostList.toString().replace(/&quot;/g, '"'));
         _budgetCostList = JSON.parse(_budgetCostList);
 
-        
+
 
         var _html = '';
         var _tdPlannedId = '', _tdActualId = '', _tdBudgetId = '';
-        
+
 
         for (var i = 0; i < _catCount; i++) {
             _tdPlannedId = _tdPlannedPrefix + i;
@@ -209,28 +209,44 @@
             var _redlabel = '';
             var _intactualCost = parseFloat(_actualCostList[i]);
             var _intbudgetCost = parseFloat(_budgetCostList[i]);
-            
+
             if (_intactualCost > _intbudgetCost)
                 _redlabel = ' redLabel';
-            _html +='<tr>';
-            _html += '<td id="' + _tdActualId + '" class="' + _barchartTDClass+_redlabel  +'" orig-val="' + _actualCostList[i] + '">' + _actualCostList[i] + '</td>';
+            _html += '<tr>';
+            _html += '<td id="' + _tdActualId + '" class="' + _barchartTDClass + _redlabel + '" orig-val="' + _actualCostList[i] + '">' + _actualCostList[i] + '</td>';
             _html += '<td id="' + _tdPlannedId + '" class="' + _barchartTDClass + '" orig-val="' + _plannedCostList[i] + '">' + _plannedCostList[i] + '</td>';
             _html += '<td id="' + _tdBudgetId + '" class="' + _barchartTDClass + '" orig-val="' + _budgetCostList[i] + '">' + _budgetCostList[i] + '</td>';
             _html += '</tr>';
         }
+        // Modified by Nishant Sheth
+        // Desc:: #1858 display finance section properlly with multiple year selection
         $("#BottomBarchartData").append(_html);
-
+        var ddlAllocateval = $("#ddlAllocate").val();
         if (_catCount == 4) {
             $(".budgetchart-table table thead tr th").css("padding-bottom", "32px");
             $(".budgetchart-table table tbody tr td").css("line-height", "73px");
             //$("#BottomBarchartData tr td").removeClass('tdChartLineHeight');
         }
-        else {
-            $(".budgetchart-table table thead tr th").css("padding-bottom", "32px");
-            $(".budgetchart-table table tbody tr td").css("line-height", "0px");
+        else if (ddlAllocateval == "quarters") {
+            //$(".budgetchart-table table thead tr th").css("padding-bottom", "32px");
+            //$(".budgetchart-table table tbody tr td").css("line-height", "0px");
+            
+            var lineheight = (parseFloat($(".highcharts-series.highcharts-tracker").find("rect").first().attr("width")) * _catCount * 2) / _catCount - 7;
+
+            $(".budgetchart-table table thead tr th").css("padding-bottom", "" + (100 / _catCount) + "px");
+            $(".budgetchart-table table tbody tr td").css("line-height", "" + lineheight + "" + "px");
             $(".budgetchart-table table tbody tr td").css("height", "18px");
             $(".budgetchart-table table tbody tr th").css("height", "18px");
+
+        } else {
+            var tdheight = (parseFloat($(".highcharts-markers.highcharts-tracker").last().attr("height")) / _catCount) - 9;
+            $(".budgetchart-table table thead tr th").css("padding-bottom", "" + (100 / _catCount) * 4 + "px");
+            $(".budgetchart-table table tbody tr td").css("line-height", "0px");
+            $(".budgetchart-table table tbody tr td").css("height", "" + tdheight + "px");
+            $(".budgetchart-table table tbody tr th").css("height", "18px");
         }
+        // End By Nishant Sheth
+
     }
 
     //function NumberFormattingBottomBarChartData() {

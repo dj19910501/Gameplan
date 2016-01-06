@@ -1239,6 +1239,7 @@
     var newTactVal = 0;
 
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
+       
         var updatetype = rowId.split(".")[0];
         var Id;
         var UpdateColumn;
@@ -1323,11 +1324,12 @@
         if (stage == 2) // start edit Shipping column
         {
             if (nValue != null && nValue != "") {
-             
+              
                 //Added By Komal Rawal to Change the value in array if grid updated
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                 var TaskID = HomeGrid.cells(rowId,3).getValue();
+                updatePlanNameDrp(TaskID,NewValue);
                 $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
                 if(ExportSelectedIds.TaskID.length > 0)
                 {
@@ -1612,6 +1614,21 @@
             }
         }
     }
+
+
+    function updatePlanNameDrp(_planid,newpplanname) {
+        $('#nl-form2 > div[class="nl-field nl-dd"]').find('li').each(function (e) {
+            var planid = $(this).val().toString();
+            if (planid == _planid) {
+                var updatedPlantext = newpplanname;
+              $(this).attr('originalvalue', updatedPlantext);
+              $(this).text('');
+              $(this).text(updatedPlantext);
+              $(this).parent().parent().find('a').text(updatedPlantext)
+          }
+        });
+    }
+
     function CheckPermissionByOwner(rowId, NewOwner, updatetype, updateid) {
         $.ajax({
             type: 'POST',

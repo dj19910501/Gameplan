@@ -477,6 +477,15 @@
         if (ifexists != undefined && ifexists != 'undefined' && ifexists != '' && ifexists != null) {
             asyncval = ifexists;
         }
+        //Added by Rahul Shah on 06/01/2016 for PL #1854
+        var ids = [];
+        $('#ulSelectedOwner li').each(function () {
+            if ($(this).hasClass("close-list")) {
+                var id = $(this).attr('id').replace('liOwner', '')
+                ids.push(id);
+            }
+
+        });
     $('#ulSelectedOwner').html('');
     if (!ifexists) {
         filters.OwnerIds = [];
@@ -518,6 +527,11 @@
                                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                                         if (OwnerItem.OwnerId == LoggedInOwner) {
                                             IsOwnerPresent = true;
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
+                                        //Added by Rahul Shah on 06/01/2016 for PL #1854
+                                        if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
                                             checked = "checked"
                                             checkedclass = "close-list"
                                         }
@@ -698,6 +712,7 @@
       var SelectedBUId, SelectedPlanId;
       var IsCallFromYearDropdown = true;
       var OptionMain = '';
+      var years = ""; // Add By Nishant Sheth
       var isAllowClick = true;
       var multiselectPlanId = "ulSelectedPlans";
       var leftPaneOption = '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()';
@@ -725,7 +740,7 @@
 
         // Load Multiselect Dropdown list i.e. Bind with new design
         LoadYearDropdown();
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth due to off multiple time same methods are called
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,false);
         GetTacticTypelist(PlanIds, false);
@@ -745,6 +760,7 @@
     });
 
     function GetLastSetofViews(presetName) {
+        
         $.ajax({
             type: 'POST',
             url: '@Url.Action("LastSetOfViews", "Home")',
@@ -933,7 +949,7 @@
     }
 
     function GetselectionFilter() {
-
+        
         var yy = $(this);
         var arrOptionIds = new Array();
         //// close multiselect
@@ -987,6 +1003,7 @@
             },
             success: function (data) {
                 if (data.status) {
+                    
                     if (leftPaneOption == '@RevenuePlanner.Helpers.Enums.ReportType.Summary.ToString()') {
                             LoadSummary();
                         }
@@ -1090,11 +1107,22 @@
 
     //// Load Plan data based on selected year
     var _item;
-    function LoadPlanData() {
-        var strYear = OptionMain;
+    function LoadPlanData(years) {
+        var strYear = years;
         if (OptionMain == 'thisquarter') {
             strYear = new Date().getFullYear();
         }
+        // Addd By Nishant Sheth
+        // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
+        var selectedPlanIds = [];
+        var listofselectedplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']:checked");
+        $.each(listofselectedplan, function () {
+            
+            var pid = $(this).attr('id').split('_')[0];
+            selectedPlanIds.push(pid);
+        });
+        // End By Nishant Sheth
+
         $.ajax({
             beforeSend: function (x) {
                 myApp.hidePleaseWait();
@@ -1125,7 +1153,19 @@
                     $("#PlanAllModule").css("display", "none");
                     $("#NoPlanFound").show();
                 }
+                // Addd By Nishant Sheth
+                // Desc  :: #1842 code review - When we select the year from Year filter, plan selection is removed, It should not
+                var listofplan = $("#accordion-element-Plan").find("ul").find("li").find("input[type='checkbox']");
+                $.each(listofplan, function () {
 
+                    var pid = $(this).attr('id').split('_')[0];
+                    var indexofplan = $.inArray(pid, selectedPlanIds);
+                    if (indexofplan > -1) {
+                        $(this).attr("checked", "checked");
+                        OnPlanchange($(this));
+                    }
+                });
+                // End By Nishant Sheth
                 PlanIds = GetFilterIdForPlan(multiselectPlanId);
                 GetTacticTypelist(PlanIds,false);
                 GetOwnerListForFilter(PlanIds,false);
@@ -1484,7 +1524,7 @@
             SavePresetValue = false;
         });
 
-function OnYearChange(_yearli) {
+    function OnYearChange(_yearli) {        
     $(_yearli).siblings().each(function () {
         $(this).removeClass('close-list');
     });
@@ -1492,7 +1532,7 @@ function OnYearChange(_yearli) {
         // Add By Nishant Sheth
         // Desc :: #1842 multiple year selection base on #1821
     var listCheckbox = $("#ulSelectedYear").find("input[type=checkbox]");
-    var years = "";
+    years = "";
     $.each(listCheckbox, function () {
         if ($(this).attr("checked")) {
             years += $(this).attr('yearValue') + ",";
@@ -1500,9 +1540,9 @@ function OnYearChange(_yearli) {
     });
     years = years.slice(0, -1);
         //OptionMain = $(_yearli).attr('yearValue');
-    OptionMain = years;
+    //OptionMain = years;
     if (IsCallFromYearDropdown) {
-        LoadPlanData();
+        LoadPlanData(years);
     }
     //var _yearText = $(_yearli).attr('title');
     //$("#spYearText").html(_yearText);
@@ -1621,7 +1661,8 @@ $('#liSummary').click(function () {
         RemoveAllActiveItem();
         $(this).addClass('active');
         $('#ddlsection').show(); //Modified for #1296
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
+        GetselectionFilter();
     }
 });
 
@@ -1641,7 +1682,8 @@ $('#liRevenue').click(function () {
         $(this).addClass('active');
         $('#ddlsection').hide(); //Modified for #1296
         LoadRevenueView();
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
+        GetselectionFilter();
     }
 });
 
@@ -1661,7 +1703,8 @@ $('#liConversion').click(function () {
         $(this).addClass('active');
         $('#ddlsection').hide(); //Modified for #1296
         LoadConversionView();
-        loadBasedOnPlan();
+        //loadBasedOnPlan(); // Commented By Nishant Sheth #1839 code review filters are not applied.
+        GetselectionFilter();
     }
 });
 

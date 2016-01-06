@@ -489,6 +489,15 @@
             else {
                 asyncval = false;
             }
+            //Added by Rahul Shah on 06/01/2016 for PL #1854
+            var ids = [];
+            $('#ulSelectedOwner li').each(function () {
+                if ($(this).hasClass("close-list")) {
+                    var id = $(this).attr('id').replace('liOwner', '')
+                    ids.push(id);
+                }
+
+            });
             $('#ulSelectedOwner').html('');
             filters.OwnerIds = [];
 
@@ -531,6 +540,11 @@
                                             checkedclass = "close-list"
                                         }
 
+                                        //Added by Rahul Shah on 06/01/2016 for PL #1854
+                                        if (ids.indexOf(OwnerItem.OwnerId) >= 0) {
+                                            checked = "checked"
+                                            checkedclass = "close-list"
+                                        }
 
 
                                         $('#ulSelectedOwner').append('<li class="accordion-inner ' + checkedclass + '" title="' + OwnerItem.Title + '" id="liOwner' + OwnerItem.OwnerId + '"><span class="sidebarliwidth">' + OwnerItem.Title + '</span><input type="checkbox" class="chkbxfilter" OwnerTitle="' + OwnerItem.Title + '" onchange="toggleOwner(this)" id="' + OwnerItem.OwnerId + '"' + checked + '></input></li>');
@@ -6390,7 +6404,7 @@
               
                 if (LinkTacticPermission.toLowerCase() == "true" && LinkedTacticId == "null" )
                 {
-                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'><i class='fa fa-link'></i>Link To</li></ul>";
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'popupType='Linking'><i class='fa fa-link'></i>Link To</li></ul>";
                 }
                 else
                 {
@@ -7029,9 +7043,11 @@ function () {
     function OpentCopyPopup(obj) {
         var sectionType = $(obj).attr('sectionType');
         var entityId = $(obj).attr('entityId');
+        var popuptype = $(obj).attr('popupType');//Added by Rahul Shah for PL #1847
         $("#dvCopyEntity").empty();
         var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
-        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
+        //$("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
+        $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype); // section parameter added to open share tactic popup
     } 
     function SaveAsPreset() {
 

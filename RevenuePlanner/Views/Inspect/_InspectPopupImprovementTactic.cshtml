@@ -209,21 +209,7 @@
                     }
                 }
 
-                else if (activeTab = TabActual) {
-                    var ReturnParameter = SaveTitle();
-                    if (ReturnParameter == false) {
-                        return false;
-                    }
-                }
-
-               
-
-                //else if (activeTab == TabBudget) {
-                //    var ReturnParameter = BudgetCampaignSave();
-                //    if (ReturnParameter == false) {
-                //        return false;
-                //    }
-                //}
+                // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
             }
 
             return true;
@@ -274,7 +260,8 @@
                     $("#spnImprovementTacticTitle").removeAttr("style");
                     $("#txtTitle").val(txtTacticValue);
                     $('#spnImprovementTacticTitle').text(txtTacticValue);
-                    RefreshCurrentTab(requestedModule, 0, 0, 0);
+                    // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                    //RefreshCurrentTab(requestedModule, 0, 0, 0);
                     returnparameter = true
                 }
                 else {

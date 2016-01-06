@@ -322,8 +322,12 @@ namespace Integration.Eloqua
                             //// Get tactic status list
                             List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
 
+                            List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
+                                                                                                                           lstApproveStatus.Contains(tactic.Status) &&
+                                                                                                                           tactic.IsDeleted == false).ToList();
+
                             //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
-                            List<Plan_Campaign_Program_Tactic> lstAllTactics = db.Plan_Campaign_Program_Tactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                            List<Plan_Campaign_Program_Tactic> lstAllTactics = tblTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
                                                                                                                            tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false).ToList();
@@ -350,8 +354,8 @@ namespace Integration.Eloqua
                             //List<CRM_EloquaMapping> lstEloquaIntegrationInstanceTacticIds = new List<CRM_EloquaMapping>();
                             //string shortSalIntegInstanceTacticId = string.Empty;
                             string strEloquaId = string.Empty;
-                            Plan_Campaign_Program_Tactic objUpdTactic;
-                            int cntrUpdateTac = 0;
+                            Plan_Campaign_Program_Tactic objUpdTactic, objlinkedTactic = null;
+                            int cntrUpdateTac = 0, linkedTacticId =0;
                             foreach (KeyValuePair<int,string> _SalTac in lstSFDCID_TacticIDMapping)
                             {
                                 if (!string.IsNullOrEmpty(_SalTac.Value))
@@ -366,6 +370,25 @@ namespace Integration.Eloqua
                                             objUpdTactic.IntegrationInstanceEloquaId = strEloquaId;
                                             db.Entry(objUpdTactic).State = EntityState.Modified;
                                             cntrUpdateTac++;
+
+                                            #region "Update Linked Tactic IntegrationInstanceEloquaId value"
+                                            #region "Retrieve linkedTactic"
+                                            linkedTacticId = (objUpdTactic != null && objUpdTactic.LinkedTacticId.HasValue) ? objUpdTactic.LinkedTacticId.Value : 0;
+                                            //if (linkedTacticId <= 0)
+                                            //{
+                                            //    var lnkPCPT = tblTactic.Where(tactic => tactic.LinkedTacticId == objUpdTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                            //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+                                            //}
+                                            #endregion
+
+                                            if (linkedTacticId > 0)
+                                            {
+                                                objlinkedTactic = new Plan_Campaign_Program_Tactic();
+                                                objlinkedTactic = tblTactic.Where(tac => (tac.PlanTacticId == linkedTacticId) && (tac.IsDeleted == false)).FirstOrDefault();
+                                                objlinkedTactic.IntegrationInstanceEloquaId = strEloquaId;
+                                                db.Entry(objlinkedTactic).State = EntityState.Modified;
+                                            }
+                                            #endregion
                                         }
                                     }
                                     //lstEloquaIntegrationInstanceTacticIds.Add(
@@ -393,7 +416,44 @@ namespace Integration.Eloqua
                             _lstSyncError.Add(Common.PrepareSyncErrorList(0, Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PullMQL.ToString(), "Pull MQL: Total number of Tactic(s) - " + lstTactic.Count + " on which system processed Pull MQLs.", Enums.SyncStatus.Info, DateTime.Now));
                             #endregion
 
+                            #region "Create LinkedTactic Mapping list"
+                            Dictionary<int, int> lstlinkedTacticMapping = new Dictionary<int, int>();
+                            foreach (var tac in lstTactic)
+                            {
+                                linkedTacticId = 0;
+                                #region "Retrieve linkedTactic"
+                                linkedTacticId = (tac != null && tac.LinkedTacticId.HasValue) ? tac.LinkedTacticId.Value : 0;
+                                //if (linkedTacticId <= 0)
+                                //{
+                                //    var lnkPCPT = tblTactic.Where(tactic => tactic.LinkedTacticId == tac.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+                                //}
+
+                                if (linkedTacticId > 0)
+                                {
+                                    lstlinkedTacticMapping.Add(tac.PlanTacticId, linkedTacticId);
+                                }
+                                #endregion
+                            }
+                            #endregion
+
                         #region Manipulate with Tactic Actual Data
+
+
+                            #region "Create Actual Temp Table"
+                            List<int> linkedTacticIds = new List<int>(), TacticIds = new List<int>();
+                            List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
+                            TacticIds = lstTactic.Select(tac => tac.PlanTacticId).ToList();
+                            if (lstlinkedTacticMapping.Count > 0)
+                            {
+                                linkedTacticIds = lstlinkedTacticMapping.Select(lnkTac => lnkTac.Value).ToList();
+                            }
+
+                            if (linkedTacticIds != null && linkedTacticIds.Count > 0)
+                                tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => (linkedTacticIds.Contains(actual.PlanTacticId) || TacticIds.Contains(actual.PlanTacticId))).ToList();
+                            else
+                                tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => TacticIds.Contains(actual.PlanTacticId)).ToList();
+                            #endregion
 
                             string contactIds = string.Empty;
 
@@ -426,9 +486,14 @@ namespace Integration.Eloqua
                                     tempYearMonthDictionary.Add(tmpPeriod, lstTacticContacts.Where(t => (t.peroid.Month == item.Month) && (t.peroid.Year == item.Year)).ToList().Count());
                                 }
 
+                                linkedTacticId = 0;
+                                // Get linked TacticId from mapping list.
+                                if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0) // check whether linkedTactics exist or not.
+                                    linkedTacticId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == objTactic.PlanTacticId).Value;
+
                                 foreach (var item in tempYearMonthDictionary)
                                 {
-                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.MQLStageValue);
+                                    var objTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.MQLStageValue);
 
                                     if (objTacticActual != null)
                                     {
@@ -449,11 +514,36 @@ namespace Integration.Eloqua
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
 
+                                    #region "Create/Update linked Tactic MQL value"
+                                    if (linkedTacticId > 0)
+                                    {
+                                        var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.MQLStageValue);
+                                        if (objLinkedTacticActual != null)
+                                        {
+                                            objLinkedTacticActual.Actualvalue = objTacticActual.Actualvalue + item.Value;
+                                            objLinkedTacticActual.ModifiedDate = DateTime.Now;
+                                            objLinkedTacticActual.ModifiedBy = _userId;
+                                            db.Entry(objLinkedTacticActual).State = EntityState.Modified;
+                                        }
+                                        else
+                                        {
+                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                            actualTactic.Actualvalue = item.Value;
+                                            actualTactic.PlanTacticId = linkedTacticId;
+                                            actualTactic.Period = item.Key;
+                                            actualTactic.StageTitle = Common.MQLStageValue;
+                                            actualTactic.CreatedDate = DateTime.Now;
+                                            actualTactic.CreatedBy = _userId;
+                                            db.Entry(actualTactic).State = EntityState.Added;
+                                        }
+                                    }
+                                    #endregion
+
                                     //// check tactic is of MQL or other type for plan tactic id.
                                     if (objTactic.Stage.Code.ToLower() == Common.StageMQL.ToLower())
                                     {
                                         //// MQL type data so update/create projected stage value and MQL value in actual table
-                                        var innerTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.StageProjectedStageValue);
+                                        var innerTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == objTactic.PlanTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.StageProjectedStageValue);
 
                                         if (innerTacticActual != null)
                                         {
@@ -473,12 +563,46 @@ namespace Integration.Eloqua
                                             actualTactic.CreatedBy = _userId;
                                             db.Entry(actualTactic).State = EntityState.Added;
                                         }
+
+                                        #region "Create/Update linked Tactic Projected Stage value"
+                                        if (linkedTacticId > 0)
+                                        {
+                                            var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == linkedTacticId && tacticActual.Period == item.Key && tacticActual.StageTitle == Common.StageProjectedStageValue);
+                                            if (objLinkedTacticActual != null)
+                                            {
+                                                objLinkedTacticActual.Actualvalue = innerTacticActual.Actualvalue + item.Value;
+                                                objLinkedTacticActual.ModifiedDate = DateTime.Now;
+                                                objLinkedTacticActual.ModifiedBy = _userId;
+                                                db.Entry(objLinkedTacticActual).State = EntityState.Modified;
+                                            }
+                                            else
+                                            {
+                                                Plan_Campaign_Program_Tactic_Actual lnkdactualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                                lnkdactualTactic.Actualvalue = item.Value;
+                                                lnkdactualTactic.PlanTacticId = linkedTacticId;
+                                                lnkdactualTactic.Period = item.Key;
+                                                lnkdactualTactic.StageTitle = Common.StageProjectedStageValue;
+                                                lnkdactualTactic.CreatedDate = DateTime.Now;
+                                                lnkdactualTactic.CreatedBy = _userId;
+                                                db.Entry(lnkdactualTactic).State = EntityState.Added;
+                                            }
+                                        }
+                                        #endregion
                                     }
                                 }
 
                                 objTactic.LastSyncDate = DateTime.Now;
                                 objTactic.ModifiedDate = DateTime.Now;
                                 objTactic.ModifiedBy = _userId;
+
+                                if (linkedTacticId > 0)   // check whether linkedTactics exist or not.
+                                {
+                                    Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                    objLinkedTactic = tblTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                    objLinkedTactic.LastSyncDate = DateTime.Now;
+                                    objLinkedTactic.ModifiedDate = DateTime.Now;
+                                    objLinkedTactic.ModifiedBy = _userId;
+                                }
 
                                 // Insert Log
                                 IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
@@ -759,8 +883,9 @@ namespace Integration.Eloqua
                             IntegrationEloquaClient integrationEloquaClient = new IntegrationEloquaClient(Convert.ToInt32(IntegrationInstanceId), 0, EntityType.IntegrationInstance, _userId, IntegrationInstanceLogId, _applicationId);
                             Integration.Eloqua.EloquaCampaign objEloqua;
                             List<EloquaCampaign> lstEloquaSFDCIDMapping = new List<EloquaCampaign>();
-                            Plan_Campaign_Program_Tactic objUpdateTactic;
-                            int cntrUpdateTac = 0;
+                            Plan_Campaign_Program_Tactic objUpdateTactic, objlinkedTactic = null;
+                            int cntrUpdateTac = 0,linkedTacticId = 0;
+
                             foreach (string eloquaId in lstNotExistEloquaId)
                             {
                                 objEloqua = new Integration.Eloqua.EloquaCampaign();
@@ -775,6 +900,25 @@ namespace Integration.Eloqua
                                         objUpdateTactic.IntegrationInstanceEloquaId = eloquaId;
                                         db.Entry(objUpdateTactic).State = EntityState.Modified;
                                         cntrUpdateTac++;
+
+                                        #region "Update Linked Tactic IntegrationInstanceEloquaId value"
+                                            #region "Retrieve linkedTactic"
+                                            linkedTacticId = (objUpdateTactic != null && objUpdateTactic.LinkedTacticId.HasValue) ? objUpdateTactic.LinkedTacticId.Value : 0;
+                                            //if (linkedTacticId <= 0)
+                                            //{
+                                            //    var lnkPCPT = tblTactic.Where(tactic => tactic.LinkedTacticId == objUpdateTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                            //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+                                            //}
+                                            #endregion
+
+                                            if (linkedTacticId > 0)
+                                            {
+                                                objlinkedTactic = new Plan_Campaign_Program_Tactic();
+                                                objlinkedTactic = tblTactic.Where(tac => (tac.PlanTacticId == linkedTacticId) && (tac.IsDeleted == false)).FirstOrDefault();
+                                                objlinkedTactic.IntegrationInstanceEloquaId = eloquaId;
+                                                db.Entry(objlinkedTactic).State = EntityState.Modified;
+                                            } 
+                                        #endregion
                                     }
                                 }
                                 lstEloquaSFDCIDMapping.Add(objEloqua);
@@ -791,12 +935,52 @@ namespace Integration.Eloqua
                             //var lstExternalTacticId = lstResponse.Where(t => !string.IsNullOrEmpty(t.externalTacticId)).Select(t => t.externalTacticId).ToList();
                             //var lstExternalTacticIdSub = lstResponse.Where(t => !string.IsNullOrEmpty(t.externalTacticId)).Select(t => t.externalTacticId.Substring(0, 15)).ToList();
                             
-                            List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                               (lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId)) &&
-                                                                                                                           tactic.IsDeployedToIntegration == true &&
+                            List<Plan_Campaign_Program_Tactic> tblPlanTactic = new List<Plan_Campaign_Program_Tactic>();
+                            tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false &&
                                                                                                                            tactic.Stage.Code == Common.StageINQ).ToList();
+
+                            List<Plan_Campaign_Program_Tactic> lstTactic = tblPlanTactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                                                                                                                               (lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId))).ToList();
+
+                            #region "Create LinkedTactic Mapping list"
+                            Dictionary<int, int> lstlinkedTacticMapping = new Dictionary<int, int>();
+                            int linkedTacticId = 0;
+                            foreach (var tac in lstTactic)
+                            {
+                                linkedTacticId = 0;
+                                #region "Retrieve linkedTactic"
+                                linkedTacticId = (tac != null && tac.LinkedTacticId.HasValue) ? tac.LinkedTacticId.Value : 0;
+                                //if (linkedTacticId <= 0)
+                                //{
+                                //    var lnkPCPT = tblPlanTactic.Where(tactic => tactic.LinkedTacticId == tac.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+                                //}
+
+                                if (linkedTacticId > 0)
+                                {
+                                    lstlinkedTacticMapping.Add(tac.PlanTacticId, linkedTacticId);
+                                }
+                                #endregion
+                            }
+                            #endregion
+
+                            #region "Create Actual Temp Table"
+                            List<int> linkedTacticIds = new List<int>(), TacticIds = new List<int>();
+                            List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
+                            TacticIds = lstTactic.Select(tac => tac.PlanTacticId).ToList();
+                            if (lstlinkedTacticMapping.Count > 0)
+                            {
+                                linkedTacticIds = lstlinkedTacticMapping.Select(lnkTac => lnkTac.Value).ToList();
+                            }
+
+                            if (linkedTacticIds != null && linkedTacticIds.Count > 0)
+                                tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => (linkedTacticIds.Contains(actual.PlanTacticId) || TacticIds.Contains(actual.PlanTacticId)) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                            else
+                                tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => TacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList(); 
+                            #endregion
+
                             // Insert or Update tactic actuals.
                             foreach (var objTactic in lstTactic)
                             {
@@ -804,10 +988,15 @@ namespace Integration.Eloqua
                                 DateTime tacticEndDate = new DateTime(objTactic.EndDate.Year, 12, 31).AddDays(1).AddTicks(-1);
                                     List<EloquaResponseModel> lstTacticResponse = lstResponse.Where(r => (r.eloquaTacticId == objTactic.IntegrationInstanceEloquaId) &&
                                                                                 r.peroid >= tacticStartDate && r.peroid <= tacticEndDate).ToList();
+                                linkedTacticId = 0;
+                                // Get linked TacticId from mapping list.
+                                if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0) // check whether linkedTactics exist or not.
+                                    linkedTacticId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == objTactic.PlanTacticId).Value;
+
                                 foreach (EloquaResponseModel item in lstTacticResponse)
                                 {
                                     string actualPeriod = (tacticStartDate.Year < item.peroid.Year) ? ("Y" + (((item.peroid.Year - tacticStartDate.Year) * 12) + item.peroid.Month )) : ("Y" + item.peroid.Month.ToString());
-                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == actualPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                    var objTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == actualPeriod && a.StageTitle == Common.StageProjectedStageValue);
                                     if (objTacticActual != null)
                                     {
                                         objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.responseCount;
@@ -826,6 +1015,32 @@ namespace Integration.Eloqua
                                         actualTactic.CreatedBy = _userId;
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
+
+                                    #region "Create/Update linked Tactic Actuals value"
+                                    if (linkedTacticId > 0)
+                                    {
+                                        var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == linkedTacticId && a.Period == actualPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                        if (objLinkedTacticActual != null)
+                                        {
+                                            objLinkedTacticActual.Actualvalue = objTacticActual.Actualvalue + item.responseCount;
+                                            objLinkedTacticActual.ModifiedDate = DateTime.Now;
+                                            objLinkedTacticActual.ModifiedBy = _userId;
+                                            db.Entry(objLinkedTacticActual).State = EntityState.Modified;
+                                        }
+                                        else
+                                        {
+                                            Plan_Campaign_Program_Tactic_Actual linkedActualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                            linkedActualTactic.Actualvalue = item.responseCount;
+                                            linkedActualTactic.PlanTacticId = linkedTacticId;
+                                            linkedActualTactic.Period = actualPeriod;//"Y" + item.peroid.Month;
+                                            linkedActualTactic.StageTitle = Common.StageProjectedStageValue;
+                                            linkedActualTactic.CreatedDate = DateTime.Now;
+                                            linkedActualTactic.CreatedBy = _userId;
+                                            db.Entry(linkedActualTactic).State = EntityState.Added;
+                                        } 
+                                    }
+                                    #endregion
+
                                     db.SaveChanges();
                                     lstResponse.Remove(item);
                                 }
@@ -833,6 +1048,17 @@ namespace Integration.Eloqua
                                 objTactic.LastSyncDate = DateTime.Now;
                                 objTactic.ModifiedDate = DateTime.Now;
                                 objTactic.ModifiedBy = _userId;
+
+                                #region "Update linked tactic LastSyncDate, ModifiedDate, ModifiedBy"
+                                if (linkedTacticId > 0)
+                                {
+                                    Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                    objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                    objLinkedTactic.LastSyncDate = DateTime.Now;
+                                    objLinkedTactic.ModifiedDate = DateTime.Now;
+                                    objLinkedTactic.ModifiedBy = _userId;
+                                } 
+                                #endregion
 
                                 // Insert Log
                                 IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
@@ -860,12 +1086,53 @@ namespace Integration.Eloqua
                             //var lstExternalTacticId = unproceessdatalist.Where(t => !string.IsNullOrEmpty(t.ExternalCampaignID)).Select(t => t.ExternalCampaignID).ToList();
                             //var lstExternalTacticIdSub = unproceessdatalist.Where(t => !string.IsNullOrEmpty(t.ExternalCampaignID)).Select(t => t.ExternalCampaignID.Substring(0, 15)).ToList();
                             //List<string> lstApproveStatus = Common.GetStatusListAfterApproved();
-                            List<Plan_Campaign_Program_Tactic> lstTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                                               (lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId)) &&
-                                                                                                                           tactic.IsDeployedToIntegration == true &&
+
+                            List<Plan_Campaign_Program_Tactic> tblUnProcessedPlanTactic = new List<Plan_Campaign_Program_Tactic>();
+                            tblUnProcessedPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                            lstApproveStatus.Contains(tactic.Status) &&
                                                                                                                            tactic.IsDeleted == false &&
                                                                                                                            tactic.Stage.Code == Common.StageINQ).ToList();
+
+                            List<Plan_Campaign_Program_Tactic> lstTactic = tblUnProcessedPlanTactic.Where(tactic => planIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
+                                                                                                                               (lstEloquaTacticId.Contains(tactic.IntegrationInstanceEloquaId))).ToList();
+
+                            #region "Create LinkedTactic Mapping list"
+                            Dictionary<int, int> lstlinkedTacticMapping = new Dictionary<int, int>();
+                            int linkedTacticId = 0;
+                            foreach (var tac in lstTactic)
+                            {
+                                linkedTacticId = 0;
+                                #region "Retrieve linkedTactic"
+                                linkedTacticId = (tac != null && tac.LinkedTacticId.HasValue) ? tac.LinkedTacticId.Value : 0;
+                                //if (linkedTacticId <= 0)
+                                //{
+                                //    var lnkPCPT = tblUnProcessedPlanTactic.Where(tactic => tactic.LinkedTacticId == tac.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+                                //}
+
+                                if (linkedTacticId > 0)
+                                {
+                                    lstlinkedTacticMapping.Add(tac.PlanTacticId, linkedTacticId);
+                                }
+                                #endregion
+                            }
+                            #endregion
+
+                            #region "Create Actual Temp Table"
+                            List<int> linkedTacticIds = new List<int>(), TacticIds = new List<int>();
+                            List<Plan_Campaign_Program_Tactic_Actual> tblPlanTacticActual = new List<Plan_Campaign_Program_Tactic_Actual>();
+                            TacticIds = lstTactic.Select(tac => tac.PlanTacticId).ToList();
+                            if (lstlinkedTacticMapping.Count > 0)
+                            {
+                                linkedTacticIds = lstlinkedTacticMapping.Select(lnkTac => lnkTac.Value).ToList();
+                            }
+
+                            if (linkedTacticIds != null && linkedTacticIds.Count > 0)
+                                tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => (linkedTacticIds.Contains(actual.PlanTacticId) || TacticIds.Contains(actual.PlanTacticId)) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                            else
+                                tblPlanTacticActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => TacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                            #endregion
+
                             // Insert or Update tactic actuals.
                             foreach (var objTactic in lstTactic)
                             {
@@ -874,10 +1141,15 @@ namespace Integration.Eloqua
                                     var lstTacticResponse = unproceessdatalist.Where(r => (r.EloquaCampaignID == objTactic.IntegrationInstanceEloquaId) &&
                                                                                 r.ResponseDateTime >= tacticStartDate && r.ResponseDateTime <= tacticEndDate);
                                 string unprocessdatalog =string.Empty;
+                                linkedTacticId = 0;
+                                // Get linked TacticId from mapping list.
+                                if (lstlinkedTacticMapping != null && lstlinkedTacticMapping.Count > 0) // check whether linkedTactics exist or not.
+                                    linkedTacticId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == objTactic.PlanTacticId).Value;
+
                                 foreach (var item in lstTacticResponse)
                                 {
                                     string actualPeriod = (tacticStartDate.Year < item.ResponseDateTime.Year) ? ("Y" + (((item.ResponseDateTime.Year - tacticStartDate.Year) * 12) + item.ResponseDateTime.Month)) : ("Y" + item.ResponseDateTime.Month.ToString());
-                                    var objTacticActual = db.Plan_Campaign_Program_Tactic_Actual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == actualPeriod && a.StageTitle == Common.StageProjectedStageValue);
+                                    var objTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == objTactic.PlanTacticId && a.Period == actualPeriod);
                                     if (objTacticActual != null)
                                     {
                                         objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.ResponseCount;
@@ -896,6 +1168,32 @@ namespace Integration.Eloqua
                                         actualTactic.CreatedBy = _userId;
                                         db.Entry(actualTactic).State = EntityState.Added;
                                     }
+
+                                    #region "Create/Update linked Tactic Actuals value"
+                                    if (linkedTacticId > 0)
+                                    {
+                                        var objLinkedTacticActual = tblPlanTacticActual.FirstOrDefault(a => a.PlanTacticId == linkedTacticId && a.Period == actualPeriod);
+                                        if (objLinkedTacticActual != null)
+                                        {
+                                            objTacticActual.Actualvalue = objTacticActual.Actualvalue + item.ResponseCount;
+                                            objTacticActual.ModifiedDate = DateTime.Now;
+                                            objTacticActual.ModifiedBy = _userId;
+                                            db.Entry(objTacticActual).State = EntityState.Modified;
+                                        }
+                                        else
+                                        {
+                                            Plan_Campaign_Program_Tactic_Actual actualTactic = new Plan_Campaign_Program_Tactic_Actual();
+                                            actualTactic.Actualvalue = item.ResponseCount;
+                                            actualTactic.PlanTacticId = linkedTacticId;
+                                            actualTactic.Period = actualPeriod;//"Y" + item.ResponseDateTime.Month;
+                                            actualTactic.StageTitle = Common.StageProjectedStageValue;
+                                            actualTactic.CreatedDate = DateTime.Now;
+                                            actualTactic.CreatedBy = _userId;
+                                            db.Entry(actualTactic).State = EntityState.Added;
+                                        }
+                                    }
+                                    #endregion
+
                                     unprocessdatalog += "(" + item.IntegrationInstanceId + "," + item.ResponseCount + "," + item.CreatedDate + ")";  
                                     db.Entry(item).State = EntityState.Deleted;
                                 }
@@ -903,6 +1201,17 @@ namespace Integration.Eloqua
                                 objTactic.LastSyncDate = DateTime.Now;
                                 objTactic.ModifiedDate = DateTime.Now;
                                 objTactic.ModifiedBy = _userId;
+
+                                #region "Update linked tactic LastSyncDate, ModifiedDate, ModifiedBy"
+                                if (linkedTacticId > 0)
+                                {
+                                    Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                    objLinkedTactic = tblUnProcessedPlanTactic.Where(tac => tac.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                    objLinkedTactic.LastSyncDate = DateTime.Now;
+                                    objLinkedTactic.ModifiedDate = DateTime.Now;
+                                    objLinkedTactic.ModifiedBy = _userId;
+                                }
+                                #endregion
 
                                 // Insert Log
                                 IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();

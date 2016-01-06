@@ -311,17 +311,17 @@
         }
         
     });
-    var DropdownTop = 0;
-    $(".pop-body-wraper").scroll(function () {
+    //var DropdownTop = 0;
+    //$(".pop-body-wraper").scroll(function () {
 
-        var DropdownToPos = $(this).scrollTop();
-        if (DropdownToPos > DropdownTop) {
-            $('#treeviewddl').removeClass('fieldmapping-dropdown');
-        } else {
-            $('#treeviewddl').addClass('fieldmapping-dropdown')
-        }
-        DropdownTop = DropdownToPos;
-    });
+    //    var DropdownToPos = $(this).scrollTop();
+    //    if (DropdownToPos > DropdownTop) {
+    //        $('#treeviewddl').removeClass('fieldmapping-dropdown');
+    //    } else {
+    //        $('#treeviewddl').addClass('fieldmapping-dropdown')
+    //    }
+    //    DropdownTop = DropdownToPos;
+    //});
     function LoadBudgetDropdown()
     {
         var GridData;
@@ -689,13 +689,37 @@
         var DropdownTop = 0;
         $( ".pop-body-wraper" ).scroll(function() {
 
-            var DropdownToPos = $(this).scrollTop();
-            if (DropdownToPos > DropdownTop) {
-                $('.dropdown-wrapper').removeClass('dropup');
-            } else {
-                $('.dropdown-wrapper').addClass('dropup')
-            }
-            DropdownTop = DropdownToPos;
+            //var DropdownToPos = $(this).scrollTop();
+            //if (DropdownToPos > DropdownTop) {
+            //    $('.dropdown-wrapper').removeClass('dropup');
+            //} else {
+            //    $('.dropdown-wrapper').addClass('dropup')
+            //}
+            //DropdownTop = DropdownToPos;
+            var scrollTop = $(this).scrollTop();
+            $('.dropdown_new_btn').click(function () {
+                //$(this).each(function () {
+                // alert('hi3');
+                // get the top offset of the dropdown (distance from top of the page)
+                var dropdown_div = $(this).next('.dropdown-wrapper');
+                //dropdown_div.css('cssText', 'display: block !important');
+                //var dropdown_height = dropdown_div.height();
+                var topOffset = dropdown_div.offset().top;
+                // calculate the dropdown offset relative to window position
+                var relativeOffset = topOffset - scrollTop;
+                // get the window height
+                var windowHeight = $('.pop-body-wraper').height();
+                // if the relative offset is greater than half the window height,
+                // reverse the dropdown.
+                if (relativeOffset > windowHeight / 2) {
+                    //alert('5');
+                    dropdown_div.addClass("dropup");
+                }
+                else {
+                    //alert('6');
+                    dropdown_div.removeClass("dropup");
+                }
+            });
             //===== For Design Purpouse ======
             //if(dropdowntop >= (windownheight - 200)) { 
             //    $('.dropdown-wrapper').removeClass('dropup');
@@ -772,6 +796,7 @@
         $(this).closest(".alert").slideUp(300);/*SlideUp value change 400 to 300 by Mitesh Vaishnav on 04 july 2014*/
     });
     function ShowError(value) {
+      
         $("#modal-container-186470").scrollTop(0);
         $("#successMessageViewLineItem").slideUp(400);
         $("#spanSuccessMessageViewLineitem").empty();
@@ -917,7 +942,8 @@
                         planProgramId = data.planProgramID;
                         planTacticId = data.planTacticID;
                         $('#lblLineitemTitle').text(lineItemTitle);
-                        if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
+                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                       @* if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
                             var ChangedTab = "Setup";
                             if (tabtext != "") {
                                 ChangedTab = tabtext;
@@ -928,8 +954,8 @@
                             }
                             loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                             //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);
-                        }
-                        else{
+                        }*@
+                       // else{
                             //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
 
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
@@ -940,10 +966,16 @@
                                 //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             }
                             returnparameter = true;
-                        }
+                        //}
                     }
                     else {
+                       
                         ShowError(data.msg);
+                        if(data.strmsg != "")
+                        {
+                          
+                            ShowError(data.strmsg);
+                        }
                         returnparameter = false;
                     }
                 }

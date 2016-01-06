@@ -418,7 +418,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="UserId"></param>
         /// <param name="ID"></param>
         /// <returns></returns>
-        public int ProgramClone(int planId,string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int ProgramClone(int planId, string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
 
@@ -669,7 +669,7 @@ namespace RevenuePlanner.Helpers
         /// <param name="ID"></param>
         /// <param name="TacticStatus"></param>
         /// <returns></returns>
-        public int LineItemClone( int planid,string Suffix, Guid UserId, int ID, string TacticStatus)
+        public int LineItemClone(int planid, string Suffix, Guid UserId, int ID, string TacticStatus)
         {
             int returnFlag = 0;
 
@@ -852,14 +852,14 @@ namespace RevenuePlanner.Helpers
             if (entityId == 0)
                 return returnFlag;
             string Suffix = Common.copySuffix + Common.GetTimeStamp();
-            DateTime startDate = new DateTime(), endDate=new DateTime();
+            DateTime startDate = new DateTime(), endDate = new DateTime();
             try
             {
                 db.Configuration.AutoDetectChangesEnabled = false;
-                Plan_Campaign_Program objParentProgram =new Plan_Campaign_Program();
+                Plan_Campaign_Program objParentProgram = new Plan_Campaign_Program();
                 if (parentEntityId > 0)
                     objParentProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == parentEntityId).FirstOrDefault();
-                if(objParentProgram != null)
+                if (objParentProgram != null)
                 {
                     startDate = objParentProgram.StartDate;
                     endDate = objParentProgram.EndDate;
@@ -892,8 +892,8 @@ namespace RevenuePlanner.Helpers
                     objPlanTactic.ModifiedBy = null;
                     objPlanTactic.LinkedTacticId = null;
                     objPlanTactic.LinkedPlanId = null;
-                    objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate,true) : objPlanTactic.StartDate;
-                    objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDate(objPlanTactic.EndDate, endDate,false) : objPlanTactic.EndDate;
+                    objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDate(objPlanTactic.StartDate, startDate, true) : objPlanTactic.StartDate;
+                    objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDate(objPlanTactic.EndDate, endDate, false) : objPlanTactic.EndDate;
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
@@ -909,10 +909,10 @@ namespace RevenuePlanner.Helpers
 
                         // Handle Tactic TargetStage scenario.
                         int? destTargetStageId = objTacticTypeMapping.TargetStageId;
-                        if (!destTargetStageId.HasValue || !objPlanTactic.StageId.Equals(destTargetStageId.Value)) 
+                        if (!destTargetStageId.HasValue || !objPlanTactic.StageId.Equals(destTargetStageId.Value))
                         {
                             objPlanTactic.ProjectedStageValue = null; // if destination Model TargetStage value null Or Source & Destionation Model Target Stage are different then update ProjectedStageValue to be null.
-                            objPlanTactic.StageId = destTargetStageId.HasValue? destTargetStageId.Value : 0; // Update Target StageId with destination model value.
+                            objPlanTactic.StageId = destTargetStageId.HasValue ? destTargetStageId.Value : 0; // Update Target StageId with destination model value.
                         }
                     }
                 }
@@ -1005,7 +1005,7 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaign.PlanId = parentEntityId;
                     objPlanCampaign.StartDate = (objPlanCampaign.StartDate.Year != planyear) ? GetCampaignResultDate(objPlanCampaign.StartDate, planyear) : objPlanCampaign.StartDate;
                     objPlanCampaign.EndDate = (objPlanCampaign.EndDate.Year != planyear) ? GetCampaignResultDate(objPlanCampaign.EndDate, planyear) : objPlanCampaign.EndDate;
-                   
+
                     objPlanCampaign.Plan_Campaign_Program.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
                         {
@@ -1177,8 +1177,8 @@ namespace RevenuePlanner.Helpers
                     objPlanCampaignPrograms.ModifiedDate = null;
                     objPlanCampaignPrograms.ModifiedBy = null;
                     objPlanCampaignPrograms.PlanCampaignId = parentEntityId;
-                    objPlanCampaignPrograms.StartDate = (objPlanCampaignPrograms.StartDate.Year != startDate.Year) ? GetResultDate(objPlanCampaignPrograms.StartDate, startDate,true) : objPlanCampaignPrograms.StartDate;
-                    objPlanCampaignPrograms.EndDate = (objPlanCampaignPrograms.EndDate.Year != endDate.Year) ? GetResultDate(objPlanCampaignPrograms.EndDate, endDate,false) : objPlanCampaignPrograms.EndDate;
+                    objPlanCampaignPrograms.StartDate = (objPlanCampaignPrograms.StartDate.Year != startDate.Year) ? GetResultDate(objPlanCampaignPrograms.StartDate, startDate, true) : objPlanCampaignPrograms.StartDate;
+                    objPlanCampaignPrograms.EndDate = (objPlanCampaignPrograms.EndDate.Year != endDate.Year) ? GetResultDate(objPlanCampaignPrograms.EndDate, endDate, false) : objPlanCampaignPrograms.EndDate;
                     objPlanCampaignPrograms.Plan_Campaign_Program_Budget = objPlanCampaignPrograms.Plan_Campaign_Program_Budget.ToList();
                     objPlanCampaignPrograms.Plan_Campaign_Program_Tactic.Where(s => s.IsDeleted == false).ToList().ForEach(
                         t =>
@@ -1201,8 +1201,8 @@ namespace RevenuePlanner.Helpers
                             t.LastSyncDate = null;
                             t.Plan_Campaign_Program_Tactic_Cost = null;//t.Plan_Campaign_Program_Tactic_Cost.ToList();
                             t.Plan_Campaign_Program_Tactic_Budget = null; //t.Plan_Campaign_Program_Tactic_Budget.ToList();
-                            t.StartDate = (t.StartDate.Year != startDate.Year) ? GetResultDate(t.StartDate, startDate,true) : t.StartDate;
-                            t.EndDate = (t.EndDate.Year != endDate.Year) ? GetResultDate(t.EndDate, endDate,false) : t.EndDate;
+                            t.StartDate = (t.StartDate.Year != startDate.Year) ? GetResultDate(t.StartDate, startDate, true) : t.StartDate;
+                            t.EndDate = (t.EndDate.Year != endDate.Year) ? GetResultDate(t.EndDate, endDate, false) : t.EndDate;
                             t.Plan_Campaign_Program_Tactic_LineItem = t.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted == false).ToList();
                             t.Plan_Campaign_Program_Tactic_LineItem.Where(s => s.IsDeleted == false).ToList().ForEach(pcptl =>
                             {
@@ -1281,7 +1281,7 @@ namespace RevenuePlanner.Helpers
             if (isParentUpdate)     // if parent entities update
                 resultDate = destDate;
             else
-                resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); 
+                resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day);
             try
             {
 
@@ -1409,6 +1409,173 @@ namespace RevenuePlanner.Helpers
                 ErrorSignal.FromCurrentContext().Raise(ex);
             }
             return resultDate;
+        }
+
+        #endregion
+
+        #region "Method related to Link entities to other Plan"
+        /// <summary>
+        /// This method is identify the clone type 
+        /// Added : By Rahul Shah for PL #1846 Linking icon for tactics with allocation
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <param name="Suffix"></param>
+        /// <param name="LinkClone"></param>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public int LinkToOtherPlan(List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping, string cloneType = "", int entityId = 0, int PlanId = 0, int parentEntityId = 0, bool isdifferModel = false)
+        {
+            Guid UserId = Sessions.User.UserId;
+            if (PlanId == 0)
+            {
+                PlanId = Sessions.PlanId;
+            }
+            string entityStatus = Enums.TacticStatus.Created.ToString();
+            return LinkTacticToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, isdifferModel, lstTacticTypeMapping);
+            //switch (cloneType)
+            //{
+            //    case "Campaign":
+            //       return CloneCampaignToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, lstTacticTypeMapping);
+
+            //    case "Program":
+            //       return CloneProgramToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, lstTacticTypeMapping);
+
+            //    case "Tactic":
+            //        return LinkTacticToOtherPlan(PlanId, UserId, entityId, parentEntityId, entityStatus, isdifferModel, lstTacticTypeMapping);
+            //        
+            //}
+            //return 0;
+        }
+
+
+        /// <summary>
+        /// Link the Tactic and it's All Child element
+        /// Added : By Rahul Shah for PL #1846 Linking Tactic to Same or Other Plan
+        /// </summary>
+        /// <param name="PlanId"></param>
+        /// <param name="Suffix"></param>
+        /// <param name="UserId"></param>
+        /// <param name="ID"></param>
+        /// <param name="TacticStatus"></param>
+        /// <returns></returns>
+        public int LinkTacticToOtherPlan(int planid, Guid UserId, int entityId, int parentEntityId, string TacticStatus, bool isdifferModel, List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping)
+        {
+            int returnFlag = 0;
+            if (entityId == 0)
+                return returnFlag;
+            DateTime startDate = new DateTime(), endDate = new DateTime();
+            try
+            {
+                db.Configuration.AutoDetectChangesEnabled = false;
+                Plan_Campaign_Program objParentProgram = new Plan_Campaign_Program();
+                if (parentEntityId > 0)
+                    objParentProgram = db.Plan_Campaign_Program.Where(prg => prg.PlanProgramId == parentEntityId).FirstOrDefault();
+                if (objParentProgram != null)
+                {
+                    startDate = objParentProgram.StartDate;
+                    endDate = objParentProgram.EndDate;
+                }
+
+                Plan_Campaign_Program_Tactic objPlanTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().FirstOrDefault(p => p.PlanTacticId == entityId && p.IsDeleted == false);
+
+
+                if (objPlanTactic != null)
+                {
+                    planid = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+                    objPlanTactic.Plan_Campaign_Program = null;
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Comment = objPlanTactic.Plan_Campaign_Program_Tactic_Comment.ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
+                    objPlanTactic.Tactic_Share = objPlanTactic.Tactic_Share.ToList();
+                    objPlanTactic.PlanProgramId = parentEntityId;
+                    objPlanTactic.StartDate = objPlanTactic.StartDate;
+                    objPlanTactic.EndDate = objPlanTactic.EndDate;
+                    objPlanTactic.LinkedPlanId = planid;
+                    objPlanTactic.LinkedTacticId = objPlanTactic.PlanTacticId;
+                    objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                        pcptl =>
+                        {
+                            pcptl.LineItemType = null;
+                            pcptl.LinkedLineItemId = pcptl.PlanLineItemId;
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                        });
+
+
+                    if (isdifferModel)
+                    {
+                        PlanTactic_TacticTypeMapping objTacticTypeMapping = lstTacticTypeMapping.Where(tac => tac.PlanTacticId == objPlanTactic.PlanTacticId).FirstOrDefault();
+                        int destTacticTypeId = objTacticTypeMapping.TacticTypeId; // Get destination model TacticTypeId.
+                        objPlanTactic.TacticTypeId = destTacticTypeId; // update TacticTypeId as per destination Model TacticTypeId.
+
+                        // Handle Tactic TargetStage scenario.
+                        int? destTargetStageId = objTacticTypeMapping.TargetStageId;
+                        if (!destTargetStageId.HasValue || !objPlanTactic.StageId.Equals(destTargetStageId.Value))
+                        {
+                            objPlanTactic.ProjectedStageValue = null; // if destination Model TargetStage value null Or Source & Destionation Model Target Stage are different then update ProjectedStageValue to be null.
+                            objPlanTactic.StageId = destTargetStageId.HasValue ? destTargetStageId.Value : 0; // Update Target StageId with destination model value.
+                        }
+                    }
+                }
+
+                db.Plan_Campaign_Program_Tactic.Add(objPlanTactic);
+                db.SaveChanges();
+
+                int planTacticId = objPlanTactic.PlanTacticId;
+                int destPlanId = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
+
+                Plan_Campaign_Program_Tactic oldPlanTactic = db.Plan_Campaign_Program_Tactic.AsNoTracking().FirstOrDefault(p => p.PlanTacticId == entityId && p.IsDeleted == false);
+
+                oldPlanTactic.LinkedTacticId = planTacticId;
+                oldPlanTactic.LinkedPlanId = destPlanId;
+
+                db.Entry(oldPlanTactic).State = EntityState.Modified;
+
+                string entityTypeTactic = Enums.EntityType.Tactic.ToString();
+
+                var CustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == entityId && (a.CustomField.EntityType == entityTypeTactic)).ToList();
+                CustomFieldsList.ForEach(a =>
+                {
+                    a.EntityId = objPlanTactic.PlanTacticId; db.Entry(a).State = EntityState.Added;
+
+                });
+
+                // clone custom attributes
+                string entityTypeLineItem = Enums.EntityType.Lineitem.ToString();
+                List<Plan_Campaign_Program_Tactic_LineItem> ListPlanTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(p => p.PlanTacticId == entityId || p.PlanTacticId == planTacticId && p.IsDeleted == false).ToList();
+                List<Plan_Campaign_Program_Tactic_LineItem> objPlanTacticLineItem = ListPlanTacticLineItem.Where(line => line.PlanTacticId == entityId).ToList();
+                foreach (var Lineitem in objPlanTacticLineItem)
+                {
+                    var LineItemCustomFieldsList = db.CustomField_Entity.Where(a => a.EntityId == Lineitem.PlanLineItemId && a.CustomField.EntityType == entityTypeLineItem).ToList();
+                    var clonedPlanLineItemId = objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.Title == Lineitem.Title).FirstOrDefault().PlanLineItemId;
+                    LineItemCustomFieldsList.ForEach(a => { a.EntityId = clonedPlanLineItemId; db.Entry(a).State = EntityState.Added; });
+
+                }
+                List<Plan_Campaign_Program_Tactic_LineItem> NewPlanTacticLineItem = ListPlanTacticLineItem.Where(line => line.PlanTacticId == planTacticId).ToList();
+                //update LinkedLineItemId for SourceLineItem.
+                foreach (var LineItemId in objPlanTacticLineItem)
+                {
+                    var name = LineItemId.Title.ToString();
+                    var id = NewPlanTacticLineItem.Where(line => line.Title.Trim() == name.Trim()).Select(line => line.PlanLineItemId).FirstOrDefault();
+                    LineItemId.LinkedLineItemId = id;
+                    db.Entry(LineItemId).State = EntityState.Modified;
+                }
+
+                db.SaveChanges();
+
+                Common.InsertChangeLog(planid, null, returnFlag, objPlanTactic.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.added);
+                returnFlag = planTacticId;
+                return returnFlag;
+            }
+            catch (AmbiguousMatchException)
+            {
+                return returnFlag;
+            }
+            finally
+            {
+                db.Configuration.AutoDetectChangesEnabled = true;
+            }
         }
 
         #endregion

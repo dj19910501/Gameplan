@@ -410,7 +410,8 @@
                     else{
                     if (data.isSaved) {
                         var requestedModule = $("#hdnRequestedModule").val();
-                        if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
+                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                        @*if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
                             var ChangedTab = "Setup";
                             if (tabtext != "") {
                                 ChangedTab = tabtext;
@@ -422,7 +423,7 @@
                             loadInspectPopup(data.id, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.ImprovementTactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                             //RefreshCurrentTab(requestedModule, 0, 0, 0);
                         }
-                        else{
+                        else{*@
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
@@ -433,11 +434,12 @@
                             $("#txtTitle").val(txtTacticValue);
                             $('#spnImprovementTacticTitle').text(txtTacticValue);
                             $('#errorMessageImprovementTactic').css("display","none");
-                            RefreshCurrentTab(requestedModule, 0, 0, 0);
+                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                           // RefreshCurrentTab(requestedModule, 0, 0, 0);
                             returnparameter=true;
                             
                             return;
-                        }
+                       // }
                         $("#successMessage").css("display", "block");
                         $("#spanMessageSuccess").empty();
                         $("#spanMessageSuccess").text(data.msg);

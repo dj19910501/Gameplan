@@ -349,7 +349,9 @@
                 data: JSON.stringify({ strActualsData: _stractualsData, strPlanItemId: _strPlanLineitemId, LineItemTitle: _lineitemtitle }),
                 success: function (data) {
                     if (data != 'undefined') {
+                      
                         if (!data.IsDuplicate) {
+                           
                         if (data.id != 0) {
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
@@ -363,7 +365,8 @@
                                 $("#hdnBudgetingIsSave").val("true");
                             }
                             else {
-                                RefreshCurrentTab(requestedModule, data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
+                                // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                                //RefreshCurrentTab(requestedModule, data.planCampaignID, data.planProgramID, data.planTacticID, 0, 0);
                             }
                         }
                         else {
@@ -373,11 +376,14 @@
                         }
                                 returnparameter = true;
                     }
-                    else {
-                        ShowError(data.errormsg);
+                        else {
+                            ShowError(data.errormsg);
+                            if (data.strmsg != "") {
+                                ShowError(data.strmsg);
+                            }
                                 returnparameter = false;
                     }
-                            returnparameter = true;
+                         //   returnparameter = true;
                 }
                 },
                 error: function () {
