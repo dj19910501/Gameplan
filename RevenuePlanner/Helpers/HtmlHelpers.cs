@@ -4321,7 +4321,7 @@ namespace RevenuePlanner.Helpers
 
                     DisplayStyle = " style=\"";
                     var IsSelected = false;
-                    var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault()!= null ?item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId: new int();
+                    var ParentOptionID = item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault()!= null ?item.option.Where(a => item.value.Contains(a.customFieldOptionId.ToString())).FirstOrDefault().ParentOptionId: new List<int>();
                     var ParentCustomFieldID = item.ParentId;
                     //List<string> SelectedTacticIds = item.option.Where(a => TacticType.Contains(a.ParentOptionId.ToString())) != null ? item.option.Where(a => TacticType.Contains(a.ParentOptionId.ToString())).Select(a => a.ParentOptionId.ToString()).ToList() : new List<string>();
                     //bool IsDefaultTacticType = SelectedTacticIds.Contains(TacticType);
@@ -4338,14 +4338,15 @@ namespace RevenuePlanner.Helpers
                         ParentField = "CustomField";
                      val=   customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault() != null ? customFieldList.Where(a => a.customFieldId == ParentCustomFieldID).FirstOrDefault().value : new List<string>();
                     }
-                    var IsSelectedParentsChild =  item.option.Where(op => val.Contains(op.ParentOptionId.ToString())).Any();
+                 //   List<string> Childoptionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
+                    var IsSelectedParentsChild =  item.option.Where(op => val.Intersect(op.ParentOptionId.Select(l => l.ToString()).ToList()).Any()).Any();
                     if (item.customFieldType == "TextBox" && item.isChild )
                     {
-                        IsSelectedParentsChild = val.Contains(item.ParentOptionId.ToString());
+                        IsSelectedParentsChild = val.Intersect(item.ParentOptionId.Select(l => l.ToString()).ToList()).Any();
                     }
                     else
                     {
-                         IsSelected = val.Contains(ParentOptionID.ToString());
+                         IsSelected = val.Intersect(ParentOptionID.Select(l => l.ToString()).ToList()).Any();
                     }
                    
                     if (item.isChild == true  && !IsSelectedParentsChild)
@@ -4372,10 +4373,12 @@ namespace RevenuePlanner.Helpers
 
                     if (item.customFieldType == Enums.CustomFieldType.TextBox.ToString() || editableOptions == true || (mode == Enums.InspectPopupMode.ReadOnly.ToString() && item.option.Count > 0))
                     {
+                        //Modified By Komal Rawal for #1864
+                        var ParentOptionId = (item.ParentOptionId == null || item.ParentOptionId.Count() == 0 ? "0" : string.Join(",", item.ParentOptionId));
                         if (item.isRequired)
-                            sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + item.ParentOptionId + "\" ParentField =\"" + ParentField + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
+                            sb.Append("<div class=\"" + className + "\"" + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + ParentOptionId + "\" ParentField =\"" + ParentField + "\"><p title=\"" + item.name + "\" class=\"ellipsis-left\">" + item.name + "</p> <span class='required-asterisk'>*</span>#VIEW_DETAIL_LINK#");
                         else
-                            sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + item.ParentOptionId + "\" ParentField =\"" + ParentField + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
+                            sb.Append("<div class=\"" + className + "\" " + DisplayStyle + "\"ParentId =\"" + item.ParentId + "\"ParentOptionId =\"" + ParentOptionId + "\" ParentField =\"" + ParentField + "\"><p title=\"" + item.name + "\" class=\"ellipsis\">" + item.name + "</p>");
                     }
 
                     //check if custom field type is textbox then generate textbox and if custom field type is dropdownlist then generate dropdownlist
@@ -4484,11 +4487,10 @@ namespace RevenuePlanner.Helpers
 
 
                                     DisplayStyle = " style=\"";
-
-
+                                    List<string> optionstring =  (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0  ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
                                     if (item.isChild == true)
                                     {
-                                        if ((objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString())) || objOption.value.ToString()=="Please Select")
+                                        if ((objOption.ChildOptionId == true && entityvalues.Intersect(optionstring).Any() || objOption.value.ToString()=="Please Select"))
                                         {
                                             DisplayStyle += "display:block;";
                                         }
@@ -4554,8 +4556,9 @@ namespace RevenuePlanner.Helpers
 
                                              }
                                         }
-
-                                        sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
+                                        //Modified By Komal Rawal for #1864
+                                        var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
+                                        sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + ParentOption + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + " style=\"display:none;\" ><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td><td class=\"first_hide\"><input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_cvr\" maxlength =\"3\" type=\"text\" name=\"textfield10\"></td><td class=\"first_hide\"> <input " + inputcolorcss + " id=\"" + objOption.customFieldOptionId + "_" + Enums.InspectStage.Cost.ToString() + "\" maxlength =\"3\" type=\"text\" name=\"textfield13\"></td></tr>");
                                     }
                                 }
                                 sb.Append("</tbody><tfoot class=\"dropdown-table-footer\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span>" + footerclose + "</a></td></tr></tfoot></table></div></div></div>");
@@ -4592,9 +4595,10 @@ namespace RevenuePlanner.Helpers
                                 foreach (var objOption in item.option)
                                 {
                                     DisplayStyle = " style=\"";
+                                    List<string> optionstring = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? new List<string>() : objOption.ParentOptionId.Select(l => l.ToString()).ToList());
                                     if (item.isChild == true)
                                     {
-                                        if ((objOption.ChildOptionId == true && entityvalues.Contains(objOption.ParentOptionId.ToString())) || objOption.value.ToString()=="Please Select")
+                                        if ((objOption.ChildOptionId == true &&  entityvalues.Intersect(optionstring).Any() || objOption.value.ToString() == "Please Select"))
                                         {
                                             DisplayStyle += "display:block;";
                                         }
@@ -4628,7 +4632,9 @@ namespace RevenuePlanner.Helpers
                                            }
 
                                     }
-                                    sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + objOption.ParentOptionId + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
+                                    //Modified By Komal Rawal for #1864
+                                      var ParentOption = (objOption.ParentOptionId == null || objOption.ParentOptionId.Count() == 0 ? "0" : string.Join(",", objOption.ParentOptionId));
+                                    sb.Append("<tr class=\"" + trhover + "\"" + DisplayStyle + "\"ParentId =\"" + ParentOption + "\"><td class=\"first_show\"><label class=\"lblCustomCheckbox\"><input cf_id=\"" + item.customFieldId + "\" name=\"" + item.customFieldId + "\" type=\"checkbox\" value=\"" + objOption.customFieldOptionId + "\" class=\"  technology_chkbx\" " + enableCheck + "" + displayCheckbox + "><label class=\"lable_inline\"><p class=\"text_ellipsis " + singlehover + " minmax-width200-program\" title=\"" + objOption.value + "\">" + objOption.value + "</p></label></label></td></tr>");
                                 }
                                 sb.Append("</tbody><tfoot class=\"programcampaignborder\"><tr><td colspan=\"3\" class=\"advance\"><a href=\"#\" class=\"advance_a\" mode=\"" + selectionMode + "\"><span class=\"swap-text\">" + footerText + "</span></a></td></tr></tfoot></table></div></div></div>");
                                 if (name.Length > 0)
