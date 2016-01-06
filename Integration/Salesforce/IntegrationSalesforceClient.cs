@@ -4381,6 +4381,8 @@ namespace Integration.Salesforce
                     else if (mapping.Key == Enums.SFDCGlobalFields.PlanName.ToString())
                     {
                         value = !string.IsNullOrEmpty(planname)?planname:string.Empty;
+                        int valuelength = lstSalesforceFieldDetail.Where(sfdetail => sfdetail.TargetField == mapping.Value).FirstOrDefault().Length;
+                        value = value.Length > valuelength ? value.Substring(0, valuelength - 1) : value;
                         keyvaluepair.Add(mapping.Value, value);
                     }
                     else
