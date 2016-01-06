@@ -783,8 +783,8 @@
                             planCampaignId = data.CampaignID;
                         }
                         $("#hdnPlanCampaignId").val(planCampaignId);
-
-                        if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
+                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                     @* if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
                             var ChangedTab = "Setup";
                             if (tabtext != "") {
                                 ChangedTab = tabtext;
@@ -808,8 +808,8 @@
                             }
                             loadInspectPopup(planCampaignId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Campaign).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                             //RefreshCurrentTab(requestedModule, 0, 0, 0);
-                        }
-                        else {
+                        }*@
+                       // else {
                             $("#successMessage").css("display", "block");
                             $("#spanMessageSuccess").empty();
                             $("#spanMessageSuccess").text(data.msg);
@@ -833,7 +833,7 @@
                             }
 
                             returnparameter = true;
-                        }
+                     //   }
                         // Add By Nishant Sheth
                         // Desc :: #1812 refresh dropdown with change of date diffrence
                         if (!(data.EndDatediff == 0)) {

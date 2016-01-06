@@ -677,7 +677,8 @@
                     var campaignId = data.campaignID;
                     var requestedModule = $("#hdnRedirectType").val();
                     $('#lblProgramTitle').text(title);
-                    if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
+                    // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                    @*if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
                         var ChangedTab = "Setup";
                         if (tabtext != "") {
                             ChangedTab = tabtext;
@@ -703,7 +704,7 @@
                         //RefreshCurrentTab(requestedModule, campaignId, 0, 0);
 
                     }
-                    else {
+                    else {*@
 
                         $("#successMessage").css("display", "block");
                         $("#spanMessageSuccess").empty();
@@ -729,7 +730,7 @@
                             //RefreshCurrentTab(requestedModule, campaignId, planProgramId, 0);  //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                         }
                         returnparameter = true;
-                    }
+                  //  }
                     // Add By Nishant Sheth
                     // Desc :: #1812 refresh dropdown with change of date diffrence
                     if (!(data.EndDatediff == 0)) {

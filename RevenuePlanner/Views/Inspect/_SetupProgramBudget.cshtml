@@ -502,9 +502,10 @@
                          $("#hdnBudgetingExpandId").val("program" + data.PlanProgramId);
                          $("#hdnBudgetingIsSave").val("true");
                      }
-                     else {
-                         RefreshCurrentTab(requestedModule, data.PlanCampaignId, data.PlanCampaignId, 0);
-                     }
+                     // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                     //else {
+                     //    RefreshCurrentTab(requestedModule, data.PlanCampaignId, data.PlanCampaignId, 0);
+                     //}
                         returnparameter = true;
                  }
                  else {

@@ -942,7 +942,8 @@
                         planProgramId = data.planProgramID;
                         planTacticId = data.planTacticID;
                         $('#lblLineitemTitle').text(lineItemTitle);
-                        if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
+                        // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                       @* if (inspectMode == '@Enums.InspectPopupMode.Add.ToString()') {
                             var ChangedTab = "Setup";
                             if (tabtext != "") {
                                 ChangedTab = tabtext;
@@ -953,8 +954,8 @@
                             }
                             loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                             //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);
-                        }
-                        else{
+                        }*@
+                       // else{
                             //   loadInspectPopup(planLineItemId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.LineItem).ToLower()", activeTab, "@Enums.InspectPopupMode.ReadOnly.ToString()", 0, requestedModule);
 
                             if ("@Enums.InspectPopupRequestedModules.Budgeting.ToString()" == requestedModule) {
@@ -965,7 +966,7 @@
                                 //RefreshCurrentTab(requestedModule, plancampaignId, planProgramId, planTacticId);    //// Added by Sohel Pathan on 29/10/2014 for Internal Review Points
                             }
                             returnparameter = true;
-                        }
+                        //}
                     }
                     else {
                        

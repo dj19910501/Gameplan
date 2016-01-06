@@ -1017,7 +1017,8 @@
                             var planCampaignId = data.planCampaignId;
                             var planProgramId = data.planProgramId;
                             var requestedModule = $("#hdnRequestedModule").val();
-                            if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
+                            // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
+                           @* if ($('#hdnOwner').val() != $('#ddlOwner').val()) {            // Modified For #1213
                                 var ChangedTab = "Setup";
                                 if (tabtext != "") {
                                     ChangedTab = tabtext;
@@ -1029,8 +1030,9 @@
                                 loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                                 // RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
 
-                            }
-                            if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
+                            }*@
+                           
+                            @*if (($("#hdnInspectMode").val() == '@Enums.InspectPopupMode.Add.ToString()')) {
                                 var ChangedTab = "Setup";
                                 if (tabtext != "") {
                                     ChangedTab = tabtext;
@@ -1042,7 +1044,7 @@
                                 loadInspectPopup(data.planTacticId, "@Convert.ToString(RevenuePlanner.Helpers.Enums.Section.Tactic).ToLower()", ChangedTab, inspectPopupMode, 0, requestedModule);
                                 //RefreshCurrentTab(requestedModule, planCampaignId, planProgramId, 0);
                             }
-                            else {
+                            else {*@
 
                                 $('#txtTacticTitle').css('display', 'none');
                                 $('#lblTacticTitle').css('display', 'block');
@@ -1079,7 +1081,7 @@
                                 }
                                 returnparameter = true;
 
-                            }
+                            //}
                         }
                         returnparameter = true;
                         // Add By Nishant Sheth
