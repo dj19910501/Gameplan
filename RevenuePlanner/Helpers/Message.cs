@@ -2564,6 +2564,19 @@ namespace RevenuePlanner.Helpers
             }
         }
        //End
+        ////Start - Added by Viral Kadiya for PL ticket #1748
+        private string _LinkedPlanEntityDuplicated;
+        public string LinkedPlanEntityDuplicated
+        {
+            get
+            {
+                return _LinkedPlanEntityDuplicated;
+            }
+            set
+            {
+                _LinkedPlanEntityDuplicated = value;
+            }
+        }
         #endregion
 
         #region  Functions
@@ -3378,6 +3391,11 @@ namespace RevenuePlanner.Helpers
                                             _ProvidePresetName = strMsgValue;
                                             break;
                                         ////End - Added by Komal Rawal for PL ticket #1779
+                                        ////Start - Added by Viral Kadiya for PL ticket #1849
+                                        case "LinkedPlanEntityDuplicated":
+                                            _LinkedPlanEntityDuplicated = strMsgValue;
+                                            break;
+                                        ////End - Added by Viral Kadiya for PL ticket #1849
                                     }
                                 }
                                 i = i + 1;

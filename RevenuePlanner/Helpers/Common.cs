@@ -4826,16 +4826,42 @@ namespace RevenuePlanner.Helpers
                                 string entityTypeProgram = Enums.EntityType.Program.ToString();
                                 string entityTypeTactic = Enums.EntityType.Tactic.ToString();
                                 //List<CustomField_Entity> customFieldList = new List<CustomField_Entity>();
+                                List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+                                var lineItemList = tblLineItem.Where(lineItem => lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
 
-                                var lineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false) && lineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
                                 lineItemList.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
                                 List<int> lineItemsIds = lineItemList.Select(lineItem => lineItem.PlanLineItemId).ToList();
                                 var lineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lineItemActual => lineItemsIds.Contains(lineItemActual.PlanLineItemId)).ToList();
                                 lineItemActualList.ForEach(lineItemActual => db.Entry(lineItemActual).State = EntityState.Deleted);
 
-                                var tacticList = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId && pcpt.IsDeleted == false).ToList();
+                                #region "Remove linked line items & Acutals value"
+                                List<int> linkedLineItemIds = lineItemList.Where(tac => tac.LinkedLineItemId.HasValue).Select(line => line.LinkedLineItemId.Value).Distinct().ToList();
+                                if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
+                                {
+                                    var linkedLineItems = tblLineItem.Where(lineItem => linkedLineItemIds.Contains(lineItem.PlanLineItemId)).ToList();
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
+                                    linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
+                                }
+                                #endregion
+
+                                List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
+
+                                var tacticList = tblPlanTactic.Where(pcpt => pcpt.Plan_Campaign_Program.Plan_Campaign.PlanId == PlanId).ToList();
                                 tacticList.ForEach(pcpt => { pcpt.IsDeleted = true; pcpt.ModifiedDate = System.DateTime.Now; pcpt.ModifiedBy = Sessions.User.UserId; });
                                 var tacticIds = tacticList.Select(a => a.PlanTacticId).ToList();
+
+                                #region "Remove linked Tactic"
+                                List<int> linkedTacticIds = tacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
+                                if (linkedTacticIds != null && linkedTacticIds.Count > 0)
+                                {
+                                    var linkedTactics = tblPlanTactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId)).ToList();
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                }
+                                else
+                                    linkedTacticIds = new List<int>();
+                                #endregion
+
                                 //tblCustomField.Where(a => tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic).ToList().ForEach(a => customFieldList.Add(a));
 
                                 var programList = db.Plan_Campaign_Program.Where(pcp => pcp.Plan_Campaign.PlanId == PlanId && pcp.IsDeleted == false).ToList();
@@ -4849,17 +4875,45 @@ namespace RevenuePlanner.Helpers
                                 //tblCustomField.Where(a => campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign).ToList().ForEach(a => customFieldList.Add(a));
                                 db.Plans.Where(p => p.PlanId == PlanId && p.IsDeleted == false).ToList().ForEach(p => p.IsDeleted = true);
 
-                                var customFieldList = db.CustomField_Entity.Where(a => (campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic)).ToList();
+                                var customFieldList = db.CustomField_Entity.Where(a => (campaignIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeCampaign) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic) || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == entityTypeTactic)).ToList();
                                 customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                             }
                             //// End - Added by Sohel Pathan on 12/11/2014 for PL ticket #933
                             else if (section == Enums.Section.Campaign.ToString() && id != 0)
                             {
-                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id).ToList();
+
+                                List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+
+                                var plan_campaign_Program_Tactic_LineItemList = tblLineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanCampaignId == id).ToList();
                                 plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
-                                var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id).ToList();
+                                #region "Remove linked line items & Acutals value"
+                                List<int> linkedLineItemIds = plan_campaign_Program_Tactic_LineItemList.Where(tac => tac.LinkedLineItemId.HasValue).Select(line => line.LinkedLineItemId.Value).Distinct().ToList();
+                                if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
+                                {
+                                    var linkedLineItems = tblLineItem.Where(lineItem => linkedLineItemIds.Contains(lineItem.PlanLineItemId)).ToList();
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
+                                    linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
+                                }
+                                #endregion
+
+                                List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
+
+                                var Plan_Campaign_Program_TacticList = tblPlanTactic.Where(a => a.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId == id).ToList();
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+
+                                #region "Remove linked Tactic"
+                                List<int> linkedTacticIds = Plan_Campaign_Program_TacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
+                                if (linkedTacticIds != null && linkedTacticIds.Count > 0)
+                                {
+                                    var linkedTactics = tblPlanTactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId)).ToList();
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                }
+                                else
+                                    linkedTacticIds = new List<int>();
+                                #endregion
 
                                 var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign.PlanCampaignId == id).ToList();
                                 Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
@@ -4879,18 +4933,43 @@ namespace RevenuePlanner.Helpers
                                 var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
                                 string sectionTactic = Enums.EntityType.Tactic.ToString();
 
-                                var campaign_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
+                                var campaign_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (programIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionProgram) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic) || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
                                 campaign_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #718 Custom fields for Campaigns
 
                             }
                             else if (section == Enums.Section.Program.ToString() && id != 0)
                             {
-                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId == id).ToList();
+                                List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+
+                                var plan_campaign_Program_Tactic_LineItemList = tblLineItem.Where(a => a.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.PlanProgramId == id).ToList();
                                 plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
-                                var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.Plan_Campaign_Program.PlanProgramId == id).ToList();
+                                #region "Remove linked line items & Acutals value"
+                                List<int> linkedLineItemIds = plan_campaign_Program_Tactic_LineItemList.Where(tac => tac.LinkedLineItemId.HasValue).Select(line => line.LinkedLineItemId.Value).Distinct().ToList();
+                                if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
+                                {
+                                    var linkedLineItems = tblLineItem.Where(lineItem => linkedLineItemIds.Contains(lineItem.PlanLineItemId)).ToList();
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
+                                    linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
+                                }
+                                #endregion
+                                List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
+
+                                var Plan_Campaign_Program_TacticList = tblPlanTactic.Where(a => a.Plan_Campaign_Program.PlanProgramId == id).ToList();
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
+
+                                #region "Remove linked Tactic"
+                                List<int> linkedTacticIds = Plan_Campaign_Program_TacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
+                                if (linkedTacticIds != null && linkedTacticIds.Count > 0)
+                                {
+                                    var linkedTactics = tblPlanTactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId)).ToList();
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                }
+                                else
+                                    linkedTacticIds = new List<int>();
+                                #endregion
 
                                 var Plan_Campaign_ProgramList = db.Plan_Campaign_Program.Where(a => a.IsDeleted.Equals(false) && a.PlanProgramId == id).ToList();
                                 Plan_Campaign_ProgramList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
@@ -4904,7 +4983,7 @@ namespace RevenuePlanner.Helpers
                                 //// when program deleted then custom field's value for this program and custom field's value of appropriate tactic will be deleted
                                 var tacticIds = Plan_Campaign_Program_TacticList.Select(a => a.PlanTacticId).ToList();
                                 string sectionTactic = Enums.EntityType.Tactic.ToString();
-                                var program_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
+                                var program_customFieldList = db.CustomField_Entity.Where(a => (a.EntityId == id && a.CustomField.EntityType == section) || (tacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic) || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == sectionTactic)).ToList();
                                 program_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
 
 
@@ -4914,12 +4993,35 @@ namespace RevenuePlanner.Helpers
                             }
                             else if (section == Enums.Section.Tactic.ToString() && id != 0)
                             {
-                                var plan_campaign_Program_Tactic_LineItemList = db.Plan_Campaign_Program_Tactic_LineItem.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
+                                List<Plan_Campaign_Program_Tactic_LineItem> tblLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.IsDeleted.Equals(false)).ToList();
+                                var plan_campaign_Program_Tactic_LineItemList = tblLineItem.Where(a => a.PlanTacticId == id).ToList();
                                 plan_campaign_Program_Tactic_LineItemList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
+                                #region "Remove linked line items & Acutals value"
+                                List<int> linkedLineItemIds = plan_campaign_Program_Tactic_LineItemList.Where(tac => tac.LinkedLineItemId.HasValue).Select(line => line.LinkedLineItemId.Value).Distinct().ToList();
+                                if (linkedLineItemIds != null && linkedLineItemIds.Count > 0)
+                                {
+                                    var linkedLineItems = tblLineItem.Where(lineItem => linkedLineItemIds.Contains(lineItem.PlanLineItemId)).ToList();
+                                    linkedLineItems.ForEach(lineItem => { lineItem.IsDeleted = true; lineItem.ModifiedDate = System.DateTime.Now; lineItem.ModifiedBy = Sessions.User.UserId; });
+                                    var linkedActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(lnkd => linkedLineItemIds.Contains(lnkd.PlanLineItemId)).ToList();
+                                    linkedActualList.ForEach(lnkd => db.Entry(lnkd).State = EntityState.Deleted);
+                                }
+                                #endregion
+
+                                List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(pcpt => pcpt.IsDeleted == false).ToList();
                                 var Plan_Campaign_Program_TacticList = db.Plan_Campaign_Program_Tactic.Where(a => a.IsDeleted.Equals(false) && a.PlanTacticId == id).ToList();
                                 Plan_Campaign_Program_TacticList.ForEach(a => { a.IsDeleted = true; a.ModifiedDate = System.DateTime.Now; a.ModifiedBy = Sessions.User.UserId; });
 
+                                #region "Remove linked Tactic"
+                                List<int> linkedTacticIds = Plan_Campaign_Program_TacticList.Where(tac => tac.LinkedTacticId.HasValue).Select(line => line.LinkedTacticId.Value).Distinct().ToList();
+                                if (linkedTacticIds != null && linkedTacticIds.Count > 0)
+                                {
+                                    var linkedTactics = tblPlanTactic.Where(lnkdtac => linkedTacticIds.Contains(lnkdtac.PlanTacticId)).ToList();
+                                    linkedTactics.ForEach(lnkedTactic => { lnkedTactic.IsDeleted = true; lnkedTactic.ModifiedDate = System.DateTime.Now; lnkedTactic.ModifiedBy = Sessions.User.UserId; });
+                                }
+                                else
+                                    linkedTacticIds = new List<int>();
+                                #endregion
                                 ////Added by Mitesh Vaishnav for PL ticket #571 Input actual costs - Tactics.
                                 var lineItemIds = plan_campaign_Program_Tactic_LineItemList.Select(a => a.PlanLineItemId).ToList();
                                 var plan_campaign_Program_Tactic_LineItem_ActualList = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(a => lineItemIds.Contains(a.PlanLineItemId)).ToList();
@@ -4927,7 +5029,7 @@ namespace RevenuePlanner.Helpers
 
                                 ////Start Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactics
                                 //// when tactic deleted then custom field's value for this tactic will be deleted 
-                                var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section).ToList();
+                                var tactic_customFieldList = db.CustomField_Entity.Where(a => a.EntityId == id && a.CustomField.EntityType == section || (linkedTacticIds.Contains(a.EntityId) && a.CustomField.EntityType == section)).ToList();
                                 tactic_customFieldList.ForEach(a => db.Entry(a).State = EntityState.Deleted);
                                 ////End Added by Mitesh Vaishnav for PL ticket #720 Custom fields for tactic
                             }

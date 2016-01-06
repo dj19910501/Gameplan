@@ -1011,4 +1011,10 @@
 		<value>Please provide preset name</value>
 	</Field>
 	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
+  <!--start Added by Viral Kadiya for PL ticket #1849-->
+  <Field>
+    <Name>LinkedPlanEntityDuplicated</Name>
+    <value>{0} with same title exist in the linked plan.</value>
+  </Field>
+  <!--End Added by Viral Kadiya for PL ticket #1849-->
 </Messages>

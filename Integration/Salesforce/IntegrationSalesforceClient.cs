@@ -267,7 +267,8 @@ namespace Integration.Salesforce
                 {
                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "SyncTacticData process start.");
                     //TODO: Add here log for get tactic : 
-                    Plan_Campaign_Program_Tactic planTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.PlanTacticId == _id && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
+                    List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+                    Plan_Campaign_Program_Tactic planTactic = tblPlanTactic.Where(tactic => tactic.PlanTacticId == _id && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).FirstOrDefault();
                     // Start - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
                     if (planTactic != null)
                     {
@@ -294,7 +295,26 @@ namespace Integration.Salesforce
                                 _mappingCustomFields = _mappingCustomFields.Concat(lstCustomFieldsCampaign).ToList();
                             }
                             // End - Added by Sohel Pathan on 03/12/2014 for PL ticket #995, 996, & 997
-                            planTactic = SyncTacticData(planTactic, ref sbMessage);
+
+                            #region "Get Linked Tactic"
+                            int linkedTacticId = 0;
+                            Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                            if (planTactic != null)
+                            {
+                                linkedTacticId = (planTactic.LinkedTacticId.HasValue) ? planTactic.LinkedTacticId.Value : 0;
+                                //if (linkedTacticId <= 0)
+                                //{
+                                //    objLinkedTactic = tblPlanTactic.Where(tactic => tactic.LinkedTacticId == planTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                                //}
+                            }
+                            if (linkedTacticId > 0)
+                            {
+                                objLinkedTactic = tblPlanTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+                            }
+                            #endregion
+
+                            planTactic = SyncTacticData(planTactic, ref sbMessage, objLinkedTactic);
 
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.None, sbMessage.ToString());
                             db.SaveChanges();
@@ -341,7 +361,9 @@ namespace Integration.Salesforce
                             //List<Plan_Campaign> campaignList = db.Plan_Campaign.Where(campaign => planIds.Contains(campaign.PlanId) && !campaign.IsDeleted).ToList();
                             //List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
                            
-                            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+                            List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+
+                            List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
 
                             //List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
                             List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
@@ -478,6 +500,7 @@ namespace Integration.Salesforce
                                     maxpage = (total / pushRecordBatchSize);
                                     List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
+                                    Plan_Campaign_Program_Tactic srcTactic, objLinkedTactic;
                                     while (page <= maxpage)
                                     {
                                         lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
@@ -486,7 +509,28 @@ namespace Integration.Salesforce
                                         sbMessage = new StringBuilder();
                                         for (int index = 0; index < lstPagedlistTactic.Count; index++)
                                         {
-                                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
+
+                                            #region "Get Linked Tactic"
+                                            int linkedTacticId = 0;
+                                            srcTactic = new Plan_Campaign_Program_Tactic();
+                                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                            srcTactic = lstPagedlistTactic[index];
+                                            if (srcTactic != null)
+                                            {
+                                                linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
+                                                //if (linkedTacticId <= 0)
+                                                //{
+                                                //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                                //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                                                //}
+                                            }
+                                            if (linkedTacticId > 0)
+                                            {
+                                                objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                            }
+                                            #endregion
+
+                                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
 
                                             // Save 10 log records to Table.
                                             if (((index + 1) % logRecordSize) == 0)
@@ -556,7 +600,9 @@ namespace Integration.Salesforce
                             //List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
                             List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
                             List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
-                            List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+                            List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+
+                            List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
 
                             List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
                             List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
@@ -735,6 +781,7 @@ namespace Integration.Salesforce
                                     maxpage = (total / pushRecordBatchSize);
                                     List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
+                                    Plan_Campaign_Program_Tactic srcTactic, objLinkedTactic;
                                     while (page <= maxpage)
                                     {
                                         lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
@@ -743,7 +790,27 @@ namespace Integration.Salesforce
                                         sbMessage = new StringBuilder();
                                         for (int index = 0; index < lstPagedlistTactic.Count; index++)
                                         {
-                                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
+                                            #region "Get Linked Tactic"
+                                            int linkedTacticId = 0;
+                                            srcTactic = new Plan_Campaign_Program_Tactic();
+                                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                            srcTactic = lstPagedlistTactic[index];
+                                            if (srcTactic != null)
+                                            {
+                                                linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
+                                                //if (linkedTacticId <= 0)
+                                                //{
+                                                //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                                //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                                                //}
+                                            }
+                                            if (linkedTacticId > 0)
+                                            {
+                                                objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                            }
+                                            #endregion
+
+                                            lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
 
                                             // Save 10 log records to Table.
                                             if (((index + 1) % logRecordSize) == 0)
@@ -940,12 +1007,13 @@ namespace Integration.Salesforce
                 //db.SaveChanges(); 
                 #endregion
 
-                //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
-                List<Plan_Campaign_Program_Tactic> lstAllTactics = db.Plan_Campaign_Program_Tactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                               tactic.IsDeployedToIntegration == true &&
+                List<Plan_Campaign_Program_Tactic> tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                statusList.Contains(tactic.Status) &&
                                                                                                                tactic.StageId == INQStageId &&
                                                                                                                tactic.IsDeleted == false).ToList();
+
+                //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
+                List<Plan_Campaign_Program_Tactic> lstAllTactics = tblPlanTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
 
                 //// Get list of EloquaIntegrationInstanceTacticID(EloquaId).
                 List<EloquaIntegrationInstanceTactic_Model_Mapping> lstEloquaIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).Select(_tac => new EloquaIntegrationInstanceTactic_Model_Mapping
@@ -1178,14 +1246,73 @@ namespace Integration.Salesforce
                                 lstMergedTactics = lstMergedTactics.Distinct().ToList();
                                 List<int> OuterTacticIds = lstMergedTactics.Select(t => t.PlanTacticId).ToList();
 
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic start.");
-                                List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
-                                OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
-                                db.SaveChanges();
-                                Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
+                                //Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic start.");
+                                //List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                                //OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                //db.SaveChanges();
+                                //Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
 
                                 if (CampaignMemberList.Count > 0)
                                 {
+                                    #region "Remove Actuals values"
+
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Create LinkedTactic mapping list start.");
+                                    #region "Create LinkedTactic Mapping list"
+                                    Dictionary<int, int> lstlinkedTacticMapping = new Dictionary<int, int>();
+                                    int linkedTacticId;
+                                    foreach (var tac in lstMergedTactics)
+                                    {
+                                        linkedTacticId = 0;
+                                        #region "Retrieve linkedTactic"
+                                        linkedTacticId = (tac != null && tac.LinkedTacticId.HasValue) ? tac.LinkedTacticId.Value : 0;
+                                        //if (linkedTacticId <= 0)
+                                        //{
+                                        //    var lnkPCPT = tblPlanTactic.Where(tactic => tactic.LinkedTacticId == tac.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                        //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+                                        //}
+
+                                        if (linkedTacticId > 0)
+                                        {
+                                            lstlinkedTacticMapping.Add(tac.PlanTacticId, linkedTacticId);
+                                        }
+                                        #endregion
+                                    }
+                                    #endregion
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Create LinkedTactic mapping list end.");
+
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic start.");
+
+                                    List<int> linkedTactics = new List<int>();
+                                    if (lstlinkedTacticMapping.Count > 0)
+                                    {
+                                        linkedTactics = lstlinkedTacticMapping.Select(lnkdTac => lnkdTac.Value).ToList();
+                                    }
+
+                                    List<Plan_Campaign_Program_Tactic_Actual> tblActuals = new List<Plan_Campaign_Program_Tactic_Actual>();
+                                    if (linkedTactics != null && linkedTactics.Count > 0)
+                                    {
+                                        tblActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => (OuterTacticIds.Contains(actual.PlanTacticId) || linkedTactics.Contains(actual.PlanTacticId)) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                                    }
+                                    else
+                                    {
+                                        tblActuals = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId) && actual.StageTitle == Common.StageProjectedStageValue).ToList();
+                                    }
+
+                                    List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblActuals.Where(actual => OuterTacticIds.Contains(actual.PlanTacticId)).ToList();
+                                    OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                    
+                                    // Remove linked Tactic's Actuals.
+                                    if (linkedTactics.Count > 0)
+                                    {
+                                        List<Plan_Campaign_Program_Tactic_Actual> linkedactualTacticList = tblActuals.Where(actual => linkedTactics.Contains(actual.PlanTacticId)).ToList();
+                                        linkedactualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                    }
+
+                                    db.SaveChanges();
+                                    Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.End, currentMethodName, Enums.MessageLabel.Success, "Removing ActualTactic end.");
+
+                                    #endregion
+
                                     var CampaignMemberListGroup = CampaignMemberList.GroupBy(cl => new { CampaignId = cl.CampaignId, Month = cl.FirstRespondedDate.ToString("MM/yyyy") }).Select(cl =>
                                         new
                                         {
@@ -1202,9 +1329,14 @@ namespace Integration.Salesforce
                                     TotalPullResonsesCount = CampaignMemberListGroup != null ? CampaignMemberListGroup.Sum(cnt => cnt.Count) : 0;
 
                                     Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.Start, currentMethodName, Enums.MessageLabel.Success, "Create PlanTacticActual list and insert Tactic log.");
+
+                                    int linkedTacId = 0;
+                                    Plan_Campaign_Program_Tactic objLinkedTactic = null;
                                     foreach (var tactic in lstMergedTactics)
                                     {
                                         var innerCampaignMember = CampaignMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
+                                        if (linkedTactics != null && linkedTactics.Count > 0) // check whether linkedTactics exist or not.
+                                            linkedTacId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == tactic.PlanTacticId).Value;
                                         foreach (var objCampaignMember in innerCampaignMember)
                                         {
                                             Plan_Campaign_Program_Tactic_Actual objPlanTacticActual = new Plan_Campaign_Program_Tactic_Actual();
@@ -1217,11 +1349,34 @@ namespace Integration.Salesforce
                                             objPlanTacticActual.CreatedDate = DateTime.Now;
                                             db.Entry(objPlanTacticActual).State = EntityState.Added;
                                             ProcessedResponsesCount = ProcessedResponsesCount + objCampaignMember.Count;
+
+                                            // Add linked Tacitc Actual Values.
+                                            if (linkedTacId > 0) // check whether linkedTactics exist or not.
+                                            {
+                                                Plan_Campaign_Program_Tactic_Actual objLinkedTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                objLinkedTacticActual.PlanTacticId = linkedTacId;           // LinkedTactic Id.
+                                                objLinkedTacticActual.Period = objCampaignMember.Period;
+                                                objLinkedTacticActual.StageTitle = Common.StageProjectedStageValue;
+                                                objLinkedTacticActual.Actualvalue = objCampaignMember.Count;
+                                                objLinkedTacticActual.CreatedBy = _userId;
+                                                objLinkedTacticActual.CreatedDate = DateTime.Now;
+                                                db.Entry(objLinkedTacticActual).State = EntityState.Added;
+                                            }
                                         }
 
                                         tactic.LastSyncDate = DateTime.Now;
                                         tactic.ModifiedDate = DateTime.Now;
                                         tactic.ModifiedBy = _userId;
+
+                                        // Update linked Tactic lastSync Date,ModifiedDate & ModifiedBy.
+                                        if (linkedTacId > 0) // check whether linkedTactics exist or not.
+                                        {
+                                            objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                            objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == linkedTacId).FirstOrDefault();
+                                            objLinkedTactic.LastSyncDate = DateTime.Now;
+                                            objLinkedTactic.ModifiedDate = DateTime.Now;
+                                            objLinkedTactic.ModifiedBy = _userId;
+                                        }
 
                                         IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                                         instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
@@ -1569,11 +1724,13 @@ namespace Integration.Salesforce
                 //db.SaveChanges(); 
                 #endregion
 
-                //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
-                List<Plan_Campaign_Program_Tactic> lstAllTactics = db.Plan_Campaign_Program_Tactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId) &&
-                                                                                                               tactic.IsDeployedToIntegration == true &&
+                List<Plan_Campaign_Program_Tactic> tblPlanTactic = new List<Plan_Campaign_Program_Tactic>();
+                tblPlanTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeployedToIntegration == true &&
                                                                                                                statusList.Contains(tactic.Status) &&
                                                                                                                tactic.IsDeleted == false).ToList();
+
+                //// Get All Approved,IsDeployedToIntegration true and IsDeleted false Tactic list.
+                List<Plan_Campaign_Program_Tactic> lstAllTactics = tblPlanTactic.Where(tactic => AllplanIds.Contains(tactic.Plan_Campaign_Program.Plan_Campaign.PlanId)).ToList();
 
                 //// Get list of EloquaIntegrationInstanceTacticID(EloquaId).
                 List<EloquaIntegrationInstanceTactic_Model_Mapping> lstEloquaIntegrationInstanceTacticIds = lstAllTactics.Where(tactic => string.IsNullOrEmpty(tactic.IntegrationInstanceTacticId) && !string.IsNullOrEmpty(tactic.IntegrationInstanceEloquaId)).Select(_tac => new EloquaIntegrationInstanceTactic_Model_Mapping
@@ -1972,10 +2129,54 @@ namespace Integration.Salesforce
                                             //Set count of total pulled responses from Salesforce.
                                             TotalPullCWCount = OpportunityMemberListGroup != null ? OpportunityMemberListGroup.Sum(cnt => cnt.Count) : 0;
 
-                                            List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => tacticidactual.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();
+                                            #region "Create LinkedTactic Mapping list"
+                                            Dictionary<int, int> lstlinkedTacticMapping = new Dictionary<int, int>();
+                                            int linkedTacticId = 0;
+                                            foreach (var tac in lstMergedTactics)
+                                            {
+                                                linkedTacticId = 0;
+                                                #region "Retrieve linkedTactic"
+                                                linkedTacticId = (tac != null && tac.LinkedTacticId.HasValue) ? tac.LinkedTacticId.Value : 0;
+                                                //if (linkedTacticId <= 0)
+                                                //{
+                                                //    var lnkPCPT = tblPlanTactic.Where(tactic => tactic.LinkedTacticId == tac.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                                //    linkedTacticId = lnkPCPT != null ? lnkPCPT.PlanTacticId : 0;
+                                                //}
+
+                                                if (linkedTacticId > 0)
+                                                {
+                                                    lstlinkedTacticMapping.Add(tac.PlanTacticId, linkedTacticId);
+                                                }
+                                                #endregion
+                                            }
+                                            #endregion
+
+                                            List<Plan_Campaign_Program_Tactic_Actual> tblPlanActual = new List<Plan_Campaign_Program_Tactic_Actual>();
+                                            List<int> LinkedTacticActualsId =null;
+                                            if (lstlinkedTacticMapping.Count > 0)
+                                            {
+                                                LinkedTacticActualsId = new List<int>();
+                                                LinkedTacticActualsId = lstlinkedTacticMapping.Where(tac => tacticidactual.Contains(tac.Key)).Select(tac => tac.Value).ToList();
+                                                tblPlanActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => (tacticidactual.Contains(actual.PlanTacticId) || LinkedTacticActualsId.Contains(actual.PlanTacticId)) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();    
+                                            }
+                                            else
+                                            {
+                                                tblPlanActual = db.Plan_Campaign_Program_Tactic_Actual.Where(actual => tacticidactual.Contains(actual.PlanTacticId) && (actual.StageTitle == Common.StageRevenue || actual.StageTitle == Common.StageCW)).ToList();    
+                                            }
+
+                                            List<Plan_Campaign_Program_Tactic_Actual> OuteractualTacticList = tblPlanActual.Where(actual => tacticidactual.Contains(actual.PlanTacticId)).ToList();
+                                            List<Plan_Campaign_Program_Tactic_Actual> LinkedActualTacticList = null;
                                             if (!isDoneFirstPullCW)
                                             {
                                                 OuteractualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                if (LinkedTacticActualsId != null && LinkedTacticActualsId.Count > 0)
+                                                {
+                                                    LinkedActualTacticList = tblPlanActual.Where(actual => LinkedTacticActualsId.Contains(actual.PlanTacticId)).ToList();
+                                                    if (LinkedActualTacticList != null && LinkedActualTacticList.Count > 0)
+                                                    {
+                                                        LinkedActualTacticList.ForEach(actual => db.Entry(actual).State = EntityState.Deleted);
+                                                    }
+                                                }
                                                 db.SaveChanges();
                                             }
 
@@ -1984,6 +2185,9 @@ namespace Integration.Salesforce
                                             foreach (var tactic in lstMergedTactics)
                                             {
                                                 var innerOpportunityMember = OpportunityMemberListGroup.Where(cm => cm.TacticId == tactic.PlanTacticId).ToList();
+                                                int lnkdTacId = 0;
+                                                if (LinkedActualTacticList != null && LinkedActualTacticList.Count > 0)
+                                                    lnkdTacId = lstlinkedTacticMapping.FirstOrDefault(tac => tac.Key == tactic.PlanTacticId).Value;
                                                 foreach (var objOpportunityMember in innerOpportunityMember)
                                                 {
                                                     var innertacticactualcw = OuteractualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == tactic.PlanTacticId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageCW);
@@ -2026,11 +2230,67 @@ namespace Integration.Salesforce
                                                         objPlanTacticActualRevenue.CreatedDate = DateTime.Now;
                                                         db.Entry(objPlanTacticActualRevenue).State = EntityState.Added;
                                                     }
+
+                                                    #region "Add/Update  Linked Tactic Actuals"
+                                                    if (lnkdTacId > 0)
+                                                    {
+                                                        var lnkdActualCW = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageCW);
+                                                        if (lnkdActualCW != null && isDoneFirstPullCW)
+                                                        {
+                                                            lnkdActualCW.Actualvalue = innertacticactualcw.Actualvalue + objOpportunityMember.Count;
+                                                            lnkdActualCW.ModifiedDate = DateTime.Now;
+                                                            lnkdActualCW.ModifiedBy = _userId;
+                                                            db.Entry(lnkdActualCW).State = EntityState.Modified;
+                                                        }
+                                                        else
+                                                        {
+                                                            Plan_Campaign_Program_Tactic_Actual objlnkdTacticActual = new Plan_Campaign_Program_Tactic_Actual();
+                                                            objlnkdTacticActual.PlanTacticId = lnkdTacId;
+                                                            objlnkdTacticActual.Period = objOpportunityMember.Period;
+                                                            objlnkdTacticActual.StageTitle = Common.StageCW;
+                                                            objlnkdTacticActual.Actualvalue = objOpportunityMember.Count;
+                                                            objlnkdTacticActual.CreatedBy = _userId;
+                                                            objlnkdTacticActual.CreatedDate = DateTime.Now;
+                                                            db.Entry(objlnkdTacticActual).State = EntityState.Added;
+                                                        }
+
+                                                        var lnkdActualRevenue = LinkedActualTacticList.FirstOrDefault(tacticActual => tacticActual.PlanTacticId == lnkdTacId && tacticActual.Period == objOpportunityMember.Period && tacticActual.StageTitle == Common.StageRevenue);
+                                                        if (lnkdActualRevenue != null && isDoneFirstPullCW)
+                                                        {
+                                                            lnkdActualRevenue.Actualvalue = innertacticactualrevenue.Actualvalue + objOpportunityMember.Revenue;
+                                                            lnkdActualRevenue.ModifiedDate = DateTime.Now;
+                                                            lnkdActualRevenue.ModifiedBy = _userId;
+                                                            db.Entry(lnkdActualRevenue).State = EntityState.Modified;
+                                                        }
+                                                        else
+                                                        {
+                                                            Plan_Campaign_Program_Tactic_Actual objlnkdTacticActualRevenue = new Plan_Campaign_Program_Tactic_Actual();
+                                                            objlnkdTacticActualRevenue.PlanTacticId = lnkdTacId;
+                                                            objlnkdTacticActualRevenue.Period = objOpportunityMember.Period;
+                                                            objlnkdTacticActualRevenue.StageTitle = Common.StageRevenue;
+                                                            objlnkdTacticActualRevenue.Actualvalue = objOpportunityMember.Revenue;
+                                                            objlnkdTacticActualRevenue.CreatedBy = _userId;
+                                                            objlnkdTacticActualRevenue.CreatedDate = DateTime.Now;
+                                                            db.Entry(objlnkdTacticActualRevenue).State = EntityState.Added;
+                                                        }
+                                                    } 
+                                                    #endregion
+
                                                 }
 
                                                 tactic.LastSyncDate = DateTime.Now;
                                                 tactic.ModifiedDate = DateTime.Now;
                                                 tactic.ModifiedBy = _userId;
+
+                                                // Update linked Tactic LastSyncDate,ModifiedDate & ModifiedBy.
+                                                if (lnkdTacId > 0) // check whether linkedTactics exist or not.
+                                                {
+                                                    Plan_Campaign_Program_Tactic objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                                    objLinkedTactic = tblPlanTactic.Where(tac => tac.PlanTacticId == lnkdTacId).FirstOrDefault();
+                                                    objLinkedTactic.LastSyncDate = DateTime.Now;
+                                                    objLinkedTactic.ModifiedDate = DateTime.Now;
+                                                    objLinkedTactic.ModifiedBy = _userId;
+                                                }
 
                                                 IntegrationInstancePlanEntityLog instanceTactic = new IntegrationInstancePlanEntityLog();
                                                 instanceTactic.IntegrationInstanceSectionId = IntegrationInstanceSectionId;
@@ -2729,7 +2989,7 @@ namespace Integration.Salesforce
             return planProgram;
         }
 
-        private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic, ref StringBuilder sbMessage)
+        private Plan_Campaign_Program_Tactic SyncTacticData(Plan_Campaign_Program_Tactic planTactic, ref StringBuilder sbMessage, Plan_Campaign_Program_Tactic lnkdTactic)
         {
             StringBuilder sb = new StringBuilder();
             Enums.Mode currentMode = Common.GetMode(planTactic.IntegrationInstanceTacticId);
@@ -2909,6 +3169,27 @@ namespace Integration.Salesforce
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment); 
                         #endregion
                         // End Added by Mitesh Vaishnav for PL Ticket 534 :When a tactic is synced a comment should be created in that tactic
+
+                        #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
+                        if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+                        {
+                            lnkdTactic.IntegrationInstanceTacticId = planTactic.IntegrationInstanceTacticId;
+                            lnkdTactic.LastSyncDate = DateTime.Now;
+                            lnkdTactic.ModifiedDate = DateTime.Now;
+                            lnkdTactic.ModifiedBy = _userId;
+
+                            // Add linked tactic comment
+                            Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                            objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
+                            objLinkedTacticComment.Comment = objTacticComment.Comment;
+                            objLinkedTacticComment.CreatedDate = DateTime.Now;
+                            objLinkedTacticComment.CreatedBy = objTacticComment.CreatedBy;
+                            db.Entry(objLinkedTacticComment).State = EntityState.Added;
+                            db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment); 
+
+                        }
+                        #endregion
+
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Create.ToString() + ", " + StatusResult.Success.ToString() + "); ");
                         _lstSyncError.Add(Common.PrepareSyncErrorList(Convert.ToInt32(planTactic.PlanTacticId), Enums.EntityType.Tactic, Enums.IntegrationInstanceSectionName.PushTacticData.ToString(), Enums.Mode.Create.ToString(), Enums.SyncStatus.Success, DateTime.Now));
                     }
@@ -2973,6 +3254,24 @@ namespace Integration.Salesforce
                         }
                         db.Entry(objTacticComment).State = EntityState.Added;
                         db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment); 
+                        #endregion
+
+                        #region "Update Linked Tactic IntegrationInstanceTacticId & Tactic Comment Table"
+                        if (lnkdTactic != null && lnkdTactic.PlanTacticId > 0)
+                        {
+                            lnkdTactic.LastSyncDate = DateTime.Now;
+                            lnkdTactic.ModifiedDate = DateTime.Now;
+                            lnkdTactic.ModifiedBy = _userId;
+
+                            // Add linked tactic comment
+                            Plan_Campaign_Program_Tactic_Comment objLinkedTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                            objLinkedTacticComment.PlanTacticId = lnkdTactic.PlanTacticId;
+                            objLinkedTacticComment.Comment = objTacticComment.Comment;
+                            objLinkedTacticComment.CreatedDate = DateTime.Now;
+                            objLinkedTacticComment.CreatedBy = objTacticComment.CreatedBy;
+                            db.Entry(objLinkedTacticComment).State = EntityState.Added;
+                            db.Plan_Campaign_Program_Tactic_Comment.Add(objLinkedTacticComment);
+                        }
                         #endregion
 
                         sb.Append("Tactic: " + planTactic.PlanTacticId.ToString() + "(" + Operation.Update.ToString() + ", " + StatusResult.Success.ToString() + "); ");
@@ -3403,7 +3702,8 @@ namespace Integration.Salesforce
                     List<int> campaignIdList = campaignList.Select(c => c.PlanCampaignId).ToList();
                     List<Plan_Campaign_Program> programList = db.Plan_Campaign_Program.Where(program => campaignIdList.Contains(program.PlanCampaignId) && !program.IsDeleted).ToList();
                     List<int> programIdList = programList.Select(c => c.PlanProgramId).ToList();
-                    List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId) && statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+                    List<Plan_Campaign_Program_Tactic> tblTactic = db.Plan_Campaign_Program_Tactic.Where(tactic => statusList.Contains(tactic.Status) && tactic.IsDeployedToIntegration && !tactic.IsDeleted).ToList();
+                    List<Plan_Campaign_Program_Tactic> tacticList = tblTactic.Where(tactic => programIdList.Contains(tactic.PlanProgramId)).ToList();
 
                     List<int> campaignIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.Plan_Campaign.IntegrationInstanceCampaignId)).Select(tactic => tactic.Plan_Campaign_Program.PlanCampaignId).ToList();
                     List<int> programIdForTactic = tacticList.Where(tactic => string.IsNullOrWhiteSpace(tactic.Plan_Campaign_Program.IntegrationInstanceProgramId)).Select(tactic => tactic.PlanProgramId).ToList();
@@ -3596,6 +3896,7 @@ namespace Integration.Salesforce
                             maxpage = (total / pushRecordBatchSize);
                             List<Plan_Campaign_Program_Tactic> lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
                             Common.SaveIntegrationInstanceLogDetails(_id, _integrationInstanceLogId, Enums.MessageOperation.None, currentMethodName, Enums.MessageLabel.None, "Total No. of Tactics: " + total);
+                            Plan_Campaign_Program_Tactic srcTactic,objLinkedTactic;
                             while (page <= maxpage)
                             {
                                 lstPagedlistTactic = new List<Plan_Campaign_Program_Tactic>();
@@ -3604,7 +3905,27 @@ namespace Integration.Salesforce
                                 sbMessage = new StringBuilder();
                                 for (int index = 0; index < lstPagedlistTactic.Count; index++)
                                 {
-                                    lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage);
+                                    #region "Get Linked Tactic"
+                                    int linkedTacticId = 0;
+                                    srcTactic = new Plan_Campaign_Program_Tactic();
+                                    objLinkedTactic = new Plan_Campaign_Program_Tactic();
+                                    srcTactic = lstPagedlistTactic[index];
+                                    if (srcTactic != null)
+                                    {
+                                        linkedTacticId = (srcTactic != null && srcTactic.LinkedTacticId.HasValue) ? srcTactic.LinkedTacticId.Value : 0;
+                                        //if (linkedTacticId <= 0)
+                                        //{
+                                        //    objLinkedTactic = tblTactic.Where(tactic => tactic.LinkedTacticId == srcTactic.PlanTacticId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                                        //    linkedTacticId = objLinkedTactic != null ? objLinkedTactic.PlanTacticId : 0;
+                                        //}
+                                    }
+                                    if (linkedTacticId > 0)
+                                    {
+                                        objLinkedTactic = tblTactic.Where(tactic => tactic.PlanTacticId == linkedTacticId).FirstOrDefault();
+                                    }
+                                    #endregion
+
+                                    lstPagedlistTactic[index] = SyncTacticData(lstPagedlistTactic[index], ref sbMessage, objLinkedTactic);
 
                                     // Save 10 log records to Table.
                                     if (((index + 1) % logRecordSize) == 0)
