@@ -423,7 +423,7 @@ namespace RevenuePlanner.Models
         public double ADSValue { get; set; }
         public double CWValue { get; set; } // added y devanshi for plangrid goal
     }
-
+    
     /// <summary>
     /// Added By : Sohel Pathan
     /// Added Date : 26/08/2014

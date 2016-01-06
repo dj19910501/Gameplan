@@ -116,10 +116,10 @@
           <Property Name="ObjectId" Type="int" Nullable="false" />
           <Property Name="ParentObjectId" Type="int" />
           <Property Name="ComponentId" Type="int" Nullable="false" />
-          <Property Name="ComponentTitle" Type="nvarchar" MaxLength="256" />
+          <Property Name="ComponentTitle" Type="nvarchar" MaxLength="1000" />
           <Property Name="ComponentType" Type="nvarchar" MaxLength="50" />
           <Property Name="ActionName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ActionSuffix" Type="nvarchar" MaxLength="50" />
+          <Property Name="ActionSuffix" Type="nvarchar" MaxLength="2500" />
           <Property Name="TimeStamp" Type="datetime" Nullable="false" />
           <Property Name="UserId" Type="uniqueidentifier" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
@@ -258,15 +258,15 @@
           <Property Name="TimeUtc" Type="datetime" Nullable="false" />
           <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AllXml" Type="ntext" Nullable="false" />
-          <Property Name="Client" Type="varchar" MaxLength="50" />
+          <Property Name="Client" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="EntityTypeColor">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="EntityType" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="ColorCode" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="EntityType" Type="nvarchar" MaxLength="50" />
+          <Property Name="ColorCode" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="GameplanDataType">
           <Key>
@@ -300,8 +300,8 @@
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="Cost" Type="float" Nullable="false" />
-          <Property Name="ColorCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="ClientId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ColorCode" Type="nvarchar" MaxLength="10" Nullable="false" />
           <Property Name="IsDeployed" Type="bit" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
@@ -436,6 +436,8 @@
           <Key>
             <PropertyRef Name="IntegrationInstancePlanLogEntityId" />
           </Key>
+          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
           <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
           <Property Name="EntityId" Type="int" Nullable="false" />
           <Property Name="EntityType" Type="varchar" MaxLength="50" />
@@ -445,8 +447,6 @@
           <Property Name="ErrorDescription" Type="nvarchar" MaxLength="4000" />
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="CreatedBy" Type="uniqueidentifier" />
-          <Property Name="IntegrationInstanceSectionId" Type="int" Nullable="false" />
-          <Property Name="IntegrationInstancePlanLogEntityId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationInstanceSection">
           <Key>
@@ -459,7 +459,7 @@
           <Property Name="SyncStart" Type="datetime" Nullable="false" />
           <Property Name="SyncEnd" Type="datetime" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" />
-          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreateBy" Type="uniqueidentifier" Nullable="false" />
         </EntityType>
@@ -504,6 +504,41 @@
           <Property Name="PortfolioId" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="PortfolioName" Type="nvarchar" MaxLength="250" Nullable="false" />
           <Property Name="PlanProgramId" Type="int" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationWorkFrontRequestQueues">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RequestQueueId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RequestQueueName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IntegrationWorkFrontRequests">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IntegrationInstanceId" Type="int" Nullable="false" />
+          <Property Name="RequestId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="QueueId" Type="int" Nullable="false" />
+          <Property Name="PlanTacticId" Type="int" Nullable="false" />
+          <Property Name="AssignedTo" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsDeleted" Type="bit" Nullable="false" />
+          <Property Name="RequestName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="WorkFrontStatus" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ResolvingObjId" Type="nvarchar" MaxLength="255" />
+          <Property Name="ResolvingObjType" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="IntegrationWorkFrontTacticSettings">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TacticId" Type="int" Nullable="false" />
+          <Property Name="TacticApprovalBehavior" Type="bit" Nullable="false" />
+          <Property Name="OrganizationBehavior" Type="bit" Nullable="false" />
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="IntegrationWorkFrontTemplates">
@@ -567,8 +602,8 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
-          <Property Name="ParentModelId" Type="int" />
           <Property Name="IsBenchmarked" Type="bit" />
+          <Property Name="ParentModelId" Type="int" />
           <Property Name="EffectiveDate" Type="datetime" />
           <Property Name="IntegrationInstanceId" Type="int" />
           <Property Name="IntegrationInstanceIdINQ" Type="int" />
@@ -599,7 +634,6 @@
             <PropertyRef Name="NotificationId" />
           </Key>
           <Property Name="NotificationId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="NotificationInternalUseOnly" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="NotificationType" Type="char" MaxLength="2" Nullable="false" />
@@ -609,6 +643,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="NotificationInternalUseOnly" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Subject" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="Plan">
@@ -619,7 +654,6 @@
           <Property Name="ModelId" Type="int" Nullable="false" />
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Version" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="Year" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="Budget" Type="float" Nullable="false" />
           <Property Name="Status" Type="nvarchar" MaxLength="50" Nullable="false" />
@@ -629,6 +663,7 @@
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="Year" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="GoalType" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="GoalValue" Type="float" Nullable="false" />
           <Property Name="AllocatedBy" Type="varchar" MaxLength="50" Nullable="false" />
@@ -988,13 +1023,13 @@
           <Property Name="Title" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="4000" />
           <Property Name="ColorCode" Type="nvarchar" MaxLength="10" Nullable="false" />
-          <Property Name="ModelId" Type="int" Nullable="false" />
-          <Property Name="StageId" Type="int" />
-          <Property Name="ProjectedRevenue" Type="float" />
           <Property Name="CreatedDate" Type="datetime" Nullable="false" />
           <Property Name="CreatedBy" Type="uniqueidentifier" Nullable="false" />
           <Property Name="ModifiedDate" Type="datetime" />
           <Property Name="ModifiedBy" Type="uniqueidentifier" />
+          <Property Name="ModelId" Type="int" Nullable="false" />
+          <Property Name="StageId" Type="int" />
+          <Property Name="ProjectedRevenue" Type="float" />
           <Property Name="PreviousTacticTypeId" Type="int" />
           <Property Name="IsDeleted" Type="bit" />
           <Property Name="IsDeployedToIntegration" Type="bit" Nullable="false" />
@@ -1002,6 +1037,7 @@
           <Property Name="IsDeployedToModel" Type="bit" Nullable="false" />
           <Property Name="Abbreviation" Type="nvarchar" MaxLength="255" />
           <Property Name="WorkFront Template" Type="nvarchar" MaxLength="255" />
+          <Property Name="WorkFrontTemplateId" Type="int" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -1036,7 +1072,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Plan_Camp__PlanC__43A1090D">
+        <Association Name="FK__Plan_Camp__PlanC__245D67DE">
           <End Role="Plan_Campaign" Type="Self.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="Self.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1048,7 +1084,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Plan_Camp__PlanP__42ACE4D4">
+        <Association Name="FK__Plan_Camp__PlanP__236943A5">
           <End Role="Plan_Campaign_Program" Type="Self.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Plan_Campaign_Program_Tactic_Comment" Type="Self.Plan_Campaign_Program_Tactic_Comment" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1060,7 +1096,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanC__4589517F">
+        <Association Name="FK__Tactic_Sh__PlanC__2645B050">
           <End Role="Plan_Campaign" Type="Self.Plan_Campaign" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="Self.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1072,7 +1108,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Tactic_Sh__PlanP__44952D46">
+        <Association Name="FK__Tactic_Sh__PlanP__25518C17">
           <End Role="Plan_Campaign_Program" Type="Self.Plan_Campaign_Program" Multiplicity="0..1" />
           <End Role="Tactic_Share" Type="Self.Tactic_Share" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1300,14 +1336,14 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_ImprovementTacticType_Metric_ImprovementTacticType">
+        <Association Name="FK_ImprovementTacticType_ImprovementTacticType">
           <End Role="ImprovementTacticType" Type="Self.ImprovementTacticType" Multiplicity="1" />
-          <End Role="ImprovementTacticType_Metric" Type="Self.ImprovementTacticType_Metric" Multiplicity="*" />
+          <End Role="ImprovementTacticType1" Type="Self.ImprovementTacticType" Multiplicity="0..1" />
           <ReferentialConstraint>
             <Principal Role="ImprovementTacticType">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Principal>
-            <Dependent Role="ImprovementTacticType_Metric">
+            <Dependent Role="ImprovementTacticType1">
               <PropertyRef Name="ImprovementTacticTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -1528,6 +1564,54 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
+          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontRequests" Type="Self.IntegrationWorkFrontRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequests">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontRequests_QueueId">
+          <End Role="IntegrationWorkFrontRequestQueues" Type="Self.IntegrationWorkFrontRequestQueues" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontRequests" Type="Self.IntegrationWorkFrontRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontRequestQueues">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequests">
+              <PropertyRef Name="QueueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontRequests_TacticId">
+          <End Role="Plan_Campaign_Program_Tactic" Type="Self.Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontRequests" Type="Self.IntegrationWorkFrontRequests" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequests">
+              <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontTacticSettings_TacticId">
+          <End Role="Plan_Campaign_Program_Tactic" Type="Self.Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Role="IntegrationWorkFrontTacticSettings" Type="Self.IntegrationWorkFrontTacticSettings" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontTacticSettings">
+              <PropertyRef Name="TacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_LineItem_Budget_Budget_Detail">
           <End Role="Budget_Detail" Type="Self.Budget_Detail" Multiplicity="1" />
           <End Role="LineItem_Budget" Type="Self.LineItem_Budget" Multiplicity="*" />
@@ -1585,18 +1669,6 @@
             </Principal>
             <Dependent Role="Model">
               <PropertyRef Name="IntegrationInstanceId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Model_IntegrationInstance1">
-          <End Role="IntegrationInstance" Type="Self.IntegrationInstance" Multiplicity="0..1" />
-          <End Role="Model" Type="Self.Model" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IntegrationInstance">
-              <PropertyRef Name="IntegrationInstanceId" />
-            </Principal>
-            <Dependent Role="Model">
-              <PropertyRef Name="IntegrationInstanceEloquaId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1984,27 +2056,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_TacticType_Model">
-          <End Role="Model" Type="Self.Model" Multiplicity="1" />
+        <Association Name="FK_TacticType_TacticType_WorkFrontTemplateId">
+          <End Role="IntegrationWorkFrontTemplates" Type="Self.IntegrationWorkFrontTemplates" Multiplicity="0..1" />
           <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Model">
-              <PropertyRef Name="ModelId" />
+            <Principal Role="IntegrationWorkFrontTemplates">
+              <PropertyRef Name="ID" />
             </Principal>
             <Dependent Role="TacticType">
-              <PropertyRef Name="ModelId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_TacticType_Stage">
-          <End Role="Stage" Type="Self.Stage" Multiplicity="0..1" />
-          <End Role="TacticType" Type="Self.TacticType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Stage">
-              <PropertyRef Name="StageId" />
-            </Principal>
-            <Dependent Role="TacticType">
-              <PropertyRef Name="StageId" />
+              <PropertyRef Name="WorkFrontTemplateId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2086,6 +2146,9 @@
           <EntitySet Name="IntegrationTypeAttribute" EntityType="Self.IntegrationTypeAttribute" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontPortfolio_Mapping" EntityType="Self.IntegrationWorkFrontPortfolio_Mapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontPortfolios" EntityType="Self.IntegrationWorkFrontPortfolios" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IntegrationWorkFrontRequestQueues" EntityType="Self.IntegrationWorkFrontRequestQueues" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IntegrationWorkFrontRequests" EntityType="Self.IntegrationWorkFrontRequests" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IntegrationWorkFrontTacticSettings" EntityType="Self.IntegrationWorkFrontTacticSettings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IntegrationWorkFrontTemplates" EntityType="Self.IntegrationWorkFrontTemplates" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItem_Budget" EntityType="Self.LineItem_Budget" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineItemType" EntityType="Self.LineItemType" Schema="dbo" store:Type="Tables" />
@@ -2125,19 +2188,19 @@
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
             <End Role="Budget_Permission" EntitySet="Budget_Permission" />
           </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanC__43A1090D" Association="Self.FK__Plan_Camp__PlanC__43A1090D">
+          <AssociationSet Name="FK__Plan_Camp__PlanC__245D67DE" Association="Self.FK__Plan_Camp__PlanC__245D67DE">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Plan_Camp__PlanP__42ACE4D4" Association="Self.FK__Plan_Camp__PlanP__42ACE4D4">
+          <AssociationSet Name="FK__Plan_Camp__PlanP__236943A5" Association="Self.FK__Plan_Camp__PlanP__236943A5">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Plan_Campaign_Program_Tactic_Comment" EntitySet="Plan_Campaign_Program_Tactic_Comment" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanC__4589517F" Association="Self.FK__Tactic_Sh__PlanC__4589517F">
+          <AssociationSet Name="FK__Tactic_Sh__PlanC__2645B050" Association="Self.FK__Tactic_Sh__PlanC__2645B050">
             <End Role="Plan_Campaign" EntitySet="Plan_Campaign" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="FK__Tactic_Sh__PlanP__44952D46" Association="Self.FK__Tactic_Sh__PlanP__44952D46">
+          <AssociationSet Name="FK__Tactic_Sh__PlanP__25518C17" Association="Self.FK__Tactic_Sh__PlanP__25518C17">
             <End Role="Plan_Campaign_Program" EntitySet="Plan_Campaign_Program" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
@@ -2213,9 +2276,9 @@
             <End Role="IntegrationType" EntitySet="IntegrationType" />
             <End Role="GameplanDataTypePull" EntitySet="GameplanDataTypePull" />
           </AssociationSet>
-          <AssociationSet Name="FK_ImprovementTacticType_Metric_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_Metric_ImprovementTacticType">
+          <AssociationSet Name="FK_ImprovementTacticType_ImprovementTacticType" Association="Self.FK_ImprovementTacticType_ImprovementTacticType">
             <End Role="ImprovementTacticType" EntitySet="ImprovementTacticType" />
-            <End Role="ImprovementTacticType_Metric" EntitySet="ImprovementTacticType_Metric" />
+            <End Role="ImprovementTacticType1" EntitySet="ImprovementTacticType" />
           </AssociationSet>
           <AssociationSet Name="FK_ImprovementTacticType_Metric_Stage" Association="Self.FK_ImprovementTacticType_Metric_Stage">
             <End Role="Stage" EntitySet="Stage" />
@@ -2289,6 +2352,22 @@
             <End Role="IntegrationType" EntitySet="IntegrationType" />
             <End Role="IntegrationTypeAttribute" EntitySet="IntegrationTypeAttribute" />
           </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId" Association="Self.FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
+            <End Role="IntegrationWorkFrontRequests" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_QueueId" Association="Self.FK_IntegrationWorkFrontRequests_QueueId">
+            <End Role="IntegrationWorkFrontRequestQueues" EntitySet="IntegrationWorkFrontRequestQueues" />
+            <End Role="IntegrationWorkFrontRequests" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_TacticId" Association="Self.FK_IntegrationWorkFrontRequests_TacticId">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="IntegrationWorkFrontRequests" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontTacticSettings_TacticId" Association="Self.FK_IntegrationWorkFrontTacticSettings_TacticId">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="IntegrationWorkFrontTacticSettings" EntitySet="IntegrationWorkFrontTacticSettings" />
+          </AssociationSet>
           <AssociationSet Name="FK_LineItem_Budget_Budget_Detail" Association="Self.FK_LineItem_Budget_Budget_Detail">
             <End Role="Budget_Detail" EntitySet="Budget_Detail" />
             <End Role="LineItem_Budget" EntitySet="LineItem_Budget" />
@@ -2306,10 +2385,6 @@
             <End Role="Model_Stage" EntitySet="Model_Stage" />
           </AssociationSet>
           <AssociationSet Name="FK_Model_IntegrationInstance" Association="Self.FK_Model_IntegrationInstance">
-            <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
-            <End Role="Model" EntitySet="Model" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Model_IntegrationInstance1" Association="Self.FK_Model_IntegrationInstance1">
             <End Role="IntegrationInstance" EntitySet="IntegrationInstance" />
             <End Role="Model" EntitySet="Model" />
           </AssociationSet>
@@ -2441,12 +2516,8 @@
             <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
             <End Role="Tactic_Share" EntitySet="Tactic_Share" />
           </AssociationSet>
-          <AssociationSet Name="fk_TacticType_Model" Association="Self.fk_TacticType_Model">
-            <End Role="Model" EntitySet="Model" />
-            <End Role="TacticType" EntitySet="TacticType" />
-          </AssociationSet>
-          <AssociationSet Name="fk_TacticType_Stage" Association="Self.fk_TacticType_Stage">
-            <End Role="Stage" EntitySet="Stage" />
+          <AssociationSet Name="FK_TacticType_TacticType_WorkFrontTemplateId" Association="Self.FK_TacticType_TacticType_WorkFrontTemplateId">
+            <End Role="IntegrationWorkFrontTemplates" EntitySet="IntegrationWorkFrontTemplates" />
             <End Role="TacticType" EntitySet="TacticType" />
           </AssociationSet>
           <AssociationSet Name="FK_User_Notification_Notification" Association="Self.FK_User_Notification_Notification">
@@ -2911,6 +2982,29 @@
             <End Role="Budget_Permission" EntitySet="Budget_Permission" />
           </AssociationSet>
           <EntitySet Name="Plan_UserSavedViews" EntityType="MRPModel.Plan_UserSavedViews" />
+          <EntitySet Name="IntegrationWorkFrontRequestQueues" EntityType="MRPModel.IntegrationWorkFrontRequestQueue" />
+          <EntitySet Name="IntegrationWorkFrontTacticSettings" EntityType="MRPModel.IntegrationWorkFrontTacticSetting" />
+          <AssociationSet Name="FK_IntegrationWorkFrontTacticSettings_TacticId" Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="IntegrationWorkFrontTacticSetting" EntitySet="IntegrationWorkFrontTacticSettings" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TacticType_TacticType_WorkFrontTemplateId" Association="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId">
+            <End Role="IntegrationWorkFrontTemplate" EntitySet="IntegrationWorkFrontTemplates" />
+            <End Role="TacticType" EntitySet="TacticTypes" />
+          </AssociationSet>
+          <EntitySet Name="IntegrationWorkFrontRequests" EntityType="MRPModel.IntegrationWorkFrontRequest" />
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId" Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
+            <End Role="IntegrationInstance" EntitySet="IntegrationInstances" />
+            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_QueueId" Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId">
+            <End Role="IntegrationWorkFrontRequestQueue" EntitySet="IntegrationWorkFrontRequestQueues" />
+            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
+          <AssociationSet Name="FK_IntegrationWorkFrontRequests_TacticId" Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId">
+            <End Role="Plan_Campaign_Program_Tactic" EntitySet="Plan_Campaign_Program_Tactic" />
+            <End Role="IntegrationWorkFrontRequest" EntitySet="IntegrationWorkFrontRequests" />
+          </AssociationSet>
           </EntityContainer>
         <EntityType Name="BestInClass">
           <Key>
@@ -2951,10 +3045,10 @@
           <Property Type="Int32" Name="ObjectId" Nullable="false" />
           <Property Type="Int32" Name="ParentObjectId" />
           <Property Type="Int32" Name="ComponentId" Nullable="false" />
-          <Property Type="String" Name="ComponentTitle" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ComponentTitle" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ComponentType" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Type="String" Name="ActionName" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="ActionSuffix" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ActionSuffix" MaxLength="2500" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="TimeStamp" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="UserId" Nullable="false" />
           <Property Type="Boolean" Name="IsDeleted" Nullable="false" />
@@ -3171,6 +3265,7 @@
           <NavigationProperty Name="Models4" Relationship="MRPModel.FK_Model_IntegrationInstanceProjMgmt" FromRole="IntegrationInstance" ToRole="Model" />
           <NavigationProperty Name="IntegrationWorkFrontTemplates" Relationship="MRPModel.FK_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontTemplate" />
           <NavigationProperty Name="Models11" Relationship="MRPModel.FK_Model_IntegrationInstance1" FromRole="IntegrationInstance" ToRole="Model" />
+          <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationInstance" ToRole="IntegrationWorkFrontRequest" />
         </EntityType>
         <EntityType Name="IntegrationInstance_Attribute">
           <Key>
@@ -3276,7 +3371,7 @@
           <Property Type="DateTime" Name="SyncStart" Nullable="false" Precision="3" />
           <Property Type="DateTime" Name="SyncEnd" Precision="3" />
           <Property Type="String" Name="Status" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Type="String" Name="Description" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Description" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Type="DateTime" Name="CreatedDate" Nullable="false" Precision="3" />
           <Property Type="Guid" Name="CreateBy" Nullable="false" />
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceSection_IntegrationInstance" FromRole="IntegrationInstanceSection" ToRole="IntegrationInstance" />
@@ -3574,6 +3669,8 @@
           <Property Type="String" Name="IntegrationInstanceEloquaId" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="LinkedTacticId" Type="Int32" />
           <Property Name="LinkedPlanId" Type="Int32" />
+          <NavigationProperty Name="IntegrationWorkFrontTacticSettings" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontTacticSetting" />
+          <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="Plan_Campaign_Program_Tactic" ToRole="IntegrationWorkFrontRequest" />
         </EntityType>
         <EntityType Name="Plan_Campaign_Program_Tactic_Actual">
           <Key>
@@ -3860,6 +3957,8 @@
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
           <Property Name="WorkFront_Template" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="WorkFrontTemplateId" Type="Int32" />
+          <NavigationProperty Name="IntegrationWorkFrontTemplate" Relationship="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" FromRole="TacticType" ToRole="IntegrationWorkFrontTemplate" />
         </EntityType>
         <EntityType Name="User_Filter">
           <Key>
@@ -4704,8 +4803,8 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="String" Name="EntityType" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Type="String" Name="ColorCode" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Type="String" Name="EntityType" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="ColorCode" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="ELMAH_Error">
           <Key>
@@ -4722,7 +4821,7 @@
           <Property Name="TimeUtc" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="Sequence" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="AllXml" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Client" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Client" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
         <Association Name="FK_ImprovementTacticType_ImprovementTacticType">
           <End Type="MRPModel.ImprovementTacticType" Role="ImprovementTacticType" Multiplicity="1" />
@@ -4796,6 +4895,7 @@
           <Property Name="Template_Name" Type="String" Nullable="false" MaxLength="250" FixedLength="false" Unicode="true" />
           <Property Name="IsDeleted" Type="Int32" Nullable="false" />
           <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationInstanceId" FromRole="IntegrationWorkFrontTemplate" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="TacticTypes" Relationship="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" FromRole="IntegrationWorkFrontTemplate" ToRole="TacticType" />
         </EntityType>
         <Association Name="FK_IntegrationInstanceId">
           <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
@@ -5163,6 +5263,106 @@
           <Property Name="LastModifiedDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="IsDefaultPreset" Type="Boolean" />
         </EntityType>
+        <EntityType Name="IntegrationWorkFrontRequestQueue">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RequestQueueId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="RequestQueueName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="IntegrationWorkFrontRequests" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" FromRole="IntegrationWorkFrontRequestQueue" ToRole="IntegrationWorkFrontRequest" />
+        </EntityType>
+        <EntityType Name="IntegrationWorkFrontTacticSetting">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TacticId" Type="Int32" Nullable="false" />
+          <Property Name="TacticApprovalBehavior" Type="Boolean" Nullable="false" />
+          <Property Name="OrganizationBehavior" Type="Boolean" Nullable="false" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" FromRole="IntegrationWorkFrontTacticSetting" ToRole="Plan_Campaign_Program_Tactic" />
+        </EntityType>
+        <Association Name="FK_IntegrationWorkFrontTacticSettings_TacticId">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontTacticSetting" Role="IntegrationWorkFrontTacticSetting" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontTacticSetting">
+              <PropertyRef Name="TacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TacticType_TacticType_WorkFrontTemplateId">
+          <End Type="MRPModel.IntegrationWorkFrontTemplate" Role="IntegrationWorkFrontTemplate" Multiplicity="0..1" />
+          <End Type="MRPModel.TacticType" Role="TacticType" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontTemplate">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="TacticType">
+              <PropertyRef Name="WorkFrontTemplateId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="IntegrationWorkFrontRequest">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IntegrationInstanceId" Type="Int32" Nullable="false" />
+          <Property Name="RequestId" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="QueueId" Type="Int32" Nullable="false" />
+          <Property Name="PlanTacticId" Type="Int32" Nullable="false" />
+          <Property Name="AssignedTo" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
+          <Property Name="RequestName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="WorkFrontStatus" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ResolvingObjId" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ResolvingObjType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="IntegrationInstance" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" FromRole="IntegrationWorkFrontRequest" ToRole="IntegrationInstance" />
+          <NavigationProperty Name="IntegrationWorkFrontRequestQueue" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" FromRole="IntegrationWorkFrontRequest" ToRole="IntegrationWorkFrontRequestQueue" />
+          <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" FromRole="IntegrationWorkFrontRequest" ToRole="Plan_Campaign_Program_Tactic" />
+        </EntityType>
+        <Association Name="FK_IntegrationWorkFrontRequests_IntegrationInstanceId">
+          <End Type="MRPModel.IntegrationInstance" Role="IntegrationInstance" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationInstance">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequest">
+              <PropertyRef Name="IntegrationInstanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontRequests_QueueId">
+          <End Type="MRPModel.IntegrationWorkFrontRequestQueue" Role="IntegrationWorkFrontRequestQueue" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IntegrationWorkFrontRequestQueue">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequest">
+              <PropertyRef Name="QueueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_IntegrationWorkFrontRequests_TacticId">
+          <End Type="MRPModel.Plan_Campaign_Program_Tactic" Role="Plan_Campaign_Program_Tactic" Multiplicity="1" />
+          <End Type="MRPModel.IntegrationWorkFrontRequest" Role="IntegrationWorkFrontRequest" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Plan_Campaign_Program_Tactic">
+              <PropertyRef Name="PlanTacticId" />
+            </Principal>
+            <Dependent Role="IntegrationWorkFrontRequest">
+              <PropertyRef Name="PlanTacticId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -5992,6 +6192,7 @@
           <EntitySetMapping Name="TacticTypes">
             <EntityTypeMapping TypeName="MRPModel.TacticType">
               <MappingFragment StoreEntitySet="TacticType">
+                <ScalarProperty Name="WorkFrontTemplateId" ColumnName="WorkFrontTemplateId" />
                 <ScalarProperty Name="WorkFront_Template" ColumnName="WorkFront Template" />
                 <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="IsDeployedToModel" ColumnName="IsDeployedToModel" />
@@ -6253,6 +6454,44 @@
                 <ScalarProperty Name="FilterValues" ColumnName="FilterValues" />
                 <ScalarProperty Name="FilterName" ColumnName="FilterName" />
                 <ScalarProperty Name="ViewName" ColumnName="ViewName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontRequestQueues">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontRequestQueue">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontRequestQueues">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="RequestQueueName" ColumnName="RequestQueueName" />
+                <ScalarProperty Name="RequestQueueId" ColumnName="RequestQueueId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontTacticSettings">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontTacticSetting">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontTacticSettings">
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="OrganizationBehavior" ColumnName="OrganizationBehavior" />
+                <ScalarProperty Name="TacticApprovalBehavior" ColumnName="TacticApprovalBehavior" />
+                <ScalarProperty Name="TacticId" ColumnName="TacticId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IntegrationWorkFrontRequests">
+            <EntityTypeMapping TypeName="MRPModel.IntegrationWorkFrontRequest">
+              <MappingFragment StoreEntitySet="IntegrationWorkFrontRequests">
+                <ScalarProperty Name="ResolvingObjType" ColumnName="ResolvingObjType" />
+                <ScalarProperty Name="ResolvingObjId" ColumnName="ResolvingObjId" />
+                <ScalarProperty Name="WorkFrontStatus" ColumnName="WorkFrontStatus" />
+                <ScalarProperty Name="RequestName" ColumnName="RequestName" />
+                <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+                <ScalarProperty Name="AssignedTo" ColumnName="AssignedTo" />
+                <ScalarProperty Name="PlanTacticId" ColumnName="PlanTacticId" />
+                <ScalarProperty Name="QueueId" ColumnName="QueueId" />
+                <ScalarProperty Name="RequestId" ColumnName="RequestId" />
+                <ScalarProperty Name="IntegrationInstanceId" ColumnName="IntegrationInstanceId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

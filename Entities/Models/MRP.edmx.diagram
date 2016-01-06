@@ -148,7 +148,7 @@
         <AssociationConnector Association="MRPModel.FK_Model_IntegrationInstance1" />
         <EntityTypeShape EntityType="MRPModel.Budget" Width="1.5" PointX="6.5799510639998839" PointY="7.6337976640247733" />
         <AssociationConnector Association="MRPModel.FK_Budget_Budget" />
-        <EntityTypeShape EntityType="MRPModel.Budget_DetailAmount" Width="1.5" PointX="16.5" PointY="22.75" />
+        <EntityTypeShape EntityType="MRPModel.Budget_DetailAmount" Width="1.5" PointX="18.125" PointY="22.875" />
         <EntityTypeShape EntityType="MRPModel.CustomFieldDependency" Width="1.5" PointX="14.25" PointY="17" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField" />
         <AssociationConnector Association="MRPModel.FK_CustomFieldDependency_CustomField1" />
@@ -166,6 +166,14 @@
         <AssociationConnector Association="MRPModel.FK_Budget_Columns_CustomField" />
         <AssociationConnector Association="MRPModel.BudgetID_FK" />
         <EntityTypeShape EntityType="MRPModel.Plan_UserSavedViews" Width="1.5" PointX="16.375" PointY="3.75" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequestQueue" Width="1.5" PointX="11" PointY="46.625" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontTacticSetting" Width="1.5" PointX="13.25" PointY="37.875" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontTacticSettings_TacticId" />
+        <AssociationConnector Association="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" />
+        <EntityTypeShape EntityType="MRPModel.IntegrationWorkFrontRequest" Width="1.5" PointX="14.25" PointY="27.5" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_IntegrationInstanceId" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_QueueId" />
+        <AssociationConnector Association="MRPModel.FK_IntegrationWorkFrontRequests_TacticId" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

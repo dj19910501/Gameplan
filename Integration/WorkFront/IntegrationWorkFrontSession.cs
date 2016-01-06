@@ -278,7 +278,8 @@ namespace Integration.WorkFront
             try
             {
                 SyncInstanceTemplates(ref SyncErrors);
-                
+                SyncRequestQueues(ref SyncErrors);
+                SyncInstanceRequests(ref SyncErrors);
                 //Retrieves list of all tactics tied to the integrated programs and deployed to integrationtic
                 List<Plan_Campaign_Program_Tactic> tacticList = db.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.IsDeployedToIntegration == true &&
                     tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Model.IntegrationInstanceIdProjMgmt == _integrationInstanceId && statusList.Contains(tactic.Status)).ToList();
@@ -529,6 +530,158 @@ namespace Integration.WorkFront
             return syncError;
         }
 
+        ///Retrieve Requests from WorkFront and store in Plan. Any requests deleted in WorkFront are marked as deleted in Plan db
+        ///Plan creates and tracks requests. Do not need to pull in other requests from WorkFront as they aren't tied to Plan projects
+        ///If request is in database but not in WorkFront, create the request. This behavior is different than templates, where we set the db entry to IsDeleted.
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// Bool: true if sync error, false otherwise
+        /// </returns>
+        private bool SyncRequestQueues(ref List<SyncError> SyncErrors)
+        {
+            bool syncError = false;
+            //update WorkFront request queues for the instance
+            try
+            {
+                JToken rqFromWorkFront = client.Search(ObjCode.QUEUE, new { fields = "ID" }); 
+                //Get the list of request queus in the database
+                List<IntegrationWorkFrontTemplate> templatesFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == _integrationInstanceId && template.IsDeleted==0).ToList();
+                List<string> templateIdsFromDB = templatesFromDB.Select(tmpl => tmpl.TemplateId).ToList();
+                //For comparison purposes, create a list of templates from WorkFront
+                List<string> templateIdsFromWorkFront = new List<string>();
+              
+                foreach (var template in rqFromWorkFront["data"])
+                {
+                    string templID = template["ID"].ToString().Trim(); //WorkFront template IDs come with excess whitespace
+                    templateIdsFromWorkFront.Add(templID);
+                    if ( !templateIdsFromDB.Contains(templID))
+                    {
+                        IntegrationWorkFrontTemplate newTemplate = new IntegrationWorkFrontTemplate();
+                        newTemplate.IntegrationInstanceId = _integrationInstanceId;
+                        newTemplate.TemplateId = templID;
+                        newTemplate.Template_Name = template["name"].ToString();
+                        newTemplate.IsDeleted = 0;
+                        db.Entry(newTemplate).State = EntityState.Added;
+                    }
+                    else {
+                        IntegrationWorkFrontTemplate templateToEdit = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == templID).FirstOrDefault();
+                        templateToEdit.Template_Name = template["name"].ToString();
+                        db.Entry(templateToEdit).State = EntityState.Modified;
+                    }
+                }
+
+               //templates in the database that are not in WorkFront need to be set to deleted in database 
+               List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
+               List<IntegrationWorkFrontTemplate> templatesToDelete = db.IntegrationWorkFrontTemplates.Where(t => inDatabaseButNotInWorkFront.Contains(t.TemplateId)).ToList();
+               if(templatesToDelete.Count>0)
+               {
+                   MRPEntities mp = new MRPEntities();
+                   DbConnection conn = mp.Database.Connection;
+                   conn.Open();
+                   DbCommand cmd = conn.CreateCommand();
+                   StringBuilder query = new StringBuilder();
+                   foreach (IntegrationWorkFrontTemplate template in templatesToDelete)
+                   {
+                       template.IsDeleted = 1;
+                       db.Entry(template).State = EntityState.Modified;
+                       query.Append("update [dbo].[TacticType] set [WorkFront Template] = null where [WorkFront Template] = '" + template.TemplateId + "';");
+                   }
+                   cmd.CommandText = query.ToString();
+                   cmd.ExecuteNonQuery();
+               }
+              
+            }
+            catch (Exception ex)
+            {
+                syncError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync Integration Requests";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            return syncError;
+        }
+
+        ///Retrieve Requests from WorkFront and store in Plan. Any requests deleted in WorkFront are marked as deleted in Plan db
+        ///Plan creates and tracks requests. Do not need to pull in other requests from WorkFront as they aren't tied to Plan projects
+        ///If request is in database but not in WorkFront, create the request. This behavior is different than templates, where we set the db entry to IsDeleted.
+        ///<param name="SyncErrors">
+        /// error list for tracking
+        /// </param>
+        /// <returns>
+        /// Bool: true if sync error, false otherwise
+        /// </returns>
+        private bool SyncInstanceRequests(ref List<SyncError> SyncErrors)
+        {
+            bool syncError = false;
+            //update WorkFront requests for the instance
+            try
+            {
+                //Get the list of requests in the database
+                List<IntegrationWorkFrontRequest> requestsFromDB = db.IntegrationWorkFrontRequests.Where(r => r.IntegrationInstanceId == _integrationInstanceId && r.IsDeleted == false).ToList();
+                List<string> requestIdsFromDB = requestsFromDB.Select(req => req.RequestId).ToList();
+                //For comparison purposes, create a list of requests from WorkFront
+                List<string> requestIdsFromWorkFront = new List<string>();
+
+                foreach (IntegrationWorkFrontRequest req in requestsFromDB)
+                {
+                    JToken requestInfoFromWorkFront = client.Search(ObjCode.OPTASK, new { fields = "assignedToID,categoryID,isHelpDesk, resolvingObjCode,resolvingObjID,status", isHelpDesk = "true", ID = req.RequestId });
+                   if (requestInfoFromWorkFront != null)
+                   {
+                       req.RequestName = requestInfoFromWorkFront["name"].ToString();
+                       req.WorkFrontStatus = requestInfoFromWorkFront["status"].ToString();
+                       if (requestInfoFromWorkFront["resolvingObjCode"] == null)
+                       {
+                            req.ResolvingObjType = "N/A";
+                       }
+                       else
+                       {
+                            req.ResolvingObjType = requestInfoFromWorkFront["resolvingObjCode"].ToString();
+                       }
+                       if (requestInfoFromWorkFront["resolvingObjID"] == null)
+                       {
+                            req.ResolvingObjId = "N/A";
+                       }
+                       else
+                       {
+                            req.ResolvingObjId = requestInfoFromWorkFront["resolvingObjID"].ToString();
+                       }
+                       db.Entry(req).State = EntityState.Modified;
+                      
+                   }
+                   else //it's in the database and not set to deleted, but not found in WorkFront,so need to create the request in WorkFront. 
+                   {
+                       Plan_Campaign_Program_Tactic tactic = db.Plan_Campaign_Program_Tactic.Single(t=> t.PlanTacticId == req.PlanTacticId);
+                       string projectIdFromDb = tactic.IntegrationWorkFrontProjectID;
+                       JToken createdRequest = client.Create(ObjCode.OPTASK, new { isHelpDesk = "true", projectID = projectIdFromDb, name = req.RequestName, opTaskType = "REQ" });
+                       if (createdRequest == null)
+                       {
+                           throw new ClientException("Error creating Request");
+                       }
+                   }
+                }
+            }
+            catch (Exception ex)
+            {
+                syncError = true;
+                SyncError error = new SyncError();
+                error.EntityId = _integrationInstanceId;
+                error.EntityType = Enums.EntityType.IntegrationInstance;
+                error.SectionName = "Sync Integration Requests";
+                error.Message = ex.Message;
+                error.SyncStatus = Enums.SyncStatus.Error;
+                error.TimeStamp = DateTime.Now;
+                SyncErrors.Add(error);
+            }
+            return syncError;
+        }
+
 
 
         /// <summary>
@@ -636,7 +789,6 @@ namespace Integration.WorkFront
                     db.Entry(createdPortfolioProject).State = EntityState.Added;
 
                     tactic.IntegrationWorkFrontProjectID = (string)project["data"]["ID"];
-                    //tactic.IntegrationInstanceTacticId = (string)project["data"]["ID"]; //needed only as place filler for Common.GetMode. Not used elsewhere.
                     tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors);
                 }
                 else if (currentMode.Equals(Enums.Mode.Update))

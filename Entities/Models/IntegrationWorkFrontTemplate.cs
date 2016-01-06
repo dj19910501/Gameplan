@@ -14,6 +14,11 @@ namespace RevenuePlanner.Models
     
     public partial class IntegrationWorkFrontTemplate
     {
+        public IntegrationWorkFrontTemplate()
+        {
+            this.TacticTypes = new HashSet<TacticType>();
+        }
+    
         public int ID { get; set; }
         public int IntegrationInstanceId { get; set; }
         public string TemplateId { get; set; }
@@ -21,5 +26,6 @@ namespace RevenuePlanner.Models
         public int IsDeleted { get; set; }
     
         public virtual IntegrationInstance IntegrationInstance { get; set; }
+        public virtual ICollection<TacticType> TacticTypes { get; set; }
     }
 }

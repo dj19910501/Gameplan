@@ -160,6 +160,15 @@
     <Compile Include="Models\IntegrationWorkFrontPortfolio_Mapping.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IntegrationWorkFrontRequest.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationWorkFrontRequestQueue.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IntegrationWorkFrontTacticSetting.cs">
+      <DependentUpon>MRP.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\IntegrationWorkFrontTemplate.cs">
       <DependentUpon>MRP.tt</DependentUpon>
     </Compile>

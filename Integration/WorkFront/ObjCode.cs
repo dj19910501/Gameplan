@@ -33,6 +33,7 @@ namespace Integration.WorkFront
 		public static readonly ObjCode CUSTOM_ENUM			= new ObjCode("custem");
         public static readonly ObjCode TEMPLATE             = new ObjCode("tmpl");
         public static readonly ObjCode PORTFOLIO            = new ObjCode("portfolio");
+        public static readonly ObjCode QUEUE               = new ObjCode("QUED");
 		
 		/// <summary>
 		/// String representation of the ObjCode
