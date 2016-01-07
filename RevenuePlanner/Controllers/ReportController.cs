@@ -140,7 +140,8 @@ namespace RevenuePlanner.Controllers
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
             // Modified By Nishant Sheth 
             // Desc #1842 :: as per code review changes
-            var CampPlans = db.Plan_Campaign.Where(camp => camp.IsDeleted == false)
+            // Client Id condition added by Bhavesh Date: 07-jan-2016, Ticket #1805,#1842
+            var CampPlans = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && camp.Plan.Model.ClientId == Sessions.User.ClientId)
                 .Select(camp => new
                 {
                     PlanId = camp.PlanId,
@@ -150,7 +151,7 @@ namespace RevenuePlanner.Controllers
                     EndDate = camp.EndDate
                 })
                 .ToList();
-            var ProgramPlans = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false)
+            var ProgramPlans = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false && prog.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId)
                 .Select(prog => new
                 {
                     PlanId = prog.Plan_Campaign.PlanId,
@@ -159,7 +160,7 @@ namespace RevenuePlanner.Controllers
                     StartDate = prog.StartDate,
                     EndDate = prog.EndDate
                 }).ToList();
-            var TacticPlans = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false)
+            var TacticPlans = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false && tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId)
                 .Select(tac => new
                 {
                     PlanId = tac.Plan_Campaign_Program.Plan_Campaign.PlanId,
@@ -214,7 +215,7 @@ namespace RevenuePlanner.Controllers
                 string yearname = Convert.ToString(year);
                 objYear = new SelectListItem();
 
-                objYear.Text = "FY " + year;
+                objYear.Text = year.ToString();
 
                 objYear.Value = yearname;
                 objYear.Selected = yearname == selectedYear ? true : false;
@@ -247,10 +248,10 @@ namespace RevenuePlanner.Controllers
 
 
             // activePlan = activePlan.Where(plan => plan.Status.Equals(planPublishedStatus) && plan.IsDeleted == false).ToList();
-            ViewBag.ViewPlan = lstPlan.Select(plan => new PlanListModel
+            ViewBag.ViewPlan = lstPlan.OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList().Select(plan => new PlanListModel
             {
                 PlanId = plan.PlanId,
-                Title = HttpUtility.HtmlDecode(plan.Title),
+                Title = HttpUtility.HtmlDecode(plan.Year + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy)),
                 Checked = LastSetOfPlanSelected.Count.Equals(0) ? plan.PlanId == Sessions.PlanId ? "checked" : "" : LastSetOfPlanSelected.Contains(plan.PlanId.ToString()) ? "checked" : "",
 
             }).Where(plan => !string.IsNullOrEmpty(plan.Title)).OrderBy(plan => plan.Title, new AlphaNumericComparer()).ToList();
@@ -2072,7 +2073,8 @@ namespace RevenuePlanner.Controllers
             List<SelectListItem> lstYear = new List<SelectListItem>();
             var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId).ToList();
             var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
-            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = "FY " + year, Value = year }));
+            // Remove FY from Year Ticekt #1805 By Bhavesh on Date 07-jan-2016
+            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = year, Value = year }));
 
 
             string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
@@ -2080,8 +2082,8 @@ namespace RevenuePlanner.Controllers
 
             List<SelectListItem> lstPlanList = new List<SelectListItem>();
 
-            lstPlanList = lstPlan.Where(plan => plan.Year == currentYear).Select(plan => new SelectListItem { Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (Sessions.ReportPlanIds.Contains(plan.PlanId) ? true : false) }).ToList();
-            ViewBag.ViewPlan = lstPlanList.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+            lstPlanList = lstPlan.Where(plan => plan.Year == currentYear).OrderBy(plan => plan.Title, new AlphaNumericComparer()).Select(plan => new SelectListItem { Text = currentYear + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (Sessions.ReportPlanIds.Contains(plan.PlanId) ? true : false) }).ToList();
+            ViewBag.ViewPlan = lstPlanList.Where(plan => !string.IsNullOrEmpty(plan.Text)).ToList();
             ViewBag.ViewYear = lstYear.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
             ViewBag.SelectedYear = currentYear;
 
@@ -2112,7 +2114,7 @@ namespace RevenuePlanner.Controllers
                 List<DateTime> listDateTime = new List<DateTime>();
                 listDateTime.Add(new DateTime(2015, 1, 1));
                 var DataPlanList = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
-                    && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.Model.IsActive == true).ToList();
+                    && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
 
                 var CampPlanIds = db.Plan_Campaign.Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
                     .Where(camp => ListYears.Contains(camp.StartDate.Year.ToString()) || ListYears.Contains(camp.EndDate.Year.ToString()))
@@ -2140,9 +2142,9 @@ namespace RevenuePlanner.Controllers
                 //}).ToList();
                 // Modify By Nishant Sheth
                 // Desc :: #1821 - To get list of plan with start date and end date
-                planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).ToList().Select(plan => new SelectListItem
+                planList = DataPlanList.Where(plan => allPlanIds.Contains(plan.PlanId)).OrderBy(s => s.Title, new AlphaNumericComparer()).ToList().Select(plan => new SelectListItem
             {
-                Text = plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
+                Text = plan.Year + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy),
                 Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy
             }).ToList();
             }

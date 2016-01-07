@@ -218,11 +218,11 @@
                                  ddlId = "liPlan" + "_" + item.PlanId;
                                  if (item.Checked == "checked")
                                  {
-                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" planTitle="@item.Title" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
+                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
                                  }
                                  else
                                  {
-                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@item.Title" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
+                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
                                  }
 
                              }
@@ -467,7 +467,6 @@
         customFieldIds: [],
         PlanIDs: [],
         SelectedPlans: [],
-        PlanTitles: [],
         StatusIDs: []
     };
    
@@ -1141,7 +1140,7 @@
                         $("#NoPlanFound").hide();
                         $.each(data, function (index, item) {
                             _item = item.Value.replace(/'/g, "&#39;"); //PL #1556 Reports: Clustered Plan Names - Dashrath Prajapati
-                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + _item + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + _item + '" onchange="OnPlanchange(this)" id="' + _item + '"></input></li>');
+                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" onchange="OnPlanchange(this)" id="' + _item + '"></input></li>');
                         });
                     }
                     else {
