@@ -9260,10 +9260,22 @@ namespace RevenuePlanner.Controllers
 
             try
             {
+                // Add By Nishant Sheth
+                // Desc :: To Reslove owner filter issue
+                var Label = Enums.FilterLabel.Plan.ToString();
+                var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+                string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+                // End By Nishant sheth
                 List<int> planIds = string.IsNullOrWhiteSpace(PlanId) ? new List<int>() : PlanId.Split(',').Select(plan => int.Parse(plan)).ToList();
                 //// Owner filter criteria.
                 List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
-
+                // Add By Nishant Sheth
+                // Desc :: To resolve the select and deselct all owner issues
+                if (planselectedowner == null)
+                {
+                    filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                }
+                // End By Nishant Sheth
                 //Modified by komal rawal for #1283
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeid) ? new List<int>() : TacticTypeid.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -9408,7 +9420,13 @@ namespace RevenuePlanner.Controllers
 
                 List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
                 lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false, customfieldlist);
-                TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
+                //TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId) || tacticlist.CreatedBy == Sessions.User.UserId).Select(tacticlist => tacticlist).ToList();
+                // Add By Nishant Shet
+                // Desc:: To resolve owner filter issue
+                TacticfilterList = TacticfilterList.Where(tacticlist => lstAllowedEntityIds.Contains(tacticlist.PlanTacticId)
+                    || (filterOwner.Count.Equals(0) || filterOwner.Contains(tacticlist.CreatedBy))).Select(tacticlist => tacticlist).ToList();
+                //End By Nishant Sheth
+
                 TempData["TacticfilterList"] = TacticfilterList;
                 TempData["lsteditableEntityIds"] = lsteditableEntityIds;
                 //End
@@ -9899,18 +9917,18 @@ namespace RevenuePlanner.Controllers
                                                 programrowsobj.data = programdataobjlist;
 
 
-                                                if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0) && !IsFiltered)
-                                                {
+                                                //if ((filterOwner.Count() == 0 && filterTacticType.Count() == 0 && filterStatus.Count() == 0 && filteredCustomFields.Count() == 0) && !IsFiltered)
+                                                //{
                                                     //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
                                                     // Modified By Nishant Sheth 
                                                     // Desc:: To resolve the #1790 observation
-                                                    finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (tacticfilter.CreatedBy == Sessions.User.UserId)).OrderBy(t => t.Title).ToList();
-                                                }
-                                                else
-                                                {
+                                                //  finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId && (tacticfilter.CreatedBy == Sessions.User.UserId)).OrderBy(t => t.Title).ToList();
+                                                //}
+                                                //else
+                                                //{
                                                     finalTacticfilterList = TacticfilterList.Where(tacticfilter => tacticfilter.PlanProgramId == Programitem.PlanProgramId).OrderBy(t => t.Title).ToList();
 
-                                                }
+                                                //}
                                                 if (finalTacticfilterList != null && finalTacticfilterList.Count > 0)
                                                 {
                                                     Startdate = Enddate = string.Empty;

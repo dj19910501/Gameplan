@@ -495,8 +495,15 @@ namespace RevenuePlanner.Controllers
             {
                 // Add By Nishant Sheth 
                 // Desc :: #1839 code review points - Tactic list is different 
-                tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId
-                                              ).ToList();
+                // Desc :: To Reslove owner filter issue
+                var Label = Enums.FilterLabel.Plan.ToString();
+                var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+                string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+                if (planselectedowner == null)
+                {
+                    tacticList = tacticList.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).ToList();
+                }
+                // End By Nishant sheth
 
             }
 

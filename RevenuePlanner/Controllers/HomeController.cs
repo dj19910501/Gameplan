@@ -469,7 +469,11 @@ namespace RevenuePlanner.Controllers
             // DESC:: For get default filter view after user log out #1750
 
             var Label = Enums.FilterLabel.Plan.ToString();
-            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).ToList();
+            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            // Add By Nishant Sheth
+            // Desc :: To resolve the select and deselct all owner issues
+            string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+            // End By Nishant Sheth
             if (SetOfPlanSelected.Count > 0)
             {
                 isupdate = true;
@@ -506,6 +510,14 @@ namespace RevenuePlanner.Controllers
 
             //// Owner filter criteria.
             List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            // Add By Nishant Sheth
+            // Desc :: To resolve the select and deselct all owner issues
+            if (planselectedowner == null)
+            {
+                filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            }
+            // End By Nishant Sheth
+            //List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
 
             //Modified by komal rawal for #1283
             //TacticType filter criteria
@@ -566,7 +578,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
                 //    //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
-                if (IsFiltered == false && customFieldIds == "" && ownerIds == "" && TacticTypeid == "" && StatusIds == "")
+                //if (IsFiltered == false && customFieldIds == "" && ownerIds == "" && TacticTypeid == "" && StatusIds == "")
                 {
                     //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
                     //List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
@@ -581,13 +593,15 @@ namespace RevenuePlanner.Controllers
                     //Modified By Komal Rawal for #1505
                     // Modified By Nishant Sheth 
                     // Desc:: To resolve the #1790 observation
-                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                    //lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
                 }
-                else
+                //else
                 {
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                     //Modified By Komal Rawal for #1505
-                    lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                    // Modified By Nishant Sheth
+                    // Desc :: To resolve the select and deselct all Tactic type issues
+                    lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
                 }
             }
 
@@ -5811,7 +5825,7 @@ namespace RevenuePlanner.Controllers
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
 
             }
-            if (ownerIds != null && ownerIds != "")
+            //if (ownerIds != null && ownerIds != "") // Commented By Nishant Sheth Desc:: To resolve owner filter issue
             {
                 Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                 objFilterValues.ViewName = null;
