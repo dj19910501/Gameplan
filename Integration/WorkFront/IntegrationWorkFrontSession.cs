@@ -545,51 +545,45 @@ namespace Integration.WorkFront
             //update WorkFront request queues for the instance
             try
             {
-                JToken rqFromWorkFront = client.Search(ObjCode.QUEUE, new { fields = "ID" }); 
+                JToken qFromWorkFront = client.Search(ObjCode.QUEUE, new { fields = "ID" }); 
                 //Get the list of request queus in the database
-                List<IntegrationWorkFrontTemplate> templatesFromDB = db.IntegrationWorkFrontTemplates.Where(template => template.IntegrationInstanceId  == _integrationInstanceId && template.IsDeleted==0).ToList();
-                List<string> templateIdsFromDB = templatesFromDB.Select(tmpl => tmpl.TemplateId).ToList();
+                List<IntegrationWorkFrontRequestQueue> queuesFromDB = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId  == _integrationInstanceId && q.IsDeleted==false).ToList();
+                List<string> qIdsFromDB = queuesFromDB.Select(q => q.RequestQueueId).ToList();
                 //For comparison purposes, create a list of templates from WorkFront
-                List<string> templateIdsFromWorkFront = new List<string>();
+                List<string> queueIdsFromWorkFront = new List<string>();
               
-                foreach (var template in rqFromWorkFront["data"])
+                foreach (var queue in qFromWorkFront["data"])
                 {
-                    string templID = template["ID"].ToString().Trim(); //WorkFront template IDs come with excess whitespace
-                    templateIdsFromWorkFront.Add(templID);
-                    if ( !templateIdsFromDB.Contains(templID))
+                    string qID = queue["ID"].ToString().Trim(); 
+                    queueIdsFromWorkFront.Add(qID);
+                    if ( !qIdsFromDB.Contains(qID)) //found a queue in WorkFront that isn't in the database. add it to database
                     {
-                        IntegrationWorkFrontTemplate newTemplate = new IntegrationWorkFrontTemplate();
-                        newTemplate.IntegrationInstanceId = _integrationInstanceId;
-                        newTemplate.TemplateId = templID;
-                        newTemplate.Template_Name = template["name"].ToString();
-                        newTemplate.IsDeleted = 0;
-                        db.Entry(newTemplate).State = EntityState.Added;
+                        IntegrationWorkFrontRequestQueue newQueue = new IntegrationWorkFrontRequestQueue();
+                        newQueue.IntegrationInstanceId = _integrationInstanceId;
+                        newQueue.RequestQueueId = qID;
+                        newQueue.RequestQueueName = queue["name"].ToString();
+                        newQueue.IsDeleted = false;
+                        db.Entry(newQueue).State = EntityState.Added;
                     }
                     else {
-                        IntegrationWorkFrontTemplate templateToEdit = db.IntegrationWorkFrontTemplates.Where(t => t.TemplateId == templID).FirstOrDefault();
-                        templateToEdit.Template_Name = template["name"].ToString();
-                        db.Entry(templateToEdit).State = EntityState.Modified;
+                        IntegrationWorkFrontRequestQueue queueToEdit = db.IntegrationWorkFrontRequestQueues.Where(q => q.RequestQueueId == qID && q.IntegrationInstanceId == _integrationInstanceId).FirstOrDefault();
+                        queueToEdit.RequestQueueName = queue["name"].ToString();
+                        db.Entry(queueToEdit).State = EntityState.Modified;
                     }
                 }
 
                //templates in the database that are not in WorkFront need to be set to deleted in database 
-               List<string> inDatabaseButNotInWorkFront = templateIdsFromDB.Except(templateIdsFromWorkFront).ToList();
-               List<IntegrationWorkFrontTemplate> templatesToDelete = db.IntegrationWorkFrontTemplates.Where(t => inDatabaseButNotInWorkFront.Contains(t.TemplateId)).ToList();
-               if(templatesToDelete.Count>0)
+               List<string> inDatabaseButNotInWorkFront = qIdsFromDB.Except(queueIdsFromWorkFront).ToList();
+               List<IntegrationWorkFrontRequestQueue> queuesToDelete = db.IntegrationWorkFrontRequestQueues.Where(t => inDatabaseButNotInWorkFront.Contains(t.RequestQueueId)).ToList();
+               if (queuesToDelete.Count > 0)
                {
-                   MRPEntities mp = new MRPEntities();
-                   DbConnection conn = mp.Database.Connection;
-                   conn.Open();
-                   DbCommand cmd = conn.CreateCommand();
-                   StringBuilder query = new StringBuilder();
-                   foreach (IntegrationWorkFrontTemplate template in templatesToDelete)
-                   {
-                       template.IsDeleted = 1;
-                       db.Entry(template).State = EntityState.Modified;
-                       query.Append("update [dbo].[TacticType] set [WorkFront Template] = null where [WorkFront Template] = '" + template.TemplateId + "';");
-                   }
-                   cmd.CommandText = query.ToString();
-                   cmd.ExecuteNonQuery();
+                   queuesToDelete.Select(c => { c.IsDeleted = true; return c; }).ToList();
+                   db.Entry(queuesToDelete).State = EntityState.Modified;
+                 //  foreach (IntegrationWorkFrontRequestQueue rq in queuesToDelete)
+                  // {
+                   //    rq.IsDeleted = true;
+                    //   db.Entry(rq).State = EntityState.Modified;
+                  // }
                }
               
             }
