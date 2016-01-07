@@ -12600,7 +12600,9 @@ div.clue-bottom-default .cluetip-arrows {
     font-size: 20px;
     font-weight: 400;
 }
-
+.dropdown-wrapper .table_drpdwn tr{
+    height: auto;
+}
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
     .display-table-row tr {
         display: table-row !important;
