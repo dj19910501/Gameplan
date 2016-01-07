@@ -285,6 +285,8 @@ namespace RevenuePlanner.Models
         public Plan_Campaign objPlanTacticCampaign { get; set; }
         public Plan objPlanTacticCampaignPlan { get; set; }
         public System.Guid CreatedBy { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
     }
 
     public class CustomFieldsForFilter

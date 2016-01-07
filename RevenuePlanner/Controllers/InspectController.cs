@@ -3379,7 +3379,17 @@ namespace RevenuePlanner.Controllers
             Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
             if (pcpt == null)
                 return null;
-
+            //Modified By Komal Rawal for Link Tactic feature
+            var LinkedTacticId = pcpt.LinkedTacticId;
+            if (LinkedTacticId != null && LinkedTacticId > 0)
+            {
+                ippctm.IsLinkedTactic = true;
+            }
+            else
+            {
+                ippctm.IsLinkedTactic = false;
+            }
+            //End
             Plan_Campaign plancampaignobj = pcpt.Plan_Campaign_Program.Plan_Campaign;
 
             Plan_Campaign_Program planprogramobj = pcpt.Plan_Campaign_Program;

@@ -199,6 +199,7 @@ namespace RevenuePlanner.Models
         public List<SelectListValue> PlanCampaignList { get; set; }
         public List<SelectListValue> CampaignProgramList { get; set; }
         public List<SelectListUser> OwnerList { get; set; }
+        public bool IsLinkedTactic { get; set; }
 
     }
 
