@@ -2366,7 +2366,7 @@ $("#BtnShareReport").click(function () {
             var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
             var IsAnyOwnerSelected = $('#ulSelectedOwner').find("li").hasClass("close-list");
             if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected && !IsAnyOwnerSelected) {
-                alert('Please select atleast one filter');
+                alert('Please select at least one filter');
                 return false;
             }
             else {
