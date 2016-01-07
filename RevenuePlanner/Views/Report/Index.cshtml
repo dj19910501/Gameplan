@@ -132,13 +132,13 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
                         <li onclick="SaveAsPreset()" role="presentation">
-                            <a id="saveaslink" tabindex="-1" role="menuitem">Save current filters</a>
+                            <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a> 
                         </li>
                         <li onclick="LoadPreset()" role="presentation">
-                            <a tabindex="-1" role="menuitem">Load saved filters</a>
+                            <a tabindex="-1" role="menuitem">Load Saved Filters</a>
                         </li>
                         <li onclick="ClearAllPreset()" role="presentation">
-                            <a tabindex="-1" role="menuitem">Clear all</a>
+                            <a tabindex="-1" role="menuitem">Clear All</a>
                         </li>
                     </ul>
                 </div>
@@ -218,11 +218,11 @@
                                  ddlId = "liPlan" + "_" + item.PlanId;
                                  if (item.Checked == "checked")
                                  {
-                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" planTitle="@item.Title" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
+                                     <li class="accordion-inner close-list" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" checked="checked" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
                                  }
                                  else
                                  {
-                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" planTitle="@item.Title" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
+                                    <li class="accordion-inner" title="@item.Title" id="@ddlId"><span class="sidebarliwidth">@item.Title</span><input type="checkbox" class="chkbxfilter" id="@item.PlanId" onchange="OnPlanchange(this);"></input></li>
                                  }
 
                              }
@@ -467,7 +467,6 @@
         customFieldIds: [],
         PlanIDs: [],
         SelectedPlans: [],
-        PlanTitles: [],
         StatusIDs: []
     };
    
@@ -923,7 +922,7 @@
                                 $(this).show();
                                 $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
                                // $(this).slideDown(600);
-                                $(this).slideDown(600).delay(3000).slideUp(600);
+                                //$(this).slideDown(600).delay(3000).slideUp(600);
                             }
                         });
 
@@ -937,7 +936,7 @@
                             $(this).show();
                             $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
                            // $(this).slideDown(600);
-                            $(this).slideDown(600).delay(3000).slideUp(600);
+                            //$(this).slideDown(600).delay(3000).slideUp(600);
                         }
                     });
 
@@ -1141,7 +1140,7 @@
                         $("#NoPlanFound").hide();
                         $.each(data, function (index, item) {
                             _item = item.Value.replace(/'/g, "&#39;"); //PL #1556 Reports: Clustered Plan Names - Dashrath Prajapati
-                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + _item + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" planTitle="' + _item + '" onchange="OnPlanchange(this)" id="' + _item + '"></input></li>');
+                            $('#' + multiselectPlanId).append('<li class="accordion-inner" title="' + item.Text + '" id="liPlan' + item.Value + '"><span class="sidebarliwidth">' + item.Text + '</span><input type="checkbox" class="chkbxfilter" onchange="OnPlanchange(this)" id="' + _item + '"></input></li>');
                         });
                     }
                     else {
@@ -2366,7 +2365,7 @@ $("#BtnShareReport").click(function () {
             var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
             var IsAnyOwnerSelected = $('#ulSelectedOwner').find("li").hasClass("close-list");
             if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected && !IsAnyOwnerSelected) {
-                alert('Please select atleast one filter');
+                alert('Please select at least one filter');
                 return false;
             }
             else {
@@ -2428,20 +2427,21 @@ $("#BtnShareReport").click(function () {
         function SavePreset() {
 
             var ViewName = $("#txtPresetName").val();
-            if (ViewName == null || ViewName == "") {
+            if (ViewName.trim() == null || ViewName.trim() == "") {
                 $("#successMessageSidebar").css("display", "none");
                 $('div[id=errorMessageMainSidebar]').each(function () {
                     if ($(this).parent().is(':visible')) {
                         $(this).show();
                         $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
                       //  $(this).slideDown(600);
-                        $(this).slideDown(600).delay(3000).slideUp(600);
+                        //$(this).slideDown(600).delay(3000).slideUp(600);
                     }
                 });
+                $("#txtPresetName").val("");
             }
             else {
                 SavePresetValue = true;
-                SaveLastSetofViews(ViewName);
+                SaveLastSetofViews(ViewName.trim());
                 $('#updatedata').click();
 
               
@@ -2450,8 +2450,9 @@ $("#BtnShareReport").click(function () {
 
         }
 
-        function CancelSavePreset() {
-        $("#errorMessageMainSidebar").css("display", "none");
+    function CancelSavePreset() {
+        $("#txtPresetName").val("");
+              $("#errorMessageMainSidebar").css("display", "none");
         $("#successMessageSidebar").css("display", "none");
         $("#successMessageLoadPreset").css("display", "none");
             $("#content_SaveFilters").css("display", "none");

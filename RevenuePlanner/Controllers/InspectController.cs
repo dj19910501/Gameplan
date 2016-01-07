@@ -3393,7 +3393,17 @@ namespace RevenuePlanner.Controllers
             Plan_Campaign_Program_Tactic pcpt = db.Plan_Campaign_Program_Tactic.Where(pcptobj => pcptobj.PlanTacticId.Equals(id) && pcptobj.IsDeleted == false).FirstOrDefault();
             if (pcpt == null)
                 return null;
-
+            //Modified By Komal Rawal for Link Tactic feature
+            var LinkedTacticId = pcpt.LinkedTacticId;
+            if (LinkedTacticId != null && LinkedTacticId > 0)
+            {
+                ippctm.IsLinkedTactic = true;
+            }
+            else
+            {
+                ippctm.IsLinkedTactic = false;
+            }
+            //End
             Plan_Campaign plancampaignobj = pcpt.Plan_Campaign_Program.Plan_Campaign;
 
             Plan_Campaign_Program planprogramobj = pcpt.Plan_Campaign_Program;
@@ -3953,14 +3963,14 @@ namespace RevenuePlanner.Controllers
                                     listLineITemCost.ForEach(a => { db.Entry(a).State = EntityState.Deleted; });
                                 }
                                 // End By Nishant Sheth
-                                pcpobj.Title = linkedTactic.Title = form.TacticTitle;
+                                pcpobj.Title = form.TacticTitle;
                                 status = pcpobj.Status;
-                                pcpobj.Description = linkedTactic.Description = form.Description;
+                                pcpobj.Description = form.Description;
                                 Guid oldOwnerId = pcpobj.CreatedBy;
                                 //Start - Added by Mitesh Vaishnav - Remove old resubmission condition and combine it for PL ticket #1137
-                                pcpobj.TacticTypeId = linkedTactic.TacticTypeId = form.TacticTypeId;
-                                pcpobj.CreatedBy = linkedTactic.CreatedBy = form.OwnerId;
-                                pcpobj.ProjectedStageValue = linkedTactic.ProjectedStageValue = form.ProjectedStageValue;
+                                pcpobj.TacticTypeId = form.TacticTypeId;
+                                pcpobj.CreatedBy = form.OwnerId;
+                                pcpobj.ProjectedStageValue = form.ProjectedStageValue;
                                 if (pcpobj.PlanProgramId != form.PlanProgramId)
                                 {
                                     oldProgramId = pcpobj.PlanProgramId;
@@ -3993,37 +4003,37 @@ namespace RevenuePlanner.Controllers
                                     {
                                         if (todaydate > form.StartDate && todaydate < form.EndDate)
                                         {
-                                            pcpobj.Status = linkedTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
+                                            pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.InProgress.ToString()].ToString();
                                         }
                                         else if (todaydate > form.EndDate)
                                         {
-                                            pcpobj.Status = linkedTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
+                                            pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Complete.ToString()].ToString();
                                         }
                                     }
                                 }
 
                                 #region "Set pcobj Start & End Date."
-                                pcpobj.StartDate = linkedTactic.StartDate = form.StartDate;
-                                pcpobj.EndDate = linkedTactic.EndDate = form.EndDate;
+                                pcpobj.StartDate = form.StartDate;
+                                pcpobj.EndDate = form.EndDate;
 
                                 if (form.PStartDate > form.StartDate)
                                 {
-                                    pcpobj.Plan_Campaign_Program.StartDate = linkedTactic.Plan_Campaign_Program.StartDate = form.StartDate;
+                                    pcpobj.Plan_Campaign_Program.StartDate = form.StartDate;
                                 }
 
                                 if (form.EndDate > form.PEndDate)
                                 {
-                                    pcpobj.Plan_Campaign_Program.EndDate = linkedTactic.Plan_Campaign_Program.EndDate = form.EndDate;
+                                    pcpobj.Plan_Campaign_Program.EndDate = form.EndDate;
                                 }
 
                                 if (form.CStartDate > form.StartDate)
                                 {
-                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = linkedTactic.Plan_Campaign_Program.Plan_Campaign.StartDate = form.StartDate;
+                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate = form.StartDate;
                                 }
 
                                 if (form.EndDate > form.CEndDate)
                                 {
-                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate = form.EndDate;
+                                    pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = form.EndDate;
                                 }
                                 #endregion
 
@@ -4173,10 +4183,26 @@ namespace RevenuePlanner.Controllers
                                     linkedTactic.Status = pcpobj.Status;
                                     linkedTactic.StartDate = pcpobj.StartDate;
                                     linkedTactic.EndDate = pcpobj.EndDate;
-                                    linkedTactic.Plan_Campaign_Program.StartDate = pcpobj.Plan_Campaign_Program.StartDate;
-                                    linkedTactic.Plan_Campaign_Program.EndDate = pcpobj.Plan_Campaign_Program.EndDate;
-                                    linkedTactic.Plan_Campaign_Program.Plan_Campaign.StartDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.StartDate;
-                                    linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate = pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate;
+                                    if (linkedTactic.Plan_Campaign_Program.StartDate > linkedTactic.StartDate)
+                                    {
+                                        linkedTactic.Plan_Campaign_Program.StartDate = form.StartDate;
+                                    }
+
+                                    if (linkedTactic.EndDate > linkedTactic.Plan_Campaign_Program.EndDate)
+                                    {
+                                        linkedTactic.Plan_Campaign_Program.EndDate = linkedTactic.EndDate;
+                                    }
+
+                                    if (linkedTactic.Plan_Campaign_Program.Plan_Campaign.StartDate > linkedTactic.StartDate)
+                                    {
+                                        linkedTactic.Plan_Campaign_Program.Plan_Campaign.StartDate = linkedTactic.StartDate;
+                                    }
+
+                                    if (linkedTactic.EndDate > linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate)
+                                    {
+                                        linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate = linkedTactic.EndDate;
+                                    }
+
                                     linkedTactic.Cost = form.Cost;
                                     linkedTactic.IsDeployedToIntegration = form.IsDeployedToIntegration;
                                     linkedTactic.StageId = form.StageId;
@@ -4199,7 +4225,7 @@ namespace RevenuePlanner.Controllers
 
                                 if (isReSubmission && Common.CheckAfterApprovedStatus(status))
                                 {
-                                    pcpobj.Status = linkedTactic.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
+                                    pcpobj.Status = Enums.TacticStatusValues[Enums.TacticStatus.Submitted.ToString()].ToString();
                                     //// Get URL for Tactic to send in Email.
                                     string strURL = GetNotificationURLbyStatus(pcpobj.Plan_Campaign_Program.Plan_Campaign.PlanId, form.PlanTacticId, Enums.Section.Tactic.ToString().ToLower());
                                     Common.mailSendForTactic(pcpobj.PlanTacticId, pcpobj.Status, pcpobj.Title, section: Convert.ToString(Enums.Section.Tactic).ToLower(), URL: strURL);// Modified by viral kadiya on 12/4/2014 to resolve PL ticket #978.

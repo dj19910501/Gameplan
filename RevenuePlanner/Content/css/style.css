@@ -10671,6 +10671,12 @@ font-size: 20px;
 .load-filter ul li.active {
     background-color: #73C4EE;
 }
+.save-filter .alert .close{
+    top:0;
+}
+.error-msg-filter .alert .close{
+    top:2px;
+}
 /*By Bheru mehta 24-12-2015 for #1749 end*/
 /*By Bheru mehta 30-12-2015 for #1843 start*/
 .unlink-icon {
@@ -11061,6 +11067,7 @@ font-size: 20px;
     overflow-x: hidden;
     overflow-y: auto;
     max-height: 200px;
+    min-height: 45px;/*by bheru mehta 07-1-2016 #1751*/
 }
 
 .value_header,
@@ -12593,7 +12600,9 @@ div.clue-bottom-default .cluetip-arrows {
     font-size: 20px;
     font-weight: 400;
 }
-
+.dropdown-wrapper .table_drpdwn tr{
+    height: auto;
+}
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
     .display-table-row tr {
         display: table-row !important;

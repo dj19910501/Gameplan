@@ -176,7 +176,7 @@
 
         }
 
-      //  var TacticDeselectAll = false;
+        //  var TacticDeselectAll = false;
         function BulkTTOperation(selection) {
             GetLastview = false;
             filters.TacticTypeids = [];
@@ -190,7 +190,7 @@
                 });
             }
             else {
-            //    TacticDeselectAll = true;
+                //    TacticDeselectAll = true;
                 $("#ulTacticType li").each(function (i) {
                     $(this).removeClass("close-list");
                     var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -481,7 +481,7 @@
         }
 
         function GetOwnerListForFilter(Planids, async) {
-
+           
             var asyncval = false;
             if (async != undefined && async != 'undefined' && async != '' && async != null) {
                 asyncval = async;
@@ -627,29 +627,29 @@
 
     </script>
 
-        <!--success message-->
+    <!--success message-->
     <div class="save-filter">
-    <!--error message-->
+        <!--error message-->
         <div id="errorMessageMainSidebar" class="alert hide alert-error">
-        <a class="close">×</a>
-        <strong></strong><span id="spanErrorMessageRole"></span>
-    </div>
+            <a class="close">×</a>
+            <strong></strong><span id="spanErrorMessageRole"></span>
+        </div>
 
-    <!--error message-->
+        <!--error message-->
         <div id="successMessageLoadPreset" class="alert hide alert-success">
             <a class="close">×</a>
             <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
         </div>
         <div id="content_SaveFilters" class="sidebar-preset scroll-section" style="display:none">
-           
+
             <h2>Save As Preset</h2>
-        <label for="Preset">Please enter a name for preset</label>
-        <input type="text" id="txtPresetName" />
+            <label for="Preset">Please enter a name for preset</label>
+            <input type="text" id="txtPresetName" />
             <input type="button" class="btn btn-blue text-shadow-blue source-sans-proregular" title="Proceed" value="Proceed" id="btnSaveProceed" onclick="javascript: SavePreset()" />
             <input type="button" class="btn btn-link" title="Cancel" value="Cancel" id="btnSaveCancel" onclick="javascript: CancelSavePreset()" />
+        </div>
+        <div id="DefaultFilters" style="display:none"></div>
     </div>
-    <div id="DefaultFilters" style="display:none"></div>
-</div>
     <div id="PlanModulesSection" class="plan-mod-section sidebar-main">
         <div class="padding-content padding-bottom0 sidebar-toogle-wrapper">
             <div class="sidebar-toogle">
@@ -770,7 +770,7 @@
                     </div>
                     <div id="AttachChartCanvas" style="width:140px;height:85px;position: absolute;margin-left: 55px;margin-top: -10px;">
                     </div>
-                     <div id="chartCanvasmultiyear" style="width: 270px; height: 85px; position: absolute; margin-left: 66px; margin-top: -10px; display: none;">
+                    <div id="chartCanvasmultiyear" style="width: 270px; height: 85px; position: absolute; margin-left: 66px; margin-top: -10px; display: none;">
                         <div id="Q1" style="margin-left: 3px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q1</div>
                         <div id="Q2" style="margin-left: 17px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q2</div>
                         <div id="Q3" style="margin-left: 32px; margin-top: 69.5px; overflow: hidden; position: absolute; text-align: center; white-space: nowrap; font-size: 10px">Q3</div>
@@ -808,7 +808,7 @@
         </div>
     </div>
     <!-- Sidebar Block Starts -->
-   <div id="Filtersidebar" class="span2 sidebar">
+    <div id="Filtersidebar" class="span2 sidebar">
         <div class="WelcomeMessageBorder"></div>
 
         <div class="padding-content padding-bottom0 sidebar-toogle-wrapper update-btn">
@@ -825,7 +825,7 @@
                 <div id="cSuccess"><span id="spanSuccessMessageRole"></span></div>
             </div>
             <!--error message-->
-           
+
         </div>
         <!--error message-->
         <div class="sidebar-section scroll-section">
@@ -833,28 +833,28 @@
                 <div class="width50 float-left filter-title ">
                     <span class="filter-header">Filters</span>
                 </div>
-            <div class="dropdown" style="float:right;">
-                <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
-                    <i class="fa fa-bars"></i>
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
-                    <li onclick="SaveAsPreset()" role="presentation">
-                        <a id="saveaslink" tabindex="-1" role="menuitem">Save current filters</a>
-                    </li>
-                    <li onclick="LoadPreset()" role="presentation">
-                        <a tabindex="-1" role="menuitem">Load saved filters</a>
-                    </li>
-                    <li onclick="ClearAllPreset()" role="presentation">
-                        <a tabindex="-1" role="menuitem">Clear all</a>
-                    </li>
-                </ul>
-            </div>
-            @*<div class="width50 float-left filter-btn">
-                    <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
-                        Update Results
+                <div class="dropdown" style="float:right;">
+                    <button id="dropdownMenu1" class="btn btn-default dropdown-toggle" aria-expanded="true" data-toggle="dropdown" type="button">
+                        <i class="fa fa-bars"></i>
+                        <span class="caret"></span>
                     </button>
-            </div>*@
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
+                        <li onclick="SaveAsPreset()" role="presentation">
+                            <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
+                        </li>
+                        <li onclick="LoadPreset()" role="presentation">
+                            <a tabindex="-1" role="menuitem">Load Saved Filters</a>
+                        </li>
+                        <li onclick="ClearAllPreset()" role="presentation">
+                            <a tabindex="-1" role="menuitem">Clear All</a>
+                        </li>
+                    </ul>
+                </div>
+                @*<div class="width50 float-left filter-btn">
+                            <button class="btn btn-blue text-shadow-blue source-sans-proregular squares-icon" type="button" id="UpdateResult" onclick="UpdateResult()">
+                                Update Results
+                            </button>
+                    </div>*@
             </div>
             <div style="clear: both;"></div>
             @if (activeMenu.ToLower() == Enums.ActiveMenu.Home.ToString().ToLower())
@@ -874,11 +874,11 @@
                     if (objplan.Checked == "checked")
                     // if(objplan.PlanId == CurrentPlanId)
                     {
-                                    <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
+                        <li class="accordion-inner close-list" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId" checked="checked"></input></li>
                     }
                     else
                     {
-                                    <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
+                        <li class="accordion-inner" title="@objplan.Title" id="@liPlanid"><span class="sidebarliwidth">@objplan.Title</span><input type="checkbox" class="chkbxfilter" plantitle="@objplan.Title" onchange="togglePlan(this)" id="@objplan.PlanId"></input></li>
                     }
                 }
                                 }
@@ -924,41 +924,41 @@
                         allCustom = custField.CustomFieldId + "AllModule";
                         noCustom = "No" + custField.CustomFieldId + "Found";
 
-                    <div id="@acordionId" class="dropdown-section accordion">
-                        <div class="accordion-group">
-                            <div class="accordion-heading">
-                                <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
-                            </div>
-                            <div id="@acordionElementId" class="accordion-body collapse">
-                                <ul class="scroll-list" id="@ulCustom">
-                                    @{
+                        <div id="@acordionId" class="dropdown-section accordion">
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <h2 class="accordion-toggle" data-toggle="collapse" data-parent="@acordionParentId" href="@acordionElementHref"><span class="sidebar_label tipsyclassTitle">@custField.Title</span><i class="indicator glyphicon glyphicon-chevron-down pull-right"></i></h2>
+                                </div>
+                                <div id="@acordionElementId" class="accordion-body collapse">
+                                    <ul class="scroll-list" id="@ulCustom">
+                                        @{
                         foreach (SelectListItem item in (System.Collections.IEnumerable)lstCutomFieldOptions)
                         {
 
                             liCustom = "li_" + custField.CustomFieldId + "_" + item.Value;
                             cutomoptioninputid = custField.CustomFieldId + "_" + item.Value;
 
-                                        <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
+                            <li class="accordion-inner" title="@item.Text" id="@liCustom"><span class="sidebarliwidth">@item.Text</span><input type="checkbox" class="chkbxfilter" customfieldtitle="@item.Text" onchange="toggleCustomFields(this)" id="@cutomoptioninputid"></input></li>
                         }
-                                    }
-                                </ul>
-                                <div class="list-tab">
-                                    @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
+                                        }
+                                    </ul>
+                                    <div class="list-tab">
+                                        @if (lstCutomFieldOptions != null && lstCutomFieldOptions.Count > 0)
                                         {
-                                        <ul id="@allCustom">
-                                            <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId')">select all</a></li>
-                                            <li>|</li>
-                                            <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId')">deselect all</a></li>
-                                        </ul>
+                                            <ul id="@allCustom">
+                                                <li><a onclick="BulkCustomFieldOperation(true, '@custField.CustomFieldId')">select all</a></li>
+                                                <li>|</li>
+                                                <li><a onclick="BulkCustomFieldOperation(false, '@custField.CustomFieldId')">deselect all</a></li>
+                                            </ul>
                                         }
                                         else
                                         {
-                                        <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
+                                            <div id="@noCustom" class="NoDataFoundFilter">No @custField.Title Found</div>
                                         }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                     }
                 }
             </div>
@@ -974,7 +974,7 @@
                                 foreach (var owner in ownerList)
                                 {
                                     liid = "liOwner" + owner.OwnerId;
-                                <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
+                                    <li class="accordion-inner" title="@owner.Title + '" id="@liid"><span class="sidebarliwidth">@owner.Title</span><input type="checkbox" class="chkbxfilter" ownertitle="@owner.Title" onchange="toggleOwner(this)" id="@owner.OwnerId"></input></li>
                                 }
                             }
                         </ul>
@@ -1017,10 +1017,10 @@
                                     titielwithbracket = tactictype.Title + " (";
                                     lastbracket = ")";
                                     cbttid = "CbTT" + tactictype.TacticTypeId;
-                                <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
-                                    <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
-                                    <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input>
-                                </li>
+                                    <li class="accordion-inner" title="@titielwithbracket@tactictype.Number@lastbracket" id="@litacticid">
+                                        <span class="sidebarliwidth">@titielwithbracket<span class="font-size14 TacticNumber" previousvalue='@tactictype.Number'>@tactictype.Number</span>@lastbracket </span>
+                                        <input type="checkbox" class="chkbxfilter" tactictypetitle="@tactictype.Title" onchange="toggleTacticType(this)" id="@cbttid"></input>
+                                    </li>
                                 }
                             }
 
@@ -1440,7 +1440,7 @@
             }
         });
     }
-   // var DeselectAllStatus = false;
+    // var DeselectAllStatus = false;
     function BulkStatusOperation(selection) {
         GetLastview = false;
         filters.StatusIds = [];
@@ -1453,7 +1453,7 @@
             });
         }
         else {
-         //   DeselectAllStatus = true;
+            //   DeselectAllStatus = true;
             $("#ulStatus li").each(function (i) {
                 $(this).removeClass("close-list");
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
@@ -1619,6 +1619,14 @@
 
         filters.TacticTypeids = [];
         filters.StatusIds = [];
+        // Add By Dashrath Prajapati
+        // Desc :: to owner resolve filter issue after login
+        filters.OwnerIds = [];
+
+        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+            filters.OwnerIds.push($(this).attr("id"));
+        });
+        // End by Dashrath Prajapati
         $("#ulTacticType li input[type=checkbox]").each(function () {
 
             var chkid = $(this).attr("id");
@@ -1657,8 +1665,8 @@
             }
         });
 
-     
-       
+
+
         //Add by Nishant For "if all selected then no record inserted for user default view"
         // Modified By Nishant Sheth
         // Desc:: To resolve the #1790 observation
@@ -1746,8 +1754,8 @@
                             if ($(this).parent().is(':visible')) {
                                 $(this).show();
                                 $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
-                               // $(this).slideDown(600);
-                                 $(this).slideDown(600).delay(3000).slideUp(600);
+                                // $(this).slideDown(600);
+                                //$(this).slideDown(600).delay(3000).slideUp(600);
                             }
                         });
 
@@ -1760,8 +1768,8 @@
                         if ($(this).parent().is(':visible')) {
                             $(this).show();
                             $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
-                           // $(this).slideDown(600);
-                           $(this).slideDown(600).delay(3000).slideUp(600);
+                            // $(this).slideDown(600);
+                            //$(this).slideDown(600).delay(3000).slideUp(600);
                         }
                     });
 
@@ -1939,9 +1947,9 @@
                 gridhtml += result;
                 $("#divgridview").html('');
                 $("#divgridview").html(gridhtml);
-            
+
                 $("div[id^='LinkIcon']").each(function () {
-                   
+
                     bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
                 });
 
@@ -2712,7 +2720,7 @@
                 $("#AttachChartCanvasmultiyear").html('');
                 $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
             }
-        else
+            else
             {
                 $("#legendchart").hide();
                 $("#AttachChartCanvasmultiyear").html('');
@@ -2720,26 +2728,26 @@
                 var Canvas = $("#chart2").find(".dhx_canvas_text");
                 var i = 0;
                 var AttachChartHtml = ChartHtml;
-            $.each(Canvas, function () {
+                $.each(Canvas, function () {
 
-                if (i > 4) {
-                    var left = $(this).css('left');
-                    var top = $(this).css('top');
-                    var text = $(this).text();
-                    var BarHeight = 55 - parseInt(top);
-                    AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
-                    AttachChartHtml += text;
-                    AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
-                    AttachChartHtml += "</div>";
-                }
-                i++;
-            });
+                    if (i > 4) {
+                        var left = $(this).css('left');
+                        var top = $(this).css('top');
+                        var text = $(this).text();
+                        var BarHeight = 55 - parseInt(top);
+                        AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                        AttachChartHtml += text;
+                        AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                        AttachChartHtml += "</div>";
+                    }
+                    i++;
+                });
 
-            $("#AttachChartCanvas").html('');
-            $("#AttachChartCanvas").html(AttachChartHtml);
-            $('#AttachChartCanvas').css('margin-left', '55px');
+                $("#AttachChartCanvas").html('');
+                $("#AttachChartCanvas").html(AttachChartHtml);
+                $('#AttachChartCanvas').css('margin-left', '55px');
             }
-           
+
             var headerhtml = $("#testdiv").html();
             //var Script = "<script>" + "$(document).ready(function () {  $('div').find('[task_id='L10874']').css('background-color','rgb(202, 60, 206)'); });" + "<//script>";
             var style = "<style> div[task_id='L10874']:last-of-type {background-color:rgb(202, 60, 206)} </style>";
@@ -2791,7 +2799,7 @@
     function setpdfgraphdata(lstchart) {
 
         //$(".dhx_chart_legend").html('');
-      // $(".dhx_chart_legend").hide();
+        // $(".dhx_chart_legend").hide();
         var legendvalue = "";
         var activityyear = $('select#ddlUpComingActivites option:selected').val();
         if (activityyear.split('-').length > 1) {
@@ -2866,7 +2874,7 @@
     }
     //Added by Rahul Shah for PL #1782 for Honeycomb pdf
     function CallPdfHoneyComb() {
-       
+
         var GanttTaskDataforHoney = {
             data: new Array()
         };// Added By Rahul Shah For HoneyComp Pdf
@@ -3218,7 +3226,7 @@
             //var ChartHtml = $("#chartCanvas").html();
             //var Canvas = $("#chart2").find(".dhx_canvas_text");
             if (isQuater.split('-').length > 1) {
-               
+
                 $("#AttachChartCanvas").html('');
                 $("#legendchart").show();
                 var ChartHtml = $("#chartCanvasmultiyear").html();
@@ -3258,7 +3266,7 @@
                 $("#AttachChartCanvasmultiyear").html(AttachChartHtml);
                 //$("#AttachChartCanvasmultiyear").css('margin-left', '60px');
             }
-        else
+            else
             {
                 $("#legendchart").hide();
                 $("#AttachChartCanvasmultiyear").html('');
@@ -3266,24 +3274,24 @@
                 Canvas = $("#chartpdf").find(".dhx_canvas_text");
                 var i = 0;
                 var AttachChartHtml = ChartHtml;
-            $.each(Canvas, function () {
+                $.each(Canvas, function () {
 
-                if (i > 4) {
-                    var left = $(this).css('left');
-                    var top = $(this).css('top');
-                    var text = $(this).text();
-                    var BarHeight = 55 - parseInt(top);
-                    AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
-                    AttachChartHtml += text;
-                    AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
-                    AttachChartHtml += "</div>";
-                }
-                i++;
-            });
+                    if (i > 4) {
+                        var left = $(this).css('left');
+                        var top = $(this).css('top');
+                        var text = $(this).text();
+                        var BarHeight = 55 - parseInt(top);
+                        AttachChartHtml += "<div style='margin-left:" + left + "; margin-top:" + top + ";overflow: hidden;position: absolute;text-align: center;white-space: nowrap;font-size: 6px;font-weight: 200;'>";
+                        AttachChartHtml += text;
+                        AttachChartHtml += "<div style='width:5px;background-color: #C633C9;height:" + BarHeight + "px;border-top-left-radius: 10px;border-top-right-radius: 10px;'></div>";
+                        AttachChartHtml += "</div>";
+                    }
+                    i++;
+                });
 
-            $("#AttachChartCanvas").html('');
-            $("#AttachChartCanvas").html(AttachChartHtml);
-        }
+                $("#AttachChartCanvas").html('');
+                $("#AttachChartCanvas").html(AttachChartHtml);
+            }
             $("#testdiv #mqlspanpercentage").hide();
             $('#AttachChartCanvas').css('margin-left', '55px');
             var headerhtml = $("#testdiv").html();
@@ -3319,7 +3327,7 @@
                 datestart = "01-01-" + isQuater.split("-")[0];
                 dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
                 //Added by Rahul Shah for PL #1813
-              
+
                 // $('#AttachChartCanvas').css('margin-left', '160px');
                 $('#mainpdfdiv').css('width', '');
                 var headerhtml = $("#testdiv").html();
@@ -3514,7 +3522,7 @@
         }
         GetTacticTypelist(planids);
         GetOwnerListForFilter(planids);
-      //  alert($('#FilterName').val());
+        //  alert($('#FilterName').val());
         GetLastSetofViews($('#FilterName').val());
 
         if ($('#IsGridView').val() == "True") {
@@ -4004,6 +4012,7 @@
     //// Function to make ajax request.
     function AjaxRequest() {
         //// Start - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
+        if (IsUpdate) {
         filters.customFieldIds = [];
 
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
@@ -4028,6 +4037,14 @@
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
 
         }
+
+            // Add by dasharth parjapti
+            // Desc ::  to resolve the owner filter issue
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+            filters.OwnerIds.push($(this).attr("id"));
+        });
+    }
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
 
         var Planid = filters.SelectedPlans;
@@ -4185,9 +4202,9 @@
                             }
                             gantt.refreshData();
 
-                          
+
                             $("div[id^='LinkIcon']").each(function () {
-                                
+
                                 bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
                             });
                             $(".gantt_container .gantt_tree_content").each(function (index, element) {
@@ -4211,7 +4228,7 @@
                                 var linetype = $(this).attr('lineitemtype');
                                 var LinkTacticPermission = $(this).attr('linktacticpermission');
                                 var LinkedTacticId = $(this).attr('linkedtacticid');
-                                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+                                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
                             });
 
@@ -4463,7 +4480,7 @@
                 var linetype = $(this).attr('lineitemtype');
                 var LinkTacticPermission = $(this).attr('linktacticpermission');
                 var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
             });
 
@@ -4531,7 +4548,7 @@
                 var linetype = $(this).attr('lineitemtype');
                 var LinkTacticPermission = $(this).attr('linktacticpermission');
                 var LinkedTacticId = $(this).attr('linkedtacticid');
-                DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+                DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
             });
 
@@ -5104,7 +5121,7 @@
                     var linetype = $(this).attr('lineitemtype');
                     var LinkTacticPermission = $(this).attr('linktacticpermission');
                     var LinkedTacticId = $(this).attr('linkedtacticid');
-                    DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+                    DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
                 });
 
                 var $doc = $(document);
@@ -5384,7 +5401,7 @@
             var linetype = $(this).attr('lineitemtype');
             var LinkTacticPermission = $(this).attr('linktacticpermission');
             var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+            DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
         });
 
@@ -5721,7 +5738,7 @@
             var linetype = $(this).attr('lineitemtype');
             var LinkTacticPermission = $(this).attr('linktacticpermission');
             var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+            DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
         });
 
@@ -6050,7 +6067,7 @@
             var linetype = $(this).attr('lineitemtype');
             var LinkTacticPermission = $(this).attr('linktacticpermission');
             var LinkedTacticId = $(this).attr('linkedtacticid');
-            DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+            DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
         });
     });
@@ -6298,8 +6315,8 @@
 
 
 
-    function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission, linetype, LinkTacticPermission,LinkedTacticId, e) {
-     
+    function DisplayPopUpMenu(typeVal, nameVal, titleVal, permission, linetype, LinkTacticPermission, LinkedTacticId, e) {
+
         var type = typeVal;
         var name = nameVal;
         // var chk_permission = titleVal.split("/");
@@ -6380,6 +6397,7 @@
         }
 
         var ul;
+        
         if (type == "Plan") {
             if (permission == "true") {
                 ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewPlan'>New Plan </li> <li class='new-prog' id='ClonePlan1'>Copy Plan</li>  <li class='new-prog' id='ChildCampaign'>Child Campaign</li> </ul>";
@@ -6391,7 +6409,7 @@
 
         else if (type == "Program") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram1'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>Child Tactic</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + ProgramId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewProgram'>New Program </li> <li class='new-prog' id='CloneProgram1'>Copy Program </li>  <li class='new-prog' id='ChildTactic'>Child Tactic</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + ProgramId + "' id='lblCopyTo' popupType='Copying'  onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -6399,17 +6417,17 @@
         }
 
         else if (type == "Tactic") {
-         
+
             if (permission == "true") {
-              
+
                 if (LinkTacticPermission.toLowerCase() == "true" && LinkedTacticId == "null" )
                 {
                     ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li> <li class='link-icon' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblLinkTo' onclick='OpentCopyPopup(this)'popupType='Linking'><i class='fa fa-link'></i>Link To</li></ul>";
                 }
                 else
                 {
-
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
+                   
+                    ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewTactic1'>New Tactic </li> <li class='new-prog' id='CloneTactic1'>Copy Tactic </li>  <li class='new-prog' id='ChildLineItem'>Child Line Item </li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + TacticId + "' id='lblCopyTo' popupType='Copying' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
 
                 }
             }
@@ -6420,7 +6438,7 @@
 
         else if (type == "Campaign") {
             if (permission == "true") {
-                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign1'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>Child Program</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + CampaignId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)'>Copy To</li></ul>";
+                ul = "<ul style='margin: 0;'>  <li class='new-prog' id='NewCampaign'>New Campaign</li> <li class='new-prog' id='CloneCampaign1'>Copy Campaign</li>  <li class='new-prog' id='ChildProgram'>Child Program</li> <li class='new-prog CopyEntity' sectionType='" + type + "' entityId='" + PlanId + "_" + CampaignId + "' id='lblCopyTo' onclick='OpentCopyPopup(this)' popupType='Copying'>Copy To</li></ul>";
             }
             else {
                 $('#popupType').css('display', 'none');
@@ -6929,7 +6947,7 @@ function () {
         var linetype = $(this).attr('lineitemtype');
         var LinkTacticPermission = $(this).attr('linktacticpermission');
         var LinkedTacticId = $(this).attr('linkedtacticid');
-        DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission,LinkedTacticId,e);
+        DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
     });
 
@@ -6995,7 +7013,7 @@ function () {
         var linetype = $(this).attr('lineitemtype');
         var LinkTacticPermission = $(this).attr('linktacticpermission');
         var LinkedTacticId = $(this).attr('linkedtacticid');
-        DisplayPopUpMenu(type, name, title, permission, linetype,LinkTacticPermission,LinkedTacticId, e);
+        DisplayPopUpMenu(type, name, title, permission, linetype, LinkTacticPermission, LinkedTacticId, e);
 
     });
 
@@ -7048,7 +7066,7 @@ function () {
         var url = '@Url.Content("~/Plan/LoadCopyEntityPopup")';
         //$("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType); // section parameter added to open share tactic popup
         $("#dvCopyEntity").load(url + "?entityId=" + entityId + "&section=" + sectionType + "&PopupType=" + popuptype); // section parameter added to open share tactic popup
-    } 
+    }
     function SaveAsPreset() {
 
         var IsAnyPlanSelected = $('#ulSelectedPlans').find("li").hasClass("close-list");
@@ -7057,7 +7075,7 @@ function () {
         var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
         var IsAnyOwnerSelected = $('#ulSelectedOwner').find("li").hasClass("close-list");
         if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected && !IsAnyOwnerSelected) {
-            alert('Please select atleast one filter');
+            alert('Please select at least one filter');
             return false;
         }
         else {
@@ -7081,7 +7099,7 @@ function () {
 
     }
 
- function LoadPreset() {
+    function LoadPreset() {
         var isLoadPreset = true;
         $.ajax({
             type: 'POST',
@@ -7111,25 +7129,25 @@ function () {
         $("#Filtersidebar").css("display", "none");
         //  $("#displaydata").css("display", "none");
 
-    }  
+    }
 
     function SavePreset() {
-      
         var ViewName = $("#txtPresetName").val();
-        if (ViewName == null || ViewName == "" ) {
+        if (ViewName.trim() == null || ViewName.trim() == "") {
             $("#successMessageSidebar").css("display", "none");
             $('div[id=errorMessageMainSidebar]').each(function () {
-                  if ($(this).parent().is(':visible')) {
-                $(this).show();
-                $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
-               // $(this).slideDown(600);
-                 $(this).slideDown(600).delay(3000).slideUp(600);
-                 }
+                if ($(this).parent().is(':visible')) {
+                    $(this).show();
+                    $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
+                    // $(this).slideDown(600);
+                    //$(this).slideDown(600).delay(3000).slideUp(600);
+                }
             });
+            $("#txtPresetName").val("");
         }
         else {
             SavePresetValue = true;
-            SaveLastSetofViews(ViewName);
+            SaveLastSetofViews(ViewName.trim());
             UpdateResult();
         }
 
@@ -7137,6 +7155,7 @@ function () {
     }
 
     function CancelSavePreset() {
+        $("#txtPresetName").val("");
         $("#errorMessageMainSidebar").css("display", "none");
         $("#successMessageSidebar").css("display", "none");
         $("#successMessageLoadPreset").css("display", "none");

@@ -16,15 +16,15 @@
 
                 @*// <input id="chkdefaultpreset_@filter.Name" type="checkbox" style="float:left; margin-right:5px" />*@
                 @if (filter.IsDefaultPreset == true)
-                    {
+                {
                     <input id="chkdefaultpreset_@filter.Name" type="checkbox" checked="checked"  />
-                    }
-                     else
+                }
+                else
                 {
                     <input id="chkdefaultpreset_@filter.Name" type="checkbox" />
                 }
                 <span title='@filter.Name'>@filter.Name</span>
-                <a onclick="DeletePreset('@filter.Name',this)"><i class="fa fa-close"></i></a>
+                <a onclick="DeletePreset('@filter.Name.Replace("'", "&#39;")',this)"><i class="fa fa-close"></i></a>
             </li>
         }
     </ul>
@@ -37,9 +37,10 @@
 
 </div>
 <script>
+    var boolsearch = false;
     $(document).ready(function () {
 
-  
+
         if ('@Model.Count' > 0) {
             $('div[id=NoPreset]').each(function () {
                 if ($(this).is(':visible'))
@@ -122,7 +123,7 @@
         }
         $("input[id^='chkdefaultpreset']").each(function () {
             $(this).prop("checked", false);
-          //  $(this).removeClass('active')
+            //  $(this).removeClass('active')
         });
         var presetName = '';
         if (checked) {
@@ -155,7 +156,7 @@
             }
         });
         if (filtername == '') {
-            alert('Please select atleast one preset.');
+            alert('Please select at least one preset.'); //modified by Rahul for PL #1836 observation-8
             return false;
         }
         else {
@@ -181,24 +182,24 @@
                     }
                     else
                     {
-                    if ($('#ActiveMenu').val().toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
-                        url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Home' + '&currentPlanId=' + PlanId;
-                    }
-                       
-                    else {
-                        if ($('#IsGridView').val() == "True") {
-
-                            var pid = $("#CurrentPlanId").val();
-
-                            url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
-
+                        if ($('#ActiveMenu').val().toLowerCase() == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
+                            url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Home' + '&currentPlanId=' + PlanId;
                         }
+
                         else {
+                            if ($('#IsGridView').val() == "True") {
 
-                            url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+                                var pid = $("#CurrentPlanId").val();
 
+                                url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + pid + '&isGridView=' + "True";
+
+                            }
+                            else {
+
+                                url = '@Url.Content("~/Home/Index?ActiveMenu=")' + '@Enums.ActiveMenu.Plan' + '&currentPlanId=' + CurrentPlanId;
+
+                            }
                         }
-                    }
                     }
                     window.location.href = url;
 
@@ -217,8 +218,9 @@
 
     //End
     function DeletePreset(presetName, sender) {
-     
-        if (confirm('Are you sure you want to delete preset ' + presetName)) {
+
+        presetName = presetName.replace("&#39;", "'");
+        if (confirm('Are you sure you want to delete preset ' + presetName + '?')) {
             var params = {};
             params.PresetName = presetName;
             $.ajax({
@@ -227,14 +229,14 @@
                 dataType: 'json',
                 data: $.param(params, true),
                 success: function (data) {
-                   
+
                     if (data.isSuccess != 'undefined' && data.isSuccess != null && data.isSuccess != 'false') {
                         var liCount = $(sender).parents('ul').find('li').length
                         $(sender).parents().closest('li').remove();
 
                         if (liCount == 1)
                         {
-                           $ ('ul[id=ulFilterPreset]').each(function () {
+                            $ ('ul[id=ulFilterPreset]').each(function () {
                                 if ($(this).is(':visible'))
                                     $(this).hide();
                             });
@@ -246,22 +248,28 @@
                                 if ($(this).is(':visible'))
                                     $(this).hide();
                             });
-                            $('div[id=NoPreset]').each(function () {
-                                if ($(this).parent().is(':visible'))
-                                    $(this).show();
-                            });
-                            $('input[id=btnBack]').each(function () {
-                                if ($(this).parent().is(':visible'))
-                                    $(this).show();
-                            });
+                            if (!boolsearch) {
+                                $('div[id=NoPreset]').each(function () {
+                                    if ($(this).parent().is(':visible'))
+                                        $(this).show();
+                                });
+                                $('input[id=btnBack]').each(function () {
+                                    if ($(this).parent().is(':visible'))
+                                        $(this).show();
+                                });
+                            }
+                            else {
+                                LoadPreset();
+                            }
+
                         }
 
                         $('div[id=successMessageLoadPreset]').each(function () {
                             if ($(this).parent().is(':visible')) {
                                 $(this).show();
                                 $(this).find("span[id=spanSuccessMessageRole]").text(data.msg);
-                              //  $(this).slideDown(600);
-                                $(this).slideDown(600).delay(3000).slideUp(600);
+                                //  $(this).slideDown(600);
+                                //$(this).slideDown(600).delay(3000).slideUp(600);
                             }
                         });
                     }
@@ -296,7 +304,7 @@
             }
 
         });
-
+        boolsearch = true;
         $("#DefaultFilters").css("display", "block");
         $("#PlanModulesSection").css("display", "none");
         $("#Filtersidebar").css("display", "none");

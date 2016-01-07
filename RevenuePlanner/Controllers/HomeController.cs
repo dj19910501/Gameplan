@@ -455,7 +455,7 @@ namespace RevenuePlanner.Controllers
             string planYear = string.Empty;
             int year;
             bool isNumeric = int.TryParse(timeFrame, out year);
-
+            string[] listYear = timeFrame.Split('-');
             if (isNumeric)
             {
                 planYear = Convert.ToString(year);
@@ -469,7 +469,11 @@ namespace RevenuePlanner.Controllers
             // DESC:: For get default filter view after user log out #1750
 
             var Label = Enums.FilterLabel.Plan.ToString();
-            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View.FilterValues).ToList();
+            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != Label && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            // Add By Nishant Sheth
+            // Desc :: To resolve the select and deselct all owner issues
+            string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+            // End By Nishant Sheth
             if (SetOfPlanSelected.Count > 0)
             {
                 isupdate = true;
@@ -506,6 +510,14 @@ namespace RevenuePlanner.Controllers
 
             //// Owner filter criteria.
             List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? new List<Guid>() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            // Add By Nishant Sheth
+            // Desc :: To resolve the select and deselct all owner issues
+            if (planselectedowner == null)
+            {
+                filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            }
+            // End By Nishant Sheth
+            //List<Guid> filterOwner = string.IsNullOrWhiteSpace(ownerIds) ? Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList() : ownerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
 
             //Modified by komal rawal for #1283
             //TacticType filter criteria
@@ -522,8 +534,7 @@ namespace RevenuePlanner.Controllers
                                                                        lstProgramId.Contains(tactic.PlanProgramId) &&
                                                                        (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy)) &&
                                                                         (filterTacticType.Count.Equals(0) || filterTacticType.Contains(tactic.TacticType.TacticTypeId)) &&
-                                                                        (filterStatus.Count.Equals(0) || filterStatus.Contains(tactic.Status))
-                                                                        && (!((tactic.EndDate < CalendarStartDate) || (tactic.StartDate > CalendarEndDate))))
+                                                                        (filterStatus.Count.Equals(0) || filterStatus.Contains(tactic.Status)))
                                                                        .ToList().Select(tactic => new Plan_Tactic
                                                                        {
                                                                            objPlanTactic = tactic,
@@ -533,9 +544,19 @@ namespace RevenuePlanner.Controllers
                                                                            objPlanTacticCampaign = tactic.Plan_Campaign_Program.Plan_Campaign,
                                                                            objPlanTacticCampaignPlan = tactic.Plan_Campaign_Program.Plan_Campaign.Plan,
                                                                            TacticType = tactic.TacticType,
-                                                                           CreatedBy = tactic.CreatedBy
+                                                                           CreatedBy = tactic.CreatedBy,
+                                                                           StartDate = tactic.StartDate,
+                                                                           EndDate = tactic.EndDate
                                                                        }).ToList();
-
+            // Add By Nishant Sheth
+            // Desc :: To resolved the this month and this quarter issue
+            int checklistyear = 0;
+            if (int.TryParse(listYear[0], out checklistyear))
+            {
+                lstTactic = lstTactic.Where(tactic => listYear.Contains(tactic.StartDate.Year.ToString())
+                    || listYear.Contains(tactic.EndDate.Year.ToString())).ToList();
+            }
+            // End By Nishant Sheth
 
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
             List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();
@@ -563,7 +584,7 @@ namespace RevenuePlanner.Controllers
                 }
                 //// End - Added by Sohel Pathan on 16/01/2015 for PL ticket #1134
                 //    //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
-                if (IsFiltered == false && customFieldIds == "" && ownerIds == "" && TacticTypeid == "" && StatusIds == "")
+                //if (IsFiltered == false && customFieldIds == "" && ownerIds == "" && TacticTypeid == "" && StatusIds == "")
                 {
                     //Modified by Komal Rawal for #1750 - For viewing onlly those tactic where user is owner, collaborator or have edit permission.
                     //List<string> collaboratorIds = Common.GetAllCollaborators(lstTacticIds).Distinct().ToList();
@@ -578,13 +599,15 @@ namespace RevenuePlanner.Controllers
                     //Modified By Komal Rawal for #1505
                     // Modified By Nishant Sheth 
                     // Desc:: To resolve the #1790 observation
-                    lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                    //lstTactic = lstTactic.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
                 }
-                else
+                //else
                 {
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
                     //Modified By Komal Rawal for #1505
-                    lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) || tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                    // Modified By Nishant Sheth
+                    // Desc :: To resolve the select and deselct all Tactic type issues
+                    lstTactic = lstTactic.Where(tactic => lstAllowedEntityIds.Contains(tactic.objPlanTactic.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
                 }
             }
 
@@ -1103,7 +1126,7 @@ namespace RevenuePlanner.Controllers
                     masterCustomFieldId = customFieldTactic.masterCustomFieldId,
                     customFieldId = customFieldTactic.customFieldId,
                     customFieldTitle = customFieldTactic.customFieldTitle
-                    
+
                 }).ToList();
 
                 TacticStageMapping objStageTac;
@@ -1118,7 +1141,7 @@ namespace RevenuePlanner.Controllers
                     objStageTac.TacticList = lstPlanTactic;
                     lstTacticStageMap.Add(objStageTac);
                 });
-             
+
                 DateTime MaxEndDateForCustomField;
                 int _PlanTacticId = 0, _PlanProgramId = 0, _TypeId = 0;
                 List<Plan_Tactic> fltrTactic, fltrplantacic;
@@ -1126,13 +1149,13 @@ namespace RevenuePlanner.Controllers
                 List<int> PlanIds = lstProcessedCustomFieldTactics.Select(_tac => _tac.tactic.PlanId).ToList();
                 List<ProgressModel> EffectiveDateListByPlanIds = lstImprovementTactic.Where(imprvmnt => PlanIds.Contains(imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId)).Select(imprvmnt => new ProgressModel { PlanId = imprvmnt.Plan_Improvement_Campaign_Program.Plan_Improvement_Campaign.ImprovePlanId, EffectiveDate = imprvmnt.EffectiveDate }).ToList();
                 DateTime maxDateCampaign, maxDateProgram, maxDateTactic, minDateCampaign, minDateProgram, minDateTactic;
-             
+
                 List<PlanMinMaxDate> planminmaxdatelist = new List<PlanMinMaxDate>();
                 PlanMinMaxDate planminmaxdateobj = new PlanMinMaxDate();
                 foreach (var lts in lstTacticStageMap)
                 {
                     var tacticplanids = lts.TacticList.Select(t => t.PlanId).Distinct().ToList();
-                    foreach(var tpl in tacticplanids)
+                    foreach (var tpl in tacticplanids)
                     {
                         planminmaxdateobj = new PlanMinMaxDate();
                         minEffectiveDate = new DateTime();
@@ -1168,7 +1191,7 @@ namespace RevenuePlanner.Controllers
                         planminmaxdatelist.Add(planminmaxdateobj);
                     }
                 }
-                
+
                 foreach (var tacticItem in lstProcessedCustomFieldTactics)
                 {
                     tacticPlanId = tacticItem.tactic.PlanId;
@@ -1199,7 +1222,7 @@ namespace RevenuePlanner.Controllers
                     MinStartDateForCustomField = new[] { minDateTactic, minDateProgram, minDateCampaign }.Min();
                     #endregion
 
-                
+
                     lstTacticTaskList.Add(new TacticTaskList()
                     {
                         Tactic = tacticItem.tactic.objPlanTactic,
@@ -3652,46 +3675,46 @@ namespace RevenuePlanner.Controllers
                     else if (strparam.Equals(Enums.UpcomingActivities.thismonth.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
                         //if (startDate.Year == System.DateTime.Now.Year)
-                       // {
-                            //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+                        // {
+                        //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
 
-                            //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
-                            differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM-yyyy"));
+                        //differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM"));
+                        differenceItems = Enumerable.Range(0, Int32.MaxValue).Select(element => startDate.AddMonths(element)).TakeWhile(element => element <= endDate).Select(element => element.ToString("MM-yyyy"));
 
-                            List<string> thismonthdifferenceItem = new List<string>();
-                            if (differenceItems.Count() > 12)
+                        List<string> thismonthdifferenceItem = new List<string>();
+                        if (differenceItems.Count() > 12)
+                        {
+                            thismonthdifferenceItem = differenceItems.ToList();
+                            thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count - 12);
+                        }
+                        else
+                        {
+                            thismonthdifferenceItem = differenceItems.ToList();
+                        }
+
+
+
+
+                        foreach (string objDifference in thismonthdifferenceItem)
+                        {
+                            string[] diffrenceitem = objDifference.Split('-');
+                            monthNo = Convert.ToInt32(diffrenceitem[0].TrimStart('0'));
+                            if (monthNo == DateTime.Now.Month)
                             {
-                                thismonthdifferenceItem = differenceItems.ToList();
-                                thismonthdifferenceItem.RemoveRange(12, thismonthdifferenceItem.Count - 12);
-                            }
-                            else
-                            {
-                                thismonthdifferenceItem = differenceItems.ToList();
-                            }
-
-
-
-
-                            foreach (string objDifference in thismonthdifferenceItem)
-                            {
-                                string[] diffrenceitem = objDifference.Split('-');
-                                monthNo = Convert.ToInt32(diffrenceitem[0].TrimStart('0'));
-                                if (monthNo == DateTime.Now.Month)
+                                if (diffrenceitem[1] == System.DateTime.Now.Year.ToString())
                                 {
-                                    if (diffrenceitem[1] == System.DateTime.Now.Year.ToString())
+                                    if (monthNo == 1)
                                     {
-                                        if (monthNo == 1)
-                                        {
-                                            monthArray[0] = monthArray[0] + 1;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                        monthArray[0] = monthArray[0] + 1;
                                     }
                                 }
+                                else
+                                {
+                                    monthArray[monthNo - 1] = monthArray[monthNo - 1] + 1;
+                                }
                             }
-                       // }
+                        }
+                        // }
                     }
                     else if (strparam.Equals(Enums.UpcomingActivities.thisquarter.ToString(), StringComparison.OrdinalIgnoreCase))
                     {
@@ -5173,7 +5196,7 @@ namespace RevenuePlanner.Controllers
                                     quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString(), monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
 
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
-            if (activePlan != null && activePlan.Any() && activePlan.Where(plan => plan.Year == currentYear).Any())
+            if (activePlan != null && activePlan.Any())
             {
                 //// Add current year into the list
 
@@ -5185,7 +5208,7 @@ namespace RevenuePlanner.Controllers
                     int campEdYear = camp.EndDate.Year;
                     int campYearDiffer = campEdYear - campStYear;
                     string EndYear = camp.EndDate.Year.ToString();
-                    if (currentYear != EndYear)
+                    if (campStYear != campEdYear)
                     {
                         var checkYear = UpcomingActivityList.Where(a => a.Text == EndYear).Select(a => a.Text).FirstOrDefault();
                         var checkFromTo = UpcomingActivityList.Where(a => a.Text == currentYear + "-" + EndYear).Select(a => a.Text).FirstOrDefault();
@@ -5199,7 +5222,7 @@ namespace RevenuePlanner.Controllers
                         }
                         if (campYearDiffer > 0)
                         {
-                            UpcomingActivityList.Add(new SelectListItem { Text = currentYear + "-" + EndYear, Value = currentYear + "-" + EndYear, Selected = false });
+                            UpcomingActivityList.Add(new SelectListItem { Text = campStYear + "-" + campEdYear, Value = campStYear + "-" + campEdYear, Selected = false });
                         }
                     }
                 }
@@ -5808,7 +5831,7 @@ namespace RevenuePlanner.Controllers
                 objDbMrpEntities.Entry(objFilterValues).State = EntityState.Added;
 
             }
-            if (ownerIds != null && ownerIds != "")
+            //if (ownerIds != null && ownerIds != "") // Commented By Nishant Sheth Desc:: To resolve owner filter issue
             {
                 Plan_UserSavedViews objFilterValues = new Plan_UserSavedViews();
                 objFilterValues.ViewName = null;

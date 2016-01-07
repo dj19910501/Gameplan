@@ -95,13 +95,13 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" role="menu">
                         <li onclick="SaveAsPreset()" role="presentation">
-                            <a id="saveaslink" tabindex="-1" role="menuitem">Save current filters</a>
+                            <a id="saveaslink" tabindex="-1" role="menuitem">Save Current Filters</a>
                         </li>
                         <li onclick="LoadPreset()" role="presentation">
-                            <a tabindex="-1" role="menuitem">Load saved filters</a>
+                            <a tabindex="-1" role="menuitem">Load Saved Filters</a>
                         </li>
                         <li onclick="ClearAllPreset()" role="presentation">
-                            <a tabindex="-1" role="menuitem">Clear all</a>
+                            <a tabindex="-1" role="menuitem">Clear All</a>
                         </li>
                     </ul>
                 </div>
@@ -668,7 +668,7 @@
                                 $(this).show();
                                 $(this).find("span[id=spanSuccessMessageRole]").text('@Common.objCached.SavePresetSuccess');
                                // $(this).slideDown(600);
-                               $(this).slideDown(600).delay(3000).slideUp(600);
+                               //$(this).slideDown(600).delay(3000).slideUp(600);
                             }
                         });
 
@@ -682,7 +682,7 @@
                             $(this).show();
                             $(this).find("span[id=spanErrorMessageRole]").text(data.msg);
                            // $(this).slideDown(600);
-                            $(this).slideDown(600).delay(3000).slideUp(600);
+                            //$(this).slideDown(600).delay(3000).slideUp(600);
                         }
                     });
 
@@ -1737,14 +1737,14 @@
     }
 
     function SaveAsPreset() {
-
+       
         var IsAnyPlanSelected = $('#ulSelectedPlans').find("li").hasClass("close-list");
         var IsAnyCustomFieldSelected = $('#divCustomFieldsFilter').find("li").hasClass("close-list");
         var IsAnyTTSelected = $('#ulTacticType').find("li").hasClass("close-list");
         var IsAnyStatusSelected = $('#ulStatus').find("li").hasClass("close-list");
         var IsAnyOwnerSelected = $('#ulSelectedOwner').find("li").hasClass("close-list");
         if (!IsAnyCustomFieldSelected && !IsAnyPlanSelected && !IsAnyTTSelected && !IsAnyStatusSelected && !IsAnyOwnerSelected) {
-            alert('Please select atleast one filter');
+            alert('Please select at least one filter');
             return false;
         }
         else {
@@ -1806,20 +1806,21 @@
     function SavePreset() {
 
         var ViewName = $("#txtPresetName").val();
-        if (ViewName == null || ViewName == "") {
+        if (ViewName.trim() == null || ViewName.trim() == "") {
             $("#successMessageSidebar").css("display", "none");
             $('div[id=errorMessageMainSidebar]').each(function () {
                 if ($(this).parent().is(':visible')) {
                     $(this).show();
                     $(this).find("span[id=spanErrorMessageRole]").text('@Common.objCached.ProvidePresetName');
                    // $(this).slideDown(600);
-                    $(this).slideDown(600).delay(3000).slideUp(600);
+                    //$(this).slideDown(600).delay(3000).slideUp(600);
                 }
             });
+            $("#txtPresetName").val("");
         }
         else {
             SavePresetValue = true;
-            SaveLastSetofViews(ViewName);
+            SaveLastSetofViews(ViewName.trim());
             UpdateResult()
         }
 
@@ -1827,6 +1828,7 @@
     }
 
     function CancelSavePreset() {
+        $("#txtPresetName").val("");  
         $("#errorMessageMainSidebar").css("display", "none");
         $("#successMessageSidebar").css("display", "none");
         $("#successMessageLoadPreset").css("display", "none");
