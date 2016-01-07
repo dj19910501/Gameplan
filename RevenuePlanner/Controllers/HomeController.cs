@@ -548,9 +548,15 @@ namespace RevenuePlanner.Controllers
                                                                            StartDate = tactic.StartDate,
                                                                            EndDate = tactic.EndDate
                                                                        }).ToList();
-
-            lstTactic = lstTactic.Where(tactic => listYear.Contains(tactic.StartDate.Year.ToString())
-                || listYear.Contains(tactic.EndDate.Year.ToString())).ToList();
+            // Add By Nishant Sheth
+            // Desc :: To resolved the this month and this quarter issue
+            int checklistyear = 0;
+            if (int.TryParse(listYear[0], out checklistyear))
+            {
+                lstTactic = lstTactic.Where(tactic => listYear.Contains(tactic.StartDate.Year.ToString())
+                    || listYear.Contains(tactic.EndDate.Year.ToString())).ToList();
+            }
+            // End By Nishant Sheth
 
             List<string> lstFilteredCustomFieldOptionIds = new List<string>();
             List<CustomFieldFilter> lstCustomFieldFilter = new List<CustomFieldFilter>();

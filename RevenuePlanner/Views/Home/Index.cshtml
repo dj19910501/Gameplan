@@ -1619,6 +1619,14 @@
 
         filters.TacticTypeids = [];
         filters.StatusIds = [];
+        // Add By Dashrath Prajapati
+        // Desc :: to owner resolve filter issue after login
+        filters.OwnerIds = [];
+
+        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+            filters.OwnerIds.push($(this).attr("id"));
+        });
+        // End by Dashrath Prajapati
         $("#ulTacticType li input[type=checkbox]").each(function () {
 
             var chkid = $(this).attr("id");
@@ -4004,6 +4012,7 @@
     //// Function to make ajax request.
     function AjaxRequest() {
         //// Start - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
+        if (IsUpdate) {
         filters.customFieldIds = [];
 
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
@@ -4028,6 +4037,14 @@
             $("#CurrentPlanId").val(filters.SelectedPlans[0].toString());
 
         }
+
+            // Add by dasharth parjapti
+            // Desc ::  to resolve the owner filter issue
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+            filters.OwnerIds.push($(this).attr("id"));
+        });
+    }
         //// End - Added by Sohel Pathan on 19/01/2015 for PL ticket #1134
 
         var Planid = filters.SelectedPlans;
