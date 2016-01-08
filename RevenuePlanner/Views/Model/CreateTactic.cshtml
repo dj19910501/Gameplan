@@ -13,7 +13,6 @@
     //End Manoj Limbachiya PL # 486
     // Start - Added By Sohel Pathan on 16/06/2014 for PL ticket #528
     string ModelStatus = Convert.ToString(ViewBag.ModelStatus);
-    //string templateName = ViewBag.templateName;
     int? stageid = Model.StageId;
         @Html.Hidden("hdnModelStatus", ModelStatus);
                                                string TacticTypeStageId = Convert.ToString(ViewBag.TacticTypeStageId);
@@ -100,7 +99,7 @@
         {
             <label>WorkFront Template</label>
             <span class="simpleSelectBox">
-            @Html.DropDownListFor(m => m.WorkFront_Template, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "TemplateId", "Template_Name"), "Please Select", new { @class = "ddlStyle hide", require = "true" })
+            @Html.DropDownListFor(m => m.WorkFrontTemplateId, new SelectList((System.Collections.IEnumerable)ViewBag.WorkFrontTemplates, "ID", "Template_Name"), "Please Select", new { @class = "ddlStyle hide", @id = "WorkFrontTemplateId", require = "true" })
             </span>
           }
         //End Brad Gray PL # 1374
@@ -388,8 +387,8 @@
                 StageId = 'null';
             }
             //Begin added Brad Gray 07/24/2015 PL # 1374
-            var TemplateId = $("#WorkFront_Template").val(); 
-            if (TemplateId == '' || TemplateId == 'Undefined') {
+            var TemplateId = $("#WorkFrontTemplateId").val();
+            if (TemplateId == '' || TemplateId == 'undefined') {
                 TemplateId = 'null';
             }
             //End added Brad Gray 07/24/2015 PL # 1374

@@ -3978,7 +3978,6 @@
           <NavigationProperty Name="Model" Relationship="MRPModel.fk_TacticType_Model" FromRole="TacticType" ToRole="Model" />
           <NavigationProperty Name="Plan_Campaign_Program_Tactic" Relationship="MRPModel.FK_Plan_Campaign_Program_Tactic_TacticType" FromRole="TacticType" ToRole="Plan_Campaign_Program_Tactic" />
           <NavigationProperty Name="Stage" Relationship="MRPModel.fk_TacticType_Stage" FromRole="TacticType" ToRole="Stage" />
-          <Property Name="WorkFront_Template" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="WorkFrontTemplateId" Type="Int32" />
           <NavigationProperty Name="IntegrationWorkFrontTemplate" Relationship="MRPModel.FK_TacticType_TacticType_WorkFrontTemplateId" FromRole="TacticType" ToRole="IntegrationWorkFrontTemplate" />
         </EntityType>
@@ -6229,7 +6228,6 @@
             <EntityTypeMapping TypeName="MRPModel.TacticType">
               <MappingFragment StoreEntitySet="TacticType">
                 <ScalarProperty Name="WorkFrontTemplateId" ColumnName="WorkFrontTemplateId" />
-                <ScalarProperty Name="WorkFront_Template" ColumnName="WorkFront Template" />
                 <ScalarProperty Name="Abbreviation" ColumnName="Abbreviation" />
                 <ScalarProperty Name="IsDeployedToModel" ColumnName="IsDeployedToModel" />
                 <ScalarProperty Name="ProjectedStageValue" ColumnName="ProjectedStageValue" />

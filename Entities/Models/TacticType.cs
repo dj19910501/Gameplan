@@ -36,7 +36,6 @@ namespace RevenuePlanner.Models
         public Nullable<double> ProjectedStageValue { get; set; }
         public bool IsDeployedToModel { get; set; }
         public string Abbreviation { get; set; }
-        public string WorkFront_Template { get; set; }
         public Nullable<int> WorkFrontTemplateId { get; set; }
     
         public virtual Model Model { get; set; }

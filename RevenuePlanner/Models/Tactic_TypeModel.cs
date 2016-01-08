@@ -25,6 +25,6 @@ namespace RevenuePlanner.Models
         public string Status { get; set; }
         public List<ModelVersion> Versions { get; set; }
         public bool IsDeployedToIntegration { get; set; }
-        public string WorkFront_Template{get;set;}
+        public int? WorkFrontTemplateId { get; set; } //updated 1/7/2016 by Brad Gray PL#1856
     }
 }

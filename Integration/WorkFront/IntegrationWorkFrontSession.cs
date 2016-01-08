@@ -756,7 +756,7 @@ namespace Integration.WorkFront
                 if (currentMode.Equals(Enums.Mode.Create))
                 {
                     instanceLogTactic.Operation = Operation.Create.ToString();
-                    string templateToUse = tacticType.WorkFront_Template;
+                    string templateToUse = tacticType.IntegrationWorkFrontTemplate.TemplateId;
                     if (templateToUse == null)
                     {
                         throw new ClientException("Tactic Type to Template Mapping Not Found for tactic " + tactic.Title + ".");
