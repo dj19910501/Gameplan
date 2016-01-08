@@ -2035,6 +2035,8 @@
                     }
                     else {
                         // Set collaborator details
+    //Added by kausha somaiya for ticket no #1869
+                        if ($('#gantt_here').html().length > 0)
                         $("#divCollaborator").css("display", "block");
                         $('#divCollaborator').empty(); // Clear collaborators div content
                         ////  set collaborator's image
