@@ -12122,7 +12122,7 @@ namespace RevenuePlanner.Controllers
                 {
                     if (!string.IsNullOrEmpty(year)) {
                         var lstPlanAll = Common.GetPlan();
-                        lstPlanAll = lstPlanAll.Where(a => Convert.ToInt32(a.Year) >= Convert.ToInt32(year)).ToList();
+                        lstPlanAll = lstPlanAll.Where(a => Convert.ToInt32(a.Year) == Convert.ToInt32(year) + 1).ToList();  
                         lstPlans = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
                     }
                     
@@ -12692,11 +12692,13 @@ namespace RevenuePlanner.Controllers
                 Plan destPlan = tblPlan.Where(plan => plan.PlanId == destPlanId).FirstOrDefault();
                 destModelId = destPlan.ModelId;
                 destPlanTitle = destPlan.Title;
-                Model sourceModel = new Model();
-                Model destModel = new Model();
+                //Model sourceModel = new Model();
+                //Model destModel = new Model();
 
-                sourceModel = db.Models.Where(mod => mod.ModelId == sourceModelId).FirstOrDefault();
-
+                //sourceModel = db.Models.Where(mod => mod.ModelId == sourceModelId).FirstOrDefault();
+                var getModelData = db.Models.Where(mod => mod.ModelId == sourceModelId || mod.ModelId == destModelId).ToList();
+                var sourceModel = getModelData.Where(mod => mod.ModelId == sourceModelId).FirstOrDefault();
+                var destModel = getModelData.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
                 List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping = new List<PlanTactic_TacticTypeMapping>();
                 // verify that source & destination model are same or not.
                 if (sourceModelId > 0 && !sourceModelId.Equals(destModelId))
@@ -12704,11 +12706,15 @@ namespace RevenuePlanner.Controllers
 
                     if (sourceModel.IntegrationInstanceId != null || sourceModel.IntegrationInstanceEloquaId != null)
                     {
-                        destModel = db.Models.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
+                        //destModel = db.Models.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
                         if (sourceModel.IntegrationInstanceId != destModel.IntegrationInstanceId || sourceModel.IntegrationInstanceEloquaId != destModel.IntegrationInstanceEloquaId)
                         {
                             return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
                         }
+                    }
+                    if (sourceModel.IntegrationInstanceIdINQ != destModel.IntegrationInstanceIdINQ || sourceModel.IntegrationInstanceIdCW != destModel.IntegrationInstanceIdCW || sourceModel.IntegrationInstanceIdMQL != destModel.IntegrationInstanceIdMQL)
+                    {
+                        return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
                     }
                     isdifferModel = true;
                     lstTacticTypeMapping = CheckDetailSourceandDestinationModel(CloneType, sourceEntityId, sourceModelId, destModelId, ref invalidTacticIds);

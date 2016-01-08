@@ -963,7 +963,7 @@
   <!--start Added by Rahul Shah for PL ticket #1846-->
   <Field>
     <Name>TacticTypeConflictMessageforLinking</Name>
-    <value>Linking process cannot proceed due to source and destination plan uses different Tactic Type. Please check Tactic Type under Model.</value>
+    <value>Linking process cannot proceed due to source and destination plan uses different Tactic Type or Target Stage. Please check Tactic Type and Target Stage under Model.</value>
   </Field>
   <!--end Added by Rahul Shah for PL ticket #1846-->
   <!--start Added by Rahul Shah for PL ticket #1846-->
