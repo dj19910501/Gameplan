@@ -1620,7 +1620,7 @@ namespace RevenuePlanner.Helpers
                         }
                         // End By Nishant Sheth
                     }
-                    if (planTacticIds.Count > 0 && int.TryParse(ListYear[0],out Year))
+                    if (planTacticIds.Count > 0)
                     {
                         int StartYear = planTacticIds.Select(tac => tac.StartDate.Year).Min();
                         int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();

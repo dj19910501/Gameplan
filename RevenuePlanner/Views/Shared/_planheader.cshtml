@@ -143,8 +143,16 @@
                 if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Home.ToString().ToLower()") {
                 newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
             }
-            else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
-                newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+                else if ($('#ActiveMenu').val().toLowerCase() == "@Enums.ActiveMenu.Plan.ToString().ToLower()") {
+                    var ligridclass=$("#liGrid").attr("class");
+                    if(ligridclass=="active pull-left")
+                    {
+                        newUrl = '@Url.Action("GetPlanByPlanID", "Plan")';
+                    }
+                    else
+                    {
+                        newUrl = '@Url.Action("GetPlanByMultiplePlanIDs", "Plan")';
+                    }
             selectedPlanIds = parseInt(CurrentPlanId);
         }
     $.ajax(
