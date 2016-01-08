@@ -1626,11 +1626,11 @@ namespace RevenuePlanner.Helpers
                         int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();
                         if (EndYear != StartYear)
                         {
-                            planYear = StartYear + "-" + EndYear;
+                            year = StartYear + "-" + EndYear;
                         }
                         else
                         {
-                            planYear = Convert.ToString(StartYear);
+                            year = Convert.ToString(StartYear);
                         }
                     }
                     DateTime StartDate;
