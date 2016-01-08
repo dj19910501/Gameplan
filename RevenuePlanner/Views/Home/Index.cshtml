@@ -1956,7 +1956,7 @@
 
                 $("div[id^='LinkIcon']").each(function () {
 
-                    bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
+                    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                 });
 
                 LoadImprovementGrid(CurrentPlanId)
@@ -4213,7 +4213,7 @@
 
                             $("div[id^='LinkIcon']").each(function () {
 
-                                bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
+                                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') +"</U>"), "tipsy-innerWhite");
                             });
                             $(".gantt_container .gantt_tree_content").each(function (index, element) {
 

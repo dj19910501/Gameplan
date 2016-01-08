@@ -260,8 +260,8 @@
             // Add By Nishant Sheth To resolve the issue for IE : #1782
             var dt = '@DateTime.Now.ToString("MM_dd_yyyy_hh_mm_ss")';
             var Filename = HomeGrid.cellByIndex(0, 1).getValue().toString().substring(0, 20) + dt + '_GridData.csv';
-         
-            if (navigator.userAgent.search("Trident") >= 0) { 
+
+            if (navigator.userAgent.search("Trident") >= 0) {
                 if (!window.Blob) {
                     // if IE 9 then becuase ie 9 and lower version not support blob
                     //http://code.ciphertrick.com/2014/12/07/download-json-data-in-csv-format-cross-browser-support/
@@ -355,11 +355,11 @@
         var count = HomeGrid.getRowsNum();
         var parentid = 0;
         var parentname = "";
-        
+
         if (count > 0) {
 
             for (var i = 2 ; i <= 13 ; i++) {
-               
+
                 HomeGrid.insertColumn(i);
                 HomeGrid.setColumnHidden(i, true);
             }
@@ -490,17 +490,17 @@
                 $("#ExportCSVHoneyComb").attr('download', Filename)
                 $("#ExportCSVHoneyComb").attr("href", 'data:Application/octet-stream,' + (escape(Entity.join(","))));
             }
-            
+
             for (var i = 2 ; i <= 13 ; i++) {
                 HomeGrid.deleteColumn(2);
             }
-             UpdateHomeGridData();
+            UpdateHomeGridData();
             countid = 0;
             HomeGrid.parse(GridDataHomeGrid, "json");
-          
+
             LoadAfterParsing();
             //BindHomeGrid();
-          
+
         }
     }
 
@@ -516,7 +516,7 @@
         }
         var datahome=JSON.parse(GridDataHomeGrid);
         $.each(datahome.rows, function () {
-          
+
             // Update data for planrecords
             var planid = this.id;
             var plandata = this;
@@ -528,12 +528,12 @@
                 countid++;
                 return UpdateHomeGridData(countid);
             } else {
-              
+
                 // Update data for campaign records
                 if(plandata.rows != null && plandata.rows != "")
                 {
                     $.each(plandata.rows, function () {
-                      
+
                         var campid = this.id;
                         var campdata = this;
                         if (campid == dataid) {
@@ -548,7 +548,7 @@
                             {
                                 // Update data for program records
                                 $.each(campdata.rows, function () {
-                                  
+
                                     var progid = this.id;
                                     var progdata = this;
                                     if (progid == dataid) {
@@ -583,7 +583,7 @@
                 }
             }
         })
-      
+
         GridDataHomeGrid =JSON.stringify(datahome);
     }
 
@@ -650,7 +650,7 @@
         $('#errorMessageInspectPopup').css("display", "none");
     });
     //var GridDataCsv;
-    var GridDataHomeGrid; 
+    var GridDataHomeGrid;
     function BindHomeGrid() {
         @*var JsonModel = '@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid))';*@
         var JsonModel = '@Newtonsoft.Json.JsonConvert.SerializeObject(Model.PlanDHTMLXGrid)';
@@ -688,13 +688,13 @@
 
         var mainGridData = JsonModel;
         mainGridData = $('<div/>').html(mainGridData.toString().replace(/[\\]/g, "\\\\")).text(); // Decode Html content.
-         GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
+        GridDataHomeGrid = (mainGridData.toString().replace(/&amp;/g, '&'));
 
         //Added by Ashish mistry on 11/12/2015 for PL #1782 :- export to csv from honeycomb
         //GridDataCsv={rows:[],head:[]};
         //GridDataCsv.head=JSON.parse(GridData).head;
         //GridDataCsv.rows=JSON.parse(GridData).rows;
-         HomeGrid.parse(GridDataHomeGrid, "json");
+        HomeGrid.parse(GridDataHomeGrid, "json");
 
         // HomeGrid.sortRows(1, 'str', 'asc');
         LoadAfterParsing();
@@ -720,8 +720,8 @@
         //});
 
         // Add By Nishant Sheth
-        // #1818 :: To display message 
-        
+        // #1818 :: To display message
+
         if(parseInt('@countrows')>0)
         {
             $('#lblMarkringActivitiestitle').hide();
@@ -730,7 +730,7 @@
             $(".pull-right.toggle-status.source-sans-proregular").show();
             $("#improvements").show();
             $("#NodatawithfilterGrid").hide();
-       
+
         }else{
             $('#lblMarkringActivitiestitle').hide();
             $("#gridbox").hide();
@@ -744,14 +744,14 @@
 
     // 1780
 
-  
+
 
 
 
     //Added by Rahul shah for Honeycomb selection in grid
     function AddRemoveEntity(item) {
         //Changes  to improve performance issue
-      
+
         if ($(item).attr('id') == 'PlanAdd') {
             //var planid = $(item).attr('altId').split('_')[0];
             //if (planid != undefined) {
@@ -1237,9 +1237,10 @@
     var newCampVal = 0;
     var newPlanVal = 0;
     var newTactVal = 0;
+    var value;
 
+    var TacticName;
     function doOnEditCell(stage, rowId, cellInd, nValue, oValue) {
-       
         var updatetype = rowId.split(".")[0];
         var Id;
         var UpdateColumn;
@@ -1249,8 +1250,36 @@
         //Added by Rahul Shah on 30/11/2015 for PL #1764.
         var hdnYear;
         hdnYear= @ViewBag.Year;
+       
+        if(stage == 0  )
+        {
+            var  newvalue = HomeGrid.cells(rowId, cellInd).getValue();
+            if(newvalue.indexOf("</div>") > -1)
+            {
+               
+                value = newvalue.split("</div>")[0];
+            }
+            TacticName = newvalue.split("</div>")[1];
+        }
+        else
+        {
+            if(nValue != undefined)
+            {
+                TacticName = nValue;
+            }
+        }
+
         UpdateColumn = HomeGrid.getColLabel(Colind, 0);
         if (stage == 0) {
+            //   value = HomeGrid.cells(rowId, cellInd).getValue();
+            //  value =   divvalue.split("</div>")[0];
+
+            // TacticName = divvalue.split("</div>")[1];
+            //if(value != undefined && value != null)
+            //{
+            //    value = $(value)[0]
+
+            //}
             // Only check for type column
             if (Colind == 7) {
                 if (updatetype == "line") {
@@ -1324,7 +1353,7 @@
         if (stage == 2) // start edit Shipping column
         {
             if (nValue != null && nValue != "") {
-              
+
                 //Added By Komal Rawal to Change the value in array if grid updated
                 var NewValue = htmlDecode(nValue);
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
@@ -1339,7 +1368,7 @@
                         ExportSelectedIds.Title[TasknameIndex] = NewValue;
 
                     }
-                    
+
                 }
                 //End
                 var sdateindex = HomeGrid.getColIndexById('startdate');
@@ -1421,7 +1450,7 @@
                             url: '@Url.Content("~/Plan/LoadTacticTypeValue")',
                             data: { tacticTypeId: tacticTypeId },
                             success: function (data) {
-                               
+
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                                 var TaskID = HomeGrid.cells(rowId,3).getValue();
                                 if(ExportSelectedIds.TaskID.length > 0)
@@ -1536,7 +1565,7 @@
                             data: { UpdateType: GetItemType(updatetype), UpdateColumn: UpdateColumn.trim(), UpdateVal: UpdateVal, Id: parseInt(Id) },
                             dataType: 'json',
                             success: function (states) {
-                              
+
                                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                                 var TaskID = HomeGrid.cells(rowId,3).getValue();
                                 if(ExportSelectedIds.TaskID.length > 0)
@@ -1561,11 +1590,64 @@
                                     return false;
                                 }
                                 if (UpdateColumn == "Start Date") {
+                                    //Modified By Komal Rawal for #1848 Link To tactic feature
+                                    var EndDate = HomeGrid.cells(rowId,5).getValue();
+                                    var EndYear = EndDate.split('/')[2];
+                                    var StartYear = nValue.split('/')[2];
+                                    var YearDiff = EndYear - StartYear;
 
+                                    if(YearDiff > 0)
+                                    {
+
+                                        var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                        var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
+                                        HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
+
+                                        $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                     
+                                    }
+                                    else
+                                    {
+                                        var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                        var Index = getvalue.indexOf("</div>");
+                                        if(Index > -1)
+                                        {
+                                            HomeGrid.cells(rowId, 1).setValue(getvalue.split("</div>")[1]);
+                                            $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
+                                        }
+                                    }
+                               //End
                                     ComapreDate(updatetype, rowId, sdateindex, nValue, UpdateColumn);
                                 }
 
                                 if (UpdateColumn == "End Date") {
+                                   
+                                    //Modified By Komal Rawal for #1848 Link To tactic feature
+                                    var StartDate = HomeGrid.cells(rowId,4).getValue();
+                                    var StartYear = StartDate.split('/')[2];
+                                    var EndYear = nValue.split('/')[2];
+                                    var YearDiff = EndYear - StartYear;
+
+                                    if(YearDiff > 0)
+                                    {
+                                        var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                        var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
+                                        HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
+
+                                        $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                    }
+                                    else
+                                    {
+                                        var getvalue = HomeGrid.cells(rowId, 1).getValue();
+                                        var Index = getvalue.indexOf("</div>");
+                                        if(Index > -1)
+                                        {
+                                            HomeGrid.cells(rowId, 1).setValue(getvalue.split("</div>")[1]);
+                                            $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
+                                        }
+                                    }
+                                    //End
+                               
 
                                     ComapreDate(updatetype, rowId, edateindex, nValue, UpdateColumn);
                                 }
@@ -1606,13 +1688,60 @@
                                     CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
 
                                 }
+                             
                             }
                         });
                     }
+                    //Modified By Komal Rawal for #1848 Link To tactic feature
+                    if(cellInd == 1)
+                    {
+                        if(value != undefined && value != "undefined" && value != null)
+                        {
+                            HomeGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
+                        }
+                        else
+                        {
+                            HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+                        }
+                    }
+                    value = "";
+
+                    
+                    $("div[id^='LinkIcon']").each(function () {
+
+                        bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+                    });
+                    //End
                     return true;
                 }
+               
+                //Modified By Komal Rawal for #1848 Link To tactic feature
+                if(cellInd == 1)
+                {
+                    if(value != undefined && value != "undefined" && value != null)
+                    {
+                        HomeGrid.cells(rowId, cellInd).setValue(value+"</div>" + TacticName);
+                    }
+                    else
+                    {
+                        HomeGrid.cells(rowId, cellInd).setValue(TacticName);
+                    }
+                }
+                value = "";
+
+                
+                $("div[id^='LinkIcon']").each(function () {
+
+                    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
+                });
+                //End
+                return true;
             }
+
+         
         }
+      
+     
     }
 
 
@@ -1621,11 +1750,11 @@
             var planid = $(this).val().toString();
             if (planid == _planid) {
                 var updatedPlantext = newpplanname;
-              $(this).attr('originalvalue', updatedPlantext);
-              $(this).text('');
-              $(this).text(updatedPlantext);
-              $(this).parent().parent().find('a').text(updatedPlantext)
-          }
+                $(this).attr('originalvalue', updatedPlantext);
+                $(this).text('');
+                $(this).text(updatedPlantext);
+                $(this).parent().parent().find('a').text(updatedPlantext)
+            }
         });
     }
 
@@ -1660,6 +1789,7 @@
         });
     }
     function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
+      
         var newDate = new Date(formatDate(nValue)); //Modified by Rahul Shah on 30/11/2015 for PL #1764.
         if (updatetype == "tact") {
 
@@ -1703,6 +1833,7 @@
 
             }
             else if (Updatecolumn == "End Date") {
+
                 //Modified by Rahul Shah on 30/11/2015 for PL #1764.
                 if (ProgstartDate < newDate)
                     HomeGrid.cells(progid, dateindex).setValue(formatDate(nValue));
@@ -1906,7 +2037,7 @@
         }
     }
     $(document).ready(function () {
-       
+
         $('#cancel-button_Movetactic').on("click", function () {
             $('#divMovetacticPopup').modal("hide");
 

@@ -10063,6 +10063,8 @@ li.close-list {
         color: #000;
         font-size: 14px;
         cursor: pointer;
+        font-family: source_sans_prolight;
+        font-weight: 600;
     }
 
         .btn-dropdwn ul li:hover {
