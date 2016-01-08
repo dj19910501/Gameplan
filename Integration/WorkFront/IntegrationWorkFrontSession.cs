@@ -784,33 +784,35 @@ namespace Integration.WorkFront
 
                     tactic.IntegrationWorkFrontProjectID = (string)project["data"]["ID"];
                     tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors);
+
+                   //moved comment section to only leave a comment on successful project creation, PL#1871 : Brad Gray 01/07/2016
+                    if (!tacticError) //don't leave a sync comment if it didn't sync
+                    {
+                        //Add tactic review comment when sync tactic
+                        Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
+                        objTacticComment.PlanTacticId = tactic.PlanTacticId;
+                        objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.WorkFront.ToString();
+                        objTacticComment.CreatedDate = DateTime.Now;
+                        if (Common.IsAutoSync)
+                        {
+                            objTacticComment.CreatedBy = new Guid();
+                        }
+                        else
+                        {
+                            objTacticComment.CreatedBy = this._userId;
+                        }
+                        db.Entry(objTacticComment).State = EntityState.Added;
+                        db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
+                    }
                 }
                 else if (currentMode.Equals(Enums.Mode.Update))
                 {
                     instanceLogTactic.Operation = Operation.Update.ToString();
-                    
                     tacticError = UpdateTacticInfo(tactic, portfolioInfo, ref SyncErrors);
-
-                    
                 }
 
-                if (!tacticError) //don't leave a sync comment if it didn't sync
+                if (!tacticError) 
                 {
-                    //Add tactic review comment when sync tactic
-                    Plan_Campaign_Program_Tactic_Comment objTacticComment = new Plan_Campaign_Program_Tactic_Comment();
-                    objTacticComment.PlanTacticId = tactic.PlanTacticId;
-                    objTacticComment.Comment = Common.TacticSyncedComment + Integration.Helper.Enums.IntegrationType.WorkFront.ToString();
-                    objTacticComment.CreatedDate = DateTime.Now;
-                    if (Common.IsAutoSync)
-                    {
-                        objTacticComment.CreatedBy = new Guid();
-                    }
-                    else
-                    {
-                        objTacticComment.CreatedBy = this._userId;
-                    }
-                    db.Entry(objTacticComment).State = EntityState.Added;
-                    db.Plan_Campaign_Program_Tactic_Comment.Add(objTacticComment);
                     //add success message to IntegrationInstanceLogDetails
                     Common.SaveIntegrationInstanceLogDetails(_integrationInstanceId, null, Enums.MessageOperation.Start, "Sync Tactic", Enums.MessageLabel.Success, "Sync success on Tactic " + tactic.Title);
                 }
