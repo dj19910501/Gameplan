@@ -1600,10 +1600,14 @@
                                     {
 
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
-                                        var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
-                                        HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
+                                        var Index = getvalue.indexOf("</div>");
+                                        if(Index <= -1)
+                                        {
+                                            var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
+                                            HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
 
-                                        $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                            $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                        }
                                      
                                     }
                                     else
@@ -1631,10 +1635,16 @@
                                     if(YearDiff > 0)
                                     {
                                         var getvalue = HomeGrid.cells(rowId, 1).getValue();
-                                        var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
-                                        HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
+                                        var Index = getvalue.indexOf("</div>");
+                                        if(Index <= -1)
+                                        {
+                                            var UnLinkIconDiv ="<div class='unlink-icon unlink-icon-grid'><i class='fa fa-chain-broken'></i></div>";
+                                            HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
+                                            $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                        }
+                                      
 
-                                        $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
+                                       
                                     }
                                     else
                                     {
