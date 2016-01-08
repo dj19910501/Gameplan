@@ -1359,7 +1359,10 @@
                 //Modified by Rahul Shah on 18/12/2015 fot PL #1813.
                 var TaskID = HomeGrid.cells(rowId,3).getValue();
                 updatePlanNameDrp(TaskID,NewValue);
-                $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
+                if(cellInd == 1)
+                {
+                    $("div[taskId='" + TaskID + "']").attr('taskname',NewValue);
+                }
                 if(ExportSelectedIds.TaskID.length > 0)
                 {
                     var TasknameIndex = ExportSelectedIds.Title.indexOf(oValue);
