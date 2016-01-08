@@ -151,7 +151,7 @@ body {
         cursor: pointer;
         padding-left: 20px;
         color: #fff;
-        float: left;
+        float: none;
         width: auto;
         margin-right: 15px;
         line-height: 35px;
@@ -10715,6 +10715,9 @@ font-size: 20px;
     overflow-y:hidden;
 }
 /*By Bheru mehta 04-01-2016 for #1850 end*/
+.username{
+    text-align:left;
+}
 @media screen and (-webkit-min-device-pixel-ratio: 0), (-ms-high-contrast: active), (-ms-high-contrast: none) {
     .chrome-ie-height-720px {
         min-height: 720px !important;
@@ -13777,10 +13780,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 }
 
 .user_title {
-    max-width: 65%;
+    /*max-width: 65%;*/
     padding-top: 14px;
     /*min-width: 200px*/ /* 27-10-2015 for ticket 1713 by bheru */
-    width: auto; /* 27-10-2015 for ticket 1713 by bheru */
+    /*width: auto;*/ /* 27-10-2015 for ticket 1713 by bheru */
 }
 
 .user_title,
@@ -13813,7 +13816,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#2c78ae', end
 }
 
 .user_title p:last-child {
-    background: url(../images/arrow-down-head.png) no-repeat;
+    background: url(../images/arrow-down-head.png) no-repeat left center;
     clear: left;
     margin-top: 10px;
     font-size: 14px;
