@@ -299,7 +299,7 @@
             var windowHeight = $('.pop-body-wraper').height();
             // if the relative offset is greater than half the window height,
             // reverse the dropdown.
-            if (relativeOffset > windowHeight / 2) {
+            if (relativeOffset > windowHeight / 2 || (relativeOffset + 100) > windowHeight  / 2) {
                 //alert('5');
                 dropdown_div.addClass("dropup");
             }
