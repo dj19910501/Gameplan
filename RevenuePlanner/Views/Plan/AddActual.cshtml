@@ -1758,9 +1758,13 @@
     }
 
     function ClearAllPreset() {
-        BulkPlanOperation(false);
+
         BulkTTOperation(false);
-        BulkStatusOperation(false);
+        //Added by kausha for ticket no #1836
+        BulkOwnerOperation(false);
+        //Commented by kausha for ticket no #1836
+        // BulkPlanOperation(false);
+        //BulkStatusOperation(false);
         $('#divCustomFieldsFilter').find("li").each(function (i) {
             $(this).removeClass("close-list");
             var chkid = $(this).find("input[type=checkbox]").attr("id");
