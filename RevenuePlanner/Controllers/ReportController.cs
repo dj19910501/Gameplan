@@ -138,10 +138,11 @@ namespace RevenuePlanner.Controllers
 
             var DataPlanList = tblPlan.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
                 && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
+            var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
             // Modified By Nishant Sheth 
             // Desc #1842 :: as per code review changes
             // Client Id condition added by Bhavesh Date: 07-jan-2016, Ticket #1805,#1842
-            var CampPlans = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && camp.Plan.Model.ClientId == Sessions.User.ClientId)
+            var CampPlans = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId))
                 .Select(camp => new
                 {
                     PlanId = camp.PlanId,
@@ -151,7 +152,7 @@ namespace RevenuePlanner.Controllers
                     EndDate = camp.EndDate
                 })
                 .ToList();
-            var ProgramPlans = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false && prog.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId)
+            var ProgramPlans = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false && uniqueplanids.Contains(prog.Plan_Campaign.PlanId))
                 .Select(prog => new
                 {
                     PlanId = prog.Plan_Campaign.PlanId,
@@ -160,7 +161,7 @@ namespace RevenuePlanner.Controllers
                     StartDate = prog.StartDate,
                     EndDate = prog.EndDate
                 }).ToList();
-            var TacticPlans = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false && tac.Plan_Campaign_Program.Plan_Campaign.Plan.Model.ClientId == Sessions.User.ClientId)
+            var TacticPlans = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false && uniqueplanids.Contains(tac.Plan_Campaign_Program.Plan_Campaign.PlanId))
                 .Select(tac => new
                 {
                     PlanId = tac.Plan_Campaign_Program.Plan_Campaign.PlanId,
@@ -2115,14 +2116,14 @@ namespace RevenuePlanner.Controllers
                 listDateTime.Add(new DateTime(2015, 1, 1));
                 var DataPlanList = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan
                     && plan.Model.IsDeleted == false && plan.Model.ClientId == Sessions.User.ClientId && plan.IsActive == true).ToList();
-
-                var CampPlanIds = db.Plan_Campaign.Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
+                var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
+                var CampPlanIds = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
                     .Where(camp => ListYears.Contains(camp.StartDate.Year.ToString()) || ListYears.Contains(camp.EndDate.Year.ToString()))
                     .Select(camp => camp.PlanId).ToList();
-                var ProgramPlanIds = db.Plan_Campaign_Program.Select(prog => new { PlanId = prog.Plan_Campaign.PlanId, StartDate = prog.StartDate, EndDate = prog.EndDate }).ToList()
+                var ProgramPlanIds = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false && uniqueplanids.Contains(prog.Plan_Campaign.PlanId)).Select(prog => new { PlanId = prog.Plan_Campaign.PlanId, StartDate = prog.StartDate, EndDate = prog.EndDate }).ToList()
                     .Where(prog => ListYears.Contains(prog.StartDate.Year.ToString()) || ListYears.Contains(prog.EndDate.Year.ToString()))
                     .Select(prog => prog.PlanId).ToList();
-                var TacticPlanIds = db.Plan_Campaign_Program_Tactic.Select(tac => new { PlanId = tac.Plan_Campaign_Program.Plan_Campaign.PlanId, StartDate = tac.StartDate, EndDate = tac.EndDate }).ToList()
+                var TacticPlanIds = db.Plan_Campaign_Program_Tactic.Where(tact => tact.IsDeleted == false && uniqueplanids.Contains(tact.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tac => new { PlanId = tac.Plan_Campaign_Program.Plan_Campaign.PlanId, StartDate = tac.StartDate, EndDate = tac.EndDate }).ToList()
                     .Where(tac => ListYears.Contains(tac.StartDate.ToString()) || ListYears.Contains(tac.EndDate.ToString()))
                     .Select(tac => tac.PlanId).ToList();
                 var PlanIds = DataPlanList.Where(plan => ListYears.Contains(plan.Year))
