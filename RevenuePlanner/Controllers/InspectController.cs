@@ -2440,14 +2440,7 @@ namespace RevenuePlanner.Controllers
         {
             InspectModel _inspetmodel;
             //// Load InspectModel data.
-            if (TempData["TacticModel"] != null)
-            {
-                _inspetmodel = (InspectModel)TempData["TacticModel"];
-            }
-            else
-            {
-                _inspetmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
-            }
+            _inspetmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
 
             try
             {
@@ -2503,14 +2496,7 @@ namespace RevenuePlanner.Controllers
         {
             InspectModel _inspectmodel;
             //// Load InspectModel data.
-            if (TempData["TacticModel"] != null)
-            {
-                _inspectmodel = (InspectModel)TempData["TacticModel"];
-            }
-            else
-            {
-                _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
-            }
+            _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
 
             //// Get Tactic comment by PlanCampaignId from Plan_Campaign_Program_Tactic_Comment table.
             var tacticComment = (from tc in db.Plan_Campaign_Program_Tactic_Comment
@@ -2825,14 +2811,7 @@ namespace RevenuePlanner.Controllers
         {
             InspectModel _inspectmodel;
             //// Load InspectModel Data.
-            if (TempData["TacticModel"] != null)
-            {
-                _inspectmodel = (InspectModel)TempData["TacticModel"];
-            }
-            else
-            {
-                _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
-            }
+            _inspectmodel = GetInspectModel(id, Convert.ToString(Enums.Section.Tactic).ToLower(), false);
 
             ViewBag.TacticStageId = _inspectmodel.StageId;
             ViewBag.TacticStageTitle = _inspectmodel.StageTitle;
@@ -5604,15 +5583,8 @@ namespace RevenuePlanner.Controllers
                                 if (result >= 1)
                                 {
                                     scope.Complete();
-                                    if (RedirectType)
-                                    {
-                                        return Json(new { redirect = Url.Action("ApplyToCalendar") });
-                                    }
-                                    else
-                                    {
-                                        string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
-                                        return Json(new { isSaved = true, redirect = Url.Action("Assortment"), msg = strMessage });
-                                    }
+                                    string strMessage = Common.objCached.PlanEntityUpdated.Replace("{0}", Enums.PlanEntityValues[Enums.PlanEntity.ImprovementTactic.ToString()]);    // Added by Viral Kadiya on 17/11/2014 to resolve isssue for PL ticket #947.
+                                    return Json(new { isSaved = true, msg = strMessage, tacticStatus = pcpobj.Status });
                                 }
                             }
                         }

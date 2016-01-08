@@ -22,10 +22,6 @@
         var PlanProgramId = tacticMaster.PlanProgramId;
         var colorCode = "";
         string RequestedModule = RedirectType;
-        if (tacticMaster != null)
-        {
-            TempData["TacticModel"] = tacticMaster;
-        }
 
         bool IsPlanCreateAll = false;
         var popupvalue = "";
@@ -218,7 +214,7 @@
     </div>
 </div>
 <script type="text/javascript">
-
+    var isclickfrompopup = false;
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
     var TabReview = "Review";
@@ -260,7 +256,7 @@
           $("#liSetup,#liReview,#liActuals,#liBudget").on("click", function () {
               var activeTab = $("#InspectTab li.active a").text();
               tabtext = ($(this).children('a').text());
-
+              isclickfrompopup = true;
               //if (activeTab == 'Actuals') {
               //    displayConfirm('topTabsClick("' + tabtext + '","' + activeTab + '");');
               //}
@@ -392,7 +388,7 @@
               }
               else {
 
-
+                  isclickfrompopup = false;
                   //To save the Active Tab on Save Button
                   if (activeTab == TabSetup) {
                       var ReturnParameter = SetupSavetactic();
