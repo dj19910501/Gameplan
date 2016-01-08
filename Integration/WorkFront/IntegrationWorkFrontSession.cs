@@ -545,7 +545,7 @@ namespace Integration.WorkFront
             //update WorkFront request queues for the instance
             try
             {
-                JToken qFromWorkFront = client.Search(ObjCode.QUEUE, new { fields = "ID" }); 
+                JToken qFromWorkFront = client.Search(ObjCode.QUEUE, new { fields = "ID,allowedOpTaskTypes,projectID" }); 
                 //Get the list of request queus in the database
                 List<IntegrationWorkFrontRequestQueue> queuesFromDB = db.IntegrationWorkFrontRequestQueues.Where(q => q.IntegrationInstanceId  == _integrationInstanceId && q.IsDeleted==false).ToList();
                 List<string> qIdsFromDB = queuesFromDB.Select(q => q.RequestQueueId).ToList();
