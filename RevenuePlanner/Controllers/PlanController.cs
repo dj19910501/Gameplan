@@ -11715,27 +11715,41 @@ namespace RevenuePlanner.Controllers
         public string GetOwnerName(string UserGuid)
         {
             var OwnerName = "";
-            if (UserGuid != "")
-            {
-                if (lstUserDetails == null || lstUserDetails.Count == 0)
+            try {
+                if (UserGuid != "")
                 {
-                    lstUserDetails = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                    if (lstUserDetails == null || lstUserDetails.Count == 0)
+                    {
+                        lstUserDetails = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                    }
+
+                    var userName = lstUserDetails.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
+                    {
+                        FirstName = user.FirstName,
+                        Lastname = user.LastName
+                    }).FirstOrDefault();
+
+
+                    if (userName != null)
+                    {
+                        OwnerName = userName.FirstName + " " + userName.Lastname;
+                    }
                 }
 
-                var userName = lstUserDetails.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
-                {
-                    FirstName = user.FirstName,
-                    Lastname = user.LastName
-                }).FirstOrDefault();
-
-
-                if (userName != null)
-                {
-                    OwnerName = userName.FirstName + " " + userName.Lastname;
-                }
+                return OwnerName.ToString();
             }
+            catch (Exception e)
+            {
 
+                if (e is System.Data.EntityException || e is System.Data.SqlClient.SqlException)
+                {
+
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                }
+
+            }
             return OwnerName.ToString();
+           
         }
 
         #endregion
@@ -11796,10 +11810,12 @@ namespace RevenuePlanner.Controllers
                 // var PlanId = Sessions.PlanId;
                 if (PopupType.ToString() == Enums.ModelTypeText.Linking.ToString())
                 {
-                    var lstPlanAll = Common.GetPlan();
-                    lstPlanAll = lstPlanAll.Where(a => Convert.ToInt32(a.Year) >= Convert.ToInt32(year)).ToList();
-                    lstPlans = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-
+                    if (!string.IsNullOrEmpty(year)) {
+                        var lstPlanAll = Common.GetPlan();
+                        lstPlanAll = lstPlanAll.Where(a => Convert.ToInt32(a.Year) >= Convert.ToInt32(year)).ToList();
+                        lstPlans = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+                    }
+                    
                 }
                 else
                 {
@@ -12128,6 +12144,8 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
+
+                ErrorSignal.FromCurrentContext().Raise(ex);
                 return Json(new { msg = Common.objCached.ExceptionErrorMessage, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 // throw ex;
             }
@@ -12137,6 +12155,7 @@ namespace RevenuePlanner.Controllers
         public List<PlanTactic_TacticTypeMapping> CheckTacticTypeIdToDestinationModel(string CloneType, int sourceEntityId, int destModelId, ref string invalidTacticIds)
         {
             //string invalidTacticIds = string.Empty;
+            StringBuilder invalidtact = new StringBuilder();
             List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping = new List<PlanTactic_TacticTypeMapping>();
             try
             {
@@ -12185,7 +12204,9 @@ namespace RevenuePlanner.Controllers
                         {
                             if (!lstTacticType.Any(tacType => tacType.Title == childTactic.TacticTypeTitle))
                             {
-                                invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
+                                invalidtact.Append(childTactic.PlanTacticId.ToString() + ",");
+                               
+                                //invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
                             }
                             else
                             {
@@ -12200,15 +12221,18 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                         }
+                       
                     }
                     else
                     {
                         // Add all Ids as Invalid TacticId.
                         foreach (var childTactic in childTactiList)
                         {
-                            invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
+                            invalidtact.Append(childTactic.PlanTacticId.ToString() + ",");
+                            //invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
                         }
                     }
+                    invalidTacticIds = invalidtact.ToString();
                 }
 
             }
@@ -12433,6 +12457,8 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
+
+                ErrorSignal.FromCurrentContext().Raise(ex);
                 return Json(new { msg = Common.objCached.ExceptionErrorMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 // throw ex;
             }
@@ -12519,22 +12545,27 @@ namespace RevenuePlanner.Controllers
                 {
                     Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                     objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId && tac.IsDeleted == false).FirstOrDefault();
-
+                    
                     //// Check whether source Entity TacticType in list of TacticType of destination Model exist or not.
-                    var lstTacticType = from _tacType in db.TacticTypes
-                                        where _tacType.ModelId == destModelId && _tacType.IsDeleted == false && _tacType.IsDeployedToModel == true && _tacType.Title == objTactic.TacticType.Title && _tacType.StageId == objTactic.StageId
-                                        select _tacType;
-                    if (lstTacticType == null || lstTacticType.Count() == 0)
-                        invalidTacticIds = sourceEntityId.ToString();
-                    else
-                    {
+                    if (objTactic != null) {
+                        var lstTacticType = from _tacType in db.TacticTypes
+                                            where _tacType.ModelId == destModelId && _tacType.IsDeleted == false && _tacType.IsDeployedToModel == true && _tacType.Title == objTactic.TacticType.Title && _tacType.StageId == objTactic.StageId
+                                            select _tacType;
+                        if (lstTacticType == null || lstTacticType.Count() == 0)
+                            invalidTacticIds = sourceEntityId.ToString();
+                        else
+                        {
 
-                        PlanTactic_TacticTypeMapping objTacticMapping = new PlanTactic_TacticTypeMapping();
-                        objTacticMapping.PlanTacticId = sourceEntityId; //Source PlanTacticId
-                        objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId; // Destination Model TacticTypeId.
-                        objTacticMapping.TargetStageId = lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
-                        lstTacticTypeMapping.Add(objTacticMapping);
+                            PlanTactic_TacticTypeMapping objTacticMapping = new PlanTactic_TacticTypeMapping();
+                            objTacticMapping.PlanTacticId = sourceEntityId; //Source PlanTacticId
+                            objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId; // Destination Model TacticTypeId.
+                            objTacticMapping.TargetStageId = lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
+                            lstTacticTypeMapping.Add(objTacticMapping);
+                        }
                     }
+
+                    
+                    
                 }
             }
             catch (Exception ex)
