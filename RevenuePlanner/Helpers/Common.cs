@@ -1591,16 +1591,7 @@ namespace RevenuePlanner.Helpers
                 //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
                 // Add By Nishant Sheth for Plan Year
-                int StartYear = planTacticIds.Select(tac => tac.StartDate.Year).Min();
-                int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();
-                if (EndYear != StartYear)
-                {
-                    year = StartYear + "-" + EndYear;
-                }
-                else
-                {
-                    year = Convert.ToString(StartYear);
-                }
+
                 // End By Nishant Sheth
                 if (year != "" && year != null)
                 {
@@ -1625,11 +1616,23 @@ namespace RevenuePlanner.Helpers
                         }
                         else
                         {
-                        planYear = DateTime.Now.Year.ToString();
+                            planYear = DateTime.Now.Year.ToString();
                         }
                         // End By Nishant Sheth
                     }
-
+                    if (planTacticIds.Count > 0 && int.TryParse(ListYear[0],out Year))
+                    {
+                        int StartYear = planTacticIds.Select(tac => tac.StartDate.Year).Min();
+                        int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();
+                        if (EndYear != StartYear)
+                        {
+                            planYear = StartYear + "-" + EndYear;
+                        }
+                        else
+                        {
+                            planYear = Convert.ToString(StartYear);
+                        }
+                    }
                     DateTime StartDate;
                     DateTime EndDate;
                     StartDate = EndDate = DateTime.Now;
@@ -1849,7 +1852,7 @@ namespace RevenuePlanner.Helpers
                 }
                 else
                 {
-                planYear = DateTime.Now.Year.ToString();
+                    planYear = DateTime.Now.Year.ToString();
                 }
                 // End By Nishant Sheth
             }
