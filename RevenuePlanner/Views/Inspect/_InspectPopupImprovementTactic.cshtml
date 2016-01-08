@@ -133,7 +133,7 @@
 </div>
 
 <script type="text/javascript">
-
+    var isclickfrompopup = false;
     var divPartial = "#divPartial";
     var TabSetup = "Setup";
     var TabReview = "Review";
@@ -178,6 +178,8 @@
         $("#liSetup,#liReview,#liImpact").on("click", function () {
             var activeTab = $("#InspectTab li.active a").text();
             tabtext = ($(this).children('a').text());
+
+            isclickfrompopup = true;
             var returnpara = SaveAllData(activeTab);   //Added By Komal Rawal for #1324
 
             if (returnpara) {
@@ -395,7 +397,7 @@
         }
         else {
 
-
+            isclickfrompopup = false;
             //To save the Active Tab on Save Button
             if (activeTab == TabSetup) {
                 var ReturnParameter = ValidateSaveImpTactic();

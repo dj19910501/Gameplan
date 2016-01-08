@@ -13,14 +13,19 @@
     @if (Sessions.User != null)
     {
         <div class="info-user cf user_title">
-            <p class="source-sans-prolight user-drop-down">@Sessions.User.FirstName @Sessions.User.LastName@*<span class="divider"> | </span>*@
-            </p>
-            <img class="avatar-user" src="@Url.Action("UserPhoto", "Home")" alt="User avatar" />
-            <p class="user-drop-down" title="@Sessions.User.JobTitle">@Sessions.User.JobTitle</p>
-            @*<img class="avatar-user" src="@Url.Content("~/Content/images/photo-user.jpg")" alt="User avatar" />*@
-           
+            <div class="pull-left username">
+                <p class="source-sans-prolight user-drop-down">
+                    @Sessions.User.FirstName @Sessions.User.LastName@*<span class="divider"> | </span>*@
+                </p>
+                <p class="user-drop-down" title="@Sessions.User.JobTitle">@Sessions.User.JobTitle</p>
+            </div>
+            <div class="pull-right">
+                <img class="avatar-user" src="@Url.Action("UserPhoto", "Home")" alt="User avatar" />
+             </div>  
+                @*<img class="avatar-user" src="@Url.Content("~/Content/images/photo-user.jpg")" alt="User avatar" />*@
 
-        </div>
+
+            </div>
         <div class="dropdown-info-user" style="display: none;">
             <ul class="drop-down-menu">
                 <li><a href="@Url.Action("Edit", "User")">Preferences</a></li>  @* Modified by Viral Kadiya on 11/04/2014 for PL Ticket #917*@

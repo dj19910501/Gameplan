@@ -194,6 +194,9 @@
                         $("#spanMsgSuccess").text(result.msg);
                         $("#errorMessage1").css("display", "none");
                         $("#successMessage1").css("display", "none");
+                        isDataModified = true;
+                        $('.close-x-big-icon').trigger('click');
+
                     }
                     else {
                         ShowError(issuccess, result.msg);

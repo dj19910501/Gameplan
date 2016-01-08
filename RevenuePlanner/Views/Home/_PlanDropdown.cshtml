@@ -122,6 +122,7 @@
         RefreshCurrentTab();
     });
     $('.new-btn-plan').click(function () {
+        isRequest = false;
         $("#ddlTabViewBy").find("option[value= @PlanGanttTypes.Tactic.ToString()]").prop("selected", "selected");
         $("#ddlTabViewBy").multiselect('refresh');
         $("#ddlTabViewBy").trigger('change');

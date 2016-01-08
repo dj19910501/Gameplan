@@ -79,7 +79,9 @@
                     return false;
                 }
                 else {
-                    $('.close-x-big-icon').trigger('click');
+                    if (!isclickfrompopup) {
+                        $('.close-x-big-icon').trigger('click');
+                    }
                 }
             }
             else {
@@ -89,25 +91,31 @@
                     return false;
                 }
                 else {
-                    $('.close-x-big-icon').trigger('click');
+                    if (!isclickfrompopup) {
+                        $('.close-x-big-icon').trigger('click');
+                    }
                 }
             }
-            // Comment By Bhavesh Date: 6-jan-2015, Ticket #1793
-@*            if (tabtext == "Setup") {
-                InspectMode = "@RevenuePlanner.Helpers.Enums.InspectPopupMode.Edit.ToString()";
+
+            // UnComment By Bhavesh Date: 8-jan-2015, Ticket #1793
+            if (isclickfrompopup) {
+                if (tabtext == "Setup") {
+                    InspectMode = "@RevenuePlanner.Helpers.Enums.InspectPopupMode.Edit.ToString()";
+                }
+                setTacticStatus($('#hdnTacticStatus').val());
+                var activeTabResubmission = $("#InspectTab li.active a").text();
+                if (tabtext == activeTabResubmission) {
+                    $("#hdnTacticBudgetAllocationOpt").val("View");
+
+                    $('#EditForm').removeClass('Save-icon-white');
+                    $('#EditForm').addClass('edit-icon-white');
+                    $('#txtTacticTitle').css('display', 'none');
+                    $('#lblTacticTitle').css('display', 'block');
+                    $("#lblTacticTitle").removeAttr("style");
+                }
+                isclickfrompopup = false;
+                loadReview($("#hdnPlanTacticId").val(), tabtext);
             }
-            setTacticStatus($('#hdnTacticStatus').val());
-            var activeTabResubmission=$("#InspectTab li.active a").text();
-            if (tabtext == activeTabResubmission) {
-                $("#hdnTacticBudgetAllocationOpt").val("View");
-                
-                $('#EditForm').removeClass('Save-icon-white');
-                $('#EditForm').addClass('edit-icon-white');
-                $('#txtTacticTitle').css('display', 'none');
-                $('#lblTacticTitle').css('display', 'block');
-                $("#lblTacticTitle").removeAttr("style");
-            }
-            loadReview($("#hdnPlanTacticId").val(), tabtext);*@
         });
     });
 </script>

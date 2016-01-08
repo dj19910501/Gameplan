@@ -10001,7 +10001,7 @@ namespace RevenuePlanner.Controllers
 
 
                                                         //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
-                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
+                                                        tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "  LinkTacticper ='" + LinkTacticPermission + "' LinkedTacticId = '" + LinkedTacticId + "' tacticaddId='" + tactic.PlanTacticId + "'></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "' taskId=" + tactic.PlanTacticId + "></div>"; //Modified by Rahul Shah on 18/12/2015 fot PL #1813. add TaskId                                                        //tacticdataobj.value = "<div class=grid_Search id=TP></div>" + (tactic.IsPlanCreateAll ? "<div class=grid_add id=Tactic alt=__" + Programitem.PlanProgramId + "_" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>" : "") + " <div class=honeycombbox-icon-gantt id=TacticAdd onclick=javascript:AddRemoveEntity(this) TaskName='" + (HttpUtility.HtmlEncode(tactic.title).Replace("'", "&#39;")) + "' ColorCode='" + TacticColor + "'  TacticType= '" + GettactictypeName(tactic.tactictypeid) + "' OwnerName= '" + GetOwnerName(tactic.CreatedBy) + "' altId=" + tactic.PlanTacticId + " per=" + tactic.IsPlanCreateAll.ToString().ToLower() + "></div>";
                                                         tacticdataobjlist.Add(tacticdataobj);
 
                                                         tacticdataobj = new Plandataobj();
@@ -10476,22 +10476,50 @@ namespace RevenuePlanner.Controllers
                     List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
                     double totalLineitemCost = 0;
                     double otherLineItemCost = 0;
+                    int linkedTacticId = 0;
+                    Plan_Campaign_Program_Tactic linkedTactic = new Plan_Campaign_Program_Tactic();
+                    linkedTacticId = (pcpobj != null && pcpobj.LinkedTacticId.HasValue) ? pcpobj.LinkedTacticId.Value : 0;
+                     if (linkedTacticId > 0)
+                        linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault(); // Get LinkedTactic object
+
                     // update tactic detail
                     if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
                     {
                         var pcpvar = (from pcpt in db.Plan_Campaign_Program_Tactic
                                       join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
                                       join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
-                                      where pcpt.Title.Trim().ToLower().Equals(UpdateVal) && !pcpt.PlanTacticId.Equals(12345) && pcpt.IsDeleted.Equals(false)
+                                      where pcpt.Title.Trim().ToLower().Equals(UpdateVal) && !pcpt.PlanTacticId.Equals(id) && pcpt.IsDeleted.Equals(false)
                                       && pcp.PlanProgramId == pcpobj.Plan_Campaign_Program.PlanProgramId    //// Added by :- Sohel Pathan on 23/05/2014 for PL ticket #448 to be able to edit Tactic/Program Title while duplicating.
                                       select pcp).FirstOrDefault();
-                        if (pcpvar != null)
+                        //// Get Linked Tactic duplicate record.
+                        Plan_Campaign_Program_Tactic dupLinkedTactic = null;
+                        if (linkedTacticId > 0)
+                        {
+                            linkedTactic = db.Plan_Campaign_Program_Tactic.Where(pcpobjw => pcpobjw.PlanTacticId == linkedTacticId).FirstOrDefault(); // Get LinkedTactic object
+
+                            dupLinkedTactic = (from pcpt in db.Plan_Campaign_Program_Tactic
+                                               join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                               join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                               where pcpt.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower()) && !pcpt.PlanTacticId.Equals(linkedTacticId) && pcpt.IsDeleted.Equals(false)
+                                                && pcp.PlanProgramId == linkedTactic.PlanProgramId   
+                                               select pcpt).FirstOrDefault();
+                        }
+                        if (dupLinkedTactic != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.LinkedPlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);
+                            return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                        }
+                        else if (pcpvar != null)
                         {
                             string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
                             return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
                         }
                         else
+                        {
                             pcpobj.Title = UpdateVal;
+                            if(linkedTacticId > 0)
+                                linkedTactic.Title = UpdateVal;
+                        }
 
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["startdate"])
@@ -10546,8 +10574,10 @@ namespace RevenuePlanner.Controllers
                         {
                             pcpobj.Cost = Convert.ToDouble(UpdateVal);
                         }
-
-
+                        if(linkedTacticId > 0)
+                        {
+                            linkedTactic.Cost = pcpobj.Cost;
+                        }
 
                         tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == pcpobj.PlanTacticId).ToList();
                         List<Plan_Campaign_Program_Tactic_LineItem> objtotalLineitemCost = tblTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
@@ -10580,11 +10610,30 @@ namespace RevenuePlanner.Controllers
                                 objTacticCost.CreatedDate = DateTime.Now;
                                 db.Entry(objTacticCost).State = EntityState.Added;
                             }
+                            //Add linked Tactic TacticCost data
+                            if (linkedTacticId > 0)
+                            {
+                                if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).Any())
+                                {
+                                    linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value += diffcost;
+                                }
+                                else
+                                {
+                                    Plan_Campaign_Program_Tactic_Cost lnkTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                    lnkTacticCost.PlanTacticId = linkedTacticId;
+                                    lnkTacticCost.Period = PeriodChar + startmonth;
+                                    lnkTacticCost.Value = diffcost;
+                                    lnkTacticCost.CreatedBy = Sessions.User.UserId;
+                                    lnkTacticCost.CreatedDate = DateTime.Now;
+                                    db.Entry(lnkTacticCost).State = EntityState.Added;
+                                }
+                            }
 
                         }
                         else if (Convert.ToDouble(UpdateVal) < pcpobj.Cost)
                         {
                             var diffcost = pcpobj.Cost - Convert.ToDouble(UpdateVal);
+                            double diffLinkCost = diffcost;
                             int endmonth = 12;
                             while (diffcost > 0 && endmonth != 0)
                             {
@@ -10607,6 +10656,28 @@ namespace RevenuePlanner.Controllers
                                         }
                                     }
                                 }
+                                if (linkedTacticId > 0)
+                                {
+                                    if (linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
+                                    {
+                                        double tacticlineitemcostmonth = lineitemcostlist.Where(lineitem => lineitem.Period == PeriodChar + endmonth).Sum(lineitem => lineitem.Value);
+                                        double objtacticcost = linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                                        var DiffMonthCost = objtacticcost - tacticlineitemcostmonth;
+                                        if (DiffMonthCost > 0)
+                                        {
+                                            if (DiffMonthCost > diffLinkCost)
+                                            {
+                                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
+                                                diffLinkCost = 0;
+                                            }
+                                            else
+                                            {
+                                                linkedTactic.Plan_Campaign_Program_Tactic_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - DiffMonthCost;
+                                                diffLinkCost = diffLinkCost - DiffMonthCost;
+                                            }
+                                        }
+                                    }
+                                }
                                 if (endmonth > 0)
                                 {
                                     endmonth -= 1;
@@ -10617,6 +10688,8 @@ namespace RevenuePlanner.Controllers
                         }
 
                         pcpobj.Cost = Convert.ToDouble(UpdateVal);
+                        if (linkedTacticId > 0)
+                            linkedTactic.Cost = pcpobj.Cost;
 
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
@@ -10627,17 +10700,34 @@ namespace RevenuePlanner.Controllers
                         pcpobj.ProjectedStageValue = tt.ProjectedStageValue == null ? 0 : tt.ProjectedStageValue;
 
                         pcpobj.StageId = tt.StageId == null ? 0 : (int)tt.StageId;
+                        if (linkedTacticId > 0 && tactictypeid >0)
+                        {
+                            int destModelId = linkedTactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId;
 
-
+                            string srcTacticTypeTitle = db.TacticTypes.FirstOrDefault(type => type.TacticTypeId == tactictypeid).Title;
+                            TacticType destTacticType = db.TacticTypes.FirstOrDefault(_tacType => _tacType.ModelId == destModelId && _tacType.IsDeleted == false && _tacType.IsDeployedToModel == true && _tacType.Title == srcTacticTypeTitle);
+                            //// Check whether source Entity TacticType in list of TacticType of destination Model exist or not.
+                            if (destTacticType != null)
+                            {
+                                linkedTactic.TacticTypeId = destTacticType.TacticTypeId;
+                                linkedTactic.ProjectedStageValue = destTacticType.ProjectedStageValue == null ? 0 : destTacticType.ProjectedStageValue;
+                                linkedTactic.StageId = destTacticType.StageId == null ? 0 : (int)destTacticType.StageId;
+                            }
+                        }
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["targetstagegoal"])
                     {
                         pcpobj.ProjectedStageValue = Convert.ToDouble(UpdateVal);
+                        if (linkedTacticId > 0)
+                            linkedTactic.ProjectedStageValue = pcpobj.ProjectedStageValue;
+
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["owner"])
                     {
                         oldOwnerId = pcpobj.CreatedBy;
                         pcpobj.CreatedBy = new Guid(UpdateVal);
+                        if (linkedTacticId > 0)
+                            linkedTactic.CreatedBy = pcpobj.CreatedBy;
                     }
                     else if (UpdateColumn == "ParentID")
                     {
@@ -10674,7 +10764,32 @@ namespace RevenuePlanner.Controllers
                             pcpobj.Plan_Campaign_Program.Plan_Campaign.EndDate = EndDate;
                         }
 
+                        if (linkedTacticId > 0)
+                        {
+                            if (linkedTactic.Plan_Campaign_Program.StartDate > linkedTactic.StartDate)
+                            {
+                                linkedTactic.Plan_Campaign_Program.StartDate = linkedTactic.StartDate;
+                            }
+
+                            if (linkedTactic.EndDate > linkedTactic.Plan_Campaign_Program.EndDate)
+                            {
+                                linkedTactic.Plan_Campaign_Program.EndDate = linkedTactic.EndDate;
+                            }
+
+                            if (linkedTactic.Plan_Campaign_Program.Plan_Campaign.StartDate > linkedTactic.StartDate)
+                            {
+                                linkedTactic.Plan_Campaign_Program.Plan_Campaign.StartDate = linkedTactic.StartDate;
+                            }
+
+                            if (linkedTactic.EndDate > linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate)
+                            {
+                                linkedTactic.Plan_Campaign_Program.Plan_Campaign.EndDate = linkedTactic.EndDate;
+                            }
+                        }
+
                     }
+                    if(linkedTacticId >0)
+                        db.Entry(linkedTactic).State = EntityState.Modified;
                     db.Entry(pcpobj).State = EntityState.Modified;
                     db.SaveChanges();
                     int result = Common.InsertChangeLog(Sessions.PlanId, null, pcpobj.PlanTacticId, pcpobj.Title, Enums.ChangeLog_ComponentType.tactic, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
@@ -10729,6 +10844,24 @@ namespace RevenuePlanner.Controllers
                                 objNewLineitem.CreatedBy = Sessions.User.UserId;
                                 objNewLineitem.CreatedDate = DateTime.Now;
                                 db.Entry(objNewLineitem).State = EntityState.Added;
+                                db.SaveChanges();
+                                if (linkedTacticId > 0)
+                                {
+                                    Plan_Campaign_Program_Tactic_LineItem objNewLinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                                    objNewLinkedLineitem.PlanTacticId = linkedTacticId;
+                                    objNewLinkedLineitem.Title = objNewLineitem.Title;
+                                    objNewLinkedLineitem.Cost = objNewLineitem.Cost;
+                                    objNewLinkedLineitem.Description = string.Empty;
+                                    objNewLinkedLineitem.CreatedBy = Sessions.User.UserId;
+                                    objNewLinkedLineitem.CreatedDate = DateTime.Now;
+                                    objNewLinkedLineitem.LinkedLineItemId = objNewLineitem.PlanLineItemId;
+                                    db.Entry(objNewLinkedLineitem).State = EntityState.Added;
+                                    db.SaveChanges();
+
+                                    objNewLineitem.LinkedLineItemId = objNewLinkedLineitem.PlanLineItemId;
+                                    db.Entry(objNewLineitem).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
                             }
                             else
                             {
@@ -10744,6 +10877,34 @@ namespace RevenuePlanner.Controllers
                                     objOtherLineItem.Cost = 0;
                                 }
                                 db.Entry(objOtherLineItem).State = EntityState.Modified;
+
+                                #region "Updte linked other lineItem"
+                                if (linkedTacticId > 0)
+                                {
+                                    List<Plan_Campaign_Program_Tactic_LineItem> tblLinkedTacticLineItem = new List<Plan_Campaign_Program_Tactic_LineItem>();
+                                    //double totalLineitemCost = 0;
+                                    tblLinkedTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == linkedTacticId).ToList();
+
+                                    List<Plan_Campaign_Program_Tactic_LineItem> objtotalLinkedLineitemCost = tblLinkedTacticLineItem.Where(lineItem => lineItem.LineItemTypeId != null && lineItem.IsDeleted == false).ToList();
+                                    //objtotalLinkedLineitemCost
+                                    double totalLinkedLineitemCost = 0;
+                                    if (objtotalLinkedLineitemCost != null && objtotalLinkedLineitemCost.Count() > 0)
+                                        totalLinkedLineitemCost = objtotalLinkedLineitemCost.Sum(l => l.Cost);
+
+                                    Plan_Campaign_Program_Tactic_LineItem objLinkedOtherLineItem = tblLinkedTacticLineItem.FirstOrDefault(lineItem => lineItem.LineItemTypeId == null);
+
+                                    objLinkedOtherLineItem.IsDeleted = false;
+                                    if (linkedTactic.Cost > totalLineitemCost)
+                                    {
+                                        objLinkedOtherLineItem.Cost = linkedTactic.Cost - totalLineitemCost;
+                                    }
+                                    else
+                                    {
+                                        objLinkedOtherLineItem.Cost = 0;
+                                    }
+                                    db.Entry(objLinkedOtherLineItem).State = EntityState.Modified;
+                                } 
+                                #endregion
                             }
                             db.SaveChanges();
                         }
@@ -10892,16 +11053,54 @@ namespace RevenuePlanner.Controllers
                 {
                     Plan_Campaign_Program_Tactic_LineItem objLineitem = db.Plan_Campaign_Program_Tactic_LineItem.FirstOrDefault(pcpobjw => pcpobjw.PlanLineItemId.Equals(id));
                     var objTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(t => t.PlanTacticId == objLineitem.PlanTacticId);
+                    
+                    #region "Retrieve Linked Plan Line Item"
+                    int linkedLineItemId = 0;
+                    linkedLineItemId = (objLineitem != null && objLineitem.LinkedLineItemId.HasValue) ? objLineitem.LinkedLineItemId.Value : 0;
+                    if (linkedLineItemId <= 0)
+                    {
+                        var lnkPlanLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(tac => tac.LinkedLineItemId == objLineitem.PlanLineItemId).FirstOrDefault();    // Take first Tactic bcz Tactic can linked with single plan.
+                        linkedLineItemId = lnkPlanLineItem != null ? lnkPlanLineItem.PlanLineItemId : 0;
+                    }
+                    #endregion
+                    Plan_Campaign_Program_Tactic_LineItem linkedLineItem = new Plan_Campaign_Program_Tactic_LineItem();
+                    if (linkedLineItemId > 0)
+                            linkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcpobjw => pcpobjw.PlanLineItemId == linkedLineItemId).FirstOrDefault(); // Get LinkedTactic object
+
+
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
                     double tacticostNew = objTactic.Plan_Campaign_Program_Tactic_Cost.Select(tactic => tactic.Value).Sum();
                     if (UpdateColumn == Enums.PlanGrid_Column["taskname"])
                     {
+                        
+
+                        //// Get Linked Tactic duplicate record.
+                        Plan_Campaign_Program_Tactic_LineItem dupLinkedLineItem = null;
+                        if (linkedLineItemId > 0)
+                        {
+                            linkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(pcpobjw => pcpobjw.PlanLineItemId == linkedLineItemId).FirstOrDefault(); // Get LinkedTactic object
+
+                            dupLinkedLineItem = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
+                                                 join pcpt in db.Plan_Campaign_Program_Tactic on pcptl.PlanTacticId equals pcpt.PlanTacticId
+                                                 join pcp in db.Plan_Campaign_Program on pcpt.PlanProgramId equals pcp.PlanProgramId
+                                                 join pc in db.Plan_Campaign on pcp.PlanCampaignId equals pc.PlanCampaignId
+                                                 where pcptl.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(linkedLineItemId) && pcptl.IsDeleted.Equals(false)
+                                                                 && pcpt.PlanTacticId == linkedLineItem.PlanTacticId
+                                                 select pcptl).FirstOrDefault();
+                        }
+
                         //// Get duplicate record to check duplication.
                         var pcptvar = (from pcptl in db.Plan_Campaign_Program_Tactic_LineItem
                                        where pcptl.Title.Trim().ToLower().Equals(UpdateVal.Trim().ToLower()) && !pcptl.PlanLineItemId.Equals(id) && pcptl.IsDeleted.Equals(false)
                                        select pcptl).FirstOrDefault();
 
-                        if (pcptvar != null)
+                        //// if duplicate record exist then return Duplicate message.
+                        if (dupLinkedLineItem != null)
+                        {
+                            string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()] + " in the linkedtactic");
+                            return Json(new { IsDuplicate = true, errormsg = strDuplicateMessage });
+                        }
+                        else if (pcptvar != null)
                         {
                             string strDuplicateMessage = string.Format(Common.objCached.PlanEntityDuplicated, Enums.PlanEntityValues[Enums.PlanEntity.LineItem.ToString()]);
                             return Json(new { isSaved = false, errormsg = strDuplicateMessage });
@@ -10909,12 +11108,30 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             objLineitem.Title = UpdateVal.Trim();
+                            if (linkedLineItemId > 0)
+                                linkedLineItem.Title = UpdateVal.Trim();
                         }
-
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["tactictype"])
                     {
-                        objLineitem.LineItemTypeId = Convert.ToInt32(UpdateVal);
+                        int lineitemTypeid = Convert.ToInt32(UpdateVal);
+                        objLineitem.LineItemTypeId = lineitemTypeid;
+
+                        #region "update linked lineitem lineItem Type"
+                        if (linkedLineItemId > 0 && lineitemTypeid > 0)
+                        {
+                            int destModelId = linkedLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.ModelId;
+
+                            string srcLineItemTypeTitle = db.LineItemTypes.FirstOrDefault(type => type.LineItemTypeId == lineitemTypeid).Title;
+                            LineItemType destLineItemType = db.LineItemTypes.FirstOrDefault(_tacType => _tacType.ModelId == destModelId && _tacType.IsDeleted == false && _tacType.Title == srcLineItemTypeTitle);
+                            //// Check whether source Entity TacticType in list of TacticType of destination Model exist or not.
+                            if (destLineItemType != null)
+                            {
+                                linkedLineItem.LineItemTypeId = destLineItemType.LineItemTypeId;
+                            }
+                        } 
+                        #endregion
+
                     }
                     else if (UpdateColumn == Enums.PlanGrid_Column["tacticplancost"])
                     {
@@ -10939,6 +11156,16 @@ namespace RevenuePlanner.Controllers
                                 objlineitemCost.CreatedBy = Sessions.User.UserId;
                                 objlineitemCost.CreatedDate = DateTime.Now;
                                 db.Entry(objlineitemCost).State = EntityState.Added;
+                                if (linkedLineItemId > 0)
+                                {
+                                    Plan_Campaign_Program_Tactic_LineItem_Cost objlinkedlineitemCost = new Plan_Campaign_Program_Tactic_LineItem_Cost();
+                                    objlineitemCost.PlanLineItemId = linkedLineItemId;
+                                    objlineitemCost.Period = PeriodChar + startmonth;
+                                    objlineitemCost.Value = diffcost;
+                                    objlineitemCost.CreatedBy = Sessions.User.UserId;
+                                    objlineitemCost.CreatedDate = DateTime.Now;
+                                    db.Entry(objlineitemCost).State = EntityState.Added; 
+                                }
                             }
 
                             List<Plan_Campaign_Program_Tactic_LineItem> tblTacticLineItem = db.Plan_Campaign_Program_Tactic_LineItem.Where(lineItem => lineItem.PlanTacticId == objTactic.PlanTacticId).ToList();
@@ -10957,6 +11184,19 @@ namespace RevenuePlanner.Controllers
                                 {
                                     tacticostslist.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
                                     objTactic.Cost = objTactic.Cost + (tacticlineitemcostmonth - tacticmonthcost);
+
+                                    #region "Update linked lineItems Tactic cost"
+                                    if (linkedLineItemId > 0)
+                                    {
+                                        List<Plan_Campaign_Program_Tactic_Cost> lstLinkedTacCost = new List<Plan_Campaign_Program_Tactic_Cost>();
+                                        lstLinkedTacCost = linkedLineItem.Plan_Campaign_Program_Tactic.Plan_Campaign_Program_Tactic_Cost.ToList();
+                                        if (lstLinkedTacCost != null && lstLinkedTacCost.Count > 0)
+                                        {
+                                            lstLinkedTacCost.Where(pcptc => pcptc.Period == PeriodChar + startmonth).FirstOrDefault().Value = tacticlineitemcostmonth;
+                                            linkedLineItem.Plan_Campaign_Program_Tactic.Cost = objTactic.Cost;
+                                        }
+                                    } 
+                                    #endregion
                                 }
                             }
                             else
@@ -10969,13 +11209,31 @@ namespace RevenuePlanner.Controllers
                                 objtacticCost.CreatedBy = Sessions.User.UserId;
                                 objtacticCost.CreatedDate = DateTime.Now;
                                 db.Entry(objtacticCost).State = EntityState.Added;
+
+                                if (linkedLineItemId > 0)
+                                {
+                                    Plan_Campaign_Program_Tactic_Cost objLinkedTacticCost = new Plan_Campaign_Program_Tactic_Cost();
+                                    objtacticCost.PlanTacticId = linkedLineItem.PlanTacticId;
+                                    objtacticCost.Period = PeriodChar + startmonth;
+                                    objtacticCost.Value = tacticlineitemcostmonth;
+                                    objtacticCost.CreatedBy = Sessions.User.UserId;
+                                    objtacticCost.CreatedDate = DateTime.Now;
+                                    db.Entry(objtacticCost).State = EntityState.Added;
+                                }
+
                                 objTactic.Cost = objTactic.Cost + tacticlineitemcostmonth;
+                            }
+                            if (linkedLineItemId > 0)
+                            {
+                                linkedLineItem.Plan_Campaign_Program_Tactic.Cost = objTactic.Cost;
+                                db.Entry(linkedLineItem.Plan_Campaign_Program_Tactic).State = EntityState.Modified;
                             }
                             db.Entry(objTactic).State = EntityState.Modified;
                         }
                         else if (lCost < objLineitem.Cost)
                         {
                             var diffcost = objLineitem.Cost - lCost;
+                            double diffLinkCost = diffcost;
                             int endmonth = 12;
                             while (diffcost > 0 && endmonth != 0)
                             {
@@ -10993,6 +11251,25 @@ namespace RevenuePlanner.Controllers
                                         diffcost = diffcost - objtacticcost;
                                     }
                                 }
+
+                                if (linkedLineItemId > 0)
+                                {
+                                    if (linkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).Any())
+                                    {
+                                        double objtacticcost = linkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value;
+                                        if (objtacticcost > diffLinkCost)
+                                        {
+                                            linkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = objtacticcost - diffLinkCost;
+                                            diffLinkCost = 0;
+                                        }
+                                        else
+                                        {
+                                            linkedLineItem.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(pcptc => pcptc.Period == PeriodChar + endmonth).FirstOrDefault().Value = 0;
+                                            diffLinkCost = diffLinkCost - objtacticcost;
+                                        }
+                                    }
+                                }
+
                                 if (endmonth > 0)
                                 {
                                     endmonth -= 1;
@@ -11003,10 +11280,21 @@ namespace RevenuePlanner.Controllers
                         }
 
                         objLineitem.Cost = lCost;
+                        if (linkedLineItemId > 0)
+                            linkedLineItem.Cost = lCost;
                     }
                     objLineitem.ModifiedBy = Sessions.User.UserId;
                     objLineitem.ModifiedDate = DateTime.Now;
                     db.Entry(objLineitem).State = EntityState.Modified;
+
+                    #region "Update linked lineItem ModifiedBy & ModifiedDate"
+                    if (linkedLineItemId > 0)
+                    {
+                        linkedLineItem.ModifiedBy = Sessions.User.UserId;
+                        linkedLineItem.ModifiedDate = DateTime.Now;
+                        db.Entry(linkedLineItem).State = EntityState.Modified;
+                    } 
+                    #endregion
                     int result = Common.InsertChangeLog(objTactic.Plan_Campaign_Program.Plan_Campaign.PlanId, null, objLineitem.PlanLineItemId, objLineitem.Title, Enums.ChangeLog_ComponentType.lineitem, Enums.ChangeLog_TableName.Plan, Enums.ChangeLog_Actions.updated);
                     result = db.SaveChanges();
 
@@ -11036,6 +11324,23 @@ namespace RevenuePlanner.Controllers
                         objNewLineitem.CreatedDate = DateTime.Now;
                         db.Entry(objNewLineitem).State = EntityState.Added;
                         db.SaveChanges();
+
+                        if (linkedLineItemId > 0)
+                        {
+                            Plan_Campaign_Program_Tactic_LineItem objlinkedLineitem = new Plan_Campaign_Program_Tactic_LineItem();
+                            objlinkedLineitem.PlanTacticId = linkedLineItem.PlanTacticId;
+                            objlinkedLineitem.Title = objNewLineitem.Title;
+                            objlinkedLineitem.Cost = objNewLineitem.Cost;
+                            objlinkedLineitem.Description = string.Empty;
+                            objlinkedLineitem.CreatedBy = Sessions.User.UserId;
+                            objlinkedLineitem.CreatedDate = DateTime.Now;
+                            objlinkedLineitem.LinkedLineItemId = objNewLineitem.PlanLineItemId;
+                            db.Entry(objlinkedLineitem).State = EntityState.Added;
+                            db.SaveChanges();
+                            objNewLineitem.LinkedLineItemId = objlinkedLineitem.PlanLineItemId;
+                            db.Entry(objNewLineitem).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
                     }
                     else
                     {
@@ -11049,6 +11354,11 @@ namespace RevenuePlanner.Controllers
                             objOtherLineItem.Cost = 0;
                         }
                         db.Entry(objOtherLineItem).State = EntityState.Modified;
+                        if (linkedLineItemId > 0)
+                        {
+                            linkedLineItem.Cost = objOtherLineItem.Cost;
+                            db.Entry(linkedLineItem).State = EntityState.Modified;
+                        }
                         db.SaveChanges();
                     }
                     //Added By Rahul Shah on 16/10/2015 for PL 1559
@@ -11715,27 +12025,41 @@ namespace RevenuePlanner.Controllers
         public string GetOwnerName(string UserGuid)
         {
             var OwnerName = "";
-            if (UserGuid != "")
-            {
-                if (lstUserDetails == null || lstUserDetails.Count == 0)
+            try {
+                if (UserGuid != "")
                 {
-                    lstUserDetails = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                    if (lstUserDetails == null || lstUserDetails.Count == 0)
+                    {
+                        lstUserDetails = objBDSServiceClient.GetUserListByClientId(Sessions.User.ClientId);
+                    }
+
+                    var userName = lstUserDetails.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
+                    {
+                        FirstName = user.FirstName,
+                        Lastname = user.LastName
+                    }).FirstOrDefault();
+
+
+                    if (userName != null)
+                    {
+                        OwnerName = userName.FirstName + " " + userName.Lastname;
+                    }
                 }
 
-                var userName = lstUserDetails.Where(user => user.UserId.ToString() == UserGuid).Select(user => new
-                {
-                    FirstName = user.FirstName,
-                    Lastname = user.LastName
-                }).FirstOrDefault();
-
-
-                if (userName != null)
-                {
-                    OwnerName = userName.FirstName + " " + userName.Lastname;
-                }
+                return OwnerName.ToString();
             }
+            catch (Exception e)
+            {
 
+                if (e is System.Data.EntityException || e is System.Data.SqlClient.SqlException)
+                {
+
+                    ErrorSignal.FromCurrentContext().Raise(e);
+                }
+
+            }
             return OwnerName.ToString();
+           
         }
 
         #endregion
@@ -11796,10 +12120,12 @@ namespace RevenuePlanner.Controllers
                 // var PlanId = Sessions.PlanId;
                 if (PopupType.ToString() == Enums.ModelTypeText.Linking.ToString())
                 {
-                    var lstPlanAll = Common.GetPlan();
-                    lstPlanAll = lstPlanAll.Where(a => Convert.ToInt32(a.Year) >= Convert.ToInt32(year)).ToList();
-                    lstPlans = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
-
+                    if (!string.IsNullOrEmpty(year)) {
+                        var lstPlanAll = Common.GetPlan();
+                        lstPlanAll = lstPlanAll.Where(a => Convert.ToInt32(a.Year) == Convert.ToInt32(year) + 1).ToList();  
+                        lstPlans = lstPlanAll.Select(plan => new SelectListItem() { Text = plan.Title, Value = plan.PlanId.ToString() }).OrderBy(plan => plan.Text).ToList();
+                    }
+                    
                 }
                 else
                 {
@@ -12128,6 +12454,8 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
+
+                ErrorSignal.FromCurrentContext().Raise(ex);
                 return Json(new { msg = Common.objCached.ExceptionErrorMessage, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 // throw ex;
             }
@@ -12137,6 +12465,7 @@ namespace RevenuePlanner.Controllers
         public List<PlanTactic_TacticTypeMapping> CheckTacticTypeIdToDestinationModel(string CloneType, int sourceEntityId, int destModelId, ref string invalidTacticIds)
         {
             //string invalidTacticIds = string.Empty;
+            StringBuilder invalidtact = new StringBuilder();
             List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping = new List<PlanTactic_TacticTypeMapping>();
             try
             {
@@ -12185,7 +12514,9 @@ namespace RevenuePlanner.Controllers
                         {
                             if (!lstTacticType.Any(tacType => tacType.Title == childTactic.TacticTypeTitle))
                             {
-                                invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
+                                invalidtact.Append(childTactic.PlanTacticId.ToString() + ",");
+                               
+                                //invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
                             }
                             else
                             {
@@ -12200,15 +12531,18 @@ namespace RevenuePlanner.Controllers
                                 }
                             }
                         }
+                       
                     }
                     else
                     {
                         // Add all Ids as Invalid TacticId.
                         foreach (var childTactic in childTactiList)
                         {
-                            invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
+                            invalidtact.Append(childTactic.PlanTacticId.ToString() + ",");
+                            //invalidTacticIds += childTactic.PlanTacticId.ToString() + ",";
                         }
                     }
+                    invalidTacticIds = invalidtact.ToString();
                 }
 
             }
@@ -12358,11 +12692,13 @@ namespace RevenuePlanner.Controllers
                 Plan destPlan = tblPlan.Where(plan => plan.PlanId == destPlanId).FirstOrDefault();
                 destModelId = destPlan.ModelId;
                 destPlanTitle = destPlan.Title;
-                Model sourceModel = new Model();
-                Model destModel = new Model();
+                //Model sourceModel = new Model();
+                //Model destModel = new Model();
 
-                sourceModel = db.Models.Where(mod => mod.ModelId == sourceModelId).FirstOrDefault();
-
+                //sourceModel = db.Models.Where(mod => mod.ModelId == sourceModelId).FirstOrDefault();
+                var getModelData = db.Models.Where(mod => mod.ModelId == sourceModelId || mod.ModelId == destModelId).ToList();
+                var sourceModel = getModelData.Where(mod => mod.ModelId == sourceModelId).FirstOrDefault();
+                var destModel = getModelData.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
                 List<PlanTactic_TacticTypeMapping> lstTacticTypeMapping = new List<PlanTactic_TacticTypeMapping>();
                 // verify that source & destination model are same or not.
                 if (sourceModelId > 0 && !sourceModelId.Equals(destModelId))
@@ -12370,11 +12706,15 @@ namespace RevenuePlanner.Controllers
 
                     if (sourceModel.IntegrationInstanceId != null || sourceModel.IntegrationInstanceEloquaId != null)
                     {
-                        destModel = db.Models.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
+                        //destModel = db.Models.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
                         if (sourceModel.IntegrationInstanceId != destModel.IntegrationInstanceId || sourceModel.IntegrationInstanceEloquaId != destModel.IntegrationInstanceEloquaId)
                         {
                             return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
                         }
+                    }
+                    if (sourceModel.IntegrationInstanceIdINQ != destModel.IntegrationInstanceIdINQ || sourceModel.IntegrationInstanceIdCW != destModel.IntegrationInstanceIdCW || sourceModel.IntegrationInstanceIdMQL != destModel.IntegrationInstanceIdMQL)
+                    {
+                        return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
                     }
                     isdifferModel = true;
                     lstTacticTypeMapping = CheckDetailSourceandDestinationModel(CloneType, sourceEntityId, sourceModelId, destModelId, ref invalidTacticIds);
@@ -12433,6 +12773,8 @@ namespace RevenuePlanner.Controllers
             }
             catch (Exception ex)
             {
+
+                ErrorSignal.FromCurrentContext().Raise(ex);
                 return Json(new { msg = Common.objCached.ExceptionErrorMessageforLinking, isSuccess = false }, JsonRequestBehavior.AllowGet);
                 // throw ex;
             }
@@ -12519,22 +12861,27 @@ namespace RevenuePlanner.Controllers
                 {
                     Plan_Campaign_Program_Tactic objTactic = new Plan_Campaign_Program_Tactic();
                     objTactic = db.Plan_Campaign_Program_Tactic.Where(tac => tac.PlanTacticId == sourceEntityId && tac.IsDeleted == false).FirstOrDefault();
-
+                    
                     //// Check whether source Entity TacticType in list of TacticType of destination Model exist or not.
-                    var lstTacticType = from _tacType in db.TacticTypes
-                                        where _tacType.ModelId == destModelId && _tacType.IsDeleted == false && _tacType.IsDeployedToModel == true && _tacType.Title == objTactic.TacticType.Title && _tacType.StageId == objTactic.StageId
-                                        select _tacType;
-                    if (lstTacticType == null || lstTacticType.Count() == 0)
-                        invalidTacticIds = sourceEntityId.ToString();
-                    else
-                    {
+                    if (objTactic != null) {
+                        var lstTacticType = from _tacType in db.TacticTypes
+                                            where _tacType.ModelId == destModelId && _tacType.IsDeleted == false && _tacType.IsDeployedToModel == true && _tacType.Title == objTactic.TacticType.Title && _tacType.StageId == objTactic.StageId
+                                            select _tacType;
+                        if (lstTacticType == null || lstTacticType.Count() == 0)
+                            invalidTacticIds = sourceEntityId.ToString();
+                        else
+                        {
 
-                        PlanTactic_TacticTypeMapping objTacticMapping = new PlanTactic_TacticTypeMapping();
-                        objTacticMapping.PlanTacticId = sourceEntityId; //Source PlanTacticId
-                        objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId; // Destination Model TacticTypeId.
-                        objTacticMapping.TargetStageId = lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
-                        lstTacticTypeMapping.Add(objTacticMapping);
+                            PlanTactic_TacticTypeMapping objTacticMapping = new PlanTactic_TacticTypeMapping();
+                            objTacticMapping.PlanTacticId = sourceEntityId; //Source PlanTacticId
+                            objTacticMapping.TacticTypeId = lstTacticType.FirstOrDefault().TacticTypeId; // Destination Model TacticTypeId.
+                            objTacticMapping.TargetStageId = lstTacticType.FirstOrDefault().StageId; // Destination Model StageId.
+                            lstTacticTypeMapping.Add(objTacticMapping);
+                        }
                     }
+
+                    
+                    
                 }
             }
             catch (Exception ex)

@@ -1549,7 +1549,17 @@ namespace RevenuePlanner.Helpers
             //List<string> tacticStatus = GetStatusListAfterApproved();  // Commented by Rahul Shah on 16/09/2015 for PL #1610
             //Added By Komal Rawal for new UI of homepage
             List<SelectListItem> planList = new List<SelectListItem>();
-
+            // Desc :: To resolve the select and deselct all owner issues
+            List<Guid> filterOwner = new List<Guid>();
+            string PlanLabel = Enums.FilterLabel.Plan.ToString();
+            var SetOfPlanSelected = objDbMrpEntities.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            if (planselectedowner == null)
+            {
+                filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            }
+            // End By Nishant Sheth
             var lstPlanAll = Common.GetPlan();
             if (lstPlanAll.Count > 0)
             {
@@ -1580,11 +1590,14 @@ namespace RevenuePlanner.Helpers
             {
                 //List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tacticStatus.Contains(tactic.Status) && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Commented By Rahul Shah on 16/09/2015 for PL #1610
                 List<Plan_Campaign_Program_Tactic> planTacticIds = objDbMrpEntities.Plan_Campaign_Program_Tactic.Where(tactic => tactic.IsDeleted == false && tactic.Plan_Campaign_Program.Plan_Campaign.PlanId == planId).ToList(); // Added By Rahul Shah on 16/09/2015 for PL #1610
+                // Add By Nishant Sheth for Plan Year
+
+                // End By Nishant Sheth
                 if (year != "" && year != null)
                 {
                     int Year;
                     // Modified By Komal Rawal to get proper HUd values for #1788
-
+                    string[] ListYear = year.Split(',');
                     string planYear = string.Empty;
 
                     bool isNumeric = int.TryParse(year, out Year);
@@ -1595,9 +1608,31 @@ namespace RevenuePlanner.Helpers
                     }
                     else
                     {
-                        planYear = DateTime.Now.Year.ToString();
+                        // Add By Nishant Sheth
+                        // Desc :: To Resolved gantt chart year issue
+                        if (int.TryParse(ListYear[0], out Year))
+                        {
+                            planYear = ListYear[0];
+                        }
+                        else
+                        {
+                            planYear = DateTime.Now.Year.ToString();
+                        }
+                        // End By Nishant Sheth
                     }
-
+                    if (planTacticIds.Count > 0)
+                    {
+                        int StartYear = planTacticIds.Select(tac => tac.StartDate.Year).Min();
+                        int EndYear = planTacticIds.Select(tac => tac.EndDate.Year).Max();
+                        if (EndYear != StartYear)
+                        {
+                            year = StartYear + "-" + EndYear;
+                        }
+                        else
+                        {
+                            year = Convert.ToString(StartYear);
+                        }
+                    }
                     DateTime StartDate;
                     DateTime EndDate;
                     StartDate = EndDate = DateTime.Now;
@@ -1612,7 +1647,7 @@ namespace RevenuePlanner.Helpers
                 List<int> lstTacticIds = new List<int>();
 
                 //// Owner filter criteria.
-                List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                //List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
 
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -1667,8 +1702,8 @@ namespace RevenuePlanner.Helpers
 
                     //}
                     //List<int> lsteditableEntityIds = Common.GetEditableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-
-                    planTacticIds = planTacticIds.Where(tactic => tactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                    // Modified By Nishant Sheth
+                    planTacticIds = planTacticIds.Where(tactic => (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.CreatedBy))).Select(tactic => tactic).ToList();
 
 
                 }
@@ -1796,7 +1831,7 @@ namespace RevenuePlanner.Helpers
             // Add By Nishant sheth
             DateTime StartDate;
             DateTime EndDate;
-
+            string[] ListYear = year.Split(',');
             // Modified By Nishant Sheth
             // #1825 stuck of loading overlay with 'this month' and 'this quarter'
             string planYear = string.Empty;
@@ -1809,7 +1844,17 @@ namespace RevenuePlanner.Helpers
             }
             else
             {
-                planYear = DateTime.Now.Year.ToString();
+                // Add By Nishant Sheth
+                // Desc :: To Resolved gantt chart year issue
+                if (int.TryParse(ListYear[0], out Year))
+                {
+                    planYear = ListYear[0];
+                }
+                else
+                {
+                    planYear = DateTime.Now.Year.ToString();
+                }
+                // End By Nishant Sheth
             }
 
 
@@ -1829,7 +1874,17 @@ namespace RevenuePlanner.Helpers
             var campplist = db.Plan_Campaign.Where(camp => (!((camp.EndDate < StartDate) || (camp.StartDate > EndDate))) && planIds.Contains(camp.PlanId)).Select(a => new { PlanCampaignId = a.PlanCampaignId, PlanId = a.PlanId }).ToList();
             var campplanid = campplist.Select(a => a.PlanId).ToList();
             var campid = campplist.Select(a => a.PlanCampaignId).ToList();
-
+            // Desc :: To resolve the select and deselct all owner issues
+            List<Guid> filterOwner = new List<Guid>();
+            string PlanLabel = Enums.FilterLabel.Plan.ToString();
+            var SetOfPlanSelected = db.Plan_UserSavedViews.Where(view => view.FilterName != PlanLabel && view.Userid == Sessions.User.UserId && view.ViewName == null).Select(View => View).ToList();
+            string planselectedowner = SetOfPlanSelected.Where(view => view.FilterName == Enums.FilterLabel.Owner.ToString()).Select(view => view.FilterValues).FirstOrDefault();
+            filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            if (planselectedowner == null)
+            {
+                filterOwner = Sessions.User.UserId.ToString().Split(',').Select(owner => Guid.Parse(owner)).ToList();
+            }
+            // End By Nishant Sheth
 
             // End by Nishant Sheth
             //var planList = db.Plans.Where(p => planIds.Contains(p.PlanId) && p.IsDeleted == false && p.IsActive == true && p.Year == year).Select(m => m).ToList();
@@ -1846,7 +1901,7 @@ namespace RevenuePlanner.Helpers
 
 
                 //// Owner filter criteria.
-                List<Guid> filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
+                //filterOwner = string.IsNullOrWhiteSpace(OwnerIds) ? new List<Guid>() : OwnerIds.Split(',').Select(owner => Guid.Parse(owner)).ToList();
 
                 //TacticType filter criteria
                 List<int> filterTacticType = string.IsNullOrWhiteSpace(TacticTypeids) ? new List<int>() : TacticTypeids.Split(',').Select(tactictype => int.Parse(tactictype)).ToList();
@@ -1896,13 +1951,13 @@ namespace RevenuePlanner.Helpers
                     }
                     lstTacticIds = planTacticsList.Select(tacticlist => tacticlist.objPlanTactic.PlanTacticId).ToList();
                     List<int> lstAllowedEntityIds = Common.GetViewableTacticList(Sessions.User.UserId, Sessions.User.ClientId, lstTacticIds, false);
-                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || pcptobj.objPlanTactic.CreatedBy == Sessions.User.UserId).ToList();
+                    planTacticsList = planTacticsList.Where(pcptobj => lstAllowedEntityIds.Contains(pcptobj.objPlanTactic.PlanTacticId) || (filterOwner.Count.Equals(0) || filterOwner.Contains(pcptobj.objPlanTactic.CreatedBy))).ToList();// Modified By Nishant Sheth
                 }
                 else
                 {
 
 
-                    planTacticsList = planTacticsList.Where(tactic => tactic.objPlanTactic.CreatedBy == Sessions.User.UserId).Select(tactic => tactic).ToList();
+                    planTacticsList = planTacticsList.Where(tactic => (filterOwner.Count.Equals(0) || filterOwner.Contains(tactic.objPlanTactic.CreatedBy))).Select(tactic => tactic).ToList();// Modified By Nishant Sheth
 
 
                 }
@@ -5885,8 +5940,12 @@ namespace RevenuePlanner.Helpers
                         tblCustomFieldEntity = (from tbl in tblCustomFieldEntity
                                                 join lst in lstTactic on tbl.EntityId equals lst
                                                 select tbl).ToList();
-
-
+                        // Add By Nishant Sheth
+                        // Desc :: owner lists are wrong 
+                        var distinctcustomfieldids = tblCustomFieldEntity.Select(a => a.EntityId).Distinct().ToList();
+                        var customexpecttactic = lstTactic.Where(tactic => !distinctcustomfieldids.Contains(tactic)).ToList();
+                        lstAllowedEntityIds.AddRange(customexpecttactic);
+                        // End By Nishant Sheth
                         if (tblCustomFieldEntity == null || !tblCustomFieldEntity.Any())
                         {
                             return lstTactic;
@@ -5931,12 +5990,12 @@ namespace RevenuePlanner.Helpers
                                 {
                                     var onlyviewtacticids = tblCustomFieldEntity.Where(tac => vieweditoptionid.Contains(int.Parse(tac.Value)) && !noneoptionid.Contains(int.Parse(tac.Value))).Select(tac => tac.EntityId).Distinct().ToList();
                                     //// set list of viewable tactic Ids
-                                    lstAllowedEntityIds = onlyviewtacticids;
+                                    lstAllowedEntityIds.AddRange(onlyviewtacticids);
                                 }
                                 else
                                 {
                                     var onlyviewtacticids = tblCustomFieldEntity.Where(tac => (vieweditoptionid.Contains(int.Parse(tac.Value)) || lstAllCustomFieldOptionIds.Contains(int.Parse(tac.Value))) && !noneoptionid.Contains(int.Parse(tac.Value))).Select(tac => tac.EntityId).Distinct().ToList();
-                                    lstAllowedEntityIds = onlyviewtacticids;
+                                    lstAllowedEntityIds.AddRange(onlyviewtacticids);
                                 }
 
 

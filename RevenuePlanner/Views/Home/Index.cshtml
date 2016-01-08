@@ -1513,6 +1513,9 @@
             LoadPlanGrid();
 
         }
+        // Add by Nishant Sheth
+        // Desc:: To resolve the header data issue
+        GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
     });
 
     //End
@@ -1795,6 +1798,12 @@
         //if (ulTacticType.length == filters.TacticTypeids.length) {
         //    filters.TacticTypeids = [];
         //}
+        // Desc ::  to resolve the owner filter issue
+        
+        filters.OwnerIds = [];
+        $("#ulSelectedOwner li input:checkbox:checked").map(function () {
+            filters.OwnerIds.push($(this).attr("id"));
+        });
         // End By Nishant Sheth
         $('#divCustomFieldsFilter').find("input[type=checkbox]").each(function () {
             if ($(this).attr('checked') == 'checked') {
@@ -1950,7 +1959,7 @@
 
                 $("div[id^='LinkIcon']").each(function () {
 
-                    bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
+                    bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
                 });
 
                 LoadImprovementGrid(CurrentPlanId)
@@ -2035,6 +2044,8 @@
                     }
                     else {
                         // Set collaborator details
+    //Added by kausha somaiya for ticket no #1869
+                        if ($('#gantt_here').html().length > 0)
                         $("#divCollaborator").css("display", "block");
                         $('#divCollaborator').empty(); // Clear collaborators div content
                         ////  set collaborator's image
@@ -4205,7 +4216,7 @@
 
                             $("div[id^='LinkIcon']").each(function () {
 
-                                bootstrapetitle($(this), 'This tactic is linked to ' + htmlDecode($(this).attr('linkedplanname')), "tipsy-innerWhite");
+                                bootstrapetitle($(this), 'This tactic is linked to ' + "<U>" + htmlDecode($(this).attr('linkedplanname') +"</U>"), "tipsy-innerWhite");
                             });
                             $(".gantt_container .gantt_tree_content").each(function (index, element) {
 
@@ -7090,6 +7101,8 @@ function () {
         BulkPlanOperation(false);
         BulkTTOperation(false);
         BulkStatusOperation(false);
+    //Added vy kausha for ticket no #1836
+        BulkOwnerOperation(false);
         $('#divCustomFieldsFilter').find("li").each(function (i) {
             $(this).removeClass("close-list");
             var chkid = $(this).find("input[type=checkbox]").attr("id");
