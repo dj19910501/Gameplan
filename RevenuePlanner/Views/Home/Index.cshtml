@@ -2358,7 +2358,7 @@
         var htmltestdiv = '';
         htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
         htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
-        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Timeframe: </label>';
+        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
         htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
         htmltestdiv += isQuater + '</span>';
         htmltestdiv += '</p>';
@@ -2388,7 +2388,8 @@
                 DropDownPlan = false;
             }
             if (DropDownPlan == true) {
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
             }
 
             //if (isselectedplan) {
@@ -2639,7 +2640,7 @@
             var mypathurl = document.location.pathname.split('/')[1];
             var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
             //var urlpdf = originurl + "/";// This line uncomment for production version and comment above line
-            $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
+            //$("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
             $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
                 $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
                 //  $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg.png")')");
@@ -3048,7 +3049,8 @@
                 DropDownPlan = false;
             }
             if (DropDownPlan == true) {
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
             }
 
 
