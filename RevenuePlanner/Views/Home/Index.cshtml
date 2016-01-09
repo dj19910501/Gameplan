@@ -1859,7 +1859,7 @@
                     if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                         BindUpcomingActivites(SelectedPlanIds);
                     }
-                    Currenttime = $('#ddlUpComingActivites').val();
+                    //Currenttime = $('#ddlUpComingActivites').val(); // Comment By Bhavesh
                     isQuater = Currenttime;
                     SetBudget("#pbudget");
                     SetPriceValue("#pMQLs");
@@ -2214,7 +2214,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
-            async: false,
+            //async: false,// Comment by bhavesh
             data: {
                 planids: SelectedPlanIds,
                 CurrentTime: Currenttime
