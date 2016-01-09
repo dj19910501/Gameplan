@@ -912,11 +912,10 @@
             alert('@Common.objCached.ValidateEndDate');
             return false;
         }
-
-        if(IsLinkedTactic.toLowerCase() == true)
-        {
+               //if(IsLinkedTactic.toLowerCase() == true)
+        //{
             if (!CheckDateYear(sdate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.StartDateCurrentYear")) return false;
-        }
+      //  }
         if (!CheckDateYear(edate, hdnYear, "@RevenuePlanner.Helpers.Common.objCached.EndDateCurrentYear")) return false;
         if (!validateDateCompare(sdate, edate, "@RevenuePlanner.Helpers.Common.objCached.DateComapreValidation")) return false;  //Added by Rahul Shah on 30/11/2015 for PL #1764.
         $("#txtProjectedStageValue").val(ReplaceCC($("#txtProjectedStageValue").val()));
@@ -1017,6 +1016,10 @@
                     window.location = '@Url.Content(Common.RedirectOnServiceUnavailibilityPage)';
                 }
                 else {
+                    if (data.IsExtended) {
+                        alert("You can not extend date to next year");
+                        return false;
+                    }
                     if (!data.IsDuplicate) {
                         if (data.redirect) {
                             var activeTab = $("#InspectTab li.active a").text()

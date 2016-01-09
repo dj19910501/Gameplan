@@ -3978,6 +3978,41 @@ namespace RevenuePlanner.Controllers
                                 }
 
                                 #region "Set pcobj Start & End Date."
+                                if (pcpobj.LinkedTacticId != null)
+                                {
+                                    if (Convert.ToInt32(pcpobj.EndDate.Year) - Convert.ToInt32(pcpobj.StartDate.Year) > 0)
+                                    {
+
+                                        if (Convert.ToInt32(form.EndDate.Year) - Convert.ToInt32(form.StartDate.Year) == 0)
+                                        {
+                                            pcpobj.LinkedTacticId = null;
+                                            pcpobj.LinkedPlanId = null;
+                                            linkedTactic.LinkedPlanId = null;
+                                            linkedTactic.LinkedTacticId = null;
+                                           
+                                            pcpobj.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                                                pcptl =>
+                                                {
+                                                    pcptl.LinkedLineItemId = null;
+
+                                                });
+                                            linkedTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
+                                                pcpt2 =>
+                                                {
+                                                    pcpt2.LinkedLineItemId = null;
+                                                });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (Convert.ToInt32(form.EndDate.Year) - Convert.ToInt32(pcpobj.Plan_Campaign_Program.Plan_Campaign.Plan.Year) > 0)
+                                        {
+                                            //string linkedYear = string.Format(Common.objCached.LinkedTacticExtendedYear, Enums.PlanEntityValues[Enums.PlanEntity.Tactic.ToString()]);    // Added by Viral Kadiya on 11/18/2014 to resolve PL ticket #947.
+                                            return Json(new { IsExtended = true, redirect = Url.Action("LoadSetup", new { id = form.PlanTacticId })});
+                                        }
+
+                                    }
+                                }
                                 pcpobj.StartDate = form.StartDate;
                                 pcpobj.EndDate = form.EndDate;
 

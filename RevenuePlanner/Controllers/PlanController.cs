@@ -12844,14 +12844,18 @@ namespace RevenuePlanner.Controllers
                 //    isDifferPlanyear = true;
                 //}
                 //#endregion
-
+                DateTime StartDate = DateTime.Now;
+                DateTime EndDate = DateTime.Now;
                 #region "Update Parent Entity Start-End Date"
                 Clonehelper objClonehelper = new Clonehelper();
                 if (CloneType == Enums.DuplicationModule.Tactic.ToString())
                 {
-                    var srcTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(tac => tac.PlanTacticId == srcPlanEntityId);
+                    //var srcTactic = db.Plan_Campaign_Program_Tactic.FirstOrDefault(tac => tac.PlanTacticId == srcPlanEntityId);
                     var destProgram = db.Plan_Campaign_Program.FirstOrDefault(prg => prg.PlanProgramId == destPlanEntityId);
+                    var destTact = db.Plan_Campaign_Program_Tactic.Where(tact => tact.PlanProgramId == destPlanEntityId).ToList();
 
+                    StartDate = destTact.Select(tact => tact.StartDate).Min();
+                    EndDate = destTact.Select(tact => tact.EndDate).Max();
                     //if (isDifferPlanyear)
                     //{
                     //    destProgram.StartDate = objClonehelper.GetResultDate(srcTactic.StartDate, destProgram.StartDate, true, isParentUpdate: true);
@@ -12864,22 +12868,22 @@ namespace RevenuePlanner.Controllers
                     //}
                     //else
                     //{
-                    if (destProgram.StartDate > srcTactic.StartDate)
+                    if (destProgram.StartDate > StartDate)
                     {
-                        destProgram.StartDate = srcTactic.StartDate;
+                        destProgram.StartDate = StartDate;
                     }
-                    if (destProgram.Plan_Campaign.StartDate > srcTactic.StartDate)
+                    if (destProgram.Plan_Campaign.StartDate > StartDate)
                     {
-                        destProgram.Plan_Campaign.StartDate = srcTactic.StartDate;
+                        destProgram.Plan_Campaign.StartDate = StartDate;
                     }
 
-                    if (srcTactic.EndDate > destProgram.EndDate)
+                    if (EndDate > destProgram.EndDate)
                     {
-                        destProgram.EndDate = srcTactic.EndDate;
+                        destProgram.EndDate = EndDate;
                     }
-                    if (srcTactic.EndDate > destProgram.Plan_Campaign.EndDate)
+                    if (EndDate > destProgram.Plan_Campaign.EndDate)
                     {
-                        destProgram.Plan_Campaign.EndDate = srcTactic.EndDate;
+                        destProgram.Plan_Campaign.EndDate = EndDate;
                     }
                     //}
 

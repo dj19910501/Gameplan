@@ -11,6 +11,9 @@ namespace RevenuePlanner.Helpers
 {
     public class Clonehelper
     {
+        #region Variables
+        private string PeriodChar = "Y";
+        #endregion
         public MRPEntities db = new MRPEntities();
 
         /// <summary>
@@ -1484,22 +1487,117 @@ namespace RevenuePlanner.Helpers
                     planid = objPlanTactic.Plan_Campaign_Program.Plan_Campaign.PlanId;
                     objPlanTactic.Plan_Campaign_Program = null;
                     objPlanTactic.Plan_Campaign_Program_Tactic_Comment = objPlanTactic.Plan_Campaign_Program_Tactic_Comment.ToList();
-                    objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList();
-                    objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
-                    objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
+                    //objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList();
+                    //objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList();
+                    //objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList();
                     objPlanTactic.Tactic_Share = objPlanTactic.Tactic_Share.ToList();
                     objPlanTactic.PlanProgramId = parentEntityId;
-                    objPlanTactic.StartDate = objPlanTactic.StartDate;
-                    objPlanTactic.EndDate = objPlanTactic.EndDate;
+                    objPlanTactic.StartDate = (objPlanTactic.StartDate.Year != startDate.Year) ? GetResultDateforLink(objPlanTactic.StartDate, startDate, true) : objPlanTactic.StartDate;
+                    objPlanTactic.EndDate = (objPlanTactic.EndDate.Year != endDate.Year) ? GetResultDateforLink(objPlanTactic.EndDate, endDate, false) : objPlanTactic.EndDate;
+                    //objPlanTactic.StartDate = objPlanTactic.StartDate;
+                    //objPlanTactic.EndDate = objPlanTactic.EndDate;
                     objPlanTactic.LinkedPlanId = planid;
                     objPlanTactic.LinkedTacticId = objPlanTactic.PlanTacticId;
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Actual = objPlanTactic.Plan_Campaign_Program_Tactic_Actual.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Actual.ToList().ForEach(
+                        actual => 
+                        {
+                            var period = actual.Period.Replace(PeriodChar, string.Empty);
+
+                            if (period != null || period != "")
+                            {
+
+                                if (int.Parse(period) > 12)
+                                {
+                                    int rem = int.Parse(period) % 12;
+                                    int div = int.Parse(period) / 12;
+                                    period = PeriodChar + (div > 1 ? "12" : rem.ToString());
+                                    actual.Period = period;
+                                }
+                            }
+                        }
+                        );
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Cost = objPlanTactic.Plan_Campaign_Program_Tactic_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Cost.ToList().ForEach(
+                        cost =>
+                        {
+                            var period = cost.Period.Replace(PeriodChar, string.Empty);
+
+                            if (period != null || period != "")
+                            {
+
+                                if (int.Parse(period) > 12)
+                                {
+                                    int rem = int.Parse(period) % 12;
+                                    int div = int.Parse(period) / 12;
+                                    period = PeriodChar + (div > 1 ? "12" : rem.ToString());
+                                    cost.Period = period;
+                                }
+                            }
+                        }
+                        );
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Budget = objPlanTactic.Plan_Campaign_Program_Tactic_Budget.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                    objPlanTactic.Plan_Campaign_Program_Tactic_Budget.ToList().ForEach(
+                        budget =>
+                        {
+                            var period = budget.Period.Replace(PeriodChar, string.Empty);
+
+                            if (period != null || period != "")
+                            {
+
+                                if (int.Parse(period) > 12)
+                                {
+                                    int rem = int.Parse(period) % 12;
+                                    int div = int.Parse(period) / 12;
+                                    period = PeriodChar + (div > 1 ? "12" : rem.ToString());
+                                    budget.Period = period;
+                                }
+                            }
+                        }
+                        );
                     objPlanTactic.Plan_Campaign_Program_Tactic_LineItem.Where(lineitem => lineitem.IsDeleted == false).ToList().ForEach(
                         pcptl =>
                         {
                             pcptl.LineItemType = null;
                             pcptl.LinkedLineItemId = pcptl.PlanLineItemId;
-                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList();
-                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList();
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost = pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Cost.ToList().ForEach(
+                                 cost =>
+                                 {
+                                     var period = cost.Period.Replace(PeriodChar, string.Empty);
+
+                                     if (period != null || period != "")
+                                     {
+
+                                         if (int.Parse(period) > 12)
+                                         {
+                                             int rem = int.Parse(period) % 12;
+                                             int div = int.Parse(period) / 12;
+                                             period = PeriodChar + (div > 1 ? "12" : rem.ToString());
+                                             cost.Period = period;
+                                         }
+                                     }
+                                 }
+                                );
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual = pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(per => int.Parse(per.Period.Replace(PeriodChar, string.Empty)) > 12).ToList();
+                            pcptl.Plan_Campaign_Program_Tactic_LineItem_Actual.ToList().ForEach(
+                                 actual =>
+                                 {
+                                     var period = actual.Period.Replace(PeriodChar, string.Empty);
+
+                                     if (period != null || period != "")
+                                     {
+
+                                         if (int.Parse(period) > 12)
+                                         {
+                                             int rem = int.Parse(period) % 12;
+                                             int div = int.Parse(period) / 12;
+                                             period = PeriodChar + (div > 1 ? "12" : rem.ToString());
+                                             actual.Period = period;
+                                         }
+                                     }
+                                 }
+                                );
                         });
 
 
@@ -1577,7 +1675,28 @@ namespace RevenuePlanner.Helpers
                 db.Configuration.AutoDetectChangesEnabled = true;
             }
         }
+        public DateTime GetResultDateforLink(DateTime srcDate, DateTime destDate, bool IsStartDate = false, bool isParentUpdate = false)
+        {
+            DateTime resultDate = new DateTime();
 
+            try
+            {
+                if (IsStartDate)
+                {
+                    resultDate = new DateTime(destDate.Year, resultDate.Month, resultDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay                        
+                }
+                else
+                {
+                    resultDate = new DateTime(destDate.Year, srcDate.Month, srcDate.Day); // copy date to destination in format: Destyear + SrcMonth + SrcDay
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ErrorSignal.FromCurrentContext().Raise(ex);
+            }
+            return resultDate;
+        }
         #endregion
     }
 }
