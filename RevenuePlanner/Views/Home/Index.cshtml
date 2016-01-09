@@ -114,6 +114,7 @@
                 if (TactictypeCount > 0) {
                     $("#TacticTypeAllModule").css("display", "block");
                     $("#NoTTFound").hide();
+                    $('#ulTacticType li').remove();
                     $.each(data.TacticTypelist, function (i, TactictypeItem) {
                         //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
                         var checked = "";
@@ -130,6 +131,7 @@
         }
 
         function GetTacticTypelist(Planids, async) {
+          
             var asyncval = false;
             if (async != undefined && async != 'undefined' && async != '' && async != null) {
                 asyncval = async;
@@ -533,6 +535,7 @@
                                     var checkedclass = "";
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
+                                    $('#ulSelectedOwner li').remove();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
                                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                                         //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
@@ -1502,6 +1505,7 @@
 
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
+            GetCollaborators(CurrentPlanId);
         }
         else {
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
@@ -1520,7 +1524,7 @@
         // Add by Nishant Sheth
         // Desc:: To resolve the header data issue
         GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
-        GetCollaborators(CurrentPlanId);
+       
     });
 
     //End
@@ -2276,9 +2280,12 @@
         //        $(this).parent().removeClass("close-list");
         //    }
         //});
-
-        GetOwnerListForFilter(planids, true);
-        GetTacticTypelist(planids, true);
+      
+        if (activeMenu.toLowerCase() == 'home') {
+            GetOwnerListForFilter(planids, true);
+            GetTacticTypelist(planids, true);
+        }
+      
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
