@@ -11702,7 +11702,7 @@ namespace RevenuePlanner.Controllers
                                       select new Plan_Tactic_Values
                                       {
                                           PlanTacticId = tactic.TacticObj.PlanTacticId,
-                                          MQL = Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),
+                                          MQL = tactic.MQLValue,//Math.Round(tactic.MQLValue, 0, MidpointRounding.AwayFromZero),// Comment by Bhavesh Ticket #1817. Date : 09-01-2016
                                           Revenue = tactic.RevenueValue,
                                           CampaignId = tactic.TacticObj.Plan_Campaign_Program.Plan_Campaign.PlanCampaignId,
                                           Programid = tactic.TacticObj.Plan_Campaign_Program.PlanProgramId
@@ -11997,7 +11997,7 @@ namespace RevenuePlanner.Controllers
                 return (num / 1000D).ToString("0.##") + "K";
 
             if (num != 0.0)
-                return num.ToString("#,#");
+                return num < 1 ? (num.ToString().Contains(".") ? num.ToString("#,#0.00") : num.ToString("#,#")) : num.ToString("#,#");
             else
                 return "0";
 
