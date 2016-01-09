@@ -12748,15 +12748,15 @@ namespace RevenuePlanner.Controllers
                 if (sourceModelId > 0 && !sourceModelId.Equals(destModelId))
                 {
 
-                    if (sourceModel.IntegrationInstanceId != null || sourceModel.IntegrationInstanceEloquaId != null)
-                    {
-                        //destModel = db.Models.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
-                        if (sourceModel.IntegrationInstanceId != destModel.IntegrationInstanceId || sourceModel.IntegrationInstanceEloquaId != destModel.IntegrationInstanceEloquaId)
-                        {
-                            return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
-                        }
-                    }
-                    if (sourceModel.IntegrationInstanceIdINQ != destModel.IntegrationInstanceIdINQ || sourceModel.IntegrationInstanceIdCW != destModel.IntegrationInstanceIdCW || sourceModel.IntegrationInstanceIdMQL != destModel.IntegrationInstanceIdMQL)
+                    //if (sourceModel.IntegrationInstanceId != null || sourceModel.IntegrationInstanceEloquaId != null)
+                    //{
+                    //    //destModel = db.Models.Where(mod => mod.ModelId == destModelId).FirstOrDefault();
+                    //    if (sourceModel.IntegrationInstanceId != destModel.IntegrationInstanceId || sourceModel.IntegrationInstanceEloquaId != destModel.IntegrationInstanceEloquaId)
+                    //    {
+                    //        return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
+                    //    }
+                    //}
+                    if (sourceModel.IntegrationInstanceId != destModel.IntegrationInstanceId || sourceModel.IntegrationInstanceEloquaId != destModel.IntegrationInstanceEloquaId || sourceModel.IntegrationInstanceIdINQ != destModel.IntegrationInstanceIdINQ || sourceModel.IntegrationInstanceIdCW != destModel.IntegrationInstanceIdCW || sourceModel.IntegrationInstanceIdMQL != destModel.IntegrationInstanceIdMQL)
                     {
                         return Json(new { msg = Common.objCached.ModelTypeConflict, isSuccess = false }, JsonRequestBehavior.AllowGet);
                     }
