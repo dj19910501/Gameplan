@@ -260,6 +260,7 @@ namespace RevenuePlanner.Models
         public string Month { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        public int Year { get; set; }
     }
 
     public class ActualTrendModel
@@ -271,6 +272,7 @@ namespace RevenuePlanner.Models
         public double Value { get; set; }
         public string Month { get; set; }
         public string StageCode { get; set; }
+        public int Year { get; set; }
     }
 
     public class TacticMonthInterval

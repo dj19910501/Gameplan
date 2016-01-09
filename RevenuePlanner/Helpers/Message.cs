@@ -2509,6 +2509,15 @@ namespace RevenuePlanner.Helpers
             }
         }
         ////End - Added by Rahul Shah for PL ticket #1846
+
+        private string _LinkedTacticExtendedYear;
+        public string LinkedTacticExtendedYear
+        {
+            get { return _LinkedTacticExtendedYear; }
+            set { _LinkedTacticExtendedYear = value; }
+        }
+
+
         ////Start - Added by Dashrath Prajapati for PL ticket #1776
         private string _CloneEntityNonSelctionErrorMessage;
         public string CloneEntityNonSelctionErrorMessage
@@ -3373,6 +3382,12 @@ namespace RevenuePlanner.Helpers
                                             _ModelTypeConflict = strMsgValue;
                                             break;
                                         ////End - Added by Rahul Shah for PL ticket #1846
+                                            ////Start - Added by Rahul Shah for PL ticket #1846
+                                        case "LinkedTacticExtendedYear":
+                                            _LinkedTacticExtendedYear = strMsgValue;
+                                            break;
+                                        ////End - Added by Rahul Shah for PL ticket #1846
+                                            
                                         ////Start - Added by Dashrath Prajapati for PL ticket #1776
                                         case "CloneEntityNoneSelectiontMessage":
                                             _CloneEntityNonSelctionErrorMessage = strMsgValue;

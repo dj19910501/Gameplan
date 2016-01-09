@@ -954,37 +954,42 @@
 		<value>{0} {1} has been copied to {2}.</value>
 	</Field>
 	<!--End Added by Viral Kadiya for PL ticket #1748-->
-  <!--start Added by Rahul Shah for PL ticket #1846-->
-  <Field>
-    <Name>ExceptionErrorMessageforLinking</Name>
-    <value>Error occurred while Linking data.</value>
-  </Field>
-  <!--end Added by Rahul Shah for PL ticket #1846-->
-  <!--start Added by Rahul Shah for PL ticket #1846-->
-  <Field>
-    <Name>TacticTypeConflictMessageforLinking</Name>
-    <value>Linking process cannot proceed due to source and destination plan uses different Tactic Type or Target Stage. Please check Tactic Type and Target Stage under Model.</value>
-  </Field>
-  <!--end Added by Rahul Shah for PL ticket #1846-->
-  <!--start Added by Rahul Shah for PL ticket #1846-->
-  <Field>
-    <Name>ModelTypeConflict</Name>
-    <value>Linking process cannot proceed due to source and destination Model Integration instances are different.</value>
-  </Field>
-  <!--end Added by Rahul Shah for PL ticket #1846-->
-  <!--start Added by Rahul Shah for PL ticket #1846-->
-  <Field>
-    <Name>LinkEntitySuccessMessage</Name>
-    <value>{0} {1} has been Link to {2}.</value>
-  </Field>
-  <!--end Added by Rahul Shah for PL ticket #1846-->
-  <!--start Added by Rahul Shah for PL ticket #1846-->
-  <Field>
-    <Name>LinkEntityAlreadyExist</Name>
-    <value>{0} is already Exist.</value>
-  </Field>
-  <!--end Added by Rahul Shah for PL ticket #1846-->
-  
+	<!--start Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>ExceptionErrorMessageforLinking</Name>
+		<value>Error occurred while Linking data.</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1846-->
+	<!--start Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>TacticTypeConflictMessageforLinking</Name>
+		<value>Linking process cannot proceed due to source and destination plan uses different Tactic Type or Target Stage. Please check Tactic Type and Target Stage under Model.</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1846-->
+	<!--start Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>ModelTypeConflict</Name>
+		<value>Linking process cannot proceed due to source and destination Model Integration instances are different.</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1846-->
+	<!--start Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>LinkEntitySuccessMessage</Name>
+		<value>{0} {1} has been linked to {2}.</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1846-->
+	<!--start Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>LinkEntityAlreadyExist</Name>
+		<value>{0} is already Exist.</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1846-->
+	<!--start Added by Rahul Shah for PL ticket #1846-->
+	<Field>
+		<Name>LinkedTacticExtendedYear</Name>
+		<value>Linked Tactic End Date can't move to next year</value>
+	</Field>
+	<!--end Added by Rahul Shah for PL ticket #1846-->
 	<!--start Added by Dashrath Prajapati for PL ticket #1776-->
 	<Field>
 		<Name>CloneEntityNoneSelectiontMessage</Name>
@@ -1011,10 +1016,10 @@
 		<value>Please provide preset name</value>
 	</Field>
 	<!--End Added by Dashrath Prajapati for PL ticket #1776-->
-  <!--start Added by Viral Kadiya for PL ticket #1849-->
-  <Field>
-    <Name>LinkedPlanEntityDuplicated</Name>
-    <value>{0} with same title exist in the linked plan.</value>
-  </Field>
-  <!--End Added by Viral Kadiya for PL ticket #1849-->
+	<!--start Added by Viral Kadiya for PL ticket #1849-->
+	<Field>
+		<Name>LinkedPlanEntityDuplicated</Name>
+		<value>{0} with same title exist in the linked plan.</value>
+	</Field>
+	<!--End Added by Viral Kadiya for PL ticket #1849-->
 </Messages>

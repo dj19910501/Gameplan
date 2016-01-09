@@ -114,6 +114,7 @@
                 if (TactictypeCount > 0) {
                     $("#TacticTypeAllModule").css("display", "block");
                     $("#NoTTFound").hide();
+                    $('#ulTacticType li').remove();
                     $.each(data.TacticTypelist, function (i, TactictypeItem) {
                         //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
                         var checked = "";
@@ -130,6 +131,7 @@
         }
 
         function GetTacticTypelist(Planids, async) {
+          
             var asyncval = false;
             if (async != undefined && async != 'undefined' && async != '' && async != null) {
                 asyncval = async;
@@ -141,7 +143,9 @@
 
             $.ajax({
                 beforeSend: function (x) {
-                    myApp.hidePleaseWait();
+                    if (!asyncval) {
+                        myApp.showPleaseWait();
+                    }
                 },
                 type: "GET",
                 cache: false,
@@ -503,7 +507,9 @@
 
             $.ajax({
                 beforeSend: function (x) {
-                    myApp.hidePleaseWait();
+                    if (!asyncval) {
+                        myApp.showPleaseWait();
+                    }
                 },
                 type: "GET",
                 cache: false,
@@ -529,6 +535,7 @@
                                     var checkedclass = "";
                                     $("#ulOwnerAllModule").css("display", "block");
                                     $("#NoOwnerFound").hide();
+                                    $('#ulSelectedOwner li').remove();
                                     $.each(data.AllowedOwner, function (i, OwnerItem) {
                                         var LoggedInOwner = data.LoggedInUser.OwnerId;
                                         //Added by Rahul Shah on 28/10/2015 for PL #1438 to checked Dropdown all option on default view
@@ -1498,6 +1505,7 @@
 
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "none");
             $('.dropdown-menu').find('a#ExportPDFVHoneyComb').css("display", "block");
+            GetCollaborators(CurrentPlanId);
         }
         else {
             $('.dropdown-menu').find('a#ExportCSVHoneyComb').css("display", "block");
@@ -1516,6 +1524,7 @@
         // Add by Nishant Sheth
         // Desc:: To resolve the header data issue
         GetHealderData(filters.SelectedPlans, filters.customFieldIds, filters.OwnerIds, filters.TacticTypeids, filters.StatusIds);
+       
     });
 
     //End
@@ -1858,7 +1867,7 @@
                     if (activeMenu == '@Enums.ActiveMenu.Home.ToString().ToLower()') {
                         BindUpcomingActivites(SelectedPlanIds);
                     }
-                    Currenttime = $('#ddlUpComingActivites').val();
+                    //Currenttime = $('#ddlUpComingActivites').val(); // Comment By Bhavesh
                     isQuater = Currenttime;
                     SetBudget("#pbudget");
                     SetPriceValue("#pMQLs");
@@ -2213,7 +2222,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
-            async: false,
+            //async: false,// Comment by bhavesh
             data: {
                 planids: SelectedPlanIds,
                 CurrentTime: Currenttime
@@ -2271,9 +2280,12 @@
         //        $(this).parent().removeClass("close-list");
         //    }
         //});
-
-        GetOwnerListForFilter(planids, true);
-        GetTacticTypelist(planids, true);
+      
+        if (activeMenu.toLowerCase() == 'home') {
+            GetOwnerListForFilter(planids, true);
+            GetTacticTypelist(planids, true);
+        }
+      
     }
 
     //// Modified By Viral Kadiya PL Ticket#886 to Replace Select and X with check boxes for filters
@@ -2358,7 +2370,7 @@
         var htmltestdiv = '';
         htmltestdiv += '<h2 style="color: #040707; margin: 0 0 10px;">Marketing Activities (Ongoing)</h2>';
         htmltestdiv += '<p style=" line-height: 24px;margin: 0;">';
-        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Timeframe: </label>';
+        htmltestdiv += '<label style="color:#050708;font-weight: 600;">Time Frame: </label>';
         htmltestdiv += '<span style="color: #9C9C9C; font-weight: 600; font-size: 14px;">';
         htmltestdiv += isQuater + '</span>';
         htmltestdiv += '</p>';
@@ -2373,7 +2385,12 @@
         });
         if (PdfFilters.SelectedPlans.length > 0) {
             $.each(PdfFilters.SelectedPlans, function () {
-                innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                if (activeMenu == "plan") {
+                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
+                }
+                else {
+                    innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                }
                 //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
             });
         }
@@ -2388,7 +2405,8 @@
                 DropDownPlan = false;
             }
             if (DropDownPlan == true) {
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
             }
 
             //if (isselectedplan) {
@@ -2506,7 +2524,8 @@
 
             var innerfiltervalueOwner = "";
             var isselectedOwner = true;
-            if (PdfFilters.OwnerIds.length > 0) {
+            var pdfowner = PdfFilters.OwnerIds.toString().trim();
+            if (pdfowner.length > 0) {
                 $.each(PdfFilters.OwnerIds, function () {
                     innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
                     //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
@@ -2639,7 +2658,7 @@
             var mypathurl = document.location.pathname.split('/')[1];
             var urlpdf = originurl + "/" + mypathurl + "/"; // This line use for stage servers.
             //var urlpdf = originurl + "/";// This line uncomment for production version and comment above line
-            $("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
+            //$("#imglogopdf").attr("src", urlpdf + "Content/images/game-plan-logo.png")
             $("#DivBullhornbg").parent().find('.bullhorn-bg').each(function () {
                 $("#mqlmaindiv").css("background-image", "url('" + urlpdf + "Content/images/bullhorn-bg.png')");
                 //  $("#mqlmaindiv").css("background-image", "url('@Url.Content("~/Content/images/bullhorn-bg.png")')");
@@ -2790,6 +2809,10 @@
                 datestart = "01-01-" + isQuater.split("-")[0];
                 dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
                 // $('#AttachChartCanvas').css('margin-left', '160px');
+                if (PdfFilters.customFieldIds.toString().trim().length > 0) {
+                    $("#legendchart").children().first().css('top', '275px');
+                    $("#legendchart").children().last().css('top', '299px');
+                }
                 $('#mainpdfdiv').css('width', '');
                 var headerhtml = $("#testdiv").html();
             }
@@ -3048,7 +3071,8 @@
                 DropDownPlan = false;
             }
             if (DropDownPlan == true) {
-                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                //innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").text();
+                innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
             }
 
 
@@ -6609,6 +6633,7 @@
                                 if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                     LoadPlanGrid();
                                 }
+                             
                             }
                         }
 
@@ -6730,6 +6755,8 @@
                                 if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
                                     LoadPlanGrid();
                                 }
+                                //Added by kausha somaiya on 09/01/2015 for ticket no #1869 
+                                GetCollaborators(CurrentPlanId);
                             }
                         }
                         return;
