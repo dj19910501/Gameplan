@@ -4319,9 +4319,9 @@ namespace RevenuePlanner.Controllers
                     List<int> lstPlanIds = new List<int>();
                     List<int> _TacticIds = new List<int>();
                     List<Plan_Campaign_Program_Tactic> _tacList = new List<Plan_Campaign_Program_Tactic>();
-                    List<Plan_Campaign_Program_Tactic_Cost> _tacCostList = new List<Plan_Campaign_Program_Tactic_Cost>();
+                    //List<Plan_Campaign_Program_Tactic_Cost> _tacCostList = new List<Plan_Campaign_Program_Tactic_Cost>();
 
-                    List<Plan_Campaign_Program_Tactic_Budget> _tacBudgetList = new List<Plan_Campaign_Program_Tactic_Budget>();
+                    //List<Plan_Campaign_Program_Tactic_Budget> _tacBudgetList = new List<Plan_Campaign_Program_Tactic_Budget>();
                     string RevenueStageType = Enums.InspectStage.Revenue.ToString();
                     List<string> categories = new List<string>();
                     #endregion
@@ -4335,8 +4335,32 @@ namespace RevenuePlanner.Controllers
                     _tacList = GetTacticForReporting(true);
                     _TacticIds = _tacList.Select(tac => tac.PlanTacticId).ToList();
 
-                    _tacBudgetList = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => _TacticIds.Contains(tac.PlanTacticId)).ToList();
-                    _TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Sum(budget => budget.Value) : 0;
+
+                    var _tacBudgetList = db.Plan_Campaign_Program_Tactic_Budget.Where(tac => _TacticIds.Contains(tac.PlanTacticId)).ToList()
+                         .Select(tac => new
+                         {
+                             Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+                             TacticId = tac.PlanTacticId,
+                             Value = tac.Value,
+                             StartYear = tac.Plan_Campaign_Program_Tactic.StartDate.Year
+                         }).ToList().Select(tac => new
+                         {
+                             Period = tac.Period,
+                             NumPeriod = (tac.Period / 13),
+                             TacticId = tac.TacticId,
+                             Value = tac.Value,
+                             StartYear = tac.StartYear
+                         }).ToList().Select(tact => new
+                         {
+                             Period = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                             Year = tact.StartYear + tact.NumPeriod,
+                             TacticId = tact.TacticId,
+                             Value = tact.Value
+                         }).ToList();
+
+
+
+                    _TacticTotalBudget = _tacBudgetList != null && _tacBudgetList.Count > 0 ? _tacBudgetList.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(budget => budget.Value) : 0;
 
                     _PlanBudget = db.Plans.Where(plan => lstPlanIds.Contains(plan.PlanId)).Sum(plan => plan.Budget);
                     objFinanceModel.TotalBudgetAllocated = _TacticTotalBudget;
@@ -4348,11 +4372,35 @@ namespace RevenuePlanner.Controllers
 
                     #region "PlannedCost vs Budget Calculation"
 
-                    _tacCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _TacticIds.Contains(tacCost.PlanTacticId)).ToList();
-                    objFinanceModel.PlannedCostvsBudget = _tacCostList.Sum(tacCost => tacCost.Value);
+                    //_tacCostList = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _TacticIds.Contains(tacCost.PlanTacticId)).ToList();
+                    var tacCostListData = db.Plan_Campaign_Program_Tactic_Cost.Where(tacCost => _TacticIds.Contains(tacCost.PlanTacticId))
+                         .ToList().Select(tac => new
+                         {
+                             Period = Convert.ToInt32(tac.Period.Replace("Y", "")),
+                             TacticId = tac.PlanTacticId,
+                             Value = tac.Value,
+                             StartYear = tac.Plan_Campaign_Program_Tactic.StartDate.Year
+                         }).ToList().Select(tac => new
+                         {
+                             Period = tac.Period,
+                             NumPeriod = (tac.Period / 13),
+                             TacticId = tac.TacticId,
+                             Value = tac.Value,
+                             StartYear = tac.StartYear
+                         }).ToList().Select(tact => new
+                         {
+                             Period = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                             Year = tact.StartYear + tact.NumPeriod,
+                             TacticId = tact.TacticId,
+                             Value = tact.Value
+                         }).ToList();
+
+                    objFinanceModel.PlannedCostvsBudget = tacCostListData.Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).Sum(tacCost => tacCost.Value);
 
                     List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
-                    TacticActualCostList = Common.CalculateActualCostTacticslist(_TacticIds, Tacticdata);
+                    TacticActualCostList = Common.CalculateActualCostTacticslist(_TacticIds, Tacticdata, timeframeOption);
+                    
+                    //ListYear.Contains(Convert.ToString(tac.ActualList.Select(act => Convert.ToString(act.Year)).ToList()))).ToList();
 
                     double _ActualCostvsBudget = 0;
                     if (TacticActualCostList != null)
@@ -4526,11 +4574,11 @@ namespace RevenuePlanner.Controllers
                                     BudgetCostList = new List<double>();
                                     _PlannedCostValue = _ActualCostValue = _BudgetCostValue = 0;
 
-                                    PlannedCostList = _tacCostList.Where(plancost => Quarters.Contains(plancost.Period)
-                                        && plancost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year.ToString()).Select(plancost => plancost.Value).ToList();
-                                    TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Quarters.Contains(actual.Period)).Sum(actual => actual.Value));
+                                    PlannedCostList = tacCostListData.Where(plancost => Quarters.Contains(plancost.Period)
+                                        && plancost.Year == year).Select(plancost => plancost.Value).ToList();
+                                    TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => Quarters.Contains(actual.Period) && actual.Year == year).Sum(actual => actual.Value));
                                     BudgetCostList = _tacBudgetList.Where(budgtcost => Quarters.Contains(budgtcost.Period)
-                                        && budgtcost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == year.ToString()).Select(budgtcost => budgtcost.Value).ToList();
+                                        && budgtcost.Year == year).Select(budgtcost => budgtcost.Value).ToList();
 
                                     _PlannedCostValue = PlannedCostList.Sum(val => val);
                                     serPlannedData.Add(_PlannedCostValue);
@@ -4562,12 +4610,12 @@ namespace RevenuePlanner.Controllers
                                     periodlist.Add(PeriodPrefix + k);
                                 }
 
-                                _PlannedCostValue = _tacCostList.Where(plancost => periodlist.Contains(plancost.Period)
-                                    && plancost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == Year)
+                                _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                                    && plancost.Year == Convert.ToInt32(Year))
                                     .Select(plancost => plancost.Value).FirstOrDefault();
-                                TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period)).Sum(actual => actual.Value));
+                                TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
                                 _BudgetCostValue = _tacBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
-                                    && budgtcost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == Year).Sum(budgtcost => budgtcost.Value);
+                                    && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
 
                                 serPlannedData.Add(_PlannedCostValue);
                                 serBudgetData.Add(_BudgetCostValue);
@@ -4610,13 +4658,14 @@ namespace RevenuePlanner.Controllers
                             bool isNumeric = int.TryParse(categories[i - 1], out year);
                             if (!(isNumeric) && isMonthList == false)
                             {
+                                year = ListYear.Contains(currentyear) ? Convert.ToInt32(currentyear) : Convert.ToInt32(ListYear.Min());
                                 for (int k = 1; k <= 12; k++)
                                 {
-                                    curntPeriod = PeriodPrefix + i;
+                                    curntPeriod = PeriodPrefix + k;
 
-                                    _PlannedCostValue = _tacCostList.Where(plancost => plancost.Period.Equals(curntPeriod)).Select(plancost => plancost.Value).FirstOrDefault();
-                                    TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod)).Sum(actual => actual.Value));
-                                    _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod)).Select(budgtcost => budgtcost.Value).FirstOrDefault();
+                                    _PlannedCostValue = tacCostListData.Where(plancost => plancost.Period.Equals(curntPeriod) && plancost.Year == year).Select(plancost => plancost.Value).FirstOrDefault();
+                                    TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => actual.Period.Equals(curntPeriod) && actual.Year == year).Sum(actual => actual.Value));
+                                    _BudgetCostValue = _tacBudgetList.Where(budgtcost => budgtcost.Period.Equals(curntPeriod) && budgtcost.Year == year).Select(budgtcost => budgtcost.Value).FirstOrDefault();
 
                                     serPlannedData.Add(_PlannedCostValue);
                                     serBudgetData.Add(_BudgetCostValue);
@@ -4646,12 +4695,12 @@ namespace RevenuePlanner.Controllers
                                     periodlist.Add(PeriodPrefix + k);
                                 }
 
-                                _PlannedCostValue = _tacCostList.Where(plancost => periodlist.Contains(plancost.Period)
-                                    && plancost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == Year)
+                                _PlannedCostValue = tacCostListData.Where(plancost => periodlist.Contains(plancost.Period)
+                                    && plancost.Year == Convert.ToInt32(Year))
                                     .Select(plancost => plancost.Value).FirstOrDefault();
-                                TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period)).Sum(actual => actual.Value));
+                                TacticActualCostList.ForEach(tactic => _ActualCostValue += tactic.ActualList.Where(actual => periodlist.Contains(actual.Period) && actual.Year == Convert.ToInt32(Year)).Sum(actual => actual.Value));
                                 _BudgetCostValue = _tacBudgetList.Where(budgtcost => periodlist.Contains(budgtcost.Period)
-                                    && budgtcost.Plan_Campaign_Program_Tactic.Plan_Campaign_Program.Plan_Campaign.Plan.Year == Year).Sum(budgtcost => budgtcost.Value);
+                                    && budgtcost.Year == Convert.ToInt32(Year)).Sum(budgtcost => budgtcost.Value);
 
                                 serPlannedData.Add(_PlannedCostValue);
                                 serBudgetData.Add(_BudgetCostValue);
