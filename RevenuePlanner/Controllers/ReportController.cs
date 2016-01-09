@@ -152,45 +152,18 @@ namespace RevenuePlanner.Controllers
                     EndDate = camp.EndDate
                 })
                 .ToList();
-            var ProgramPlans = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false && uniqueplanids.Contains(prog.Plan_Campaign.PlanId))
-                .Select(prog => new
-                {
-                    PlanId = prog.Plan_Campaign.PlanId,
-                    StartYear = prog.StartDate.Year,
-                    EndYear = prog.EndDate.Year,
-                    StartDate = prog.StartDate,
-                    EndDate = prog.EndDate
-                }).ToList();
-            var TacticPlans = db.Plan_Campaign_Program_Tactic.Where(tac => tac.IsDeleted == false && uniqueplanids.Contains(tac.Plan_Campaign_Program.Plan_Campaign.PlanId))
-                .Select(tac => new
-                {
-                    PlanId = tac.Plan_Campaign_Program.Plan_Campaign.PlanId,
-                    StartYear = tac.StartDate.Year,
-                    EndYear = tac.EndDate.Year,
-                    StartDate = tac.StartDate,
-                    EndDate = tac.EndDate
-                }).ToList();
+           // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
             var PlanIds = DataPlanList.Where(plan => plan.Year == selectedYear)
                 .Select(plan => plan.PlanId).Distinct().ToList();
 
             var CampPlanIds = CampPlans.Where(camp => (!(camp.StartDate >= endDate1 || camp.EndDate <= startDate1)))
                 .Select(camp => camp.PlanId).Distinct().ToList();
-            var ProgramPlanIds = ProgramPlans.Where(prog => (!(prog.StartDate >= endDate1 || prog.EndDate <= startDate1)))
-                .Select(prog => prog.PlanId).Distinct().ToList();
-            var TacticPlanIds = TacticPlans.Where(tac => (!(tac.StartDate >= endDate1 || tac.EndDate <= startDate1)))
-                .Select(tac => tac.PlanId).Distinct().ToList();
 
-            var allPlanIds = CampPlanIds.Concat(ProgramPlanIds)
-                                        .Concat(TacticPlanIds)
-                                        .Concat(PlanIds).Distinct().ToList();
+            var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
             var StartYears = CampPlans.Select(camp => camp.StartYear)
-                .Concat(ProgramPlans.Select(prog => prog.StartYear))
-                .Concat(TacticPlans.Select(tac => tac.StartYear))
                 .Distinct().ToList();
 
             var EndYears = CampPlans.Select(camp => camp.EndYear)
-                .Concat(ProgramPlans.Select(prog => prog.EndYear))
-                .Concat(TacticPlans.Select(tac => tac.EndYear))
                 .Distinct().ToList();
 
             var PlanYears = StartYears.Concat(EndYears).Distinct().ToList();
@@ -2130,23 +2103,24 @@ namespace RevenuePlanner.Controllers
             lstViewByAllocated = lstViewByAllocated.Where(modal => !string.IsNullOrEmpty(modal.Text)).ToList();
             ViewBag.ViewByAllocated = lstViewByAllocated;
 
-            //// Set Year list.
-            List<SelectListItem> lstYear = new List<SelectListItem>();
-            var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId).ToList();
-            var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
-            // Remove FY from Year Ticekt #1805 By Bhavesh on Date 07-jan-2016
-            yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = year, Value = year }));
+            // Comment By Bhavesh. Not require
+            ////// Set Year list.
+            //List<SelectListItem> lstYear = new List<SelectListItem>();
+            //var lstPlan = db.Plans.Where(plan => plan.IsDeleted == false && plan.Status == PublishedPlan && plan.Model.ClientId == Sessions.User.ClientId).ToList();
+            //var yearlist = lstPlan.OrderBy(plan => plan.Year).Select(plan => plan.Year).Distinct().ToList();
+            //// Remove FY from Year Ticekt #1805 By Bhavesh on Date 07-jan-2016
+            //yearlist.ForEach(year => lstYear.Add(new SelectListItem { Text = year, Value = year }));
 
 
-            string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
-            string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
+            //string defaultallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.defaults.ToString()].ToString();
+            //string Noneallocatedby = Enums.PlanAllocatedByList[Enums.PlanAllocatedBy.none.ToString()].ToString();
 
-            List<SelectListItem> lstPlanList = new List<SelectListItem>();
+            //List<SelectListItem> lstPlanList = new List<SelectListItem>();
 
-            lstPlanList = lstPlan.Where(plan => plan.Year == currentYear).OrderBy(plan => plan.Title, new AlphaNumericComparer()).Select(plan => new SelectListItem { Text = currentYear + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (Sessions.ReportPlanIds.Contains(plan.PlanId) ? true : false) }).ToList();
-            ViewBag.ViewPlan = lstPlanList.Where(plan => !string.IsNullOrEmpty(plan.Text)).ToList();
-            ViewBag.ViewYear = lstYear.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
-            ViewBag.SelectedYear = currentYear;
+            //lstPlanList = lstPlan.Where(plan => plan.Year == currentYear).OrderBy(plan => plan.Title, new AlphaNumericComparer()).Select(plan => new SelectListItem { Text = currentYear + " " + plan.Title + " - " + (plan.AllocatedBy == defaultallocatedby ? Noneallocatedby : plan.AllocatedBy), Value = plan.PlanId.ToString() + "_" + plan.AllocatedBy, Selected = (Sessions.ReportPlanIds.Contains(plan.PlanId) ? true : false) }).ToList();
+            //ViewBag.ViewPlan = lstPlanList.Where(plan => !string.IsNullOrEmpty(plan.Text)).ToList();
+            //ViewBag.ViewYear = lstYear.Where(plan => !string.IsNullOrEmpty(plan.Text)).OrderBy(plan => plan.Text, new AlphaNumericComparer()).ToList();
+            //ViewBag.SelectedYear = currentYear;
 
             return PartialView("Budget");
         }
@@ -2179,20 +2153,13 @@ namespace RevenuePlanner.Controllers
                 var uniqueplanids = DataPlanList.Select(p => p.PlanId).Distinct().ToList();
                 var CampPlanIds = db.Plan_Campaign.Where(camp => camp.IsDeleted == false && uniqueplanids.Contains(camp.PlanId)).Select(camp => new { PlanId = camp.PlanId, StartDate = camp.StartDate, EndDate = camp.EndDate }).ToList()
                     .Where(camp => ListYears.Contains(camp.StartDate.Year.ToString()) || ListYears.Contains(camp.EndDate.Year.ToString()))
-                    .Select(camp => camp.PlanId).ToList();
-                var ProgramPlanIds = db.Plan_Campaign_Program.Where(prog => prog.IsDeleted == false && uniqueplanids.Contains(prog.Plan_Campaign.PlanId)).Select(prog => new { PlanId = prog.Plan_Campaign.PlanId, StartDate = prog.StartDate, EndDate = prog.EndDate }).ToList()
-                    .Where(prog => ListYears.Contains(prog.StartDate.Year.ToString()) || ListYears.Contains(prog.EndDate.Year.ToString()))
-                    .Select(prog => prog.PlanId).ToList();
-                var TacticPlanIds = db.Plan_Campaign_Program_Tactic.Where(tact => tact.IsDeleted == false && uniqueplanids.Contains(tact.Plan_Campaign_Program.Plan_Campaign.PlanId)).Select(tac => new { PlanId = tac.Plan_Campaign_Program.Plan_Campaign.PlanId, StartDate = tac.StartDate, EndDate = tac.EndDate }).ToList()
-                    .Where(tac => ListYears.Contains(tac.StartDate.ToString()) || ListYears.Contains(tac.EndDate.ToString()))
-                    .Select(tac => tac.PlanId).ToList();
+                    .Select(camp => camp.PlanId).Distinct().ToList();
+               // Removed by Bhavseh. We already update parent date while updating of child entity date so we can get year from parent.
                 var PlanIds = DataPlanList.Where(plan => ListYears.Contains(plan.Year))
                     .Select(plan => plan.PlanId).Distinct().ToList();
 
 
-                var allPlanIds = CampPlanIds.Concat(ProgramPlanIds)
-                                            .Concat(TacticPlanIds)
-                                            .Concat(PlanIds).Distinct().ToList();
+                var allPlanIds = CampPlanIds.Concat(PlanIds).Distinct().ToList();
                 // End By Nishant Sheth
 
                 //// Set Plan list.
