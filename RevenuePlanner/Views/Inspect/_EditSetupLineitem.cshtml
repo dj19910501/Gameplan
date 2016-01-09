@@ -291,26 +291,7 @@
         }
     }
    
-    //Added BY Komal Rawal for #1617
-    $('#dropdown_new_btn_FieldMapping').click(function () {
-        if($(this).next().css("display") == "none")
-        {
-            //$(this).next().css("width","auto");
-            //  $(this).next().addClass('dropdownAddborder');
-            var dropdown_field_top1 = $('#dropdown_new_btn_FieldMapping').offset().top;
-            var windownheight = $(window).height();
-            if (dropdown_field_top1 >= (windownheight - 200)) { $('#treeviewddl').addClass('fieldmapping-dropdown');}
-            
-            $(this).next().css("display","block");
-            //LoadBudgetDropdown();
-        }
-        else
-        {
-            //$(this).next().css("width","0px");
-            $(this).next().css("display","none");
-        }
-        
-    });
+   
     //var DropdownTop = 0;
     //$(".pop-body-wraper").scroll(function () {
 
@@ -688,7 +669,10 @@
 
         var DropdownTop = 0;
         $( ".pop-body-wraper" ).scroll(function() {
-
+            //$('#dropdown_new_btn_FieldMapping').click(function () {
+            //    alert('1');
+            //    $('#treeviewddl').addClass('fieldmapping-dropdown');
+            //});
             //var DropdownToPos = $(this).scrollTop();
             //if (DropdownToPos > DropdownTop) {
             //    $('.dropdown-wrapper').removeClass('dropup');
@@ -735,11 +719,30 @@
             //} else if (dropdowntop >= (windownheight - 300)) {
             //    alert('test2');
             //    $('.dropdown-wrapper').addClass('dropup')
-            //} 
-            
+            //}             
         });
 
-      
+        //Added BY Komal Rawal for #1617
+        $('#dropdown_new_btn_FieldMapping').click(function () {
+            //alert('3');
+            if($(this).next().css("display") == "none")
+            {
+                //$(this).next().css("width","auto");
+                //  $(this).next().addClass('dropdownAddborder');
+                var dropdown_field_top1 = $('#dropdown_new_btn_FieldMapping').offset().top;
+                var windownheight = $(window).height();
+                 $('#treeviewddl').addClass('fieldmapping-dropdown');
+            
+                $(this).next().css("display","block");
+                //LoadBudgetDropdown();
+            }
+            else
+            {
+                //$(this).next().css("width","0px");
+                $(this).next().css("display","none");
+            }
+        
+        });
 
         $('#LineItemTypeId').next().css('width', '95%');
         $('#LineItemTypeId').next().css('min-height', '30px');
