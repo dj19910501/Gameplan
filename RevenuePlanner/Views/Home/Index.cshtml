@@ -141,7 +141,9 @@
 
             $.ajax({
                 beforeSend: function (x) {
-                    myApp.hidePleaseWait();
+                    if (!asyncval) {
+                        myApp.showPleaseWait();
+                    }
                 },
                 type: "GET",
                 cache: false,
@@ -503,7 +505,9 @@
 
             $.ajax({
                 beforeSend: function (x) {
-                    myApp.hidePleaseWait();
+                    if (!asyncval) {
+                        myApp.showPleaseWait();
+                    }
                 },
                 type: "GET",
                 cache: false,
