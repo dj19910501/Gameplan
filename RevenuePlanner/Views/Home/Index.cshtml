@@ -2385,7 +2385,12 @@
         });
         if (PdfFilters.SelectedPlans.length > 0) {
             $.each(PdfFilters.SelectedPlans, function () {
-                innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                if (activeMenu == "plan") {
+                    innerfiltervalueplan += " " + $(".nl-field.nl-dd").find("a").attr('title');
+                }
+                else {
+                    innerfiltervalueplan += " " + $('#' + this).parent().parent("#ulSelectedPlans").children().children('#' + this).attr("plantitle") + ",";
+                }
                 //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
             });
         }
@@ -2519,7 +2524,8 @@
 
             var innerfiltervalueOwner = "";
             var isselectedOwner = true;
-            if (PdfFilters.OwnerIds.length > 0) {
+            var pdfowner = PdfFilters.OwnerIds.toString().trim();
+            if (pdfowner.length > 0) {
                 $.each(PdfFilters.OwnerIds, function () {
                     innerfiltervalueOwner += " " + $("#ulSelectedOwner").find('#liOwner' + this).attr("title") + ",";
                     //$("#5820").parent().parent("#ulSelectedPlans").children().children("#5820").attr("plantitle");
@@ -2803,6 +2809,10 @@
                 datestart = "01-01-" + isQuater.split("-")[0];
                 dateend = "01-01-" + (parseInt(isQuater) + yearDiffrence).toString();
                 // $('#AttachChartCanvas').css('margin-left', '160px');
+                if (PdfFilters.customFieldIds.toString().trim().length > 0) {
+                    $("#legendchart").children().first().css('top', '275px');
+                    $("#legendchart").children().last().css('top', '299px');
+                }
                 $('#mainpdfdiv').css('width', '');
                 var headerhtml = $("#testdiv").html();
             }

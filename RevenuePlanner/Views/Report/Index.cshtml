@@ -1173,6 +1173,7 @@
     }
 
     function BulkPlanOperation(selection) {
+        var PlanIds = [];
         var ulPlanli = "#" + multiselectPlanId +" li";
         if (selection) {
             $(ulPlanli).each(function (i) {
@@ -1191,7 +1192,8 @@
 
         PlanIds = GetFilterIdForPlan(multiselectPlanId);
         GetOwnerListForFilter(PlanIds,false);
-        GetTacticTypelist(PlanIds,false);
+        GetTacticTypelist(PlanIds, false);
+        LoadPlanData(null);
     }
 
     function BulkCustomFieldOperation(selection,ulCutomFieldId) {
@@ -2390,7 +2392,9 @@ $("#BtnShareReport").click(function () {
                 var chkid = $(this).find("input[type=checkbox]").attr("id");
                 $("#" + chkid).removeAttr("checked");
             });
-
+            $("#accordion-Year li input:checkbox:checked").each(function () {
+                $(this).removeAttr("checked");
+            });
 
         }
 
