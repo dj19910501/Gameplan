@@ -405,6 +405,7 @@ namespace RevenuePlanner.Controllers
             public int StartYear { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
+            public int Year { get; set; }
         }
 
         /// <summary>
@@ -1421,11 +1422,70 @@ namespace RevenuePlanner.Controllers
                 #region "Revenue Model Values"
 
                 ActualTacticStageList = GetActualListInTacticInterval(Tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
-                ActualTacticTrendList = GetActualTrendModelForRevenueOverview(Tacticdata, ActualTacticStageList);
-
+                ActualTacticTrendList = GetActualTrendModelForRevenueOverview(Tacticdata, ActualTacticStageList, option);
+                ActualTacticTrendList = ActualTacticTrendList.Select(tac => new
+                {
+                    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    TacticId = tac.PlanTacticId,
+                    Value = tac.Value,
+                    StartYear = tac.StartDate.Year,
+                    StageCode = tac.StageCode,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate
+                }).ToList().Select(tac => new
+                {
+                    Period = tac.Period,
+                    NumPeriod = (tac.Period / 13),
+                    TacticId = tac.TacticId,
+                    Value = tac.Value,
+                    StartYear = tac.StartYear,
+                    StageCode = tac.StageCode,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate
+                }).ToList().Select(tact => new ActualTrendModel
+                {
+                    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    Year = tact.StartYear + tact.NumPeriod,
+                    PlanTacticId = tact.TacticId,
+                    Value = tact.Value,
+                    StageCode = tact.StageCode,
+                    StartDate = tact.StartDate,
+                    EndDate = tact.EndDate
+                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                 #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
                 ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
-
+                ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                {
+                    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    TacticId = tac.PlanTacticId,
+                    Value = tac.Value,
+                    StartYear = tac.StartDate.Year,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate,
+                    NoTacticMonths = tac.NoTacticMonths,
+                    TrendValue = tac.TrendValue
+                }).ToList().Select(tac => new
+                {
+                    Period = tac.Period,
+                    NumPeriod = (tac.Period / 13),
+                    TacticId = tac.TacticId,
+                    Value = tac.Value,
+                    StartYear = tac.StartDate.Year,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate,
+                    NoTacticMonths = tac.NoTacticMonths,
+                    TrendValue = tac.TrendValue
+                }).ToList().Select(tact => new ProjectedTrendModel
+                {
+                    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    Year = tact.StartYear + tact.NumPeriod,
+                    PlanTacticId = tact.TacticId,
+                    Value = tact.Value,
+                    StartDate = tact.StartDate,
+                    EndDate = tact.EndDate,
+                    NoTacticMonths = tact.NoTacticMonths,
+                    TrendValue = tact.TrendValue
+                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                 #endregion
 
                 #region "Get Basic Model"
@@ -4135,12 +4195,73 @@ namespace RevenuePlanner.Controllers
 
                     List<string> includeMonth = GetMonthListForReport(timeframeOption);
                     ActualTacticStageList = GetActualListInTacticInterval(Tacticdata, timeframeOption, ActualStageCodeList, IsTillCurrentMonth);
-                    List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(Tacticdata, ActualTacticStageList);
+                    List<ActualTrendModel> ActualTacticTrendModelList = GetActualTrendModelForRevenueOverview(Tacticdata, ActualTacticStageList, timeframeOption);
+                    ActualTacticTrendModelList = ActualTacticTrendModelList.Select(tac => new
+                                {
+                                    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                                    TacticId = tac.PlanTacticId,
+                                    Value = tac.Value,
+                                    StartYear = tac.StartDate.Year,
+                                    StageCode = tac.StageCode,
+                                    StartDate = tac.StartDate,
+                                    EndDate = tac.EndDate
+                                }).ToList().Select(tac => new
+                                {
+                                    Period = tac.Period,
+                                    NumPeriod = (tac.Period / 13),
+                                    TacticId = tac.TacticId,
+                                    Value = tac.Value,
+                                    StartYear = tac.StartYear,
+                                    StageCode = tac.StageCode,
+                                    StartDate = tac.StartDate,
+                                    EndDate = tac.EndDate
+                                }).ToList().Select(tact => new ActualTrendModel
+                                {
+                                    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                                    Year = tact.StartYear + tact.NumPeriod,
+                                    PlanTacticId = tact.TacticId,
+                                    Value = tact.Value,
+                                    StageCode = tact.StageCode,
+                                    StartDate = tact.StartDate,
+                                    EndDate = tact.EndDate
+                                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                     #region "Revenue related Code"
 
                     #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(revStageCode)).ToList();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, revStageCode);
+                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                   {
+                       Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                       TacticId = tac.PlanTacticId,
+                       Value = tac.Value,
+                       StartYear = tac.StartDate.Year,
+                       StartDate = tac.StartDate,
+                       EndDate = tac.EndDate,
+                       NoTacticMonths = tac.NoTacticMonths,
+                       TrendValue = tac.TrendValue
+                   }).ToList().Select(tac => new
+                   {
+                       Period = tac.Period,
+                       NumPeriod = (tac.Period / 13),
+                       TacticId = tac.TacticId,
+                       Value = tac.Value,
+                       StartYear = tac.StartDate.Year,
+                       StartDate = tac.StartDate,
+                       EndDate = tac.EndDate,
+                       NoTacticMonths = tac.NoTacticMonths,
+                       TrendValue = tac.TrendValue
+                   }).ToList().Select(tact => new ProjectedTrendModel
+                   {
+                       Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                       Year = tact.StartYear + tact.NumPeriod,
+                       PlanTacticId = tact.TacticId,
+                       Value = tact.Value,
+                       StartDate = tact.StartDate,
+                       EndDate = tact.EndDate,
+                       NoTacticMonths = tact.NoTacticMonths,
+                       TrendValue = tact.TrendValue
+                   }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
                     #endregion
 
@@ -4174,6 +4295,38 @@ namespace RevenuePlanner.Controllers
                     ActualTacticTrendList = new List<ActualTrendModel>();
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(inqStageCode)).ToList();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, inqStageCode);
+                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                    {
+                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                        TacticId = tac.PlanTacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tac => new
+                    {
+                        Period = tac.Period,
+                        NumPeriod = (tac.Period / 13),
+                        TacticId = tac.TacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tact => new ProjectedTrendModel
+                    {
+                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        Year = tact.StartYear + tact.NumPeriod,
+                        PlanTacticId = tact.TacticId,
+                        Value = tact.Value,
+                        StartDate = tact.StartDate,
+                        EndDate = tact.EndDate,
+                        NoTacticMonths = tact.NoTacticMonths,
+                        TrendValue = tact.TrendValue
+                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
                     #endregion
 
@@ -4201,6 +4354,38 @@ namespace RevenuePlanner.Controllers
                     ActualTacticTrendList = new List<ActualTrendModel>();
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(mqlStageCode)).ToList();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, mqlStageCode);
+                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                    {
+                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                        TacticId = tac.PlanTacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tac => new
+                    {
+                        Period = tac.Period,
+                        NumPeriod = (tac.Period / 13),
+                        TacticId = tac.TacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tact => new ProjectedTrendModel
+                    {
+                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        Year = tact.StartYear + tact.NumPeriod,
+                        PlanTacticId = tact.TacticId,
+                        Value = tact.Value,
+                        StartDate = tact.StartDate,
+                        EndDate = tact.EndDate,
+                        NoTacticMonths = tact.NoTacticMonths,
+                        TrendValue = tact.TrendValue
+                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
                     #endregion
 
@@ -4263,6 +4448,38 @@ namespace RevenuePlanner.Controllers
                     ActualTacticTrendList = new List<ActualTrendModel>();
                     ActualTacticTrendList = ActualTacticTrendModelList.Where(actual => actual.StageCode.Equals(cwStageCode)).ToList();
                     ProjectedTrendList = CalculateProjectedTrend(Tacticdata, includeMonth, cwStageCode);
+                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                    {
+                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                        TacticId = tac.PlanTacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tac => new
+                    {
+                        Period = tac.Period,
+                        NumPeriod = (tac.Period / 13),
+                        TacticId = tac.TacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tact => new ProjectedTrendModel
+                    {
+                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        Year = tact.StartYear + tact.NumPeriod,
+                        PlanTacticId = tact.TacticId,
+                        Value = tact.Value,
+                        StartDate = tact.StartDate,
+                        EndDate = tact.EndDate,
+                        NoTacticMonths = tact.NoTacticMonths,
+                        TrendValue = tact.TrendValue
+                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                     OverviewModelList = GetTacticwiseActualProjectedRevenueList(ActualTacticTrendList, ProjectedTrendList);
                     #endregion
 
@@ -4399,7 +4616,7 @@ namespace RevenuePlanner.Controllers
 
                     List<TacticActualCostModel> TacticActualCostList = new List<TacticActualCostModel>();
                     TacticActualCostList = Common.CalculateActualCostTacticslist(_TacticIds, Tacticdata, timeframeOption);
-                    
+
                     //ListYear.Contains(Convert.ToString(tac.ActualList.Select(act => Convert.ToString(act.Year)).ToList()))).ToList();
 
                     double _ActualCostvsBudget = 0;
@@ -4871,7 +5088,7 @@ namespace RevenuePlanner.Controllers
         /// </summary>
         /// <param name="TacticList"> List of Tactic</param>
         /// <returns>Return List of Sparklinechart data</returns>
-        public List<ActualTrendModel> GetActualTrendModelForRevenueOverview(List<TacticStageValue> TacticData, List<ActualTacticListByStage> ActualTacticStageList)
+        public List<ActualTrendModel> GetActualTrendModelForRevenueOverview(List<TacticStageValue> TacticData, List<ActualTacticListByStage> ActualTacticStageList, string timeframe = "")
         {
             #region "Declare local Variables"
             List<ActualTrendModel> ActualTrendModelList = new List<ActualTrendModel>();
@@ -4887,6 +5104,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> TacticList = new List<Plan_Campaign_Program_Tactic>();
             List<Plan_Campaign_Program_Tactic_Actual> ActualTacticList = new List<Plan_Campaign_Program_Tactic_Actual>();
             int _currentYear = Convert.ToInt32(currentYear);
+            string[] ListYear = timeframe.Split(',');
             #endregion
 
             try
@@ -4905,7 +5123,7 @@ namespace RevenuePlanner.Controllers
                     foreach (var tactic in TacticList)
                     {
                         {
-                            _TacEndMonth = 12;
+                            _TacEndMonth = 12 * ListYear.Length;
                         }
                         _planTacticId = tactic.PlanTacticId;
 
@@ -6718,14 +6936,16 @@ namespace RevenuePlanner.Controllers
                                 _curntQuarterListProjected = Quarters.Where(q1 => Convert.ToInt32(q1.Replace(PeriodPrefix, "")) > (year == Convert.ToInt32(currentYear) ? Convert.ToInt32(currentEndMonth) : Convert.ToInt32("12"))).ToList(); // Modified By Nishant Sheth #1839
                                 _curntQuarterListGoal = Quarters;
 
-                                _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) && _curntQuarterListActual.Contains(actual.Month)).Sum(actual => actual.Value);
+                                _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) && _curntQuarterListActual.Contains(actual.Month)
+                                    && actual.Year == year).Sum(actual => actual.Value);
                                 _actuallist.Add(_Actual);
 
 
-                                _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && _curntQuarterListProjected.Contains(_projected.Month)).Sum(_projected => _projected.TrendValue);
+                                _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && _curntQuarterListProjected.Contains(_projected.Month)
+                                    && _projected.Year == year).Sum(_projected => _projected.TrendValue);
                                 _projectedlist.Add(_Projected);
 
-                                _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
+                                _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate) && _projected.Year == year)
                                     && _curntQuarterListGoal.Contains(_projected.Month)).Sum(_projected => _projected.Value);
                                 _goallist.Add(_Goal);
 
@@ -6733,7 +6953,7 @@ namespace RevenuePlanner.Controllers
                                 //DateTime CurrentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
                                 _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
-                                    && _curntQuarterListActual.Contains(_projected.Month)).Sum(_projected => _projected.Value); // Modified By Nishant Sheth #1839
+                                    && _curntQuarterListActual.Contains(_projected.Month) && _projected.Year == year).Sum(_projected => _projected.Value); // Modified By Nishant Sheth #1839
                                 _goalYTDList.Add(_GoalYTD);
                             }
                             isMonthList = true;
@@ -6744,17 +6964,17 @@ namespace RevenuePlanner.Controllers
                             DateTime TFstartDate = new DateTime(Year, 1, 1);
                             DateTime TFendDate = new DateTime(Year, 12, 31);
 
-                            _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))).Sum(actual => actual.Value);
+                            _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate)) && actual.Year == year).Sum(actual => actual.Value);
                             _actuallist.Add(_Actual);
 
-                            _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.TrendValue);
+                            _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && _projected.Year == year).Sum(_projected => _projected.TrendValue);
                             _projectedlist.Add(_Projected);
 
-                            _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
+                            _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && _projected.Year == year).Sum(_projected => _projected.Value);
                             _goallist.Add(_Goal);
 
                             // Addd For Rveneue header value Goal Yeat to Date
-                            _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
+                            _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate)) && _projected.Year == year).Sum(_projected => _projected.Value);
                             _goalYTDList.Add(_GoalYTD);
                         }
 
@@ -6778,15 +6998,15 @@ namespace RevenuePlanner.Controllers
                                 // Modified By Nishant Sheth #1839
                                 curntPeriod = PeriodPrefix + k;
                                 // Modify By Nishant Sheth #1839 to get same value for quaterly and monthly
-                                _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))
+                                _Actual = ActualTrendList.Where(actual => actual.Year == year && (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))
                                     && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? actual.Month.Equals(curntPeriod) : actual.Month.Equals("")).Sum(actual => actual.Value);
-                                _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
+                                _Projected = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
                                     && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) > (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.TrendValue);
                                 // Modified By Nishant Sheth #1839
-                                _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
+                                _Goal = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
                                     && _projected.Month.Equals(curntPeriod)).Sum(_projected => _projected.Value);
 
-                                _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
+                                _GoalYTD = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))
                                     && Convert.ToInt32(curntPeriod.Replace(PeriodPrefix, "")) <= (year == Convert.ToInt32(currentYear) ? currentEndMonth : Convert.ToInt32("12")) ? _projected.Month.Equals(curntPeriod) : _projected.Month.Equals("")).Sum(_projected => _projected.Value);
 
                                 _actuallist.Add(_Actual);
@@ -6802,10 +7022,10 @@ namespace RevenuePlanner.Controllers
                             int Year = Convert.ToInt32(categories[i - 1]);
                             DateTime TFstartDate = new DateTime(Year, 1, 1);
                             DateTime TFendDate = new DateTime(Year, 12, 31);
-                            _Actual = ActualTrendList.Where(actual => (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))).Sum(actual => actual.Value);
-                            _Projected = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.TrendValue);
-                            _Goal = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
-                            _GoalYTD = ProjectedTrendModelList.Where(_projected => (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
+                            _Actual = ActualTrendList.Where(actual => actual.Year == year && (!(actual.StartDate >= TFendDate || actual.EndDate <= TFstartDate))).Sum(actual => actual.Value);
+                            _Projected = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.TrendValue);
+                            _Goal = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
+                            _GoalYTD = ProjectedTrendModelList.Where(_projected => _projected.Year == year && (!(_projected.StartDate >= TFendDate || _projected.EndDate <= TFstartDate))).Sum(_projected => _projected.Value);
 
                             _actuallist.Add(_Actual);
                             _projectedlist.Add(_Projected);
@@ -6909,7 +7129,7 @@ namespace RevenuePlanner.Controllers
             List<Plan_Campaign_Program_Tactic> _lstTactic = new List<Plan_Campaign_Program_Tactic>();
             CardSectionModel objCardSectionModel = new CardSectionModel();
             List<CardSectionListModel> CardSectionListModel = new List<CardSectionListModel>();
-
+            string[] ListYear = option.Split(',');
             /// End Declartion
             #endregion
 
@@ -6983,9 +7203,71 @@ namespace RevenuePlanner.Controllers
 
                     ActualTacticStageList = GetActualListInTacticInterval(_tacticdata, option, ActualStageCodeList, IsTillCurrentMonth);
                     ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
+                   
+                    ActualTacticTrendList = ActualTacticTrendList.Select(tac => new
+                    {
+                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                        TacticId = tac.PlanTacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StageCode = tac.StageCode,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate
+                    }).ToList().Select(tac => new
+                    {
+                        Period = tac.Period,
+                        NumPeriod = (tac.Period / 13),
+                        TacticId = tac.TacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartYear,
+                        StageCode = tac.StageCode,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate
+                    }).ToList().Select(tact => new ActualTrendModel
+                    {
+                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        Year = tact.StartYear + tact.NumPeriod,
+                        PlanTacticId = tact.TacticId,
+                        Value = tact.Value,
+                        StageCode = tact.StageCode,
+                        StartDate = tact.StartDate,
+                        EndDate = tact.EndDate
+                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
 
                     #region "Revenue : Get Tacticwise Actual_Projected Vs Goal Model data "
                     ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, revStageCode);
+                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                    {
+                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                        TacticId = tac.PlanTacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tac => new
+                    {
+                        Period = tac.Period,
+                        NumPeriod = (tac.Period / 13),
+                        TacticId = tac.TacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tact => new ProjectedTrendModel
+                    {
+                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        Year = tact.StartYear + tact.NumPeriod,
+                        PlanTacticId = tact.TacticId,
+                        Value = tact.Value,
+                        StartDate = tact.StartDate,
+                        EndDate = tact.EndDate,
+                        NoTacticMonths = tact.NoTacticMonths,
+                        TrendValue = tact.TrendValue
+                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                     #endregion
 
                     #region Mapping Items for Card Section
@@ -7247,6 +7529,35 @@ namespace RevenuePlanner.Controllers
                     {
                         ActualTacticTrendList = GetActualTrendModelForRevenueOverview(_tacticdata, ActualTacticStageList);
                     }
+                    ActualTacticTrendList = ActualTacticTrendList.Select(tac => new
+                    {
+                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                        TacticId = tac.PlanTacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StageCode = tac.StageCode,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate
+                    }).ToList().Select(tac => new
+                    {
+                        Period = tac.Period,
+                        NumPeriod = (tac.Period / 13),
+                        TacticId = tac.TacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartYear,
+                        StageCode = tac.StageCode,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate
+                    }).ToList().Select(tact => new ActualTrendModel
+                    {
+                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        Year = tact.StartYear + tact.NumPeriod,
+                        PlanTacticId = tact.TacticId,
+                        Value = tact.Value,
+                        StageCode = tact.StageCode,
+                        StartDate = tact.StartDate,
+                        EndDate = tact.EndDate
+                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                     #endregion
 
                     if (_customfieldOptionId > 0)
@@ -7293,6 +7604,38 @@ namespace RevenuePlanner.Controllers
                     {
                         ProjectedTrendList = CalculateProjectedTrend(_tacticdata, includeMonth, revStageCode);
                     }
+                    ProjectedTrendList = ProjectedTrendList.Select(tac => new
+                    {
+                        Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                        TacticId = tac.PlanTacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tac => new
+                    {
+                        Period = tac.Period,
+                        NumPeriod = (tac.Period / 13),
+                        TacticId = tac.TacticId,
+                        Value = tac.Value,
+                        StartYear = tac.StartDate.Year,
+                        StartDate = tac.StartDate,
+                        EndDate = tac.EndDate,
+                        NoTacticMonths = tac.NoTacticMonths,
+                        TrendValue = tac.TrendValue
+                    }).ToList().Select(tact => new ProjectedTrendModel
+                    {
+                        Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                        Year = tact.StartYear + tact.NumPeriod,
+                        PlanTacticId = tact.TacticId,
+                        Value = tact.Value,
+                        StartDate = tact.StartDate,
+                        EndDate = tact.EndDate,
+                        NoTacticMonths = tact.NoTacticMonths,
+                        TrendValue = tact.TrendValue
+                    }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
                 }
                 /// Add By Nishant Sheth : 07-July-2015 
                 /// Desc : Fill card section with filter option , Ticket no:#1397 
@@ -7784,7 +8127,41 @@ namespace RevenuePlanner.Controllers
 
                 #region "Get Cost by LineItem"
                 TacticCostData = GetActualCostDataByWeightage(_CustomfieldId, _TacticOptionObject.CustomFieldOptionid.ToString(), _CustomFieldType, fltrTacticData, tblTacticLineItemList, tblLineItemActualList, _IsTacticCustomField);
-                CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
+                TacticCostData = TacticCostData.Select(tac => new
+                {
+                    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    TacticId = tac.Id,
+                    Value = tac.Value,
+                    StartYear = tac.StartDate.Year,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate,
+                    StartMonth = tac.StartMonth,
+                    EndMonth = tac.EndMonth
+                }).ToList().Select(tac => new
+                {
+                    Period = tac.Period,
+                    NumPeriod = (tac.Period / 13),
+                    TacticId = tac.TacticId,
+                    Value = tac.Value,
+                    StartYear = tac.StartDate.Year,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate,
+                    StartMonth = tac.StartMonth,
+                    EndMonth = tac.EndMonth
+                }).ToList().Select(tact => new TacticMonthValue
+                {
+                    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    Year = tact.StartYear + tact.NumPeriod,
+                    Id = tact.TacticId,
+                    Value = tact.Value,
+                    StartYear = tact.StartDate.Year,
+                    StartDate = tact.StartDate,
+                    EndDate = tact.EndDate,
+                    StartMonth = tact.StartMonth,
+                    EndMonth = tact.EndMonth
+                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+                CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)
+                     && ListYear.Contains(Convert.ToString(actual.Year))).ToList();
                 #endregion
 
                 #region "Calcualte Actual & Projected value Quarterly"
@@ -7815,7 +8192,8 @@ namespace RevenuePlanner.Controllers
                             {
                                 List<string> Quarters = new List<string>() { YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++) };
                                 Actual = CurrentMonthCostList.Where(actual => Quarters.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                  && actual.Year==Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 CostList.Add(Actual.ToString());
                             }
                             Quarteryvalues = true;
@@ -7823,7 +8201,8 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             double Actual = 0;
-                            Actual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            Actual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             CostList.Add(Actual.ToString());
                         }
                     }
@@ -7853,14 +8232,16 @@ namespace RevenuePlanner.Controllers
                             {
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + i;
                                 _actualval = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                    && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                    && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                    && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 CostList.Add(_actualval.ToString());
                             }
                             Quarteryvalues = true;
                         }
                         else
                         {
-                            _actualval = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            _actualval = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             CostList.Add(_actualval.ToString());
                         }
                     }
@@ -7937,7 +8318,8 @@ namespace RevenuePlanner.Controllers
                             {
                                 List<string> Quarters = new List<string>() { YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++) };
                                 CostActual = CurrentMonthCostList.Where(actual => Quarters.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                  && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 Total = (CostActual) != 0 ? ((((ActualList.ToList()[ListIndex]) - (CostActual)) / (CostActual)) * 100) : 0;
                                 ROIList.Add(Math.Round(Total, 2).ToString());
                                 ListIndex++;
@@ -7947,7 +8329,8 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             double CostActual = 0;
-                            CostActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            CostActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             Total = (CostActual) != 0 ? ((((ActualList.ToList()[ListIndex]) - (CostActual)) / (CostActual)) * 100) : 0;
                             ROIList.Add(Math.Round(Total, 2).ToString());
                             ListIndex++;
@@ -7979,7 +8362,8 @@ namespace RevenuePlanner.Controllers
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + _month;
                                 _revactual = ActualList.ToList()[ListIndex];
                                 _costActual = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                     && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                     && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                     && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
                                 ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
                                 ListIndex++;
@@ -7989,7 +8373,8 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             _revactual = ActualList.ToList()[ListIndex];
-                            _costActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            _costActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
                             ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
                             ListIndex++;
@@ -8321,7 +8706,42 @@ namespace RevenuePlanner.Controllers
 
                 #region "Get ActualCost Data"
                 TacticCostData = GetActualCostData(TacticData, tblTacticLineItemList, tblLineItemActualList);
-                CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)).ToList();
+                TacticCostData = TacticCostData.Select(tac => new
+                {
+                    Period = Convert.ToInt32(tac.Month.Replace("Y", "")),
+                    TacticId = tac.Id,
+                    Value = tac.Value,
+                    StartYear = tac.StartDate.Year,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate,
+                    StartMonth = tac.StartMonth,
+                    EndMonth = tac.EndMonth
+                }).ToList().Select(tac => new
+                {
+                    Period = tac.Period,
+                    NumPeriod = (tac.Period / 13),
+                    TacticId = tac.TacticId,
+                    Value = tac.Value,
+                    StartYear = tac.StartDate.Year,
+                    StartDate = tac.StartDate,
+                    EndDate = tac.EndDate,
+                    StartMonth = tac.StartMonth,
+                    EndMonth = tac.EndMonth
+                }).ToList().Select(tact => new TacticMonthValue
+                {
+                    Month = PeriodPrefix + (tact.Period > 12 ? ((tact.Period + 1) - (13 * tact.NumPeriod)) : (tact.Period) - (13 * tact.NumPeriod)),
+                    Year = tact.StartYear + tact.NumPeriod,
+                    Id = tact.TacticId,
+                    Value = tact.Value,
+                    StartYear = tact.StartDate.Year,
+                    StartDate = tact.StartDate,
+                    EndDate = tact.EndDate,
+                    StartMonth = tact.StartMonth,
+                    EndMonth = tact.EndMonth
+                }).Where(tac => ListYear.Contains(Convert.ToString(tac.Year))).ToList();
+
+                CurrentMonthCostList = TacticCostData.Where(actual => IncludeCurrentMonth.Contains(actual.Month)
+                    && ListYear.Contains(Convert.ToString(actual.Year))).ToList();
 
                 #endregion
 
@@ -8360,7 +8780,8 @@ namespace RevenuePlanner.Controllers
                             {
                                 List<string> Quarters = new List<string>() { YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++) };
                                 Actual = CurrentMonthCostList.Where(actual => Quarters.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                  && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 CostList.Add(Actual.ToString());
                             }
                             Quarteryvalues = true;
@@ -8368,7 +8789,8 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             double Actual = 0;
-                            Actual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            Actual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             CostList.Add(Actual.ToString());
                         }
                     }
@@ -8390,14 +8812,16 @@ namespace RevenuePlanner.Controllers
                             {
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + i;
                                 _actualval = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                    && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                    && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                    && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 CostList.Add(_actualval.ToString());
                             }
                             Quarteryvalues = true;
                         }
                         else
                         {
-                            _actualval = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            _actualval = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             CostList.Add(_actualval.ToString());
                         }
                     }
@@ -8458,7 +8882,8 @@ namespace RevenuePlanner.Controllers
                             {
                                 List<string> Quarters = new List<string>() { YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++), YearName + PeriodPrefix + (Quarterbase++) };
                                 CostActual = CurrentMonthCostList.Where(actual => Quarters.Contains(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                  && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                  && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 Total = (CostActual) != 0 ? ((((ActualList.ToList()[ListIndex]) - (CostActual)) / (CostActual)) * 100) : 0;
                                 ROIList.Add(Math.Round(Total, 2).ToString());
                                 ListIndex++;
@@ -8468,7 +8893,8 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             double CostActual = 0;
-                            CostActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            CostActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             Total = (CostActual) != 0 ? ((((ActualList.ToList()[ListIndex]) - (CostActual)) / (CostActual)) * 100) : 0;
                             ROIList.Add(Math.Round(Total, 2).ToString());
                             ListIndex++;
@@ -8492,7 +8918,8 @@ namespace RevenuePlanner.Controllers
                                 _curntPeriod = YearName + PeriodPrefix.ToString() + _month;
                                 _revactual = ActualList.ToList()[ListIndex];
                                 _costActual = CurrentMonthCostList.Where(actual => _curntPeriod.Equals(!string.IsNullOrEmpty(actual.Month) ? actual.Month : string.Empty)
-                                     && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                                     && !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                     && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                                 _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
                                 ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
                                 ListIndex++;
@@ -8502,7 +8929,8 @@ namespace RevenuePlanner.Controllers
                         else
                         {
                             _revactual = ActualList.ToList()[ListIndex];
-                            _costActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)).Sum(actual => actual.Value);
+                            _costActual = CurrentMonthCostList.Where(actual => !(actual.StartDate >= TFEndDate || actual.EndDate <= TFStartDate)
+                                && actual.Year == Convert.ToInt32(YearName)).Sum(actual => actual.Value);
                             _TotalTrend = (_costActual) != 0 ? ((((_revactual) - (_costActual)) / (_costActual) * 100)) : 0;// Change By Nishant #1423
                             ROIList.Add(Math.Round(_TotalTrend, 2).ToString());
                             ListIndex++;
