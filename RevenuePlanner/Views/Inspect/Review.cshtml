@@ -1,6 +1,8 @@
 ﻿@using RevenuePlanner.Helpers
 @{
     var tacticReview = (RevenuePlanner.Models.InspectModel)ViewBag.TacticDetail;
+    var deployStatus = tacticReview.IsDeployedToIntegration == true ? "Sync To Integration" : "Don't Sync To Integration";
+    deployStatus = tacticReview.IsIntegrationInstanceExist == "N/A" ? "Plan not Integrated" : deployStatus; ////Taken from code modified by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration - Brad Gray 09 Jan 2016 PL#1872
     bool ShowMQL = (bool)ViewBag.ShowMQL;
     bool IsDeployToIntegrationVisible = (bool)ViewBag.IsDeployToIntegrationVisible;
     ////Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration
@@ -18,7 +20,7 @@
     var tacticIntegrationProjMgmtInstance = ViewBag.TacticIntegrationProjMgmtInstance;
     List<RevenuePlanner.Models.CustomFieldReviewTab> topThreeCustomFields = ViewBag.TopThreeCustomFields;
 }
-
+ <div class="row border-bottom-div">
     <div class="span5 width360" id="inspect-modal-right-div" style="width: 42% !important">
         <div style="padding-bottom: 16px; margin-bottom: 24px;" class="span5 width96 border-bottom-div">
             <div style="float: left; width: 48%; border-right: 1px solid #b2afaf">
@@ -60,7 +62,7 @@
                     @if (ViewBag.IsDiffrentStageType == true)
                     {
                         <img id="diffrentStageIcon" src="~/Content/images/flag-icon.png" title="Please note that the stage information at plan level is different than that at the model level" />
-                    
+
                     }
                 </div>
                 @* Modified By :- Sohel Pathan on 21/05/2014 for PL ticket #483. *@
@@ -76,12 +78,12 @@
                 </div>
             }
         </div>
-        <div class="cf margin-top40 width96 textalign-mozcenter border-bottom-div review_wrapper" style="padding-bottom: 5px;">
+        <div class="cf margin-top40 width96 textalign-mozcenter review_wrapper" style="padding-bottom: 5px;">
 
             <div class="pull-left size65x38">
                 <div class="owner"></div>
                 <div>Owner</div>
-                <span id="owner-id" class="blue-text bold" title="@tacticReview.Owner">@tacticReview.Owner</span>
+                <span id="owner-id" class="blue-text bold remove-bottom-border" title="@tacticReview.Owner">@tacticReview.Owner</span>
             </div>
             <!--Moved Integration review to new div; Brad Gray PL#1462 8 Aug 2015-->
             @foreach (var item in topThreeCustomFields)
@@ -100,90 +102,27 @@
                     }
                 </div>
             }
-            
         </div>
 
-
-        <!--Begin PL#1462 07 Brad Gray, Aug 2015--> 
-        
-        <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
-            <div class="span2" style="width: 80px">
-                <div class="pull-left size65x38">
-                    <div class="integration-review"></div>
-                    <div>
-                        <label class="integrration_label_align" id="integration">Integration</label>
-                    </div>
-                    <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
-                </div>
-            </div>
-            <div class="span9" style="border-left: 1px solid #b2afaf">
-                    @{
-                        foreach (var item in ViewBag.IntegrationTypeLinks)
-                        {
-                            <div class="pull-left margin-left20 integration-review-imglink" >
-                                <a href=@item.Value onclick="window.open(this.href); return false;">
-                                    <div class="link_popup pull-right margin-bottom10"></div>
-                                    @{
-                                        if (item.Key == Enums.IntegrationType.Eloqua.ToString())
-                                        {
-                                                <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
-                                        }
-                                        else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
-                                        {
-                                            <div class="margin-left20 salesforce-img margin-top10"></div>
-                                        }
-                                        else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
-                                        {
-                                            <div class="workfront-img margin-top23"></div>
-                                        }
-                                        }
-                                 </a>
-                              </div>
-                           }
-                     }
+        <!--Begin PL#1872 Brad Gray, 09 Jan 2016-->
+        <div class="cf margin-top60 width96 textalign-mozcenter" style="padding-bottom: 5px;">
+            <div class="span5 review_no_padding">
+                <p style="width: 110%; text-align: left">Deployed to Integration</p>
+                @Html.TextBox("txtDeployStatus", deployStatus, new { @class = "span12 input-small truncate", style = "background:#F2F2F2;", id = "txtDeployStatus", @readonly = "true" })
             </div>
         </div>
-        
-        <!--End PL#1462 07 Brad Gray, Aug 2015--> 
+    </div>
 
-            @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
-            <div style="margin-bottom: 0px; width: 93%;margin-top:10px;">
-                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null)
-                {
-                    if (INQLastSync != null)
-                    {
-                        <span style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced on @INQLastSync.ToString("MMM dd, yyyy") at @INQLastSync.ToString("hh:mm tt").ToLower() </span>
-                        <br />
-                    }
-                    if (MQLLastSync != null)
-                    {
-                        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced on @MQLLastSync.ToString("MMM dd, yyyy") at @MQLLastSync.ToString("hh:mm tt").ToLower()</span>
-                        <br />
-                    }
-                    if (CWLastSync != null)
-                    {
-                        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced on @CWLastSync.ToString("MMM dd, yyyy ") at  @CWLastSync.ToString("hh:mm tt").ToLower()</span>
-                        <br />
-                    }
-                    if (TacticLastSync != null)
-                    {
-                        <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic last synced on @TacticLastSync.ToString("MMM dd, yyyy ") at  @TacticLastSync.ToString("hh:mm tt").ToLower()</span>
-                    }
-                }
-                else
-                {
-                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic not synced</span>
-                }
-                @*End -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
-            </div>
-        </div>
+
+
+
+
+
 
     <div class="span2 right-col-tab no_margin_top" id="inspect-modal-left-column2">
-
         <div class="inspect-bolder-label">Notes</div>
-     
         <div id="divComment" class="chat-div" style="overflow: auto;height: 350px !important;">
-            <div id="divInnerComment" class="comment-scroll-section all-height90" >
+            <div id="divInnerComment" class="comment-scroll-section all-height90">
                 @foreach (var item in ViewBag.ReviewModel)
                 {
                     <div class="post-div" style="clear: both; width: 100%; border-bottom: solid 1px #A8A8A8;">
@@ -197,7 +136,6 @@
                         </div>
                         <div style="clear: both;"></div>
                     </div>
-                                        
                 }
             </div>
             <div></div>
@@ -205,31 +143,71 @@
 
         @if ((bool)ViewBag.IsCommentsViewEditAuthorized)    //Modified By komal Rawal for #1158
         {
-          <div class="padding-top10" id="commentsection">
+            <div class="padding-top10" id="commentsection">
                 @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-blue-background" })
                 <img id="btnComment" src="~/Content/images/chat-button.png" alt="" style="float: right;" />
             </div>
         }
         else
         {
-            <div class="padding-top10" >
+            <div class="padding-top10">
                 @Html.TextArea("txtAreaComment", new { id = "txtAreaComment", @class = "new-comment light-gray-background" })
-                <img  src="~/Content/images/chat-button-gray.png" alt="" style="float: right;" />
-        </div>
+                <img src="~/Content/images/chat-button-gray.png" alt="" style="float: right;" />
+            </div>
         }
-   
-    </div>
 
+    </div>
+</div>
    @if (tacticReview.IsDeployedToIntegration && (bool)ViewBag.IsModelDeploy && (bool)ViewBag.IsModelIntegratedWorkFront)
    {
-        <ul class="nav nav-tabs new-margin clear remove-bottom-border" style="border-top: 1px solid #b2afaf;padding-bottom:10px;padding-top:10px">
+    <div class="row">
+
+        <!--Begin PL#1462 07 Brad Gray, Aug 2015, moved 09 Jan 2016 by Brad Gray PL#1872-->
+        <div class="cf margin-top20 width96 textalign-mozcenter" style="padding-bottom: 5px;">
+            <div class="span2" style="width: 80px">
+                <div class="pull-left size65x38">
+                    <div class="integration-review"></div>
+                    <div>
+                        <label class="integrration_label_align" id="integration">Integration</label>
+                    </div>
+                    <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
+                </div>
+            </div>
+            <div class="span9" style="border-left: 1px solid #b2afaf">
+             @{
+               foreach (var item in ViewBag.IntegrationTypeLinks)
+               {
+                <div class="pull-left margin-left20 integration-review-imglink">
+                    <a href=@item.Value onclick="window.open(this.href); return false;">
+                        <div class="link_popup pull-right margin-bottom10"></div>
+                        @{
+                           if (item.Key == Enums.IntegrationType.Eloqua.ToString())
+                           {
+                            <div class="eloqua-img margin-top18" style="margin-left:10px"></div>
+                           }
+                           else if (item.Key == Enums.IntegrationType.Salesforce.ToString())
+                           {
+                            <div class="margin-left20 salesforce-img margin-top10"></div>
+                           }
+                           else if (item.Key == Enums.IntegrationType.WorkFront.ToString())
+                           {
+                            <div class="workfront-img margin-top23"></div>
+                           }
+                        }
+                  </a>
+                </div>
+               }
+              }
+            </div>
+        </div>
+        <!--End PL#1462 07 Brad Gray, Aug 2015-->
+
+        <ul class="nav nav-tabs new-margin clear remove-bottom-border" style="padding-bottom:10px;padding-top:10px">
             <li>
                 <h4 class="source-sans-proregular">WorkFront Setup and Options</h4>
             </li>
         </ul>
 
-
-    <div class="row">
         <div style="padding-bottom: 8px; margin-bottom: 8px;" class="span2">
             <div style="float: left; width: 98%; border-right: 1px solid #b2afaf">
                 <div class="source-sans-prosemibold">Tactic Type</div>
@@ -242,8 +220,6 @@
                 </div>
             </div>
         </div>
-
-
 
 
 
