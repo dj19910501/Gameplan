@@ -3240,34 +3240,41 @@ namespace RevenuePlanner.Controllers
                                             var tacticlnkedActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => (ta.PlanTacticId == linkedTacticId) && lstLinkedPeriods.Contains(ta.Period)).ToList();
                                             tacticlnkedActualList.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
 
-                                        // Remove Tactic LineItems.
-                                            List<int> tacticlinkedLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta =>  (ta.PlanTacticId == linkedTacticId)).ToList().Select(a => a.PlanLineItemId).ToList();
+                                            #region "Commented line Item delete"
+                                            // Remove Tactic LineItems.
+                                            List<int> tacticlinkedLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => (ta.PlanTacticId == linkedTacticId)).ToList().Select(a => a.PlanLineItemId).ToList();
                                             var deletelinkedMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => tacticlinkedLineItemActualList.Contains(c.PlanLineItemId) && lstLinkedPeriods.Contains(c.Period)).ToList();
                                             if (deletelinkedMarkedLineItem != null && deletelinkedMarkedLineItem.Count > 0)
-                                                deletelinkedMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
-                                    }
-                                    else
-                                    {
+                                                deletelinkedMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted); 
+                                            #endregion
+                                        }
+                                        else
+                                        {
                                             // Remove Tactic Actual list.
                                             var tacticlnkedActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => (ta.PlanTacticId == linkedTacticId)).ToList();
                                             tacticlnkedActualList.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
 
                                             // Remove Tactic LineItems.
-                                            List<int> tacticlinkedLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => (ta.PlanTacticId == linkedTacticId)).ToList().Select(a => a.PlanLineItemId).ToList();
-                                            var deletelinkedMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => tacticlinkedLineItemActualList.Contains(c.PlanLineItemId)).ToList();
-                                            if (deletelinkedMarkedLineItem != null && deletelinkedMarkedLineItem.Count >0)
-                                                deletelinkedMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
+                                            #region "Commented line Item delete"
+                                            //List<int> tacticlinkedLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => (ta.PlanTacticId == linkedTacticId)).ToList().Select(a => a.PlanLineItemId).ToList();
+                                            //var deletelinkedMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => tacticlinkedLineItemActualList.Contains(c.PlanLineItemId)).ToList();
+                                            //if (deletelinkedMarkedLineItem != null && deletelinkedMarkedLineItem.Count > 0)
+                                            //    deletelinkedMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted); 
+                                            #endregion
                                         }
                                     }
                                         //modified by Mitesh vaishnav for functional review point - removing sp
                                         var tacticActualList = db.Plan_Campaign_Program_Tactic_Actual.Where(ta => ta.PlanTacticId == actualResult.PlanTacticId).ToList();
                                         tacticActualList.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
 
-                                        //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
-                                        List<int> tacticLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => ta.PlanTacticId == actualResult.PlanTacticId).ToList().Select(a => a.PlanLineItemId).ToList();
-                                        var deleteMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => tacticLineItemActualList.Contains(c.PlanLineItemId)).ToList();
-                                    if (deleteMarkedLineItem != null && deleteMarkedLineItem.Count > 0)
-                                        deleteMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted);
+                                        #region "Commented line Item delete"
+                                        //    //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
+                                        //    List<int> tacticLineItemActualList = db.Plan_Campaign_Program_Tactic_LineItem.Where(ta => ta.PlanTacticId == actualResult.PlanTacticId).ToList().Select(a => a.PlanLineItemId).ToList();
+                                        //    var deleteMarkedLineItem = db.Plan_Campaign_Program_Tactic_LineItem_Actual.Where(c => tacticLineItemActualList.Contains(c.PlanLineItemId)).ToList();
+                                        //if (deleteMarkedLineItem != null && deleteMarkedLineItem.Count > 0)
+                                        //    deleteMarkedLineItem.ForEach(ta => db.Entry(ta).State = EntityState.Deleted); 
+                                        #endregion
+
                                     //db.SaveChanges();
                                     //Added By : Kalpesh Sharma #735 Actual cost - Changes to add actuals screen 
                                     //Int64 projectedStageValue = 0, mql = 0, cw = 0, cost = 0;
