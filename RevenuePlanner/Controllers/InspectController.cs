@@ -4195,8 +4195,8 @@ namespace RevenuePlanner.Controllers
                                     linkedTactic.CreatedBy = pcpobj.CreatedBy;
                                     //linkedTactic.ProjectedStageValue = pcpobj.ProjectedStageValue;
                                     linkedTactic.Status = pcpobj.Status;
-                                    linkedTactic.StartDate = pcpobj.StartDate;
-                                    linkedTactic.EndDate = pcpobj.EndDate;
+                                    //linkedTactic.StartDate = pcpobj.StartDate;
+                                    //linkedTactic.EndDate = pcpobj.EndDate;
                                     if (linkedTactic.Plan_Campaign_Program.StartDate > linkedTactic.StartDate)
                                     {
                                         linkedTactic.Plan_Campaign_Program.StartDate = form.StartDate;

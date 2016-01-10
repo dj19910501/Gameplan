@@ -1250,13 +1250,13 @@
         //Added by Rahul Shah on 30/11/2015 for PL #1764.
         var hdnYear;
         hdnYear= @ViewBag.Year;
-       
+
         if(stage == 0  )
         {
             var  newvalue = HomeGrid.cells(rowId, cellInd).getValue();
             if(newvalue.indexOf("</div>") > -1)
             {
-               
+
                 value = newvalue.split("</div>")[0];
             }
             TacticName = newvalue.split("</div>")[1];
@@ -1593,6 +1593,11 @@
                                     return false;
                                 }
                                 if (UpdateColumn == "Start Date") {
+                                    if(states.IsExtended){
+                                        alert("Start date must be current Plan year");
+                                        return false;
+                                    }
+
                                     //Modified By Komal Rawal for #1848 Link To tactic feature
                                     var EndDate = HomeGrid.cells(rowId,5).getValue();
                                     var EndYear = EndDate.split('/')[2];
@@ -1611,7 +1616,7 @@
 
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
                                         }
-                                     
+
                                     }
                                     else
                                     {
@@ -1623,12 +1628,15 @@
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "False")
                                         }
                                     }
-                               //End
+                                    //End
                                     ComapreDate(updatetype, rowId, sdateindex, nValue, UpdateColumn);
                                 }
 
                                 if (UpdateColumn == "End Date") {
-                                   
+                                    if(states.IsExtended){
+                                        alert("End date must be current Plan year");
+                                        return false;
+                                    }
                                     //Modified By Komal Rawal for #1848 Link To tactic feature
                                     var StartDate = HomeGrid.cells(rowId,4).getValue();
                                     var StartYear = StartDate.split('/')[2];
@@ -1645,9 +1653,9 @@
                                             HomeGrid.cells(rowId, 1).setValue(UnLinkIconDiv + getvalue);
                                             $("div[tacticaddId='" + TaskID + "']").attr("linktacticper", "True")
                                         }
-                                      
 
-                                       
+
+
                                     }
                                     else
                                     {
@@ -1660,7 +1668,7 @@
                                         }
                                     }
                                     //End
-                               
+
 
                                     ComapreDate(updatetype, rowId, edateindex, nValue, UpdateColumn);
                                 }
@@ -1701,7 +1709,7 @@
                                     CheckPermissionByOwner(rowId, nValue, updatetype, parseInt(Id))
 
                                 }
-                             
+
                             }
                         });
                     }
@@ -1719,7 +1727,7 @@
                     }
                     value = "";
 
-                    
+
                     $("div[id^='LinkIcon']").each(function () {
 
                         bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
@@ -1727,7 +1735,7 @@
                     //End
                     return true;
                 }
-               
+
                 //Modified By Komal Rawal for #1848 Link To tactic feature
                 if(cellInd == 1)
                 {
@@ -1742,7 +1750,7 @@
                 }
                 value = "";
 
-                
+
                 $("div[id^='LinkIcon']").each(function () {
 
                     bootstrapetitle($(this), 'This tactic is linked to ' + "<U>"+ htmlDecode($(this).attr('linkedplanname') + "</U>"), "tipsy-innerWhite");
@@ -1751,10 +1759,10 @@
                 return true;
             }
 
-         
+
         }
-      
-     
+
+
     }
 
 
@@ -1802,7 +1810,7 @@
         });
     }
     function ComapreDate(updatetype, rowId, dateindex, nValue, Updatecolumn) {
-      
+
         var newDate = new Date(formatDate(nValue)); //Modified by Rahul Shah on 30/11/2015 for PL #1764.
         if (updatetype == "tact") {
 
