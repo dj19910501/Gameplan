@@ -105,7 +105,7 @@
         </div>
 
         <!--Begin PL#1872 Brad Gray, 09 Jan 2016-->
-        <div class="cf margin-top60 width96 textalign-mozcenter" style="padding-bottom: 5px;">
+        <div class="cf margin-top40 width96 textalign-mozcenter" style="padding-bottom: 5px;">
             <div class="span6 review_no_padding">
                 <p class="margin-top-10 text_align_left">Deployed to Integration</p>
                    @{ if (tacticReview.IsDeployedToIntegration)
@@ -118,6 +118,40 @@
                     }
                 }
             </div>
+
+            @*Start -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
+            <div class ="span6" style="margin-bottom: 0px; width: 93%;margin-top:10px;">
+                @if (tacticIntegrationInstance != null || tacticIntegrationProjMgmtInstance != null || tacticEloquaInstance != null)
+                {
+                    if (INQLastSync != null)
+                    {
+                        <span class ="pull-left" style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px;">@Html.LabelForINQ("INQ") synced on @INQLastSync.ToString("MMM dd, yyyy") at @INQLastSync.ToString("hh:mm tt").ToLower() </span>
+                        <br />
+                    }
+                    if (MQLLastSync != null)
+                    {
+                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForMQL("MQL") synced on @MQLLastSync.ToString("MMM dd, yyyy") at @MQLLastSync.ToString("hh:mm tt").ToLower()</span>
+                        <br />
+                    }
+                    if (CWLastSync != null)
+                    {
+                        <span class="pull-left"  style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">@Html.LabelForCW("CW") synced on @CWLastSync.ToString("MMM dd, yyyy ") at  @CWLastSync.ToString("hh:mm tt").ToLower()</span>
+                        <br />
+                    }
+                    if (TacticLastSync != null)
+                    {
+                        <span class="pull-left" style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic last synced on @TacticLastSync.ToString("MMM dd, yyyy ") at  @TacticLastSync.ToString("hh:mm tt").ToLower()</span>
+                    }
+                }
+                else
+                {
+                    <span style="font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;">Tactic not synced</span>
+                }
+                @*End -Added by Mitesh Vaishnav for PL ticket #690 Model Interface - Integration*@
+            </div>
+
+
+
         </div>
     </div>
 
@@ -179,7 +213,12 @@
                     </div>
                     <span id="integration-id" class="blue-text bold" title="@IntegrationStatus">@IntegrationStatus</span>
                 </div>
+
+               
+
             </div>
+
+           
 
             <!--Modified 09 Jan 2016 by Brad Gray PL#1872 to allow changes per integration-->
             <div class="span9" style="border-left: 1px solid #b2afaf">
@@ -223,7 +262,7 @@
         </div>
         <!--End PL#1462 07 Brad Gray, Aug 2015-->
 
-        <div class="row gray-input">
+        <div class="row gray-input" style="margin-top:-5px">
 
             <div style="padding-bottom: 8px; margin-bottom: 8px;" class="span2">
                 <div style="float: left; width: 98%; border-right: 1px solid #b2afaf">
