@@ -8192,10 +8192,15 @@ namespace RevenuePlanner.Controllers
 
                 ViewBag.IsOtherLineItem = isOtherLineItem;
 
+                if(pcptl != null)
+                {
+
+              
                 // Add by Nishant sheth
                 // Desc :: #1765 - to get the year diffrence between item start date and end date
                 ViewBag.YearDiffrence = Convert.ToInt32(Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.EndDate.Year) - Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.StartDate.Year));
                 ViewBag.StartYear = Convert.ToInt32(pcptl.Plan_Campaign_Program_Tactic.StartDate.Year);
+                }
 
                 return PartialView("_ActualLineitem");
             }

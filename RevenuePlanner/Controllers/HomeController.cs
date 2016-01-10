@@ -5204,13 +5204,20 @@ namespace RevenuePlanner.Controllers
             List<Plan> activePlan = objDbMrpEntities.Plans.Where(plan => planIds.Contains(plan.PlanId) && plan.IsActive.Equals(true) && plan.IsDeleted == false).ToList();
             List<int> lstplanid = activePlan.Select(a => a.PlanId).ToList();
             var lstCampaign = objDbMrpEntities.Plan_Campaign.Where(a => lstplanid.Contains(a.PlanId) && a.IsDeleted == false).ToList();
-
+            var PlanYearList = activePlan.Select(plan => plan.Year).Distinct().ToList();
 
             //// Get the Current year and Pre define Upcoming Activites.
             string currentYear = DateTime.Now.Year.ToString();
 
             List<SelectListItem> UpcomingActivityList = new List<SelectListItem>();
-
+            foreach (var Planyear in PlanYearList)
+            {
+                var checkYear = UpcomingActivityList.Where(a => a.Text == Planyear).Select(a => a.Text).FirstOrDefault();
+                if (checkYear == null)
+                {
+                    UpcomingActivityList.Add(new SelectListItem { Text = Planyear, Value = Planyear, Selected = false });
+                }
+            }
             //// Fetch the pervious year and future year list and insert into the list object
             var yearlistPrevious = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) < DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
             yearlistPrevious.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
@@ -5218,7 +5225,7 @@ namespace RevenuePlanner.Controllers
 
             string strThisQuarter = Enums.UpcomingActivities.thisquarter.ToString(), strThisMonth = Enums.UpcomingActivities.thismonth.ToString(),
                                     quartText = Enums.UpcomingActivitiesValues[strThisQuarter].ToString(), monthText = Enums.UpcomingActivitiesValues[strThisMonth].ToString();
-
+            string MinYear = string.Empty;
             //// If active plan dosen't have any current plan at that time we have to remove this month and thisquater option
             if (activePlan != null && activePlan.Any())
             {
@@ -5226,37 +5233,60 @@ namespace RevenuePlanner.Controllers
 
                 UpcomingActivityList.Add(new SelectListItem { Text = quartText, Value = strThisQuarter, Selected = false });
                 UpcomingActivityList.Add(new SelectListItem { Text = monthText, Value = strThisMonth, Selected = false });
+
+                if (lstCampaign.Count > 0)
+                {
+                    MinYear = Convert.ToString(lstCampaign.Select(a => a.StartDate.Year).Min());
+                }
                 foreach (var camp in lstCampaign)
                 {
                     int campStYear = camp.StartDate.Year;
                     int campEdYear = camp.EndDate.Year;
                     int campYearDiffer = campEdYear - campStYear;
                     string EndYear = camp.EndDate.Year.ToString();
+                    string StartYear = camp.StartDate.Year.ToString();
+                    if (Convert.ToInt32(MinYear) < campStYear)
+                    {
+                        MinYear = Convert.ToString(campStYear);
+                    }
                     if (campStYear != campEdYear)
                     {
-                        var checkYear = UpcomingActivityList.Where(a => a.Text == EndYear).Select(a => a.Text).FirstOrDefault();
-                        var checkFromTo = UpcomingActivityList.Where(a => a.Text == currentYear + "-" + EndYear).Select(a => a.Text).FirstOrDefault();
-                        int yearDiff = Convert.ToInt32(EndYear) - Convert.ToInt32(currentYear);
+                        //var checkYear = UpcomingActivityList.Where(a => a.Text == EndYear).Select(a => a.Text).FirstOrDefault();
+                        //var checkFromTo = UpcomingActivityList.Where(a => a.Text == currentYear + "-" + EndYear).Select(a => a.Text).FirstOrDefault();
+                        int yearDiff = Convert.ToInt32(EndYear) - Convert.ToInt32(campStYear);
                         for (int i = 1; i <= yearDiff; i++)
                         {
-                            if (checkYear == null)
+                            var checkEndYear = UpcomingActivityList.Where(a => a.Text == EndYear).Select(a => a.Text).FirstOrDefault();
+                            if (checkEndYear == null)
                             {
                                 UpcomingActivityList.Add(new SelectListItem { Text = EndYear, Value = EndYear, Selected = false });
+                            }
+                            var checkStartYear = UpcomingActivityList.Where(a => a.Text == StartYear).Select(a => a.Text).FirstOrDefault();
+                            if (checkStartYear == null)
+                            {
+                                UpcomingActivityList.Add(new SelectListItem { Text = StartYear, Value = StartYear, Selected = false });
                             }
                         }
                         if (campYearDiffer > 0)
                         {
+                            var checkFromTo = UpcomingActivityList.Where(a => a.Text == campStYear + "-" + campEdYear).Select(a => a.Text).FirstOrDefault();
+                            if (checkFromTo == null)
+                            {
                             UpcomingActivityList.Add(new SelectListItem { Text = campStYear + "-" + campEdYear, Value = campStYear + "-" + campEdYear, Selected = false });
                         }
                     }
                 }
-                UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
+                }
+                // UpcomingActivityList.Add(new SelectListItem { Text = currentYear, Value = currentYear, Selected = true });
             }
+            List<string> upcometext = UpcomingActivityList.Select(a => a.Text).ToList();
+            UpcomingActivityList.Where(a => a.Text == (upcometext.Contains(currentYear) ? currentYear : MinYear)).ToList().ForEach(a => a.Selected = true);
             UpcomingActivityList = UpcomingActivityList.GroupBy(a => a.Text).Select(x => x.First()).ToList();
 
-            var yearlistAfter = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
-            yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
-            return UpcomingActivityList.Distinct().ToList();
+            //var yearlistAfter = activePlan.Where(plan => plan.Year != currentYear && Convert.ToInt32(plan.Year) > DateTime.Now.Year).Select(plan => plan.Year).Distinct().OrderBy(year => year).ToList();
+            //yearlistAfter.ForEach(year => UpcomingActivityList.Add(new SelectListItem { Text = year, Value = year, Selected = false }));
+            UpcomingActivityList = UpcomingActivityList.Distinct().ToList();
+            return UpcomingActivityList;
         }
 
         #endregion

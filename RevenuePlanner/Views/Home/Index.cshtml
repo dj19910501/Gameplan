@@ -1580,6 +1580,7 @@
     var SavePresetValue = false;
     function UpdateResult() {
         IsUpdate = true;
+        isRequest = false;
         // added by devanshi for #1431
         if (activeMenu == '@Enums.ActiveMenu.Plan.ToString().ToLower()') {
             if (document.getElementById("liGrid").className.indexOf("active") >= 0) {
@@ -2222,7 +2223,7 @@
         $.ajax({
             type: 'POST',
             url: '@Url.Content("~/Home/BindUpcomingActivitesValues/")',
-            //async: false,// Comment by bhavesh
+            async: false,// Comment by bhavesh // Uncomment By Nishant Sheth Desc :: Due to selected min year records display
             data: {
                 planids: SelectedPlanIds,
                 CurrentTime: Currenttime
@@ -2247,6 +2248,7 @@
             });
         }
         $dropdown.append($html);
+        Currenttime = $("#ddlUpComingActivites").val();
         $("#ddlUpComingActivites").selectbox('detach');
         $("#ddlUpComingActivites").selectbox("attach");
     }
@@ -4147,7 +4149,7 @@
                     else {
                         // Add By Nishant sheth
                         // #1818 :: Display message if no any data with filters
-                        if (data.taskData.length > 0) {
+                        if (data.taskData.length > 0 || isRequest) {
                             $("#gantt_here").show();
                             $(".pull-right.toggle-status.source-sans-proregular").show();
                             $("#improvements").show();
